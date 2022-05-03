@@ -147,7 +147,7 @@ public enum MessageReceiver {
             message.sentTimestamp = envelope.timestamp
             message.receivedTimestamp = UInt64((Date().timeIntervalSince1970) * 1000)
             message.groupPublicKey = groupPublicKey
-            message.openGroupServerMessageID = openGroupMessageServerId
+            message.openGroupServerMessageId = openGroupMessageServerId
             
             // Validate
             var isValid: Bool = message.isValid

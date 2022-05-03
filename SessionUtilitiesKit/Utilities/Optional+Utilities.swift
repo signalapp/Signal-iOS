@@ -21,3 +21,11 @@ extension Optional {
         return (self ?? value)
     }
 }
+
+extension Optional where Wrapped == String {
+    public func defaulting(to value: Wrapped, useDefaultIfEmpty: Bool = false) -> Wrapped {
+        guard !useDefaultIfEmpty || self?.isEmpty != true else { return value }
+        
+        return (self ?? value)
+    }
+}

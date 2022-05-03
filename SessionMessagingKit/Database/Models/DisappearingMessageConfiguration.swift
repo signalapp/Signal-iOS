@@ -57,6 +57,34 @@ public extension DisappearingMessagesConfiguration {
 // MARK: - Convenience
 
 public extension DisappearingMessagesConfiguration {
+    struct MessageInfo: Codable {
+        public let senderName: String?
+        public let isEnabled: Bool
+        public let durationSeconds: TimeInterval
+        
+        var previewText: String {
+            guard let senderName: String = senderName else {
+                // Changed by localNumber on this device or via synced transcript
+                guard isEnabled, durationSeconds > 0 else { return "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION".localized() }
+                
+                return String(
+                    format: "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION".localized(),
+                    NSString.formatDurationSeconds(UInt32(floor(durationSeconds)), useShortFormat: false)
+                )
+            }
+            
+            guard isEnabled, durationSeconds > 0 else {
+                return String(format: "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION".localized(), senderName)
+            }
+            
+            return String(
+                format: "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION".localized(),
+                NSString.formatDurationSeconds(UInt32(floor(durationSeconds)), useShortFormat: false),
+                senderName
+            )
+        }
+    }
+    
     var durationIndex: Int {
         return DisappearingMessagesConfiguration.validDurationsSeconds
             .firstIndex(of: durationSeconds)
@@ -67,26 +95,16 @@ public extension DisappearingMessagesConfiguration {
         NSString.formatDurationSeconds(UInt32(durationSeconds), useShortFormat: false)
     }
     
-    func infoUpdateMessage(with senderName: String?) -> String {
-        guard let senderName: String = senderName else {
-            // Changed by localNumber on this device or via synced transcript
-            guard isEnabled, durationSeconds > 0 else { return "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION".localized() }
-            
-            return String(
-                format: "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION".localized(),
-                NSString.formatDurationSeconds(UInt32(floor(durationSeconds)), useShortFormat: false)
-            )
-        }
-        
-        guard isEnabled, durationSeconds > 0 else {
-            return String(format: "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION".localized(), senderName)
-        }
-        
-        return String(
-            format: "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION".localized(),
-            NSString.formatDurationSeconds(UInt32(floor(durationSeconds)), useShortFormat: false),
-            senderName
+    func messageInfoString(with senderName: String?) -> String? {
+        let messageInfo: MessageInfo = DisappearingMessagesConfiguration.MessageInfo(
+            senderName: senderName,
+            isEnabled: isEnabled,
+            durationSeconds: durationSeconds
         )
+        
+        guard let messageInfoData: Data = try? JSONEncoder().encode(messageInfo) else { return nil }
+        
+        return String(data: messageInfoData, encoding: .utf8)
     }
 }
 

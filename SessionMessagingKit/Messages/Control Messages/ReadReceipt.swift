@@ -4,38 +4,27 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-@objc(SNReadReceipt)
-public final class ReadReceipt : ControlMessage {
+public final class ReadReceipt: ControlMessage {
     private enum CodingKeys: String, CodingKey {
         case timestamps
     }
     
-    @objc public var timestamps: [UInt64]?
+    public var timestamps: [UInt64]?
 
-    // MARK: Initialization
-    public override init() { super.init() }
+    // MARK: - Initialization
     
     internal init(timestamps: [UInt64]) {
         super.init()
+        
         self.timestamps = timestamps
     }
 
-    // MARK: Validation
+    // MARK: - Validation
+    
     public override var isValid: Bool {
         guard super.isValid else { return false }
         if let timestamps = timestamps, !timestamps.isEmpty { return true }
         return false
-    }
-
-    // MARK: Coding
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        if let timestamps = coder.decodeObject(forKey: "messageTimestamps") as! [UInt64]? { self.timestamps = timestamps }
-    }
-
-    public override func encode(with coder: NSCoder) {
-        super.encode(with: coder)
-        coder.encode(timestamps, forKey: "messageTimestamps")
     }
     
     // MARK: - Codable
@@ -56,7 +45,8 @@ public final class ReadReceipt : ControlMessage {
         try container.encodeIfPresent(timestamps, forKey: .timestamps)
     }
 
-    // MARK: Proto Conversion
+    // MARK: - Proto Conversion
+    
     public override class func fromProto(_ proto: SNProtoContent, sender: String) -> ReadReceipt? {
         guard let receiptProto = proto.receiptMessage, receiptProto.type == .read else { return nil }
         let timestamps = receiptProto.timestamp
@@ -81,8 +71,9 @@ public final class ReadReceipt : ControlMessage {
         }
     }
     
-    // MARK: Description
-    public override var description: String {
+    // MARK: - Description
+    
+    public var description: String {
         """
         ReadReceipt(
             timestamps: \(timestamps?.description ?? "null")

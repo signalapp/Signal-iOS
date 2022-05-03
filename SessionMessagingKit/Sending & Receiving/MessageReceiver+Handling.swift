@@ -194,7 +194,7 @@ extension MessageReceiver {
             threadId: thread.id,
             authorId: sender,
             variant: .infoDisappearingMessagesUpdate,
-            body: config.infoUpdateMessage(
+            body: config.messageInfoString(
                 with: (sender != getUserHexEncodedPublicKey(db) ?
                     Profile.displayName(db, id: sender) :
                     nil
@@ -225,7 +225,7 @@ extension MessageReceiver {
             db,
             publicKey: userPublicKey,
             name: message.displayName,
-            profilePictureUrl: message.profilePictureURL,
+            profilePictureUrl: message.profilePictureUrl,
             profileKey: OWSAES256Key(data: message.profileKey),
             sentTimestamp: messageSentTimestamp
         )
@@ -248,7 +248,7 @@ extension MessageReceiver {
                 try profile
                     .with(
                         name: contactInfo.displayName,
-                        profilePictureUrl: .updateIf(contactInfo.profilePictureURL),
+                        profilePictureUrl: .updateIf(contactInfo.profilePictureUrl),
                         profileEncryptionKey: .updateIf(
                             contactInfo.profileKey.map { OWSAES256Key(data: $0) }
                         )
@@ -312,8 +312,8 @@ extension MessageReceiver {
                     guard !existingClosedGroupsIds.contains(closedGroup.publicKey) else { return }
                     
                     let keyPair: Box.KeyPair = Box.KeyPair(
-                        publicKey: closedGroup.encryptionKeyPair.publicKey.bytes,
-                        secretKey: closedGroup.encryptionKeyPair.privateKey.bytes
+                        publicKey: closedGroup.encryptionKeyPublicKey.bytes,
+                        secretKey: closedGroup.encryptionKeySecretKey.bytes
                     )
                     
                     try handleNewClosedGroup(
@@ -409,7 +409,7 @@ extension MessageReceiver {
             }
         try attachments.saveAll(db)
         
-        message.attachmentIDs = attachments.map { $0.id }
+        message.attachmentIds = attachments.map { $0.id }
         
         // Update profile if needed
         if let profile = message.profile {
@@ -420,7 +420,7 @@ extension MessageReceiver {
                 db,
                 publicKey: sender,
                 name: profile.displayName,
-                profilePictureUrl: profile.profilePictureURL,
+                profilePictureUrl: profile.profilePictureUrl,
                 profileKey: contactProfileKey,
                 sentTimestamp: messageSentTimestamp
             )
@@ -474,7 +474,7 @@ extension MessageReceiver {
                 interaction = try existingInteraction
                     .with(
                         serverHash: message.serverHash, // Keep track of server hash
-                        openGroupServerMessageId: message.openGroupServerMessageID.map { Int64($0) }
+                        openGroupServerMessageId: message.openGroupServerMessageId.map { Int64($0) }
                     )
                     .saved(db)
                 
@@ -494,7 +494,7 @@ extension MessageReceiver {
                     body: message.text,
                     timestampMs: Int64(messageSentTimestamp * 1000),
                     // Note: Ensure we don't ever expire open group messages
-                    expiresInSeconds: (disappearingMessagesConfiguration.isEnabled && message.openGroupServerMessageID == nil ?
+                    expiresInSeconds: (disappearingMessagesConfiguration.isEnabled && message.openGroupServerMessageId == nil ?
                         disappearingMessagesConfiguration.durationSeconds :
                         nil
                     ),
@@ -502,9 +502,9 @@ extension MessageReceiver {
                     // OpenGroupInvitations are stored as LinkPreview's in the database
                     linkPreviewUrl: (message.linkPreview?.url ?? message.openGroupInvitation?.url),
                     // Keep track of the open group server message ID ↔ message ID relationship
-                    openGroupServerMessageId: message.openGroupServerMessageID.map { Int64($0) },
                     openGroupWhisperMods: false,       // TODO: SOGSV4
                     openGroupWhisperTo: nil            // TODO: SOGSV4
+                    openGroupServerMessageId: message.openGroupServerMessageId.map { Int64($0) },
                 ).inserted(db)
                 
                 guard let newInteractionId: Int64 = interaction.id else { throw GRDBStorageError.failedToSave }

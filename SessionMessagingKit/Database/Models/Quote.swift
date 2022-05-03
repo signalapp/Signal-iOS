@@ -4,19 +4,18 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-public struct Quote: Codable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
+public struct Quote: Codable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "quote" }
-    internal static let interactionForeignKey = ForeignKey([Columns.interactionId], to: [Interaction.Columns.id])
+    public static let interactionForeignKey = ForeignKey([Columns.interactionId], to: [Interaction.Columns.id])
     internal static let originalInteractionForeignKey = ForeignKey(
         [Columns.timestampMs, Columns.authorId],
         to: [Interaction.Columns.timestampMs, Interaction.Columns.authorId]
     )
     internal static let profileForeignKey = ForeignKey([Columns.authorId], to: [Profile.Columns.id])
-    private static let attachmentForeignKey = ForeignKey([Columns.attachmentId], to: [Attachment.Columns.id])
     internal static let interaction = belongsTo(Interaction.self, using: interactionForeignKey)
     private static let profile = hasOne(Profile.self, using: profileForeignKey)
     private static let quotedInteraction = hasOne(Interaction.self, using: originalInteractionForeignKey)
-    internal static let attachment = hasOne(Attachment.self, using: attachmentForeignKey)
+    public static let attachment = hasOne(Attachment.self, using: Attachment.quoteForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {

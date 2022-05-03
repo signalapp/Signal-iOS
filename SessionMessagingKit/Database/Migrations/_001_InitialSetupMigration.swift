@@ -194,7 +194,6 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.recipientId, .text)
                 .notNull()
                 .indexed()                                            // Quicker querying
-                .references(Profile.self)
             t.column(.state, .integer)
                 .notNull()
                 .indexed()                                            // Quicker querying
@@ -225,6 +224,10 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.localRelativeFilePath, .text)
             t.column(.width, .integer)
             t.column(.height, .integer)
+            t.column(.duration, .double)
+            t.column(.isValid, .boolean)
+                .notNull()
+                .defaults(to: false)
             t.column(.encryptionKey, .blob)
             t.column(.digest, .blob)
             t.column(.caption, .text)

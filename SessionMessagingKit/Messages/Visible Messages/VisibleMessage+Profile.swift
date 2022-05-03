@@ -4,40 +4,30 @@ import Foundation
 import SessionUtilitiesKit
 
 public extension VisibleMessage {
+    struct Profile: Codable {
+        public let displayName: String?
+        public let profileKey: Data?
+        public let profilePictureUrl: String?
 
-    @objc(SNProfile)
-    class Profile: NSObject, Codable, NSCoding {
-        public var displayName: String?
-        public var profileKey: Data?
-        public var profilePictureURL: String?
-
-        internal init(displayName: String, profileKey: Data? = nil, profilePictureURL: String? = nil) {
+        internal init(displayName: String, profileKey: Data? = nil, profilePictureUrl: String? = nil) {
             self.displayName = displayName
             self.profileKey = profileKey
-            self.profilePictureURL = profilePictureURL
+            self.profilePictureUrl = profilePictureUrl
         }
 
-        public required init?(coder: NSCoder) {
-            if let displayName = coder.decodeObject(forKey: "displayName") as! String? { self.displayName = displayName }
-            if let profileKey = coder.decodeObject(forKey: "profileKey") as! Data? { self.profileKey = profileKey }
-            if let profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String? { self.profilePictureURL = profilePictureURL }
-        }
-
-        public func encode(with coder: NSCoder) {
-            coder.encode(displayName, forKey: "displayName")
-            coder.encode(profileKey, forKey: "profileKey")
-            coder.encode(profilePictureURL, forKey: "profilePictureURL")
-        }
+        // MARK: - Proto Conversion
 
         public static func fromProto(_ proto: SNProtoDataMessage) -> Profile? {
-            guard let profileProto = proto.profile, let displayName = profileProto.displayName else { return nil }
-            let profileKey = proto.profileKey
-            let profilePictureURL = profileProto.profilePicture
-            if let profileKey = profileKey, let profilePictureURL = profilePictureURL {
-                return Profile(displayName: displayName, profileKey: profileKey, profilePictureURL: profilePictureURL)
-            } else {
-                return Profile(displayName: displayName)
-            }
+            guard
+                let profileProto = proto.profile,
+                let displayName = profileProto.displayName
+            else { return nil }
+            
+            return Profile(
+                displayName: displayName,
+                profileKey: proto.profileKey,
+                profilePictureUrl: profileProto.profilePicture
+            )
         }
 
         public func toProto() -> SNProtoDataMessage? {
@@ -48,9 +38,10 @@ public extension VisibleMessage {
             let dataMessageProto = SNProtoDataMessage.builder()
             let profileProto = SNProtoDataMessageLokiProfile.builder()
             profileProto.setDisplayName(displayName)
-            if let profileKey = profileKey, let profilePictureURL = profilePictureURL {
+            
+            if let profileKey = profileKey, let profilePictureUrl = profilePictureUrl {
                 dataMessageProto.setProfileKey(profileKey)
-                profileProto.setProfilePicture(profilePictureURL)
+                profileProto.setProfilePicture(profilePictureUrl)
             }
             do {
                 dataMessageProto.setProfile(try profileProto.build())
@@ -62,12 +53,13 @@ public extension VisibleMessage {
         }
         
         // MARK: Description
-        public override var description: String {
+        
+        public var description: String {
             """
             Profile(
                 displayName: \(displayName ?? "null"),
                 profileKey: \(profileKey?.description ?? "null"),
-                profilePictureURL: \(profilePictureURL ?? "null")
+                profilePictureUrl: \(profilePictureUrl ?? "null")
             )
             """
         }

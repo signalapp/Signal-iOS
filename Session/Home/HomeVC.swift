@@ -100,7 +100,8 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         _ = CurrentAppContext().isRTL
         
         // Preparation
-        SignalApp.shared().homeViewController = self
+        SessionApp.homeViewController.mutate { $0 = self }
+        
         // Gradient & nav bar
         setUpGradientBackground()
         if navigationController?.navigationBar != nil {

@@ -1,8 +1,7 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import SessionUtilitiesKit
 
 @objc
 public class SSKPreferences: NSObject {
@@ -63,6 +62,11 @@ public extension SSKPreferences {
     @objc(setScreenSecurity:)
     static func objc_setScreenSecurity(_ enabled: Bool) {
         GRDBStorage.shared.write { db in db[.preferencesAppSwitcherPreviewEnabled] = enabled }
+    }
+    
+    @objc(areReadReceiptsEnabled)
+    static func objc_areReadReceiptsEnabled() -> Bool {
+        return GRDBStorage.shared[.areReadReceiptsEnabled]
     }
     
     @objc(setAreReadReceiptsEnabled:)

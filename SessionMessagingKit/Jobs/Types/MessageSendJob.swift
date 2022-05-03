@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import PromiseKit
 import SignalCoreKit
 import SessionUtilitiesKit
@@ -36,46 +37,21 @@ public enum MessageSendJob: JobExecutor {
                 return
             }
             
-            var shouldDeferJob: Bool = false
+            var shouldFailJob: Bool = false
             
             GRDBStorage.shared.read { db in
                 // Fetch all associated attachments
-                let attachments: [Attachment] = try interaction.attachments.fetchAll(db)
+                let attachmentCount: Int = try interaction.attachments
+                    .filter(Attachment.Columns.state == Attachment.State.pending)
+                    .fetchCount(db)
                 
-                // Create jobs for any pending attachment jobs and insert them into the
-                // queue before the current job (this will mean the current job will re-run
-                // after these inserted jobs complete)
-                let pendingAttachments: [Attachment] = attachments.filter { $0.state == .pending }
-                pendingAttachments
-                    .forEach { attachment in
-                        JobRunner.insert(
-                            db,
-                            job: Job(
-                                variant: .attachmentUpload,
-                                behaviour: .runOnce,
-                                threadId: job.threadId,
-                                details: AttachmentUploadJob.Details(
-                                    threadId: threadId,
-                                    attachmentId: attachment.id,
-                                    messageSendJobId: jobId
-                                )
-                            ),
-                            before: job
-                        )
-                    }
-                
-                // If there were pending or uploading attachments then stop here (we want to
-                // upload them first and then re-run this send job - the 'JobRunner.insert'
-                // method will take care of this)
-                shouldDeferJob = (
-                    !pendingAttachments.isEmpty ||
-                    attachments.contains(where: { $0.state == .uploading })
-                )
+                shouldFailJob = (attachmentCount > 0)
             }
             
-            // Only continue if we don't want to defer the job
-            guard !shouldDeferJob else {
-                deferred(job)
+            // Cannot send messages with pending attachments (the app doesn't currently
+            // support deferred attachment uploads)
+            guard !shouldFailJob else {
+                failure(job, Attachment.UploadError.notUploaded, true)
                 return
             }
         }

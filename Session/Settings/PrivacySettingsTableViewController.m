@@ -13,7 +13,6 @@
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SessionUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/ThreadUtil.h>
-#import <SessionMessagingKit/OWSReadReceiptManager.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
@@ -73,7 +72,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                      @"Label for the 'read receipts' setting.")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"read_receipts"]
                     isOnBlock:^{
-                        return [OWSReadReceiptManager.sharedManager areReadReceiptsEnabled];
+                        return [SSKPreferences areReadReceiptsEnabled];
                     }
                     isEnabledBlock:^{
                         return YES;

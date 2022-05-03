@@ -78,10 +78,10 @@ final class UserCell : UITableViewCell {
         separator.pin([ UIView.HorizontalEdge.leading, UIView.VerticalEdge.bottom, UIView.HorizontalEdge.trailing ], to: contentView)
     }
 
-    // MARK: Updating
+    // MARK: - Updating
+    
     func update() {
-        profilePictureView.publicKey = publicKey
-        profilePictureView.update()
+        profilePictureView.update(for: publicKey)
         displayNameLabel.text = Profile.displayName(id: publicKey)
         
         switch accessory {

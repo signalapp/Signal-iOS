@@ -4,7 +4,6 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-@objc(SNUnsendRequest)
 public final class UnsendRequest: ControlMessage {
     private enum CodingKeys: String, CodingKey {
         case timestamp
@@ -16,32 +15,21 @@ public final class UnsendRequest: ControlMessage {
     
     public override var isSelfSendValid: Bool { true }
     
-    // MARK: Validation
+    // MARK: - Validation
+    
     public override var isValid: Bool {
         guard super.isValid else { return false }
+        
         return timestamp != nil && author != nil
     }
     
-    // MARK: Initialization
-    public override init() { super.init() }
-
+    // MARK: - Initialization
+    
     internal init(timestamp: UInt64, author: String) {
         super.init()
+        
         self.timestamp = timestamp
         self.author = author
-    }
-
-    // MARK: Coding
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        if let timestamp = coder.decodeObject(forKey: "timestamp") as! UInt64? { self.timestamp = timestamp }
-        if let author = coder.decodeObject(forKey: "author") as! String? { self.author = author }
-    }
-
-    public override func encode(with coder: NSCoder) {
-        super.encode(with: coder)
-        coder.encode(timestamp, forKey: "timestamp")
-        coder.encode(author, forKey: "author")
     }
     
     // MARK: - Codable
@@ -64,7 +52,8 @@ public final class UnsendRequest: ControlMessage {
         try container.encodeIfPresent(author, forKey: .author)
     }
     
-    // MARK: Proto Conversion
+    // MARK: - Proto Conversion
+    
     public override class func fromProto(_ proto: SNProtoContent, sender: String) -> UnsendRequest? {
         guard let unsendRequestProto = proto.unsendRequest else { return nil }
         let timestamp = unsendRequestProto.timestamp
@@ -88,8 +77,9 @@ public final class UnsendRequest: ControlMessage {
         }
     }
     
-    // MARK: Description
-    public override var description: String {
+    // MARK: - Description
+    
+    public var description: String {
         """
         UnsendRequest(
             timestamp: \(timestamp?.description ?? "null")

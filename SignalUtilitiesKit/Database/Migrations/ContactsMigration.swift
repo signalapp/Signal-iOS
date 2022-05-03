@@ -16,24 +16,24 @@ public class ContactsMigration : OWSDatabaseMigration {
     }
     
     private func doMigrationAsync(completion: @escaping OWSDatabaseMigrationCompletion) {
-        var contacts: [SessionMessagingKit.Legacy.Contact] = []
+        var contacts: [SMKLegacy.Contact] = []
         TSContactThread.enumerateCollectionObjects { object, _ in
             guard let thread = object as? TSContactThread else { return }
             let sessionID = thread.contactSessionID()
-            var contact: SessionMessagingKit.Legacy.Contact?
+            var contact: SMKLegacy.Contact?
             
             Storage.read { transaction in
-                contact = transaction.object(forKey: sessionID, inCollection: Legacy.contactCollection) as? SessionMessagingKit.Legacy.Contact
+                contact = transaction.object(forKey: sessionID, inCollection: SMKLegacy.contactCollection) as? SMKLegacy.Contact
             }
             
-            if let contact: SessionMessagingKit.Legacy.Contact = contact {
+            if let contact: SMKLegacy.Contact = contact {
                 contact.isTrusted = true
                 contacts.append(contact)
             }
         }
         Storage.write(with: { transaction in
             contacts.forEach { contact in
-                transaction.setObject(contact, forKey: contact.sessionID, inCollection: Legacy.contactCollection)
+                transaction.setObject(contact, forKey: contact.sessionID, inCollection: SMKLegacy.contactCollection)
             }
             self.save(with: transaction) // Intentionally capture self
         }, completion: {

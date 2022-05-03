@@ -251,7 +251,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         DispatchQueue.main.async {
             notificationBody = MentionUtilities.highlightMentions(
                 in: (notificationBody ?? ""),
-                threadId: thread.id
+                threadVariant: thread.variant
             )
             let sound: Preferences.Sound? = self.requestSound(thread: thread)
             
@@ -354,10 +354,6 @@ class NotificationActionHandler {
 
     // MARK: - Dependencies
 
-    var signalApp: SignalApp {
-        return SignalApp.shared()
-    }
-
     var notificationPresenter: NotificationPresenter {
         return AppEnvironment.shared.notificationPresenter
     }
@@ -421,12 +417,12 @@ class NotificationActionHandler {
         // can be visible to the user immediately upon opening the app, rather than having to watch
         // it animate in from the homescreen.
         let shouldAnimate = UIApplication.shared.applicationState == .active
-        signalApp.presentConversationAndScrollToFirstUnreadMessage(forThreadId: threadId, animated: shouldAnimate)
+        SessionApp.presentConversation(for: threadId, animated: shouldAnimate)
         return Promise.value(())
     }
     
     func showHomeVC() -> Promise<Void> {
-        signalApp.showHomeView()
+        SessionApp.showHomeView()
         return Promise.value(())
     }
 

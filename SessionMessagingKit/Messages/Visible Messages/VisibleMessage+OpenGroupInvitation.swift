@@ -5,27 +5,16 @@ import GRDB
 import SessionUtilitiesKit
 
 public extension VisibleMessage {
+    struct OpenGroupInvitation: Codable {
+        public let name: String?
+        public let url: String?
 
-    @objc(SNOpenGroupInvitation)
-    class OpenGroupInvitation: NSObject, Codable, NSCoding {
-        public var name: String?
-        public var url: String?
-
-        @objc
         public init(name: String, url: String) {
             self.name = name
             self.url = url
         }
 
-        public required init?(coder: NSCoder) {
-            if let name = coder.decodeObject(forKey: "name") as! String? { self.name = name }
-            if let url = coder.decodeObject(forKey: "url") as! String? { self.url = url }
-        }
-
-        public func encode(with coder: NSCoder) {
-            coder.encode(name, forKey: "name")
-            coder.encode(url, forKey: "url")
-        }
+        // MARK: - Proto Conversion
 
         public static func fromProto(_ proto: SNProtoDataMessageOpenGroupInvitation) -> OpenGroupInvitation? {
             let url = proto.url
@@ -47,8 +36,9 @@ public extension VisibleMessage {
             }
         }
         
-        // MARK: Description
-        public override var description: String {
+        // MARK: - Description
+        
+        public var description: String {
             """
             OpenGroupInvitation(
                 name: \(name ?? "null"),

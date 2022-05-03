@@ -7,15 +7,15 @@ public extension TSIncomingMessage {
         Storage.read { transaction in
             expiration = thread.disappearingMessagesDuration(with: transaction)
         }
-        let openGroupServerMessageID = visibleMessage.openGroupServerMessageID ?? 0
-        let isOpenGroupMessage = (openGroupServerMessageID != 0)
+        let openGroupServerMessageId = visibleMessage.openGroupServerMessageId ?? 0
+        let isOpenGroupMessage = (openGroupServerMessageId != 0)
         let result = TSIncomingMessage(
             timestamp: visibleMessage.sentTimestamp!,
             in: thread,
             authorId: sender,
             sourceDeviceId: 1,
             messageBody: visibleMessage.text,
-            attachmentIds: visibleMessage.attachmentIDs,
+            attachmentIds: visibleMessage.attachmentIds,
             expiresInSeconds: !isOpenGroupMessage ? expiration : 0, // Ensure we don't ever expire open group messages
             quotedMessage: quotedMessage,
             linkPreview: linkPreview,
@@ -24,7 +24,7 @@ public extension TSIncomingMessage {
             openGroupInvitationURL: visibleMessage.openGroupInvitation?.url,
             serverHash: visibleMessage.serverHash
         )
-        result.openGroupServerMessageID = openGroupServerMessageID
+        result.openGroupServerMessageID = openGroupServerMessageId
         return result
     }
 }

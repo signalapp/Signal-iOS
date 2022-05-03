@@ -6,7 +6,7 @@ import Sodium
 import Curve25519Kit
 import SessionUtilitiesKit
 
-public final class ClosedGroupControlMessage : ControlMessage {
+public final class ClosedGroupControlMessage: ControlMessage {
     private enum CodingKeys: String, CodingKey {
         case kind
     }
@@ -22,7 +22,8 @@ public final class ClosedGroupControlMessage : ControlMessage {
     
     public override var isSelfSendValid: Bool { true }
     
-    // MARK: Kind
+    // MARK: - Kind
+    
     public enum Kind: CustomStringConvertible, Codable {
         private enum CodingKeys: String, CodingKey {
             case description
@@ -49,13 +50,13 @@ public final class ClosedGroupControlMessage : ControlMessage {
 
         public var description: String {
             switch self {
-            case .new: return "new"
-            case .encryptionKeyPair: return "encryptionKeyPair"
-            case .nameChange: return "nameChange"
-            case .membersAdded: return "membersAdded"
-            case .membersRemoved: return "membersRemoved"
-            case .memberLeft: return "memberLeft"
-            case .encryptionKeyPairRequest: return "encryptionKeyPairRequest"
+                case .new: return "new"
+                case .encryptionKeyPair: return "encryptionKeyPair"
+                case .nameChange: return "nameChange"
+                case .membersAdded: return "membersAdded"
+                case .membersRemoved: return "membersRemoved"
+                case .memberLeft: return "memberLeft"
+                case .encryptionKeyPairRequest: return "encryptionKeyPairRequest"
             }
         }
         
@@ -150,9 +151,9 @@ public final class ClosedGroupControlMessage : ControlMessage {
         }
     }
 
-    // MARK: Key Pair Wrapper
-    @objc(SNKeyPairWrapper)
-    public final class KeyPairWrapper: NSObject, Codable, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+    // MARK: - Key Pair Wrapper
+    
+    public struct KeyPairWrapper: Codable {
         public var publicKey: String?
         public var encryptedKeyPair: Data?
 
@@ -162,16 +163,8 @@ public final class ClosedGroupControlMessage : ControlMessage {
             self.publicKey = publicKey
             self.encryptedKeyPair = encryptedKeyPair
         }
-
-        public required init?(coder: NSCoder) {
-            if let publicKey = coder.decodeObject(forKey: "publicKey") as! String? { self.publicKey = publicKey }
-            if let encryptedKeyPair = coder.decodeObject(forKey: "encryptedKeyPair") as! Data? { self.encryptedKeyPair = encryptedKeyPair }
-        }
-
-        public func encode(with coder: NSCoder) {
-            coder.encode(publicKey, forKey: "publicKey")
-            coder.encode(encryptedKeyPair, forKey: "encryptedKeyPair")
-        }
+        
+        // MARK: - Proto Conversion
 
         public static func fromProto(_ proto: SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper) -> KeyPairWrapper? {
             return KeyPairWrapper(publicKey: proto.publicKey.toHexString(), encryptedKeyPair: proto.encryptedKeyPair)
@@ -189,97 +182,36 @@ public final class ClosedGroupControlMessage : ControlMessage {
         }
     }
 
-    // MARK: Initialization
-    public override init() { super.init() }
+    // MARK: - Initialization
 
     internal init(kind: Kind) {
         super.init()
+        
         self.kind = kind
     }
 
-    // MARK: Validation
+    // MARK: - Validation
+    
     public override var isValid: Bool {
         guard super.isValid, let kind = kind else { return false }
+        
         switch kind {
-        case .new(let publicKey, let name, let encryptionKeyPair, let members, let admins, let expirationTimer):
-            return !publicKey.isEmpty && !name.isEmpty && !encryptionKeyPair.publicKey.isEmpty
-                && !encryptionKeyPair.secretKey.isEmpty && !members.isEmpty && !admins.isEmpty
-        case .encryptionKeyPair: return true
-        case .nameChange(let name): return !name.isEmpty
-        case .membersAdded(let members): return !members.isEmpty
-        case .membersRemoved(let members): return !members.isEmpty
-        case .memberLeft: return true
-        case .encryptionKeyPairRequest: return true
-        }
-    }
-
-    // MARK: Coding
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        guard let rawKind = coder.decodeObject(forKey: "kind") as? String else { return nil }
-        switch rawKind {
-        case "new":
-            guard let publicKey = coder.decodeObject(forKey: "publicKey") as? Data,
-                let name = coder.decodeObject(forKey: "name") as? String,
-                let encryptionKeyPair = coder.decodeObject(forKey: "encryptionKeyPair") as? SessionUtilitiesKit.Legacy.KeyPair,
-                let members = coder.decodeObject(forKey: "members") as? [Data],
-                let admins = coder.decodeObject(forKey: "admins") as? [Data] else { return nil }
-            let expirationTimer = coder.decodeObject(forKey: "expirationTimer") as? UInt32 ?? 0
-            let keyPair: Box.KeyPair = Box.KeyPair(
-                publicKey: encryptionKeyPair.publicKey.bytes,
-                secretKey: encryptionKeyPair.privateKey.bytes
-            )
-            self.kind = .new(publicKey: publicKey, name: name, encryptionKeyPair: keyPair, members: members, admins: admins, expirationTimer: expirationTimer)
-        case "encryptionKeyPair":
-            let publicKey = coder.decodeObject(forKey: "publicKey") as? Data
-            guard let wrappers = coder.decodeObject(forKey: "wrappers") as? [KeyPairWrapper] else { return nil }
-            self.kind = .encryptionKeyPair(publicKey: publicKey, wrappers: wrappers)
-        case "nameChange":
-            guard let name = coder.decodeObject(forKey: "name") as? String else { return nil }
-            self.kind = .nameChange(name: name)
-        case "membersAdded":
-            guard let members = coder.decodeObject(forKey: "members") as? [Data] else { return nil }
-            self.kind = .membersAdded(members: members)
-        case "membersRemoved":
-            guard let members = coder.decodeObject(forKey: "members") as? [Data] else { return nil }
-            self.kind = .membersRemoved(members: members)
-        case "memberLeft":
-            self.kind = .memberLeft
-        case "encryptionKeyPairRequest":
-            self.kind = .encryptionKeyPairRequest
-        default: return nil
-        }
-    }
-    
-    public override func encode(with coder: NSCoder) {
-        super.encode(with: coder)
-        guard let kind = kind else { return }
-        switch kind {
-        case .new(let publicKey, let name, let encryptionKeyPair, let members, let admins, let expirationTimer):
-            coder.encode("new", forKey: "kind")
-            coder.encode(publicKey, forKey: "publicKey")
-            coder.encode(name, forKey: "name")
-            coder.encode(encryptionKeyPair, forKey: "encryptionKeyPair")
-            coder.encode(members, forKey: "members")
-            coder.encode(admins, forKey: "admins")
-            coder.encode(expirationTimer, forKey: "expirationTimer")
-        case .encryptionKeyPair(let publicKey, let wrappers):
-            coder.encode("encryptionKeyPair", forKey: "kind")
-            coder.encode(publicKey, forKey: "publicKey")
-            coder.encode(wrappers, forKey: "wrappers")
-        case .nameChange(let name):
-            coder.encode("nameChange", forKey: "kind")
-            coder.encode(name, forKey: "name")
-        case .membersAdded(let members):
-            coder.encode("membersAdded", forKey: "kind")
-            coder.encode(members, forKey: "members")
-        case .membersRemoved(let members):
-            coder.encode("membersRemoved", forKey: "kind")
-            coder.encode(members, forKey: "members")
-        case .memberLeft:
-            coder.encode("memberLeft", forKey: "kind")
-        case .encryptionKeyPairRequest:
-            coder.encode("encryptionKeyPairRequest", forKey: "kind")
+            case .new(let publicKey, let name, let encryptionKeyPair, let members, let admins, _):
+                return (
+                    !publicKey.isEmpty &&
+                    !name.isEmpty &&
+                    !encryptionKeyPair.publicKey.isEmpty &&
+                    !encryptionKeyPair.secretKey.isEmpty &&
+                    !members.isEmpty &&
+                    !admins.isEmpty
+                )
+                
+            case .encryptionKeyPair: return true
+            case .nameChange(let name): return !name.isEmpty
+            case .membersAdded(let members): return !members.isEmpty
+            case .membersRemoved(let members): return !members.isEmpty
+            case .memberLeft: return true
+            case .encryptionKeyPairRequest: return true
         }
     }
     
@@ -301,35 +233,64 @@ public final class ClosedGroupControlMessage : ControlMessage {
         try container.encode(kind, forKey: .kind)
     }
 
-    // MARK: Proto Conversion
+    // MARK: - Proto Conversion
+    
     public override class func fromProto(_ proto: SNProtoContent, sender: String) -> ClosedGroupControlMessage? {
-        guard let closedGroupControlMessageProto = proto.dataMessage?.closedGroupControlMessage else { return nil }
-        let kind: Kind
-        switch closedGroupControlMessageProto.type {
-        case .new:
-            guard let publicKey = closedGroupControlMessageProto.publicKey, let name = closedGroupControlMessageProto.name,
-                let encryptionKeyPairAsProto = closedGroupControlMessageProto.encryptionKeyPair else { return nil }
-            let expirationTimer = closedGroupControlMessageProto.expirationTimer
-            let encryptionKeyPair = Box.KeyPair(publicKey: encryptionKeyPairAsProto.publicKey.removing05PrefixIfNeeded().bytes, secretKey: encryptionKeyPairAsProto.privateKey.bytes)
-            kind = .new(publicKey: publicKey, name: name, encryptionKeyPair: encryptionKeyPair,
-                members: closedGroupControlMessageProto.members, admins: closedGroupControlMessageProto.admins, expirationTimer: expirationTimer)
-        case .encryptionKeyPair:
-            let publicKey = closedGroupControlMessageProto.publicKey
-            let wrappers = closedGroupControlMessageProto.wrappers.compactMap { KeyPairWrapper.fromProto($0) }
-            kind = .encryptionKeyPair(publicKey: publicKey, wrappers: wrappers)
-        case .nameChange:
-            guard let name = closedGroupControlMessageProto.name else { return nil }
-            kind = .nameChange(name: name)
-        case .membersAdded:
-            kind = .membersAdded(members: closedGroupControlMessageProto.members)
-        case .membersRemoved:
-            kind = .membersRemoved(members: closedGroupControlMessageProto.members)
-        case .memberLeft:
-            kind = .memberLeft
-        case .encryptionKeyPairRequest:
-            kind = .encryptionKeyPairRequest
+        guard let closedGroupControlMessageProto = proto.dataMessage?.closedGroupControlMessage else {
+            return nil
         }
-        return ClosedGroupControlMessage(kind: kind)
+        
+        switch closedGroupControlMessageProto.type {
+            case .new:
+                guard
+                    let publicKey = closedGroupControlMessageProto.publicKey,
+                    let name = closedGroupControlMessageProto.name,
+                    let encryptionKeyPairAsProto = closedGroupControlMessageProto.encryptionKeyPair
+                else { return nil }
+                
+                return ClosedGroupControlMessage(
+                    kind: .new(
+                        publicKey: publicKey,
+                        name: name,
+                        encryptionKeyPair: Box.KeyPair(
+                            publicKey: encryptionKeyPairAsProto.publicKey.removing05PrefixIfNeeded().bytes,
+                            secretKey: encryptionKeyPairAsProto.privateKey.bytes
+                        ),
+                        members: closedGroupControlMessageProto.members,
+                        admins: closedGroupControlMessageProto.admins,
+                        expirationTimer: closedGroupControlMessageProto.expirationTimer
+                    )
+                )
+                
+            case .encryptionKeyPair:
+                return ClosedGroupControlMessage(
+                    kind: .encryptionKeyPair(
+                        publicKey: closedGroupControlMessageProto.publicKey,
+                        wrappers: closedGroupControlMessageProto.wrappers
+                            .compactMap { KeyPairWrapper.fromProto($0) }
+                    )
+                )
+                
+            case .nameChange:
+                guard let name = closedGroupControlMessageProto.name else { return nil }
+                
+                return ClosedGroupControlMessage(kind: .nameChange(name: name))
+                
+            case .membersAdded:
+                return ClosedGroupControlMessage(
+                    kind: .membersAdded(members: closedGroupControlMessageProto.members)
+                )
+                
+            case .membersRemoved:
+                return ClosedGroupControlMessage(
+                    kind: .membersRemoved(members: closedGroupControlMessageProto.members)
+                )
+                
+            case .memberLeft: return ClosedGroupControlMessage(kind: .memberLeft)
+                
+            case .encryptionKeyPairRequest:
+                return ClosedGroupControlMessage(kind: .encryptionKeyPairRequest)
+        }
     }
 
     public override func toProto(_ db: Database) -> SNProtoContent? {
@@ -387,8 +348,9 @@ public final class ClosedGroupControlMessage : ControlMessage {
         }
     }
 
-    // MARK: Description
-    public override var description: String {
+    // MARK: - Description
+    
+    public var description: String {
         """
         ClosedGroupControlMessage(
             kind: \(kind?.description ?? "null")

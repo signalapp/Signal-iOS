@@ -306,7 +306,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             guard Identity.userExists() else { return }
             
-            SignalApp.shared().homeViewController?.createNewDM()
+            SessionApp.homeViewController.wrappedValue?.createNewDM()
             completionHandler(true)
         }
     }
@@ -373,7 +373,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         stopPollers()
         
         let wasUnlinked: Bool = UserDefaults.standard[.wasUnlinked]
-        SignalApp.resetAppData {
+        SessionApp.resetAppData {
             // Resetting the data clears the old user defaults. We need to restore the unlink default.
             UserDefaults.standard[.wasUnlinked] = wasUnlinked
         }

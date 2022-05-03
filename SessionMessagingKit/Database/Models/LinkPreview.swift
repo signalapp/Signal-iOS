@@ -4,15 +4,14 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-public struct LinkPreview: Codable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
+public struct LinkPreview: Codable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "linkPreview" }
     internal static let interactionForeignKey = ForeignKey(
         [Columns.url],
         to: [Interaction.Columns.linkPreviewUrl]
     )
-    private static let attachmentForeignKey = ForeignKey([Columns.attachmentId], to: [Attachment.Columns.id])
     internal static let interactions = hasMany(Interaction.self, using: Interaction.linkPreviewForeignKey)
-    internal static let attachment = hasOne(Attachment.self, using: attachmentForeignKey)
+    public static let attachment = hasOne(Attachment.self, using: Attachment.linkPreviewForeignKey)
     
     /// We want to cache url previews to the nearest 100,000 seconds (~28 hours - simpler than 86,400) to ensure the user isn't shown a preview that is too stale
     internal static let timstampResolution: Double = 100000

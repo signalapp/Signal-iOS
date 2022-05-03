@@ -2,8 +2,12 @@
 
 import Foundation
 import Mantle
+import Sodium
 import YapDatabase
 import SignalCoreKit
+import SessionUtilitiesKit
+
+public typealias SMKLegacy = Legacy
 
 public enum Legacy {
     // MARK: - Collections and Keys
@@ -29,7 +33,7 @@ public enum Legacy {
     internal static let openGroupServerIdToUniqueIdLookupCollection = "SNOpenGroupServerIdToUniqueIdLookup"
     
     internal static let interactionCollection = "TSInteraction"
-    internal static let attachmentsCollection = "TSAttachements"
+    internal static let attachmentsCollection = "TSAttachements"    // Note: This is how it was previously spelt
     internal static let outgoingReadReceiptManagerCollection = "kOutgoingReadReceiptManagerCollection"
     
     internal static let notifyPushServerJobCollection = "NotifyPNServerJobCollection"
@@ -55,16 +59,890 @@ public enum Legacy {
     
     internal static let userDefaultsHasHiddenMessageRequests = "hasHiddenMessageRequests"
     
-    // MARK: - Types
+    // MARK: - Types (and NSCoding)
     
-    public typealias Contact = _LegacyContact
-    public typealias DisappearingMessagesConfiguration = _LegacyDisappearingMessagesConfiguration
+    @objc(SNContact)
+    public class Contact: NSObject, NSCoding {
+        @objc public let sessionID: String
+        @objc public var profilePictureURL: String?
+        @objc public var profilePictureFileName: String?
+        @objc public var profileEncryptionKey: OWSAES256Key?
+        @objc public var threadID: String?
+        @objc public var isTrusted = false
+        @objc public var isApproved = false
+        @objc public var isBlocked = false
+        @objc public var didApproveMe = false
+        @objc public var hasBeenBlocked = false
+        @objc public var name: String?
+        @objc public var nickname: String?
+        
+        // MARK: Coding
+        
+        public required init?(coder: NSCoder) {
+            guard let sessionID = coder.decodeObject(forKey: "sessionID") as! String? else { return nil }
+            self.sessionID = sessionID
+            isTrusted = coder.decodeBool(forKey: "isTrusted")
+            if let name = coder.decodeObject(forKey: "displayName") as! String? { self.name = name }
+            if let nickname = coder.decodeObject(forKey: "nickname") as! String? { self.nickname = nickname }
+            if let profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String? { self.profilePictureURL = profilePictureURL }
+            if let profilePictureFileName = coder.decodeObject(forKey: "profilePictureFileName") as! String? { self.profilePictureFileName = profilePictureFileName }
+            if let profileEncryptionKey = coder.decodeObject(forKey: "profilePictureEncryptionKey") as! OWSAES256Key? { self.profileEncryptionKey = profileEncryptionKey }
+            if let threadID = coder.decodeObject(forKey: "threadID") as! String? { self.threadID = threadID }
+            
+            let isBlockedFlag: Bool = coder.decodeBool(forKey: "isBlocked")
+            isApproved = coder.decodeBool(forKey: "isApproved")
+            isBlocked = isBlockedFlag
+            didApproveMe = coder.decodeBool(forKey: "didApproveMe")
+            hasBeenBlocked = (coder.decodeBool(forKey: "hasBeenBlocked") || isBlockedFlag)
+        }
+
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
+    
+    @objc(OWSDisappearingMessagesConfiguration)
+    internal class DisappearingMessagesConfiguration: MTLModel {
+        @objc public let uniqueId: String
+        @objc public var isEnabled: Bool
+        @objc public var durationSeconds: UInt32
+        
+        // MARK: - NSCoder
+        
+        required init(coder: NSCoder) {
+            self.uniqueId = coder.decodeObject(forKey: "uniqueId") as! String
+            self.isEnabled = coder.decodeObject(forKey: "enabled") as! Bool
+            self.durationSeconds = coder.decodeObject(forKey: "durationSeconds") as! UInt32
+            
+            // Intentionally not calling 'super.init(coder:) here
+            super.init()
+        }
+        
+        required init(dictionary dictionaryValue: [String : Any]!) throws {
+            fatalError("init(dictionary:) has not been implemented")
+        }
+        
+        override public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
+    
+    // MARK: - Visible/Control Message NSCoding
+    
+    /// Abstract base class for `VisibleMessage` and `ControlMessage`.
+    @objc(SNMessage)
+    internal class Message: NSObject, NSCoding {
+        internal var id: String?
+        internal var threadID: String?
+        internal var sentTimestamp: UInt64?
+        internal var receivedTimestamp: UInt64?
+        internal var recipient: String?
+        internal var sender: String?
+        internal var groupPublicKey: String?
+        internal var openGroupServerMessageID: UInt64?
+        internal var openGroupServerTimestamp: UInt64?
+        internal var serverHash: String?
+
+        // MARK: NSCoding
+        
+        public required init?(coder: NSCoder) {
+            if let id = coder.decodeObject(forKey: "id") as! String? { self.id = id }
+            if let threadID = coder.decodeObject(forKey: "threadID") as! String? { self.threadID = threadID }
+            if let sentTimestamp = coder.decodeObject(forKey: "sentTimestamp") as! UInt64? { self.sentTimestamp = sentTimestamp }
+            if let receivedTimestamp = coder.decodeObject(forKey: "receivedTimestamp") as! UInt64? { self.receivedTimestamp = receivedTimestamp }
+            if let recipient = coder.decodeObject(forKey: "recipient") as! String? { self.recipient = recipient }
+            if let sender = coder.decodeObject(forKey: "sender") as! String? { self.sender = sender }
+            if let groupPublicKey = coder.decodeObject(forKey: "groupPublicKey") as! String? { self.groupPublicKey = groupPublicKey }
+            if let openGroupServerMessageID = coder.decodeObject(forKey: "openGroupServerMessageID") as! UInt64? { self.openGroupServerMessageID = openGroupServerMessageID }
+            if let openGroupServerTimestamp = coder.decodeObject(forKey: "openGroupServerTimestamp") as! UInt64? { self.openGroupServerTimestamp = openGroupServerTimestamp }
+            if let serverHash = coder.decodeObject(forKey: "serverHash") as! String? { self.serverHash = serverHash }
+        }
+
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+            let result: SessionMessagingKit.Message = (instance ?? SessionMessagingKit.Message())
+            result.id = self.id
+            result.threadId = self.threadID
+            result.sentTimestamp = self.sentTimestamp
+            result.receivedTimestamp = self.receivedTimestamp
+            result.recipient = self.recipient
+            result.sender = self.sender
+            result.groupPublicKey = self.groupPublicKey
+            result.openGroupServerMessageId = self.openGroupServerMessageID
+            result.openGroupServerTimestamp = self.openGroupServerTimestamp
+            result.serverHash = self.serverHash
+            
+            return result
+        }
+    }
+
+    @objc(SNVisibleMessage)
+    internal final class VisibleMessage: Message {
+        internal var syncTarget: String?
+        internal var text: String?
+        internal var attachmentIDs: [String] = []
+        internal var quote: Quote?
+        internal var linkPreview: LinkPreview?
+        internal var profile: Profile?
+        internal var openGroupInvitation: OpenGroupInvitation?
+
+        // MARK: - NSCoding
+        
+        public required init?(coder: NSCoder) {
+            super.init(coder: coder)
+            
+            if let syncTarget = coder.decodeObject(forKey: "syncTarget") as! String? { self.syncTarget = syncTarget }
+            if let text = coder.decodeObject(forKey: "body") as! String? { self.text = text }
+            if let attachmentIDs = coder.decodeObject(forKey: "attachments") as! [String]? { self.attachmentIDs = attachmentIDs }
+            if let quote = coder.decodeObject(forKey: "quote") as! Quote? { self.quote = quote }
+            if let linkPreview = coder.decodeObject(forKey: "linkPreview") as! LinkPreview? { self.linkPreview = linkPreview }
+            if let profile = coder.decodeObject(forKey: "profile") as! Profile? { self.profile = profile }
+            if let openGroupInvitation = coder.decodeObject(forKey: "openGroupInvitation") as! OpenGroupInvitation? { self.openGroupInvitation = openGroupInvitation }
+        }
+        
+        public override func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+            return try super.toNonLegacy(
+                SessionMessagingKit.VisibleMessage(
+                    syncTarget: syncTarget,
+                    text: text,
+                    attachmentIds: attachmentIDs,
+                    quote: quote?.toNonLegacy(),
+                    linkPreview: linkPreview?.toNonLegacy(),
+                    profile: profile?.toNonLegacy(),
+                    openGroupInvitation: openGroupInvitation?.toNonLegacy()
+                )
+            )
+        }
+    }
+    
+    @objc(SNQuote)
+    internal class Quote: NSObject, NSCoding {
+        internal var timestamp: UInt64?
+        internal var publicKey: String?
+        internal var text: String?
+        internal var attachmentID: String?
+        
+        // MARK: - NSCoding
+
+        public required init?(coder: NSCoder) {
+            if let timestamp = coder.decodeObject(forKey: "timestamp") as! UInt64? { self.timestamp = timestamp }
+            if let publicKey = coder.decodeObject(forKey: "authorId") as! String? { self.publicKey = publicKey }
+            if let text = coder.decodeObject(forKey: "body") as! String? { self.text = text }
+            if let attachmentID = coder.decodeObject(forKey: "attachmentID") as! String? { self.attachmentID = attachmentID }
+        }
+
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        internal func toNonLegacy() -> SessionMessagingKit.VisibleMessage.Quote {
+            return SessionMessagingKit.VisibleMessage.Quote(
+                timestamp: (timestamp ?? 0),
+                publicKey: (publicKey ?? ""),
+                text: text,
+                attachmentId: attachmentID
+            )
+        }
+    }
+    
+    @objc(SNLinkPreview)
+    internal class LinkPreview: NSObject, NSCoding {
+        internal var title: String?
+        internal var url: String?
+        internal var attachmentID: String?
+        
+        // MARK: - NSCoding
+
+        public required init?(coder: NSCoder) {
+            if let title = coder.decodeObject(forKey: "title") as! String? { self.title = title }
+            if let url = coder.decodeObject(forKey: "urlString") as! String? { self.url = url }
+            if let attachmentID = coder.decodeObject(forKey: "attachmentID") as! String? { self.attachmentID = attachmentID }
+        }
+
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        internal func toNonLegacy() -> SessionMessagingKit.VisibleMessage.LinkPreview {
+            return SessionMessagingKit.VisibleMessage.LinkPreview(
+                title: title,
+                url: (url ?? ""),
+                attachmentId: attachmentID
+            )
+        }
+    }
     
     @objc(SNProfile)
-    public class Profile: NSObject, NSCoding {
-        public var displayName: String?
-        public var profileKey: Data?
-        public var profilePictureURL: String?
+    internal class Profile: NSObject, NSCoding {
+        internal var displayName: String?
+        internal var profileKey: Data?
+        internal var profilePictureURL: String?
+        
+        // MARK: - NSCoding
+
+        public required init?(coder: NSCoder) {
+            if let displayName = coder.decodeObject(forKey: "displayName") as! String? { self.displayName = displayName }
+            if let profileKey = coder.decodeObject(forKey: "profileKey") as! Data? { self.profileKey = profileKey }
+            if let profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String? { self.profilePictureURL = profilePictureURL }
+        }
+
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        internal func toNonLegacy() -> SessionMessagingKit.VisibleMessage.Profile {
+            return SessionMessagingKit.VisibleMessage.Profile(
+                displayName: (displayName ?? ""),
+                profileKey: profileKey,
+                profilePictureUrl: profilePictureURL
+            )
+        }
+    }
+    
+    @objc(SNOpenGroupInvitation)
+    internal class OpenGroupInvitation: NSObject, NSCoding {
+        internal var name: String?
+        internal var url: String?
+        
+        // MARK: - NSCoding
+
+        public required init?(coder: NSCoder) {
+            if let name = coder.decodeObject(forKey: "name") as! String? { self.name = name }
+            if let url = coder.decodeObject(forKey: "url") as! String? { self.url = url }
+        }
+
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        internal func toNonLegacy() -> SessionMessagingKit.VisibleMessage.OpenGroupInvitation {
+            return SessionMessagingKit.VisibleMessage.OpenGroupInvitation(
+                name: (name ?? ""),
+                url: (url ?? "")
+            )
+        }
+    }
+    
+    @objc(SNControlMessage)
+    internal class ControlMessage: Message {}
+    
+    @objc(SNReadReceipt)
+    internal final class ReadReceipt: ControlMessage {
+        internal var timestamps: [UInt64]?
+
+        // MARK: - NSCoding
+        
+        public required init?(coder: NSCoder) {
+            super.init(coder: coder)
+            if let timestamps = coder.decodeObject(forKey: "messageTimestamps") as! [UInt64]? { self.timestamps = timestamps }
+        }
+
+        public override func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+            return try super.toNonLegacy(
+                SessionMessagingKit.ReadReceipt(
+                    timestamps: (timestamps ?? [])
+                )
+            )
+        }
+    }
+    
+    @objc(SNTypingIndicator)
+    internal final class TypingIndicator: ControlMessage {
+        public var rawKind: Int?
+
+        // MARK: - NSCoding
+        
+        public required init?(coder: NSCoder) {
+            super.init(coder: coder)
+            
+            self.rawKind = coder.decodeObject(forKey: "action") as! Int?
+        }
+
+        public override func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+            return try super.toNonLegacy(
+                SessionMessagingKit.TypingIndicator(
+                    kind: SessionMessagingKit.TypingIndicator.Kind(
+                        rawValue: (rawKind ?? SessionMessagingKit.TypingIndicator.Kind.stopped.rawValue)
+                    )
+                    .defaulting(to: .stopped)
+                )
+            )
+        }
+    }
+
+    @objc(SNClosedGroupControlMessage)
+    internal final class ClosedGroupControlMessage: ControlMessage {
+        internal var rawKind: String?
+        
+        internal var publicKey: Data?
+        internal var wrappers: [KeyPairWrapper]?
+        internal var name: String?
+        internal var encryptionKeyPair: SUKLegacy.KeyPair?
+        internal var members: [Data]?
+        internal var admins: [Data]?
+        internal var expirationTimer: UInt32
+
+        // MARK: - Key Pair Wrapper
+        
+        @objc(SNKeyPairWrapper)
+        internal final class KeyPairWrapper: NSObject, NSCoding {
+            internal var publicKey: String?
+            internal var encryptedKeyPair: Data?
+            
+            // MARK: - NSCoding
+
+            public required init?(coder: NSCoder) {
+                if let publicKey = coder.decodeObject(forKey: "publicKey") as! String? { self.publicKey = publicKey }
+                if let encryptedKeyPair = coder.decodeObject(forKey: "encryptedKeyPair") as! Data? { self.encryptedKeyPair = encryptedKeyPair }
+            }
+
+            public func encode(with coder: NSCoder) {
+                fatalError("encode(with:) should never be called for legacy types")
+            }
+        }
+        
+        // MARK: - NSCoding
+        
+        public required init?(coder: NSCoder) {
+            self.rawKind = coder.decodeObject(forKey: "kind") as? String
+            
+            self.publicKey = coder.decodeObject(forKey: "publicKey") as? Data
+            self.wrappers = coder.decodeObject(forKey: "wrappers") as? [KeyPairWrapper]
+            self.name = coder.decodeObject(forKey: "name") as? String
+            self.encryptionKeyPair = coder.decodeObject(forKey: "encryptionKeyPair") as? SUKLegacy.KeyPair
+            self.members = coder.decodeObject(forKey: "members") as? [Data]
+            self.admins = coder.decodeObject(forKey: "admins") as? [Data]
+            self.expirationTimer = (coder.decodeObject(forKey: "expirationTimer") as? UInt32 ?? 0)
+            
+            super.init(coder: coder)
+        }
+        
+        public override func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+            return try super.toNonLegacy(
+                SessionMessagingKit.ClosedGroupControlMessage(
+                    kind: try {
+                        switch rawKind {
+                            case "new":
+                                guard
+                                    let publicKey: Data = self.publicKey,
+                                    let name: String = self.name,
+                                    let encryptionKeyPair: SUKLegacy.KeyPair = self.encryptionKeyPair,
+                                    let members: [Data] = self.members,
+                                    let admins: [Data] = self.admins
+                                else {
+                                    SNLog("[Migration Error] Unable to decode Legacy ClosedGroupControlMessage")
+                                    throw GRDBStorageError.migrationFailed
+                                }
+                                
+                                return .new(
+                                    publicKey: publicKey,
+                                    name: name,
+                                    encryptionKeyPair: Box.KeyPair(
+                                        publicKey: encryptionKeyPair.publicKey.bytes,
+                                        secretKey: encryptionKeyPair.privateKey.bytes
+                                    ),
+                                    members: members,
+                                    admins: admins,
+                                    expirationTimer: self.expirationTimer
+                                )
+                                
+                            case "encryptionKeyPair":
+                                guard let wrappers: [KeyPairWrapper] = self.wrappers else {
+                                    SNLog("[Migration Error] Unable to decode Legacy ClosedGroupControlMessage")
+                                    throw GRDBStorageError.migrationFailed
+                                }
+                                
+                                return .encryptionKeyPair(
+                                    publicKey: publicKey,
+                                    wrappers: try wrappers.map { wrapper in
+                                        guard
+                                            let publicKey: String = wrapper.publicKey,
+                                            let encryptedKeyPair: Data = wrapper.encryptedKeyPair
+                                        else {
+                                            SNLog("[Migration Error] Unable to decode Legacy ClosedGroupControlMessage")
+                                            throw GRDBStorageError.migrationFailed
+                                        }
+
+                                        return SessionMessagingKit.ClosedGroupControlMessage.KeyPairWrapper(
+                                            publicKey: publicKey,
+                                            encryptedKeyPair: encryptedKeyPair
+                                        )
+                                    }
+                                )
+                                
+                            case "nameChange":
+                                guard let name: String = self.name else {
+                                    SNLog("[Migration Error] Unable to decode Legacy ClosedGroupControlMessage")
+                                    throw GRDBStorageError.migrationFailed
+                                }
+                                
+                                return .nameChange(
+                                    name: name
+                                )
+                                
+                            case "membersAdded":
+                                guard let members: [Data] = self.members else {
+                                    SNLog("[Migration Error] Unable to decode Legacy ClosedGroupControlMessage")
+                                    throw GRDBStorageError.migrationFailed
+                                }
+                                
+                                return .membersAdded(members: members)
+                                
+                            case "membersRemoved":
+                                guard let members: [Data] = self.members else {
+                                    SNLog("[Migration Error] Unable to decode Legacy ClosedGroupControlMessage")
+                                    throw GRDBStorageError.migrationFailed
+                                }
+                                
+                                return .membersRemoved(members: members)
+                                
+                            case "memberLeft": return .memberLeft
+                            case "encryptionKeyPairRequest": return .encryptionKeyPairRequest
+                            default: throw GRDBStorageError.migrationFailed
+                        }
+                    }()
+                )
+            )
+        }
+    }
+    
+    @objc(SNDataExtractionNotification)
+    internal final class DataExtractionNotification: ControlMessage {
+        internal let rawKind: String?
+        internal let timestamp: UInt64?
+        
+        // MARK: - NSCoding
+        
+        public required init?(coder: NSCoder) {
+            self.rawKind = coder.decodeObject(forKey: "kind") as? String
+            self.timestamp = coder.decodeObject(forKey: "timestamp") as? UInt64
+            
+            super.init(coder: coder)
+        }
+
+        public override func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+            return try super.toNonLegacy(
+                SessionMessagingKit.DataExtractionNotification(
+                    kind: try {
+                        switch rawKind {
+                            case "screenshot": return .screenshot
+                            case "mediaSaved":
+                                guard let timestamp: UInt64 = self.timestamp else {
+                                    SNLog("[Migration Error] Unable to decode Legacy DataExtractionNotification")
+                                    throw GRDBStorageError.migrationFailed
+                                }
+                                
+                                return .mediaSaved(timestamp: timestamp)
+                                
+                            default: throw GRDBStorageError.migrationFailed
+                        }
+                    }()
+                )
+            )
+        }
+    }
+    
+    @objc(SNExpirationTimerUpdate)
+    internal final class ExpirationTimerUpdate: ControlMessage {
+        internal var syncTarget: String?
+        internal var duration: UInt32?
+        
+        // MARK: - NSCoding
+        
+        public required init?(coder: NSCoder) {
+            super.init(coder: coder)
+            if let syncTarget = coder.decodeObject(forKey: "syncTarget") as! String? { self.syncTarget = syncTarget }
+            if let duration = coder.decodeObject(forKey: "durationSeconds") as! UInt32? { self.duration = duration }
+        }
+        
+        public override func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+            return try super.toNonLegacy(
+                SessionMessagingKit.ExpirationTimerUpdate(
+                    syncTarget: syncTarget,
+                    duration: (duration ?? 0)
+                )
+            )
+        }
+    }
+    
+    @objc(SNConfigurationMessage)
+    internal final class ConfigurationMessage: ControlMessage {
+        internal var closedGroups: Set<CMClosedGroup> = []
+        internal var openGroups: Set<String> = []
+        internal var displayName: String?
+        internal var profilePictureURL: String?
+        internal var profileKey: Data?
+        internal var contacts: Set<CMContact> = []
+        
+        // MARK: - NSCoding
+        
+        public required init?(coder: NSCoder) {
+            super.init(coder: coder)
+            if let closedGroups = coder.decodeObject(forKey: "closedGroups") as! Set<CMClosedGroup>? { self.closedGroups = closedGroups }
+            if let openGroups = coder.decodeObject(forKey: "openGroups") as! Set<String>? { self.openGroups = openGroups }
+            if let displayName = coder.decodeObject(forKey: "displayName") as! String? { self.displayName = displayName }
+            if let profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String? { self.profilePictureURL = profilePictureURL }
+            if let profileKey = coder.decodeObject(forKey: "profileKey") as! Data? { self.profileKey = profileKey }
+            if let contacts = coder.decodeObject(forKey: "contacts") as! Set<CMContact>? { self.contacts = contacts }
+        }
+
+        public override func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    
+        // MARK: Non-Legacy Conversion
+        
+        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+            return try super.toNonLegacy(
+                SessionMessagingKit.ConfigurationMessage(
+                    displayName: displayName,
+                    profilePictureUrl: profilePictureURL,
+                    profileKey: profileKey,
+                    closedGroups: closedGroups
+                        .map { $0.toNonLegacy() }
+                        .asSet(),
+                    openGroups: openGroups,
+                    contacts: contacts
+                        .map { $0.toNonLegacy() }
+                        .asSet()
+                )
+            )
+        }
+    }
+
+    @objc(CMClosedGroup)
+    internal final class CMClosedGroup: NSObject, NSCoding {
+        internal let publicKey: String
+        internal let name: String
+        internal let encryptionKeyPair: SUKLegacy.KeyPair
+        internal let members: Set<String>
+        internal let admins: Set<String>
+        internal let expirationTimer: UInt32
+        
+        // MARK: - NSCoding
+
+        public required init?(coder: NSCoder) {
+            guard
+                let publicKey = coder.decodeObject(forKey: "publicKey") as! String?,
+                let name = coder.decodeObject(forKey: "name") as! String?,
+                let encryptionKeyPair = coder.decodeObject(forKey: "encryptionKeyPair") as! SUKLegacy.KeyPair?,
+                let members = coder.decodeObject(forKey: "members") as! Set<String>?,
+                let admins = coder.decodeObject(forKey: "admins") as! Set<String>?
+            else { return nil }
+            
+            self.publicKey = publicKey
+            self.name = name
+            self.encryptionKeyPair = encryptionKeyPair
+            self.members = members
+            self.admins = admins
+            self.expirationTimer = (coder.decodeObject(forKey: "expirationTimer") as? UInt32 ?? 0)
+        }
+
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        internal func toNonLegacy() -> SessionMessagingKit.ConfigurationMessage.CMClosedGroup {
+            return SessionMessagingKit.ConfigurationMessage.CMClosedGroup(
+                publicKey: publicKey,
+                name: name,
+                encryptionKeyPublicKey: encryptionKeyPair.publicKey,
+                encryptionKeySecretKey: encryptionKeyPair.privateKey,
+                members: members,
+                admins: admins,
+                expirationTimer: expirationTimer
+            )
+        }
+    }
+
+    @objc(SNConfigurationMessageContact)
+    internal final class CMContact: NSObject, NSCoding {
+        internal var publicKey: String?
+        internal var displayName: String?
+        internal var profilePictureURL: String?
+        internal var profileKey: Data?
+        
+        internal var hasIsApproved: Bool
+        internal var isApproved: Bool
+        internal var hasIsBlocked: Bool
+        internal var isBlocked: Bool
+        internal var hasDidApproveMe: Bool
+        internal var didApproveMe: Bool
+        
+        // MARK: - NSCoding
+
+        public required init?(coder: NSCoder) {
+            guard
+                let publicKey = coder.decodeObject(forKey: "publicKey") as! String?,
+                let displayName = coder.decodeObject(forKey: "displayName") as! String?
+            else { return nil }
+            
+            self.publicKey = publicKey
+            self.displayName = displayName
+            self.profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String?
+            self.profileKey = coder.decodeObject(forKey: "profileKey") as! Data?
+            self.hasIsApproved = (coder.decodeObject(forKey: "hasIsApproved") as? Bool ?? false)
+            self.isApproved = (coder.decodeObject(forKey: "isApproved") as? Bool ?? false)
+            self.hasIsBlocked = (coder.decodeObject(forKey: "hasIsBlocked") as? Bool ?? false)
+            self.isBlocked = (coder.decodeObject(forKey: "isBlocked") as? Bool ?? false)
+            self.hasDidApproveMe = (coder.decodeObject(forKey: "hasDidApproveMe") as? Bool ?? false)
+            self.didApproveMe = (coder.decodeObject(forKey: "didApproveMe") as? Bool ?? false)
+        }
+
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        internal func toNonLegacy() -> SessionMessagingKit.ConfigurationMessage.CMContact {
+            return SessionMessagingKit.ConfigurationMessage.CMContact(
+                publicKey: publicKey,
+                displayName: displayName,
+                profilePictureUrl: profilePictureURL,
+                profileKey: profileKey,
+                hasIsApproved: hasIsApproved,
+                isApproved: isApproved,
+                hasIsBlocked: hasIsBlocked,
+                isBlocked: isBlocked,
+                hasDidApproveMe: hasDidApproveMe,
+                didApproveMe: didApproveMe
+            )
+        }
+    }
+    
+    @objc(SNUnsendRequest)
+    internal final class UnsendRequest: ControlMessage {
+        internal var timestamp: UInt64?
+        internal var author: String?
+        
+        // MARK: - NSCoding
+        
+        public required init?(coder: NSCoder) {
+            super.init(coder: coder)
+            
+            self.timestamp = coder.decodeObject(forKey: "timestamp") as? UInt64
+            self.author = coder.decodeObject(forKey: "author") as? String
+        }
+
+        public override func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+            return try super.toNonLegacy(
+                SessionMessagingKit.UnsendRequest(
+                    timestamp: (timestamp ?? 0),
+                    author: (author ?? "")
+                )
+            )
+        }
+    }
+    
+    @objc(SNMessageRequestResponse)
+    internal final class MessageRequestResponse: ControlMessage {
+        internal var isApproved: Bool
+        
+        // MARK: - NSCoding
+
+        public required init?(coder: NSCoder) {
+            self.isApproved = coder.decodeBool(forKey: "isApproved")
+            
+            super.init(coder: coder)
+        }
+
+        public override func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+            return try super.toNonLegacy(
+                SessionMessagingKit.MessageRequestResponse(
+                    isApproved: isApproved
+                )
+            )
+        }
+    }
+
+    // MARK: - Attachments
+    
+    @objc(TSAttachment)
+    internal class Attachment: NSObject, NSCoding {
+        @objc(TSAttachmentType)
+        public enum AttachmentType: Int {
+            case `default`
+            case voiceMessage
+        }
+        
+        @objc public var serverId: UInt64
+        @objc public var encryptionKey: Data?
+        @objc public var contentType: String
+        @objc public var isDownloaded: Bool
+        @objc public var attachmentType: AttachmentType
+        @objc public var downloadURL: String
+        @objc public var byteCount: UInt32
+        @objc public var sourceFilename: String?
+        @objc public var caption: String?
+        @objc public var albumMessageId: String?
+        
+        public var isImage: Bool { return MIMETypeUtil.isImage(contentType) }
+        public var isVideo: Bool { return MIMETypeUtil.isVideo(contentType) }
+        public var isAudio: Bool { return MIMETypeUtil.isAudio(contentType) }
+        public var isAnimated: Bool { return MIMETypeUtil.isAnimated(contentType) }
+        
+        public var isVisualMedia: Bool { isImage || isVideo || isAnimated }
+        
+        // MARK: - NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.serverId = coder.decodeObject(forKey: "serverId") as! UInt64
+            self.encryptionKey = coder.decodeObject(forKey: "encryptionKey") as? Data
+            self.contentType = coder.decodeObject(forKey: "contentType") as! String
+            self.isDownloaded = (coder.decodeObject(forKey: "isDownloaded") as? Bool == true)
+            self.attachmentType = AttachmentType(
+                rawValue: (coder.decodeObject(forKey: "attachmentType") as! NSNumber).intValue
+            ).defaulting(to: .default)
+            self.downloadURL = (coder.decodeObject(forKey: "downloadURL") as? String ?? "")
+            self.byteCount = coder.decodeObject(forKey: "byteCount") as! UInt32
+        }
+        
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
+    
+    @objc(TSAttachmentPointer)
+    internal class AttachmentPointer: Attachment {
+        @objc(TSAttachmentPointerState)
+        public enum State: Int {
+            case enqueued
+            case downloading
+            case failed
+        }
+        
+        @objc public var state: State
+        @objc public var mostRecentFailureLocalizedText: String?
+        @objc public var digest: Data?
+        @objc public var mediaSize: CGSize
+        @objc public var lazyRestoreFragmentId: String?
+        
+        // MARK: - NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.state = State(
+                rawValue: coder.decodeObject(forKey: "state") as! Int
+            ).defaulting(to: .failed)
+            self.mostRecentFailureLocalizedText = coder.decodeObject(forKey: "mostRecentFailureLocalizedText") as? String
+            self.digest = coder.decodeObject(forKey: "digest") as? Data
+            self.mediaSize = coder.decodeObject(forKey: "mediaSize") as! CGSize
+            self.lazyRestoreFragmentId = coder.decodeObject(forKey: "lazyRestoreFragmentId") as? String
+            
+            super.init(coder: coder)
+        }
+        
+        override public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
+    
+    @objc(TSAttachmentStream)
+    internal class AttachmentStream: Attachment {
+        @objc public var digest: Data?
+        @objc public var isUploaded: Bool
+        @objc public var creationTimestamp: Date
+        @objc public var localRelativeFilePath: String?
+        @objc public var cachedImageWidth: NSNumber?
+        @objc public var cachedImageHeight: NSNumber?
+        @objc public var cachedAudioDurationSeconds: NSNumber?
+        @objc public var isValidImageCached: NSNumber?
+        @objc public var isValidVideoCached: NSNumber?
+        
+        public var isValidImage: Bool { return (isValidImageCached?.boolValue == true) }
+        public var isValidVideo: Bool { return (isValidVideoCached?.boolValue == true) }
+        
+        public var isValidVisualMedia: Bool {
+            if self.isImage && self.isValidImage { return true }
+            if self.isVideo && self.isValidVideo { return true }
+            if self.isAnimated && self.isValidImage { return true }
+            
+            return false
+        }
+        
+        // MARK: - NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.digest = coder.decodeObject(forKey: "digest") as? Data
+            self.isUploaded = (coder.decodeObject(forKey: "isUploaded") as? Bool == true)
+            self.creationTimestamp = coder.decodeObject(forKey: "creationTimestamp") as! Date
+            self.localRelativeFilePath = coder.decodeObject(forKey: "localRelativeFilePath") as? String
+            self.cachedImageWidth = coder.decodeObject(forKey: "cachedImageWidth") as? NSNumber
+            self.cachedImageHeight = coder.decodeObject(forKey: "cachedImageHeight") as? NSNumber
+            self.cachedAudioDurationSeconds = coder.decodeObject(forKey: "cachedAudioDurationSeconds") as? NSNumber
+            self.isValidImageCached = coder.decodeObject(forKey: "isValidImageCached") as? NSNumber
+            self.isValidVideoCached = coder.decodeObject(forKey: "isValidVideoCached") as? NSNumber
+            
+            super.init(coder: coder)
+        }
+        
+        override public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
 
     @objc(NotifyPNServerJob)
     internal final class NotifyPNServerJob: NSObject, NSCoding {
@@ -94,10 +972,7 @@ public enum Legacy {
             }
 
             public func encode(with coder: NSCoder) {
-                coder.encode(recipient, forKey: "recipient")
-                coder.encode(data, forKey: "data")
-                coder.encode(ttl, forKey: "ttl")
-                coder.encode(timestamp, forKey: "timestamp")
+                fatalError("encode(with:) should never be called for legacy types")
             }
         }
         
@@ -119,9 +994,7 @@ public enum Legacy {
         }
 
         public func encode(with coder: NSCoder) {
-            coder.encode(message, forKey: "message")
-            coder.encode(id, forKey: "id")
-            coder.encode(failureCount, forKey: "failureCount")
+            fatalError("encode(with:) should never be called for legacy types")
         }
     }
 
@@ -140,36 +1013,33 @@ public enum Legacy {
         public init?(coder: NSCoder) {
             guard
                 let data = coder.decodeObject(forKey: "data") as! Data?,
-                let id = coder.decodeObject(forKey: "id") as! String?,
-                let isBackgroundPoll = coder.decodeObject(forKey: "isBackgroundPoll") as! Bool?
+                let id = coder.decodeObject(forKey: "id") as! String?
             else { return nil }
             
             self.data = data
             self.serverHash = coder.decodeObject(forKey: "serverHash") as! String?
             self.openGroupMessageServerID = coder.decodeObject(forKey: "openGroupMessageServerID") as! UInt64?
             self.openGroupID = coder.decodeObject(forKey: "openGroupID") as! String?
-            self.isBackgroundPoll = isBackgroundPoll
+            // Note: This behaviour is changed from the old code but the 'isBackgroundPoll' is only set
+            // when getting messages from the 'BackgroundPoller' class and since we likely want to process
+            // these new messages immediately it should be fine to do this (this value seemed to be missing
+            // in some cases which resulted in the 'Legacy.MessageReceiveJob' failing to parse)
+            self.isBackgroundPoll = ((coder.decodeObject(forKey: "isBackgroundPoll") as? Bool) ?? false)
             self.id = id
             self.failureCount = ((coder.decodeObject(forKey: "failureCount") as? UInt) ?? 0)
         }
 
         public func encode(with coder: NSCoder) {
-            coder.encode(data, forKey: "data")
-            coder.encode(serverHash, forKey: "serverHash")
-            coder.encode(openGroupMessageServerID, forKey: "openGroupMessageServerID")
-            coder.encode(openGroupID, forKey: "openGroupID")
-            coder.encode(isBackgroundPoll, forKey: "isBackgroundPoll")
-            coder.encode(id, forKey: "id")
-            coder.encode(failureCount, forKey: "failureCount")
+            fatalError("encode(with:) should never be called for legacy types")
         }
     }
 
     @objc(SNMessageSendJob)
-    public final class MessageSendJob: NSObject, NSCoding {
-        public let message: Message
-        public let destination: Message.Destination
-        public var id: String?
-        public var failureCount: UInt = 0
+    internal final class MessageSendJob: NSObject, NSCoding {
+        internal let message: Message
+        internal let destination: SessionMessagingKit.Message.Destination
+        internal var id: String?
+        internal var failureCount: UInt = 0
 
         // MARK: - Coding
         
@@ -217,24 +1087,7 @@ public enum Legacy {
         }
 
         public func encode(with coder: NSCoder) {
-            coder.encode(message, forKey: "message")
-            
-            switch destination {
-                case .contact(let publicKey):
-                    coder.encode("contact(\(publicKey))", forKey: "destination")
-                    
-                case .closedGroup(let groupPublicKey):
-                    coder.encode("closedGroup(\(groupPublicKey))", forKey: "destination")
-                    
-                case .openGroup(let channel, let server):
-                    coder.encode("openGroup(\(channel), \(server))", forKey: "destination")
-                    
-                case .openGroupV2(let room, let server):
-                    coder.encode("openGroupV2(\(room), \(server))", forKey: "destination")
-            }
-            
-            coder.encode(id, forKey: "id")
-            coder.encode(failureCount, forKey: "failureCount")
+            fatalError("encode(with:) should never be called for legacy types")
         }
         
         // MARK: - Convenience
@@ -252,13 +1105,13 @@ public enum Legacy {
     }
     
     @objc(AttachmentUploadJob)
-    public final class AttachmentUploadJob: NSObject, NSCoding {
-        public let attachmentID: String
-        public let threadID: String
-        public let message: Message
-        public let messageSendJobID: String
-        public var id: String?
-        public var failureCount: UInt = 0
+    internal final class AttachmentUploadJob: NSObject, NSCoding {
+        internal let attachmentID: String
+        internal let threadID: String
+        internal let message: Message
+        internal let messageSendJobID: String
+        internal var id: String?
+        internal var failureCount: UInt = 0
         
         // MARK: - Coding
         
@@ -280,12 +1133,7 @@ public enum Legacy {
         }
 
         public func encode(with coder: NSCoder) {
-            coder.encode(attachmentID, forKey: "attachmentID")
-            coder.encode(threadID, forKey: "threadID")
-            coder.encode(message, forKey: "message")
-            coder.encode(messageSendJobID, forKey: "messageSendJobID")
-            coder.encode(id, forKey: "id")
-            coder.encode(failureCount, forKey: "failureCount")
+            fatalError("encode(with:) should never be called for legacy types")
         }
     }
     
@@ -317,235 +1165,34 @@ public enum Legacy {
         }
 
         public func encode(with coder: NSCoder) {
-            coder.encode(attachmentID, forKey: "attachmentID")
-            coder.encode(tsMessageID, forKey: "tsIncomingMessageID")
-            coder.encode(threadID, forKey: "threadID")
-            coder.encode(id, forKey: "id")
-            coder.encode(failureCount, forKey: "failureCount")
-            coder.encode(isDeferred, forKey: "isDeferred")
-        }
-    }
-}
-
-@objc(SNJob)
-public protocol _LegacyJob : NSCoding {
-    var id: String? { get set }
-    var failureCount: UInt { get set }
-
-    static var collection: String { get }
-    static var maxFailureCount: UInt { get }
-
-    func execute()
-}
-
-// Note: Looks like Swift doesn't expose nested types well (in the `-Swift` header this was
-// appearing with `SWIFT_CLASS_NAME("Contact")` which conflicts with the new type and has a
-// different structure) as a result we cannot nest this cleanly
-@objc(SNContact)
-public class _LegacyContact: NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
-    @objc public let sessionID: String
-    /// The URL from which to fetch the contact's profile picture.
-    @objc public var profilePictureURL: String?
-    /// The file name of the contact's profile picture on local storage.
-    @objc public var profilePictureFileName: String?
-    /// The key with which the profile is encrypted.
-    @objc public var profileEncryptionKey: OWSAES256Key?
-    /// The ID of the thread associated with this contact.
-    @objc public var threadID: String?
-    /// This flag is used to determine whether we should auto-download files sent by this contact.
-    @objc public var isTrusted = false
-    /// This flag is used to determine whether message requests from this contact are approved
-    @objc public var isApproved = false
-    /// This flag is used to determine whether message requests from this contact are blocked
-    @objc public var isBlocked = false {
-        didSet {
-            if isBlocked {
-                hasBeenBlocked = true
-            }
-        }
-    }
-    /// This flag is used to determine whether this contact has approved the current users message request
-    @objc public var didApproveMe = false
-    /// This flag is used to determine whether this contact has ever been blocked (will be included in the config message if so)
-    @objc public var hasBeenBlocked = false
-    
-    // MARK: Name
-    /// The name of the contact. Use this whenever you need the "real", underlying name of a user (e.g. when sending a message).
-    @objc public var name: String?
-    /// The contact's nickname, if the user set one.
-    @objc public var nickname: String?
-    /// The name to display in the UI. For local use only.
-    @objc public func displayName(for context: Context) -> String? {
-        if let nickname = nickname { return nickname }
-        switch context {
-        case .regular: return name
-        case .openGroup:
-            // In open groups, where it's more likely that multiple users have the same name, we display a bit of the Session ID after
-            // a user's display name for added context.
-            guard let name = name else { return nil }
-            let endIndex = sessionID.endIndex
-            let cutoffIndex = sessionID.index(endIndex, offsetBy: -8)
-            return "\(name) (...\(sessionID[cutoffIndex..<endIndex]))"
+            fatalError("encode(with:) should never be called for legacy types")
         }
     }
     
-    // MARK: Context
-    @objc(SNContactContext)
-    public enum Context : Int {
-        case regular, openGroup
-    }
-    
-    // MARK: Initialization
-    @objc public init(sessionID: String) {
-        self.sessionID = sessionID
-        super.init()
-    }
-
-    private override init() { preconditionFailure("Use init(sessionID:) instead.") }
-
-    // MARK: Validation
-    public var isValid: Bool {
-        if profilePictureURL != nil { return (profileEncryptionKey != nil) }
-        if profileEncryptionKey != nil { return (profilePictureURL != nil) }
-        return true
-    }
-    
-    // MARK: Coding
-    
-    public required init?(coder: NSCoder) {
-        guard let sessionID = coder.decodeObject(forKey: "sessionID") as! String? else { return nil }
-        self.sessionID = sessionID
-        isTrusted = coder.decodeBool(forKey: "isTrusted")
-        if let name = coder.decodeObject(forKey: "displayName") as! String? { self.name = name }
-        if let nickname = coder.decodeObject(forKey: "nickname") as! String? { self.nickname = nickname }
-        if let profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String? { self.profilePictureURL = profilePictureURL }
-        if let profilePictureFileName = coder.decodeObject(forKey: "profilePictureFileName") as! String? { self.profilePictureFileName = profilePictureFileName }
-        if let profileEncryptionKey = coder.decodeObject(forKey: "profilePictureEncryptionKey") as! OWSAES256Key? { self.profileEncryptionKey = profileEncryptionKey }
-        if let threadID = coder.decodeObject(forKey: "threadID") as! String? { self.threadID = threadID }
+    public final class DisappearingConfigurationUpdateInfoMessage: TSInfoMessage {
+        // Note: Due to how Mantle works we need to set default values for these as the 'init(dictionary:)'
+        // method doesn't actually get values for them but the must be set before calling a super.init method
+        // so this allows us to work around the behaviour until 'init(coder:)' method completes it's super call
+        var createdByRemoteName: String?
+        var configurationDurationSeconds: UInt32 = 0
+        var configurationIsEnabled: Bool = false
         
-        let isBlockedFlag: Bool = coder.decodeBool(forKey: "isBlocked")
-        isApproved = coder.decodeBool(forKey: "isApproved")
-        isBlocked = isBlockedFlag
-        didApproveMe = coder.decodeBool(forKey: "didApproveMe")
-        hasBeenBlocked = (coder.decodeBool(forKey: "hasBeenBlocked") || isBlockedFlag)
-    }
-
-    public func encode(with coder: NSCoder) {
-        coder.encode(sessionID, forKey: "sessionID")
-        coder.encode(name, forKey: "displayName")
-        coder.encode(nickname, forKey: "nickname")
-        coder.encode(profilePictureURL, forKey: "profilePictureURL")
-        coder.encode(profilePictureFileName, forKey: "profilePictureFileName")
-        coder.encode(profileEncryptionKey, forKey: "profilePictureEncryptionKey")
-        coder.encode(threadID, forKey: "threadID")
-        coder.encode(isTrusted, forKey: "isTrusted")
-        coder.encode(isApproved, forKey: "isApproved")
-        coder.encode(isBlocked, forKey: "isBlocked")
-        coder.encode(didApproveMe, forKey: "didApproveMe")
-        coder.encode(hasBeenBlocked, forKey: "hasBeenBlocked")
-    }
-    
-    // MARK: Equality
-    override public func isEqual(_ other: Any?) -> Bool {
-        guard let other = other as? _LegacyContact else { return false }
-        return sessionID == other.sessionID
-    }
-
-    // MARK: Hashing
-    override public var hash: Int { // Override NSObject.hash and not Hashable.hashValue or Hashable.hash(into:)
-        return sessionID.hash
-    }
-
-    // MARK: Description
-    override public var description: String {
-        nickname ?? name ?? sessionID
-    }
-    
-    // MARK: Convenience
-    @objc(contextForThread:)
-    public static func context(for thread: TSThread) -> Context {
-        return ((thread as? TSGroupThread)?.isOpenGroup == true) ? .openGroup : .regular
-
-@objc(OWSDisappearingMessagesConfiguration)
-public class _LegacyDisappearingMessagesConfiguration: MTLModel {
-    public let uniqueId: String
-    @objc public var isEnabled: Bool
-    @objc public var durationSeconds: UInt32
-    
-    @objc public var durationIndex: UInt32 = 0
-    @objc public var durationString: String?
-    
-    var originalDictionaryValue: [String: Any]?
-    @objc public var isNewRecord: Bool = false
-    
-    @objc public static func defaultWith(_ threadId: String) -> Legacy.DisappearingMessagesConfiguration {
-        return Legacy.DisappearingMessagesConfiguration(
-            threadId: threadId,
-            enabled: false,
-            durationSeconds: (24 * 60 * 60)
-        )
-    }
-    
-    public static func fetch(uniqueId: String, transaction: YapDatabaseReadTransaction? = nil) -> Legacy.DisappearingMessagesConfiguration? {
-        return nil
-    }
-    
-    @objc public static func fetchObject(uniqueId: String) -> Legacy.DisappearingMessagesConfiguration? {
-        return nil
-    }
-    
-    @objc public static func fetchOrBuildDefault(threadId: String, transaction: YapDatabaseReadTransaction) -> Legacy.DisappearingMessagesConfiguration? {
-        return defaultWith(threadId)
-    }
-    
-    @objc public static var validDurationsSeconds: [UInt32] = []
-    
-    // MARK: - Initialization
-    
-    init(threadId: String, enabled: Bool, durationSeconds: UInt32) {
-        self.uniqueId = threadId
-        self.isEnabled = enabled
-        self.durationSeconds = durationSeconds
-        self.isNewRecord = true
+        // MARK: - Coding
         
-        super.init()
-    }
-    
-    required init(coder: NSCoder) {
-        self.uniqueId = coder.decodeObject(forKey: "uniqueId") as! String
-        self.isEnabled = coder.decodeObject(forKey: "enabled") as! Bool
-        self.durationSeconds = coder.decodeObject(forKey: "durationSeconds") as! UInt32
-        
-        // Intentionally not calling 'super.init(coder:) here
-        super.init()
-    }
-    
-    required init(dictionary dictionaryValue: [String : Any]!) throws {
-        fatalError("init(dictionary:) has not been implemented")
-    }
-    
-    // MARK: - Dirty Tracking
-    
-    @objc public override static func storageBehaviorForProperty(withKey propertyKey: String) -> MTLPropertyStorage {
-        // Don't persist transient properties
-        if
-            propertyKey == "TAG" ||
-            propertyKey == "originalDictionaryValue" ||
-            propertyKey == "newRecord"
-        {
-            return MTLPropertyStorageNone
+        public required init(coder: NSCoder) {
+            super.init(coder: coder)
+            
+            self.createdByRemoteName = coder.decodeObject(forKey: "createdByRemoteName") as? String
+            self.configurationDurationSeconds = ((coder.decodeObject(forKey: "configurationDurationSeconds") as? UInt32) ?? 0)
+            self.configurationIsEnabled = ((coder.decodeObject(forKey: "configurationIsEnabled") as? Bool) ?? false)
         }
         
-        return super.storageBehaviorForProperty(withKey: propertyKey)
-    }
-    
-    @objc public var dictionaryValueDidChange: Bool {
-        return false
-    }
-    
-    @objc(saveWithTransaction:)
-    public func save(with transaction: YapDatabaseReadWriteTransaction) {
-        self.originalDictionaryValue = self.dictionaryValue
-        self.isNewRecord = false
+        required init(dictionary dictionaryValue: [String : Any]!) throws {
+            try super.init(dictionary: dictionaryValue)
+        }
+        
+        public override func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
     }
 }

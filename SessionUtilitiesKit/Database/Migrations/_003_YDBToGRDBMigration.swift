@@ -16,6 +16,12 @@ enum _003_YDBToGRDBMigration: Migration {
         var userEd25519PublicKeyHexString: String?
         var userX25519KeyPair: Legacy.KeyPair?
         
+        // Map the Legacy types for the NSKeyedUnarchiver
+        NSKeyedUnarchiver.setClass(
+            Legacy.KeyPair.self,
+            forClassName: "ECKeyPair"
+        )
+        
         Storage.read { transaction in
             registeredNumber = transaction.object(
                 forKey: Legacy.userAccountRegisteredNumberKey,

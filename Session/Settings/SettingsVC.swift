@@ -139,15 +139,23 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         setUpGradientBackground()
         setUpNavBarStyle()
         setNavBarTitle(NSLocalizedString("vc_settings_title", comment: ""))
+        
         // Navigation bar buttons
         updateNavigationBarButtons()
+        
         // Profile picture view
+        let profile: Profile = Profile.fetchOrCreateCurrentUser()
         let profilePictureTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showEditProfilePictureUI))
         profilePictureView.addGestureRecognizer(profilePictureTapGestureRecognizer)
-        profilePictureView.publicKey = getUserHexEncodedPublicKey()
-        profilePictureView.update()
+        profilePictureView
+            .update(
+                publicKey: profile.id,
+                profile: profile,
+                threadVariant: .contact
+            )
         // Display name label
-        displayNameLabel.text = Profile.fetchOrCreateCurrentUser().name
+        displayNameLabel.text = profile.name
+        
         // Display name container
         let displayNameContainer = UIView()
         displayNameContainer.accessibilityLabel = "Edit display name text field"
@@ -160,22 +168,27 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         displayNameTextField.alpha = 0
         let displayNameContainerTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showEditDisplayNameUI))
         displayNameContainer.addGestureRecognizer(displayNameContainerTapGestureRecognizer)
+        
         // Header view
         let headerStackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameContainer ])
         headerStackView.axis = .vertical
         headerStackView.spacing = Values.smallSpacing
         headerStackView.alignment = .center
+        
         // Separator
         let separator = Separator(title: NSLocalizedString("your_session_id", comment: ""))
+        
         // Share button
         let shareButton = Button(style: .regular, size: .medium)
         shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
         shareButton.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
+        
         // Button container
         let buttonContainer = UIStackView(arrangedSubviews: [ copyButton, shareButton ])
         buttonContainer.axis = .horizontal
         buttonContainer.spacing = Values.mediumSpacing
         buttonContainer.distribution = .fillEqually
+        
         // Top stack view
         let topStackView = UIStackView(arrangedSubviews: [ headerStackView, separator, publicKeyLabel, buttonContainer ])
         topStackView.axis = .vertical
@@ -183,10 +196,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         topStackView.alignment = .fill
         topStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.largeSpacing, bottom: 0, right: Values.largeSpacing)
         topStackView.isLayoutMarginsRelativeArrangement = true
+        
         // Setting buttons stack view
         getSettingButtons().forEach { settingButtonOrSeparator in
             settingButtonsStackView.addArrangedSubview(settingButtonOrSeparator)
         }
+        
         // Oxen logo
         updateLogo()
         let logoContainer = UIView()
@@ -194,6 +209,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         logoImageView.pin(.top, to: .top, of: logoContainer)
         logoContainer.pin(.bottom, to: .bottom, of: logoImageView)
         logoImageView.centerXAnchor.constraint(equalTo: logoContainer.centerXAnchor, constant: -2).isActive = true
+        
         // Main stack view
         let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView, inviteButton, faqButton, surveyButton, supportButton, helpTranslateButton, logoContainer, versionLabel ])
         stackView.axis = .vertical
@@ -202,6 +218,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         stackView.layoutMargins = UIEdgeInsets(top: Values.mediumSpacing, left: 0, bottom: Values.mediumSpacing, right: 0)
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.set(.width, to: UIScreen.main.bounds.width)
+        
         // Scroll view
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
@@ -365,7 +382,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                 profileName: (name ?? ""),
                 avatarImage: profilePicture,
                 requiredSync: true,
-                success: {
+                success: { updatedProfile in
                     if displayNameToBeUploaded != nil {
                         userDefaults[.lastDisplayNameUpdate] = Date()
                     }
@@ -378,11 +395,14 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                     
                     DispatchQueue.main.async {
                         modalActivityIndicator.dismiss {
-                            guard let self = self else { return }
-                            self.profilePictureView.update()
-                            self.displayNameLabel.text = name
-                            self.profilePictureToBeUploaded = nil
-                            self.displayNameToBeUploaded = nil
+                            self?.profilePictureView.update(
+                                publicKey: updatedProfile.id,
+                                profile: updatedProfile,
+                                threadVariant: .contact
+                            )
+                            self?.displayNameLabel.text = name
+                            self?.profilePictureToBeUploaded = nil
+                            self?.displayNameToBeUploaded = nil
                         }
                     }
                 },

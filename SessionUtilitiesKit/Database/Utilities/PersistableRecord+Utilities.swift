@@ -10,7 +10,7 @@ public extension Array where Element: PersistableRecord {
         }
     }
     
-    @discardableResult func saveAll(_ db: Database) throws {
+    func saveAll(_ db: Database) throws {
         try forEach { try $0.save(db) }
     }
 }

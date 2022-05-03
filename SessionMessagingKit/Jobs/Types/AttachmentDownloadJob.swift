@@ -28,7 +28,8 @@ public enum AttachmentDownloadJob: JobExecutor {
             return
         }
         guard attachment.state != .downloaded else {
-            // FIXME: It's not clear * how * this happens, but apparently we can get to this point from time to time with an already downloaded attachment.
+            // If there is a bug elsewhere in the code it's possible for an AttachmentDownloadJob to be created
+            // for an attachment that is already downloaded - if it is just succeed immediately
             success(job, false)
             return
         }
@@ -133,6 +134,10 @@ public enum AttachmentDownloadJob: JobExecutor {
 extension AttachmentDownloadJob {
     public struct Details: Codable {
         public let attachmentId: String
+        
+        public init(attachmentId: String) {
+            self.attachmentId = attachmentId
+        }
     }
     
     public enum AttachmentDownloadError: LocalizedError {

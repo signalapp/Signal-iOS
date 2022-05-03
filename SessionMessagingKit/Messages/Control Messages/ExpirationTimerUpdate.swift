@@ -4,8 +4,7 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-@objc(SNExpirationTimerUpdate)
-public final class ExpirationTimerUpdate : ControlMessage {
+public final class ExpirationTimerUpdate: ControlMessage {
     private enum CodingKeys: String, CodingKey {
         case syncTarget
         case duration
@@ -19,32 +18,20 @@ public final class ExpirationTimerUpdate : ControlMessage {
 
     public override var isSelfSendValid: Bool { true }
 
-    // MARK: Initialization
-    public override init() { super.init() }
+    // MARK: - Initialization
     
     internal init(syncTarget: String?, duration: UInt32) {
         super.init()
+        
         self.syncTarget = syncTarget
         self.duration = duration
     }
 
-    // MARK: Validation
+    // MARK: - Validation
+    
     public override var isValid: Bool {
         guard super.isValid else { return false }
         return duration != nil
-    }
-
-    // MARK: Coding
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        if let syncTarget = coder.decodeObject(forKey: "syncTarget") as! String? { self.syncTarget = syncTarget }
-        if let duration = coder.decodeObject(forKey: "durationSeconds") as! UInt32? { self.duration = duration }
-    }
-    
-    public override func encode(with coder: NSCoder) {
-        super.encode(with: coder)
-        coder.encode(syncTarget, forKey: "syncTarget")
-        coder.encode(duration, forKey: "durationSeconds")
     }
     
     // MARK: - Codable
@@ -67,7 +54,8 @@ public final class ExpirationTimerUpdate : ControlMessage {
         try container.encodeIfPresent(duration, forKey: .duration)
     }
 
-    // MARK: Proto Conversion
+    // MARK: - Proto Conversion
+    
     public override class func fromProto(_ proto: SNProtoContent, sender: String) -> ExpirationTimerUpdate? {
         guard let dataMessageProto = proto.dataMessage else { return nil }
         
@@ -106,18 +94,14 @@ public final class ExpirationTimerUpdate : ControlMessage {
         }
     }
     
-    // MARK: Description
-    public override var description: String {
+    // MARK: - Description
+    
+    public var description: String {
         """
         ExpirationTimerUpdate(
             syncTarget: \(syncTarget ?? "null"),
             duration: \(duration?.description ?? "null")
         )
         """
-    }
-    
-    // MARK: Convenience
-    @objc public func setDuration(_ duration: UInt32) {
-        self.duration = duration
     }
 }

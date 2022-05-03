@@ -5,37 +5,25 @@ import GRDB
 import SessionUtilitiesKit
 
 public extension VisibleMessage {
+    struct LinkPreview: Codable {
+        public let title: String?
+        public let url: String?
+        public let attachmentId: String?
 
-    @objc(SNLinkPreview)
-    class LinkPreview: NSObject, Codable, NSCoding {
-        public var title: String?
-        public var url: String?
-        public var attachmentID: String?
+        public var isValid: Bool { title != nil && url != nil && attachmentId != nil }
 
-        public var isValid: Bool { title != nil && url != nil && attachmentID != nil }
-
-        internal init(title: String?, url: String, attachmentID: String?) {
+        internal init(title: String?, url: String, attachmentId: String?) {
             self.title = title
             self.url = url
-            self.attachmentID = attachmentID
+            self.attachmentId = attachmentId
         }
-
-        public required init?(coder: NSCoder) {
-            if let title = coder.decodeObject(forKey: "title") as! String? { self.title = title }
-            if let url = coder.decodeObject(forKey: "urlString") as! String? { self.url = url }
-            if let attachmentID = coder.decodeObject(forKey: "attachmentID") as! String? { self.attachmentID = attachmentID }
-        }
-
-        public func encode(with coder: NSCoder) {
-            coder.encode(title, forKey: "title")
-            coder.encode(url, forKey: "urlString")
-            coder.encode(attachmentID, forKey: "attachmentID")
-        }
+        
+        // MARK: - Proto Conversion
 
         public static func fromProto(_ proto: SNProtoDataMessagePreview) -> LinkPreview? {
             let title = proto.title
             let url = proto.url
-            return LinkPreview(title: title, url: url, attachmentID: nil)
+            return LinkPreview(title: title, url: url, attachmentId: nil)
         }
 
         public func toProto() -> SNProtoDataMessagePreview? {
@@ -51,8 +39,9 @@ public extension VisibleMessage {
             if let title = title { linkPreviewProto.setTitle(title) }
             
             if
-                let attachmentID = attachmentID,
-                let attachment: SessionMessagingKit.Attachment = try? SessionMessagingKit.Attachment.fetchOne(db, id: attachmentID),
+                let attachmentId = attachmentId,
+                // TODO: try to ditch `SessionMessagingKit.`
+                let attachment: SessionMessagingKit.Attachment = try? SessionMessagingKit.Attachment.fetchOne(db, id: attachmentId),
                 let attachmentProto = attachment.buildProto()
             {
                 linkPreviewProto.setImage(attachmentProto)
@@ -66,13 +55,14 @@ public extension VisibleMessage {
             }
         }
         
-        // MARK: Description
-        public override var description: String {
+        // MARK: - Description
+        
+        public var description: String {
             """
             LinkPreview(
                 title: \(title ?? "null"),
                 url: \(url ?? "null"),
-                attachmentID: \(attachmentID ?? "null")
+                attachmentId: \(attachmentId ?? "null")
             )
             """
         }
@@ -86,7 +76,7 @@ public extension VisibleMessage.LinkPreview {
         return VisibleMessage.LinkPreview(
             title: linkPreview.title,
             url: linkPreview.url,
-            attachmentID: linkPreview.attachmentId
+            attachmentId: linkPreview.attachmentId
         )
     }
 }

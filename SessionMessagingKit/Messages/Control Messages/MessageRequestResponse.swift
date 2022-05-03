@@ -4,7 +4,6 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-@objc(SNMessageRequestResponse)
 public final class MessageRequestResponse: ControlMessage {
     private enum CodingKeys: String, CodingKey {
         case isApproved
@@ -18,22 +17,6 @@ public final class MessageRequestResponse: ControlMessage {
         self.isApproved = isApproved
         
         super.init()
-    }
-    
-    // MARK: - Coding
-
-    public required init?(coder: NSCoder) {
-        guard let isApproved: Bool = coder.decodeObject(forKey: "isApproved") as? Bool else { return nil }
-        
-        self.isApproved = isApproved
-        
-        super.init(coder: coder)
-    }
-
-    public override func encode(with coder: NSCoder) {
-        super.encode(with: coder)
-        
-        coder.encode(isApproved, forKey: "isApproved")
     }
     
     // MARK: - Codable
@@ -79,7 +62,7 @@ public final class MessageRequestResponse: ControlMessage {
     
     // MARK: - Description
     
-    public override var description: String {
+    public var description: String {
         """
         MessageRequestResponse(
             isApproved: \(isApproved)

@@ -6,43 +6,30 @@ import SessionUtilitiesKit
 
 public extension VisibleMessage {
 
-    @objc(SNQuote)
-    class Quote: NSObject, Codable, NSCoding {
-        public var timestamp: UInt64?
-        public var publicKey: String?
-        public var text: String?
-        public var attachmentID: String?
+    struct Quote: Codable {
+        public let timestamp: UInt64?
+        public let publicKey: String?
+        public let text: String?
+        public let attachmentId: String?
 
         public var isValid: Bool { timestamp != nil && publicKey != nil }
-
-        public override init() { super.init() }
         
-        internal init(timestamp: UInt64, publicKey: String, text: String?, attachmentID: String?) {
+        // MARK: - Initialization
+
+        internal init(timestamp: UInt64, publicKey: String, text: String?, attachmentId: String?) {
             self.timestamp = timestamp
             self.publicKey = publicKey
             self.text = text
-            self.attachmentID = attachmentID
+            self.attachmentId = attachmentId
         }
-
-        public required init?(coder: NSCoder) {
-            if let timestamp = coder.decodeObject(forKey: "timestamp") as! UInt64? { self.timestamp = timestamp }
-            if let publicKey = coder.decodeObject(forKey: "authorId") as! String? { self.publicKey = publicKey }
-            if let text = coder.decodeObject(forKey: "body") as! String? { self.text = text }
-            if let attachmentID = coder.decodeObject(forKey: "attachmentID") as! String? { self.attachmentID = attachmentID }
-        }
-
-        public func encode(with coder: NSCoder) {
-            coder.encode(timestamp, forKey: "timestamp")
-            coder.encode(publicKey, forKey: "authorId")
-            coder.encode(text, forKey: "body")
-            coder.encode(attachmentID, forKey: "attachmentID")
-        }
+        
+        // MARK: - Proto Conversion
 
         public static func fromProto(_ proto: SNProtoDataMessageQuote) -> Quote? {
             let timestamp = proto.id
             let publicKey = proto.author
             let text = proto.text
-            return Quote(timestamp: timestamp, publicKey: publicKey, text: text, attachmentID: nil)
+            return Quote(timestamp: timestamp, publicKey: publicKey, text: text, attachmentId: nil)
         }
 
         public func toProto() -> SNProtoDataMessageQuote? {
@@ -66,9 +53,9 @@ public extension VisibleMessage {
         }
 
         private func addAttachmentsIfNeeded(_ db: Database, to quoteProto: SNProtoDataMessageQuote.SNProtoDataMessageQuoteBuilder) {
-            guard let attachmentID = attachmentID else { return }
+            guard let attachmentId = attachmentId else { return }
             guard
-                let attachment: SessionMessagingKit.Attachment = try? SessionMessagingKit.Attachment.fetchOne(db, id: attachmentID),
+                let attachment: SessionMessagingKit.Attachment = try? SessionMessagingKit.Attachment.fetchOne(db, id: attachmentId),
                 attachment.state != .uploaded
             else {
                 #if DEBUG
@@ -91,14 +78,15 @@ public extension VisibleMessage {
             }
         }
         
-        // MARK: Description
-        public override var description: String {
+        // MARK: - Description
+        
+        public var description: String {
             """
             Quote(
                 timestamp: \(timestamp?.description ?? "null"),
                 publicKey: \(publicKey ?? "null"),
                 text: \(text ?? "null"),
-                attachmentID: \(attachmentID ?? "null")
+                attachmentId: \(attachmentId ?? "null")
             )
             """
         }
@@ -109,12 +97,11 @@ public extension VisibleMessage {
 
 public extension VisibleMessage.Quote {
     static func from(_ db: Database, quote: Quote) -> VisibleMessage.Quote {
-        let result = VisibleMessage.Quote()
-        result.timestamp = UInt64(quote.timestampMs)
-        result.publicKey = quote.authorId
-        result.text = quote.body
-        result.attachmentID = quote.attachmentId
-        
-        return result
+        return VisibleMessage.Quote(
+            timestamp: UInt64(quote.timestampMs),
+            publicKey: quote.authorId,
+            text: quote.body,
+            attachmentId: quote.attachmentId
+        )
     }
 }

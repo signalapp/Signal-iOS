@@ -96,7 +96,6 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
         request(for: SessionThread.interactions)
     }
     
-    
     // MARK: - Initialization
     
     public init(
@@ -130,6 +129,26 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
             .deleteAll(db)
         
         return try performDelete(db)
+    }
+}
+
+// MARK: - Mutation
+
+public extension SessionThread {
+    func with(
+        shouldBeVisible: Bool? = nil
+    ) -> SessionThread {
+        return SessionThread(
+            id: id,
+            variant: variant,
+            creationDateTimestamp: creationDateTimestamp,
+            shouldBeVisible: (shouldBeVisible ?? self.shouldBeVisible),
+            isPinned: isPinned,
+            messageDraft: messageDraft,
+            notificationMode: notificationMode,
+            notificationSound: notificationSound,
+            mutedUntilTimestamp: mutedUntilTimestamp
+        )
     }
 }
 
@@ -174,21 +193,36 @@ public extension SessionThread {
     
     func name(_ db: Database) -> String {
         switch variant {
-            case .contact: return Profile.displayName(db, id: id)
+            case .contact:
+                guard !isNoteToSelf(db) else { return name(isNoteToSelf: true) }
+                
+                return name(
+                    displayName: Profile.displayName(
+                        db,
+                        id: id,
+                        customFallback: Profile.truncated(id: id, truncating: .middle)
+                    )
+                )
             
             case .closedGroup:
-                guard let name: String = try? String.fetchOne(db, closedGroup.select(ClosedGroup.Columns.name)), !name.isEmpty else {
-                    return "Group"
-                }
-                
-                return name
+                return name(displayName: try? String.fetchOne(db, closedGroup.select(.name)))
                 
             case .openGroup:
-                guard let name: String = try? String.fetchOne(db, openGroup.select(OpenGroup.Columns.name)), !name.isEmpty else {
-                    return "Group"
-                }
+                return name(displayName: try? String.fetchOne(db, openGroup.select(.name)))
+        }
+    }
+    
+    func name(isNoteToSelf: Bool = false, displayName: String? = nil) -> String {
+        switch variant {
+            case .contact:
+                guard !isNoteToSelf else { return "Note to Self" }
                 
-                return name
+                return displayName
+                    .defaulting(to: "Anonymous", useDefaultIfEmpty: true)
+            
+            case .closedGroup, .openGroup:
+                return displayName
+                    .defaulting(to: "Group", useDefaultIfEmpty: true)
         }
     }
 }

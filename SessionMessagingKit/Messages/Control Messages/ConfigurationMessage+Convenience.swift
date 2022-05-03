@@ -12,7 +12,7 @@ extension ConfigurationMessage {
         let displayName: String = profile.name
         let profilePictureUrl: String? = profile.profilePictureUrl
         let profileKey: Data? = profile.profileEncryptionKey?.keyData
-        var closedGroups: Set<ClosedGroup> = []
+        var closedGroups: Set<CMClosedGroup> = []
         var openGroups: Set<String> = []
         
         Storage.read { transaction in
@@ -66,7 +66,7 @@ extension ConfigurationMessage {
                 return CMContact(
                     publicKey: contact.id,
                     displayName: (profile?.name ?? contact.id),
-                    profilePictureURL: profile?.profilePictureUrl,
+                    profilePictureUrl: profile?.profilePictureUrl,
                     profileKey: profile?.profileEncryptionKey?.keyData,
                     hasIsApproved: true,
                     isApproved: contact.isApproved,
@@ -80,7 +80,7 @@ extension ConfigurationMessage {
         
         return ConfigurationMessage(
             displayName: displayName,
-            profilePictureURL: profilePictureUrl,
+            profilePictureUrl: profilePictureUrl,
             profileKey: profileKey,
             closedGroups: closedGroups,
             openGroups: openGroups,

@@ -365,7 +365,7 @@ public final class JobRunner {
                         db,
                         Job// TODO: Test this works as expected
                             .filterPendingJobs(excludeFutureJobs: false)
-                            .select(Job.Columns.nextRunTimestamp)
+                            .select(.nextRunTimestamp)
                     )
             }
         

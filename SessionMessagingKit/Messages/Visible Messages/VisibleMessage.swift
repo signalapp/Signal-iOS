@@ -4,12 +4,11 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-@objc(SNVisibleMessage)
 public final class VisibleMessage: Message {
     private enum CodingKeys: String, CodingKey {
         case syncTarget
         case text = "body"
-        case attachmentIDs = "attachments"
+        case attachmentIds = "attachments"
         case quote
         case linkPreview
         case profile
@@ -20,65 +19,68 @@ public final class VisibleMessage: Message {
     ///
     /// - Note: `nil` if this isn't a sync message.
     public var syncTarget: String?
-    @objc public var text: String?
-    @objc public var attachmentIDs: [String] = []
-    @objc public var quote: Quote?
-    @objc public var linkPreview: LinkPreview?
-    @objc public var contact: Legacy.Contact?
-    @objc public var profile: Profile?
-    @objc public var openGroupInvitation: OpenGroupInvitation?
+    public let text: String?
+    public var attachmentIds: [String]
+    public let quote: Quote?
+    public let linkPreview: LinkPreview?
+    public var profile: Profile?
+    public let openGroupInvitation: OpenGroupInvitation?
 
     public override var isSelfSendValid: Bool { true }
     
-    // MARK: Initialization
-    public override init() { super.init() }
-
-    // MARK: Validation
+    // MARK: - Validation
+    
     public override var isValid: Bool {
         guard super.isValid else { return false }
-        if !attachmentIDs.isEmpty { return true }
+        if !attachmentIds.isEmpty { return true }
         if openGroupInvitation != nil { return true }
         if let text = text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty { return true }
         return false
     }
-
-    // MARK: Coding
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        if let syncTarget = coder.decodeObject(forKey: "syncTarget") as! String? { self.syncTarget = syncTarget }
-        if let text = coder.decodeObject(forKey: "body") as! String? { self.text = text }
-        if let attachmentIDs = coder.decodeObject(forKey: "attachments") as! [String]? { self.attachmentIDs = attachmentIDs }
-        if let quote = coder.decodeObject(forKey: "quote") as! Quote? { self.quote = quote }
-        if let linkPreview = coder.decodeObject(forKey: "linkPreview") as! LinkPreview? { self.linkPreview = linkPreview }
-        if let profile = coder.decodeObject(forKey: "profile") as! Profile? { self.profile = profile }
-        if let openGroupInvitation = coder.decodeObject(forKey: "openGroupInvitation") as! OpenGroupInvitation? { self.openGroupInvitation = openGroupInvitation }
-    }
     
-    public override func encode(with coder: NSCoder) {
-        super.encode(with: coder)
-        coder.encode(syncTarget, forKey: "syncTarget")
-        coder.encode(text, forKey: "body")
-        coder.encode(attachmentIDs, forKey: "attachments")
-        coder.encode(quote, forKey: "quote")
-        coder.encode(linkPreview, forKey: "linkPreview")
-        coder.encode(profile, forKey: "profile")
-        coder.encode(openGroupInvitation, forKey: "openGroupInvitation")
+    // MARK: - Initialization
+    
+    public init(
+        sentTimestamp: UInt64? = nil,
+        recipient: String? = nil,
+        groupPublicKey: String? = nil,
+        syncTarget: String? = nil,
+        text: String?,
+        attachmentIds: [String] = [],
+        quote: Quote? = nil,
+        linkPreview: LinkPreview? = nil,
+        profile: Profile? = nil,
+        openGroupInvitation: OpenGroupInvitation? = nil
+    ) {
+        self.syncTarget = syncTarget
+        self.text = text
+        self.attachmentIds = attachmentIds
+        self.quote = quote
+        self.linkPreview = linkPreview
+        self.profile = profile
+        self.openGroupInvitation = openGroupInvitation
+        
+        super.init(
+            sentTimestamp: sentTimestamp,
+            recipient: recipient,
+            groupPublicKey: groupPublicKey
+        )
     }
     
     // MARK: - Codable
     
     required init(from decoder: Decoder) throws {
-        try super.init(from: decoder)
-        
         let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
         
         syncTarget = try? container.decode(String.self, forKey: .syncTarget)
         text = try? container.decode(String.self, forKey: .text)
-        attachmentIDs = ((try? container.decode([String].self, forKey: .attachmentIDs)) ?? [])
+        attachmentIds = ((try? container.decode([String].self, forKey: .attachmentIds)) ?? [])
         quote = try? container.decode(Quote.self, forKey: .quote)
         linkPreview = try? container.decode(LinkPreview.self, forKey: .linkPreview)
         profile = try? container.decode(Profile.self, forKey: .profile)
         openGroupInvitation = try? container.decode(OpenGroupInvitation.self, forKey: .openGroupInvitation)
+        
+        try super.init(from: decoder)
     }
     
     public override func encode(to encoder: Encoder) throws {
@@ -88,32 +90,32 @@ public final class VisibleMessage: Message {
         
         try container.encodeIfPresent(syncTarget, forKey: .syncTarget)
         try container.encodeIfPresent(text, forKey: .text)
-        try container.encodeIfPresent(attachmentIDs, forKey: .attachmentIDs)
+        try container.encodeIfPresent(attachmentIds, forKey: .attachmentIds)
         try container.encodeIfPresent(quote, forKey: .quote)
         try container.encodeIfPresent(linkPreview, forKey: .linkPreview)
         try container.encodeIfPresent(profile, forKey: .profile)
         try container.encodeIfPresent(openGroupInvitation, forKey: .openGroupInvitation)
     }
 
-    // MARK: Proto Conversion
+    // MARK: - Proto Conversion
+    
     public override class func fromProto(_ proto: SNProtoContent, sender: String) -> VisibleMessage? {
         guard let dataMessage = proto.dataMessage else { return nil }
-        let result = VisibleMessage()
-        result.text = dataMessage.body
-        // Attachments are handled in MessageReceiver
-        if let quoteProto = dataMessage.quote, let quote = Quote.fromProto(quoteProto) { result.quote = quote }
-        if let linkPreviewProto = dataMessage.preview.first, let linkPreview = LinkPreview.fromProto(linkPreviewProto) { result.linkPreview = linkPreview }
-        // TODO: Contact
-        if let profile = Profile.fromProto(dataMessage) { result.profile = profile }
-        if let openGroupInvitationProto = dataMessage.openGroupInvitation,
-            let openGroupInvitation = OpenGroupInvitation.fromProto(openGroupInvitationProto) { result.openGroupInvitation = openGroupInvitation }
-        result.syncTarget = dataMessage.syncTarget
-        return result
+        
+        return VisibleMessage(
+            syncTarget: dataMessage.syncTarget,
+            text: dataMessage.body,
+            attachmentIds: [],    // Attachments are handled in MessageReceiver
+            quote: dataMessage.quote.map { Quote.fromProto($0) },
+            linkPreview: dataMessage.preview.first.map { LinkPreview.fromProto($0) },
+            profile: Profile.fromProto(dataMessage),
+            openGroupInvitation: dataMessage.openGroupInvitation.map { OpenGroupInvitation.fromProto($0) }
+        )
     }
 
     public override func toProto(_ db: Database) -> SNProtoContent? {
         let proto = SNProtoContent.builder()
-        var attachmentIDs = self.attachmentIDs
+        var attachmentIds = self.attachmentIds
         let dataMessage: SNProtoDataMessage.SNProtoDataMessageBuilder
         
         // Profile
@@ -138,8 +140,8 @@ public final class VisibleMessage: Message {
         }
         
         // Link preview
-        if let linkPreviewAttachmentID = linkPreview?.attachmentID, let index = attachmentIDs.firstIndex(of: linkPreviewAttachmentID) {
-            attachmentIDs.remove(at: index)
+        if let linkPreviewAttachmentId = linkPreview?.attachmentId, let index = attachmentIds.firstIndex(of: linkPreviewAttachmentId) {
+            attachmentIds.remove(at: index)
         }
         
         if let linkPreview = linkPreview, let linkPreviewProto = linkPreview.toProto(db) {
@@ -148,7 +150,7 @@ public final class VisibleMessage: Message {
         
         // Attachments
         
-        let attachments: [SessionMessagingKit.Attachment]? = try? SessionMessagingKit.Attachment.fetchAll(db, ids: self.attachmentIDs)
+        let attachments: [SessionMessagingKit.Attachment]? = try? SessionMessagingKit.Attachment.fetchAll(db, ids: self.attachmentIds)
         
         if !(attachments ?? []).allSatisfy({ $0.state == .uploaded }) {
             #if DEBUG
@@ -157,8 +159,6 @@ public final class VisibleMessage: Message {
         }
         let attachmentProtos = (attachments ?? []).compactMap { $0.buildProto() }
         dataMessage.setAttachments(attachmentProtos)
-        
-        // TODO: Contact
         
         // Open group invitation
         if let openGroupInvitation = openGroupInvitation, let openGroupInvitationProto = openGroupInvitation.toProto() { dataMessage.setOpenGroupInvitation(openGroupInvitationProto) }
@@ -184,15 +184,15 @@ public final class VisibleMessage: Message {
         }
     }
     
-    // MARK: Description
-    public override var description: String {
+    // MARK: - Description
+    
+    public var description: String {
         """
         VisibleMessage(
             text: \(text ?? "null"),
-            attachmentIDs: \(attachmentIDs),
+            attachmentIds: \(attachmentIds),
             quote: \(quote?.description ?? "null"),
             linkPreview: \(linkPreview?.description ?? "null"),
-            contact: \(contact?.description ?? "null"),
             profile: \(profile?.description ?? "null")
             "openGroupInvitation": \(openGroupInvitation?.description ?? "null")
         )

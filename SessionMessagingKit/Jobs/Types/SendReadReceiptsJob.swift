@@ -49,13 +49,35 @@ public enum SendReadReceiptsJob: JobExecutor {
                 // When we complete the 'SendReadReceiptsJob' we want to immediately schedule
                 // another one for the same thread but with a 'nextRunTimestamp' set to the
                 // 'minRunFrequency' value to throttle the read receipt requests
-                GRDBStorage.shared.write { db in
-                    _ = try createOrUpdateIfNeeded(db, threadId: threadId, interactionIds: [])?
-                        .with(nextRunTimestamp: (Date().timeIntervalSince1970 + minRunFrequency))
+                var shouldFinishCurrentJob: Bool = false
+                let nextRunTimestamp: TimeInterval = (Date().timeIntervalSince1970 + minRunFrequency)
+                
+                let updatedJob: Job? = GRDBStorage.shared.write { db in
+                    // If another 'sendReadReceipts' job was scheduled then update that one
+                    // to run at 'nextRunTimestamp' and make the current job stop
+                    if
+                        let existingJob: Job = try? Job
+                            .filter(Job.Columns.id != job.id)
+                            .filter(Job.Columns.variant == Job.Variant.sendReadReceipts)
+                            .filter(Job.Columns.threadId == threadId)
+                            .fetchOne(db),
+                        !JobRunner.isCurrentlyRunning(existingJob)
+                    {
+                        _ = try existingJob
+                            .with(nextRunTimestamp: nextRunTimestamp)
+                            .saved(db)
+                        shouldFinishCurrentJob = true
+                        return job
+                    }
+                    
+                    return try job
+                        .with(details: Details(destination: details.destination, timestampMsValues: []))
+                        .defaulting(to: job)
+                        .with(nextRunTimestamp: nextRunTimestamp)
                         .saved(db)
                 }
                 
-                success(job, false)
+                success(updatedJob ?? job, shouldFinishCurrentJob)
             }
             .catch { error in failure(job, error, false) }
             .retainUntilComplete()
@@ -82,7 +104,7 @@ public extension SendReadReceiptsJob {
         let maybeTimestampMsValues: [Int64]? = try? Int64.fetchAll(
             db,
             Interaction
-                .select(Interaction.Columns.timestampMs)
+                .select(.timestampMs)
                 .filter(interactionIds.contains(Interaction.Columns.id))
                 // Only `standardIncoming` incoming interactions should have read receipts sent
                 .filter(Interaction.Columns.variant == Interaction.Variant.standardIncoming)

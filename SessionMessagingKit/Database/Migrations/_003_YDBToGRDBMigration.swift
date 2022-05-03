@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import AVKit
 import GRDB
 import Curve25519Kit
 import SessionUtilitiesKit
@@ -13,16 +14,17 @@ enum _003_YDBToGRDBMigration: Migration {
     
     static func migrate(_ db: Database) throws {
         // MARK: - Process Contacts, Threads & Interactions
-        
+        print("RAWR [\(Date().timeIntervalSince1970)] - SessionMessagingKit migration - Start")
         var shouldFailMigration: Bool = false
         var contacts: Set<Legacy.Contact> = []
+        var validProfileIds: Set<String> = []
         var contactThreadIds: Set<String> = []
         
         var legacyThreadIdToIdMap: [String: String] = [:]
         var threads: Set<TSThread> = []
         var disappearingMessagesConfiguration: [String: Legacy.DisappearingMessagesConfiguration] = [:]
         
-        var closedGroupKeys: [String: [TimeInterval: SessionUtilitiesKit.Legacy.KeyPair]] = [:]
+        var closedGroupKeys: [String: [TimeInterval: SUKLegacy.KeyPair]] = [:]
         var closedGroupName: [String: String] = [:]
         var closedGroupFormation: [String: UInt64] = [:]
         var closedGroupModel: [String: TSGroupModel] = [:]
@@ -36,18 +38,41 @@ enum _003_YDBToGRDBMigration: Migration {
 //        var openGroupServerToUniqueIdLookup: [String: [String]] = [:]   // TODO: Not needed????
         
         var interactions: [String: [TSInteraction]] = [:]
-        var attachments: [String: TSAttachment] = [:]
+        var attachments: [String: Legacy.Attachment] = [:]
+        var processedAttachmentIds: Set<String> = []
         var outgoingReadReceiptsTimestampsMs: [String: Set<Int64>] = [:]
+        
+        // Map the Legacy types for the NSKeyedUnarchiver
+        NSKeyedUnarchiver.setClass(
+            Legacy.Contact.self,
+            forClassName: "SNContact"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.Attachment.self,
+            forClassName: "TSAttachment"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.AttachmentStream.self,
+            forClassName: "TSAttachmentStream"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.AttachmentPointer.self,
+            forClassName: "TSAttachmentPointer"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.DisappearingConfigurationUpdateInfoMessage.self,
+            forClassName: "OWSDisappearingConfigurationUpdateInfoMessage"
+        )
         
         Storage.read { transaction in
             // Process the Contacts
             transaction.enumerateRows(inCollection: Legacy.contactCollection) { _, object, _, _ in
                 guard let contact = object as? Legacy.Contact else { return }
                 contacts.insert(contact)
+                validProfileIds.insert(contact.sessionID)
             }
         
             print("RAWR [\(Date().timeIntervalSince1970)] - Process threads - Start")
-            let userClosedGroupPublicKeys: [String] = transaction.allKeys(inCollection: Legacy.closedGroupPublicKeyCollection)
             
             // Process the threads
             transaction.enumerateKeysAndObjects(inCollection: Legacy.threadCollection) { key, object, _ in
@@ -66,7 +91,6 @@ enum _003_YDBToGRDBMigration: Migration {
                 disappearingMessagesConfiguration[threadId] = transaction
                     .object(forKey: threadId, inCollection: Legacy.disappearingMessagesCollection)
                     .asType(Legacy.DisappearingMessagesConfiguration.self)
-                    .defaulting(to: Legacy.DisappearingMessagesConfiguration.defaultWith(threadId))
                 
                 // Process group-specific info
                 guard let groupThread: TSGroupThread = thread as? TSGroupThread else {
@@ -89,14 +113,6 @@ enum _003_YDBToGRDBMigration: Migration {
                         shouldFailMigration = true
                         return
                     }
-                    guard userClosedGroupPublicKeys.contains(publicKey) else {
-                        // TODO: Determine if we want to remove this
-                        SNLog("[Migration Error] Found unexpected invalid closed group public key")
-                        shouldFailMigration = true
-                        return
-                    }
-                    
-                    let keyCollection: String = "\(Legacy.closedGroupKeyPairPrefix)\(publicKey)"
                     
                     legacyThreadIdToIdMap[threadId] = publicKey
                     closedGroupName[threadId] = groupThread.name(with: transaction)
@@ -107,10 +123,15 @@ enum _003_YDBToGRDBMigration: Migration {
                         inCollection: Legacy.closedGroupZombieMembersCollection
                     ) as? Set<String>
                     
+                    // Note: If the user is no longer in a closed group then the group will still exist but the user
+                    // won't have the closed group public key anymore
+                    let keyCollection: String = "\(Legacy.closedGroupKeyPairPrefix)\(publicKey)"
+                    
                     transaction.enumerateKeysAndObjects(inCollection: keyCollection) { key, object, _ in
-                        guard let timestamp: TimeInterval = TimeInterval(key), let keyPair: SessionUtilitiesKit.Legacy.KeyPair = object as? SessionUtilitiesKit.Legacy.KeyPair else {
-                            return
-                        }
+                        guard
+                            let timestamp: TimeInterval = TimeInterval(key),
+                            let keyPair: SUKLegacy.KeyPair = object as? SUKLegacy.KeyPair
+                        else { return }
                         
                         closedGroupKeys[threadId] = (closedGroupKeys[threadId] ?? [:])
                             .setting(timestamp, keyPair)
@@ -153,7 +174,7 @@ enum _003_YDBToGRDBMigration: Migration {
             // Process attachments
             print("RAWR [\(Date().timeIntervalSince1970)] - Process attachments - Start")
             transaction.enumerateKeysAndObjects(inCollection: Legacy.attachmentsCollection) { key, object, _ in
-                guard let attachment: TSAttachment = object as? TSAttachment else {
+                guard let attachment: Legacy.Attachment = object as? Legacy.Attachment else {
                     SNLog("[Migration Error] Unable to process attachment")
                     shouldFailMigration = true
                     return
@@ -227,7 +248,6 @@ enum _003_YDBToGRDBMigration: Migration {
         var legacyInteractionToIdMap: [String: Int64] = [:]
         var legacyInteractionIdentifierToIdMap: [String: Int64] = [:]
         var legacyInteractionIdentifierToIdFallbackMap: [String: Int64] = [:]
-        var legacyAttachmentToIdMap: [String: String] = [:]
         
         func identifier(
             for threadId: String,
@@ -296,7 +316,10 @@ enum _003_YDBToGRDBMigration: Migration {
                     creationDateTimestamp: thread.creationDate.timeIntervalSince1970,
                     shouldBeVisible: thread.shouldBeVisible,
                     isPinned: thread.isPinned,
-                    messageDraft: thread.messageDraft,
+                    messageDraft: ((thread.messageDraft ?? "").isEmpty ?
+                        nil :
+                        thread.messageDraft
+                    ),
                     notificationMode: notificationMode,
                     mutedUntilTimestamp: thread.mutedUntilDate?.timeIntervalSince1970
                 ).insert(db)
@@ -309,11 +332,15 @@ enum _003_YDBToGRDBMigration: Migration {
                         durationSeconds: TimeInterval(config.durationSeconds)
                     ).insert(db)
                 }
+                else {
+                    try DisappearingMessagesConfiguration
+                        .defaultWith(threadId)
+                        .insert(db)
+                }
                 
                 // Closed Groups
                 if (thread as? TSGroupThread)?.isClosedGroup == true {
                     guard
-                        let legacyKeys = closedGroupKeys[legacyThreadId],
                         let name: String = closedGroupName[legacyThreadId],
                         let groupModel: TSGroupModel = closedGroupModel[legacyThreadId],
                         let formationTimestamp: UInt64 = closedGroupFormation[legacyThreadId]
@@ -328,7 +355,10 @@ enum _003_YDBToGRDBMigration: Migration {
                         formationTimestamp: TimeInterval(formationTimestamp)
                     ).insert(db)
                     
-                    try legacyKeys.forEach { timestamp, legacyKeys in
+                    // Note: If a user has left a closed group then they won't actually have any keys
+                    // but they should still be able to browse the old messages so we do want to allow
+                    // this case and migrate the rest of the info
+                    try closedGroupKeys[legacyThreadId]?.forEach { timestamp, legacyKeys in
                         try ClosedGroupKeyPair(
                             threadId: threadId,
                             publicKey: legacyKeys.publicKey,
@@ -469,7 +499,6 @@ enum _003_YDBToGRDBMigration: Migration {
                                 recipientStateMap = [:]
                                 mostRecentFailureText = nil
                                 
-                                
                             case let outgoingMessage as TSOutgoingMessage:
                                 variant = .standardOutgoing
                                 authorId = currentUserPublicKey
@@ -481,11 +510,32 @@ enum _003_YDBToGRDBMigration: Migration {
                                 mostRecentFailureText = outgoingMessage.mostRecentFailureText
                                 
                             case let infoMessage as TSInfoMessage:
+                                // Note: The legacy 'TSInfoMessage' didn't store the author id so there is no
+                                // way to determine who actually triggered the info message
                                 authorId = currentUserPublicKey
-                                body = ((infoMessage.body ?? "").isEmpty ?
-                                    infoMessage.customMessage :
-                                    infoMessage.body
-                                )
+                                body = {
+                                    // Note: The 'DisappearingConfigurationUpdateInfoMessage' stored additional info and constructed
+                                    // a string at display time so we want to continue that behaviour
+                                    guard
+                                        infoMessage.messageType == .disappearingMessagesUpdate,
+                                        let updateMessage: Legacy.DisappearingConfigurationUpdateInfoMessage = infoMessage as? Legacy.DisappearingConfigurationUpdateInfoMessage,
+                                        let infoMessageData: Data = try? JSONEncoder().encode(
+                                            DisappearingMessagesConfiguration.MessageInfo(
+                                                senderName: updateMessage.createdByRemoteName,
+                                                isEnabled: updateMessage.configurationIsEnabled,
+                                                durationSeconds: TimeInterval(updateMessage.configurationDurationSeconds)
+                                            )
+                                        ),
+                                        let infoMessageString: String = String(data: infoMessageData, encoding: .utf8)
+                                    else {
+                                        return ((infoMessage.body ?? "").isEmpty ?
+                                            infoMessage.customMessage :
+                                            infoMessage.body
+                                        )
+                                    }
+                                    
+                                    return infoMessageString
+                                }()
                                 wasRead = infoMessage.wasRead
                                 expiresInSeconds = nil    // Info messages don't expire
                                 expiresStartedAtMs = nil  // Info messages don't expire
@@ -522,8 +572,15 @@ enum _003_YDBToGRDBMigration: Migration {
                             timestampMs: Int64(legacyInteraction.timestamp),
                             receivedAtTimestampMs: Int64(legacyInteraction.receivedAtTimestamp),
                             wasRead: wasRead,
-                            expiresInSeconds: expiresInSeconds.map { TimeInterval($0) },
-                            expiresStartedAtMs: expiresStartedAtMs.map { Double($0) },
+                            // For both of these '0' used to be equivalent to null
+                            expiresInSeconds: ((expiresInSeconds ?? 0) > 0 ?
+                                expiresInSeconds.map { TimeInterval($0) } :
+                                nil
+                            ),
+                            expiresStartedAtMs: ((expiresStartedAtMs ?? 0) > 0 ?
+                                expiresStartedAtMs.map { Double($0) } :
+                                nil
+                            ),
                             linkPreviewUrl: linkPreview?.urlString, // Only a soft link so save to set
                             openGroupServerMessageId: openGroupServerMessageId.map { Int64($0) },
                             openGroupWhisperMods: false, // TODO: This in SOGSV4
@@ -586,35 +643,74 @@ enum _003_YDBToGRDBMigration: Migration {
                         // Handle any quote
                         
                         if let quotedMessage: TSQuotedMessage = quotedMessage {
-                            let quoteAttachmentId: String? = quotedMessage.quotedAttachments
-                                .compactMap { attachmentInfo in
-                                    if let attachmentId: String = attachmentInfo.attachmentId {
-                                        return attachmentId
-                                    }
-                                    else if let attachmentId: String = attachmentInfo.thumbnailAttachmentPointerId {
-                                        return attachmentId
-                                    }
-                                    // TODO: Looks like some of these might be busted???
-                                    return attachmentInfo.thumbnailAttachmentStreamId
+                            var quoteAttachmentId: String? = quotedMessage.quotedAttachments
+                                .flatMap { attachmentInfo in
+                                    return [
+                                        // Prioritise the thumbnail as it means we won't
+                                        // need to generate a new one
+                                        attachmentInfo.thumbnailAttachmentStreamId,
+                                        attachmentInfo.thumbnailAttachmentPointerId,
+                                        attachmentInfo.attachmentId
+                                    ]
+                                    .compactMap { $0 }
                                 }
-                                .first { attachments[$0] != nil }
+                                .first { attachmentId -> Bool in attachments[attachmentId] != nil }
                             
-                            guard quotedMessage.quotedAttachments.isEmpty || quoteAttachmentId != nil else {
-                                // TODO: Is it possible to hit this case if a quoted attachment hasn't been downloaded?
-                                SNLog("[Migration Error] Missing quote attachment")
-                                throw GRDBStorageError.migrationFailed
+                            // It looks like there can be cases where a quote can be quoting an
+                            // interaction that isn't associated with a profile we know about (eg.
+                            // if you join an open group and one of the first messages is a quote of
+                            // an older message not cached to the device) - this will cause a foreign
+                            // key constraint violation so in these cases just create an empty profile
+                            if !validProfileIds.contains(quotedMessage.authorId) {
+                                SNLog("[Migration Warning] Quote with unknown author found - Creating empty profile")
+                                
+                                // Note: Need to upsert here because it's possible multiple quotes
+                                // will use the same invalid 'authorId' value resulting in a unique
+                                // constraint violation
+                                try Profile(
+                                    id: quotedMessage.authorId,
+                                    name: quotedMessage.authorId
+                                ).save(db)
+                            }
+                            
+                            // Note: It looks like there is a way for a quote to not have it's
+                            // associated attachmentId so let's try our best to track down the
+                            // original interaction and re-create the attachment link before
+                            // falling back to having no attachment in the quote
+                            if quoteAttachmentId == nil && !quotedMessage.quotedAttachments.isEmpty {
+                                quoteAttachmentId = interactions[legacyThreadId]?
+                                    .first(where: {
+                                        $0.timestamp == quotedMessage.timestamp &&
+                                        (
+                                            // Outgoing messages don't store the 'authorId' so we
+                                            // need to compare against the 'currentUserPublicKey'
+                                            // for those or cast to a TSIncomingMessage otherwise
+                                            quotedMessage.authorId == currentUserPublicKey ||
+                                            quotedMessage.authorId == ($0 as? TSIncomingMessage)?.authorId
+                                        )
+                                    })
+                                    .asType(TSMessage.self)?
+                                    .attachmentIds
+                                    .firstObject
+                                    .asType(String.self)
+                                
+                                SNLog([
+                                    "[Migration Warning] Quote with invalid attachmentId found",
+                                    (quoteAttachmentId == nil ?
+                                        "Unable to reconcile, leaving attachment blank" :
+                                        "Original interaction found, using source attachment"
+                                    )
+                                ].joined(separator: " - "))
                             }
                             
                             // Setup the attachment and add it to the lookup (if it exists)
                             let attachmentId: String? = try attachmentId(
                                 db,
                                 for: quoteAttachmentId,
-                                attachments: attachments
+                                isQuotedMessage: true,
+                                attachments: attachments,
+                                processedAttachmentIds: &processedAttachmentIds
                             )
-                            
-                            if let quoteAttachmentId: String = quoteAttachmentId, let attachmentId: String = attachmentId {
-                                legacyAttachmentToIdMap[quoteAttachmentId] = attachmentId
-                            }
                             
                             // Create the quote
                             try Quote(
@@ -642,12 +738,9 @@ enum _003_YDBToGRDBMigration: Migration {
                             let attachmentId: String? = try attachmentId(
                                 db,
                                 for: linkPreview.imageAttachmentId,
-                                attachments: attachments
+                                attachments: attachments,
+                                processedAttachmentIds: &processedAttachmentIds
                             )
-                            
-                            if let legacyAttachmentId: String = linkPreview.imageAttachmentId, let attachmentId: String = attachmentId {
-                                legacyAttachmentToIdMap[legacyAttachmentId] = attachmentId
-                            }
                             
                             // Note: It's possible for there to be duplicate values here so we use 'save'
                             // instead of insert (ie. upsert)
@@ -663,8 +756,13 @@ enum _003_YDBToGRDBMigration: Migration {
                         // Handle any attachments
                         
                         try attachmentIds.forEach { legacyAttachmentId in
-                            guard let attachmentId: String = try attachmentId(db, for: legacyAttachmentId, interactionVariant: variant, attachments: attachments) else {
-                                // TODO: Is it possible to hit this case if an interaction hasn't been viewed?
+                            guard let attachmentId: String = try attachmentId(
+                                db,
+                                for: legacyAttachmentId,
+                                interactionVariant: variant,
+                                attachments: attachments,
+                                processedAttachmentIds: &processedAttachmentIds
+                            ) else {
                                 SNLog("[Migration Error] Missing interaction attachment")
                                 throw GRDBStorageError.migrationFailed
                             }
@@ -674,12 +772,12 @@ enum _003_YDBToGRDBMigration: Migration {
                                 interactionId: interactionId,
                                 attachmentId: attachmentId
                             ).insert(db)
-                            
-                            legacyAttachmentToIdMap[legacyAttachmentId] = attachmentId
                         }
                 }
             }
         }
+        
+        print("RAWR [\(Date().timeIntervalSince1970)] - Process thread inserts - End")
         
         // Clear out processed data (give the memory a change to be freed)
         
@@ -705,6 +803,8 @@ enum _003_YDBToGRDBMigration: Migration {
         attachments = [:]
         
         // MARK: - Process Legacy Jobs
+        
+        print("RAWR [\(Date().timeIntervalSince1970)] - Process jobs - Start")
         
         var notifyPushServerJobs: Set<Legacy.NotifyPNServerJob> = []
         var messageReceiveJobs: Set<Legacy.MessageReceiveJob> = []
@@ -737,6 +837,83 @@ enum _003_YDBToGRDBMigration: Migration {
             Legacy.AttachmentDownloadJob.self,
             forClassName: "SessionMessagingKit.AttachmentDownloadJob"
         )
+        NSKeyedUnarchiver.setClass(
+            Legacy.Message.self,
+            forClassName: "SNMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.VisibleMessage.self,
+            forClassName: "SNVisibleMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.Quote.self,
+            forClassName: "SNQuote"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.LinkPreview.self,
+            forClassName: "SessionServiceKit.OWSLinkPreview"    // Very old legacy name
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.LinkPreview.self,
+            forClassName: "SNLinkPreview"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.Profile.self,
+            forClassName: "SNProfile"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.OpenGroupInvitation.self,
+            forClassName: "SNOpenGroupInvitation"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.ControlMessage.self,
+            forClassName: "SNControlMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.ReadReceipt.self,
+            forClassName: "SNReadReceipt"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.TypingIndicator.self,
+            forClassName: "SNTypingIndicator"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.ClosedGroupControlMessage.self,
+            forClassName: "SessionMessagingKit.ClosedGroupControlMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.ClosedGroupControlMessage.KeyPairWrapper.self,
+            forClassName: "ClosedGroupControlMessage.SNKeyPairWrapper"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.DataExtractionNotification.self,
+            forClassName: "SessionMessagingKit.DataExtractionNotification"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.ExpirationTimerUpdate.self,
+            forClassName: "SNExpirationTimerUpdate"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.ConfigurationMessage.self,
+            forClassName: "SNConfigurationMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.CMClosedGroup.self,
+            forClassName: "SNClosedGroup"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.CMContact.self,
+            forClassName: "SNConfigurationMessage.SNConfigurationMessageContact"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.UnsendRequest.self,
+            forClassName: "SNUnsendRequest"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.MessageRequestResponse.self,
+            forClassName: "SNMessageRequestResponse"
+        )
+        
         Storage.read { transaction in
             transaction.enumerateRows(inCollection: Legacy.notifyPushServerJobCollection) { _, object, _, _ in
                 guard let job = object as? Legacy.NotifyPNServerJob else { return }
@@ -764,7 +941,11 @@ enum _003_YDBToGRDBMigration: Migration {
             }
         }
         
+        print("RAWR [\(Date().timeIntervalSince1970)] - Process jobs - End")
+        
         // MARK: - Insert Jobs
+        
+        print("RAWR [\(Date().timeIntervalSince1970)] - Process job inserts - Start")
         
         // MARK: - --notifyPushServer
         
@@ -805,7 +986,18 @@ enum _003_YDBToGRDBMigration: Migration {
                     return
                 }
                 
-                let threadId: String? = MessageReceiver.extractSenderPublicKey(db, from: envelope)
+                let threadId: String?
+
+                switch envelope.type {
+                    // For closed group messages the 'groupPublicKey' is stored in the
+                    // 'envelope.source' value and that should be used for the 'threadId'
+                    case .closedGroupMessage:
+                        threadId = envelope.source
+                        break
+                        
+                    default:
+                        threadId = MessageReceiver.extractSenderPublicKey(db, from: envelope)
+                }
 
                 _ = try Job(
                     failureCount: legacyJob.failureCount,
@@ -873,7 +1065,8 @@ enum _003_YDBToGRDBMigration: Migration {
                         destination: legacyJob.destination,
                         variant: {
                             switch legacyJob.message {
-                                case is ExpirationTimerUpdate: return .infoDisappearingMessagesUpdate
+                                case is Legacy.ExpirationTimerUpdate:
+                                    return .infoDisappearingMessagesUpdate
                                 default: return nil
                             }
                         }(),
@@ -895,7 +1088,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         // in these cases the 'interactionId' value will be nil
                         interactionId: interactionId,
                         destination: legacyJob.destination,
-                        message: legacyJob.message
+                        message: legacyJob.message.toNonLegacy()
                     )
                 )?.inserted(db)
                 
@@ -936,7 +1129,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     SNLog("[Migration Error] attachmentDownload job unable to find interaction")
                     throw GRDBStorageError.migrationFailed
                 }
-                guard let attachmentId: String = legacyAttachmentToIdMap[legacyJob.attachmentID] else {
+                guard processedAttachmentIds.contains(legacyJob.attachmentID) else {
                     SNLog("[Migration Error] attachmentDownload job unable to find attachment")
                     throw GRDBStorageError.migrationFailed
                 }
@@ -949,7 +1142,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     threadId: legacyThreadIdToIdMap[legacyJob.threadID],
                     interactionId: interactionId,
                     details: AttachmentDownloadJob.Details(
-                        attachmentId: attachmentId
+                        attachmentId: legacyJob.attachmentID
                     )
                 )?.inserted(db)
             }
@@ -971,7 +1164,11 @@ enum _003_YDBToGRDBMigration: Migration {
             }
         }
         
+        print("RAWR [\(Date().timeIntervalSince1970)] - Process job inserts - End")
+        
         // MARK: - Process Preferences
+        
+        print("RAWR [\(Date().timeIntervalSince1970)] - Process preferences inserts - Start")
         
         var legacyPreferences: [String: Any] = [:]
         
@@ -1027,24 +1224,39 @@ enum _003_YDBToGRDBMigration: Migration {
         db[.hasHiddenMessageRequests] = CurrentAppContext().appUserDefaults()
             .bool(forKey: Legacy.userDefaultsHasHiddenMessageRequests)
         
-        print("RAWR [\(Date().timeIntervalSince1970)] - Process thread inserts - End")
+        print("RAWR [\(Date().timeIntervalSince1970)] - Process preferences inserts - End")
         
         print("RAWR Done!!!")
     }
     
     // MARK: - Convenience
     
-    private static func attachmentId(_ db: Database, for legacyAttachmentId: String?, interactionVariant: Interaction.Variant? = nil, attachments: [String: TSAttachment]) throws -> String? {
+    private static func attachmentId(
+        _ db: Database,
+        for legacyAttachmentId: String?,
+        interactionVariant: Interaction.Variant? = nil,
+        isQuotedMessage: Bool = false,
+        attachments: [String: Legacy.Attachment],
+        processedAttachmentIds: inout Set<String>
+    ) throws -> String? {
         guard let legacyAttachmentId: String = legacyAttachmentId else { return nil }
-
-        guard let legacyAttachment: TSAttachment = attachments[legacyAttachmentId] else {
-            SNLog("[Migration Error] Missing attachment")
-            throw GRDBStorageError.migrationFailed
+        guard !processedAttachmentIds.contains(legacyAttachmentId) else {
+            guard isQuotedMessage else {
+                SNLog("[Migration Error] Attempted to process duplicate attachment")
+                throw GRDBStorageError.migrationFailed
+            }
+            
+            return legacyAttachmentId
+        }
+        
+        guard let legacyAttachment: Legacy.Attachment = attachments[legacyAttachmentId] else {
+            SNLog("[Migration Warning] Missing attachment - interaction will appear as blank")
+            return nil
         }
 
         let state: Attachment.State = {
             switch legacyAttachment {
-                case let stream as TSAttachmentStream:  // Outgoing or already downloaded
+                case let stream as Legacy.AttachmentStream:  // Outgoing or already downloaded
                     switch interactionVariant {
                         case .standardOutgoing: return (stream.isUploaded ? .uploaded : .pending)
                         default: return .downloaded
@@ -1056,28 +1268,90 @@ enum _003_YDBToGRDBMigration: Migration {
         }()
         let size: CGSize = {
             switch legacyAttachment {
-                case let stream as TSAttachmentStream: return stream.calculateImageSize()
-                case let pointer as TSAttachmentPointer: return pointer.mediaSize
+                case let stream as Legacy.AttachmentStream:
+                    guard let originalFilePath: String = Attachment.originalFilePath(id: legacyAttachmentId, mimeType: stream.contentType, sourceFilename: stream.localRelativeFilePath) else {
+                        return .zero
+                    }
+                    
+                    return Attachment
+                        .imageSize(
+                            contentType: stream.contentType,
+                            originalFilePath: originalFilePath
+                        )
+                        .defaulting(to: .zero)
+                    
+                case let pointer as Legacy.AttachmentPointer: return pointer.mediaSize
                 default: return CGSize.zero
             }
         }()
+        let (isValid, duration): (Bool, TimeInterval?) = {
+            guard
+                let stream: Legacy.AttachmentStream = legacyAttachment as? Legacy.AttachmentStream,
+                let originalFilePath: String = Attachment.originalFilePath(
+                    id: legacyAttachmentId,
+                    mimeType: stream.contentType,
+                    sourceFilename: stream.localRelativeFilePath
+                )
+            else {
+                return (false, nil)
+            }
+            
+            if stream.isAudio {
+                if let cachedDuration: TimeInterval = stream.cachedAudioDurationSeconds?.doubleValue, cachedDuration > 0 {
+                    return (true, cachedDuration)
+                }
+                
+                let (isValid, duration): (Bool, TimeInterval?) = Attachment.determineValidityAndDuration(
+                    contentType: stream.contentType,
+                    originalFilePath: originalFilePath
+                )
+                
+                return (isValid, duration)
+            }
+            
+            if stream.isVideo {
+                let videoPlayer: AVPlayer = AVPlayer(url: URL(fileURLWithPath: originalFilePath))
+                let duration: TimeInterval? = videoPlayer.currentItem
+                    .map { item -> TimeInterval in
+                        // Accorting to the CMTime docs "value/timescale = seconds"
+                        (TimeInterval(item.duration.value) / TimeInterval(item.duration.timescale))
+                    }
+                
+                return ((duration ?? 0) > 0, duration)
+            }
+            
+            if stream.isVisualMedia {
+                return (stream.isValidVisualMedia, nil)
+            }
+            
+            return (true, nil)
+        }()
         
-        let attachment: Attachment = try Attachment(
+        
+        _ = try Attachment(
+            // Note: The legacy attachment object used a UUID string for it's id as well
+            // and saved files using these id's so just used the existing id so we don't
+            // need to bother renaming files as part of the migration
+            id: legacyAttachmentId,
             serverId: "\(legacyAttachment.serverId)",
-            variant: (legacyAttachment.isVoiceMessage ? .voiceMessage : .standard),
+            variant: (legacyAttachment.attachmentType == .voiceMessage ? .voiceMessage : .standard),
             state: state,
             contentType: legacyAttachment.contentType,
             byteCount: UInt(legacyAttachment.byteCount),
-            creationTimestamp: (legacyAttachment as? TSAttachmentStream)?.creationTimestamp.timeIntervalSince1970,
+            creationTimestamp: (legacyAttachment as? Legacy.AttachmentStream)?.creationTimestamp.timeIntervalSince1970,
             sourceFilename: legacyAttachment.sourceFilename,
             downloadUrl: legacyAttachment.downloadURL,
             width: (size == .zero ? nil : UInt(size.width)),
             height: (size == .zero ? nil : UInt(size.height)),
+            duration: duration,
+            isValid: isValid,
             encryptionKey: legacyAttachment.encryptionKey,
-            digest: (legacyAttachment as? TSAttachmentStream)?.digest,
+            digest: (legacyAttachment as? Legacy.AttachmentStream)?.digest,
             caption: legacyAttachment.caption
         ).inserted(db)
         
-        return attachment.id
+        processedAttachmentIds.insert(legacyAttachmentId)
+        
+        return legacyAttachmentId
     }
 }

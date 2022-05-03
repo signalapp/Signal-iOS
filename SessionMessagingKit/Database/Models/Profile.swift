@@ -5,8 +5,11 @@ import GRDB
 import SignalCoreKit
 import SessionUtilitiesKit
 
-public struct Profile: Codable, Identifiable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible, CustomStringConvertible {
+public struct Profile: Codable, Identifiable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible, CustomStringConvertible {
     public static var databaseTableName: String { "profile" }
+    internal static let interactionForeignKey = ForeignKey([Columns.id], to: [Interaction.Columns.authorId])
+    internal static let contactForeignKey = ForeignKey([Columns.id], to: [Contact.Columns.id])
+    public static let groupMembers = hasMany(GroupMember.self, using: GroupMember.profileForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -37,6 +40,24 @@ public struct Profile: Codable, Identifiable, FetchableRecord, PersistableRecord
 
     /// The key with which the profile is encrypted.
     public let profileEncryptionKey: OWSAES256Key?
+    
+    // MARK: - Initialization
+    
+    public init(
+        id: String,
+        name: String,
+        nickname: String? = nil,
+        profilePictureUrl: String? = nil,
+        profilePictureFileName: String? = nil,
+        profileEncryptionKey: OWSAES256Key? = nil
+    ) {
+        self.id = id
+        self.name = name
+        self.nickname = nickname
+        self.profilePictureUrl = profilePictureUrl
+        self.profilePictureFileName = profilePictureFileName
+        self.profileEncryptionKey = profileEncryptionKey
+    }
     
     // MARK: - Description
     
@@ -177,7 +198,7 @@ public extension Profile {
     }
 }
 
-// MARK: - Convenience
+// MARK: - Mutation
 
 public extension Profile {
     func with(
@@ -195,29 +216,6 @@ public extension Profile {
             profilePictureFileName: (profilePictureFileName ?? self.profilePictureFileName),
             profileEncryptionKey: (profileEncryptionKey ?? self.profileEncryptionKey)
         )
-    }
-    
-    // MARK: - Context
-    
-    @objc enum Context: Int {
-        case regular
-        case openGroup
-    }
-
-    /// The name to display in the UI. For local use only.
-    func displayName(for context: Context = .regular) -> String {
-        if let nickname: String = nickname { return nickname }
-        
-        switch context {
-            case .regular: return name
-                
-            case .openGroup:
-                // In open groups, where it's more likely that multiple users have the same name, we display a bit of the Session ID after
-                // a user's display name for added context.
-                let endIndex = id.endIndex
-                let cutoffIndex = id.index(endIndex, offsetBy: -8)
-                return "\(name) (...\(id[cutoffIndex..<endIndex]))"
-            }
     }
 }
 
@@ -310,6 +308,65 @@ public extension Profile {
             (try? Profile.fetchOne(db, id: id)) ??
             defaultFor(id)
         )
+    }
+}
+
+// MARK: - Convenience
+
+public extension Profile {
+    // MARK: - Context
+    
+    @objc enum Context: Int {
+        case regular
+        case openGroup
+    }
+    
+    // MARK: - Truncation
+    
+    enum Truncation {
+        case start
+        case middle
+        case end
+    }
+    
+    /// A standardised mechanism for truncating a user id for a given thread
+    static func truncated(id: String, thread: SessionThread) -> String {
+        switch thread.variant {
+            case .openGroup: return truncated(id: id, truncating: .start)
+            default: return truncated(id: id, truncating: .middle)
+        }
+    }
+    
+    /// A standardised mechanism for truncating a user id
+    static func truncated(id: String, truncating: Truncation = .start) -> String {
+        guard id.count > 8 else { return id }
+        
+        switch truncating {
+            case .start: return "...\(id.suffix(8))"
+            case .middle: return "\(id.prefix(4))...\(id.suffix(4))"
+            case .end: return "\(id.prefix(8))..."
+        }
+    }
+    
+    /// The name to display in the UI for a given thread variant
+    func displayName(for threadVariant: SessionThread.Variant) -> String {
+        return displayName(
+            for: (threadVariant == .openGroup ? .openGroup : .regular)
+        )
+    }
+
+    /// The name to display in the UI
+    func displayName(for context: Context = .regular) -> String {
+        if let nickname: String = nickname { return nickname }
+        
+        switch context {
+            case .regular: return name
+                
+            case .openGroup:
+                // In open groups, where it's more likely that multiple users have the same name,
+                // we display a bit of the Session ID after a user's display name for added context
+                return "\(name) (\(Profile.truncated(id: id, truncating: .start)))"
+            }
     }
 }
 

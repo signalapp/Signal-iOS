@@ -2,6 +2,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 import SessionUtilitiesKit
 
 public struct RecipientState: Codable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
@@ -25,12 +26,38 @@ public struct RecipientState: Codable, Equatable, FetchableRecord, PersistableRe
         case sending
         case skipped
         case sent
+        
+        func message(hasAttachments: Bool, hasAtLeastOneReadReceipt: Bool) -> String {
+            switch self {
+                case .failed: return "MESSAGE_STATUS_FAILED".localized()
+                case .sending:
+                    guard hasAttachments else {
+                        return "MESSAGE_STATUS_SENDING".localized()
+                    }
+                    
+                    return "MESSAGE_STATUS_UPLOADING".localized()
+                    
+                case .sent:
+                    guard hasAtLeastOneReadReceipt else {
+                        return "MESSAGE_STATUS_SENT".localized()
+                    }
+                    
+                    return "MESSAGE_STATUS_READ".localized()
+                    
+                default:
+                    owsFailDebug("Message has unexpected status: \(self).")
+                    return "MESSAGE_STATUS_SENT".localized()
+            }
+        }
     }
     
     /// The id for the interaction this state belongs to
     public let interactionId: Int64
     
-    /// The id for the recipient this state belongs to
+    /// The id for the recipient that has this state
+    ///
+    /// **Note:** For contact and closedGroup threads this can be used as a lookup for a contact/profile but in an
+    /// openGroup thread this will be the threadId so won’t resolve to a contact/profile
     public let recipientId: String
     
     /// The current state for the recipient

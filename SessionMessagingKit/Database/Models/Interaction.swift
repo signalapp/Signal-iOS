@@ -7,25 +7,31 @@ import SessionUtilitiesKit
 public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, MutablePersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "interaction" }
     internal static let threadForeignKey = ForeignKey([Columns.threadId], to: [SessionThread.Columns.id])
-    internal static let profileForeignKey = ForeignKey([Columns.authorId], to: [Profile.Columns.id])
     internal static let linkPreviewForeignKey = ForeignKey(
         [Columns.linkPreviewUrl],
         to: [LinkPreview.Columns.url]
     )
     internal static let thread = belongsTo(SessionThread.self, using: threadForeignKey)
-    private static let profile = hasOne(Profile.self, using: profileForeignKey)
+    public static let profile = hasOne(Profile.self, using: Profile.interactionForeignKey)
     internal static let interactionAttachments = hasMany(
         InteractionAttachment.self,
         using: InteractionAttachment.interactionForeignKey
     )
-    internal static let attachments = hasMany(
+    public static let attachments = hasMany(
         Attachment.self,
         through: interactionAttachments,
         using: InteractionAttachment.attachment
     )
     public static let quote = hasOne(Quote.self, using: Quote.interactionForeignKey)
-    internal static let linkPreview = hasOne(LinkPreview.self, using: LinkPreview.interactionForeignKey)
-    private static let recipientStates = hasMany(RecipientState.self, using: RecipientState.interactionForeignKey)
+    
+    /// Whenever using this `linkPreview` association make sure to filter the result using `.filter(literal: Interaction.linkPreviewFilterLiteral)` to ensure the correct LinkPreview is returned
+    public static let linkPreview = hasOne(LinkPreview.self, using: LinkPreview.interactionForeignKey)
+    public static let linkPreviewFilterLiteral: SQL = {
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
+        return "(ROUND((\(interaction[.timestampMs]) / 1000 / 100000) - 0.5) * 100000) = \(linkPreview[.timestamp])"
+    }()
+    public static let recipientStates = hasMany(RecipientState.self, using: RecipientState.interactionForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -67,6 +73,20 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
         case infoMediaSavedNotification
         
         case infoMessageRequestAccepted = 4000
+        
+        // MARK: - Convenience
+        
+        public var isInfoMessage: Bool {
+            switch self {
+                case .infoClosedGroupCreated, .infoClosedGroupUpdated, .infoClosedGroupCurrentUserLeft,
+                    .infoDisappearingMessagesUpdate, .infoScreenshotNotification, .infoMediaSavedNotification,
+                    .infoMessageRequestAccepted:
+                    return true
+                    
+                case .standardIncoming, .standardOutgoing, .standardIncomingDeleted:
+                    return false
+            }
+        }
     }
     
     /// The `id` value is auto incremented by the database, if the `Interaction` hasn't been inserted into
@@ -83,6 +103,10 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     public let threadId: String
     
     /// The id of the user who sent the interaction, also used to expose the `profile` variable)
+    ///
+    /// **Note:** For any "info" messages this value will always be the current user public key (this is because these
+    /// messages are created locally based on control messages and the initiator of a control message doesn't always
+    /// get transmitted)
     public let authorId: String
     
     /// The type of interaction
@@ -156,20 +180,10 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     }
 
     public var linkPreview: QueryInterfaceRequest<LinkPreview> {
-        let linkPreviewAlias: TableAlias = TableAlias()
-        
-        return LinkPreview
-            .aliased(linkPreviewAlias)
-            .joining(
-                required: LinkPreview.interactions
-                    .filter(literal: [
-                        "(ROUND((\(Interaction.Columns.timestampMs) / 1000 / 100000) - 0.5) * 100000)",
-                        "=",
-                        "\(linkPreviewAlias[LinkPreview.Columns.timestamp])"
-                    ].joined(separator: " "))
-                    .limit(1)   // Avoid joining to multiple interactions
-            )
-            .limit(1)   // Avoid joining to multiple interactions
+        /// **Note:** This equation **MUST** match the `linkPreviewFilterLiteral` logic
+        let roundedTimestamp: Double = (round(((Double(timestampMs) / 1000) / 100000) - 0.5) * 100000)
+        return request(for: Interaction.linkPreview)
+            .filter(LinkPreview.Columns.timestamp == roundedTimestamp)
     }
     
     public var recipientStates: QueryInterfaceRequest<RecipientState> {
@@ -320,11 +334,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
                 .aliased(interactionAlias)
                 .joining(
                     required: Interaction.linkPreview
-                        .filter(literal: [
-                            "(ROUND((\(interactionAlias[Columns.timestampMs]) / 1000 / 100000) - 0.5) * 100000)",
-                            "=",
-                            "\(LinkPreview.Columns.timestamp)"
-                        ].joined(separator: " "))
+                        .filter(literal: Interaction.linkPreviewFilterLiteral)
                 )
                 .fetchCount(db)
             let tmp = try linkPreview.fetchAll(db)
@@ -449,7 +459,7 @@ public extension Interaction {
         scheduleJobs(
             interactionIds: try Int64.fetchAll(
                 db,
-                interactionQuery.select(Interaction.Columns.id)
+                interactionQuery.select(.id)
             )
         )
     }
@@ -538,10 +548,10 @@ public extension Interaction {
         )
     }
     
+    /// Use the `Interaction.previewText` method directly where possible rather than this method as it
+    /// makes it's own database queries
     func previewText(_ db: Database) -> String {
         switch variant {
-            case .standardIncomingDeleted: return ""
-                
             case .standardIncoming, .standardOutgoing:
                 struct AttachmentDescriptionInfo: Decodable, FetchableRecord {
                     let id: String
@@ -549,36 +559,19 @@ public extension Interaction {
                     let contentType: String
                     let sourceFilename: String?
                 }
-                
-                var bodyDescription: String?
-                
-                if let body: String = self.body, !body.isEmpty {
-                    bodyDescription = body
-                }
-                
-                if bodyDescription == nil {
-                    struct AttachmentBodyInfo: Decodable, FetchableRecord {
-                        let id: String
-                        let variant: Attachment.Variant
-                        let contentType: String
-                        let sourceFilename: String?
-                    }
-                    
+
+                var targetBody: String? = self.body
+
+                if self.body == nil || self.body?.isEmpty == true {
                     let maybeTextInfo: AttachmentDescriptionInfo? = try? AttachmentDescriptionInfo
                         .fetchOne(
                             db,
                             attachments
-                                .select(
-                                    Attachment.Columns.id,
-                                    Attachment.Columns.state,
-                                    Attachment.Columns.variant,
-                                    Attachment.Columns.contentType,
-                                    Attachment.Columns.sourceFilename
-                                )
+                                .select(.id, .state, .variant, .contentType, .sourceFilename)
                                 .filter(Attachment.Columns.contentType == OWSMimeTypeOversizeTextMessage)
                                 .filter(Attachment.Columns.state == Attachment.State.downloaded)
                         )
-                    
+
                     if
                         let textInfo: AttachmentDescriptionInfo = maybeTextInfo,
                         let filePath: String = Attachment.originalFilePath(
@@ -589,20 +582,15 @@ public extension Interaction {
                         let data: Data = try? Data(contentsOf: URL(fileURLWithPath: filePath)),
                         let dataString: String = String(data: data, encoding: .utf8)
                     {
-                        bodyDescription = dataString.filterForDisplay
+                        targetBody = dataString.filterForDisplay
                     }
                 }
-                
+
                 let attachmentDescription: String? = try? AttachmentDescriptionInfo
                     .fetchOne(
                         db,
                         attachments
-                            .select(
-                                Attachment.Columns.id,
-                                Attachment.Columns.variant,
-                                Attachment.Columns.contentType,
-                                Attachment.Columns.sourceFilename
-                            )
+                            .select(.id, .variant, .contentType, .sourceFilename)
                             .filter(Attachment.Columns.contentType != OWSMimeTypeOversizeTextMessage)
                     )
                     .map { info -> String in
@@ -612,6 +600,70 @@ public extension Interaction {
                             sourceFilename: info.sourceFilename
                         )
                     }
+                let isOpenGroupInvitation: Bool = (try? linkPreview
+                    .filter(LinkPreview.Columns.variant == LinkPreview.Variant.openGroupInvitation)
+                    .isNotEmpty(db))
+                    .defaulting(to: false)
+                
+                return Interaction.previewText(
+                    variant: self.variant,
+                    body: targetBody,
+                    attachments: [],
+                    customAttachmentDescription: attachmentDescription,
+                    isOpenGroupInvitation: isOpenGroupInvitation
+                )
+
+            case .infoMediaSavedNotification, .infoScreenshotNotification:
+                // Note: This should only occur in 'contact' threads so the `threadId`
+                // is the contact id
+                return Interaction.previewText(
+                    variant: self.variant,
+                    body: self.body,
+                    authorDisplayName: Profile.displayName(db, id: threadId),
+                    attachments: []
+                )
+
+            default: return Interaction.previewText(
+                variant: self.variant,
+                body: self.body,
+                attachments: []
+            )
+        }
+    }
+    
+    /// This menthod generates the preview text for a given transaction
+    static func previewText(
+        variant: Variant,
+        body: String?,
+        authorDisplayName: String = "",
+        attachments: [Attachment],
+        customAttachmentDescription: String? = nil,
+        isOpenGroupInvitation: Bool = false
+    ) -> String {
+        switch variant {
+            case .standardIncomingDeleted: return ""
+                
+            case .standardIncoming, .standardOutgoing:
+                var bodyDescription: String?
+                let attachmentDescription: String? = (customAttachmentDescription ?? attachments
+                    .first(where: { $0.contentType != OWSMimeTypeOversizeTextMessage })?
+                    .description
+                )
+                
+                if let body: String = body, !body.isEmpty {
+                    bodyDescription = body
+                }
+                else if
+                    let textAttachment: Attachment = attachments.first(where: { attachment in
+                        attachment.state == .downloaded &&
+                        attachment.contentType == OWSMimeTypeOversizeTextMessage
+                    }),
+                    let filePath: String = textAttachment.originalFilePath,
+                    let data: Data = try? Data(contentsOf: URL(fileURLWithPath: filePath)),
+                    let dataString: String = String(data: data, encoding: .utf8)
+                {
+                    bodyDescription = dataString.filterForDisplay
+                }
                 
                 if
                     let attachmentDescription: String = attachmentDescription,
@@ -634,7 +686,7 @@ public extension Interaction {
                     return attachmentDescription
                 }
                 
-                if let linkPreview: LinkPreview = try? linkPreview.fetchOne(db), linkPreview.variant == .openGroupInvitation {
+                if isOpenGroupInvitation {
                     return "😎 Open group invitation"
                 }
                 
@@ -642,19 +694,11 @@ public extension Interaction {
                 return ""
                 
             case .infoMediaSavedNotification:
-                // Note: This should only occur in 'contact' threads so the `threadId`
-                // is the contact id
-                let displayName: String = Profile.displayName(id: threadId)
-                
                 // TODO: Use referencedAttachmentTimestamp to tell the user * which * media was saved
-                return String(format: "media_saved".localized(), displayName)
+                return String(format: "media_saved".localized(), authorDisplayName)
                 
             case .infoScreenshotNotification:
-                // Note: This should only occur in 'contact' threads so the `threadId`
-                // is the contact id
-                let displayName: String = Profile.displayName(id: threadId)
-                
-                return String(format: "screenshot_taken".localized(), displayName)
+                return String(format: "screenshot_taken".localized(), authorDisplayName)
                 
             case .infoClosedGroupCreated: return "GROUP_CREATED".localized()
             case .infoClosedGroupCurrentUserLeft: return "GROUP_YOU_LEFT".localized()
@@ -662,8 +706,15 @@ public extension Interaction {
             case .infoMessageRequestAccepted: return (body ?? "MESSAGE_REQUESTS_ACCEPTED".localized())
             
             case .infoDisappearingMessagesUpdate:
-                // TODO: We should do better here
-                return (body ?? "")
+                guard
+                    let infoMessageData: Data = (body ?? "").data(using: .utf8),
+                    let messageInfo: DisappearingMessagesConfiguration.MessageInfo = try? JSONDecoder().decode(
+                        DisappearingMessagesConfiguration.MessageInfo.self,
+                        from: infoMessageData
+                    )
+                else { return (body ?? "") }
+                
+                return messageInfo.previewText
         }
     }
     
@@ -671,9 +722,17 @@ public extension Interaction {
         let states: [RecipientState.State] = try RecipientState.State
             .fetchAll(
                 db,
-                recipientStates
-                    .select(RecipientState.Columns.state)
+                recipientStates.select(.state)
             )
+        
+        return Interaction.state(for: states)
+    }
+    
+    static func state(for states: [RecipientState.State]) -> RecipientState.State {
+        // If there are no states then assume this is a new interaction which hasn't been
+        // saved yet so has no states
+        guard !states.isEmpty else { return .sending }
+        
         var hasFailed: Bool = false
         
         for state in states {

@@ -82,14 +82,14 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
     
     // MARK: - Initialization
     
-    init(
+    public init(
         server: String,
         room: String,
         publicKey: String,
         name: String,
-        groupDescription: String?,
-        imageId: Int?,
-        imageData: Data?,
+        groupDescription: String? = nil,
+        imageId: Int? = nil,
+        imageData: Data? = nil,
         userCount: Int,
         infoUpdates: Int
     ) {

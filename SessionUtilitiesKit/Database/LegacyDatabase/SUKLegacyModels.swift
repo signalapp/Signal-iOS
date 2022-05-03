@@ -2,6 +2,8 @@
 
 import Foundation
 
+public typealias SUKLegacy = Legacy
+
 public enum Legacy {
     // MARK: - Collections and Keys
     
@@ -14,7 +16,7 @@ public enum Legacy {
     internal static let identityKeyStoreIdentityKey = "TSStorageManagerIdentityKeyStoreIdentityKey"
     internal static let identityKeyStoreCollection = "TSStorageManagerIdentityKeyStoreCollection"
     
-    @objc(ECKeyPair)
+    @objc(LegacyKeyPair)
     public class KeyPair: NSObject, NSCoding {
         private static let keyLength: Int = 32
         private static let publicKeyKey: String = "TSECKeyPairPublicKey"
@@ -22,6 +24,14 @@ public enum Legacy {
         
         public let publicKey: Data
         public let privateKey: Data
+        
+        public init(
+            publicKeyData: Data,
+            privateKeyData: Data
+        ) {
+            publicKey = publicKeyData
+            privateKey = privateKeyData
+        }
         
         public required init?(coder: NSCoder) {
             var pubKeyLength: Int = 0

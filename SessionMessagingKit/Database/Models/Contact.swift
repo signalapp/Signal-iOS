@@ -7,6 +7,7 @@ import SessionUtilitiesKit
 public struct Contact: Codable, Identifiable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "contact" }
     internal static let threadForeignKey = ForeignKey([Columns.id], to: [SessionThread.Columns.id])
+    public static let profile = hasOne(Profile.self, using: Profile.contactForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -36,6 +37,12 @@ public struct Contact: Codable, Identifiable, FetchableRecord, PersistableRecord
     
     /// This flag is used to determine whether this contact has ever been blocked (will be included in the config message if so)
     public let hasBeenBlocked: Bool
+    
+    // MARK: - Relationships
+    
+    public var profile: QueryInterfaceRequest<Profile> {
+        request(for: Contact.profile)
+    }
     
     // MARK: - Initialization
     

@@ -147,7 +147,11 @@ public final class MessageSender : NSObject {
             let profile: Profile = Profile.fetchOrCreateCurrentUser(db)
             
             if let profileKey: Data = profile.profileEncryptionKey?.keyData, let profilePictureUrl: String = profile.profilePictureUrl {
-                message.profile = VisibleMessage.Profile(displayName: profile.name, profileKey: profileKey, profilePictureURL: profilePictureUrl)
+                message.profile = VisibleMessage.Profile(
+                    displayName: profile.name,
+                    profileKey: profileKey,
+                    profilePictureUrl: profilePictureUrl
+                )
             }
             else {
                 message.profile = VisibleMessage.Profile(displayName: profile.name)
@@ -400,7 +404,7 @@ public final class MessageSender : NSObject {
                 on: server
             )
             .done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
-                message.openGroupServerMessageID = given(openGroupMessage.serverID) { UInt64($0) }
+                message.openGroupServerMessageId = given(openGroupMessage.serverID) { UInt64($0) }
 
                 GRDBStorage.shared.write { db in
                     try MessageSender.handleSuccessfulMessageSend(
@@ -445,11 +449,11 @@ public final class MessageSender : NSObject {
                 // Track the open group server message ID and update server timestamp (use server
                 // timestamp for open group messages otherwise the quote messages may not be able
                 // to be found by the timestamp on other devices
-                timestampMs: (message.openGroupServerMessageID == nil ?
+                timestampMs: (message.openGroupServerMessageId == nil ?
                     nil :
                     serverTimestampMs.map { Int64($0) }
                 ),
-                openGroupServerMessageId: message.openGroupServerMessageID.map { Int64($0) }
+                openGroupServerMessageId: message.openGroupServerMessageId.map { Int64($0) }
             ).update(db)
             
             // Mark the message as sent
@@ -489,14 +493,14 @@ public final class MessageSender : NSObject {
                     }
                 }(),
                 sentTimestampMs: {
-                    if message.openGroupServerMessageID != nil {
+                    if message.openGroupServerMessageId != nil {
                         return (serverTimestampMs.map { Int64($0) } ?? 0)
                     }
                     
                     return (message.sentTimestamp.map { Int64($0) } ?? 0)
                 }(),
                 serverHash: (message.serverHash ?? ""),
-                openGroupMessageServerId: (message.openGroupServerMessageID.map { Int64($0) } ?? 0)
+                openGroupMessageServerId: (message.openGroupServerMessageId.map { Int64($0) } ?? 0)
             ).insert(db)
         }
         // Sync the message if:
@@ -553,7 +557,7 @@ public final class MessageSender : NSObject {
         else if let sentTimestamp: Double = message.sentTimestamp.map({ Double($0) }) {
             // If we have a threadId then include that in the filter to make the request smaller
             if
-                let threadId: String = message.threadID,
+                let threadId: String = message.threadId,
                 !threadId.isEmpty,
                 let thread: SessionThread = try? SessionThread.fetchOne(db, id: threadId)
             {

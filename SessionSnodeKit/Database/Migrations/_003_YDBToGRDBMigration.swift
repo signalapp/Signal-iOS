@@ -15,6 +15,12 @@ enum _003_YDBToGRDBMigration: Migration {
         var snodeSetResult: [String: Set<Legacy.Snode>] = [:]
         var lastSnodePoolRefreshDate: Date? = nil
         
+        // Map the Legacy types for the NSKeyedUnarchiver
+        NSKeyedUnarchiver.setClass(
+            Legacy.Snode.self,
+            forClassName: "SessionSnodeKit.Snode"
+        )
+        
         Storage.read { transaction in
             // Process the lastSnodePoolRefreshDate
             lastSnodePoolRefreshDate = transaction.object(

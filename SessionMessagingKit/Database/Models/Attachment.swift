@@ -2,9 +2,13 @@
 
 import Foundation
 import GRDB
+import PromiseKit
+import SignalCoreKit
 import SessionUtilitiesKit
+import AVFAudio
+import AVFoundation
 
-public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
+public struct Attachment: Codable, Identifiable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "attachment" }
     internal static let interactionAttachments = belongsTo(InteractionAttachment.self)
     fileprivate static let quote = belongsTo(Quote.self)
@@ -24,6 +28,8 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
         case localRelativeFilePath
         case width
         case height
+        case duration
+        case isValid
         case encryptionKey
         case digest
         case caption
@@ -44,7 +50,7 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
     }
     
     /// A unique identifier for the attachment
-    public let id: String = UUID().uuidString
+    public let id: String
     
     /// The id for the attachment returned by the server
     ///
@@ -93,6 +99,12 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
     /// The height of the attachment, this will be `null` for non-visual attachment types
     public let height: UInt?
     
+    /// The number of seconds the attachment plays for (this will only be set for video and audio attachment types)
+    public let duration: TimeInterval?
+    
+    /// A flag indicating whether the attachment data downloaded is valid for it's content type
+    public let isValid: Bool
+    
     /// The key used to decrypt the attachment
     public let encryptionKey: Data?
     
@@ -105,6 +117,7 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
     // MARK: - Initialization
     
     public init(
+        id: String = UUID().uuidString,
         serverId: String? = nil,
         variant: Variant,
         state: State = .pending,
@@ -116,10 +129,13 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
         localRelativeFilePath: String? = nil,
         width: UInt? = nil,
         height: UInt? = nil,
+        duration: TimeInterval? = nil,
+        isValid: Bool = false,
         encryptionKey: Data? = nil,
         digest: Data? = nil,
         caption: String? = nil
     ) {
+        self.id = id
         self.serverId = serverId
         self.variant = variant
         self.state = state
@@ -131,19 +147,21 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
         self.localRelativeFilePath = localRelativeFilePath
         self.width = width
         self.height = height
+        self.duration = duration
+        self.isValid = isValid
         self.encryptionKey = encryptionKey
         self.digest = digest
         self.caption = caption
     }
     
+    /// This initializer should only be used when converting from either a LinkPreview or a SignalAttachment to an Attachment (prior to upload)
     public init?(
+        id: String = UUID().uuidString,
         variant: Variant = .standard,
         contentType: String,
         dataSource: DataSource
     ) {
-        guard
-            let originalFilePath: String = Attachment.originalFilePath(id: self.id, mimeType: contentType, sourceFilename: nil)
-        else {
+        guard let originalFilePath: String = Attachment.originalFilePath(id: id, mimeType: contentType, sourceFilename: nil) else {
             return nil
         }
         guard dataSource.write(toPath: originalFilePath) else { return nil }
@@ -152,7 +170,12 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
             contentType: contentType,
             originalFilePath: originalFilePath
         )
+        let (isValid, duration): (Bool, TimeInterval?) = Attachment.determineValidityAndDuration(
+            contentType: contentType,
+            originalFilePath: originalFilePath
+        )
         
+        self.id = id
         self.serverId = nil
         self.variant = variant
         self.state = .pending
@@ -164,6 +187,8 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
         self.localRelativeFilePath = nil
         self.width = imageSize.map { UInt(floor($0.width)) }
         self.height = imageSize.map { UInt(floor($0.height)) }
+        self.duration = duration
+        self.isValid = isValid
         self.encryptionKey = nil
         self.digest = nil
         self.caption = nil
@@ -223,7 +248,24 @@ public extension Attachment {
         encryptionKey: Data? = nil,
         digest: Data? = nil
     ) -> Attachment {
+        let (isValid, duration): (Bool, TimeInterval?) = {
+            switch (self.state, state) {
+                case (_, .downloaded):
+                    return Attachment.determineValidityAndDuration(
+                        contentType: contentType,
+                        originalFilePath: originalFilePath
+                    )
+                
+                // Assume the data is already correct for "uploading" attachments (and don't override it)
+                case (.uploading, .failed), (.uploaded, .failed): return (self.isValid, self.duration)
+                case (_, .failed): return (false, nil)
+                    
+                default: return (self.isValid, self.duration)
+            }
+        }()
+        
         return Attachment(
+            id: self.id,
             serverId: (serverId ?? self.serverId),
             variant: variant,
             state: (state ?? self.state),
@@ -235,6 +277,8 @@ public extension Attachment {
             localRelativeFilePath: (localRelativeFilePath ?? self.localRelativeFilePath),
             width: width,
             height: height,
+            duration: duration,
+            isValid: isValid,
             encryptionKey: (encryptionKey ?? self.encryptionKey),
             digest: (digest ?? self.digest),
             caption: self.caption
@@ -255,7 +299,8 @@ public extension Attachment {
             return (MIMETypeUtil.mimeType(forFileExtension: fileExtension) ?? OWSMimeTypeApplicationOctetStream)
         }
         
-        self.serverId = nil
+        self.id = UUID().uuidString
+        self.serverId = "\(proto.id)"
         self.variant = {
             let voiceMessageFlag: Int32 = SNProtoAttachmentPointer.SNProtoAttachmentPointerFlags
                 .voiceMessage
@@ -276,6 +321,8 @@ public extension Attachment {
         self.localRelativeFilePath = nil
         self.width = (proto.hasWidth && proto.width > 0 ? UInt(proto.width) : nil)
         self.height = (proto.hasHeight && proto.height > 0 ? UInt(proto.height) : nil)
+        self.duration = nil         // Needs to be downloaded to be set
+        self.isValid = false        // Needs to be downloaded to be set
         self.encryptionKey = proto.key
         self.digest = proto.digest
         self.caption = (proto.hasCaption ? proto.caption : nil)
@@ -335,31 +382,56 @@ public extension Attachment {
 // MARK: - GRDB Interactions
 
 public extension Attachment {
-    static func fetchAllPendingAttachments(_ db: Database, for threadId: String) throws -> [Attachment] {
-        return try Attachment
-            .select(Attachment.Columns.allCases + [Interaction.Columns.id])
-            .filter(Columns.variant == Variant.standard)
-            .filter(Columns.state == State.pending)
-            .joining(
-                optional: Attachment.interactionAttachments
-                    .filter(Interaction.Columns.threadId == threadId)
-            )
-            .joining(
-                optional: Attachment.quote
-                    .joining(
-                        required: Quote.interaction
-                            .filter(Interaction.Columns.threadId == threadId)
-                    )
-            )//tmp.authorId
-            .joining(
-                optional: Attachment.linkPreview
-                    .joining(
-                        required: LinkPreview.interactions
-                            .filter(Interaction.Columns.threadId == threadId)
-                    )
-            )
-            .order(Interaction.Columns.id.desc) // Newest attachments first
-            .fetchAll(db)
+    struct DownloadInfo: FetchableRecord, Decodable {
+        public let attachmentId: String
+        public let interactionId: Int64
+    }
+    
+    static func pendingAttachmentDownloadInfo(for authorId: String) -> SQLRequest<Attachment.DownloadInfo> {
+        let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        let quote: TypedTableAlias<Quote> = TypedTableAlias()
+        let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
+        let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
+        
+        // Note: In GRDB all joins need to run via their "association" system which doesn't support the type
+        // of query we have below (a required join based on one of 3 optional joins) so we have to construct
+        // the query manually
+        return """
+            SELECT DISTINCT
+                \(attachment[.id]) AS attachmentId,
+                \(interaction[.id]) AS interactionId
+        
+            FROM \(Attachment.self)
+            
+            JOIN \(Interaction.self) ON
+                \(interaction[.authorId]) = \(SQL(sql: ":authorId", arguments: StatementArguments(["authorId": authorId]))) AND (
+                    \(interaction[.id]) = \(quote[.interactionId]) OR
+                    \(interaction[.id]) = \(interactionAttachment[.interactionId]) OR
+                    \(interaction[.linkPreviewUrl]) = \(linkPreview[.url])
+                )
+            
+            LEFT JOIN \(Quote.self) ON \(quote[.attachmentId]) = \(attachment[.id])
+            LEFT JOIN \(InteractionAttachment.self) ON \(interactionAttachment[.attachmentId]) = \(attachment[.id])
+            LEFT JOIN \(LinkPreview.self) ON
+                \(linkPreview[.attachmentId]) = \(attachment[.id]) AND
+                \(linkPreview[.variant]) = \(SQL(
+                    sql: ":variant",
+                    arguments: StatementArguments(["variant": LinkPreview.Variant.standard])
+                ))
+        
+            WHERE
+                \(attachment[.variant]) = \(SQL(
+                    sql: ":attachmentVariant",
+                    arguments: StatementArguments(["attachmentVariant": Attachment.Variant.standard])
+                )) AND
+                \(attachment[.state]) = \(SQL(
+                    sql: ":state",
+                    arguments: StatementArguments(["state": Attachment.State.pending])
+                ))
+        
+            ORDER BY interactionId DESC
+        """
     }
 }
 
@@ -370,11 +442,11 @@ public extension Attachment {
     private static let thumbnailDimensionMedium: UInt = 450
     
     /// This size is large enough to render full screen
-    private static var thumbnailDimensionsLarge: CGFloat = {
+    private static var thumbnailDimensionLarge: UInt = {
         let screenSizePoints: CGSize = UIScreen.main.bounds.size
-        let minZoomFactor: CGFloat = 2  // TODO: Should this be screen scale?
+        let minZoomFactor: CGFloat = UIScreen.main.scale
         
-        return (max(screenSizePoints.width, screenSizePoints.height) * minZoomFactor)
+        return UInt(floor(max(screenSizePoints.width, screenSizePoints.height) * minZoomFactor))
     }()
     
     private static var sharedDataAttachmentsDirPath: String = {
@@ -404,7 +476,7 @@ public extension Attachment {
         )
     }
     
-    static func imageSize(contentType: String, originalFilePath: String) -> CGSize? {
+    internal static func imageSize(contentType: String, originalFilePath: String) -> CGSize? {
         let isVideo: Bool = MIMETypeUtil.isVideo(contentType)
         let isImage: Bool = MIMETypeUtil.isImage(contentType)
         let isAnimated: Bool = MIMETypeUtil.isAnimated(contentType)
@@ -423,15 +495,77 @@ public extension Attachment {
     static func videoStillImage(filePath: String) -> UIImage? {
         return try? OWSMediaUtils.thumbnail(
             forVideoAtPath: filePath,
-            maxDimension: Attachment.thumbnailDimensionsLarge
+            maxDimension: CGFloat(Attachment.thumbnailDimensionLarge)
         )
+    }
+    
+    internal static func determineValidityAndDuration(contentType: String, originalFilePath: String?) -> (isValid: Bool, duration: TimeInterval?) {
+        guard let originalFilePath: String = originalFilePath else { return (false, nil) }
+        
+        // Process audio attachments
+        if MIMETypeUtil.isAudio(contentType) {
+            do {
+                let audioPlayer: AVAudioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: originalFilePath))
+                
+                return ((audioPlayer.duration > 0), audioPlayer.duration)
+            }
+            catch {
+                switch (error as NSError).code {
+                    case Int(kAudioFileInvalidFileError), Int(kAudioFileStreamError_InvalidFile):
+                        // Ignore "invalid audio file" errors
+                        return (false, nil) // TODO: Confirm this behaviour (previously returned 0)
+                        
+                    default: return (false, nil)
+                }
+            }
+        }
+        
+        // Process image attachments
+        if MIMETypeUtil.isImage(contentType) {
+            return (
+                NSData.ows_isValidImage(atPath: originalFilePath, mimeType: contentType),
+                nil
+            )
+        }
+        
+        // Process video attachments
+        if MIMETypeUtil.isVideo(contentType) {
+            let videoPlayer: AVPlayer = AVPlayer(url: URL(fileURLWithPath: originalFilePath))
+            let durationSeconds: TimeInterval? = videoPlayer.currentItem
+                .map { item -> TimeInterval in
+                    // Accorting to the CMTime docs "value/timescale = seconds"
+                    (TimeInterval(item.duration.value) / TimeInterval(item.duration.timescale))
+                }
+            
+            return (
+                OWSMediaUtils.isValidVideo(path: originalFilePath),
+                durationSeconds
+            )
+        }
+        
+        // Any other attachment types are valid and have no duration
+        return (true, nil)
     }
 }
 
 // MARK: - Convenience
 
 extension Attachment {
-    var originalFilePath: String? {
+    public enum ThumbnailSize {
+        case small
+        case medium
+        case large
+        
+        var dimension: UInt {
+            switch self {
+                case .small: return Attachment.thumbnailDimensionSmall
+                case .medium: return Attachment.thumbnailDimensionMedium
+                case .large: return Attachment.thumbnailDimensionLarge
+            }
+        }
+    }
+    
+    public var originalFilePath: String? {
         return Attachment.originalFilePath(
             id: self.id,
             mimeType: self.contentType,
@@ -453,18 +587,19 @@ extension Attachment {
         }
         
         guard isImage || isAnimated else { return nil }
-        guard NSData.ows_isValidImage(atPath: originalFilePath, mimeType: contentType) else {
-            return nil
-        }
+        guard isValid else { return nil }
         
         return UIImage(contentsOfFile: originalFilePath)
     }
     
-    var isImage: Bool { MIMETypeUtil.isImage(contentType) }
-    var isVideo: Bool { MIMETypeUtil.isVideo(contentType) }
-    var isAnimated: Bool { MIMETypeUtil.isAnimated(contentType) }
+    public var isImage: Bool { MIMETypeUtil.isImage(contentType) }
+    public var isVideo: Bool { MIMETypeUtil.isVideo(contentType) }
+    public var isAnimated: Bool { MIMETypeUtil.isAnimated(contentType) }
+    public var isAudio: Bool { MIMETypeUtil.isAudio(contentType) }
     
-    func readDataFromFile() throws -> Data? {
+    public var isVisualMedia: Bool { isImage || isVideo || isAnimated }
+    
+    public func readDataFromFile() throws -> Data? {
         guard let filePath: String = Attachment.originalFilePath(id: self.id, mimeType: self.contentType, sourceFilename: self.sourceFilename) else {
             return nil
         }
@@ -514,14 +649,18 @@ extension Attachment {
         )
     }
     
-    func thumbnailImageSmallSync() -> UIImage? {
+    public func thumbnail(size: ThumbnailSize, success: @escaping (UIImage) -> (), failure: @escaping () -> ()) {
+        loadThumbnail(with: size.dimension, success: success, failure: failure)
+    }
+    
+    func thumbnailSync(size: ThumbnailSize) -> UIImage? {
         guard isVideo || isImage || isAnimated else { return nil }
         
         let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0)
         var image: UIImage?
         
-        loadThumbnail(
-            with: Attachment.thumbnailDimensionSmall,
+        thumbnail(
+            size: size,
             success: { loadedImage in
                 image = loadedImage
                 semaphore.signal()

@@ -12,7 +12,7 @@ public struct ClosedGroup: Codable, Identifiable, FetchableRecord, PersistableRe
         ClosedGroupKeyPair.self,
         using: ClosedGroupKeyPair.closedGroupForeignKey
     )
-    private static let members = hasMany(GroupMember.self, using: GroupMember.closedGroupForeignKey)
+    public static let members = hasMany(GroupMember.self, using: GroupMember.closedGroupForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -63,6 +63,18 @@ public struct ClosedGroup: Codable, Identifiable, FetchableRecord, PersistableRe
     public var admins: QueryInterfaceRequest<GroupMember> {
         request(for: ClosedGroup.members)
             .filter(GroupMember.Columns.role == GroupMember.Role.admin)
+    }
+    
+    // MARK: - Initialization
+    
+    public init(
+        threadId: String,
+        name: String,
+        formationTimestamp: TimeInterval
+    ) {
+        self.threadId = threadId
+        self.name = name
+        self.formationTimestamp = formationTimestamp
     }
     
     // MARK: - Custom Database Interaction
