@@ -49,41 +49,48 @@ extension MobileCoinAPI {
     struct MobileCoinNetworkConfig {
         let consensusUrl: String
         let fogUrl: String
+        let fogReportUrl: String
 
         static var signalMainNet: MobileCoinNetworkConfig {
             let consensusUrl = "mc://node1.prod.mobilecoinww.com"
             let fogUrl = "fog://service.fog.mob.production.namda.net"
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
+            let fogReportUrl = "fog://fog-rpt-prd.namda.net"
+            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
         }
 
         static var mobileCoinMainNet: MobileCoinNetworkConfig {
             let consensusUrl = "mc://node1.prod.mobilecoinww.com"
             let fogUrl = "fog://fog.prod.mobilecoinww.com"
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
+            let fogReportUrl = fogUrl
+            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
         }
 
         static var signalTestNet: MobileCoinNetworkConfig {
             let consensusUrl = "mc://node1.test.mobilecoin.com"
             let fogUrl = "fog://service.fog.mob.staging.namda.net"
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
+            let fogReportUrl = "fog://fog-rpt-stg.namda.net"
+            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
         }
 
         static var mobileCoinTestNet: MobileCoinNetworkConfig {
             let consensusUrl = "mc://node1.test.mobilecoin.com"
             let fogUrl = "fog://fog.test.mobilecoin.com"
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
+            let fogReportUrl = fogUrl
+            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
         }
 
         static var mobileCoinAlphaNet: MobileCoinNetworkConfig {
             let consensusUrl = "mc://consensus.alpha.mobilecoin.com"
             let fogUrl = "fog://fog.alpha.mobilecoin.com"
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
+            let fogReportUrl = fogUrl
+            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
         }
 
         static var mobileCoinMobileDev: MobileCoinNetworkConfig {
             let consensusUrl = "mc://consensus.mobiledev.mobilecoin.com"
             let fogUrl = "fog://fog.mobiledev.mobilecoin.com"
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
+            let fogReportUrl = fogUrl
+            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
         }
 
         static func networkConfig(environment: Environment) -> MobileCoinNetworkConfig {
@@ -614,7 +621,7 @@ extension MobileCoinAPI {
         let fogReportId = ""
         let accountIndex: UInt32 = 0
         let result = MobileCoin.AccountKey.make(mnemonic: mnemonic,
-                                                fogReportUrl: networkConfig.fogUrl,
+                                                fogReportUrl: networkConfig.fogReportUrl,
                                                 fogReportId: fogReportId,
                                                 fogAuthoritySpki: fogAuthoritySpki,
                                                 accountIndex: accountIndex)
