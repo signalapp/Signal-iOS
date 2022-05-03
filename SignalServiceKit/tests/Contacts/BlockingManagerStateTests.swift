@@ -168,7 +168,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
                 case (false, let changedObject as TSGroupModel):
                     return dut.removeBlockedGroup(changedObject.groupId) != nil
                 default:
-                    XCTFail()
+                    XCTFail("This case should be impossible")
                     return false
                 }
             }()

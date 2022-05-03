@@ -417,7 +417,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
             if case SignalError.sessionNotFound(_) = knownSenderError.underlyingError {
                 // Expected
             } else {
-                XCTFail()
+                XCTFail("Unexpected: error is not sessionNotFound")
             }
         } catch {
             XCTFail("Unexpected error: \(error)")
