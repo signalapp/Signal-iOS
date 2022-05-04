@@ -31,7 +31,7 @@ public final class SnodeAPI : NSObject {
     // MARK: Hardfork version
     private static var hardfork = UserDefaults.standard[.hardfork]
     private static var softfork = UserDefaults.standard[.softfork]
-    public static var inHardfork: Bool { hardfork >= 19 && softfork >= 1 }
+    public static var duringHardforkTransition: Bool { hardfork == 19 && softfork == 0 }
 
     // MARK: Settings
     private static let maxRetryCount: UInt = 8
