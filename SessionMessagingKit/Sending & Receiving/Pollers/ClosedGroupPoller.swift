@@ -128,7 +128,7 @@ public final class ClosedGroupPoller : NSObject {
             }
             
             // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
-            SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, associatedWith: groupPublicKey, from: lastRawMessage)
+            SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, namespace: SnodeAPI.unauthenticatedNamespace, associatedWith: groupPublicKey, from: lastRawMessage)
         }
         promise.catch2 { error in
             SNLog("Polling failed for closed group with public key: \(groupPublicKey) due to error: \(error).")

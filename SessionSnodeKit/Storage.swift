@@ -20,9 +20,9 @@ public protocol SessionSnodeKitStorageProtocol {
     func setLastSnodePoolRefreshDate(to date: Date, using transaction: Any)
     func getSwarm(for publicKey: String) -> Set<Snode>
     func setSwarm(to swarm: Set<Snode>, for publicKey: String, using transaction: Any)
-    func getLastMessageHash(for snode: Snode, associatedWith publicKey: String) -> String?
-    func setLastMessageHashInfo(for snode: Snode, associatedWith publicKey: String, to lastMessageHashInfo: JSON, using transaction: Any)
-    func pruneLastMessageHashInfoIfExpired(for snode: Snode, associatedWith publicKey: String)
+    func getLastMessageHash(for snode: Snode, namespace: Int, associatedWith publicKey: String) -> String?
+    func setLastMessageHashInfo(for snode: Snode, namespace: Int, associatedWith publicKey: String, to lastMessageHashInfo: JSON, using transaction: Any)
+    func pruneLastMessageHashInfoIfExpired(for snode: Snode, namespace: Int, associatedWith publicKey: String)
     func getReceivedMessages(for publicKey: String) -> Set<String>
     func setReceivedMessages(to receivedMessages: Set<String>, for publicKey: String, using transaction: Any)
 }

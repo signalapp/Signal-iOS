@@ -24,9 +24,9 @@ public final class SnodeAPI : NSObject {
     public static var swarmCache: [String:Set<Snode>] = [:]
     
     // MARK: Namespaces
-    private static let defaultNamespace = 0
-    private static let unauthenticatedNamespace = -10
-    private static let configNamespace = 5
+    public static let defaultNamespace = 0
+    public static let unauthenticatedNamespace = -10
+    public static let configNamespace = 5
     
     // MARK: Hardfork version
     private static var hardfork = UserDefaults.standard[.hardfork]
@@ -451,8 +451,8 @@ public final class SnodeAPI : NSObject {
         
         guard let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
         // Get last message hash
-        storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey)
-        let lastHash = storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
+        storage.pruneLastMessageHashInfoIfExpired(for: snode, namespace: namespace, associatedWith: publicKey)
+        let lastHash = storage.getLastMessageHash(for: snode, namespace: namespace, associatedWith: publicKey) ?? ""
         // Construct signature
         let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
         let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
@@ -475,8 +475,8 @@ public final class SnodeAPI : NSObject {
         let storage = SNSnodeKitConfiguration.shared.storage
         
         // Get last message hash
-        storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey)
-        let lastHash = storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
+        storage.pruneLastMessageHashInfoIfExpired(for: snode, namespace: namespace, associatedWith: publicKey)
+        let lastHash = storage.getLastMessageHash(for: snode, namespace: namespace, associatedWith: publicKey) ?? ""
 
         // Make the request
         let parameters: JSON = [
@@ -673,10 +673,10 @@ public final class SnodeAPI : NSObject {
         )
     }
     
-    public static func updateLastMessageHashValueIfPossible(for snode: Snode, associatedWith publicKey: String, from lastRawMessage: JSON?) {
+    public static func updateLastMessageHashValueIfPossible(for snode: Snode, namespace: Int, associatedWith publicKey: String, from lastRawMessage: JSON?) {
         if let lastMessage = lastRawMessage, let lastHash = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? UInt64 {
             SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
-                SNSnodeKitConfiguration.shared.storage.setLastMessageHashInfo(for: snode, associatedWith: publicKey,
+                SNSnodeKitConfiguration.shared.storage.setLastMessageHashInfo(for: snode, namespace: namespace, associatedWith: publicKey,
                     to: [ "hash" : lastHash, "expirationDate" : NSNumber(value: expirationDate) ], using: transaction)
             }
         } else if (lastRawMessage != nil) {
