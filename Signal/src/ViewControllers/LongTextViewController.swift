@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -81,7 +81,8 @@ public class LongTextViewController: OWSViewController {
             CVComponentBodyText.linkifyData(attributedText: mutableText,
                                             linkifyStyle: .linkAttribute,
                                             hasPendingMessageRequest: hasPendingMessageRequest,
-                                            shouldAllowLinkification: displayableText.shouldAllowLinkification)
+                                            shouldAllowLinkification: displayableText.shouldAllowLinkification,
+                                            textWasTruncated: false)
 
             messageTextView.attributedText = mutableText
             messageTextView.textAlignment = displayableText.fullTextNaturalAlignment

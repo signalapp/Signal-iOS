@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -123,7 +123,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     private static func detectItems(text: String,
                                     attributedString: NSAttributedString?,
                                     hasPendingMessageRequest: Bool,
-                                    shouldAllowLinkification: Bool) -> [CVBodyTextLabel.Item] {
+                                    shouldAllowLinkification: Bool,
+                                    textWasTruncated: Bool) -> [CVBodyTextLabel.Item] {
 
         // Use a lock to ensure that measurement on and off the main thread
         // don't conflict.
@@ -131,6 +132,10 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             guard !hasPendingMessageRequest else {
                 // Do not linkify if there is a pending message request.
                 return []
+            }
+
+            if textWasTruncated {
+                owsAssertDebug(text.hasSuffix(DisplayableText.truncatedTextSuffix))
             }
 
             var items = [CVBodyTextLabel.Item]()
@@ -169,6 +174,19 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 return []
             }
             for match in detector.matches(in: text, options: [], range: text.entireRange) {
+                if textWasTruncated {
+                    if NSMaxRange(match.range) == NSMaxRange(text.entireRange) {
+                        // This implies that the data detector *included* our "…" suffix.
+                        // We don't expect this to happen, but if it does it's certainly not intended!
+                        continue
+                    }
+                    if (text as NSString).substring(after: match.range) == DisplayableText.truncatedTextSuffix {
+                        // More likely the item right before the "…" was detected.
+                        // Conservatively assume that the item was truncated.
+                        continue
+                    }
+                }
+
                 guard let snippet = (text as NSString).substring(with: match.range).strippedOrNil else {
                     owsFailDebug("Invalid snippet.")
                     continue
@@ -346,13 +364,15 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
            let textValue = bodyText.textValue(isTextExpanded: isTextExpanded) {
 
             let shouldAllowLinkification = displayableText.shouldAllowLinkification
+            let textWasTruncated = !isTextExpanded && displayableText.isTextTruncated
 
             switch textValue {
             case .text(let text):
                 items = detectItems(text: text,
                                     attributedString: nil,
                                     hasPendingMessageRequest: hasPendingMessageRequest,
-                                    shouldAllowLinkification: shouldAllowLinkification)
+                                    shouldAllowLinkification: shouldAllowLinkification,
+                                    textWasTruncated: textWasTruncated)
 
                 // UILabels are much cheaper than UITextViews, and we can
                 // usually use them for rendering body text.
@@ -371,7 +391,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 items = detectItems(text: attributedText.string,
                                     attributedString: attributedText,
                                     hasPendingMessageRequest: hasPendingMessageRequest,
-                                    shouldAllowLinkification: shouldAllowLinkification)
+                                    shouldAllowLinkification: shouldAllowLinkification,
+                                    textWasTruncated: textWasTruncated)
                 shouldUseAttributedText = true
             }
         } else {
@@ -619,12 +640,14 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     public static func linkifyData(attributedText: NSMutableAttributedString,
                                    linkifyStyle: LinkifyStyle,
                                    hasPendingMessageRequest: Bool,
-                                   shouldAllowLinkification: Bool) {
+                                   shouldAllowLinkification: Bool,
+                                   textWasTruncated: Bool) {
 
         let items = detectItems(text: attributedText.string,
                                 attributedString: attributedText,
                                 hasPendingMessageRequest: hasPendingMessageRequest,
-                                shouldAllowLinkification: shouldAllowLinkification)
+                                shouldAllowLinkification: shouldAllowLinkification,
+                                textWasTruncated: textWasTruncated)
         Self.linkifyData(attributedText: attributedText,
                          linkifyStyle: linkifyStyle,
                          items: items)

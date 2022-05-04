@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -280,5 +280,70 @@ class CVTextTest: SignalBaseTest {
                 }
             }
         }
+    }
+
+    func testLinkifyWithTruncation() {
+        let truncatedData = NSMutableAttributedString(string: "https://signal.org/foo https://signal.org/ba…")
+        CVComponentBodyText.linkifyData(attributedText: truncatedData,
+                                        linkifyStyle: .linkAttribute,
+                                        hasPendingMessageRequest: false,
+                                        shouldAllowLinkification: true,
+                                        textWasTruncated: true)
+        var values: [String] = []
+        var ranges: [NSRange] = []
+        truncatedData.enumerateAttribute(.link, in: truncatedData.entireRange, options: []) { value, range, _ in
+            if let value = value {
+                values.append(value as! String)
+                ranges.append(range)
+            }
+        }
+        XCTAssertEqual(["https://signal.org/foo"], values)
+        XCTAssertEqual([NSRange(location: 0, length: 22)], ranges)
+
+        truncatedData.removeAttribute(.link, range: truncatedData.entireRange)
+        CVComponentBodyText.linkifyData(attributedText: truncatedData,
+                                        linkifyStyle: .linkAttribute,
+                                        hasPendingMessageRequest: false,
+                                        shouldAllowLinkification: true,
+                                        textWasTruncated: false)
+        values.removeAll()
+        ranges.removeAll()
+        truncatedData.enumerateAttribute(.link, in: truncatedData.entireRange, options: []) { value, range, _ in
+            if let value = value {
+                values.append(value as! String)
+                ranges.append(range)
+            }
+        }
+        XCTAssertEqual(["https://signal.org/foo", "https://signal.org/ba"], values)
+        XCTAssertEqual([NSRange(location: 0, length: 22), NSRange(location: 23, length: 21)], ranges)
+
+        // Should work on more than just URLs.
+        let truncatedEmail = NSMutableAttributedString(string: "moxie@example.com moxie@signal.or…")
+        CVComponentBodyText.linkifyData(attributedText: truncatedEmail,
+                                        linkifyStyle: .linkAttribute,
+                                        hasPendingMessageRequest: false,
+                                        shouldAllowLinkification: true,
+                                        textWasTruncated: true)
+        values.removeAll()
+        truncatedEmail.enumerateAttribute(.link, in: truncatedEmail.entireRange, options: []) { value, _, _ in
+            if let value = value {
+                values.append(value as! String)
+            }
+        }
+        XCTAssertEqual(["mailto:moxie@example.com"], values)
+
+        let truncatedPhone = NSMutableAttributedString(string: "+16505555555 +1650555555…")
+        CVComponentBodyText.linkifyData(attributedText: truncatedPhone,
+                                        linkifyStyle: .linkAttribute,
+                                        hasPendingMessageRequest: false,
+                                        shouldAllowLinkification: true,
+                                        textWasTruncated: true)
+        values.removeAll()
+        truncatedPhone.enumerateAttribute(.link, in: truncatedPhone.entireRange, options: []) { value, _, _ in
+            if let value = value {
+                values.append(value as! String)
+            }
+        }
+        XCTAssertEqual(["tel:+16505555555"], values)
     }
 }

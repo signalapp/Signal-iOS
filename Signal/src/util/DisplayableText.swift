@@ -103,6 +103,8 @@ public class DisplayableText: NSObject {
     @objc
     static let kMaxCharactersPerEmojiCount: UInt = 10
 
+    static let truncatedTextSuffix: String = "…"
+
     // MARK: Initializers
 
     private init(fullContent: Content, truncatedContent: Content?) {
@@ -316,7 +318,7 @@ public class DisplayableText: NSObject {
             case .text(let text):
                 let truncatedText = (text.substring(to: snippetLength)
                                         .ows_stripped()
-                                        + "…")
+                                        + Self.truncatedTextSuffix)
                 truncatedContent = Content(textValue: .text(text: truncatedText),
                                            naturalAlignment: truncatedText.naturalTextAlignment)
             case .attributedText(let attributedText):
@@ -338,7 +340,7 @@ public class DisplayableText: NSObject {
                 let truncatedAttributedText = attributedText
                     .attributedSubstring(from: NSRange(location: 0, length: snippetLength))
                     .ows_stripped()
-                    .stringByAppendingString("…")
+                    .stringByAppendingString(Self.truncatedTextSuffix)
 
                 truncatedContent = Content(textValue: .attributedText(attributedText: truncatedAttributedText),
                                            naturalAlignment: truncatedAttributedText.string.naturalTextAlignment)
