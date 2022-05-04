@@ -68,18 +68,17 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     private var sharpCorners: OWSDirectionalRectCorner {
-
-        var rawValue: UInt = 0
+        var result: OWSDirectionalRectCorner = []
 
         if !itemViewState.isFirstInCluster {
-            rawValue |= isIncoming ? OWSDirectionalRectCorner.topLeading.rawValue : OWSDirectionalRectCorner.topTrailing.rawValue
+            result.insert(isIncoming ? .topLeading : .topTrailing)
         }
 
         if !itemViewState.isLastInCluster {
-            rawValue |= isIncoming ? OWSDirectionalRectCorner.bottomLeading.rawValue : OWSDirectionalRectCorner.bottomTrailing.rawValue
+            result.insert(isIncoming ? .bottomLeading : .bottomTrailing)
         }
 
-        return OWSDirectionalRectCorner(rawValue: rawValue)
+        return result
     }
 
     private var sharpCornersForQuotedMessage: OWSDirectionalRectCorner {
