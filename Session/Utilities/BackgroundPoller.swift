@@ -28,19 +28,24 @@ public final class BackgroundPoller : NSObject {
     
     private static func pollForMessages() -> Promise<Void> {
         let userPublicKey = getUserHexEncodedPublicKey()
-        return getMessages(for: userPublicKey, authenticated: true)
+        return getMessages(for: userPublicKey)
     }
     
     private static func pollForClosedGroupMessages() -> [Promise<Void>] {
         let publicKeys = Storage.shared.getUserClosedGroupPublicKeys()
-        return publicKeys.map { getMessages(for: $0, authenticated: false) }
+        return publicKeys.map { getMessages(for: $0, isClosedGroup: true) }
     }
     
-    private static func getMessages(for publicKey: String, authenticated: Bool) -> Promise<Void> {
+    private static func getMessages(for publicKey: String, isClosedGroup: Bool = false) -> Promise<Void> {
+        func handleRawMessages(rawResponse: Any) -> [Promise<Void>] {
+            
+        }
+        
         return SnodeAPI.getSwarm(for: publicKey).then(on: DispatchQueue.main) { swarm -> Promise<Void> in
             guard let snode = swarm.randomElement() else { throw SnodeAPI.Error.generic }
             return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
-                return SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey, authenticated: authenticated).then(on: DispatchQueue.main) { rawResponse -> Promise<Void> in
+                var getMessagesPromises: [Promise<Void>] = []
+                let promise = SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey, authenticated: !isClosedGroup).then(on: DispatchQueue.main) { rawResponse -> Promise<Void> in
                     let (messages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
                     let promises = messages.compactMap { json -> Promise<Void>? in
                         // Use a best attempt approach here; we don't want to fail the entire process if one of the
@@ -50,12 +55,34 @@ public final class BackgroundPoller : NSObject {
                         let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: true)
                         return job.execute()
                     }
-                    let namespace = authenticated ? SnodeAPI.defaultNamespace : SnodeAPI.closedGroupNamespace
+                    let namespace = isClosedGroup ? SnodeAPI.closedGroupNamespace : SnodeAPI.defaultNamespace
                     // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
                     SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, namespace: namespace, associatedWith: publicKey, from: lastRawMessage)
                     
                     return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects
                 }
+                getMessagesPromises.append(promise)
+                
+                if isClosedGroup && SnodeAPI.duringHardforkTransition {
+                    let promise1 = SnodeAPI.getRawClosedGroupMessagesFromDefaultNamespace(from: snode, associatedWith: publicKey).then(on: DispatchQueue.main) { rawResponse -> Promise<Void> in
+                        let (messages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
+                        let promises = messages.compactMap { json -> Promise<Void>? in
+                            // Use a best attempt approach here; we don't want to fail the entire process if one of the
+                            // messages failed to parse.
+                            guard let envelope = SNProtoEnvelope.from(json),
+                                let data = try? envelope.serializedData() else { return nil }
+                            let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: true)
+                            return job.execute()
+                        }
+                        // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
+                        SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, namespace: SnodeAPI.defaultNamespace, associatedWith: publicKey, from: lastRawMessage)
+                        
+                        return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects
+                    }
+                    getMessagesPromises.append(promise1)
+                }
+                
+                return when(resolved: getMessagesPromises).map{ _ in }
             }
         }
     }
