@@ -49,6 +49,7 @@ public final class SnodeAPI : NSObject {
         case inconsistentSnodePools
         case noKeyPair
         case signingFailed
+        case signatureVerificationFailed
         // ONS
         case decryptionFailed
         case hashingFailed
@@ -62,6 +63,7 @@ public final class SnodeAPI : NSObject {
             case .inconsistentSnodePools: return "Received inconsistent Service Node pool information from the Service Node network."
             case .noKeyPair: return "Missing user key pair."
             case .signingFailed: return "Couldn't sign message."
+            case . signatureVerificationFailed: return "Failed to verify the signature."
             // ONS
             case .decryptionFailed: return "Couldn't decrypt ONS name."
             case .hashingFailed: return "Couldn't compute ONS name hash."
@@ -456,7 +458,8 @@ public final class SnodeAPI : NSObject {
         // Construct signature
         let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
         let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
-        guard let verificationData = ("retrieve" + String(namespace) + String(timestamp)).data(using: String.Encoding.utf8),
+        let namespaceVerificationString = namespace == defaultNamespace ? "" : String(namespace)
+        guard let verificationData = ("retrieve" + namespaceVerificationString + String(timestamp)).data(using: String.Encoding.utf8),
               let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)
         else { return Promise(error: Error.signingFailed) }
         // Make the request
