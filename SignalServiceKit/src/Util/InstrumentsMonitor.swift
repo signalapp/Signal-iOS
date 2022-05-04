@@ -18,7 +18,7 @@ import os.signpost
      - Parameter : group
      - Parameter : name
      */
-    public typealias startSpanInterface = (String, String?, String) -> UInt64?
+    public typealias StartSpanInterface = (String, String?, String) -> UInt64?
 
     /**
      The interface definition to be implemented for a monitor start.
@@ -27,17 +27,17 @@ import os.signpost
      - Parameter : success
      - Parameter : array of additional result infos
      */
-    public typealias stopSpanInterface = (String, UInt64, Bool?, [String]) -> Void
+    public typealias StopSpanInterface = (String, UInt64, Bool?, [String]) -> Void
 
     /**
      Defines the tracker start implementation to be used by the framework.
      */
-    public static var start: startSpanInterface?
+    public static var start: StartSpanInterface?
 
     /**
     Defines the tracker end implementation to be used by the framework.
     */
-    public static var stop: stopSpanInterface?
+    public static var stop: StopSpanInterface?
 
     @usableFromInline
     internal static let SUBSYSTEM = "org.whispersystems.signal"
@@ -53,7 +53,7 @@ import os.signpost
         #endif
     }
 
-    public static let defaultStartImplementation: startSpanInterface? = { (category: String, parent: String?, name: String) -> UInt64? in
+    public static let defaultStartImplementation: StartSpanInterface? = { (category: String, parent: String?, name: String) -> UInt64? in
         let log = OSLog(subsystem: SUBSYSTEM, category: category)
         let signpostID = OSSignpostID(log: log)
         var thread = Thread.current.debugDescription
@@ -81,7 +81,7 @@ import os.signpost
         return signpostID.rawValue
     }
 
-    public static let defaultStopImplementation: stopSpanInterface? = { (category: String, hash: UInt64, success: Bool?, params: [String]) in
+    public static let defaultStopImplementation: StopSpanInterface? = { (category: String, hash: UInt64, success: Bool?, params: [String]) in
         var params = params
         if let success = success {
             params.insert(success ? "1" : "0", at: 0)
