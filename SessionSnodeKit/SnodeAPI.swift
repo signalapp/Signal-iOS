@@ -25,7 +25,7 @@ public final class SnodeAPI : NSObject {
     
     // MARK: Namespaces
     public static let defaultNamespace = 0
-    public static let unauthenticatedNamespace = -10
+    public static let closedGroupNamespace = -10
     public static let configNamespace = 5
     
     // MARK: Hardfork version
@@ -414,7 +414,7 @@ public final class SnodeAPI : NSObject {
     }
     
     // MARK: Retrieve
-    
+    // Not in use until we can batch delete and store config messages
     public static func getConfigMessages(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
         let (promise, seal) = RawResponsePromise.pending()
         Threading.workQueue.async {
@@ -474,7 +474,7 @@ public final class SnodeAPI : NSObject {
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
 
-    private static func getMessagesUnauthenticated(from snode: Snode, associatedWith publicKey: String, namespace: Int = unauthenticatedNamespace) -> RawResponsePromise {
+    private static func getMessagesUnauthenticated(from snode: Snode, associatedWith publicKey: String, namespace: Int = closedGroupNamespace) -> RawResponsePromise {
         let storage = SNSnodeKitConfiguration.shared.storage
         
         // Get last message hash
@@ -493,13 +493,11 @@ public final class SnodeAPI : NSObject {
     // MARK: Store
     
     public static func sendMessage(_ message: SnodeMessage, isClosedGroupMessage: Bool, isConfigMessage: Bool) -> Promise<Set<RawResponsePromise>> {
-        if isConfigMessage {
-            return sendMessageWithAuthentication(message, namespace: configNamespace)
-        }
-        let namespace = isClosedGroupMessage ? unauthenticatedNamespace : defaultNamespace
+        let namespace = isClosedGroupMessage ? closedGroupNamespace : defaultNamespace
         return sendMessageUnauthenticated(message, namespace: namespace)
     }
     
+    // Not in use until we can batch delete and store config messages
     private static func sendMessageWithAuthentication(_ message: SnodeMessage, namespace: Int) -> Promise<Set<RawResponsePromise>> {
         let storage = SNSnodeKitConfiguration.shared.storage
         

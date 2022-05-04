@@ -50,7 +50,7 @@ public final class BackgroundPoller : NSObject {
                         let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: true)
                         return job.execute()
                     }
-                    let namespace = authenticated ? SnodeAPI.defaultNamespace : SnodeAPI.unauthenticatedNamespace
+                    let namespace = authenticated ? SnodeAPI.defaultNamespace : SnodeAPI.closedGroupNamespace
                     // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
                     SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, namespace: namespace, associatedWith: publicKey, from: lastRawMessage)
                     
