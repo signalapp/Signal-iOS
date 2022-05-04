@@ -1622,7 +1622,7 @@
 "DONATION_VIEW_ONE_TIME_DONATION" = "Einmalspende";
 
 /* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Weitere Möglichkeiten für Spenden";
 
 /* Title for the 'receipts' section on the donation screen */
 "DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Bescheinigungen";

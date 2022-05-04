@@ -134,7 +134,7 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Villa";
 
 /* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Keyra athugun á gagnagrunni";
+"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Keyra athugun á heilindum gagnagrunns";
 
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "Opna Signal í staðinn";
@@ -407,7 +407,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "Þegar þú átt fleiri en eitt merki, geturðu valið eitt þeirra sem aðrir sjá á auðkennismyndinni þinni.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Þú hefur unnið þér inn %@-merki! Birtu þetta merki á auðkenninu þínu til að stuðla að meðvitundu um að það sé hægt að styrkja Signal.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Loka borða";
@@ -1286,16 +1286,16 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Keyra";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Þetta gæti tekið drjúga stund (nokkrar mínútur eða lengur) og fer eftir því hve mikið þú hefur notað Signal. Það er í lagi að loka Signal ef þetta tekur of langan tíma.";
 
 /* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
+"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Bæta í villuskráningu";
 
 /* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Integrity check results";
+"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Niðurstöður heilindaprófunar";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database integrity check?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Keyra athugun á heilindum gagnagrunns?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Þetta getur tekið nokkrar mínútur.";

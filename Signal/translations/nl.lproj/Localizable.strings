@@ -494,7 +494,7 @@
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Je ‘Eenmalige donateur’-badge verloopt op %@.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Vul een zelfgekozen bedrag in";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Een zelfgekozen bedrag invullen";
 
 /* Text explaining there are other ways to donate on the boost view. */
 "BOOST_VIEW_OTHER_WAYS" = "Meer overschrijvingsopties (maar via die opties krijg je geen badge)";
@@ -1580,7 +1580,7 @@
 "DONATION_RECEIPT_ONE_TIME" = "Eenmalig";
 
 /* Title for recurring donation receipts */
-"DONATION_RECEIPT_RECURRING" = "Doorlopend";
+"DONATION_RECEIPT_RECURRING" = "Maandelijks";
 
 /* Title on donation receipts */
 "DONATION_RECEIPT_TITLE" = "Donatie-afschrift";
@@ -5738,7 +5738,7 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Appvergrendeling";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Bescherm op je eigen telefoon je gesprekken tegen stiekeme schermopnames vanuit spionerende apps, door Signals inhoud te verbergen in het overzicht van recent geopende apps.";
+"SETTINGS_SCREEN_SECURITY" = "Verberg Signal in de lijst van recent geopende apps";
 
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "Signal-oproepen weergeven in de “Recentelijk”-lijst in de iOS-telefoonapp.";
@@ -6068,7 +6068,7 @@
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Ontvang een ‘%@’-badge";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Maandelijkse donaties annuleren";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Maandelijkse donaties stopzetten";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Bevestigen";

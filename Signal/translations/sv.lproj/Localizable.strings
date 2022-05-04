@@ -1337,7 +1337,7 @@
 "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Exportera Loggar";
 
 /* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Skicka till mig själv";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Egen anteckning";
 
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Dela";

@@ -764,7 +764,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "البحث عن طريق اسم المُستخدم";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "يُمكِنُك مَنح حقّ الوُصُول إلى جِهات الاِتصال مِن خِلال تَطبيق إعدادات iOS لِرُؤيَة جِهات الاِتِّصال التي تَستخدِم Signal.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "يمكنك تفعيل الوصول إلى جهات الاتصال من خلال تطبيق إعدادات iOS لترى من يستخدم Signal من جهات الاتصالك.";
 
 /* Configure reactions title text */
 "CONFIGURE_REACTIONS" = "ضبط ردود الفعل";
@@ -1004,7 +1004,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "حذف المحادثة ؟";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "كتم المحادثة لمدّة...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "كتم المحادثة لمدة...";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "يوم واحد";
@@ -1133,7 +1133,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "رسالة";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "كتم هذه المُحادثة لِـ ...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "كتم المحادثة لمدة...";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "دائمًا";
@@ -1220,7 +1220,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "رفع حَظر المُستخدم";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "رَفع الكَتم";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "إلغاء الكتم";
 
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "مرئيَّة";
@@ -1742,13 +1742,13 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "فشل رفع السجلات.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "فشل التراسل لأنك قد حظرت المُستخدم.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "فشل التراسل لأنك حظرت المستخدم.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "تعذّر على Signal الاتصال بالانترنت. يُرجى المحاولة مرة أخرى.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "تعذر على Signal الاتصال بالانترنت. يرجى المحاولة مرة أخرى.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "فشل الارسال لنقص المُتلقين الصالحين.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "فشل إرسال الرسالة لعدم وجود مستلمين صالحين.";
 
 /* Error indicating that a socket request failed. */
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "فشل طلب الشبكة.";
@@ -1769,10 +1769,10 @@
 "ERROR_DESCRIPTION_SUSPECTED_SPAM" = "يحتاج الخادم إلى التحقق من المستخدم قبل إرسال الرسالة.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "حدث خلل مجهول.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "حدث خطأ مجهول.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "جهة الاتصال ليست من مُستخدمي تطبيق Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "جهة الاتصال ليست من مستخدمي Signal.";
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "فشل تحميل المُرفق.";
@@ -1799,7 +1799,7 @@
 "ERROR_MESSAGE_NO_SESSION" = "لا توجد جلسة متاحة للتواصل.";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "تمّ تغيير رقم اﻷمان.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "تغيَّر رقم اﻷمان.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "رقم الأمان الخاص بك أنت و%@ قد تغير.";
@@ -1898,7 +1898,7 @@
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "يَجري تحميل وسائط أقدم...";
 
 /* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "مُرفق";
+"GENERIC_ATTACHMENT_LABEL" = "مرفق";
 
 /* notification title indicating the user generically has a new message */
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "رسالة جديدة !";
@@ -2963,7 +2963,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ملف صوتي غير صالح.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "يُمكنك تفعيل الوصول إلى جهات الاتصال في تطبيق إعدادات iOS لدعوة أصدقائك للانضمام إلى Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "يمكنك تفعيل الوصول إلى جهات الاتصال في تطبيق إعدادات iOS لدعوة أصدقائك للانضمام إلى Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "السماح بالوصول لجهات الاتصال";
@@ -2972,10 +2972,10 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "دعوة الأصدقاء إلى Signal";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "البحث";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "بحث";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "أدعُ أصدقائك";
+"INVITE_FRIENDS_PICKER_TITLE" = "اُدعُ الأصدقاء";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "إن دعوتك لعدة أشخاص في آن واحد ستؤدي إلى بدأ مُحادثة جماعية. و عليه، فإن جميع المُستلمين سوف يتمكنون من رؤية بعضهم البعض.";
@@ -3038,7 +3038,7 @@
 "LEAVE_GROUP_FAILED" = "حدث خطأ أثناء مُغادرة المجموعة.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "إن رمز الاستجابة السريعة غير صالح. يُرجى التأكد من مسحك لرمز الاستجابة السريعة الظاهر على الجهازك الذي تُريد ربطه.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "رمز الاستجابة السريعة هذا غير صالح. فضلاً تأكد من أنك تقوم بمسح رمز الاستجابة السريعة المعروض على الجهاز الذي تريد ربطه.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "فشل ربط الجهاز";
@@ -3050,7 +3050,7 @@
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "ربط هذا الجهاز؟";
 
 /* attempt another linking */
-"LINK_DEVICE_RESTART" = "إعادة المُحاولة";
+"LINK_DEVICE_RESTART" = "إعادة المحاولة";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "امسح رمز الاستجابة السريعة المعروض على الجهاز الذي تريد ربطه.";
@@ -3365,13 +3365,13 @@
 "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "لقد تمّ إرسال طلبك للإنضمام إلى مُشرف المجموعة. سيتم إخطارك عند اتخاذه للإجراء.";
 
 /* message status for message delivered to their recipient. */
-"MESSAGE_STATUS_DELIVERED" = "تم الاستلام";
+"MESSAGE_STATUS_DELIVERED" = "استُلِمَت";
 
 /* message status while message is downloading. */
 "MESSAGE_STATUS_DOWNLOADING" = "يَجري التَّنزيل";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "فَشَلَ الإرسال.";
+"MESSAGE_STATUS_FAILED" = "فشل الإرسال.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "فشل";
@@ -3398,10 +3398,10 @@
 "MESSAGE_STATUS_SENDING" = "يَجري الإرسال...";
 
 /* status message for sent messages */
-"MESSAGE_STATUS_SENT" = "تمّ الارسال";
+"MESSAGE_STATUS_SENT" = "أرسِلَت";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "يَجري الرَّفع...";
+"MESSAGE_STATUS_UPLOADING" = "جار الرفع...";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "لقد تمَّ عرضه";
@@ -3530,7 +3530,7 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "البحث عن مُستخدم";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "إيجاد جهات الاتصال بواسطة رقم الهاتف";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "اعثر على جهات الاتصال برقم الهاتف";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "لا توجد مجموعات مُشتركة";
@@ -4316,10 +4316,10 @@
 "PRIVACY_UNVERIFY_BUTTON" = "مَحوُ التحقُّق";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "هذا لا يبدوا كرقم الأمان الخاص بك أنت مع %@. هل أنت تتحقق من جهة الاتصال الصحيحة؟";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "لا يبدو هذا رقم أمانك مع %@. هل تتحقق من جهة الاتصال الصحيحة؟";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "لا يبدو أن الرقم الذي في الحافظة الخاصة بك هو رقم الأمان الصحيح لهذه المُحادثة.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "لا يبدو الرقم الذي في حافظتك أنه رقم الأمان الصحيح لهذه المحادثة.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "لم يجد Signal أي رقم أمان في حافظتك. هل نسخته بشكل صحيح ؟";
@@ -4577,7 +4577,7 @@
 "REGISTRATION_ERROR" = "خطأ في التسجيل";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "لا نستطيع تفعيل الحساب الخاص بك حتى تتحقق من الرمز الذي قد أرسلناه لك.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "لا نستطيع تفعيل حسابك إلى أن تتحقق من الرمز الذي أرسلناه لك.";
 
 /* Alert body for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "للمُتابعة، تأكَّد أنَّ الهاتف الخاص بك مُتَّصل بالانترنت ثمَّ حاول مرَّة أُخرى.";
@@ -4601,7 +4601,7 @@
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "فشل التحقق";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "الأرقام التي قد سلمتها لا تتطابق مع التي أرسلناها. هل تُريد أن تحقق مُجددًا؟";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "الأرقام التي أدخلتها لا تتطابق مع التي أرسلناها. لم لا تتأكد مجدداً؟";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "إنَّ PIN قفل التسجيل غير صحيح.";
@@ -4676,7 +4676,7 @@
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "إظهار";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "رقم أمان Signal الخاص بي:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "رقم أمان Signal الخاص بنا:\n%@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "تغير رقم أمانك مع %@. قد ترغب بالتحقق منه.";
@@ -4952,10 +4952,10 @@
 "SEND_FAILED_NOTIFICATION_BODY" = "لقد فشل إرسال رسالتك.";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "لقد فشل إرسال الدعوة، يرُجى المُحاولة مرة أُخرى لاحقًا.";
+"SEND_INVITE_FAILURE" = "فشل إرسال الدعوة، فضلاً أعد المحاولة لاحقاً.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "أنت قد دعوت صديقكَ لاستخدام Signal!";
+"SEND_INVITE_SUCCESS" = "لقد دعوت صديقك لاستخدام Signal!";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "تجاهُل الوسائط";
@@ -5063,13 +5063,13 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "لا نتائج للبحث";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "محظورة";
+"SETTINGS_BLOCK_LIST_TITLE" = "محظور";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "دائمًا اعِد توجيه المُكالمات";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "إعادة توجيه المكالمات دائماً";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "إعادة توجيه جميع المُكالمات عبر خوادم Signal لتفادي الكشف عن عنوان الـIP  الخاص بك لجهة اتصالك. تفعيل هذه الميزة سوف يُقلل من جودة المُكالمة.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "إعادة توجيه جميع المكالمات عبر خادم Signal لتفادي كشف عنوان بروتوكول الإنترنت الخاص بك لجهة اتصالك. ستنخفض جودة المكالمات عند التفعيل.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "تعديل الرقم";
@@ -5198,7 +5198,7 @@
 "SETTINGS_HELP" = "المُساعدة";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "اُدعُ الأصدِقاء";
+"SETTINGS_INVITE_TITLE" = "اُدعُ أصدقائك";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
 "SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "لون المحادثة والخلفية";
@@ -6404,7 +6404,7 @@
 "VIEW_ONCE_OUTGOING_TOAST" = "تتمُّ إزالة ملفات وسائط-العرض-لمرة-واحدة الصادرة تلقائيًا بعد أن يتمَّ إرسالُها.";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "مرِّر للإلغاء";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "اسحب للإلغاء";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "رِسالة صوتيَّة";
