@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e
+set -u
+set -o pipefail
 
-BASE_DIR=$(git rev-parse --show-toplevel)
+BASE_DIR="$(git rev-parse --show-toplevel)"
 
-cd $BASE_DIR
+cd "$BASE_DIR"
 
-bundle exec fastlane deliver --skip-screenshots --skip-binary-upload --username ${FASTLANE_USERNAME} --app_identifier 'org.whispersystems.signal'
+bundle exec fastlane deliver --skip-screenshots --skip-binary-upload --username "$FASTLANE_USERNAME" --app_identifier 'org.whispersystems.signal'
