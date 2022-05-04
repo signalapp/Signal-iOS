@@ -47,22 +47,6 @@ public class SDSKeyValueStore: NSObject {
         super.init()
     }
 
-    public class func createTable(database: Database) throws {
-        let sql = """
-            CREATE TABLE \(table.tableName) (
-                \(keyColumn.columnName) TEXT NOT NULL,
-                \(collectionColumn.columnName) TEXT NOT NULL,
-                \(valueColumn.columnName) BLOB NOT NULL,
-                PRIMARY KEY (
-                    \(keyColumn.columnName),
-                    \(collectionColumn.columnName)
-                )
-            )
-        """
-        let statement = try database.makeStatement(sql: sql)
-        try statement.execute()
-    }
-
     @objc
     public class func logCollectionStatistics() {
         Logger.info("SDSKeyValueStore statistics:")
