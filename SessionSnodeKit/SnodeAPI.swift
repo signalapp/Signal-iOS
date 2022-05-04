@@ -27,6 +27,11 @@ public final class SnodeAPI : NSObject {
     private static let defaultNamespace = 0
     private static let unauthenticatedNamespace = -10
     private static let configNamespace = 5
+    
+    // MARK: Hardfork version
+    private static var hardfork = UserDefaults.standard[.hardfork]
+    private static var softfork = UserDefaults.standard[.softfork]
+    public static var inHardfork: Bool { hardfork >= 19 && softfork >= 1 }
 
     // MARK: Settings
     private static let maxRetryCount: UInt = 8
@@ -136,7 +141,18 @@ public final class SnodeAPI : NSObject {
     // MARK: Internal API
     internal static func invoke(_ method: Snode.Method, on snode: Snode, associatedWith publicKey: String? = nil, parameters: JSON) -> RawResponsePromise {
         if Features.useOnionRequests {
-            return OnionRequestAPI.sendOnionRequest(to: snode, invoking: method, with: parameters, associatedWith: publicKey).map2 { $0 as Any }
+            return OnionRequestAPI.sendOnionRequest(to: snode, invoking: method, with: parameters, associatedWith: publicKey)
+                .map2 { json in
+                    if let hf = json["hf"] as? [Int] {
+                        if hf[0] != hardfork || hf[1] != softfork {
+                            hardfork = hf[0]
+                            softfork = hf[1]
+                            UserDefaults.standard[.hardfork] = hardfork
+                            UserDefaults.standard[.softfork] = softfork
+                        }
+                    }
+                    return json as Any
+                }
         } else {
             let url = "\(snode.address):\(snode.port)/storage_rpc/v1"
             return HTTP.execute(.post, url, parameters: parameters).map2 { $0 as Any }.recover2 { error -> Promise<Any> in
@@ -418,6 +434,14 @@ public final class SnodeAPI : NSObject {
         return promise
     }
     
+    public static func getRawClosedGroupMessagesFromDefaultNamespace(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
+        let (promise, seal) = RawResponsePromise.pending()
+        Threading.workQueue.async {
+            getMessagesUnauthenticated(from: snode, associatedWith: publicKey, namespace: defaultNamespace).done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
+        }
+        return promise
+    }
+    
     private static func getMessagesWithAuthentication(from snode: Snode, associatedWith publicKey: String, namespace: Int) -> RawResponsePromise {
         let storage = SNSnodeKitConfiguration.shared.storage
         
@@ -447,7 +471,7 @@ public final class SnodeAPI : NSObject {
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
 
-    private static func getMessagesUnauthenticated(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
+    private static func getMessagesUnauthenticated(from snode: Snode, associatedWith publicKey: String, namespace: Int = unauthenticatedNamespace) -> RawResponsePromise {
         let storage = SNSnodeKitConfiguration.shared.storage
         
         // Get last message hash
@@ -457,7 +481,7 @@ public final class SnodeAPI : NSObject {
         // Make the request
         let parameters: JSON = [
             "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey,
-            "namespace": unauthenticatedNamespace,
+            "namespace": namespace,
             "lastHash" : lastHash,
         ]
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
