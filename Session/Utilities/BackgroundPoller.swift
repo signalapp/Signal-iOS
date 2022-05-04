@@ -37,10 +37,6 @@ public final class BackgroundPoller : NSObject {
     }
     
     private static func getMessages(for publicKey: String, isClosedGroup: Bool = false) -> Promise<Void> {
-        func handleRawMessages(rawResponse: Any) -> [Promise<Void>] {
-            
-        }
-        
         return SnodeAPI.getSwarm(for: publicKey).then(on: DispatchQueue.main) { swarm -> Promise<Void> in
             guard let snode = swarm.randomElement() else { throw SnodeAPI.Error.generic }
             return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
