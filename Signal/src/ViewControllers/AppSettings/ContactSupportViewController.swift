@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,17 +14,17 @@ import SafariServices
 }
 
 enum ContactSupportFilter: String, CaseIterable {
-    case feature_request = "Feature Request"
+    case featureRequest = "Feature Request"
     case question = "Question"
     case feedback = "Feedback"
-    case something_not_working = "Something Not Working"
+    case somethingNotWorking = "Something Not Working"
     case other = "Other"
     case payments = "Payments"
-    case sustainers = "Sustainer & Signal Boost"
+    case donationsAndBadges = "Donations & Badges"
 
     var localizedString: String {
         switch self {
-        case .feature_request:
+        case .featureRequest:
             return NSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST",
                 comment: "The localized representation of the 'feature request' support filter."
@@ -39,7 +39,7 @@ enum ContactSupportFilter: String, CaseIterable {
                 "CONTACT_SUPPORT_FILTER_FEEDBACK",
                 comment: "The localized representation of the 'feedback' support filter."
             )
-        case .something_not_working:
+        case .somethingNotWorking:
             return NSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING",
                 comment: "The localized representation of the 'something not working' support filter."
@@ -54,17 +54,17 @@ enum ContactSupportFilter: String, CaseIterable {
                 "CONTACT_SUPPORT_FILTER_PAYMENTS",
                 comment: "The localized representation of the 'payments' support filter."
             )
-        case .sustainers:
+        case .donationsAndBadges:
             return NSLocalizedString(
-                "CONTACT_SUPPORT_FILTER_SUSTAINERS",
-                comment: "The localized representation of the 'Sustainers & Signal Boost' support filter."
+                "CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES",
+                comment: "The localized representation of the 'Donations & Badges' support filter."
             )
         }
     }
 
     var localizedShortString: String {
         switch self {
-        case .feature_request:
+        case .featureRequest:
             return NSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT",
                 comment: "A brief localized representation of the 'feature request' support filter."
@@ -79,7 +79,7 @@ enum ContactSupportFilter: String, CaseIterable {
                 "CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT",
                 comment: "A brief localized representation of the 'feedback' support filter."
             )
-        case .something_not_working:
+        case .somethingNotWorking:
             return NSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT",
                 comment: "A brief localized representation of the 'something not working' support filter."
@@ -94,10 +94,10 @@ enum ContactSupportFilter: String, CaseIterable {
                 "CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT",
                 comment: "A brief localized representation of the 'payments' support filter."
             )
-        case .sustainers:
+        case .donationsAndBadges:
             return NSLocalizedString(
-                "CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT",
-                comment: "A brief localized representation of the 'Sustainers & Signal Boost' support filter."
+                "CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT",
+                comment: "A brief localized representation of the 'Donations & Badges' support filter."
             )
         }
     }
