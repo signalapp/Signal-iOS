@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUITableViewController.h"
@@ -7,7 +7,6 @@
 #import "DebugUIDiskUsage.h"
 #import "DebugUIMessages.h"
 #import "DebugUIMisc.h"
-#import "DebugUIScreenshots.h"
 #import "DebugUISessionState.h"
 #import "DebugUIStress.h"
 #import "DebugUISyncMessages.h"
@@ -97,9 +96,6 @@ NS_ASSUME_NONNULL_BEGIN
     [subsectionItems addObject:[self itemForSubsection:[DebugUISyncMessages new]
                                         viewController:viewController
                                                 thread:thread]];
-    [subsectionItems addObject:[self itemForSubsection:[DebugUIScreenshots new]
-                                        viewController:viewController
-                                                thread:thread]];
     OWSTableItem *sharedDataFileBrowserItem = [OWSTableItem
         disclosureItemWithText:@"📁 Shared Container"
                    actionBlock:^{
@@ -158,9 +154,6 @@ NS_ASSUME_NONNULL_BEGIN
         addObject:[self itemForSubsection:[DebugUISyncMessages new] viewController:viewController thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIGroupsV2 new] viewController:viewController thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIPayments new] viewController:viewController thread:nil]];
-    [subsectionItems addObject:[self itemForSubsection:[DebugUIScreenshots new]
-                                        viewController:viewController
-                                                thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:nil]];
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
 
