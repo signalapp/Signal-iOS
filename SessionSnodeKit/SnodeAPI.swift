@@ -489,18 +489,12 @@ public final class SnodeAPI : NSObject {
 
     // MARK: Store
     
-    public static func sendConfigMessage(_ message: SnodeMessage)  -> Promise<Set<RawResponsePromise>> {
-        return sendMessageWithAuthentication(message, namespace: configNamespace)
-    }
-    
-    public static func sendMessage(_ message: SnodeMessage, authenticated: Bool, isConfigMessage: Bool) -> Promise<Set<RawResponsePromise>> {
+    public static func sendMessage(_ message: SnodeMessage, isClosedGroupMessage: Bool, isConfigMessage: Bool) -> Promise<Set<RawResponsePromise>> {
         if isConfigMessage {
-            return sendConfigMessage(message)
+            return sendMessageWithAuthentication(message, namespace: configNamespace)
         }
-        if authenticated {
-            return sendMessageWithAuthentication(message, namespace: defaultNamespace)
-        }
-        return sendMessageUnauthenticated(message)
+        let namespace = isClosedGroupMessage ? unauthenticatedNamespace : defaultNamespace
+        return sendMessageUnauthenticated(message, namespace: namespace)
     }
     
     private static func sendMessageWithAuthentication(_ message: SnodeMessage, namespace: Int) -> Promise<Set<RawResponsePromise>> {
@@ -533,13 +527,13 @@ public final class SnodeAPI : NSObject {
         return promise
     }
     
-    private static func sendMessageUnauthenticated(_ message: SnodeMessage) -> Promise<Set<RawResponsePromise>> {
+    private static func sendMessageUnauthenticated(_ message: SnodeMessage, namespace: Int) -> Promise<Set<RawResponsePromise>> {
         let (promise, seal) = Promise<Set<RawResponsePromise>>.pending()
         let publicKey = Features.useTestnet ? message.recipient.removing05PrefixIfNeeded() : message.recipient
         Threading.workQueue.async {
             getTargetSnodes(for: publicKey).map2 { targetSnodes in
                 var parameters = message.toJSON()
-                parameters["namespace"] = unauthenticatedNamespace
+                parameters["namespace"] = namespace
                 return Set(targetSnodes.map { targetSnode in
                     attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                         invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)

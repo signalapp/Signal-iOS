@@ -205,7 +205,7 @@ public final class MessageSender : NSObject {
         let timestamp = UInt64(Int64(message.sentTimestamp!) + SnodeAPI.clockOffset)
         let snodeMessage = SnodeMessage(recipient: message.recipient!, data: base64EncodedData, ttl: message.ttl, timestamp: timestamp)
         SnodeAPI.sendMessage(snodeMessage,
-                             authenticated: (kind != .closedGroupMessage),
+                             isClosedGroupMessage: (kind == .closedGroupMessage),
                              isConfigMessage: message.isKind(of: ConfigurationMessage.self))
         .done(on: DispatchQueue.global(qos: .userInitiated)) { promises in
             var isSuccess = false
