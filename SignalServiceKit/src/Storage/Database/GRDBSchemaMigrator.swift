@@ -1688,18 +1688,15 @@ public class GRDBSchemaMigrator: NSObject {
             """)
         }
 
-        if FeatureFlags.storiesMigration4 {
-
-            migrator.registerMigration(MigrationId.addStoryContextIndexToInteractions.rawValue) { db in
-                do {
-                    try db.create(
-                        index: "index_model_TSInteraction_on_StoryContext",
-                        on: "model_TSInteraction",
-                        columns: ["storyTimestamp", "storyAuthorUuidString", "isGroupStoryReply"]
-                    )
-                } catch {
-                    owsFail("Error: \(error)")
-                }
+        migrator.registerMigration(MigrationId.addStoryContextIndexToInteractions.rawValue) { db in
+            do {
+                try db.create(
+                    index: "index_model_TSInteraction_on_StoryContext",
+                    on: "model_TSInteraction",
+                    columns: ["storyTimestamp", "storyAuthorUuidString", "isGroupStoryReply"]
+                )
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 
