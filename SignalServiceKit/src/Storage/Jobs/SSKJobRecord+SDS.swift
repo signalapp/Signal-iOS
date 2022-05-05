@@ -160,7 +160,6 @@ extension SSKJobRecord {
     class func fromRecord(_ record: JobRecordRecord) throws -> SSKJobRecord {
 
         guard let recordId = record.id else {
-            owsFailDebug("Record id is null")
             throw SDSError.invalidValue
         }
 
