@@ -482,11 +482,14 @@ public final class SnodeAPI : NSObject {
         let lastHash = storage.getLastMessageHash(for: snode, namespace: namespace, associatedWith: publicKey) ?? ""
 
         // Make the request
-        let parameters: JSON = [
+        var parameters: JSON = [
             "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey,
-            "namespace": namespace,
             "lastHash" : lastHash,
         ]
+        // Don't include namespace if polling for 0 with no authentication
+        if namespace != defaultNamespace {
+            parameters["namespace"] = namespace
+        }
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
 
