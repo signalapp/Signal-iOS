@@ -505,6 +505,10 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
         capabilities[@"stories"] = @(YES);
     }
 
+    if (SSKFeatureFlags.giftBadgeReceiving) {
+        capabilities[@"giftBadges"] = @(YES);
+    }
+
     // If the storage service requires (or will require) secondary devices
     // to have a capability in order to be linked, we might need to always
     // set that capability here if isSecondaryDevice is true.
