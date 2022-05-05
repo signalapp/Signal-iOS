@@ -453,13 +453,13 @@ class GRDBFullTextSearchFinder: NSObject {
                     snippet(\(ftsTableName), \(indexOfContentColumnInFTSTable), '<\(matchTag)>', '</\(matchTag)>', '…', \(numTokens) ) as \(matchSnippet)
                 FROM \(ftsTableName)
                 LEFT JOIN \(contentTableName) ON \(contentTableName).rowId = \(ftsTableName).rowId
-                WHERE \(ftsTableName) MATCH '"\(ftsContentColumn)" : \(query)'
+                WHERE \(ftsTableName).\(ftsContentColumn) MATCH ?
                 AND \(collectionColumn) IN (\(collections.map { "'\($0)'" }.joined(separator: ",")))
                 ORDER BY rank
                 LIMIT \(maxResults)
             """
 
-            let cursor = try Row.fetchCursor(transaction.database, sql: sql)
+            let cursor = try Row.fetchCursor(transaction.database, sql: sql, arguments: [query])
             while let row = try cursor.next() {
                 let collection: String = row[collectionColumn]
                 let uniqueId: String = row[uniqueIdColumn]
