@@ -135,6 +135,7 @@ extension OWSIdentityManager {
         firstly(on: .global()) { () -> Promise<Bool> in
             // If we haven't generated an identity key yet, we should do so now.
             guard let currentPniIdentityKey = self.identityKeyPair(for: .pni) else {
+                Logger.info("Creating PNI identity keys for the first time")
                 return .value(true)
             }
             // If we have, we still check it against the server, in case the initial upload got interrupted.
@@ -146,11 +147,17 @@ extension OWSIdentityManager {
                                                                               fetchType: .unversioned)
             return fetchedProfilePromise.map { fetchedProfile in
                 // Check that the key is actually up to date.
-                fetchedProfile.profile.identityKey == currentPniIdentityKey.publicKey
+                if fetchedProfile.profile.identityKey == currentPniIdentityKey.publicKey {
+                    Logger.debug("PNI identity key is up to date on the server")
+                    return false
+                }
+                Logger.info("PNI identity key is out of date on the server; re-uploading")
+                return true
             }.recover { error -> Promise<Bool> in
                 switch error {
                 case ParamParser.ParseError.missingField("identityKey"):
                     // The server does not have an identity key for us at all.
+                    Logger.info("Server does not have our PNI identity key; uploading now")
                     return .value(true)
                 case ProfileFetchError.notMainApp:
                     return .value(false)
