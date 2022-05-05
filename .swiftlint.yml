@@ -3,6 +3,7 @@ excluded:
 disabled_rules:
 - cyclomatic_complexity
 - file_length
+- for_where
 - function_body_length
 - function_parameter_count
 - line_length
