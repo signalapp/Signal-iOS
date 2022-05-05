@@ -36,7 +36,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return viewControllers!.first as! MediaDetailViewController
     }
 
-    public var currentItem: MediaGalleryItem! {
+    public var currentItem: MediaGalleryItem {
         return currentViewController.galleryItemBox.value
     }
 
@@ -361,11 +361,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     func updateMediaRail() {
-        guard let currentItem = self.currentItem else {
-            owsFailDebug("currentItem was unexpectedly nil")
-            return
-        }
-
         if mostRecentAlbum?.items.contains(currentItem) != true {
             mostRecentAlbum = mediaGallery.album(for: currentItem)
         }
@@ -450,11 +445,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
         Logger.debug("")
 
-        guard let currentItem = self.currentItem else {
-            owsFailDebug("currentItem was unexpectedly nil")
-            return
-        }
-
         guard items.contains(currentItem) else {
             Logger.debug("irrelevant item")
             return
@@ -481,7 +471,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     func itemIsAllowed(_ item: MediaGalleryItem) -> Bool {
         // Normally, we can show any media item, but if we're limited
         // to showing a single message, don't page beyond that message
-        return !showingSingleMessage || currentItem?.message == item.message
+        return !showingSingleMessage || currentItem.message == item.message
     }
 
     func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath]) {
@@ -751,10 +741,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }()
 
     private func updateTitle() {
-        guard let currentItem = self.currentItem else {
-            owsFailDebug("currentItem was unexpectedly nil")
-            return
-        }
         updateTitle(item: currentItem)
     }
 
@@ -878,22 +864,12 @@ extension MediaPageViewController: UIViewControllerTransitioningDelegate {
             return nil
         }
 
-        guard let currentItem = currentItem else {
-            owsFailDebug("currentItem was unexpectedly nil")
-            return nil
-        }
-
         return MediaZoomAnimationController(galleryItem: currentItem)
     }
 
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         guard self == dismissed else {
             owsFailDebug("unexpected presented: \(dismissed)")
-            return nil
-        }
-
-        guard let currentItem = currentItem else {
-            owsFailDebug("currentItem was unexpectedly nil")
             return nil
         }
 
