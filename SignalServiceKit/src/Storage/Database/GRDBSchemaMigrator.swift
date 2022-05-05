@@ -211,11 +211,11 @@ public class GRDBSchemaMigrator: NSObject {
     class DatabaseMigratorWrapper {
         var migrator = DatabaseMigrator()
 
-        func registerMigration(_ identifier: String, migrate: @escaping (Database) throws -> Void) {
-            migrator.registerMigration(identifier) {  (database: Database) throws in
+        func registerMigration(_ identifier: String, migrate: @escaping (Database) -> Void) {
+            migrator.registerMigration(identifier) { (database: Database) in
                 let startTime = CACurrentMediaTime()
                 Logger.info("Running migration: \(identifier)")
-                try migrate(database)
+                migrate(database)
                 let timeElapsed = CACurrentMediaTime() - startTime
                 let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
                 Logger.info("Migration completed: \(identifier), duration: \(formattedTime)")
@@ -1650,13 +1650,17 @@ public class GRDBSchemaMigrator: NSObject {
             defer { transaction.finalizeTransaction() }
             guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
 
-            try db.execute(sql: """
-                DROP INDEX index_model_TSInteraction_ConversationLoadInteractionCount;
+            do {
+                try db.execute(sql: """
+                    DROP INDEX index_model_TSInteraction_ConversationLoadInteractionCount;
 
-                CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionCount
-                ON model_TSInteraction(uniqueThreadId, isGroupStoryReply, recordType)
-                WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
-            """)
+                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionCount
+                    ON model_TSInteraction(uniqueThreadId, isGroupStoryReply, recordType)
+                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+                """)
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.updateConversationLoadInteractionDistanceIndex.rawValue) { db in
@@ -1664,13 +1668,17 @@ public class GRDBSchemaMigrator: NSObject {
             defer { transaction.finalizeTransaction() }
             guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
 
-            try db.execute(sql: """
-                DROP INDEX index_model_TSInteraction_ConversationLoadInteractionDistance;
+            do {
+                try db.execute(sql: """
+                    DROP INDEX index_model_TSInteraction_ConversationLoadInteractionDistance;
 
-                CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
-                ON model_TSInteraction(uniqueThreadId, id, isGroupStoryReply, recordType, uniqueId)
-                WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
-            """)
+                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
+                    ON model_TSInteraction(uniqueThreadId, id, isGroupStoryReply, recordType, uniqueId)
+                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+                """)
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.updateConversationUnreadCountIndex.rawValue) { db in
@@ -1678,13 +1686,17 @@ public class GRDBSchemaMigrator: NSObject {
             defer { transaction.finalizeTransaction() }
             guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
 
-            try db.execute(sql: """
-                DROP INDEX IF EXISTS index_interactions_unread_counts;
-                DROP INDEX IF EXISTS index_model_TSInteraction_UnreadCount;
+            do {
+                try db.execute(sql: """
+                    DROP INDEX IF EXISTS index_interactions_unread_counts;
+                    DROP INDEX IF EXISTS index_model_TSInteraction_UnreadCount;
 
-                CREATE INDEX index_model_TSInteraction_UnreadCount
-                ON model_TSInteraction(read, isGroupStoryReply, uniqueThreadId, recordType);
-            """)
+                    CREATE INDEX index_model_TSInteraction_UnreadCount
+                    ON model_TSInteraction(read, isGroupStoryReply, uniqueThreadId, recordType);
+                """)
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.addStoryContextIndexToInteractions.rawValue) { db in
@@ -1887,19 +1899,23 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
-            let cursor = TSThread.grdbFetchCursor(
-                sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .mutedUntilTimestamp) > 0",
-                transaction: transaction
-            )
+            do {
+                let cursor = TSThread.grdbFetchCursor(
+                    sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .mutedUntilTimestamp) > 0",
+                    transaction: transaction
+                )
 
-            while let thread = try cursor.next() {
-                if let thread = thread as? TSContactThread {
-                    Self.storageServiceManager.recordPendingUpdates(updatedAddresses: [thread.contactAddress])
-                } else if let thread = thread as? TSGroupThread {
-                    Self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
-                } else {
-                    owsFail("Unexpected thread type \(thread)")
+                while let thread = try cursor.next() {
+                    if let thread = thread as? TSContactThread {
+                        Self.storageServiceManager.recordPendingUpdates(updatedAddresses: [thread.contactAddress])
+                    } else if let thread = thread as? TSGroupThread {
+                        Self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
+                    } else {
+                        owsFail("Unexpected thread type \(thread)")
+                    }
                 }
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 
@@ -1907,32 +1923,36 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
-            let cursor = TSThread.grdbFetchCursor(
-                sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
-                transaction: transaction
-            )
+            do {
+                let cursor = TSThread.grdbFetchCursor(
+                    sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
+                    transaction: transaction
+                )
 
-            while let thread = try cursor.next() {
-                guard let groupThread = thread as? TSGroupThread else {
-                    owsFail("Unexpected thread type \(thread)")
-                }
-                let interactionFinder = InteractionFinder(threadUniqueId: groupThread.uniqueId)
-                groupThread.groupMembership.fullMembers.forEach { address in
-                    // Group member addresses are low-trust, and the address cache has
-                    // not been populated yet at this point in time. We want to record
-                    // as close to a fully qualified address as we can in the database,
-                    // so defer to the address from the signal recipient (if one exists)
-                    let recipient = GRDBSignalRecipientFinder().signalRecipient(for: address, transaction: transaction)
-                    let memberAddress = recipient?.address ?? address
+                while let thread = try cursor.next() {
+                    guard let groupThread = thread as? TSGroupThread else {
+                        owsFail("Unexpected thread type \(thread)")
+                    }
+                    let interactionFinder = InteractionFinder(threadUniqueId: groupThread.uniqueId)
+                    groupThread.groupMembership.fullMembers.forEach { address in
+                        // Group member addresses are low-trust, and the address cache has
+                        // not been populated yet at this point in time. We want to record
+                        // as close to a fully qualified address as we can in the database,
+                        // so defer to the address from the signal recipient (if one exists)
+                        let recipient = GRDBSignalRecipientFinder().signalRecipient(for: address, transaction: transaction)
+                        let memberAddress = recipient?.address ?? address
 
-                    let latestInteraction = interactionFinder.latestInteraction(from: memberAddress, transaction: transaction.asAnyWrite)
-                    let memberRecord = TSGroupMember(
-                        address: memberAddress,
-                        groupThreadId: groupThread.uniqueId,
-                        lastInteractionTimestamp: latestInteraction?.timestamp ?? 0
-                    )
-                    memberRecord.anyInsert(transaction: transaction.asAnyWrite)
+                        let latestInteraction = interactionFinder.latestInteraction(from: memberAddress, transaction: transaction.asAnyWrite)
+                        let memberRecord = TSGroupMember(
+                            address: memberAddress,
+                            groupThreadId: groupThread.uniqueId,
+                            lastInteractionTimestamp: latestInteraction?.timestamp ?? 0
+                        )
+                        memberRecord.anyInsert(transaction: transaction.asAnyWrite)
+                    }
                 }
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 
@@ -1976,35 +1996,39 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
-            // Ensure the local address is loaded & cached. If it’s not, the
-            // `modelWasInserted` calls may try to load it with a sneaky transaction,
-            // which will fail since we’re in a barrier block on the queue.
-            _ = self.tsAccountManager.localAddress(with: transaction.asAnyRead)
+            do {
+                // Ensure the local address is loaded & cached. If it’s not, the
+                // `modelWasInserted` calls may try to load it with a sneaky transaction,
+                // which will fail since we’re in a barrier block on the queue.
+                _ = self.tsAccountManager.localAddress(with: transaction.asAnyRead)
 
-            let threadCursor = TSThread.grdbFetchCursor(
-                sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
-                transaction: transaction
-            )
+                let threadCursor = TSThread.grdbFetchCursor(
+                    sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
+                    transaction: transaction
+                )
 
-            while let thread = try threadCursor.next() as? TSGroupThread {
-                try autoreleasepool {
-                    try thread.groupModel.migrateLegacyAvatarDataToDisk()
-                    thread.anyUpsert(transaction: transaction.asAnyWrite)
-                    GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: transaction)
+                while let thread = try threadCursor.next() as? TSGroupThread {
+                    try autoreleasepool {
+                        try thread.groupModel.migrateLegacyAvatarDataToDisk()
+                        thread.anyUpsert(transaction: transaction.asAnyWrite)
+                        GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: transaction)
+                    }
                 }
-            }
 
-            // There was a broken version of this migration that did not persist the avatar migration. It's now fixed, but for
-            // users who ran it we need to skip the re-index of the group members because we can't perform a second "insert"
-            // query. This is superfluous anyways, so it's safe to skip.
-            guard !hasRunMigration("dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData", transaction: transaction) else { return }
+                // There was a broken version of this migration that did not persist the avatar migration. It's now fixed, but for
+                // users who ran it we need to skip the re-index of the group members because we can't perform a second "insert"
+                // query. This is superfluous anyways, so it's safe to skip.
+                guard !hasRunMigration("dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData", transaction: transaction) else { return }
 
-            let memberCursor = try TSGroupMember.fetchCursor(db)
+                let memberCursor = try TSGroupMember.fetchCursor(db)
 
-            while let member = try memberCursor.next() {
-                autoreleasepool {
-                    GRDBFullTextSearchFinder.modelWasInserted(model: member, transaction: transaction)
+                while let member = try memberCursor.next() {
+                    autoreleasepool {
+                        GRDBFullTextSearchFinder.modelWasInserted(model: member, transaction: transaction)
+                    }
                 }
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 
