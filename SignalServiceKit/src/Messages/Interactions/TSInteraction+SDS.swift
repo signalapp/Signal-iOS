@@ -98,6 +98,7 @@ public struct InteractionRecord: SDSRecord {
     public let storyTimestamp: UInt64?
     public let isGroupStoryReply: Bool?
     public let storyReactionEmoji: String?
+    public let giftBadge: Data?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -171,6 +172,7 @@ public struct InteractionRecord: SDSRecord {
         case storyTimestamp
         case isGroupStoryReply
         case storyReactionEmoji
+        case giftBadge
     }
 
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -265,6 +267,7 @@ public extension InteractionRecord {
         storyTimestamp = row[68]
         isGroupStoryReply = row[69]
         storyReactionEmoji = row[70]
+        giftBadge = row[71]
     }
 }
 
@@ -310,6 +313,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -347,6 +352,7 @@ extension TSInteraction {
                                                 expireStartedAt: expireStartedAt,
                                                 expiresAt: expiresAt,
                                                 expiresInSeconds: expiresInSeconds,
+                                                giftBadge: giftBadge,
                                                 isGroupStoryReply: isGroupStoryReply,
                                                 isViewOnceComplete: isViewOnceComplete,
                                                 isViewOnceMessage: isViewOnceMessage,
@@ -381,6 +387,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -418,6 +426,7 @@ extension TSInteraction {
                                                         expireStartedAt: expireStartedAt,
                                                         expiresAt: expiresAt,
                                                         expiresInSeconds: expiresInSeconds,
+                                                        giftBadge: giftBadge,
                                                         isGroupStoryReply: isGroupStoryReply,
                                                         isViewOnceComplete: isViewOnceComplete,
                                                         isViewOnceMessage: isViewOnceMessage,
@@ -452,6 +461,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -493,6 +504,7 @@ extension TSInteraction {
                                                                  expireStartedAt: expireStartedAt,
                                                                  expiresAt: expiresAt,
                                                                  expiresInSeconds: expiresInSeconds,
+                                                                 giftBadge: giftBadge,
                                                                  isGroupStoryReply: isGroupStoryReply,
                                                                  isViewOnceComplete: isViewOnceComplete,
                                                                  isViewOnceMessage: isViewOnceMessage,
@@ -557,6 +569,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -609,6 +623,7 @@ extension TSInteraction {
                                              expireStartedAt: expireStartedAt,
                                              expiresAt: expiresAt,
                                              expiresInSeconds: expiresInSeconds,
+                                             giftBadge: giftBadge,
                                              isGroupStoryReply: isGroupStoryReply,
                                              isViewOnceComplete: isViewOnceComplete,
                                              isViewOnceMessage: isViewOnceMessage,
@@ -652,6 +667,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -689,6 +706,7 @@ extension TSInteraction {
                                                        expireStartedAt: expireStartedAt,
                                                        expiresAt: expiresAt,
                                                        expiresInSeconds: expiresInSeconds,
+                                                       giftBadge: giftBadge,
                                                        isGroupStoryReply: isGroupStoryReply,
                                                        isViewOnceComplete: isViewOnceComplete,
                                                        isViewOnceMessage: isViewOnceMessage,
@@ -723,6 +741,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -760,6 +780,7 @@ extension TSInteraction {
                                                       expireStartedAt: expireStartedAt,
                                                       expiresAt: expiresAt,
                                                       expiresInSeconds: expiresInSeconds,
+                                                      giftBadge: giftBadge,
                                                       isGroupStoryReply: isGroupStoryReply,
                                                       isViewOnceComplete: isViewOnceComplete,
                                                       isViewOnceMessage: isViewOnceMessage,
@@ -794,6 +815,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -834,6 +857,7 @@ extension TSInteraction {
                                                     expireStartedAt: expireStartedAt,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
+                                                    giftBadge: giftBadge,
                                                     isGroupStoryReply: isGroupStoryReply,
                                                     isViewOnceComplete: isViewOnceComplete,
                                                     isViewOnceMessage: isViewOnceMessage,
@@ -870,6 +894,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -913,6 +939,7 @@ extension TSInteraction {
                                                      expireStartedAt: expireStartedAt,
                                                      expiresAt: expiresAt,
                                                      expiresInSeconds: expiresInSeconds,
+                                                     giftBadge: giftBadge,
                                                      isGroupStoryReply: isGroupStoryReply,
                                                      isViewOnceComplete: isViewOnceComplete,
                                                      isViewOnceMessage: isViewOnceMessage,
@@ -975,6 +1002,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -1012,6 +1041,7 @@ extension TSInteraction {
                                   expireStartedAt: expireStartedAt,
                                   expiresAt: expiresAt,
                                   expiresInSeconds: expiresInSeconds,
+                                  giftBadge: giftBadge,
                                   isGroupStoryReply: isGroupStoryReply,
                                   isViewOnceComplete: isViewOnceComplete,
                                   isViewOnceMessage: isViewOnceMessage,
@@ -1046,6 +1076,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -1083,6 +1115,7 @@ extension TSInteraction {
                                      expireStartedAt: expireStartedAt,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
+                                     giftBadge: giftBadge,
                                      isGroupStoryReply: isGroupStoryReply,
                                      isViewOnceComplete: isViewOnceComplete,
                                      isViewOnceMessage: isViewOnceMessage,
@@ -1121,6 +1154,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -1158,6 +1193,7 @@ extension TSInteraction {
                                  expireStartedAt: expireStartedAt,
                                  expiresAt: expiresAt,
                                  expiresInSeconds: expiresInSeconds,
+                                 giftBadge: giftBadge,
                                  isGroupStoryReply: isGroupStoryReply,
                                  isViewOnceComplete: isViewOnceComplete,
                                  isViewOnceMessage: isViewOnceMessage,
@@ -1207,6 +1243,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -1244,6 +1282,7 @@ extension TSInteraction {
                                                     expireStartedAt: expireStartedAt,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
+                                                    giftBadge: giftBadge,
                                                     isGroupStoryReply: isGroupStoryReply,
                                                     isViewOnceComplete: isViewOnceComplete,
                                                     isViewOnceMessage: isViewOnceMessage,
@@ -1278,6 +1317,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -1317,6 +1358,7 @@ extension TSInteraction {
                                                              expireStartedAt: expireStartedAt,
                                                              expiresAt: expiresAt,
                                                              expiresInSeconds: expiresInSeconds,
+                                                             giftBadge: giftBadge,
                                                              isGroupStoryReply: isGroupStoryReply,
                                                              isViewOnceComplete: isViewOnceComplete,
                                                              isViewOnceMessage: isViewOnceMessage,
@@ -1353,6 +1395,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -1393,6 +1437,7 @@ extension TSInteraction {
                                                            expireStartedAt: expireStartedAt,
                                                            expiresAt: expiresAt,
                                                            expiresInSeconds: expiresInSeconds,
+                                                           giftBadge: giftBadge,
                                                            isGroupStoryReply: isGroupStoryReply,
                                                            isViewOnceComplete: isViewOnceComplete,
                                                            isViewOnceMessage: isViewOnceMessage,
@@ -1429,6 +1474,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -1457,6 +1504,7 @@ extension TSInteraction {
                              expireStartedAt: expireStartedAt,
                              expiresAt: expiresAt,
                              expiresInSeconds: expiresInSeconds,
+                             giftBadge: giftBadge,
                              isGroupStoryReply: isGroupStoryReply,
                              isViewOnceComplete: isViewOnceComplete,
                              isViewOnceMessage: isViewOnceMessage,
@@ -1486,6 +1534,8 @@ extension TSInteraction {
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let giftBadgeSerialized: Data? = record.giftBadge
+            let giftBadge: OWSGiftBadge? = try SDSDeserialization.optionalUnarchive(giftBadgeSerialized, name: "giftBadge")
             let isGroupStoryReply: Bool = try SDSDeserialization.required(record.isGroupStoryReply, name: "isGroupStoryReply")
             let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
             let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
@@ -1532,6 +1582,7 @@ extension TSInteraction {
                                      expireStartedAt: expireStartedAt,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
+                                     giftBadge: giftBadge,
                                      isGroupStoryReply: isGroupStoryReply,
                                      isViewOnceComplete: isViewOnceComplete,
                                      isViewOnceMessage: isViewOnceMessage,
@@ -1728,6 +1779,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -1851,6 +1915,7 @@ extension TSInteraction: DeepCopyable {
                                              expireStartedAt: expireStartedAt,
                                              expiresAt: expiresAt,
                                              expiresInSeconds: expiresInSeconds,
+                                             giftBadge: giftBadge,
                                              isGroupStoryReply: isGroupStoryReply,
                                              isViewOnceComplete: isViewOnceComplete,
                                              isViewOnceMessage: isViewOnceMessage,
@@ -1918,6 +1983,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -2002,6 +2080,7 @@ extension TSInteraction: DeepCopyable {
                                      expireStartedAt: expireStartedAt,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
+                                     giftBadge: giftBadge,
                                      isGroupStoryReply: isGroupStoryReply,
                                      isViewOnceComplete: isViewOnceComplete,
                                      isViewOnceMessage: isViewOnceMessage,
@@ -2066,6 +2145,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -2161,6 +2253,7 @@ extension TSInteraction: DeepCopyable {
                                                      expireStartedAt: expireStartedAt,
                                                      expiresAt: expiresAt,
                                                      expiresInSeconds: expiresInSeconds,
+                                                     giftBadge: giftBadge,
                                                      isGroupStoryReply: isGroupStoryReply,
                                                      isViewOnceComplete: isViewOnceComplete,
                                                      isViewOnceMessage: isViewOnceMessage,
@@ -2222,6 +2315,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -2326,6 +2432,7 @@ extension TSInteraction: DeepCopyable {
                                                     expireStartedAt: expireStartedAt,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
+                                                    giftBadge: giftBadge,
                                                     isGroupStoryReply: isGroupStoryReply,
                                                     isViewOnceComplete: isViewOnceComplete,
                                                     isViewOnceMessage: isViewOnceMessage,
@@ -2386,6 +2493,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -2480,6 +2600,7 @@ extension TSInteraction: DeepCopyable {
                                                                  expireStartedAt: expireStartedAt,
                                                                  expiresAt: expiresAt,
                                                                  expiresInSeconds: expiresInSeconds,
+                                                                 giftBadge: giftBadge,
                                                                  isGroupStoryReply: isGroupStoryReply,
                                                                  isViewOnceComplete: isViewOnceComplete,
                                                                  isViewOnceMessage: isViewOnceMessage,
@@ -2542,6 +2663,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -2632,6 +2766,7 @@ extension TSInteraction: DeepCopyable {
                                                         expireStartedAt: expireStartedAt,
                                                         expiresAt: expiresAt,
                                                         expiresInSeconds: expiresInSeconds,
+                                                        giftBadge: giftBadge,
                                                         isGroupStoryReply: isGroupStoryReply,
                                                         isViewOnceComplete: isViewOnceComplete,
                                                         isViewOnceMessage: isViewOnceMessage,
@@ -2690,6 +2825,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -2780,6 +2928,7 @@ extension TSInteraction: DeepCopyable {
                                                 expireStartedAt: expireStartedAt,
                                                 expiresAt: expiresAt,
                                                 expiresInSeconds: expiresInSeconds,
+                                                giftBadge: giftBadge,
                                                 isGroupStoryReply: isGroupStoryReply,
                                                 isViewOnceComplete: isViewOnceComplete,
                                                 isViewOnceMessage: isViewOnceMessage,
@@ -2838,6 +2987,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -2928,6 +3090,7 @@ extension TSInteraction: DeepCopyable {
                                  expireStartedAt: expireStartedAt,
                                  expiresAt: expiresAt,
                                  expiresInSeconds: expiresInSeconds,
+                                 giftBadge: giftBadge,
                                  isGroupStoryReply: isGroupStoryReply,
                                  isViewOnceComplete: isViewOnceComplete,
                                  isViewOnceMessage: isViewOnceMessage,
@@ -2986,6 +3149,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -3056,6 +3232,7 @@ extension TSInteraction: DeepCopyable {
                                      expireStartedAt: expireStartedAt,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
+                                     giftBadge: giftBadge,
                                      isGroupStoryReply: isGroupStoryReply,
                                      isViewOnceComplete: isViewOnceComplete,
                                      isViewOnceMessage: isViewOnceMessage,
@@ -3118,6 +3295,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -3212,6 +3402,7 @@ extension TSInteraction: DeepCopyable {
                                                            expireStartedAt: expireStartedAt,
                                                            expiresAt: expiresAt,
                                                            expiresInSeconds: expiresInSeconds,
+                                                           giftBadge: giftBadge,
                                                            isGroupStoryReply: isGroupStoryReply,
                                                            isViewOnceComplete: isViewOnceComplete,
                                                            isViewOnceMessage: isViewOnceMessage,
@@ -3272,6 +3463,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -3364,6 +3568,7 @@ extension TSInteraction: DeepCopyable {
                                                              expireStartedAt: expireStartedAt,
                                                              expiresAt: expiresAt,
                                                              expiresInSeconds: expiresInSeconds,
+                                                             giftBadge: giftBadge,
                                                              isGroupStoryReply: isGroupStoryReply,
                                                              isViewOnceComplete: isViewOnceComplete,
                                                              isViewOnceMessage: isViewOnceMessage,
@@ -3424,6 +3629,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -3514,6 +3732,7 @@ extension TSInteraction: DeepCopyable {
                                                     expireStartedAt: expireStartedAt,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
+                                                    giftBadge: giftBadge,
                                                     isGroupStoryReply: isGroupStoryReply,
                                                     isViewOnceComplete: isViewOnceComplete,
                                                     isViewOnceMessage: isViewOnceMessage,
@@ -3572,6 +3791,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -3662,6 +3894,7 @@ extension TSInteraction: DeepCopyable {
                                                       expireStartedAt: expireStartedAt,
                                                       expiresAt: expiresAt,
                                                       expiresInSeconds: expiresInSeconds,
+                                                      giftBadge: giftBadge,
                                                       isGroupStoryReply: isGroupStoryReply,
                                                       isViewOnceComplete: isViewOnceComplete,
                                                       isViewOnceMessage: isViewOnceMessage,
@@ -3720,6 +3953,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -3810,6 +4056,7 @@ extension TSInteraction: DeepCopyable {
                                                        expireStartedAt: expireStartedAt,
                                                        expiresAt: expiresAt,
                                                        expiresInSeconds: expiresInSeconds,
+                                                       giftBadge: giftBadge,
                                                        isGroupStoryReply: isGroupStoryReply,
                                                        isViewOnceComplete: isViewOnceComplete,
                                                        isViewOnceMessage: isViewOnceMessage,
@@ -3868,6 +4115,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -3958,6 +4218,7 @@ extension TSInteraction: DeepCopyable {
                                   expireStartedAt: expireStartedAt,
                                   expiresAt: expiresAt,
                                   expiresInSeconds: expiresInSeconds,
+                                  giftBadge: giftBadge,
                                   isGroupStoryReply: isGroupStoryReply,
                                   isViewOnceComplete: isViewOnceComplete,
                                   isViewOnceMessage: isViewOnceMessage,
@@ -4016,6 +4277,19 @@ extension TSInteraction: DeepCopyable {
             let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let giftBadge: OWSGiftBadge?
+            if let giftBadgeForCopy = modelToCopy.giftBadge {
+               giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
+            } else {
+               giftBadge = nil
+            }
             let isGroupStoryReply: Bool = modelToCopy.isGroupStoryReply
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
@@ -4077,6 +4351,7 @@ extension TSInteraction: DeepCopyable {
                              expireStartedAt: expireStartedAt,
                              expiresAt: expiresAt,
                              expiresInSeconds: expiresInSeconds,
+                             giftBadge: giftBadge,
                              isGroupStoryReply: isGroupStoryReply,
                              isViewOnceComplete: isViewOnceComplete,
                              isViewOnceMessage: isViewOnceMessage,
@@ -4248,6 +4523,7 @@ extension TSInteractionSerializer {
     static var storyTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "storyTimestamp", columnType: .int64, isOptional: true) }
     static var isGroupStoryReplyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isGroupStoryReply", columnType: .int, isOptional: true) }
     static var storyReactionEmojiColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "storyReactionEmoji", columnType: .unicodeString, isOptional: true) }
+    static var giftBadgeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "giftBadge", columnType: .blob, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -4325,7 +4601,8 @@ extension TSInteractionSerializer {
         storyAuthorUuidStringColumn,
         storyTimestampColumn,
         isGroupStoryReplyColumn,
-        storyReactionEmojiColumn
+        storyReactionEmojiColumn,
+        giftBadgeColumn
         ])
     }
 }
@@ -4800,8 +5077,9 @@ class TSInteractionSerializer: SDSSerializer {
         let storyTimestamp: UInt64? = nil
         let isGroupStoryReply: Bool? = nil
         let storyReactionEmoji: String? = nil
+        let giftBadge: Data? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply, storyReactionEmoji: storyReactionEmoji)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply, storyReactionEmoji: storyReactionEmoji, giftBadge: giftBadge)
     }
 }
 

@@ -77,6 +77,7 @@
     "InteractionRecord.expireStartedAt": 18,
     "InteractionRecord.expiresAt": 19,
     "InteractionRecord.expiresInSeconds": 20,
+    "InteractionRecord.giftBadge": 69,
     "InteractionRecord.groupMetaMessage": 21,
     "InteractionRecord.hasEnded": 56,
     "InteractionRecord.hasLegacyMessageState": 22,

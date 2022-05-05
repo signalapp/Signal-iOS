@@ -119,6 +119,7 @@ CREATE
             ,"storyTimestamp" INTEGER
             ,"isGroupStoryReply" BOOLEAN DEFAULT 0
             ,"storyReactionEmoji" TEXT
+            ,"giftBadge" BLOB
         )
 ;
 
