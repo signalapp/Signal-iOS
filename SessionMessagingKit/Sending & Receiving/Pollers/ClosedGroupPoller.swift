@@ -88,8 +88,12 @@ public final class ClosedGroupPoller : NSObject {
             timer.invalidate()
             Threading.pollerQueue.async {
                 var promises: [Promise<Void>] = []
-                if let promise = self?.poll(groupPublicKey) { promises.append(promise) }
-                if SnodeAPI.duringHardforkTransition, let promise = self?.poll(groupPublicKey, defaultInbox: true) { promises.append(promise) }
+                if SnodeAPI.hardfork <= 19, SnodeAPI.softfork == 0, let promise = self?.poll(groupPublicKey, defaultInbox: true) {
+                    promises.append(promise)
+                }
+                if SnodeAPI.hardfork >= 19, SnodeAPI.softfork >= 0,let promise = self?.poll(groupPublicKey) {
+                    promises.append(promise)
+                }
                 when(resolved: promises).done(on: Threading.pollerQueue) { _ in
                     self?.pollRecursively(groupPublicKey)
                 }.catch(on: Threading.pollerQueue) { error in

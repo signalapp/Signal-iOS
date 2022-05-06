@@ -29,9 +29,8 @@ public final class SnodeAPI : NSObject {
     public static let configNamespace = 5
     
     // MARK: Hardfork version
-    private static var hardfork = UserDefaults.standard[.hardfork]
-    private static var softfork = UserDefaults.standard[.softfork]
-    public static var duringHardforkTransition: Bool { hardfork == 19 && softfork == 0 }
+    public static var hardfork = UserDefaults.standard[.hardfork]
+    public static var softfork = UserDefaults.standard[.softfork]
 
     // MARK: Settings
     private static let maxRetryCount: UInt = 8
