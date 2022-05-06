@@ -45,6 +45,10 @@ public struct ProfileManager {
         }
         guard let profile: Profile = try? Profile.fetchOne(db, id: id) else { return nil }
         
+        return profileAvatar(profile: profile)
+    }
+    
+    public static func profileAvatar(profile: Profile) -> UIImage? {
         if let profileFileName: String = profile.profilePictureFileName, !profileFileName.isEmpty {
             return loadProfileAvatar(for: profileFileName)
         }
@@ -186,7 +190,7 @@ public struct ProfileManager {
         profileName: String,
         avatarImage: UIImage?,
         requiredSync: Bool,
-        success: (() -> ())? = nil,
+        success: ((Profile) -> ())? = nil,
         failure: ((Error) -> ())? = nil
     ) {
         DispatchQueue.global(qos: .default).async {
@@ -205,7 +209,7 @@ public struct ProfileManager {
                             "Updating local profile on service with no avatar."
                         )
                         
-                        try? existingProfile
+                        let updatedProfile: Profile = try existingProfile
                             .with(
                                 name: profileName,
                                 profilePictureUrl: nil,
@@ -215,20 +219,20 @@ public struct ProfileManager {
                                     .existing
                                 )
                             )
-                            .save(db)
+                            .saved(db)
                         
                         // Remove any cached avatar image value
                         if let fileName: String = existingProfile.profilePictureFileName {
                             profileAvatarCache.mutate { $0[fileName] = nil }
                         }
-                    },
-                    completion: { _, _ in
+                        
                         SNLog("Successfully updated service with profile.")
                         
                         DispatchQueue.main.async {
-                            success?()
+                            success?(updatedProfile)
                         }
-                    }
+                    },
+                    completion: { _, _ in }
                 )
                 return
             }
@@ -302,7 +306,7 @@ public struct ProfileManager {
                     
                     GRDBStorage.shared.writeAsync(
                         updates: { db in
-                            try? Profile
+                            let profile: Profile = try Profile
                                 .fetchOrCreateCurrentUser(db)
                                 .with(
                                     name: profileName,
@@ -310,17 +314,17 @@ public struct ProfileManager {
                                     profilePictureFileName: .update(fileName),
                                     profileEncryptionKey: .update(newProfileKey)
                                 )
-                                .save(db)
-                        },
-                        completion: { _, _ in
+                                .saved(db)
+                            
                             // Update the cached avatar image value
                             profileAvatarCache.mutate { $0[fileName] = avatarImage }
                             
                             DispatchQueue.main.async {
                                 SNLog("Successfully updated service with profile.")
-                                success?()
+                                success?(profile)
                             }
-                        }
+                        },
+                        completion: { _, _ in }
                     )
                 }
                 .recover { error in

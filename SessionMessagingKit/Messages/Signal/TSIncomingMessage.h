@@ -2,7 +2,6 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import <SessionMessagingKit/OWSReadTracking.h>
 #import <SessionMessagingKit/TSMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -10,12 +9,11 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSContactThread;
 @class TSGroupThread;
 
-@interface TSIncomingMessage : TSMessage <OWSReadTracking>
+@interface TSIncomingMessage : TSMessage
 
+@property (nonatomic, getter=wasRead) BOOL read;
 @property (nonatomic, readonly) BOOL wasReceivedByUD;
-
 @property (nonatomic, readonly) BOOL isUserMentioned;
-
 @property (nonatomic, readonly, nullable) NSString *notificationIdentifier;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp

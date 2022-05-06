@@ -131,8 +131,8 @@ public final class VisibleMessage: Message {
         
         // Quote
         
-        if let quotedAttachmentID = quote?.attachmentID, let index = attachmentIDs.firstIndex(of: quotedAttachmentID) {
-            attachmentIDs.remove(at: index)
+        if let quotedAttachmentId = quote?.attachmentId, let index = attachmentIds.firstIndex(of: quotedAttachmentId) {
+            attachmentIds.remove(at: index)
         }
         
         if let quote = quote, let quoteProto = quote.toProto(db) {

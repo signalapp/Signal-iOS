@@ -1,4 +1,6 @@
+import GRDB
 import PromiseKit
+import SessionUtilitiesKit
 
 @objc(SNOpenGroupPollerV2)
 public final class OpenGroupPollerV2 : NSObject {
@@ -44,17 +46,20 @@ public final class OpenGroupPollerV2 : NSObject {
         let (promise, seal) = Promise<Void>.pending()
         promise.retainUntilComplete()
         Threading.pollerQueue.async {
-            OpenGroupAPIV2.compactPoll(self.server).done(on: OpenGroupAPIV2.workQueue) { [weak self] bodies in
-                guard let self = self else { return }
-                self.isPolling = false
-                bodies.forEach { self.handleCompactPollBody($0, isBackgroundPoll: isBackgroundPoll) }
-                SNLog("Open group polling finished for \(self.server).")
-                seal.fulfill(())
-            }.catch(on: OpenGroupAPIV2.workQueue) { error in
-                SNLog("Open group polling failed due to error: \(error).")
-                self.isPolling = false
-                seal.fulfill(()) // The promise is just used to keep track of when we're done
-            }
+            GRDBStorage.shared
+                .read { db in try OpenGroupAPIV2.compactPoll(db, server: self.server) }
+                .done(on: OpenGroupAPIV2.workQueue) { [weak self] bodies in
+                    guard let self = self else { return }
+                    self.isPolling = false
+                    bodies.forEach { self.handleCompactPollBody($0, isBackgroundPoll: isBackgroundPoll) }
+                    SNLog("Open group polling finished for \(self.server).")
+                    seal.fulfill(())
+                }
+                .catch(on: OpenGroupAPIV2.workQueue) { error in
+                    SNLog("Open group polling failed due to error: \(error).")
+                    self.isPolling = false
+                    seal.fulfill(()) // The promise is just used to keep track of when we're done
+                }
         }
         return promise
     }

@@ -19,7 +19,6 @@ public enum MessageSendJob: JobExecutor {
         deferred: @escaping (Job) -> ()
     ) {
         guard
-            let jobId: Int64 = job.id,  // Need the 'job.id' in order to execute a MessageSendJob
             let detailsData: Data = job.details,
             let details: Details = try? JSONDecoder().decode(Details.self, from: detailsData)
         else {
@@ -29,9 +28,8 @@ public enum MessageSendJob: JobExecutor {
         
         if details.message is VisibleMessage {
             guard
-                let interactionId: Int64 = details.interactionId,
-                let threadId: String = job.threadId,
-                let interaction: Interaction = GRDBStorage.shared.read({ db in try Interaction.fetchOne(db, id: interactionId) })
+                let jobId: Int64 = job.id,
+                let interactionId: Int64 = job.interactionId
             else {
                 failure(job, JobRunnerError.missingRequiredDetails, false)
                 return

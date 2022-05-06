@@ -8,10 +8,9 @@ public struct GroupMember: Codable, FetchableRecord, PersistableRecord, TableRec
     public static var databaseTableName: String { "groupMember" }
     internal static let openGroupForeignKey = ForeignKey([Columns.groupId], to: [OpenGroup.Columns.threadId])
     internal static let closedGroupForeignKey = ForeignKey([Columns.groupId], to: [ClosedGroup.Columns.threadId])
-    internal static let profileForeignKey = ForeignKey([Columns.profileId], to: [Profile.Columns.id])
     public static let openGroup = belongsTo(OpenGroup.self, using: openGroupForeignKey)
     public static let closedGroup = belongsTo(ClosedGroup.self, using: closedGroupForeignKey)
-    public static let profile = hasOne(Profile.self, using: profileForeignKey)
+    public static let profile = hasOne(Profile.self, using: Profile.groupMemberForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {

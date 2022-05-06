@@ -168,7 +168,7 @@ public enum MessageReceiver {
                 // • The app performed a background poll or received a push notification
                 // • This method was invoked and the received message timestamps table was updated
                 // • Processing wasn't finished
-                // • The user doesn't see theO new closed group
+                // • The user doesn't see the new closed group
                 case (_, _, .new): break
                     
                 // All `VisibleMessage` values will have an associated `Interaction` so just let

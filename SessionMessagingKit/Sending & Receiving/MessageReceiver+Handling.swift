@@ -29,15 +29,54 @@ extension MessageReceiver {
             default: fatalError()
         }
         
-        guard (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false) else { return }
-        
-        // Touch the thread to update the home screen preview
-        let storage = SNMessagingKitConfiguration.shared.storage
-        guard let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { return }
-        ThreadUpdateBatcher.shared.touch(threadID)
+        // When handling any non-typing indicator message we want to make sure the thread becomes
+        // visible (the only other spot this flag gets set is when sending messages)
+        switch message {
+            case is TypingIndicator: break
+                
+            default:
+                guard let threadInfo: (id: String, variant: SessionThread.Variant) = threadInfo(db, message: message, openGroupId: openGroupId) else {
+                    return
+                }
+                
+                _ = try SessionThread
+                    .fetchOrCreate(db, id: threadInfo.id, variant: threadInfo.variant)
+                    .with(shouldBeVisible: true)
+                    .saved(db)
+        }
     }
-
     
+    // MARK: - Convenience
+    
+    private static func threadInfo(_ db: Database, message: Message, openGroupId: String?) -> (id: String, variant: SessionThread.Variant)? {
+        if let openGroupId: String = openGroupId {
+            // Note: We don't want to create a thread for an open group if it doesn't exist
+            if (try? SessionThread.exists(db, id: openGroupId)) != true { return nil }
+            
+            return (openGroupId, .openGroup)
+        }
+        
+        if let groupPublicKey: String = message.groupPublicKey {
+            // Note: We don't want to create a thread for a closed group if it doesn't exist
+            if (try? SessionThread.exists(db, id: groupPublicKey)) != true { return nil }
+            
+            return (groupPublicKey, .closedGroup)
+        }
+        
+        // Extract the 'syncTarget' value if there is one
+        let maybeSyncTarget: String?
+        
+        switch message {
+            case let message as VisibleMessage: maybeSyncTarget = message.syncTarget
+            case let message as ExpirationTimerUpdate: maybeSyncTarget = message.syncTarget
+            default: maybeSyncTarget = nil
+        }
+        
+        // Note: We don't want to create a thread for a closed group if it doesn't exist
+        guard let contactId: String = (maybeSyncTarget ?? message.sender) else { return nil }
+        
+        return (contactId, .contact)
+    }
     
     // MARK: - Read Receipts
     
@@ -153,15 +192,9 @@ extension MessageReceiver {
     // MARK: - Expiration Timers
 
     private static func handleExpirationTimerUpdate(_ db: Database, message: ExpirationTimerUpdate) throws {
-        let targetId: String? = {
-            if let groupPublicKey: String = message.groupPublicKey { return groupPublicKey }
-            
-            return (message.syncTarget ?? message.sender)
-        }()
-        
         // Get the target thread
         guard
-            let targetId: String = targetId,
+            let targetId: String = threadInfo(db, message: message, openGroupId: nil)?.id,
             let sender: String = message.sender,
             let thread: SessionThread = try? SessionThread.fetchOne(db, id: targetId)
         else { return }
@@ -213,7 +246,8 @@ extension MessageReceiver {
         
         SNLog("Configuration message received.")
         
-        // Note: `message.sentTimestamp` is in ms
+        // Note: `message.sentTimestamp` is in ms (convert to TimeInterval before converting to
+        // seconds to maintain the accuracy)
         let isInitialSync: Bool = (!UserDefaults.standard[.hasSyncedInitialConfiguration])
         let messageSentTimestamp: TimeInterval = TimeInterval((message.sentTimestamp ?? 0) / 1000)
         let lastConfigTimestamp: TimeInterval = UserDefaults.standard[.lastConfigurationSync]
@@ -255,27 +289,25 @@ extension MessageReceiver {
                     )
                     .save(db)
                 
-                // Note: We only update these values if the proto actually has values for them (this is to
-                // prevent an edge case where an old client could override the values with default values
-                // since they aren't included)
-                //
-                // Note: Since message requests has no reverse, the only case we need to process is a
-                // config message setting *isApproved* and *didApproveMe* to true. This may prevent some
-                // weird edge cases where a config message swapping *isApproved* and *didApproveMe* to
-                // false.
+                /// We only update these values if the proto actually has values for them (this is to prevent an
+                /// edge case where an old client could override the values with default values since they aren't included)
+                ///
+                /// **Note:** Since message requests have no reverse, we should only handle setting `isApproved`
+                /// and `didApproveMe` to `true`. This may prevent some weird edge cases where a config message
+                /// swapping `isApproved` and `didApproveMe` to `false`
                 try contact
                     .with(
                         isApproved: (contactInfo.hasIsApproved && contactInfo.isApproved ?
-                            .existing :
-                            true
+                            true :
+                            .existing
                         ),
-                        isBlocked: (contactInfo.hasIsBlocked && contactInfo.isBlocked ?
-                            .existing :
-                            true
+                        isBlocked: (contactInfo.hasIsBlocked ?
+                            .update(contactInfo.isBlocked) :
+                            .existing
                         ),
                         didApproveMe: (contactInfo.hasDidApproveMe && contactInfo.didApproveMe ?
-                            .existing :
-                            true
+                            true :
+                            .existing
                         )
                     )
                     .save(db)
@@ -290,7 +322,7 @@ extension MessageReceiver {
                         let thread: SessionThread = try? SessionThread.fetchOne(db, id: sessionId),
                         thread.isMessageRequest(db)
                     {
-                        try thread.delete(db)
+                        _ = try thread.delete(db)
                     }
                 }
             }
@@ -353,11 +385,20 @@ extension MessageReceiver {
             .filter(Interaction.Columns.authorId == author)
             .fetchOne(db)
         
-        guard let interaction: Interaction = maybeInteraction else { return }
+        guard
+            let interactionId: Int64 = maybeInteraction?.id,
+            let interaction: Interaction = maybeInteraction
+        else { return }
         
         // Mark incoming messages as read and remove any of their notifications
         if interaction.variant == .standardIncoming {
-            _ = try interaction.markingAsRead(db, includingOlder: false, trySendReadReceipt: false)
+            try Interaction.markAsRead(
+                db,
+                interactionId: interactionId,
+                threadId: interaction.threadId,
+                includingOlder: false,
+                trySendReadReceipt: false
+            )
             
             UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: interaction.notificationIdentifiers)
             UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: interaction.notificationIdentifiers)
@@ -393,23 +434,10 @@ extension MessageReceiver {
             throw MessageReceiverError.invalidMessage
         }
         
-        // Note: `message.sentTimestamp` is in ms
-        let messageSentTimestamp: TimeInterval = TimeInterval((message.sentTimestamp ?? 0) / 1000)
+        // Note: `message.sentTimestamp` is in ms (convert to TimeInterval before converting to
+        // seconds to maintain the accuracy)
+        let messageSentTimestamp: TimeInterval = (TimeInterval(message.sentTimestamp ?? 0) / 1000)
         let isMainAppActive: Bool = (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false)
-        
-        // Parse & persist attachments
-        
-        let attachments: [Attachment] = dataMessage.attachments
-            .compactMap { proto in
-                let attachment: Attachment = Attachment(proto: proto)
-                
-                // Attachments on received messages must have a 'downloadUrl' otherwise
-                // they are invalid and we can ignore them
-                return (attachment.downloadUrl != nil ? attachment : nil)
-            }
-        try attachments.saveAll(db)
-        
-        message.attachmentIds = attachments.map { $0.id }
         
         // Update profile if needed
         if let profile = message.profile {
@@ -427,123 +455,100 @@ extension MessageReceiver {
         }
         
         // Get or create thread
-        let threadInfo: (id: String, variant: SessionThread.Variant)? = {
-            if let openGroupId: String = openGroupId {
-                // Note: We don't want to create a thread for an open group if it doesn't exist
-                if (try? SessionThread.exists(db, id: openGroupId)) != true { return nil }
-                
-                return (openGroupId, .openGroup)
-            }
-            
-            if let groupPublicKey: String = message.groupPublicKey {
-                // Note: We don't want to create a thread for a closed group if it doesn't exist
-                if (try? SessionThread.exists(db, id: groupPublicKey)) != true { return nil }
-                
-                return (groupPublicKey, .closedGroup)
-            }
-            
-            return ((message.syncTarget ?? sender), .contact)
-        }()
-        guard let threadInfo: (id: String, variant: SessionThread.Variant) = threadInfo else {
+        guard let threadInfo: (id: String, variant: SessionThread.Variant) = threadInfo(db, message: message, openGroupId: openGroupId) else {
             throw MessageReceiverError.noThread
         }
 
-        let thread: SessionThread = SessionThread.fetchOrCreate(db, id: threadInfo.id, variant: threadInfo.variant)
-        let interaction: Interaction
-        let interactionId: Int64
+        let thread: SessionThread = try SessionThread
+            .fetchOrCreate(db, id: threadInfo.id, variant: threadInfo.variant)
         
-        do {
-            // Store the message variant so we can run variant-specific behaviours
-            let variant: Interaction.Variant = {
-                if sender == getUserHexEncodedPublicKey(db) {
-                    return .standardOutgoing
-                }
-                
-                return .standardIncoming
-            }()
-            
-            // Check if there is an existing message with the same timestamp, variant and sender
-            let existingInteraction: Interaction? = try? thread.interactions
-                .filter(Interaction.Columns.timestampMs == (messageSentTimestamp * 1000))
-                .filter(Interaction.Columns.variant == variant)
-                .filter(Interaction.Columns.authorId == sender)
-                .fetchOne(db)
-                
-            if let existingInteraction: Interaction = existingInteraction {
-                // These values might not have been set yet for outgoing interactions so update them
-                interaction = try existingInteraction
-                    .with(
-                        serverHash: message.serverHash, // Keep track of server hash
-                        openGroupServerMessageId: message.openGroupServerMessageId.map { Int64($0) }
-                    )
-                    .saved(db)
-                
-                guard let existingInteractionId: Int64 = interaction.id else { throw GRDBStorageError.failedToSave }
-                
-                interactionId = existingInteractionId
+        // Store the message variant so we can run variant-specific behaviours
+        let variant: Interaction.Variant = {
+            if sender == getUserHexEncodedPublicKey(db) {
+                return .standardOutgoing
             }
-            else {
-                let disappearingMessagesConfiguration: DisappearingMessagesConfiguration = (try? thread.disappearingMessagesConfiguration.fetchOne(db))
-                    .defaulting(to: DisappearingMessagesConfiguration.defaultWith(thread.id))
-                
-                interaction = try Interaction(
-                    serverHash: message.serverHash, // Keep track of server hash
-                    threadId: thread.id,
-                    authorId: sender,
-                    variant: variant,
-                    body: message.text,
-                    timestampMs: Int64(messageSentTimestamp * 1000),
-                    // Note: Ensure we don't ever expire open group messages
-                    expiresInSeconds: (disappearingMessagesConfiguration.isEnabled && message.openGroupServerMessageId == nil ?
-                        disappearingMessagesConfiguration.durationSeconds :
-                        nil
-                    ),
-                    expiresStartedAtMs: nil,
-                    // OpenGroupInvitations are stored as LinkPreview's in the database
-                    linkPreviewUrl: (message.linkPreview?.url ?? message.openGroupInvitation?.url),
-                    // Keep track of the open group server message ID ↔ message ID relationship
-                    openGroupWhisperMods: false,       // TODO: SOGSV4
-                    openGroupWhisperTo: nil            // TODO: SOGSV4
-                    openGroupServerMessageId: message.openGroupServerMessageId.map { Int64($0) },
-                ).inserted(db)
-                
-                guard let newInteractionId: Int64 = interaction.id else { throw GRDBStorageError.failedToSave }
-                
-                interactionId = newInteractionId
-                
-                // For newly created outgoing messages upsert the recipient states to sent
-                if variant == .standardOutgoing {
-                    if let syncTarget: String = message.syncTarget {
+            
+            return .standardIncoming
+        }()
+        
+        // Retrieve the disappearing messages config to set the 'expiresInSeconds' value
+        // accoring to the config
+        let disappearingMessagesConfiguration: DisappearingMessagesConfiguration = (try? thread.disappearingMessagesConfiguration.fetchOne(db))
+            .defaulting(to: DisappearingMessagesConfiguration.defaultWith(thread.id))
+        
+        // Try to insert the interaction
+        //
+        // Note: There are now a number of unique constraints on the database which
+        // prevent the ability to insert duplicate interactions at a database level
+        // so we don't need to check for the existance of a message beforehand anymore
+        let interaction: Interaction = try Interaction(
+            serverHash: message.serverHash, // Keep track of server hash
+            threadId: thread.id,
+            authorId: sender,
+            variant: variant,
+            body: message.text,
+            timestampMs: Int64(messageSentTimestamp * 1000),
+            // Note: Ensure we don't ever expire open group messages
+            expiresInSeconds: (disappearingMessagesConfiguration.isEnabled && message.openGroupServerMessageId == nil ?
+                disappearingMessagesConfiguration.durationSeconds :
+                nil
+            ),
+            expiresStartedAtMs: nil,
+            // OpenGroupInvitations are stored as LinkPreview's in the database
+            linkPreviewUrl: (message.linkPreview?.url ?? message.openGroupInvitation?.url),
+            // Keep track of the open group server message ID ↔ message ID relationship
+            openGroupServerMessageId: message.openGroupServerMessageId.map { Int64($0) },
+            openGroupWhisperMods: false,       // TODO: SOGSV4
+            openGroupWhisperTo: nil            // TODO: SOGSV4
+        ).inserted(db)
+        
+        guard let interactionId: Int64 = interaction.id else { throw GRDBStorageError.failedToSave }
+        
+        // For newly created outgoing messages upsert the recipient states to sent
+        if variant == .standardOutgoing {
+            if let syncTarget: String = message.syncTarget {
+                try RecipientState(
+                    interactionId: interactionId,
+                    recipientId: syncTarget,
+                    state: .sent
+                ).save(db)
+            }
+            else if thread.variant == .closedGroup {
+                try GroupMember
+                    .filter(GroupMember.Columns.groupId == thread.id)
+                    .fetchAll(db)
+                    .forEach { member in
                         try RecipientState(
                             interactionId: interactionId,
-                            recipientId: syncTarget,
+                            recipientId: member.profileId,
                             state: .sent
                         ).save(db)
                     }
-                    else if
-                        let closedGroup: ClosedGroup = try? thread.closedGroup.fetchOne(db),
-                        let members: [GroupMember] = try? closedGroup.members.fetchAll(db)
-                    {
-                        try members.forEach { member in
-                            try RecipientState(
-                                interactionId: interactionId,
-                                recipientId: member.profileId,
-                                state: .sent
-                            ).save(db)
-                        }
-                    }
-                }
             }
-            
+        
             // For outgoing messages mark it and all older interactions as read
-            if variant == .standardOutgoing {
-                _ = try interaction.markingAsRead(db, includingOlder: true, trySendReadReceipt: true)
-            }
+            try Interaction.markAsRead(
+                db,
+                interactionId: interactionId,
+                threadId: thread.id,
+                includingOlder: true,
+                trySendReadReceipt: true
+            )
+        }
+        
+            
+        // Parse & persist attachments
+        let attachments: [Attachment] = dataMessage.attachments
+            .compactMap { proto in
+                let attachment: Attachment = Attachment(proto: proto)
                 
-        }
-        catch {
-            throw error
-        }
+                // Attachments on received messages must have a 'downloadUrl' otherwise
+                // they are invalid and we can ignore them
+                return (attachment.downloadUrl != nil ? attachment : nil)
+            }
+        try attachments.saveAll(db)
+        
+        message.attachmentIds = attachments.map { $0.id }
         
         // Persist quote if needed
         let quote: Quote? = try? Quote(
@@ -618,7 +623,7 @@ extension MessageReceiver {
         }
         
         // Notify the user if needed
-        guard interaction.variant == .standardIncoming else { return interactionId }
+        guard variant == .standardIncoming else { return interactionId }
         
         // Use the same identifier for notifications when in backgroud polling to prevent spam
         SSKEnvironment.shared.notificationsManager.wrappedValue?
@@ -766,7 +771,6 @@ extension MessageReceiver {
         let groupAlreadyExisted: Bool = ((try? SessionThread.exists(db, id: groupPublicKey)) ?? false)
         let thread: SessionThread = try SessionThread
             .fetchOrCreate(db, id: groupPublicKey, variant: .closedGroup)
-            .saved(db)
         let closedGroup: ClosedGroup = try ClosedGroup(
             threadId: groupPublicKey,
             name: name,

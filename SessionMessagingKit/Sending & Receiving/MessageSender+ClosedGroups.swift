@@ -27,7 +27,6 @@ extension MessageSender {
         
         let thread: SessionThread = try SessionThread
             .fetchOrCreate(db, id: groupPublicKey, variant: .closedGroup)
-            .saved(db)
         try ClosedGroup(
             threadId: groupPublicKey,
             name: name,
@@ -56,7 +55,6 @@ extension MessageSender {
         try members.forEach { memberId in
             let contactThread: SessionThread = try SessionThread
                 .fetchOrCreate(db, id: memberId, variant: .contact)
-                .saved(db)
             
             // Sending this non-durably is okay because we show a loader to the user. If they
             // close the app while the loader is still showing, it's within expectation that
@@ -349,7 +347,6 @@ extension MessageSender {
             // Send updates to the new members individually
             let thread: SessionThread = try SessionThread
                 .fetchOrCreate(db, id: member, variant: .contact)
-                .saved(db)
             
             try MessageSender.send(
                 db,
@@ -625,7 +622,6 @@ extension MessageSender {
             let plaintext = try proto.serializedData()
             let thread: SessionThread = try SessionThread
                 .fetchOrCreate(db, id: publicKey, variant: .contact)
-                .saved(db)
             let ciphertext = try MessageSender.encryptWithSessionProtocol(plaintext, for: publicKey)
             
             SNLog("Sending latest encryption key pair to: \(publicKey).")

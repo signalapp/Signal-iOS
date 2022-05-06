@@ -1,7 +1,9 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import GRDB
 import Curve25519Kit
+import SessionMessagingKit
 import SessionUtilitiesKit
 
 final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
@@ -174,7 +176,8 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
     private func startNewDM(with sessionID: String) {
         let thread = TSContactThread.getOrCreateThread(contactSessionID: sessionID)
         presentingViewController?.dismiss(animated: true, completion: nil)
-        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+        
+        SessionApp.presentConversation(for: sessionId, action: .compose, animated: false)
     }
 }
 

@@ -3,7 +3,6 @@
 //
 
 #import "TSDatabaseView.h"
-#import "OWSReadTracking.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
 #import "TSIncomingMessage.h"
@@ -94,44 +93,6 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
                                                                versionTag:version
                                                                   options:options];
     [storage asyncRegisterExtension:view withName:viewName];
-}
-
-+ (void)asyncRegisterUnreadDatabaseView:(OWSStorage *)storage
-{
-    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
-        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        if ([object conformsToProtocol:@protocol(OWSReadTracking)]) {
-            id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
-            if (!possiblyRead.wasRead && possiblyRead.shouldAffectUnreadCounts) {
-                return possiblyRead.uniqueThreadId;
-            }
-        }
-        return nil;
-    }];
-
-    [self registerMessageDatabaseViewWithName:TSUnreadDatabaseViewExtensionName
-                                 viewGrouping:viewGrouping
-                                      version:@"2"
-                                      storage:storage];
-}
-
-+ (void)asyncRegisterUnseenDatabaseView:(OWSStorage *)storage
-{
-    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
-        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        if ([object conformsToProtocol:@protocol(OWSReadTracking)]) {
-            id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
-            if (!possiblyRead.wasRead) {
-                return possiblyRead.uniqueThreadId;
-            }
-        }
-        return nil;
-    }];
-
-    [self registerMessageDatabaseViewWithName:TSUnseenDatabaseViewExtensionName
-                                 viewGrouping:viewGrouping
-                                      version:@"2"
-                                      storage:storage];
 }
 
 + (void)asyncRegisterUnreadMentionDatabaseView:(OWSStorage *)storage

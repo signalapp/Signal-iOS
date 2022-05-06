@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import PromiseKit
 import Sodium
 import SessionSnodeKit
@@ -98,14 +99,12 @@ public final class Poller : NSObject {
         
         let userPublicKey = getUserHexEncodedPublicKey()
         
-        return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey)
-            .then(on: Threading.pollerQueue) { [weak self] rawResponse -> Promise<Void> in
-                guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
-                
-                let messages: [SnodeReceivedMessage] = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: userPublicKey)
+        return SnodeAPI.getMessages(from: snode, associatedWith: userPublicKey)
+            .then(on: Threading.pollerQueue) { [weak self] messages -> Promise<Void> in
+                guard self?.isPolling == true else { return Promise { $0.fulfill(()) } }
                 
                 if !messages.isEmpty {
-                    SNLog("Received \(messages.count) new message(s).")
+                    SNLog("Received \(messages.count) message(s).")
                     
                     GRDBStorage.shared.write { db in
                         var threadMessages: [String: [MessageReceiveJob.Details.MessageInfo]] = [:]
@@ -133,7 +132,13 @@ public final class Poller : NSObject {
                                 _ = try message.info.saved(db)
                             }
                             catch {
-                                SNLog("Failed to deserialize envelope due to error: \(error).")
+                                switch error {
+                                    // Ignore unique constraint violations here (they will be hanled in the MessageReceiveJob)
+                                    case .SQLITE_CONSTRAINT_UNIQUE: break
+                                        
+                                    default:
+                                        SNLog("Failed to deserialize envelope due to error: \(error).")
+                                }
                             }
                         }
                         
@@ -154,9 +159,9 @@ public final class Poller : NSObject {
                     }
                 }
                 
-                strongSelf.pollCount += 1
+                self?.pollCount += 1
                 
-                guard strongSelf.pollCount < Poller.maxPollCount else {
+                guard (self?.pollCount ?? 0) < Poller.maxPollCount else {
                     throw Error.pollLimitReached
                 }
                 

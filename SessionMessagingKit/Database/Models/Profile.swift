@@ -9,7 +9,8 @@ public struct Profile: Codable, Identifiable, Equatable, FetchableRecord, Persis
     public static var databaseTableName: String { "profile" }
     internal static let interactionForeignKey = ForeignKey([Columns.id], to: [Interaction.Columns.authorId])
     internal static let contactForeignKey = ForeignKey([Columns.id], to: [Contact.Columns.id])
-    public static let groupMembers = hasMany(GroupMember.self, using: GroupMember.profileForeignKey)
+    internal static let groupMemberForeignKey = ForeignKey([Columns.id], to: [GroupMember.Columns.profileId])
+    public static let groupMembers = hasMany(GroupMember.self, using: groupMemberForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -274,6 +275,10 @@ public extension Profile {
         )
     }
     
+    /// Fetches or creates a Profile for the current user
+    ///
+    /// **Note:** This method intentionally does **not** save the newly created Profile,
+    /// it will need to be explicitly saved after calling
     static func fetchOrCreateCurrentUser() -> Profile {
         var userPublicKey: String = ""
         
@@ -286,6 +291,10 @@ public extension Profile {
         return (exisingProfile ?? defaultFor(userPublicKey))
     }
     
+    /// Fetches or creates a Profile for the current user
+    ///
+    /// **Note:** This method intentionally does **not** save the newly created Profile,
+    /// it will need to be explicitly saved after calling
     static func fetchOrCreateCurrentUser(_ db: Database) -> Profile {
         let userPublicKey: String = getUserHexEncodedPublicKey(db)
         
@@ -295,6 +304,10 @@ public extension Profile {
         )
     }
     
+    /// Fetches or creates a Profile for the specified user
+    ///
+    /// **Note:** This method intentionally does **not** save the newly created Profile,
+    /// it will need to be explicitly saved after calling
     static func fetchOrCreate(id: String) -> Profile {
         let exisingProfile: Profile? = GRDBStorage.shared.read { db in
             try Profile.fetchOne(db, id: id)
@@ -303,6 +316,10 @@ public extension Profile {
         return (exisingProfile ?? defaultFor(id))
     }
     
+    /// Fetches or creates a Profile for the specified user
+    ///
+    /// **Note:** This method intentionally does **not** save the newly created Profile,
+    /// it will need to be explicitly saved after calling
     static func fetchOrCreate(_ db: Database, id: String) -> Profile {
         return (
             (try? Profile.fetchOne(db, id: id)) ??
@@ -357,7 +374,22 @@ public extension Profile {
 
     /// The name to display in the UI
     func displayName(for context: Context = .regular) -> String {
+        return Profile.displayName(for: context, id: id, name: name, nickname: nickname)
+    }
+    
+    static func displayName(for threadVariant: SessionThread.Variant, id: String, name: String?, nickname: String?) -> String {
+        return Profile.displayName(
+            for: (threadVariant == .openGroup ? .openGroup : .regular),
+            id: id,
+            name: name,
+            nickname: nickname
+        )
+    }
+    
+    static func displayName(for context: Context, id: String, name: String?, nickname: String?) -> String {
         if let nickname: String = nickname { return nickname }
+        
+        guard let name: String = name else { return Profile.truncated(id: id, truncating: .start) }
         
         switch context {
             case .regular: return name
@@ -366,7 +398,7 @@ public extension Profile {
                 // In open groups, where it's more likely that multiple users have the same name,
                 // we display a bit of the Session ID after a user's display name for added context
                 return "\(name) (\(Profile.truncated(id: id, truncating: .start)))"
-            }
+        }
     }
 }
 

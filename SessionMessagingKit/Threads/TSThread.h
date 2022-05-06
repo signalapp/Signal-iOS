@@ -72,17 +72,12 @@ BOOL IsNoteToSelfEnabled(void);
 
 - (NSUInteger)numberOfInteractionsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
-- (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
-    NS_SWIFT_NAME(unreadMessageCount(transaction:));
-
 /**
  *  @return If there is any message mentioning current user in this thread.
  */
 - (NSUInteger)unreadMentionMessageCount;
 
 - (NSUInteger)unreadMentionMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction;
-
-- (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**
  *  Returns the string that will be displayed typically in a conversations view as a preview of the last message

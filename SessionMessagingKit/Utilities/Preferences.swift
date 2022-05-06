@@ -307,7 +307,7 @@ public class SMKSound: NSObject {
                     .fetchOne(
                         db,
                         SessionThread
-                            .select(SessionThread.Columns.notificationSound)
+                            .select(.notificationSound)
                             .filter(id: threadId)
                     )
             }?

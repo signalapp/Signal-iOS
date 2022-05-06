@@ -1,5 +1,9 @@
-import SessionSnodeKit
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import PromiseKit
+import SessionSnodeKit
 
 @objc(LKClosedGroupPoller)
 public final class ClosedGroupPoller : NSObject {
@@ -109,19 +113,15 @@ public final class ClosedGroupPoller : NSObject {
                     return Promise(error: Error.pollingCanceled)
                 }
                 
-                return SnodeAPI.getRawMessages(from: snode, associatedWith: groupPublicKey)
-                    .map2 {
-                        let messages: [SnodeReceivedMessage] = SnodeAPI.parseRawMessagesResponse($0, from: snode, associatedWith: groupPublicKey)
-                        
-                        return (snode, messages)
-                    }
+                return SnodeAPI.getMessages(from: snode, associatedWith: groupPublicKey)
+                    .map2 { messages in (snode, messages) }
             }
         
         promise.done2 { [weak self] snode, messages in
-            guard let self = self, self.isPolling(for: groupPublicKey) else { return }
+            guard self?.isPolling(for: groupPublicKey) == true else { return }
             
             if !messages.isEmpty {
-                SNLog("Received \(messages.count) new message(s) in closed group with public key: \(groupPublicKey).")
+                SNLog("Received \(messages.count) message(s) in closed group with public key: \(groupPublicKey).")
                 
                 GRDBStorage.shared.write { db in
                     var jobDetailMessages: [MessageReceiveJob.Details.MessageInfo] = []
@@ -141,7 +141,13 @@ public final class ClosedGroupPoller : NSObject {
                             _ = try message.info.saved(db)
                         }
                         catch {
-                            SNLog("Failed to deserialize envelope due to error: \(error).")
+                            switch error {
+                                // Ignore unique constraint violations here (they will be hanled in the MessageReceiveJob)
+                                case .SQLITE_CONSTRAINT_UNIQUE: break
+                                    
+                                default:
+                                    SNLog("Failed to deserialize envelope due to error: \(error).")
+                            }
                         }
                     }
                     

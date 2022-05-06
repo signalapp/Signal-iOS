@@ -11,7 +11,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
         [Columns.linkPreviewUrl],
         to: [LinkPreview.Columns.url]
     )
-    internal static let thread = belongsTo(SessionThread.self, using: threadForeignKey)
+    public static let thread = belongsTo(SessionThread.self, using: threadForeignKey)
     public static let profile = hasOne(Profile.self, using: Profile.interactionForeignKey)
     internal static let interactionAttachments = hasMany(
         InteractionAttachment.self,
@@ -24,11 +24,13 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     )
     public static let quote = hasOne(Quote.self, using: Quote.interactionForeignKey)
     
-    /// Whenever using this `linkPreview` association make sure to filter the result using `.filter(literal: Interaction.linkPreviewFilterLiteral)` to ensure the correct LinkPreview is returned
+    /// Whenever using this `linkPreview` association make sure to filter the result using
+    /// `.filter(literal: Interaction.linkPreviewFilterLiteral)` to ensure the correct LinkPreview is returned
     public static let linkPreview = hasOne(LinkPreview.self, using: LinkPreview.interactionForeignKey)
     public static let linkPreviewFilterLiteral: SQL = {
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
+        
         return "(ROUND((\(interaction[.timestampMs]) / 1000 / 100000) - 0.5) * 100000) = \(linkPreview[.timestamp])"
     }()
     public static let recipientStates = hasMany(RecipientState.self, using: RecipientState.interactionForeignKey)
@@ -95,8 +97,11 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     
     /// The hash returned by the server when this message was created on the server
     ///
-    /// **Note:** This will only be populated for `standardIncoming`/`standardOutgoing` interactions
-    /// from either `contact` or `closedGroup` threads
+    /// **Notes:**
+    /// - This will only be populated for `standardIncoming`/`standardOutgoing` interactions from
+    /// either `contact` or `closedGroup` threads
+    /// - This value will differ for "sync" messages (messages we resend to the current to ensure it appears
+    /// on all linked devices) because the data in the message is slightly different
     public let serverHash: String?
     
     /// The id of the thread that this interaction belongs to (used to expose the `thread` variable)
@@ -182,6 +187,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     public var linkPreview: QueryInterfaceRequest<LinkPreview> {
         /// **Note:** This equation **MUST** match the `linkPreviewFilterLiteral` logic
         let roundedTimestamp: Double = (round(((Double(timestampMs) / 1000) / 100000) - 0.5) * 100000)
+        
         return request(for: Interaction.linkPreview)
             .filter(LinkPreview.Columns.timestamp == roundedTimestamp)
     }
@@ -388,33 +394,32 @@ public extension Interaction {
 // MARK: - GRDB Interactions
 
 public extension Interaction {
-    /// Immutable version of the `markAsRead(_:includingOlder:trySendReadReceipt:)` function
-    func markingAsRead(_ db: Database, includingOlder: Bool, trySendReadReceipt: Bool) throws -> Interaction {
-        var updatedInteraction: Interaction = self
-        try updatedInteraction.markAsRead(db, includingOlder: includingOlder, trySendReadReceipt: trySendReadReceipt)
-        
-        return updatedInteraction
-    }
-    
     /// This will update the `wasRead` state the the interaction
     ///
     /// - Parameters
+    ///   - interactionId: The id of the specific interaction to mark as read
+    ///   - threadId: The id of the thread the interaction belongs to
     ///   - includingOlder: Setting this to `true` will updated the `wasRead` flag for all older interactions as well
     ///   - trySendReadReceipt: Setting this to `true` will schedule a `ReadReceiptJob`
-    mutating func markAsRead(_ db: Database, includingOlder: Bool, trySendReadReceipt: Bool) throws {
+    static func markAsRead(
+        _ db: Database,
+        interactionId: Int64?,
+        threadId: String,
+        includingOlder: Bool,
+        trySendReadReceipt: Bool
+    ) throws {
+        guard let interactionId: Int64 = interactionId else { return }
+
         // Once all of the below is done schedule the jobs
         func scheduleJobs(interactionIds: [Int64]) {
             // Add the 'DisappearingMessagesJob' if needed - this will update any expiring
             // messages `expiresStartedAtMs` values
             JobRunner.upsert(
                 db,
-                job: Job(
-                    variant: .disappearingMessages,
-                    details: DisappearingMessagesJob.updateNextRunIfNeeded(
-                        db,
-                        interactionIds: interactionIds,
-                        startedAtMs: (Date().timeIntervalSince1970 * 1000)
-                    )
+                job: DisappearingMessagesJob.updateNextRunIfNeeded(
+                    db,
+                    interactionIds: interactionIds,
+                    startedAtMs: (Date().timeIntervalSince1970 * 1000)
                 )
             )
             
@@ -433,22 +438,17 @@ public extension Interaction {
         
         // If we aren't including older interactions then update and save the current one
         guard includingOlder else {
-            let updatedInteraction: Interaction = try self
-                .with(wasRead: true)
-                .saved(db)
+            _ = try Interaction
+                .filter(id: interactionId)
+                .updateAll(db, Columns.wasRead.set(to: true))
             
-            guard let id: Int64 = updatedInteraction.id else { throw GRDBStorageError.objectNotFound }
-            
-            scheduleJobs(interactionIds: [id])
+            scheduleJobs(interactionIds: [interactionId])
             return
         }
         
-        // Need an id in order to continue
-        guard let id: Int64 = self.id else { throw GRDBStorageError.objectNotFound }
-        
         let interactionQuery = Interaction
             .filter(Columns.threadId == threadId)
-            .filter(Columns.id <= id)
+            .filter(Columns.id <= interactionId)
             // The `wasRead` flag doesn't apply to `standardOutgoing` or `standardIncomingDeleted`
             .filter(Columns.variant != Variant.standardOutgoing && Columns.variant != Variant.standardIncomingDeleted)
         

@@ -4,7 +4,7 @@ public final class InputTextView : UITextView, UITextViewDelegate {
     private let maxWidth: CGFloat
     private lazy var heightConstraint = self.set(.height, to: minHeight)
     
-    public override var text: String! { didSet { handleTextChanged() } }
+    public override var text: String? { didSet { handleTextChanged() } }
     
     // MARK: UI Components
     private lazy var placeholderLabel: UILabel = {
@@ -79,21 +79,26 @@ public final class InputTextView : UITextView, UITextViewDelegate {
     
     private func handleTextChanged() {
         defer { snDelegate?.inputTextViewDidChangeContent(self) }
-        placeholderLabel.isHidden = !text.isEmpty
+        
+        placeholderLabel.isHidden = !(text ?? "").isEmpty
+        
         let height = frame.height
         let size = sizeThatFits(CGSize(width: maxWidth, height: .greatestFiniteMagnitude))
+        
         // `textView.contentSize` isn't accurate when restoring a multiline draft, so we set it here manually
         self.contentSize = size
         let newHeight = size.height.clamp(minHeight, maxHeight)
+        
         guard newHeight != height else { return }
+        
         heightConstraint.constant = newHeight
         snDelegate?.inputTextViewDidChangeSize(self)
     }
 }
 
-// MARK: Delegate
-protocol InputTextViewDelegate : AnyObject {
-    
+// MARK: - InputTextViewDelegate
+
+protocol InputTextViewDelegate: AnyObject {
     func inputTextViewDidChangeSize(_ inputTextView: InputTextView)
     func inputTextViewDidChangeContent(_ inputTextView: InputTextView)
     func didPasteImageFromPasteboard(_ inputTextView: InputTextView, image: UIImage)

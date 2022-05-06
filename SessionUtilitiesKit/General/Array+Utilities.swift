@@ -34,6 +34,14 @@ public extension Array {
         
         return self.removeFirst()
     }
+    
+    func inserting(_ other: Element?, at index: Int) -> [Element] {
+        guard let other: Element = other else { return self }
+        
+        var updatedArray: [Element] = self
+        updatedArray.insert(other, at: index)
+        return updatedArray
+    }
 }
 
 

@@ -6,9 +6,9 @@ import SessionUtilitiesKit
 
 public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "thread" }
-    private static let contact = hasOne(Contact.self, using: Contact.threadForeignKey)
-    private static let closedGroup = hasOne(ClosedGroup.self, using: ClosedGroup.threadForeignKey)
-    private static let openGroup = hasOne(OpenGroup.self, using: OpenGroup.threadForeignKey)
+    public static let contact = hasOne(Contact.self, using: Contact.threadForeignKey)
+    public static let closedGroup = hasOne(ClosedGroup.self, using: ClosedGroup.threadForeignKey)
+    public static let openGroup = hasOne(OpenGroup.self, using: OpenGroup.threadForeignKey)
     private static let disappearingMessagesConfiguration = hasOne(
         DisappearingMessagesConfiguration.self,
         using: DisappearingMessagesConfiguration.threadForeignKey
@@ -136,14 +136,15 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
 
 public extension SessionThread {
     func with(
-        shouldBeVisible: Bool? = nil
+        shouldBeVisible: Bool? = nil,
+        isPinned: Bool? = nil
     ) -> SessionThread {
         return SessionThread(
             id: id,
             variant: variant,
             creationDateTimestamp: creationDateTimestamp,
             shouldBeVisible: (shouldBeVisible ?? self.shouldBeVisible),
-            isPinned: isPinned,
+            isPinned: (isPinned ?? self.isPinned),
             messageDraft: messageDraft,
             notificationMode: notificationMode,
             notificationSound: notificationSound,
@@ -155,9 +156,18 @@ public extension SessionThread {
 // MARK: - GRDB Interactions
 
 public extension SessionThread {
-    /// The `variant` will be ignored if an existing thread is found
-    static func fetchOrCreate(_ db: Database, id: ID, variant: Variant) -> SessionThread {
-        return ((try? fetchOne(db, id: id)) ?? SessionThread(id: id, variant: variant))
+    /// Fetches or creates a SessionThread with the specified id and variant
+    ///
+    /// **Notes:**
+    /// - The `variant` will be ignored if an existing thread is found
+    /// - This method **will** save the newly created SessionThread to the database
+    static func fetchOrCreate(_ db: Database, id: ID, variant: Variant) throws -> SessionThread {
+        guard let existingThread: SessionThread = try? fetchOne(db, id: id) else {
+            return try SessionThread(id: id, variant: variant)
+                .saved(db)
+        }
+        
+        return existingThread
     }
     
     static func messageRequestThreads(_ db: Database) -> QueryInterfaceRequest<SessionThread> {
@@ -184,6 +194,51 @@ public extension SessionThread {
 // MARK: - Convenience
 
 public extension SessionThread {
+    
+    /// This method can be used to create a query based on whether a thread is the note to self thread
+    static func isNoteToSelf(userPublicKey: String) -> SQLSpecificExpressible {
+        return (
+            SessionThread.Columns.variant == SessionThread.Variant.contact &&
+            SessionThread.Columns.id == userPublicKey
+        )
+    }
+    
+    /// This method can be used to filter a thread query to only include messages requests
+    ///
+    /// **Note:** In order to use this filter you **MUST** have a `joining(required/optional:)` to the
+    /// `SessionThread.contact` association or it won't work
+    static func isMessageRequest(userPublicKey: String) -> SQLSpecificExpressible {
+        let contactAlias: TypedTableAlias<Contact> = TypedTableAlias()
+        
+        return (
+            SessionThread.Columns.shouldBeVisible == true &&
+            SessionThread.Columns.variant == SessionThread.Variant.contact &&
+            SessionThread.Columns.id != userPublicKey &&     // Note to self
+            (
+                // Note: Doing a '!= true' check doesn't work properly so we need
+                // to explicitly do this
+                contactAlias[.isApproved] == nil ||
+                contactAlias[.isApproved] == false
+            )
+        )
+    }
+    
+    /// This method can be used to filter a thread query to exclude messages requests
+    ///
+    /// **Note:** In order to use this filter you **MUST** have a `joining(required/optional:)` to the
+    /// `SessionThread.contact` association or it won't work
+    static func isNotMessageRequest(userPublicKey: String) -> SQLSpecificExpressible {
+        let contactAlias: TypedTableAlias<Contact> = TypedTableAlias()
+        
+        return (
+            SessionThread.Columns.shouldBeVisible == true && (
+                SessionThread.Columns.variant != SessionThread.Variant.contact ||
+                SessionThread.Columns.id == userPublicKey ||     // Note to self
+                contactAlias[.isApproved] == true
+            )
+        )
+    }
+    
     func isNoteToSelf(_ db: Database? = nil) -> Bool {
         return (
             variant == .contact &&

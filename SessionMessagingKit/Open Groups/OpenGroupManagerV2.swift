@@ -1,4 +1,6 @@
+import GRDB
 import PromiseKit
+import SessionUtilitiesKit
 
 @objc(SNOpenGroupManagerV2)
 public final class OpenGroupManagerV2 : NSObject {
@@ -14,8 +16,15 @@ public final class OpenGroupManagerV2 : NSObject {
     @objc public func startPolling() {
         guard !isPolling else { return }
         isPolling = true
-        let servers = Set(Storage.shared.getAllV2OpenGroups().values.map { $0.server })
-        servers.forEach { server in
+        
+        let servers: [String]? = GRDBStorage.shared.read { db in
+            try OpenGroup
+                .select(.server)
+                .distinct()
+                .asRequest(of: String.self)
+                .fetchAll(db)
+        }
+        servers?.forEach { server in
             if let poller = pollers[server] { poller.stop() } // Should never occur
             let poller = OpenGroupPollerV2(for: server)
             poller.startIfNeeded()
@@ -134,15 +143,21 @@ public final class OpenGroupManagerV2 : NSObject {
         return promise
     }
 
-    public func delete(_ openGroup: OpenGroupV2, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
-        let storage = SNMessagingKitConfiguration.shared.storage
+    public func delete(_ db: Database, openGroupId: String) {
+        guard let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: openGroupId) else { return }
+        
         // Stop the poller if needed
-        let openGroups = storage.getAllV2OpenGroups().values.filter { $0.server == openGroup.server }
-        if openGroups.count == 1 && openGroups.last == openGroup {
+        let numRooms: Int = (try? OpenGroup
+            .filter(OpenGroup.Columns.server == openGroup.server)
+            .fetchCount(db))
+            .defaulting(to: 1)
+        
+        if numRooms == 1 {
             let poller = pollers[openGroup.server]
             poller?.stop()
             pollers[openGroup.server] = nil
         }
+        
         // Remove all data
         var messageIDs: Set<String> = []
         var messageTimestamps: Set<UInt64> = []

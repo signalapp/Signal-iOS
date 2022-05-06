@@ -39,6 +39,18 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.details, .blob)
         }
         
+        try db.create(table: JobDependencies.self) { t in
+            t.column(.jobId, .integer)
+                .notNull()
+                .references(Job.self, onDelete: .cascade)             // Delete if Job deleted
+            t.column(.dependantId, .integer)
+                .notNull()
+                .indexed()                                            // Quicker querying
+                .references(Job.self, onDelete: .cascade)             // Delete if Job deleted
+            
+            t.primaryKey([.jobId, .dependantId])
+        }
+        
         try db.create(table: Setting.self) { t in
             t.column(.key, .text)
                 .notNull()

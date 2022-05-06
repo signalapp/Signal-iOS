@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import PromiseKit
 import SessionUtilitiesKit
 
@@ -31,10 +32,10 @@ public enum MessageReceiveJob: JobExecutor {
             
             for messageInfo in details.messages {
                 do {
-                    // Note: The main reason why the 'MessageReceiver.parse' can fail but then succeed
-                    // later on is when we get a closed group message which is signed using a new key
-                    // but haven't received the key yet (the key gets sent directly to the user rather
-                    // than via the closed group so this is unfortunately a possible case)
+                    // Note: It generally shouldn't be possible for 'MessageReceiver.parse' to fail
+                    // the main situation where this can happen is when the jobs run out of order (eg.
+                    // a closed group message encrypted with a new key gets processed before the key
+                    // gets added - this shouldn't be as possible with the updated JobRunner)
                     let isRetry: Bool = (job.failureCount > 0)
                     let (message, proto) = try MessageReceiver.parse(
                         db,
@@ -52,16 +53,30 @@ public enum MessageReceiveJob: JobExecutor {
                     )
                 }
                 catch {
-                    // We failed to process this message so add it to the list to re-process
-                    remainingMessagesToProcess.append(messageInfo)
-                    
-                    // If the current message is a permanent failure then override it with the new error (we want
-                    // to retry if there is a single non-permanent error)
-                    switch leastSevereError {
-                        case let error as MessageReceiverError where !error.isRetryable:
-                            leastSevereError = error
-                        
+                    switch error {
+                        // Note: This is the same as the 'MessageReceiverError.duplicateMessage'
+                        // which is not retryable so just skip to the next message to process
+                        case DatabaseError.SQLITE_CONSTRAINT_UNIQUE:
+                            SNLog("MessageReceiveJob skipping duplicate message.")
+                            continue
+                            
                         default: break
+                    }
+                    
+                    // If the current message is a permanent failure then override it with the
+                    // new error (we want to retry if there is a single non-permanent error)
+                    switch error {
+                        case let receiverError as MessageReceiverError where !receiverError.isRetryable:
+                            SNLog("MessageReceiveJob permanently failed message due to error: \(error)")
+                            continue
+                        
+                        default:
+                            SNLog("Couldn't receive message due to error: \(error)")
+                            leastSevereError = error
+                            
+                            // We failed to process this message but it is a retryable error
+                            // so add it to the list to re-process
+                            remainingMessagesToProcess.append(messageInfo)
                     }
                 }
             }
@@ -79,20 +94,16 @@ public enum MessageReceiveJob: JobExecutor {
                 .saved(db)
         }
         
-        }
-        
         // Handle the result
         switch leastSevereError {
             case let error as MessageReceiverError where !error.isRetryable:
-                SNLog("Message receive job permanently failed due to error: \(error)")
-                failure(job, error, true)
+                failure(updatedJob, error, true)
                 
             case .some(let error):
-                SNLog("Couldn't receive message due to error: \(error)")
-                failure(job, error, true)
+                failure(updatedJob, error, false)
                 
             case .none:
-                success(job, false)
+                success(updatedJob, false)
         }
     }
 }

@@ -13,10 +13,15 @@ public final class MessageRequestResponse: ControlMessage {
     
     // MARK: - Initialization
     
-    public init(isApproved: Bool) {
+    public init(
+        isApproved: Bool,
+        sentTimestampMs: UInt64? = nil
+    ) {
         self.isApproved = isApproved
         
-        super.init()
+        super.init(
+            sentTimestamp: sentTimestampMs
+        )
     }
     
     // MARK: - Codable
@@ -42,9 +47,7 @@ public final class MessageRequestResponse: ControlMessage {
     public override class func fromProto(_ proto: SNProtoContent, sender: String) -> MessageRequestResponse? {
         guard let messageRequestResponseProto = proto.messageRequestResponse else { return nil }
         
-        let isApproved = messageRequestResponseProto.isApproved
-
-        return MessageRequestResponse(isApproved: isApproved)
+        return MessageRequestResponse(isApproved: messageRequestResponseProto.isApproved)
     }
 
     public override func toProto(_ db: Database) -> SNProtoContent? {

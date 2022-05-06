@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import PromiseKit
 import Curve25519Kit
 import SessionSnodeKit
@@ -153,9 +154,11 @@ public final class OpenGroupAPIV2 : NSObject {
         }
     }
     
-    public static func compactPoll(_ server: String) -> Promise<[CompactPollResponseBody]> {
+    public static func compactPoll(_ db: Database, server: String) throws -> Promise<[CompactPollResponseBody]> {
         let storage = SNMessagingKitConfiguration.shared.storage
-        let rooms = storage.getAllV2OpenGroups().values.filter { $0.server == server }.map { $0.room }
+        let groups: [OpenGroup] = try OpenGroup
+            .filter(OpenGroup.Columns.server == server)
+            .fetchAll(db)
         var body: [JSON] = []
         var authTokenPromises: [String:Promise<String>] = [:]
         let useMessageLimit = (hasPerformedInitialPoll[server] != true && timeSinceLastOpen > OpenGroupPollerV2.maxInactivityPeriod)
@@ -164,13 +167,13 @@ public final class OpenGroupAPIV2 : NSObject {
             UserDefaults.standard[.lastOpen] = Date()
             hasUpdatedLastOpenDate = true
         }
-        for room in rooms {
-            authTokenPromises[room] = getAuthToken(for: room, on: server)
-            var json: JSON = [ "room_id" : room ]
-            if let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) {
+        for group in groups {
+            authTokenPromises[group.room] = getAuthToken(for: group.room, on: server)
+            var json: JSON = [ "room_id" : group.room ]
+            if let lastMessageServerID = storage.getLastMessageServerID(for: group.room, on: server) {
                 json["from_message_server_id"] = useMessageLimit ? nil : lastMessageServerID
             }
-            if let lastDeletionServerID = storage.getLastDeletionServerID(for: room, on: server) {
+            if let lastDeletionServerID = storage.getLastDeletionServerID(for: group.room, on: server) {
                 json["from_deletion_server_id"] = useMessageLimit ? nil : lastDeletionServerID
             }
             body.append(json)

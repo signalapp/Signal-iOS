@@ -1082,11 +1082,11 @@ enum _003_YDBToGRDBMigration: Migration {
                     behaviour: .runOnce,
                     nextRunTimestamp: 0,
                     threadId: threadId,
+                    // Note: There are some cases where there isn't a link between a
+                    // 'MessageSendJob' and an interaction (eg. ConfigurationMessage),
+                    // in these cases the 'interactionId' value will be nil
+                    interactionId: interactionId,
                     details: MessageSendJob.Details(
-                        // Note: There are some cases where there isn't a link between a
-                        // 'MessageSendJob' and an interaction (eg. ConfigurationMessage),
-                        // in these cases the 'interactionId' value will be nil
-                        interactionId: interactionId,
                         destination: legacyJob.destination,
                         message: legacyJob.message.toNonLegacy()
                     )

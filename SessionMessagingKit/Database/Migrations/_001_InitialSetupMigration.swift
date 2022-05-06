@@ -164,25 +164,25 @@ enum _001_InitialSetupMigration: Migration {
                 .defaults(to: false)
             t.column(.openGroupWhisperTo, .text)
             
-            /// Note: The below unique constraints are added to prevent messages being duplicated, we need
-            /// multiple constraints because `null` is not unique in SQLite which means any unique constraint
-            /// which contained a nullable column would not be seen as unique if the value is null (this is good to
-            /// avoid outgoing message from conflicting due to not having a `serverHash` but bad when different
-            /// columns are only unique in certain circumstances)
-            ///
-            /// The values have the following behaviours:
+            /// The below unique constraints are added to prevent messages being duplicated, we need
+            /// multiple constraints to handle the different situations which can result in duplicate messages,
+            /// the following describes the different cases where messages can be duplicated:
             ///
             /// Threads with variants: [`contact`, `closedGroup`]:
-            ///    `threadId`                    - Unique per thread
-            ///    `serverHash`                - Unique per message for service-node-based messages
-            ///                       **Note:** Some InfoMessage's will have this intentionally left `null`
-            ///                       as we want to ignore any collisions and re-process them
-            ///    `timestampMs`              - Very low chance of collision (especially combined with other two)
+            ///   "Sync" messages (messages we resend to the current to ensure it appears on all linked devices):
+            ///     `threadId`                    - Unique per thread
+            ///     `authorId`                    - Unique per user
+            ///     `timestampMs`              - Very low chance of collision (especially combined with other two)
+            ///
+            ///   Standard messages:
+            ///     `threadId`                    - Unique per thread
+            ///     `serverHash`                - Unique per message (deterministically generated)
             ///
             /// Threads with variants: [`openGroup`]:
-            /// `threadId`                                        - Unique per thread
-            /// `openGroupServerMessageId`     - Unique for VisibleMessage's on an OpenGroup server
-            t.uniqueKey([.threadId, .serverHash, .timestampMs])
+            ///   `threadId`                                        - Unique per thread
+            ///   `openGroupServerMessageId`     - Unique for VisibleMessage's on an OpenGroup server
+            t.uniqueKey([.threadId, .authorId, .timestampMs])
+            t.uniqueKey([.threadId, .serverHash])
             t.uniqueKey([.threadId, .openGroupServerMessageId])
         }
         

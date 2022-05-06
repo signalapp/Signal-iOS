@@ -27,7 +27,7 @@ enum _001_InitialSetupMigration: Migration {
                 [.address, .port],
                 references: Snode.self,
                 columns: [.address, .port],
-                onDelete: .cascade
+                onDelete: .cascade                                    // Delete if Snode deleted
             )
             t.primaryKey([.key, .nodeIndex])
         }
@@ -38,11 +38,11 @@ enum _001_InitialSetupMigration: Migration {
                 .primaryKey(autoincrement: true)
             t.column(.key, .text)
                 .notNull()
-                .indexed()
+                .indexed()                                            // Quicker querying
             t.column(.hash, .text).notNull()
             t.column(.expirationDateMs, .integer)
                 .notNull()
-                .indexed()
+                .indexed()                                            // Quicker querying
             
             t.uniqueKey([.key, .hash])
         }

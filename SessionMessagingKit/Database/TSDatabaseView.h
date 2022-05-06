@@ -57,16 +57,6 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 
 + (void)asyncRegisterThreadOutgoingMessagesDatabaseView:(OWSStorage *)storage;
 
-// Instances of OWSReadTracking for wasRead is NO and shouldAffectUnreadCounts is YES.
-//
-// Should be used for "unread message counts".
-+ (void)asyncRegisterUnreadDatabaseView:(OWSStorage *)storage;
-
-// Should be used for "unread indicator".
-//
-// Instances of OWSReadTracking for wasRead is NO.
-+ (void)asyncRegisterUnseenDatabaseView:(OWSStorage *)storage;
-
 // Should be used for "mention indicator".
 //
 // Instances of OWSReadTracking for wasRead is NO and isUserMentioned is YES.

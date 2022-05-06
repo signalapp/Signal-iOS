@@ -253,52 +253,6 @@ BOOL IsNoteToSelfEnabled(void)
     return [interactionsByThread numberOfItemsInGroup:self.uniqueId];
 }
 
-- (NSArray<id<OWSReadTracking>> *)unseenMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    NSMutableArray<id<OWSReadTracking>> *messages = [NSMutableArray new];
-    [[TSDatabaseView unseenDatabaseViewExtension:transaction]
-        enumerateKeysAndObjectsInGroup:self.uniqueId
-                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                                    return;
-                                }
-                                id<OWSReadTracking> unread = (id<OWSReadTracking>)object;
-                                if (unread.read) {
-                                    NSLog(@"Found an already read message in the * unseen * messages list.");
-                                    return;
-                                }
-                                [messages addObject:unread];
-                            }];
-
-    return [messages copy];
-}
-
-- (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    YapDatabaseViewTransaction *unreadMessages = [transaction ext:TSUnreadDatabaseViewExtensionName];
-    return [unreadMessages numberOfItemsInGroup:self.uniqueId];
-    
-    
-    // FIXME: Why did we have to do as the following?
-//    __block NSUInteger count = 0;
-//
-//    YapDatabaseViewTransaction *unreadMessages = [transaction ext:TSUnreadDatabaseViewExtensionName];
-//    [unreadMessages enumerateKeysAndObjectsInGroup:self.uniqueId
-//                                        usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-//        if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-//            return;
-//        }
-//        id<OWSReadTracking> unread = (id<OWSReadTracking>)object;
-//        if (unread.read) {
-//            NSLog(@"Found an already read message in the * unread * messages list.");
-//            return;
-//        }
-//        count += 1;
-//    }];
-    
-//    return count;
-}
-
 - (NSUInteger)unreadMentionMessageCount
 {
     __block NSUInteger unreadMentionMessageCount;
@@ -312,15 +266,6 @@ BOOL IsNoteToSelfEnabled(void)
 {
     YapDatabaseViewTransaction *unreadMentions = [transaction ext:TSUnreadMentionDatabaseViewExtensionName];
     return [unreadMentions numberOfItemsInGroup:self.uniqueId];
-}
-
-- (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
-        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp] trySendReadReceipt:YES transaction:transaction];
-    }
-    
-    [super saveWithTransaction:transaction];
 }
 
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(YapDatabaseReadTransaction *)transaction

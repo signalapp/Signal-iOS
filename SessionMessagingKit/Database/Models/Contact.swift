@@ -4,7 +4,7 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-public struct Contact: Codable, Identifiable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
+public struct Contact: Codable, Identifiable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "contact" }
     internal static let threadForeignKey = ForeignKey([Columns.id], to: [SessionThread.Columns.id])
     public static let profile = hasOne(Profile.self, using: Profile.contactForeignKey)
@@ -106,6 +106,10 @@ public extension Contact {
 // MARK: - GRDB Interactions
 
 public extension Contact {
+    /// Fetches or creates a Contact for the specified user
+    ///
+    /// **Note:** This method intentionally does **not** save the newly created Contact,
+    /// it will need to be explicitly saved after calling
     static func fetchOrCreate(_ db: Database, id: ID) -> Contact {
         return ((try? fetchOne(db, id: id)) ?? Contact(id: id))
     }

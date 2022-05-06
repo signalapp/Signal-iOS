@@ -183,7 +183,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
                 }
                 
                 self?.presentingViewController?.dismiss(animated: true, completion: nil)
-                SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+                SessionApp.presentConversation(for: thread.id, action: .compose, animated: false)
             }
             promise.catch(on: DispatchQueue.main) { [weak self] _ in
                 self?.dismiss(animated: true, completion: nil) // Dismiss the loader
@@ -199,6 +199,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
     
     @objc private func createNewDM() {
         presentingViewController?.dismiss(animated: true, completion: nil)
-        SignalApp.shared().homeViewController!.createNewDM()
+        
+        SessionApp.homeViewController.wrappedValue?.createNewDM()
     }
 }

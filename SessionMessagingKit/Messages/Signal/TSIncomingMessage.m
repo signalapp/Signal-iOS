@@ -6,7 +6,6 @@
 #import "NSNotificationCenter+OWS.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSReadReceiptManager.h"
 #import "TSAttachmentPointer.h"
 #import "TSContactThread.h"
 #import "TSDatabaseSecondaryIndexes.h"
@@ -18,8 +17,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TSIncomingMessage ()
-
-@property (nonatomic, getter=wasRead) BOOL read;
 
 @end
 
@@ -131,52 +128,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     _notificationIdentifier = notificationIdentifier;
     [self saveWithTransaction:transaction];
-}
-
-#pragma mark - OWSReadTracking
-
-- (BOOL)shouldAffectUnreadCounts
-{
-    return YES;
-}
-
-- (void)markAsReadNowWithTrySendReadReceipt:(BOOL)trySendReadReceipt
-                             transaction:(YapDatabaseReadWriteTransaction *)transaction;
-{
-    [self markAsReadAtTimestamp:[NSDate millisecondTimestamp]
-             trySendReadReceipt:trySendReadReceipt
-                    transaction:transaction];
-}
-
-- (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-           trySendReadReceipt:(BOOL)trySendReadReceipt
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
-{
-    if (_read && readTimestamp >= self.expireStartedAt) {
-        return;
-    }
-    // We just ignore all attachments download state here and mark all messages as read
-    // This is a workaround for a situation that some large attachments won't be downloaded
-    // and just stuck in a downloading state. In that case, the corresponding message won't
-    // be able to be marked as read.
-    
-    _read = YES;
-    [self saveWithTransaction:transaction];
-    
-    [transaction addCompletionQueue:nil
-                    completionBlock:^{
-                        [[NSNotificationCenter defaultCenter]
-                         postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
-                         object:self];
-                    }];
-
-    [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
-                                                     expirationStartedAt:readTimestamp
-                                                             transaction:transaction];
-
-    if (trySendReadReceipt) {
-        [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
-    }
 }
 
 @end

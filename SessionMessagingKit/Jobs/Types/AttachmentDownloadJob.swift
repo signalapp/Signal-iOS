@@ -27,9 +27,11 @@ public enum AttachmentDownloadJob: JobExecutor {
             failure(job, JobRunnerError.missingRequiredDetails, false)
             return
         }
-        guard attachment.state != .downloaded else {
-            // If there is a bug elsewhere in the code it's possible for an AttachmentDownloadJob to be created
-            // for an attachment that is already downloaded - if it is just succeed immediately
+        
+        // Due to the complex nature of jobs and how attachments can be reused it's possible for
+        // and AttachmentDownloadJob to get created for an attachment which has already been
+        // downloaded/uploaded so in those cases just succeed immediately
+        guard attachment.state != .downloaded && attachment.state != .uploaded else {
             success(job, false)
             return
         }

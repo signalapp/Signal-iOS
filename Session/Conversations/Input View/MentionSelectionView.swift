@@ -157,11 +157,12 @@ private extension MentionSelectionView {
             separator.pin(.bottom, to: .bottom, of: self)
         }
 
-        // MARK: Updating
+        // MARK: - Updating
+        
         private func update() {
             displayNameLabel.text = mentionCandidate.displayName
-            profilePictureView.publicKey = mentionCandidate.publicKey
-            profilePictureView.update()
+            profilePictureView.update(for: mentionCandidate.publicKey)
+            
             if let server = openGroupServer, let room = openGroupRoom {
                 let isUserModerator = OpenGroupAPIV2.isUserModerator(mentionCandidate.publicKey, for: room, on: server)
                 moderatorIconImageView.isHidden = !isUserModerator
@@ -174,7 +175,6 @@ private extension MentionSelectionView {
 
 // MARK: - Delegate
 
-protocol MentionSelectionViewDelegate : class {
-
+protocol MentionSelectionViewDelegate: AnyObject {
     func handleMentionSelected(_ mention: Mention, from view: MentionSelectionView)
 }

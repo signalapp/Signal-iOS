@@ -268,7 +268,16 @@ public final class GRDBStorage {
 // MARK: - Promise Extensions
 
 public extension GRDBStorage {
-    // FIXME: Would be good to replace this with Swift Combine
+    // FIXME: Would be good to replace these with Swift Combine
+    @discardableResult func read<T>(_ value: (Database) throws -> Promise<T>) -> Promise<T> {
+        do {
+            return try dbPool.read(value)
+        }
+        catch {
+            return Promise(error: error)
+        }
+    }
+    
     @discardableResult func write<T>(updates: (Database) throws -> Promise<T>) -> Promise<T> {
         do {
             return try dbPool.write(updates)

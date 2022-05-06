@@ -33,8 +33,9 @@ extension MessageSender {
             db,
             job: Job(
                 variant: .messageSend,
+                threadId: thread.id,
+                interactionId: interactionId,
                 details: MessageSendJob.Details(
-                    interactionId: interactionId,
                     destination: try Message.Destination.from(db, thread: thread),
                     message: message
                 )
@@ -153,7 +154,6 @@ extension MessageSender {
                 job: Job(
                     variant: .messageSend,
                     details: MessageSendJob.Details(
-                        interactionId: nil,
                         destination: destination,
                         message: configurationMessage
                     )

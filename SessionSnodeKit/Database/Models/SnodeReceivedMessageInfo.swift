@@ -61,13 +61,13 @@ public extension SnodeReceivedMessageInfo {
 // MARK: - GRDB Interactions
 
 public extension SnodeReceivedMessageInfo {
-    static func pruneLastMessageHashInfoIfExpired(for snode: Snode, associatedWith publicKey: String) {
-        // Clear out the 'expirationDateMs' value for all expired (but non-0) message infos
+    static func pruneExpiredMessageHashInfo(for snode: Snode, associatedWith publicKey: String) {
+        // Delete any expired (but non-0) SnodeReceivedMessageInfo values associated to a specific node
         GRDBStorage.shared.write { db in
             try? SnodeReceivedMessageInfo
                 .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey))
-                .filter(SnodeReceivedMessageInfo.Columns.expirationDateMs > 0)
-                .updateAll(db, SnodeReceivedMessageInfo.Columns.expirationDateMs.set(to: 0))
+                .filter(SnodeReceivedMessageInfo.Columns.expirationDateMs <= (Date().timeIntervalSince1970 * 1000))
+                .deleteAll(db)
         }
     }
     
@@ -80,7 +80,7 @@ public extension SnodeReceivedMessageInfo {
         return GRDBStorage.shared.write { db in
             try SnodeReceivedMessageInfo
                 .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey))
-                .filter(SnodeReceivedMessageInfo.Columns.expirationDateMs <= (Date().timeIntervalSince1970 * 1000))
+                .filter(SnodeReceivedMessageInfo.Columns.expirationDateMs > (Date().timeIntervalSince1970 * 1000))
                 .order(SnodeReceivedMessageInfo.Columns.id.desc)
                 .fetchOne(db)
         }

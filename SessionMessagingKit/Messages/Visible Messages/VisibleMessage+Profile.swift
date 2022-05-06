@@ -65,3 +65,13 @@ public extension VisibleMessage {
         }
     }
 }
+
+// MARK: - Conversion
+
+extension VisibleMessage.Profile {
+    init(profile: SessionMessagingKit.Profile) {
+        self.displayName = profile.name
+        self.profileKey = profile.profileEncryptionKey?.keyData
+        self.profilePictureUrl = profile.profilePictureUrl
+    }
+}

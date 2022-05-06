@@ -399,13 +399,15 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         delegate?.handleMentionSelected(mention, from: view)
     }
 
-    // MARK: Convenience
+    // MARK: - Convenience
+    
     private func container(for button: InputViewButton) -> UIView {
-        let result = UIView()
+        let result: UIView = UIView()
         result.addSubview(button)
         result.set(.width, to: InputViewButton.expandedSize)
         result.set(.height, to: InputViewButton.expandedSize)
         button.center(in: result)
+        
         return result
     }
 }

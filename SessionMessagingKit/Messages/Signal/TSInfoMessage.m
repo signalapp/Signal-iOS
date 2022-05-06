@@ -13,8 +13,6 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 
 @interface TSInfoMessage ()
 
-@property (nonatomic, getter=wasRead) BOOL read;
-
 @property (nonatomic, readonly) NSUInteger infoMessageSchemaVersion;
 
 @end
@@ -119,32 +117,6 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     }
 
     return @"Unknown Info Message Type";
-}
-
-#pragma mark - OWSReadTracking
-
-- (BOOL)shouldAffectUnreadCounts
-{
-    return NO;
-}
-
-- (uint64_t)expireStartedAt
-{
-    return 0;
-}
-
-- (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-           trySendReadReceipt:(BOOL)trySendReadReceipt
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    if (_read) {
-        return;
-    }
-
-    _read = YES;
-    [self saveWithTransaction:transaction];
-
-    // Ignore trySendReadReceipt, it doesn't apply to info messages.
 }
 
 @end

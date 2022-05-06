@@ -21,11 +21,12 @@ extension VisibleMessage.Quote {
     
     public static func from(_ quote: TSQuotedMessage?) -> VisibleMessage.Quote? {
         guard let quote = quote else { return nil }
-        let result = VisibleMessage.Quote()
-        result.timestamp = quote.timestamp
-        result.publicKey = quote.authorId
-        result.text = quote.body
-        result.attachmentID = quote.quotedAttachments.first?.attachmentId
-        return result
+        
+        return VisibleMessage.Quote(
+            timestamp: quote.timestamp,
+            publicKey: quote.authorId,
+            text: quote.body,
+            attachmentId: quote.quotedAttachments.first?.attachmentId
+        )
     }
 }

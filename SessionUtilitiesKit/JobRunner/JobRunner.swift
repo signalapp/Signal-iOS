@@ -147,11 +147,11 @@ public final class JobRunner {
         add(db, job: job, canStartJob: canStartJob)
     }
     
-    public static func insert(_ db: Database, job: Job?, before otherJob: Job) {
+    @discardableResult public static func insert(_ db: Database, job: Job?, before otherJob: Job) -> Job? {
         switch job?.behaviour {
             case .recurringOnActive, .recurringOnLaunch, .runOnceNextLaunch:
                 SNLog("[JobRunner] Attempted to insert \(job.map { "\($0.variant)" } ?? "unknown") job before the current one even though it's behaviour is \(job.map { "\($0.behaviour)" } ?? "unknown")")
-                return
+                return nil
                 
             default: break
         }
@@ -159,7 +159,7 @@ public final class JobRunner {
         // Store the job into the database (getting an id for it)
         guard let updatedJob: Job = try? job?.inserted(db) else {
             SNLog("[JobRunner] Unable to add \(job.map { "\($0.variant)" } ?? "unknown") job")
-            return
+            return nil
         }
         
         // Insert the job before the current job (re-adding the current job to
@@ -167,14 +167,15 @@ public final class JobRunner {
         // job will run and then the otherJob will run (or run again) once it's
         // done
         jobQueue.mutate {
-            if !$0.contains(otherJob) {
-                $0.insert(otherJob, at: 0)
+            guard let otherJobIndex: Int = $0.firstIndex(of: otherJob) else {
+                $0.insert(contentsOf: [updatedJob, otherJob], at: 0)
+                return
             }
-            
-            guard let otherJobIndex: Int = $0.firstIndex(of: otherJob) else { return }
             
             $0.insert(updatedJob, at: otherJobIndex)
         }
+        
+        return updatedJob
     }
     
     public static func appDidFinishLaunching() {
@@ -339,6 +340,46 @@ public final class JobRunner {
             return
         }
         
+        // Check if the next job has any dependencies
+        let jobDependencies: [Job] = GRDBStorage.shared
+            .read { db in try nextJob.dependencies.fetchAll(db) }
+            .defaulting(to: [])
+        
+        guard jobDependencies.isEmpty else {
+            SNLog("[JobRunner] Found job with \(jobDependencies.count) dependencies, running those first")
+            
+            let jobDependencyIds: [Int64] = jobDependencies
+                .compactMap { $0.id }
+            let jobIdsNotInQueue: Set<Int64> = jobDependencyIds
+                .asSet()
+                .subtracting(jobQueue.wrappedValue.compactMap { $0.id })
+            
+            // If there are dependencies which aren't in the queue we should just append them
+            guard !jobIdsNotInQueue.isEmpty else {
+                jobQueue.mutate { queue in
+                    queue.append(
+                        contentsOf: jobDependencies
+                            .filter { jobIdsNotInQueue.contains($0.id ?? -1) }
+                    )
+                    queue.append(nextJob)
+                }
+                handleJobDeferred(nextJob)
+                return
+            }
+            
+            // Otherwise re-add the current job after it's dependencies
+            jobQueue.mutate { queue in
+                guard let lastDependencyIndex: Int = queue.lastIndex(where: { jobDependencyIds.contains($0.id ?? -1) }) else {
+                    queue.append(nextJob)
+                    return
+                }
+                
+                queue.insert(nextJob, at: lastDependencyIndex + 1)
+            }
+            handleJobDeferred(nextJob)
+            return
+        }
+        
         // Update the state to indicate it's running
         //
         // Note: We need to store 'numJobsRemaining' in it's own variable because
@@ -363,7 +404,7 @@ public final class JobRunner {
                 try TimeInterval
                     .fetchOne(
                         db,
-                        Job// TODO: Test this works as expected
+                        Job
                             .filterPendingJobs(excludeFutureJobs: false)
                             .select(.nextRunTimestamp)
                     )
@@ -384,7 +425,7 @@ public final class JobRunner {
         }
         
         // Setup a trigger
-        SNLog("[JobRunner] Stopping until next job in \(Int(ceil(abs(secondsUntilNextJob))))) second\(Int(ceil(abs(secondsUntilNextJob))) == 1 ? "" : "s"))")
+        SNLog("[JobRunner] Stopping until next job in \(Int(ceil(abs(secondsUntilNextJob)))) second\(Int(ceil(abs(secondsUntilNextJob))) == 1 ? "" : "s"))")
         nextTrigger.mutate { $0 = Trigger.create(timestamp: nextJobTimestamp) }
     }
     
@@ -395,12 +436,24 @@ public final class JobRunner {
         switch job.behaviour {
             case .runOnce, .runOnceNextLaunch:
                 GRDBStorage.shared.write { db in
-                    try job.delete(db)
+                    // First remove any JobDependencies requiring this job to be completed (if
+                    // we don't then the dependant jobs will automatically be deleted)
+                    _ = try JobDependencies
+                        .filter(JobDependencies.Columns.dependantId == job.id)
+                        .deleteAll(db)
+                    
+                    _ = try job.delete(db)
                 }
                 
             case .recurring where shouldStop == true:
                 GRDBStorage.shared.write { db in
-                    try job.delete(db)
+                    // First remove any JobDependencies requiring this job to be completed (if
+                    // we don't then the dependant jobs will automatically be deleted)
+                    _ = try JobDependencies
+                        .filter(JobDependencies.Columns.dependantId == job.id)
+                        .deleteAll(db)
+                    
+                    _ = try job.delete(db)
                 }
                 
             // For `recurring` jobs which have already run, they should automatically run again
@@ -477,7 +530,7 @@ public final class JobRunner {
             else {
                 // If the job permanently failed or we have performed all of our retry attempts
                 // then delete the job (it'll probably never succeed)
-                try job.delete(db)
+                _ = try job.delete(db)
                 return
             }
             
@@ -500,7 +553,9 @@ public final class JobRunner {
     /// on other jobs, and it should automatically manage those dependencies)
     private static func handleJobDeferred(_ job: Job) {
         jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
-        runNextJob()
+        internalQueue.async {
+            runNextJob()
+        }
     }
     
     // MARK: - Convenience

@@ -5,6 +5,8 @@ import GRDB
 
 public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "job" }
+    internal static let dependencyForeignKey = ForeignKey([Columns.id], to: [JobDependencies.Columns.dependantId])
+    internal static let dependencies = hasMany(Job.self, using: dependencyForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -143,6 +145,14 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     /// JSON encoded data required for the job
     public let details: Data?
     
+    /// The other jobs which this job is dependant on
+    ///
+    /// **Note:** When completing a job the dependencies **MUST** be cleared before the job is
+    /// deleted or it will automatically delete any dependant jobs
+    public var dependencies: QueryInterfaceRequest<Job> {
+        request(for: Job.dependencies)
+    }
+    
     // MARK: - Initialization
     
     fileprivate init(
@@ -191,6 +201,8 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         interactionId: Int64? = nil,
         details: T?
     ) {
+        precondition(T.self != Job.self, "[Job] Fatal error trying to create a Job with a Job as it's details")
+        
         guard
             let details: T = details,
             let detailsData: Data = try? JSONEncoder().encode(details)
@@ -209,6 +221,14 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     
     public mutating func didInsert(with rowID: Int64, for column: String?) {
         self.id = rowID
+    }
+    
+    public func delete(_ db: Database) throws -> Bool {
+        // Delete any dependencies
+        try dependencies
+            .deleteAll(db)
+        
+        return try performDelete(db)
     }
 }
 

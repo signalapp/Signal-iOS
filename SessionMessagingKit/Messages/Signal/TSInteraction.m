@@ -226,9 +226,9 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     if (!self.uniqueId) {
         self.uniqueId = [NSUUID new].UUIDString;
     }
-    if (self.sortId == 0) {
-        self.sortId = [SSKIncrementingIdFinder nextIdWithKey:[TSInteraction collection] transaction:transaction];
-    }
+//    if (self.sortId == 0) {
+//        self.sortId = [SSKIncrementingIdFinder nextIdWithKey:[TSInteraction collection] transaction:transaction];
+//    }
 
     [super saveWithTransaction:transaction];
 

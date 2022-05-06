@@ -411,13 +411,33 @@ public final class SnodeAPI : NSObject {
             }
     }
     
-    public static func getRawMessages(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
-        let (promise, seal) = RawResponsePromise.pending()
+    public static func getMessages(from snode: Snode, associatedWith publicKey: String) -> Promise<[SnodeReceivedMessage]> {
+        let (promise, seal) = Promise<[SnodeReceivedMessage]>.pending()
         Threading.workQueue.async {
             getMessagesInternal(from: snode, associatedWith: publicKey)
-                .done2 { seal.fulfill($0) }
+                .done2 { rawResponse in
+                    guard
+                        let json: JSON = rawResponse as? JSON,
+                        let rawMessages: [JSON] = json["messages"] as? [JSON]
+                    else {
+                        seal.fulfill([])
+                        return
+                    }
+                    
+                    let messages: [SnodeReceivedMessage] = rawMessages
+                        .compactMap { rawMessage -> SnodeReceivedMessage? in
+                            SnodeReceivedMessage(
+                                snode: snode,
+                                publicKey: publicKey,
+                                rawMessage: rawMessage
+                            )
+                        }
+                    
+                    seal.fulfill(messages)
+                }
                 .catch2 { seal.reject($0) }
         }
+        
         return promise
     }
 
@@ -428,7 +448,7 @@ public final class SnodeAPI : NSObject {
         
 //        guard let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
         // Get last message hash
-        SnodeReceivedMessageInfo.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey)
+        SnodeReceivedMessageInfo.pruneExpiredMessageHashInfo(for: snode, associatedWith: publicKey)
         let lastHash = SnodeReceivedMessageInfo.fetchLastNotExpired(for: snode, associatedWith: publicKey)?.hash ?? ""
         // Construct signature
 //        let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
@@ -675,18 +695,16 @@ public final class SnodeAPI : NSObject {
     }
     
     private static func removeDuplicates(from rawMessages: [JSON], associatedWith publicKey: String) -> [JSON] {
-        var oldReceivedMessages: [SnodeReceivedMessageInfo] = []
-        
-        GRDBStorage.shared.read { db in
-            oldReceivedMessages = oldReceivedMessages.appending(
-                contentsOf: try? SnodeReceivedMessageInfo
-                    .filter(SnodeReceivedMessageInfo.Columns.key.like("%\(publicKey)"))
+        let oldMessageHashes: Set<String> = GRDBStorage.shared
+            .read { db in
+                try SnodeReceivedMessageInfo
+                    .select(.hash)
+                    .filter(SnodeReceivedMessageInfo.Columns.key == publicKey)
+                    .asRequest(of: String.self)
                     .fetchAll(db)
-            )
-        }
-        
-        let oldMessageHashes: Set<String> = oldReceivedMessages.map { $0.hash }.asSet()
-        
+            }
+            .defaulting(to: [])
+            .asSet()
         return rawMessages
             .compactMap { rawMessage -> JSON? in
                 guard let hash: String = rawMessage["hash"] as? String else {

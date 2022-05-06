@@ -2,12 +2,11 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import <SessionMessagingKit/OWSReadTracking.h>
 #import <SessionMessagingKit/TSMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSInfoMessage : TSMessage <OWSReadTracking>
+@interface TSInfoMessage : TSMessage
 
 typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageTypeGroupCreated,
@@ -19,6 +18,7 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageTypeMessageRequestAccepted = 99
 };
 
+@property (nonatomic, getter=wasRead) BOOL read;
 @property (atomic, readonly) TSInfoMessageType messageType;
 @property (atomic, readonly, nullable) NSString *customMessage;
 @property (atomic, readonly, nullable) NSString *unregisteredRecipientId;

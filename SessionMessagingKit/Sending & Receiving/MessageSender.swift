@@ -369,6 +369,17 @@ public final class MessageSender : NSObject {
             handleFailure(db, with: .invalidMessage)
             return promise
         }
+        
+        // Attach the user's profile
+        message.profile = VisibleMessage.Profile(
+            profile: Profile.fetchOrCreateCurrentUser()
+        )
+
+        if (message.profile?.displayName ?? "").isEmpty {
+            handleFailure(db, with: .noUsername)
+            return promise
+        }
+        
         // Convert it to protobuf
         guard let proto = message.toProto(db) else {
             handleFailure(db, with: .protoConversionFailed)
@@ -467,13 +478,10 @@ public final class MessageSender : NSObject {
             // Start the disappearing messages timer if needed
             JobRunner.upsert(
                 db,
-                job: Job(
-                    variant: .disappearingMessages,
-                    details: DisappearingMessagesJob.updateNextRunIfNeeded(
-                        db,
-                        interaction: interaction,
-                        startedAtMs: (Date().timeIntervalSince1970 * 1000)
-                    )
+                job: DisappearingMessagesJob.updateNextRunIfNeeded(
+                    db,
+                    interaction: interaction,
+                    startedAtMs: (Date().timeIntervalSince1970 * 1000)
                 )
             )
         }
