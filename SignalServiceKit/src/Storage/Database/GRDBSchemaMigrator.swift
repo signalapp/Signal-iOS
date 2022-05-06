@@ -176,6 +176,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_senderKeyStoreKeyIdMigration
         case dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarDataFixed
         case dataMigration_repairAvatar
+        case dataMigration_dropEmojiAvailabilityStore
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -2041,6 +2042,17 @@ public class GRDBSchemaMigrator: NSObject {
             let preferencesKeyValueStore = SDSKeyValueStore(collection: Self.migrationSideEffectsCollectionName)
             let key = Self.avatarRepairAttemptCount
             preferencesKeyValueStore.setInt(0, key: key, transaction: transaction.asAnyWrite)
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_dropEmojiAvailabilityStore.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            // This is a bit of a layering violation, since these tables were previously managed in the app layer.
+            // In the long run we'll have a general "unused SDSKeyValueStore cleaner" migration,
+            // but for now this should drop 2000 or so rows for free.
+            SDSKeyValueStore(collection: "Emoji+availableStore").removeAll(transaction: transaction.asAnyWrite)
+            SDSKeyValueStore(collection: "Emoji+metadataStore").removeAll(transaction: transaction.asAnyWrite)
         }
     }
 }

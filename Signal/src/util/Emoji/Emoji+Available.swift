@@ -1,12 +1,16 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
+
+import Foundation
 
 extension Emoji {
     private static let availableCache = AtomicDictionary<Emoji, Bool>()
-    private static let metadataStore = SDSKeyValueStore(collection: "Emoji+metadataStore")
-    private static let availableStore = SDSKeyValueStore(collection: "Emoji+availableStore")
     private static let iosVersionKey = "iosVersion"
+    private static let cacheUrl = OWSFileSystem.appSharedDataDirectoryURL()
+        .appendingPathComponent("Library")
+        .appendingPathComponent("Caches")
+        .appendingPathComponent("emoji.plist")
 
     static func warmAvailableCache() {
         owsAssertDebug(!Thread.isMainThread)
@@ -17,67 +21,53 @@ extension Emoji {
         var uncachedEmoji = [Emoji]()
 
         let iosVersion = AppVersion.iOSVersionString
-        var iosVersionNeedsUpdate = false
-        var shouldResetCache = false
 
-        SDSDatabaseStorage.shared.read { transaction in
-            guard let lastIosVersion = metadataStore.getString(iosVersionKey, transaction: transaction) else {
-                Logger.info("Building initial emoji availability cache.")
-                iosVersionNeedsUpdate = true
-                uncachedEmoji = Emoji.allCases
-                shouldResetCache = true
-                return
-            }
+        // Use an NSMutableDictionary for built-in plist serialization and heterogeneous values.
+        var availableMap = NSMutableDictionary()
+        do {
+            availableMap = try NSMutableDictionary(contentsOf: Self.cacheUrl, error: ())
+        } catch {
+            Logger.info("Re-building emoji availability cache. Cache could not be loaded. \(error)")
+            uncachedEmoji = Emoji.allCases
+        }
 
-            guard lastIosVersion == iosVersion else {
-                Logger.info("Re-building emoji availability cache. iOS version upgraded from \(lastIosVersion) -> \(iosVersion)")
-                iosVersionNeedsUpdate = true
-                uncachedEmoji = Emoji.allCases
-                shouldResetCache = true
-                return
-            }
-
-            let availableMap = availableStore.allBoolValuesMap(transaction: transaction)
-            guard !availableMap.isEmpty else {
-                Logger.info("Re-building emoji availability cache. Cache could not be loaded.")
-                uncachedEmoji = Emoji.allCases
-                shouldResetCache = true
-                return
-            }
-
+        let lastIosVersion = availableMap[iosVersionKey] as? String
+        if lastIosVersion == iosVersion {
+            Logger.debug("Loading emoji availability cache (expect \(Emoji.allCases.count) items, found \(availableMap.count - 1)).")
             for emoji in Emoji.allCases {
-                if let available = availableMap[emoji.rawValue] {
+                if let available = availableMap[emoji.rawValue] as? Bool {
                     availableCache[emoji] = available
                 } else {
                     Logger.warn("Emoji unexpectedly missing from cache: \(emoji).")
                     uncachedEmoji.append(emoji)
                 }
             }
+        } else if uncachedEmoji.isEmpty {
+            Logger.info("Re-building emoji availability cache. iOS version upgraded from \(lastIosVersion ?? "(none)") -> \(iosVersion)")
+            uncachedEmoji = Emoji.allCases
         }
 
-        var uncachedAvailability = [Emoji: Bool]()
         if !uncachedEmoji.isEmpty {
             Logger.info("Checking emoji availability for \(uncachedEmoji.count) uncached emoji")
             uncachedEmoji.forEach {
                 let available = isEmojiAvailable($0)
-                uncachedAvailability[$0] = available
+                availableMap[$0.rawValue] = available
                 availableCache[$0] = available
             }
-        }
 
-        if uncachedAvailability.count > 0 || iosVersionNeedsUpdate {
-            SDSDatabaseStorage.shared.write { transaction in
-                if shouldResetCache {
-                    availableStore.removeAll(transaction: transaction)
-                }
-                for (emoji, available) in uncachedAvailability {
-                    availableStore.setBool(available, key: emoji.rawValue, transaction: transaction)
-                }
-                metadataStore.setString(iosVersion, key: iosVersionKey, transaction: transaction)
+            availableMap[iosVersionKey] = iosVersion
+            do {
+                // Use FileManager.createDirectory directly because OWSFileSystem.ensureDirectoryExists
+                // can modify the protection, and this is a system-managed directory.
+                try FileManager.default.createDirectory(at: Self.cacheUrl.deletingLastPathComponent(),
+                                                        withIntermediateDirectories: true)
+                try availableMap.write(to: Self.cacheUrl)
+            } catch {
+                Logger.warn("Failed to save emoji availability cache; it will be recomputed next time! \(error)")
             }
         }
 
-        Logger.info("Warmed emoji availability cache with \(availableCache.filter { $0.value }.count) available emoji for iOS \(iosVersion)")
+        Logger.info("Warmed emoji availability cache with \(availableCache.lazy.filter { $0.value }.count) available emoji for iOS \(iosVersion)")
 
         Self.availableCache.set(availableCache)
     }
