@@ -8,7 +8,7 @@ import SignalUI
 
 class BadgeThanksSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
-    override var renderExternalHandle: Bool { false }
+    override var sheetBackgroundColor: UIColor { tableViewController.tableBackgroundColor }
     private var shouldMakeVisibleAndPrimary = false
 
     var contentSizeHeight: CGFloat {
@@ -22,7 +22,6 @@ class BadgeThanksSheet: InteractiveSheetViewController {
     }
 
     private let tableViewController = OWSTableViewController2()
-    private let handleContainer = UIView()
 
     private let badge: ProfileBadge
     private var isBoost: Bool { BoostBadgeIds.contains(badge.id) }
@@ -136,21 +135,6 @@ class BadgeThanksSheet: InteractiveSheetViewController {
         contentView.addSubview(tableViewController.view)
         tableViewController.view.autoPinEdgesToSuperviewEdges()
 
-        // We add the handle directly to the content view,
-        // so that it doesn't scroll with the table.
-        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
-        contentView.addSubview(handleContainer)
-        handleContainer.autoPinWidthToSuperview()
-        handleContainer.autoPinEdge(toSuperviewEdge: .top)
-
-        let handle = UIView()
-        handle.backgroundColor = tableViewController.separatorColor
-        handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
-        handle.layer.cornerRadius = 5 / 2
-        handleContainer.addSubview(handle)
-        handle.autoPinHeightToSuperview(withMargin: 12)
-        handle.autoHCenterInSuperview()
-
         if isBoost && hasAnySustainerBadge {
             shouldMakeVisibleAndPrimary = false
         } else {
@@ -176,7 +160,6 @@ class BadgeThanksSheet: InteractiveSheetViewController {
 
     override func themeDidChange() {
         super.themeDidChange()
-        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
         updateTableContents()
     }
 

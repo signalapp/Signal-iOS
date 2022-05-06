@@ -9,6 +9,7 @@ import SignalServiceKit
 @objc
 class EmojiPickerSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [collectionView] }
+    override var handlePosition: HandlePosition { .outside }
 
     let completionHandler: (EmojiWithSkinTones?) -> Void
 
@@ -35,6 +36,10 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         return button
     }()
 
+    override var sheetBackgroundColor: UIColor {
+        Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
+    }
+
     init(allowReactionConfiguration: Bool = true, completionHandler: @escaping (EmojiWithSkinTones?) -> Void) {
         self.allowReactionConfiguration = allowReactionConfiguration
         self.completionHandler = completionHandler
@@ -58,8 +63,6 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-
-        contentView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
 
         let topStackView = UIStackView()
         topStackView.axis = .horizontal

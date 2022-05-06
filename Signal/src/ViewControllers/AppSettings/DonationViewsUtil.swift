@@ -49,32 +49,15 @@ public class ProfileBadgeLookup {
 public class SubscriptionReadMoreSheet: InteractiveSheetViewController {
     let contentScrollView = UIScrollView()
     let stackView = UIStackView()
-    let handleContainer = UIView()
     public override var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
     public override var minHeight: CGFloat { min(740, CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32)) }
     override var maximizedHeight: CGFloat { minHeight }
-    public override var renderExternalHandle: Bool { false }
+    override var sheetBackgroundColor: UIColor { Theme.tableView2PresentedBackgroundColor }
 
     // MARK: -
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        contentView.backgroundColor = Theme.tableView2PresentedBackgroundColor
-
-        // We add the handle directly to the content view,
-        // so that it doesn't scroll with the table.
-        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
-        contentView.addSubview(handleContainer)
-        handleContainer.autoPinWidthToSuperview()
-        handleContainer.autoPinEdge(toSuperviewEdge: .top)
-
-        let handle = UIView()
-        handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
-        handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
-        handle.layer.cornerRadius = 5 / 2
-        handleContainer.addSubview(handle)
-        handle.autoPinHeightToSuperview(withMargin: 12)
-        handle.autoHCenterInSuperview()
 
         contentView.addSubview(contentScrollView)
 
@@ -86,19 +69,10 @@ public class SubscriptionReadMoreSheet: InteractiveSheetViewController {
         // Pin to the scroll view's viewport, not to its scrollable area
         stackView.autoPinWidth(toWidthOf: contentScrollView)
 
-        contentScrollView.autoPinWidthToSuperview()
-        contentScrollView.autoPinEdge(toSuperviewEdge: .bottom)
-        contentScrollView.autoPinEdge(.top, to: .bottom, of: handleContainer)
+        contentScrollView.autoPinEdgesToSuperviewEdges()
         contentScrollView.alwaysBounceVertical = true
 
         buildContents()
-    }
-
-    public override func themeDidChange() {
-        super.themeDidChange()
-        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
-        contentView.backgroundColor = Theme.tableView2PresentedBackgroundColor
-
     }
 
     private func buildContents() {

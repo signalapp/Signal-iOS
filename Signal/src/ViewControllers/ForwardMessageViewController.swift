@@ -18,8 +18,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     private let pickerVC: ForwardPickerViewController
     private let forwardNavigationViewController = ForwardNavigationViewController()
 
-    private let handle = UIView()
-
     override var interactiveScrollViews: [UIScrollView] { [ pickerVC.tableView ] }
 
     public weak var forwardMessageDelegate: ForwardMessageDelegate?
@@ -33,6 +31,8 @@ class ForwardMessageViewController: InteractiveSheetViewController {
 
     private let selection = ConversationPickerSelection()
     var selectedConversations: [ConversationItem] { selection.conversations }
+
+    override var sheetBackgroundColor: UIColor { pickerVC.tableBackgroundColor }
 
     private init(content: Content) {
         self.content = content
@@ -111,15 +111,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         super.themeDidChange()
     }
 
-    public override func applyTheme() {
-        AssertIsOnMainThread()
-
-        super.applyTheme()
-
-        contentView.backgroundColor = pickerVC.tableBackgroundColor
-        handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -128,15 +119,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     }
 
     private func selectRecipientsStep() {
-
-        handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
-        handle.layer.cornerRadius = 5 / 2
-
-        let handleContainer = UIView()
-        handleContainer.addSubview(handle)
-        handle.autoPinHeightToSuperview(withMargin: 12)
-        handle.autoHCenterInSuperview()
-
         pickerVC.forwardMessageViewController = self
         pickerVC.shouldShowSearchBar = false
         pickerVC.shouldHideSearchBarIfCancelled = true
@@ -145,16 +127,10 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         forwardNavigationViewController.forwardMessageViewController = self
         forwardNavigationViewController.viewControllers = [ pickerVC ]
         self.addChild(forwardNavigationViewController)
+
         let navView = forwardNavigationViewController.view!
-
-        let stackView = UIStackView(arrangedSubviews: [
-                                        handleContainer,
-                                        navView ])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-
-        self.contentView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewEdges()
+        self.contentView.addSubview(navView)
+        navView.autoPinEdgesToSuperviewEdges()
 
         applyTheme()
     }
@@ -187,7 +163,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         forwardMessageDelegate?.forwardMessageFlowDidCancel()
     }
 
-    override var renderExternalHandle: Bool { false }
     override var minHeight: CGFloat { 576 }
 }
 

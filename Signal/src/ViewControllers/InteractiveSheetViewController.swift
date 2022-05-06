@@ -4,11 +4,28 @@
 
 import Foundation
 import SignalUI
+import UIKit
 
 public class InteractiveSheetViewController: OWSViewController {
+    private let handleHeight: CGFloat = 5
+    private let handleInsideMargin: CGFloat = 12
+
+    public enum HandlePosition {
+        case outside
+        case inside
+    }
+
+    private let contentContainerView: UIStackView = {
+        let view = UIStackView()
+        view.axis = .vertical
+        return view
+    }()
+
     public let contentView = UIView()
 
     public var interactiveScrollViews: [UIScrollView] { [] }
+
+    var sheetBackgroundColor: UIColor { Theme.actionSheetBackgroundColor }
 
     public weak var externalBackdropView: UIView?
     private lazy var _internalBackdropView = UIView()
@@ -20,8 +37,9 @@ public class InteractiveSheetViewController: OWSViewController {
 
     public var allowsInteractiveDismisssal: Bool { true }
 
-    public var renderExternalHandle: Bool { true }
-    private lazy var handle = UIView()
+    var handlePosition: HandlePosition { .inside }
+    private let handle = UIView()
+    private lazy var handleContainer = UIView()
 
     public required override init() {
         super.init()
@@ -37,22 +55,51 @@ public class InteractiveSheetViewController: OWSViewController {
         view = UIView()
         view.backgroundColor = .clear
 
-        view.addSubview(contentView)
-        contentView.autoPinEdge(toSuperviewEdge: .bottom)
-        contentView.autoHCenterInSuperview()
-        contentView.autoMatch(.height, to: .height, of: view, withOffset: 0, relation: .lessThanOrEqual)
-        contentView.backgroundColor = Theme.actionSheetBackgroundColor
+        view.addSubview(contentContainerView)
+        contentContainerView.autoPinEdge(toSuperviewEdge: .bottom)
+        contentContainerView.autoHCenterInSuperview()
+        contentContainerView.backgroundColor = sheetBackgroundColor
+
+        let autoMatchHeightOffset: CGFloat
+        switch handlePosition {
+        case .outside:
+            autoMatchHeightOffset = 0
+        case .inside:
+            autoMatchHeightOffset = -2 * (handleHeight + handleInsideMargin + handleInsideMargin)
+        }
+        contentContainerView.autoMatch(.height, to: .height, of: view, withOffset: autoMatchHeightOffset, relation: .lessThanOrEqual)
 
         // Prefer to be full width, but don't exceed the maximum width
-        contentView.autoSetDimension(.width, toSize: maxWidth, relation: .lessThanOrEqual)
-        contentView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
+        contentContainerView.autoSetDimension(.width, toSize: maxWidth, relation: .lessThanOrEqual)
+        contentContainerView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
         NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            contentView.autoPinWidthToSuperview()
+            contentContainerView.autoPinWidthToSuperview()
         }
 
-        contentView.layer.cornerRadius = 16
-        contentView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        contentView.layer.masksToBounds = true
+        contentContainerView.layer.cornerRadius = 16
+        contentContainerView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        contentContainerView.layer.masksToBounds = true
+
+        contentContainerView.addArrangedSubview(contentView)
+        contentView.autoPinWidthToSuperview()
+
+        handle.autoSetDimensions(to: CGSize(width: 36, height: handleHeight))
+        handle.layer.cornerRadius = handleHeight / 2
+        switch handlePosition {
+        case .outside:
+            view.addSubview(handle)
+            handle.backgroundColor = .ows_whiteAlpha80
+            handle.autoPinEdge(.bottom, to: .top, of: contentContainerView, withOffset: -8)
+        case .inside:
+            contentContainerView.insertArrangedSubview(handleContainer, at: 0)
+            handleContainer.autoPinWidthToSuperview()
+            handleContainer.addSubview(handle)
+            handleContainer.backgroundColor = contentContainerView.backgroundColor
+            handleContainer.isOpaque = true
+            handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
+            handle.autoPinHeightToSuperview(withMargin: handleInsideMargin)
+        }
+        handle.autoHCenterInSuperview()
 
         // Support tapping the backdrop to cancel the sheet.
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapBackdrop(_:)))
@@ -61,6 +108,20 @@ public class InteractiveSheetViewController: OWSViewController {
 
         // Setup handle for interactive dismissal / resizing
         setupInteractiveSizing()
+    }
+
+    public override func themeDidChange() {
+        super.themeDidChange()
+
+        contentContainerView.backgroundColor = sheetBackgroundColor
+
+        switch handlePosition {
+        case .outside:
+            break
+        case .inside:
+            handleContainer.backgroundColor = contentContainerView.backgroundColor
+            handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
+        }
     }
 
     @objc func didTapBackdrop(_ sender: UITapGestureRecognizer) {
@@ -89,7 +150,7 @@ public class InteractiveSheetViewController: OWSViewController {
     private var startingTranslation: CGFloat?
 
     private func setupInteractiveSizing() {
-        heightConstraint = contentView.autoSetDimension(.height, toSize: minimizedHeight)
+        heightConstraint = contentContainerView.autoSetDimension(.height, toSize: minimizedHeight)
 
         // Create a pan gesture to handle when the user interacts with the
         // view outside of any scroll views we want to follow.
@@ -102,15 +163,6 @@ public class InteractiveSheetViewController: OWSViewController {
         // so we can transfer any initial scrolling into maximizing
         // the view.
         interactiveScrollViews.forEach { $0.panGestureRecognizer.addTarget(self, action: #selector(handlePan)) }
-
-        if renderExternalHandle {
-            handle.backgroundColor = .ows_whiteAlpha80
-            handle.autoSetDimensions(to: CGSize(width: 56, height: 5))
-            handle.layer.cornerRadius = 5 / 2
-            view.addSubview(handle)
-            handle.autoHCenterInSuperview()
-            handle.autoPinEdge(.bottom, to: .top, of: contentView, withOffset: -8)
-        }
     }
 
     @objc
@@ -157,7 +209,7 @@ public class InteractiveSheetViewController: OWSViewController {
             let growThreshold = startingHeight * 1.5
             let velocityThreshold: CGFloat = 500
 
-            let currentHeight = contentView.height
+            let currentHeight = contentContainerView.height
             let currentVelocity = sender.velocity(in: view).y
 
             enum CompletionState { case growing, dismissing, cancelling }
@@ -196,8 +248,13 @@ public class InteractiveSheetViewController: OWSViewController {
 
             UIView.animate(withDuration: min(remainingTime, maxAnimationDuration), delay: 0, options: .curveEaseOut, animations: {
                 if remainingDistance < 0 {
-                    self.contentView.frame.origin.y -= remainingDistance
-                    self.handle.frame.origin.y -= remainingDistance
+                    self.contentContainerView.frame.origin.y -= remainingDistance
+                    switch self.handlePosition {
+                    case .outside:
+                        self.handle.frame.origin.y -= remainingDistance
+                    case .inside:
+                        break
+                    }
                 } else {
                     self.heightConstraint?.constant = finalHeight
                     self.view.layoutIfNeeded()
@@ -234,7 +291,7 @@ public class InteractiveSheetViewController: OWSViewController {
         // currently maximized, or we're panning outside of the scroll
         // view we want to do an interactive transition.
         guard (panningScrollView != nil && panningScrollView!.contentOffset.y <= 0)
-            || contentView.height < maximizedHeight
+            || contentContainerView.height < maximizedHeight
             || panningScrollView == nil else { return false }
 
         if startingTranslation == nil {
@@ -242,7 +299,7 @@ public class InteractiveSheetViewController: OWSViewController {
         }
 
         if startingHeight == nil {
-            startingHeight = contentView.height
+            startingHeight = contentContainerView.height
         }
 
         return true
@@ -261,7 +318,7 @@ extension InteractiveSheetViewController: UIGestureRecognizerDelegate {
         switch gestureRecognizer {
         case is UITapGestureRecognizer:
             let point = gestureRecognizer.location(in: view)
-            guard !contentView.frame.contains(point) else { return false }
+            guard !contentContainerView.frame.contains(point) else { return false }
             return true
         default:
             return true

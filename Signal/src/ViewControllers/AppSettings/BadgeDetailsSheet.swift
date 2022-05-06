@@ -9,7 +9,7 @@ import UIKit
 
 class BadgeDetailsSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
-    override var renderExternalHandle: Bool { false }
+    override var sheetBackgroundColor: UIColor { tableViewController.tableBackgroundColor }
 
     var contentSizeHeight: CGFloat {
         tableViewController.tableView.contentSize.height + tableViewController.tableView.adjustedContentInset.totalHeight
@@ -22,7 +22,6 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
     }
 
     private let tableViewController = OWSTableViewController2()
-    private let handleContainer = UIView()
 
     public enum Owner: Equatable {
         // TODO: Eventually we won't need a short name for self, the server will provide copy for us.
@@ -70,7 +69,6 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
 
     override func themeDidChange() {
         super.themeDidChange()
-        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
         updateTableContents()
     }
 
@@ -80,21 +78,6 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
 
         contentView.addSubview(tableViewController.view)
         tableViewController.view.autoPinEdgesToSuperviewEdges()
-
-        // We add the handle directly to the content view,
-        // so that it doesn't scroll with the table.
-        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
-        contentView.addSubview(handleContainer)
-        handleContainer.autoPinWidthToSuperview()
-        handleContainer.autoPinEdge(toSuperviewEdge: .top)
-
-        let handle = UIView()
-        handle.backgroundColor = tableViewController.separatorColor
-        handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
-        handle.layer.cornerRadius = 5 / 2
-        handleContainer.addSubview(handle)
-        handle.autoPinHeightToSuperview(withMargin: 12)
-        handle.autoHCenterInSuperview()
 
         updateViewState()
     }

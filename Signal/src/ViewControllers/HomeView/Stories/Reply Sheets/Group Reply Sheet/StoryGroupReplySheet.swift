@@ -7,9 +7,9 @@ import UIKit
 import SignalServiceKit
 
 class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
-    override var renderExternalHandle: Bool { false }
     override var interactiveScrollViews: [UIScrollView] { [tableView] }
     override var minHeight: CGFloat { CurrentAppContext().frame.height * 0.6 }
+    override var sheetBackgroundColor: UIColor { .ows_gray90 }
 
     private lazy var tableView = UITableView()
     lazy var inputToolbar = StoryReplyInputToolbar()
@@ -73,30 +73,10 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
         tableView.autoPinWidthToSuperview()
         tableView.autoPinEdge(toSuperviewEdge: .bottom)
 
-        // We add the handle directly to the content view,
-        // so that it doesn't scroll with the table.
-        let handleContainer = UIView()
-        contentView.addSubview(handleContainer)
-        handleContainer.autoPinWidthToSuperview()
-        handleContainer.autoPinEdge(toSuperviewEdge: .top)
-        handleContainer.autoPinEdge(.bottom, to: .top, of: tableView)
-
-        let handle = UIView()
-        handle.backgroundColor = .ows_gray65
-        handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
-        handle.layer.cornerRadius = 5 / 2
-        handleContainer.addSubview(handle)
-        handle.autoPinHeightToSuperview(withMargin: 12)
-        handle.autoHCenterInSuperview()
-
         inputToolbar.delegate = self
         contentView.addSubview(inputToolbar)
         inputToolbar.autoPinWidthToSuperview()
         inputToolbarBottomConstraint.isActive = true
-
-        contentView.backgroundColor = .ows_gray90
-        tableView.backgroundColor = .ows_gray90
-        handleContainer.backgroundColor = .ows_gray90
 
         for type in StoryGroupReplyCell.CellType.allCases {
             tableView.register(StoryGroupReplyCell.self, forCellReuseIdentifier: type.rawValue)

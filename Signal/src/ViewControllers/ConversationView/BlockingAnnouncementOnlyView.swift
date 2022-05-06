@@ -116,8 +116,6 @@ class MessageUserSubsetSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
     private let tableViewController = OWSTableViewController2()
     private let addresses: [SignalServiceAddress]
-    override var renderExternalHandle: Bool { false }
-    private let handleContainer = UIView()
 
     var contentSizeHeight: CGFloat {
         tableViewController.tableView.contentSize.height + tableViewController.tableView.adjustedContentInset.totalHeight
@@ -152,7 +150,6 @@ class MessageUserSubsetSheet: InteractiveSheetViewController {
 
     override func themeDidChange() {
         super.themeDidChange()
-        handleContainer.backgroundColor = tableViewController.tableBackgroundColor
         updateTableContents()
     }
 
@@ -168,21 +165,6 @@ class MessageUserSubsetSheet: InteractiveSheetViewController {
                            forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
         contentView.addSubview(tableViewController.view)
         tableViewController.view.autoPinEdgesToSuperviewEdges()
-
-        // We add the handle directly to the content view,
-        // so that it doesn't scroll with the table.
-        handleContainer.backgroundColor = tableViewController.tableBackgroundColor
-        contentView.addSubview(handleContainer)
-        handleContainer.autoPinWidthToSuperview()
-        handleContainer.autoPinEdge(toSuperviewEdge: .top)
-
-        let handle = UIView()
-        handle.backgroundColor = tableViewController.separatorColor
-        handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
-        handle.layer.cornerRadius = 5 / 2
-        handleContainer.addSubview(handle)
-        handle.autoPinHeightToSuperview(withMargin: 12)
-        handle.autoHCenterInSuperview()
 
         updateViewState()
     }
@@ -208,11 +190,6 @@ class MessageUserSubsetSheet: InteractiveSheetViewController {
 
     private func updateTableContents() {
         let contents = OWSTableContents()
-
-        // Leave space at the top for the handle
-        let handleSection = OWSTableSection()
-        handleSection.customHeaderHeight = 25
-        contents.addSection(handleSection)
 
         let section = OWSTableSection()
         let header = NSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN",

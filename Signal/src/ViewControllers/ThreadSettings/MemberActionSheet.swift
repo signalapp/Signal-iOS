@@ -11,7 +11,6 @@ class MemberActionSheet: InteractiveSheetViewController {
     let tableViewController = OWSTableViewController2()
 
     private var groupViewHelper: GroupViewHelper?
-    private let handleContainer = UIView()
 
     var avatarView: PrimaryImageView?
     var thread: TSThread { threadViewModel.threadRecord }
@@ -19,7 +18,7 @@ class MemberActionSheet: InteractiveSheetViewController {
     let address: SignalServiceAddress
 
     override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
-    override var renderExternalHandle: Bool { false }
+    override var sheetBackgroundColor: UIColor {  tableViewController.tableBackgroundColor }
 
     var contentSizeHeight: CGFloat {
         tableViewController.tableView.contentSize.height + tableViewController.tableView.adjustedContentInset.totalHeight
@@ -89,21 +88,6 @@ class MemberActionSheet: InteractiveSheetViewController {
         contentView.addSubview(tableViewController.view)
         tableViewController.view.autoPinEdgesToSuperviewEdges()
 
-        // We add the handle directly to the content view,
-        // so that it doesn't scroll with the table.
-        handleContainer.backgroundColor = tableViewController.tableBackgroundColor
-        contentView.addSubview(handleContainer)
-        handleContainer.autoPinWidthToSuperview()
-        handleContainer.autoPinEdge(toSuperviewEdge: .top)
-
-        let handle = UIView()
-        handle.backgroundColor = tableViewController.separatorColor
-        handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
-        handle.layer.cornerRadius = 5 / 2
-        handleContainer.addSubview(handle)
-        handle.autoPinHeightToSuperview(withMargin: 12)
-        handle.autoHCenterInSuperview()
-
         updateViewState()
     }
 
@@ -128,7 +112,6 @@ class MemberActionSheet: InteractiveSheetViewController {
 
     override func themeDidChange() {
         super.themeDidChange()
-        handleContainer.backgroundColor = tableViewController.tableBackgroundColor
         updateTableContents()
     }
 

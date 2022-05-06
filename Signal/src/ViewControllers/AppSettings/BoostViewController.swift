@@ -12,42 +12,18 @@ import SignalUI
 
 class BoostSheetView: InteractiveSheetViewController {
     let boostVC = BoostViewController()
-    let handleContainer = UIView()
     override var interactiveScrollViews: [UIScrollView] { [boostVC.tableView] }
     override var minHeight: CGFloat { min(680, CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32)) }
     override var maximizedHeight: CGFloat { minHeight }
-    override var renderExternalHandle: Bool { false }
 
     // MARK: -
 
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        // We add the handle directly to the content view,
-        // so that it doesn't scroll with the table.
-        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
-        contentView.addSubview(handleContainer)
-        handleContainer.autoPinWidthToSuperview()
-        handleContainer.autoPinEdge(toSuperviewEdge: .top)
-
-        let handle = UIView()
-        handle.backgroundColor = boostVC.separatorColor
-        handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
-        handle.layer.cornerRadius = 5 / 2
-        handleContainer.addSubview(handle)
-        handle.autoPinHeightToSuperview(withMargin: 12)
-        handle.autoHCenterInSuperview()
-
         contentView.addSubview(boostVC.view)
-        boostVC.view.autoPinWidthToSuperview()
-        boostVC.view.autoPinEdge(toSuperviewEdge: .bottom)
-        boostVC.view.autoPinEdge(.top, to: .bottom, of: handleContainer)
+        boostVC.view.autoPinEdgesToSuperviewEdges()
         addChild(boostVC)
-    }
-
-    override func themeDidChange() {
-        super.themeDidChange()
-        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
     }
 }
 

@@ -8,8 +8,14 @@ import SignalRingRTC
 @objc
 class GroupCallMemberSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [tableView] }
+    override var handlePosition: HandlePosition { .outside }
+
     let tableView = UITableView(frame: .zero, style: .grouped)
     let call: SignalCall
+
+    override var sheetBackgroundColor: UIColor {
+        UIAccessibility.isReduceTransparencyEnabled ? .ows_blackAlpha80 : .ows_blackAlpha40
+    }
 
     init(call: SignalCall) {
         self.call = call
@@ -28,13 +34,10 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        if UIAccessibility.isReduceTransparencyEnabled {
-            contentView.backgroundColor = .ows_blackAlpha80
-        } else {
+        if !UIAccessibility.isReduceTransparencyEnabled {
             let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
             contentView.addSubview(blurEffectView)
             blurEffectView.autoPinEdgesToSuperviewEdges()
-            contentView.backgroundColor = .ows_blackAlpha40
         }
 
         tableView.dataSource = self
