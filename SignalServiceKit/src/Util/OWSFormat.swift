@@ -194,9 +194,9 @@ public extension OWSFormat {
     static func localizedDurationString(from timeInterval: TimeInterval) -> String {
         var result: String?
         switch timeInterval {
-        case 0:
+        case 0..<1:
             result = zeroDurationString
-        case 0..<60:
+        case 1..<60:
             result = durationFormatterS.string(from: timeInterval)
         case 3600...:
             result = durationFormatterHMS.string(from: timeInterval)
