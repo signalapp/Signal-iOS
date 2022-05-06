@@ -1,21 +1,10 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-import Foundation
+import UIKit
 import Photos
 import PromiseKit
+import SignalUtilitiesKit
 
-@objc
-protocol SendMediaNavDelegate: AnyObject {
-    func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController)
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?)
-
-    func sendMediaNavInitialMessageText(_ sendMediaNavigationController: SendMediaNavigationController) -> String?
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?)
-}
-
-@objc
 class SendMediaNavigationController: OWSNavigationController {
 
     // This is a sensitive constant, if you change it make sure to check
@@ -56,7 +45,6 @@ class SendMediaNavigationController: OWSNavigationController {
 
     // MARK: -
 
-    @objc
     public weak var sendMediaNavDelegate: SendMediaNavDelegate?
 
     @objc
@@ -679,4 +667,14 @@ private class DoneButton: UIView {
     func didTap(tapGesture: UITapGestureRecognizer) {
         delegate?.doneButtonWasTapped(self)
     }
+}
+
+// MARK: - SendMediaNavDelegate
+
+protocol SendMediaNavDelegate: AnyObject {
+    func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController)
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?)
+
+    func sendMediaNavInitialMessageText(_ sendMediaNavigationController: SendMediaNavigationController) -> String?
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?)
 }

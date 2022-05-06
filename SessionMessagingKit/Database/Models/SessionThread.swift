@@ -194,6 +194,27 @@ public extension SessionThread {
 // MARK: - Convenience
 
 public extension SessionThread {
+    static func displayName(userPublicKey: String) -> SQLSpecificExpressible {
+        let contactAlias: TypedTableAlias<Contact> = TypedTableAlias()
+        
+        return (
+            (
+                (
+                    SessionThread.Columns.variant == SessionThread.Variant.closedGroup &&
+                    ClosedGroup.Columns.name
+                ) || (
+                    SessionThread.Columns.variant == SessionThread.Variant.openGroup &&
+                    OpenGroup.Columns.name
+                ) || (
+                    isNoteToSelf(userPublicKey: userPublicKey)
+                ) || (
+                    Profile.Columns.nickname ||
+                    Profile.Columns.name
+                    //customFallback: Profile.truncated(id: thread.id, truncating: .middle)
+                )
+            )
+        )
+    }
     
     /// This method can be used to create a query based on whether a thread is the note to self thread
     static func isNoteToSelf(userPublicKey: String) -> SQLSpecificExpressible {
@@ -208,18 +229,19 @@ public extension SessionThread {
     /// **Note:** In order to use this filter you **MUST** have a `joining(required/optional:)` to the
     /// `SessionThread.contact` association or it won't work
     static func isMessageRequest(userPublicKey: String) -> SQLSpecificExpressible {
+        let threadAlias: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contactAlias: TypedTableAlias<Contact> = TypedTableAlias()
         
-        return (
-            SessionThread.Columns.shouldBeVisible == true &&
-            SessionThread.Columns.variant == SessionThread.Variant.contact &&
-            SessionThread.Columns.id != userPublicKey &&     // Note to self
-            (
-                // Note: Doing a '!= true' check doesn't work properly so we need
-                // to explicitly do this
-                contactAlias[.isApproved] == nil ||
-                contactAlias[.isApproved] == false
-            )
+        return SQL(
+            """
+                \(threadAlias[.shouldBeVisible]) = true AND
+                    \(SQL("\(threadAlias[.variant]) = \(SessionThread.Variant.contact)")) AND
+                    \(SQL("\(threadAlias[.id]) != \(userPublicKey)")) AND (
+                        /* Note: A '!= true' check doesn't work properly so we need to be explicit */
+                        \(contactAlias[.isApproved]) IS NULL OR
+                        \(contactAlias[.isApproved]) = false
+                    )
+            """
         )
     }
     

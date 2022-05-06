@@ -469,9 +469,7 @@ public final class MessageSender : NSObject {
             
             // Mark the message as sent
             try interaction.recipientStates
-                .fetchAll(db)
-                .map { $0.with(state: .sent) }
-                .saveAll(db)
+                .updateAll(db, RecipientState.Columns.state.set(to: RecipientState.State.sent))
             
             NotificationCenter.default.post(name: .messageSentStatusDidChange, object: nil, userInfo: nil)
             

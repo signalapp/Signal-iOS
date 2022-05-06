@@ -130,10 +130,17 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
             let alert = UIAlertController(title: NSLocalizedString("invalid_session_id", comment: ""), message: NSLocalizedString("Please check the Session ID and try again.", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
-        } else {
-            let thread = TSContactThread.getOrCreateThread(contactSessionID: hexEncodedPublicKey)
+        }
+        else {
+            let maybeThread: SessionThread? = GRDBStorage.shared.write { db in
+                try SessionThread.fetchOrCreate(db, id: hexEncodedPublicKey, variant: .contact)
+            }
+            
+            guard maybeThread != nil else { return }
+            
             presentingViewController?.dismiss(animated: true, completion: nil)
-            SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+            
+            SessionApp.presentConversation(for: hexEncodedPublicKey, action: .compose, animated: false)
         }
     }
 }

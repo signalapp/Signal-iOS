@@ -7,23 +7,33 @@ import SessionMessagingKit
 
 @objc(LKProfilePictureView)
 public final class ProfilePictureView: UIView {
+    public static func closedGroupProfileQuery(threadId: String, userPublicKey: String) -> QueryInterfaceRequest<Profile> {
+        return Profile
+            .filter(Profile.Columns.id != userPublicKey)
+            .joining(
+                required: Profile.groupMembers
+                    .filter(GroupMember.Columns.groupId == threadId)
+            )
+            .order(.id)
+            .limit(2)
+    }
+         
     private var hasTappableProfilePicture: Bool = false
     @objc public var size: CGFloat = 0 // Not an implicitly unwrapped optional due to Obj-C limitations
-    @objc public var useFallbackPicture = false
-    @objc public var publicKey: String!
-    @objc public var additionalPublicKey: String?
-    @objc public var openGroupProfilePicture: UIImage?
+    
     // Constraints
     private var imageViewWidthConstraint: NSLayoutConstraint!
     private var imageViewHeightConstraint: NSLayoutConstraint!
     private var additionalImageViewWidthConstraint: NSLayoutConstraint!
     private var additionalImageViewHeightConstraint: NSLayoutConstraint!
     
-    // MARK: Components
+    // MARK: - Components
+    
     private lazy var imageView = getImageView()
     private lazy var additionalImageView = getImageView()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setUpViewHierarchy()
@@ -39,144 +49,209 @@ public final class ProfilePictureView: UIView {
         addSubview(imageView)
         imageView.pin(.leading, to: .leading, of: self)
         imageView.pin(.top, to: .top, of: self)
+        
         let imageViewSize = CGFloat(Values.mediumProfilePictureSize)
         imageViewWidthConstraint = imageView.set(.width, to: imageViewSize)
         imageViewHeightConstraint = imageView.set(.height, to: imageViewSize)
+        
         // Set up additional image view
         addSubview(additionalImageView)
         additionalImageView.pin(.trailing, to: .trailing, of: self)
         additionalImageView.pin(.bottom, to: .bottom, of: self)
+        
         let additionalImageViewSize = CGFloat(Values.smallProfilePictureSize)
         additionalImageViewWidthConstraint = additionalImageView.set(.width, to: additionalImageViewSize)
         additionalImageViewHeightConstraint = additionalImageView.set(.height, to: additionalImageViewSize)
         additionalImageView.layer.cornerRadius = additionalImageViewSize / 2
     }
     
-    // MARK: Updating
+    // MARK: - Updating
     @objc(updateForContact:)
-    public func update(for publicKey: String) { // TODO: Confirm this is still used
-        GRDBStorage.shared.read { db in update(db, publicKey: publicKey) }
-    }
+    public func update(for publicKey: String?) {
+        guard let publicKey: String = publicKey else { return }
         
-    public func update(_ db: Database, publicKey: String) {
-        openGroupProfilePicture = nil
-        self.publicKey = publicKey
-        additionalPublicKey = nil
-        useFallbackPicture = false
-        update(db)
-    }
-
-    public func update(_ db: Database, thread: SessionThread) {
-        openGroupProfilePicture = nil
-        
-        switch thread.variant {
-            case .contact: update(db, publicKey: thread.id)
-                
-            case .closedGroup:
-                let userPublicKey: String = getUserHexEncodedPublicKey(db)
-                var randomUsers: [String] = (try? thread.closedGroup
-                    .fetchOne(db)?
-                    .members
-                    .fetchAll(db)
-                    .map { $0.profileId }
-                    .filter { $0 != userPublicKey }
-                    .sorted())   // Sort to provide a level of stability
-                    .defaulting(to: [])
-                
-                if randomUsers.count == 1 {
-                    // Ensure the current user is at the back visually
-                    randomUsers.insert(userPublicKey, at: 0)
-                }
-                
-                publicKey = (randomUsers.first ?? "")
-                additionalPublicKey = (randomUsers.count >= 2 ? randomUsers[1] : "")
-                useFallbackPicture = false
-                update(db)
-                
-            case .openGroup:
-                openGroupProfilePicture = (try? thread.openGroup
-                    .fetchOne(db)?
-                    .imageData)
-                    .map { UIImage(data: $0) }
-                publicKey = ""
-                useFallbackPicture = (openGroupProfilePicture == nil)
-                hasTappableProfilePicture = (openGroupProfilePicture != nil)
-                update(db)
+        let profile: Profile? = GRDBStorage.shared.read { db in
+            try? Profile.fetchOne(db, id: publicKey)
         }
-    }
-
-    @objc public func update() { // TODO: Confirm this is still used
-        GRDBStorage.shared.read { db in update(db) }
+        
+        update(
+            publicKey: publicKey,
+            profile: profile,
+            threadVariant: .contact
+        )
     }
     
-    public func update(_ db: Database) {
+    @objc(updateForThreadId:)
+    public func update(forThreadId threadId: String?) {
+        guard
+            let threadId: String = threadId,
+            let (thread, profiles, imageData) = GRDBStorage.shared.read({ db -> (SessionThread, [Profile], Data?) in
+                guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
+                    throw GRDBStorageError.objectNotFound
+                }
+                
+                switch thread.variant {
+                    case .contact:
+                        return (
+                            thread,
+                            [try? Profile.fetchOne(db, id: thread.id)].compactMap { $0 },
+                            nil
+                        )
+                        
+                    case .closedGroup:
+                        let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                        let randomUsers: [Profile] = (try? ProfilePictureView
+                            .closedGroupProfileQuery(threadId: thread.id, userPublicKey: userPublicKey)
+                            .fetchAll(db))
+                            .defaulting(to: [])
+                        
+                        // If there is only a single user in the group then insert the current user
+                        // at the back
+                        if randomUsers.count == 1 {
+                            return (
+                                thread,
+                                randomUsers.inserting(
+                                    Profile.fetchOrCreateCurrentUser(db),
+                                    at: 0
+                                ),
+                                nil
+                            )
+                        }
+                        
+                        return (thread, randomUsers, nil)
+                        
+                    case .openGroup:
+                        return (
+                            thread,
+                            [],
+                            try? thread.openGroup
+                                .select(OpenGroup.Columns.imageData)
+                                .asRequest(of: Data.self)
+                                .fetchOne(db)
+                        )
+                }
+            })
+        else { return }
+        
+        update(
+            publicKey: (imageData != nil ? "" : thread.id),
+            profile: profiles.first,
+            additionalProfile: profiles.last,
+            threadVariant: thread.variant,
+            openGroupProfilePicture: imageData.map { UIImage(data: $0) },
+            useFallbackPicture: (thread.variant == .openGroup && imageData == nil)
+        )
+    }
+
+    public func update(
+        publicKey: String = "",
+        profile: Profile? = nil,
+        additionalProfile: Profile? = nil,
+        threadVariant: SessionThread.Variant,
+        openGroupProfilePicture: UIImage? = nil,
+        useFallbackPicture: Bool = false
+    ) {
         AssertIsOnMainThread()
-        func getProfilePicture(of size: CGFloat, for publicKey: String) -> UIImage? {
-            guard !publicKey.isEmpty else { return nil }
-            
-            if let profilePicture: UIImage = ProfileManager.profileAvatar(db, id: publicKey) {
-                hasTappableProfilePicture = true
-                return profilePicture
-            }
-            
-            hasTappableProfilePicture = false
-            // TODO: Pass in context?
-            let displayName: String = Profile.displayName(db, id: publicKey)
-            return Identicon.generatePlaceholderIcon(seed: publicKey, text: displayName, size: size)
-        }
-        
-        let size: CGFloat
-        if let additionalPublicKey = additionalPublicKey, !useFallbackPicture, openGroupProfilePicture == nil {
-            if self.size == 40 {
-                size = 32
-            } else if self.size == Values.largeProfilePictureSize {
-                size = 56
-            } else {
-                size = Values.smallProfilePictureSize
-            }
-            
-            imageViewWidthConstraint.constant = size
-            imageViewHeightConstraint.constant = size
-            additionalImageViewWidthConstraint.constant = size
-            additionalImageViewHeightConstraint.constant = size
-            additionalImageView.isHidden = false
-            additionalImageView.image = getProfilePicture(of: size, for: additionalPublicKey)
-        }
-        else {
-            size = self.size
-            imageViewWidthConstraint.constant = size
-            imageViewHeightConstraint.constant = size
-            additionalImageView.isHidden = true
-            additionalImageView.image = nil
-        }
-        
-        guard publicKey != nil || openGroupProfilePicture != nil else { return }
-        
-        imageView.image = useFallbackPicture ? nil : (openGroupProfilePicture ?? getProfilePicture(of: size, for: publicKey))
-        imageView.backgroundColor = useFallbackPicture ? UIColor(rgbHex: 0x353535) : Colors.unimportant
-        imageView.layer.cornerRadius = size / 2
-        additionalImageView.layer.cornerRadius = size / 2
-        imageView.contentMode = useFallbackPicture ? .center : .scaleAspectFit
-        
-        if useFallbackPicture {
-            switch size {
+        guard !useFallbackPicture else {
+            switch self.size {
                 case Values.smallProfilePictureSize..<Values.mediumProfilePictureSize: imageView.image = #imageLiteral(resourceName: "SessionWhite16")
                 case Values.mediumProfilePictureSize..<Values.largeProfilePictureSize: imageView.image = #imageLiteral(resourceName: "SessionWhite24")
                 default: imageView.image = #imageLiteral(resourceName: "SessionWhite40")
             }
+            
+            imageView.contentMode = .center
+            imageView.backgroundColor = UIColor(rgbHex: 0x353535)
+            imageView.layer.cornerRadius = (self.size / 2)
+            imageViewWidthConstraint.constant = self.size
+            imageViewHeightConstraint.constant = self.size
+            additionalImageView.isHidden = true
+            additionalImageView.image = nil
+            additionalImageView.layer.cornerRadius = (self.size / 2)
+            return
         }
+        guard !publicKey.isEmpty || openGroupProfilePicture != nil else { return }
+        
+        func getProfilePicture(of size: CGFloat, for publicKey: String, profile: Profile?) -> (image: UIImage, isTappable: Bool) {
+            if let profile: Profile = profile, let profilePicture: UIImage = ProfileManager.profileAvatar(profile: profile) {
+                return (profilePicture, true)
+            }
+            
+            return (
+                Identicon.generatePlaceholderIcon(
+                    seed: publicKey,
+                    text: (profile?.displayName(for: threadVariant))
+                        .defaulting(to: publicKey),
+                    size: size
+                ),
+                false
+            )
+        }
+        
+        // Calulate the sizes (and set the additional image content
+        let targetSize: CGFloat
+        if let additionalProfile: Profile = additionalProfile, openGroupProfilePicture == nil {
+            if self.size == 40 {
+                targetSize = 32
+            }
+            else if self.size == Values.largeProfilePictureSize {
+                targetSize = 56
+            }
+            else {
+                targetSize = Values.smallProfilePictureSize
+            }
+            
+            imageViewWidthConstraint.constant = targetSize
+            imageViewHeightConstraint.constant = targetSize
+            additionalImageViewWidthConstraint.constant = targetSize
+            additionalImageViewHeightConstraint.constant = targetSize
+            additionalImageView.isHidden = false
+            additionalImageView.image = getProfilePicture(
+                of: targetSize,
+                for: additionalProfile.id,
+                profile: additionalProfile
+            ).image
+        }
+        else {
+            targetSize = self.size
+            imageViewWidthConstraint.constant = targetSize
+            imageViewHeightConstraint.constant = targetSize
+            additionalImageView.isHidden = true
+            additionalImageView.image = nil
+        }
+        
+        // Set the image
+        if let openGroupProfilePicture: UIImage = openGroupProfilePicture {
+            imageView.image = openGroupProfilePicture
+            hasTappableProfilePicture = true
+        }
+        else {
+            let (image, isTappable): (UIImage, Bool) = getProfilePicture(
+                of: targetSize,
+                for: publicKey,
+                profile: profile
+            )
+            imageView.image = image
+            hasTappableProfilePicture = isTappable
+        }
+        
+        imageView.contentMode = .scaleAspectFit
+        imageView.backgroundColor = Colors.unimportant
+        imageView.layer.cornerRadius = (targetSize / 2)
+        additionalImageView.layer.cornerRadius = (targetSize / 2)
     }
     
-    // MARK: Convenience
+    // MARK: - Convenience
+    
     private func getImageView() -> UIImageView {
         let result = UIImageView()
         result.layer.masksToBounds = true
         result.backgroundColor = Colors.unimportant
         result.contentMode = .scaleAspectFit
+        
         return result
     }
     
     @objc public func getProfilePicture() -> UIImage? {
-        return hasTappableProfilePicture ? imageView.image : nil
+        return (hasTappableProfilePicture ? imageView.image : nil)
     }
 }

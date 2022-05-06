@@ -1,18 +1,21 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
 
 // Requirements:
 // • Links should show up properly and be tappable.
 // • Text should * not * be selectable.
 // • The long press interaction that shows the context menu should still work.
 
-final class BodyTextView : UITextView {
-    private let snDelegate: BodyTextViewDelegate
+final class BodyTextView: UITextView {
+    private let snDelegate: BodyTextViewDelegate?
     
     override var selectedTextRange: UITextRange? {
         get { return nil }
         set { }
     }
     
-    init(snDelegate: BodyTextViewDelegate) {
+    init(snDelegate: BodyTextViewDelegate?) {
         self.snDelegate = snDelegate
         super.init(frame: CGRect.zero, textContainer: nil)
         setUpGestureRecognizers()
@@ -35,7 +38,7 @@ final class BodyTextView : UITextView {
     }
     
     @objc private func handleLongPress() {
-        snDelegate.handleLongPress()
+        snDelegate?.handleLongPress()
     }
     
     @objc private func handleDoubleTap() {

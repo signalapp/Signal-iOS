@@ -15,7 +15,7 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
     AudioPlaybackState_Paused,
 };
 
-@protocol OWSAudioPlayerDelegate <NSObject>
+@protocol OWSAudioPlayerDelegate
 
 - (AudioPlaybackState)audioPlaybackState;
 - (void)setAudioPlaybackState:(AudioPlaybackState)state;

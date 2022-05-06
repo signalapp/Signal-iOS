@@ -6,44 +6,53 @@ import SessionUIKit
 import SessionUtilitiesKit
 import SessionMessagingKit
 
-final class DownloadAttachmentModal : Modal {
-    private let viewItem: ConversationViewItem
+final class DownloadAttachmentModal: Modal {
+    private let profile: Profile?
+
+    // MARK: - Lifecycle
     
-    // MARK: Lifecycle
-    init(viewItem: ConversationViewItem) {
-        self.viewItem = viewItem
+    init(profile: Profile?) {
+        self.profile = profile
+        
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     override init(nibName: String?, bundle: Bundle?) {
         preconditionFailure("Use init(viewItem:) instead.")
     }
-    
+
     required init?(coder: NSCoder) {
         preconditionFailure("Use init(viewItem:) instead.")
     }
-    
+
     override func populateContentView() {
-        guard let publicKey = (viewItem.interaction as? TSIncomingMessage)?.authorId else { return }
+        guard let profile: Profile = profile else { return }
+        
         // Name
-        let name = Profile.displayName(for: publicKey)
+        let name: String = profile.displayName()
+        
         // Title
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
         titleLabel.text = String(format: NSLocalizedString("modal_download_attachment_title", comment: ""), name)
         titleLabel.textAlignment = .center
+        
         // Message
         let messageLabel = UILabel()
         messageLabel.textColor = Colors.text
         messageLabel.font = .systemFont(ofSize: Values.smallFontSize)
         let message = String(format: NSLocalizedString("modal_download_attachment_explanation", comment: ""), name)
         let attributedMessage = NSMutableAttributedString(string: message)
-        attributedMessage.addAttributes([ .font : UIFont.boldSystemFont(ofSize: Values.smallFontSize) ], range: (message as NSString).range(of: name))
+        attributedMessage.addAttributes(
+            [.font: UIFont.boldSystemFont(ofSize: Values.smallFontSize) ],
+            range: (message as NSString).range(of: name)
+        )
         messageLabel.attributedText = attributedMessage
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.textAlignment = .center
+        
         // Download button
         let downloadButton = UIButton()
         downloadButton.set(.height, to: Values.mediumButtonHeight)
@@ -53,11 +62,13 @@ final class DownloadAttachmentModal : Modal {
         downloadButton.setTitleColor(Colors.text, for: UIControl.State.normal)
         downloadButton.setTitle(NSLocalizedString("modal_download_button_title", comment: ""), for: UIControl.State.normal)
         downloadButton.addTarget(self, action: #selector(trust), for: UIControl.Event.touchUpInside)
+        
         // Button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, downloadButton ])
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually
+        
         // Main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ titleLabel, messageLabel, buttonStackView ])
         mainStackView.axis = .vertical
@@ -68,8 +79,9 @@ final class DownloadAttachmentModal : Modal {
         contentView.pin(.trailing, to: .trailing, of: mainStackView, withInset: Values.largeSpacing)
         contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: Values.largeSpacing)
     }
+
+    // MARK: - Interaction
     
-    // MARK: Interaction
     @objc private func trust() {
         guard let message = viewItem.interaction as? TSIncomingMessage else { return }
         

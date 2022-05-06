@@ -173,8 +173,13 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         }
     }
 
-    private func startNewDM(with sessionID: String) {
-        let thread = TSContactThread.getOrCreateThread(contactSessionID: sessionID)
+    private func startNewDM(with sessionId: String) {
+        let maybeThread: SessionThread? = GRDBStorage.shared.write { db in
+            try SessionThread.fetchOrCreate(db, id: sessionId, variant: .contact)
+        }
+        
+        guard maybeThread != nil else { return }
+        
         presentingViewController?.dismiss(animated: true, completion: nil)
         
         SessionApp.presentConversation(for: sessionId, action: .compose, animated: false)

@@ -377,19 +377,34 @@ public extension Profile {
         return Profile.displayName(for: context, id: id, name: name, nickname: nickname)
     }
     
-    static func displayName(for threadVariant: SessionThread.Variant, id: String, name: String?, nickname: String?) -> String {
+    static func displayName(
+        for threadVariant: SessionThread.Variant,
+        id: String,
+        name: String?,
+        nickname: String?,
+        customFallback: String? = nil
+    ) -> String {
         return Profile.displayName(
             for: (threadVariant == .openGroup ? .openGroup : .regular),
             id: id,
             name: name,
-            nickname: nickname
+            nickname: nickname,
+            customFallback: customFallback
         )
     }
     
-    static func displayName(for context: Context, id: String, name: String?, nickname: String?) -> String {
+    static func displayName(
+        for context: Context,
+        id: String,
+        name: String?,
+        nickname: String?,
+        customFallback: String? = nil
+    ) -> String {
         if let nickname: String = nickname { return nickname }
         
-        guard let name: String = name else { return Profile.truncated(id: id, truncating: .start) }
+        guard let name: String = name else {
+            return (customFallback ?? Profile.truncated(id: id, truncating: .start))
+        }
         
         switch context {
             case .regular: return name

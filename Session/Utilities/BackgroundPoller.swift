@@ -47,75 +47,74 @@ public final class BackgroundPoller : NSObject {
             guard let snode = swarm.randomElement() else { throw SnodeAPI.Error.generic }
             
             return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
-                return SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey).then(on: DispatchQueue.main) { rawResponse -> Promise<Void> in
-                    let messages: [SnodeReceivedMessage] = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
-                    
-                    guard !messages.isEmpty else { return Promise.value(()) }
-                    
-                    var jobsToRun: [Job] = []
-                    
-                    GRDBStorage.shared.write { db in
-                        var threadMessages: [String: [MessageReceiveJob.Details.MessageInfo]] = [:]
-                        // TODO: Test this updated logic
-                        messages.forEach { message in
-                            guard let envelope = SNProtoEnvelope.from(message) else { return }
+                return SnodeAPI.getMessages(from: snode, associatedWith: publicKey)
+                    .then(on: DispatchQueue.main) { messages -> Promise<Void> in
+                        guard !messages.isEmpty else { return Promise.value(()) }
+                        
+                        var jobsToRun: [Job] = []
+                        
+                        GRDBStorage.shared.write { db in
+                            var threadMessages: [String: [MessageReceiveJob.Details.MessageInfo]] = [:]
                             
-                            // Extract the threadId and add that to the messageReceive job for
-                            // multi-threading and garbage collection purposes
-                            let threadId: String? = MessageReceiver.extractSenderPublicKey(db, from: envelope)
+                            messages.forEach { message in
+                                guard let envelope = SNProtoEnvelope.from(message) else { return }
+                                
+                                // Extract the threadId and add that to the messageReceive job for
+                                // multi-threading and garbage collection purposes
+                                let threadId: String? = MessageReceiver.extractSenderPublicKey(db, from: envelope)
+                                
+                                do {
+                                    threadMessages[threadId ?? ""] = (threadMessages[threadId ?? ""] ?? [])
+                                        .appending(
+                                            MessageReceiveJob.Details.MessageInfo(
+                                                data: try envelope.serializedData(),
+                                                serverHash: message.info.hash
+                                            )
+                                        )
+                                    
+                                    // Persist the received message after the MessageReceiveJob is created
+                                    _ = try message.info.saved(db)
+                                }
+                                catch {
+                                    SNLog("Failed to deserialize envelope due to error: \(error).")
+                                }
+                            }
                             
-                            do {
-                                threadMessages[threadId ?? ""] = (threadMessages[threadId ?? ""] ?? [])
-                                    .appending(
-                                        MessageReceiveJob.Details.MessageInfo(
-                                            data: try envelope.serializedData(),
-                                            serverHash: message.info.hash
+                            threadMessages
+                                .forEach { threadId, threadMessages in
+                                    let maybeJob: Job? = Job(
+                                        variant: .messageReceive,
+                                        behaviour: .runOnce,
+                                        threadId: threadId,
+                                        details: MessageReceiveJob.Details(
+                                            messages: threadMessages,
+                                            isBackgroundPoll: false
                                         )
                                     )
-                                
-                                // Persist the received message after the MessageReceiveJob is created
-                                _ = try message.info.saved(db)
-                            }
-                            catch {
-                                SNLog("Failed to deserialize envelope due to error: \(error).")
-                            }
+                                    
+                                    guard let job: Job = maybeJob else { return }
+                                    
+                                    JobRunner.add(db, job: job)
+                                    jobsToRun.append(job)
+                                }
                         }
                         
-                        threadMessages
-                            .forEach { threadId, threadMessages in
-                                let maybeJob: Job? = Job(
-                                    variant: .messageReceive,
-                                    behaviour: .runOnce,
-                                    threadId: threadId,
-                                    details: MessageReceiveJob.Details(
-                                        messages: threadMessages,
-                                        isBackgroundPoll: false
-                                    )
-                                )
-                                
-                                guard let job: Job = maybeJob else { return }
-                                
-                                JobRunner.add(db, job: job)
-                                jobsToRun.append(job)
-                            }
-                    }
-                    
-                    let promises = jobsToRun.compactMap { job -> Promise<Void>? in
-                        let (promise, seal) = Promise<Void>.pending()
-                        
-                        // Note: In the background we just want jobs to fail silently
-                        MessageReceiveJob.run(
-                            job,
-                            success: { _, _ in seal.fulfill(()) },
-                            failure: { _, _, _ in seal.fulfill(()) },
-                            deferred: { _ in seal.fulfill(()) }
-                        )
+                        let promises = jobsToRun.compactMap { job -> Promise<Void>? in
+                            let (promise, seal) = Promise<Void>.pending()
+                            
+                            // Note: In the background we just want jobs to fail silently
+                            MessageReceiveJob.run(
+                                job,
+                                success: { _, _ in seal.fulfill(()) },
+                                failure: { _, _, _ in seal.fulfill(()) },
+                                deferred: { _ in seal.fulfill(()) }
+                            )
 
-                        return promise
-                    }
+                            return promise
+                        }
 
-                    return when(fulfilled: promises)
-                }
+                        return when(fulfilled: promises)
+                    }
             }
         }
     }

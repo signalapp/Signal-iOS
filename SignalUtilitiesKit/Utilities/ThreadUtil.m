@@ -7,7 +7,6 @@
 #import "OWSUnreadIndicator.h"
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
-#import <SessionMessagingKit/OWSDisappearingMessagesConfiguration.h>
 #import <SessionMessagingKit/TSAccountManager.h>
 #import <SessionMessagingKit/TSContactThread.h>
 #import <SessionMessagingKit/TSDatabaseView.h>

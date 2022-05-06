@@ -201,30 +201,43 @@ final class ConversationCell : UITableViewCell {
     
     // MARK: - Content
     
-    public func update(with threadViewModel: ThreadViewModel?, isGlobalSearchResult: Bool = false) {
-        guard let threadViewModel: ThreadViewModel = threadViewModel else { return }
+    public func update(with threadInfo: HomeViewModel.ThreadInfo, isGlobalSearchResult: Bool = false) {
         guard !isGlobalSearchResult else {
-            updateForSearchResult(threadViewModel)
+            updateForSearchResult(threadInfo)
             return
         }
         
-        update(threadViewModel)
+        update(threadInfo)
     }
 
     // MARK: - Updating for search results
     
-    private func updateForSearchResult(_ threadViewModel: ThreadViewModel) {
-        GRDBStorage.shared.read { db in profilePictureView.update(db, thread: threadViewModel.thread) }
+    private func updateForSearchResult(_ threadInfo: HomeViewModel.ThreadInfo) {
+        profilePictureView.update(
+            publicKey: threadInfo.id,
+            profile: threadInfo.profile,
+            additionalProfile: threadInfo.additionalProfile,
+            threadVariant: threadInfo.variant,
+            openGroupProfilePicture: threadInfo.openGroupProfilePictureData.map { UIImage(data: $0) },
+            useFallbackPicture: (threadInfo.variant == .openGroup && threadInfo.openGroupProfilePictureData == nil)
+        )
         
         isPinnedIcon.isHidden = true
         unreadCountView.isHidden = true
         hasMentionView.isHidden = true
     }
 
-    public func configureForRecent(_ threadViewModel: ThreadViewModel) {
-        displayNameLabel.attributedText = NSMutableAttributedString(string: getDisplayName(for: threadViewModel.thread), attributes: [.foregroundColor:Colors.text])
+    public func configureForRecent(_ threadInfo: HomeViewModel.ThreadInfo) {
+        displayNameLabel.attributedText = NSMutableAttributedString(
+            string: threadInfo.displayName,
+            attributes: [ .foregroundColor: Colors.text ]
+        )
         bottomLabelStackView.isHidden = false
-        let snippet = String(format: NSLocalizedString("RECENT_SEARCH_LAST_MESSAGE_DATETIME", comment: ""), DateUtil.formatDate(forDisplay: threadViewModel.lastInteractionDate))
+        
+        let snippet = String(
+            format: "RECENT_SEARCH_LAST_MESSAGE_DATETIME".localized(),
+            DateUtil.formatDate(forDisplay: threadInfo.lastInteractionDate)
+        )
         snippetLabel.attributedText = NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text.withAlphaComponent(Values.lowOpacity)])
         timestampLabel.isHidden = true
     }
@@ -290,47 +303,51 @@ final class ConversationCell : UITableViewCell {
 
     // MARK: - Updating
     
-    private func update(_ threadViewModel: ThreadViewModel) {
-        let thread: SessionThread = threadViewModel.thread
+    private func update(_ threadInfo: HomeViewModel.ThreadInfo) {
+        backgroundColor = (threadInfo.isPinned ? Colors.cellPinned : Colors.cellBackground)
         
-        backgroundColor = (thread.isPinned ? Colors.cellPinned : Colors.cellBackground)
-        
-        if GRDBStorage.shared.read({ db in try thread.contact.fetchOne(db)?.isBlocked }) == true {
+        if threadInfo.isBlocked {
             accentLineView.backgroundColor = Colors.destructive
             accentLineView.alpha = 1
         }
         else {
             accentLineView.backgroundColor = Colors.accent
-            accentLineView.alpha = (threadViewModel.unreadCount > 0 ? 1 : 0.0001) // Setting the alpha to exactly 0 causes an issue on iOS 12
+            accentLineView.alpha = (threadInfo.unreadCount > 0 ? 1 : 0.0001) // Setting the alpha to exactly 0 causes an issue on iOS 12
         }
         
-        isPinnedIcon.isHidden = !thread.isPinned
-        unreadCountView.isHidden = (threadViewModel.unreadCount <= 0)
-        unreadCountLabel.text = (threadViewModel.unreadCount < 10000 ? "\(threadViewModel.unreadCount)" : "9999+")
+        isPinnedIcon.isHidden = !threadInfo.isPinned
+        unreadCountView.isHidden = (threadInfo.unreadCount <= 0)
+        unreadCountLabel.text = (threadInfo.unreadCount < 10000 ? "\(threadInfo.unreadCount)" : "9999+")
         unreadCountLabel.font = .boldSystemFont(
-            ofSize: (threadViewModel.unreadCount < 10000 ? Values.verySmallFontSize : 8)
+            ofSize: (threadInfo.unreadCount < 10000 ? Values.verySmallFontSize : 8)
         )
         hasMentionView.isHidden = !(
-            (threadViewModel.unreadMentionCount > 0) &&
-            (thread.variant == .closedGroup || thread.variant == .openGroup)
+            (threadInfo.unreadMentionCount > 0) &&
+            (threadInfo.variant == .closedGroup || threadInfo.variant == .openGroup)
         )
-        GRDBStorage.shared.read { db in profilePictureView.update(db, thread: thread) }
-        displayNameLabel.text = getDisplayName(for: thread)
-        timestampLabel.text = DateUtil.formatDate(forDisplay: threadViewModel.lastInteractionDate)
-        // TODO: Add this back
+        profilePictureView.update(
+            publicKey: threadInfo.id,
+            profile: threadInfo.profile,
+            additionalProfile: threadInfo.additionalProfile,
+            threadVariant: threadInfo.variant,
+            openGroupProfilePicture: threadInfo.openGroupProfilePictureData.map { UIImage(data: $0) },
+            useFallbackPicture: (threadInfo.variant == .openGroup && threadInfo.openGroupProfilePictureData == nil)
+        )
+        displayNameLabel.text = threadInfo.displayName
+        timestampLabel.text = DateUtil.formatDate(forDisplay: threadInfo.lastInteractionDate)
 //        if SSKEnvironment.shared.typingIndicators.typingRecipientId(forThread: thread) != nil {
 //            snippetLabel.text = ""
 //            typingIndicatorView.isHidden = false
 //            typingIndicatorView.startAnimation()
 //        } else {
-            snippetLabel.attributedText = getSnippet(threadViewModel: threadViewModel)
+            snippetLabel.attributedText = getSnippet(threadInfo: threadInfo)
             typingIndicatorView.isHidden = true
             typingIndicatorView.stopAnimation()
 //        }
         
         statusIndicatorView.backgroundColor = nil
         
-        switch (threadViewModel.lastInteraction?.variant, threadViewModel.lastInteractionState) {
+        switch (threadInfo.lastInteractionInfo?.variant, threadInfo.lastInteractionInfo?.state) {
             case (.standardOutgoing, .sending):
                 statusIndicatorView.image = #imageLiteral(resourceName: "CircleDotDotDot").withRenderingMode(.alwaysTemplate)
                 statusIndicatorView.tintColor = Colors.text
@@ -348,15 +365,6 @@ final class ConversationCell : UITableViewCell {
             
             default:
                 statusIndicatorView.isHidden = false
-        }
-    }
-
-    private func getAuthorName(thread: SessionThread, interaction: Interaction) -> String? {
-        switch (thread.variant, interaction.variant) {
-            case (.contact, .standardIncoming):
-                return Profile.displayName(id: interaction.authorId, customFallback: "Anonymous")
-                
-            default: return nil
         }
     }
 
@@ -389,10 +397,10 @@ final class ConversationCell : UITableViewCell {
         return Profile.displayName(id: hexEncodedPublicKey, customFallback: middleTruncatedHexKey)
     }
 
-    private func getSnippet(threadViewModel: ThreadViewModel) -> NSMutableAttributedString {
+    private func getSnippet(threadInfo: HomeViewModel.ThreadInfo) -> NSMutableAttributedString {
         let result = NSMutableAttributedString()
         
-        if (threadViewModel.thread.notificationMode == .none) {
+        if (threadInfo.notificationMode == .none) {
             result.append(NSAttributedString(
                 string: "\u{e067}  ",
                 attributes: [
@@ -401,7 +409,7 @@ final class ConversationCell : UITableViewCell {
                 ]
             ))
         }
-        else if threadViewModel.thread.notificationMode == .mentionsOnly {
+        else if threadInfo.notificationMode == .mentionsOnly {
             let imageAttachment = NSTextAttachment()
             imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: Colors.unimportant)
             imageAttachment.bounds = CGRect(x: 0, y: -2, width: Values.smallFontSize, height: Values.smallFontSize)
@@ -417,15 +425,14 @@ final class ConversationCell : UITableViewCell {
             ))
         }
         
-        let font: UIFont = (threadViewModel.unreadCount > 0 ?
+        let font: UIFont = (threadInfo.unreadCount > 0 ?
             .boldSystemFont(ofSize: Values.smallFontSize) :
             .systemFont(ofSize: Values.smallFontSize)
         )
         
         if
-            (threadViewModel.thread.variant == .closedGroup || threadViewModel.thread.variant == .openGroup),
-            let lastInteraction: Interaction = threadViewModel.lastInteraction,
-            let authorName: String = getAuthorName(thread: threadViewModel.thread, interaction: lastInteraction)
+            (threadInfo.variant == .closedGroup || threadInfo.variant == .openGroup),
+            let authorName: String = threadInfo.lastInteractionInfo?.authorName
         {
             result.append(NSAttributedString(
                 string: "\(authorName): ",
@@ -436,10 +443,12 @@ final class ConversationCell : UITableViewCell {
             ))
         }
             
-        if let rawSnippet: String = threadViewModel.lastInteractionText {
-            let snippet = MentionUtilities.highlightMentions(in: rawSnippet, threadId: threadViewModel.thread.id)
+        if let rawSnippet: String = threadInfo.lastInteractionInfo?.text {
             result.append(NSAttributedString(
-                string: snippet,
+                string: MentionUtilities.highlightMentions(
+                    in: rawSnippet,
+                    threadVariant: threadInfo.variant
+                ),
                 attributes: [
                     .font: font,
                     .foregroundColor: Colors.text

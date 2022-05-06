@@ -1,3 +1,6 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 
 /// A message is invalidated when it needs to be re-rendered in the UI. Examples of when this happens include:
 ///

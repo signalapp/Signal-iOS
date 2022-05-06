@@ -439,7 +439,8 @@ extension MessageReceiver {
         let messageSentTimestamp: TimeInterval = (TimeInterval(message.sentTimestamp ?? 0) / 1000)
         let isMainAppActive: Bool = (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false)
         
-        // Update profile if needed
+        // Update profile if needed (want to do this regarless of whether the message exists or
+        // not to ensure the profile info gets sync between a users devices at every chance)
         if let profile = message.profile {
             var contactProfileKey: OWSAES256Key? = nil
             if let profileKey = profile.profileKey { contactProfileKey = OWSAES256Key(data: profileKey) }
@@ -481,61 +482,71 @@ extension MessageReceiver {
         // Note: There are now a number of unique constraints on the database which
         // prevent the ability to insert duplicate interactions at a database level
         // so we don't need to check for the existance of a message beforehand anymore
-        let interaction: Interaction = try Interaction(
-            serverHash: message.serverHash, // Keep track of server hash
-            threadId: thread.id,
-            authorId: sender,
-            variant: variant,
-            body: message.text,
-            timestampMs: Int64(messageSentTimestamp * 1000),
-            // Note: Ensure we don't ever expire open group messages
-            expiresInSeconds: (disappearingMessagesConfiguration.isEnabled && message.openGroupServerMessageId == nil ?
-                disappearingMessagesConfiguration.durationSeconds :
-                nil
-            ),
-            expiresStartedAtMs: nil,
-            // OpenGroupInvitations are stored as LinkPreview's in the database
-            linkPreviewUrl: (message.linkPreview?.url ?? message.openGroupInvitation?.url),
-            // Keep track of the open group server message ID ↔ message ID relationship
-            openGroupServerMessageId: message.openGroupServerMessageId.map { Int64($0) },
-            openGroupWhisperMods: false,       // TODO: SOGSV4
-            openGroupWhisperTo: nil            // TODO: SOGSV4
-        ).inserted(db)
+        let interaction: Interaction
+        
+        do {
+            interaction = try Interaction(
+                serverHash: message.serverHash, // Keep track of server hash
+                threadId: thread.id,
+                authorId: sender,
+                variant: variant,
+                body: message.text,
+                timestampMs: Int64(messageSentTimestamp * 1000),
+                // Note: Ensure we don't ever expire open group messages
+                expiresInSeconds: (disappearingMessagesConfiguration.isEnabled && message.openGroupServerMessageId == nil ?
+                    disappearingMessagesConfiguration.durationSeconds :
+                    nil
+                ),
+                expiresStartedAtMs: nil,
+                // OpenGroupInvitations are stored as LinkPreview's in the database
+                linkPreviewUrl: (message.linkPreview?.url ?? message.openGroupInvitation?.url),
+                // Keep track of the open group server message ID ↔ message ID relationship
+                openGroupServerMessageId: message.openGroupServerMessageId.map { Int64($0) },
+                openGroupWhisperMods: false,
+                openGroupWhisperTo: nil
+            ).inserted(db)
+        }
+        catch {
+            switch error {
+                case DatabaseError.SQLITE_CONSTRAINT_UNIQUE:
+                    guard
+                        variant == .standardOutgoing,
+                        let existingInteractionId: Int64 = try? thread.interactions
+                            .select(.id)
+                            .filter(Interaction.Columns.timestampMs == (messageSentTimestamp * 1000))
+                            .filter(Interaction.Columns.variant == variant)
+                            .filter(Interaction.Columns.authorId == sender)
+                            .asRequest(of: Int64.self)
+                            .fetchOne(db)
+                    else { break }
+                    
+                    // If we receive an outgoing message that already exists in the database
+                    // then we still need up update the recipient and read states for the
+                    // message (even if we don't need to do anything else)
+                    try updateRecipientAndReadStates(
+                        db,
+                        thread: thread,
+                        interactionId: existingInteractionId,
+                        variant: variant,
+                        syncTarget: message.syncTarget
+                    )
+                    
+                default: break
+            }
+            
+            throw error
+        }
         
         guard let interactionId: Int64 = interaction.id else { throw GRDBStorageError.failedToSave }
         
-        // For newly created outgoing messages upsert the recipient states to sent
-        if variant == .standardOutgoing {
-            if let syncTarget: String = message.syncTarget {
-                try RecipientState(
-                    interactionId: interactionId,
-                    recipientId: syncTarget,
-                    state: .sent
-                ).save(db)
-            }
-            else if thread.variant == .closedGroup {
-                try GroupMember
-                    .filter(GroupMember.Columns.groupId == thread.id)
-                    .fetchAll(db)
-                    .forEach { member in
-                        try RecipientState(
-                            interactionId: interactionId,
-                            recipientId: member.profileId,
-                            state: .sent
-                        ).save(db)
-                    }
-            }
-        
-            // For outgoing messages mark it and all older interactions as read
-            try Interaction.markAsRead(
-                db,
-                interactionId: interactionId,
-                threadId: thread.id,
-                includingOlder: true,
-                trySendReadReceipt: true
-            )
-        }
-        
+        // Update and recipient and read states as needed
+        try updateRecipientAndReadStates(
+            db,
+            thread: thread,
+            interactionId: interactionId,
+            variant: variant,
+            syncTarget: message.syncTarget
+        )
             
         // Parse & persist attachments
         let attachments: [Attachment] = dataMessage.attachments
@@ -637,10 +648,50 @@ extension MessageReceiver {
         return interactionId
     }
     
+    private static func updateRecipientAndReadStates(
+        _ db: Database,
+        thread: SessionThread,
+        interactionId: Int64,
+        variant: Interaction.Variant,
+        syncTarget: String?
+    ) throws {
+        guard variant == .standardOutgoing else { return }
+        
+        if let syncTarget: String = syncTarget {
+            try RecipientState(
+                interactionId: interactionId,
+                recipientId: syncTarget,
+                state: .sent
+            ).save(db)
+        }
+        else if thread.variant == .closedGroup {
+            try GroupMember
+                .filter(GroupMember.Columns.groupId == thread.id)
+                .fetchAll(db)
+                .forEach { member in
+                    try RecipientState(
+                        interactionId: interactionId,
+                        recipientId: member.profileId,
+                        state: .sent
+                    ).save(db)
+                }
+        }
+    
+        // For outgoing messages mark it and all older interactions as read
+        try Interaction.markAsRead(
+            db,
+            interactionId: interactionId,
+            threadId: thread.id,
+            includingOlder: true,
+            trySendReadReceipt: true
+        )
+    }
+    
     // MARK: - Profile Updating
     
     private static func updateProfileIfNeeded(
-        _ db: Database, publicKey: String,
+        _ db: Database,
+        publicKey: String,
         name: String?,
         profilePictureUrl: String?,
         profileKey: OWSAES256Key?,

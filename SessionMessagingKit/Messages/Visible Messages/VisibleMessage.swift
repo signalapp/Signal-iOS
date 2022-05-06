@@ -204,32 +204,37 @@ public final class VisibleMessage: Message {
 
 public extension VisibleMessage {
     static func from(_ db: Database, interaction: Interaction) -> VisibleMessage {
-        let result = VisibleMessage()
-        result.sentTimestamp = UInt64(interaction.timestampMs)
-        result.recipient = (try? interaction.recipientStates.fetchOne(db))?.recipientId
+        let linkPreview: SessionMessagingKit.LinkPreview? = try? interaction.linkPreview.fetchOne(db)
         
-        if let thread: SessionThread = try? interaction.thread.fetchOne(db), thread.variant == .closedGroup {
-            result.groupPublicKey = thread.id
-        }
-        
-        result.text = interaction.body
-        result.attachmentIDs = ((try? interaction.attachments.fetchAll(db)) ?? []).map { $0.id }
-        result.quote = (try? interaction.quote.fetchOne(db))
-            .map { VisibleMessage.Quote.from(db, quote: $0) }
-        
-        if let linkPreview: SessionMessagingKit.LinkPreview = try? interaction.linkPreview.fetchOne(db) {
-            switch linkPreview.variant {
-                case .standard:
-                    result.linkPreview = VisibleMessage.LinkPreview.from(db, linkPreview: linkPreview)
+        return VisibleMessage(
+            sentTimestamp: UInt64(interaction.timestampMs),
+            recipient: (try? interaction.recipientStates.fetchOne(db))?.recipientId,
+            groupPublicKey: try? interaction.thread
+                .filter(SessionThread.Columns.variant == SessionThread.Variant.closedGroup)
+                .select(.id)
+                .asRequest(of: String.self)
+                .fetchOne(db),
+            syncTarget: nil,
+            text: interaction.body,
+            attachmentIds: ((try? interaction.attachments.fetchAll(db)) ?? [])
+                .map { $0.id },
+            quote: (try? interaction.quote.fetchOne(db))
+                .map { VisibleMessage.Quote.from(db, quote: $0) },
+            linkPreview: linkPreview
+                .map { linkPreview in
+                    guard linkPreview.variant == .standard else { return nil }
                     
-                case .openGroupInvitation:
-                    result.openGroupInvitation = VisibleMessage.OpenGroupInvitation.from(
-                        db,
-                        linkPreview: linkPreview
-                    )
+                    return VisibleMessage.LinkPreview.from(db, linkPreview: linkPreview)
+                },
+            profile: nil,   // TODO: Confirm this
+            openGroupInvitation: linkPreview.map { linkPreview in
+                guard linkPreview.variant == .openGroupInvitation else { return nil }
+                
+                return VisibleMessage.OpenGroupInvitation.from(
+                    db,
+                    linkPreview: linkPreview
+                )
             }
-        }
-        
-        return result
+        )
     }
 }

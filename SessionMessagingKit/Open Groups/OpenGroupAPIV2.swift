@@ -168,7 +168,7 @@ public final class OpenGroupAPIV2 : NSObject {
             hasUpdatedLastOpenDate = true
         }
         for group in groups {
-            authTokenPromises[group.room] = getAuthToken(for: group.room, on: server)
+            authTokenPromises[group.room] = getAuthToken(db, for: group.room, on: server)
             var json: JSON = [ "room_id" : group.room ]
             if let lastMessageServerID = storage.getLastMessageServerID(for: group.room, on: server) {
                 json["from_message_server_id"] = useMessageLimit ? nil : lastMessageServerID
@@ -213,7 +213,11 @@ public final class OpenGroupAPIV2 : NSObject {
     }
     
     // MARK: Authorization
-    private static func getAuthToken(for room: String, on server: String) -> Promise<String> {
+    private static func getAuthToken(_ db: Database? = nil, for room: String, on server: String) -> Promise<String> {
+        guard let db: Database = db else {
+            return GRDBStorage.shared.read { db in getAuthToken(db, for: room, on: server) }
+        }
+        
         let storage = SNMessagingKitConfiguration.shared.storage
         if let authToken = storage.getAuthToken(for: room, on: server) {
             return Promise.value(authToken)
@@ -221,7 +225,7 @@ public final class OpenGroupAPIV2 : NSObject {
             if let authTokenPromise = authTokenPromises.wrappedValue["\(server).\(room)"] {
                 return authTokenPromise
             } else {
-                let promise = requestNewAuthToken(for: room, on: server)
+                let promise = requestNewAuthToken(db, for: room, on: server)
                 .then(on: OpenGroupAPIV2.workQueue) { claimAuthToken($0, for: room, on: server) }
                 .then(on: OpenGroupAPIV2.workQueue) { authToken -> Promise<String> in
                     let (promise, seal) = Promise<String>.pending()
@@ -243,9 +247,9 @@ public final class OpenGroupAPIV2 : NSObject {
         }
     }
 
-    public static func requestNewAuthToken(for room: String, on server: String) -> Promise<String> {
+    public static func requestNewAuthToken(_ db: Database, for room: String, on server: String) -> Promise<String> {
         SNLog("Requesting auth token for server: \(server).")
-        guard let userKeyPair = Identity.fetchUserKeyPair() else { return Promise(error: Error.generic) }
+        guard let userKeyPair = Identity.fetchUserKeyPair(db) else { return Promise(error: Error.generic) }
         let queryParameters = [ "public_key" : getUserHexEncodedPublicKey() ]
         let request = Request(verb: .get, room: room, server: server, endpoint: "auth_token_challenge", queryParameters: queryParameters, isAuthRequired: false)
         return send(request).map(on: OpenGroupAPIV2.workQueue) { json in

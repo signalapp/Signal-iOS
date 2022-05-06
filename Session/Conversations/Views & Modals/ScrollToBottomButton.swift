@@ -1,12 +1,17 @@
-    
-final class ScrollToBottomButton : UIView {
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+
+final class ScrollToBottomButton: UIView {
     private weak var delegate: ScrollToBottomButtonDelegate?
     
-    // MARK: Settings
+    // MARK: - Settings
+    
     private static let size: CGFloat = 40
     private static let iconSize: CGFloat = 16
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     init(delegate: ScrollToBottomButtonDelegate) {
         self.delegate = delegate
         super.init(frame: CGRect.zero)
@@ -55,13 +60,15 @@ final class ScrollToBottomButton : UIView {
         addGestureRecognizer(tapGestureRecognizer)
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func handleTap() {
         delegate?.handleScrollToBottomButtonTapped()
     }
 }
 
-protocol ScrollToBottomButtonDelegate : class {
-    
+// MARK: - ScrollToBottomButtonDelegate
+
+protocol ScrollToBottomButtonDelegate: AnyObject {
     func handleScrollToBottomButtonTapped()
 }

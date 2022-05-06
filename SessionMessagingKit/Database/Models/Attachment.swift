@@ -10,9 +10,11 @@ import AVFoundation
 
 public struct Attachment: Codable, Identifiable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "attachment" }
-    internal static let interactionAttachments = belongsTo(InteractionAttachment.self)
-    fileprivate static let quote = belongsTo(Quote.self)
-    fileprivate static let linkPreview = belongsTo(LinkPreview.self)
+    public static let interactionAttachments = hasOne(InteractionAttachment.self)
+    internal static let quoteForeignKey = ForeignKey([Columns.id], to: [Quote.Columns.attachmentId])
+    internal static let linkPreviewForeignKey = ForeignKey([Columns.id], to: [LinkPreview.Columns.attachmentId])
+    fileprivate static let quote = belongsTo(Quote.self, using: quoteForeignKey)
+    fileprivate static let linkPreview = belongsTo(LinkPreview.self, using: linkPreviewForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
@@ -382,12 +384,13 @@ public extension Attachment {
 // MARK: - GRDB Interactions
 
 public extension Attachment {
-    struct DownloadInfo: FetchableRecord, Decodable {
+    struct StateInfo: FetchableRecord, Decodable {
         public let attachmentId: String
         public let interactionId: Int64
+        public let state: Attachment.State
     }
     
-    static func pendingAttachmentDownloadInfo(for authorId: String) -> SQLRequest<Attachment.DownloadInfo> {
+    static func stateInfo(authorId: String, state: State? = nil) -> SQLRequest<Attachment.StateInfo> {
         let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         let quote: TypedTableAlias<Quote> = TypedTableAlias()
@@ -400,37 +403,78 @@ public extension Attachment {
         return """
             SELECT DISTINCT
                 \(attachment[.id]) AS attachmentId,
-                \(interaction[.id]) AS interactionId
+                \(interaction[.id]) AS interactionId,
+                \(attachment[.state]) AS state
         
             FROM \(Attachment.self)
             
             JOIN \(Interaction.self) ON
-                \(interaction[.authorId]) = \(SQL(sql: ":authorId", arguments: StatementArguments(["authorId": authorId]))) AND (
+                \(SQL("\(interaction[.authorId]) = \(authorId)")) AND (
                     \(interaction[.id]) = \(quote[.interactionId]) OR
                     \(interaction[.id]) = \(interactionAttachment[.interactionId]) OR
-                    \(interaction[.linkPreviewUrl]) = \(linkPreview[.url])
+                    (
+                        \(interaction[.linkPreviewUrl]) = \(linkPreview[.url]) AND
+                        /* Note: This equation MUST match the `linkPreviewFilterLiteral` logic in Interaction.swift */
+                        (ROUND((\(interaction[.timestampMs]) / 1000 / 100000) - 0.5) * 100000) = \(linkPreview[.timestamp])
+                    )
                 )
             
             LEFT JOIN \(Quote.self) ON \(quote[.attachmentId]) = \(attachment[.id])
             LEFT JOIN \(InteractionAttachment.self) ON \(interactionAttachment[.attachmentId]) = \(attachment[.id])
             LEFT JOIN \(LinkPreview.self) ON
                 \(linkPreview[.attachmentId]) = \(attachment[.id]) AND
-                \(linkPreview[.variant]) = \(SQL(
-                    sql: ":variant",
-                    arguments: StatementArguments(["variant": LinkPreview.Variant.standard])
-                ))
+                \(SQL("\(linkPreview[.variant]) = \(LinkPreview.Variant.standard)"))
         
             WHERE
-                \(attachment[.variant]) = \(SQL(
-                    sql: ":attachmentVariant",
-                    arguments: StatementArguments(["attachmentVariant": Attachment.Variant.standard])
-                )) AND
-                \(attachment[.state]) = \(SQL(
-                    sql: ":state",
-                    arguments: StatementArguments(["state": Attachment.State.pending])
-                ))
+                (
+                    \(SQL("\(state) IS NULL")) OR
+                    \(SQL("\(attachment[.state]) = \(state)"))
+                )
         
             ORDER BY interactionId DESC
+        """
+    }
+
+    static func stateInfo(interactionId: Int64, state: State? = nil) -> SQLRequest<Attachment.StateInfo> {
+        let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        let quote: TypedTableAlias<Quote> = TypedTableAlias()
+        let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
+        let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
+        
+        // Note: In GRDB all joins need to run via their "association" system which doesn't support the type
+        // of query we have below (a required join based on one of 3 optional joins) so we have to construct
+        // the query manually
+        return """
+            SELECT DISTINCT
+                \(attachment[.id]) AS attachmentId,
+                \(interaction[.id]) AS interactionId,
+                \(attachment[.state]) AS state
+        
+            FROM \(Attachment.self)
+            
+            JOIN \(Interaction.self) ON
+                \(SQL("\(interaction[.id]) = \(interactionId)")) AND (
+                    \(interaction[.id]) = \(quote[.interactionId]) OR
+                    \(interaction[.id]) = \(interactionAttachment[.interactionId]) OR
+                    (
+                        \(interaction[.linkPreviewUrl]) = \(linkPreview[.url]) AND
+                        /* Note: This equation MUST match the `linkPreviewFilterLiteral` logic in Interaction.swift */
+                        (ROUND((\(interaction[.timestampMs]) / 1000 / 100000) - 0.5) * 100000) = \(linkPreview[.timestamp])
+                    )
+                )
+            
+            LEFT JOIN \(Quote.self) ON \(quote[.attachmentId]) = \(attachment[.id])
+            LEFT JOIN \(InteractionAttachment.self) ON \(interactionAttachment[.attachmentId]) = \(attachment[.id])
+            LEFT JOIN \(LinkPreview.self) ON
+                \(linkPreview[.attachmentId]) = \(attachment[.id]) AND
+                \(SQL("\(linkPreview[.variant]) = \(LinkPreview.Variant.standard)"))
+        
+            WHERE
+                (
+                    \(SQL("\(state) IS NULL")) OR
+                    \(SQL("\(attachment[.state]) = \(state)"))
+                )
         """
     }
 }
@@ -684,5 +728,142 @@ extension Attachment {
         try data.write(to: URL(fileURLWithPath: originalFilePath))
         
         return true
+    }
+}
+
+// MARK: - Upload
+
+extension Attachment {
+    internal enum UploadError: LocalizedError {
+        case invalidStartState
+        case noAttachment
+        case notUploaded
+        case encryptionFailed
+
+        public var errorDescription: String? {
+            switch self {
+                case .invalidStartState: return "Cannot upload an attachment in this state."
+                case .noAttachment: return "No such attachment."
+                case .notUploaded: return "Attachment not uploaded."
+                case .encryptionFailed: return "Couldn't encrypt file."
+            }
+        }
+    }
+    
+    internal func upload(
+        using upload: (Data) -> Promise<UInt64>,
+        encrypt: Bool,
+        success: (() -> Void)?,
+        failure: ((Error) -> Void)?
+    ) {
+        guard state != .uploaded else {
+            SNLog("Attempted to upload an already uploaded/downloaded attachment.")
+            failure?(UploadError.invalidStartState)
+            return
+        }
+        
+        // Get the attachment
+        guard var data = try? readDataFromFile() else {
+            SNLog("Couldn't read attachment from disk.")
+            failure?(UploadError.noAttachment)
+            return
+        }
+        
+        // If the attachment is a downloaded attachment, check if it came from the server
+        // and if so just succeed immediately (no use re-uploading an attachment that is
+        // already present on the server) - or if we want it to be encrypted and it's not
+        // then encrypt it
+        //
+        // Note: The most common cases for this will be for LinkPreviews or Quotes
+        guard
+            state != .downloaded ||
+            serverId == nil ||
+            downloadUrl == nil ||
+            !encrypt ||
+            encryptionKey == nil ||
+            digest == nil
+        else {
+            // Save the final upload info
+            let uploadedAttachment: Attachment? = GRDBStorage.shared.write { db in
+                try self
+                    .with(state: .uploaded)
+                    .saved(db)
+            }
+            
+            guard uploadedAttachment != nil else {
+                SNLog("Couldn't update attachmentUpload job.")
+                failure?(GRDBStorageError.failedToSave)
+                return
+            }
+                
+            success?()
+            return
+        }
+        
+        var processedAttachment: Attachment = self
+        
+        // Encrypt the attachment if needed
+        if encrypt {
+            var encryptionKey: NSData = NSData()
+            var digest: NSData = NSData()
+            
+            guard let ciphertext = Cryptography.encryptAttachmentData(data, shouldPad: true, outKey: &encryptionKey, outDigest: &digest) else {
+                SNLog("Couldn't encrypt attachment.")
+                failure?(UploadError.encryptionFailed)
+                return
+            }
+            
+            processedAttachment = processedAttachment.with(
+                encryptionKey: encryptionKey as Data,
+                digest: digest as Data
+            )
+            data = ciphertext
+        }
+        
+        // Check the file size
+        SNLog("File size: \(data.count) bytes.")
+        if Double(data.count) > Double(FileServerAPIV2.maxFileSize) / FileServerAPIV2.fileSizeORMultiplier {
+            failure?(FileServerAPIV2.Error.maxFileSizeExceeded)
+            return
+        }
+        
+        // Update the attachment to the 'uploading' state
+        let updatedAttachment: Attachment? = GRDBStorage.shared.write { db in
+            try processedAttachment
+                .with(state: .uploading)
+                .saved(db)
+        }
+        
+        guard updatedAttachment != nil else {
+            SNLog("Couldn't update attachmentUpload job.")
+            failure?(GRDBStorageError.failedToSave)
+            return
+        }
+        
+        // Perform the upload
+        upload(data)
+            .done(on: DispatchQueue.global(qos: .userInitiated)) { fileId in
+                // Save the final upload info
+                let uploadedAttachment: Attachment? = GRDBStorage.shared.write { db in
+                    try updatedAttachment?
+                        .with(
+                            serverId: "\(fileId)",
+                            state: .uploaded,
+                            downloadUrl: "\(FileServerAPIV2.server)/files/\(fileId)"
+                        )
+                        .saved(db)
+                }
+                
+                guard uploadedAttachment != nil else {
+                    SNLog("Couldn't update attachmentUpload job.")
+                    failure?(GRDBStorageError.failedToSave)
+                    return
+                }
+                    
+                success?()
+            }
+            .catch { error in
+                failure?(error)
+            }
     }
 }

@@ -3,7 +3,6 @@
 //
 
 #import "TSThread.h"
-#import "OWSDisappearingMessagesConfiguration.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
@@ -28,13 +27,6 @@ BOOL IsNoteToSelfEnabled(void)
 @end
 
 @implementation TSThread
-
-#pragma mark Dependencies
-
-- (TSAccountManager *)tsAccountManager
-{
-    return SSKEnvironment.shared.tsAccountManager;
-}
 
 #pragma mark Initialization
 
@@ -337,25 +329,6 @@ BOOL IsNoteToSelfEnabled(void)
         [self saveWithTransaction:transaction];
     } else {
         [self touchWithTransaction:transaction];
-    }
-}
-
-#pragma mark Disappearing Messages
-
-- (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
-    (YapDatabaseReadTransaction *)transaction
-{
-    return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId transaction:transaction];
-}
-
-- (uint32_t)disappearingMessagesDurationWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSDisappearingMessagesConfiguration *config = [self disappearingMessagesConfigurationWithTransaction:transaction];
-
-    if (!config.isEnabled) {
-        return 0;
-    } else {
-        return config.durationSeconds;
     }
 }
 

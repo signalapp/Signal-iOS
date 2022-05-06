@@ -49,38 +49,30 @@ extension MessageSender {
             return Promise(error: GRDBStorageError.objectNotSaved)
         }
         
-        let attachments: [Attachment]? = try? Attachment
-            .filter(Attachment.Columns.state == Attachment.State.pending)
-            .joining(
-                required: Attachment.interactionAttachments
-                    .filter(InteractionAttachment.Columns.interactionId == interactionId)
-            )
-            .fetchAll(db)
-        
-        let attachmentUploadPromises: [Promise<Void>] = (attachments ?? [])
-            .map { attachment in
+        let openGroup: OpenGroup? = try? thread.openGroup.fetchOne(db)
+        let attachmentStateInfo: [Attachment.StateInfo] = (try? Attachment
+            .stateInfo(interactionId: interactionId, state: .pending)
+            .fetchAll(db))
+            .defaulting(to: [])
+        let attachmentUploadPromises: [Promise<Void>] = (try? Attachment
+            .filter(ids: attachmentStateInfo.map { $0.attachmentId })
+            .fetchAll(db))
+            .defaulting(to: [])
+            .map { attachment -> Promise<Void> in
                 let (promise, seal) = Promise<Void>.pending()
                 
-                if let openGroup: OpenGroup = try? thread.openGroup.fetchOne(db) {
-                    AttachmentUploadJob.upload(
-                        db,
-                        attachment: attachment,
-                        using: { data in OpenGroupAPIV2.upload(data, to: openGroup.room, on: openGroup.server) },
-                        encrypt: false,
-                        success: { seal.fulfill(()) },
-                        failure: { seal.reject($0) }
-                    )
-                }
-                else {
-                    AttachmentUploadJob.upload(
-                        db,
-                        attachment: attachment,
-                        using: FileServerAPIV2.upload,
-                        encrypt: true,
-                        success: { seal.fulfill(()) },
-                        failure: { seal.reject($0) }
-                    )
-                }
+                attachment.upload(
+                    using: { data in
+                        if let openGroup: OpenGroup = openGroup {
+                            return OpenGroupAPIV2.upload(data, to: openGroup.room, on: openGroup.server)
+                        }
+                        
+                        return FileServerAPIV2.upload(data)
+                    },
+                    encrypt: (openGroup == nil),
+                    success: { seal.fulfill(()) },
+                    failure: { seal.reject($0) }
+                )
                 
                 return promise
             }

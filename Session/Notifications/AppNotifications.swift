@@ -1,6 +1,4 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
 import GRDB
@@ -365,11 +363,11 @@ class NotificationActionHandler {
     // MARK: -
 
     func markAsRead(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
+        guard let threadId: String = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
             throw NotificationError.failDebug("threadId was unexpectedly nil")
         }
 
-        guard let thread = TSThread.fetch(uniqueId: threadId) else {
+        guard let thread: SessionThread = GRDBStorage.shared.read({ db in try SessionThread.fetchOne(db, id: threadId) }) else {
             throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
         }
 
@@ -394,7 +392,13 @@ class NotificationActionHandler {
                 timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
             ).inserted(db)
             
-            _ = try interaction.markingAsRead(db, includingOlder: true, trySendReadReceipt: true)
+            try Interaction.markAsRead(
+                db,
+                interactionId: interaction.id,
+                threadId: thread.id,
+                includingOlder: true,
+                trySendReadReceipt: true
+            )
             
             return MessageSender.sendNonDurably(db, interaction: interaction, in: thread)
         }
@@ -426,10 +430,32 @@ class NotificationActionHandler {
         return Promise.value(())
     }
 
-    private func markAsRead(thread: TSThread) -> Promise<Void> {
-        return Storage.write { transaction in
-            thread.markAllAsRead(with: transaction)
-        }
+    private func markAsRead(thread: SessionThread) -> Promise<Void> {
+        let (promise, seal) = Promise<Void>.pending()
+        
+        GRDBStorage.shared.writeAsync(
+            updates: { db in
+                try Interaction.markAsRead(
+                    db,
+                    interactionId: try thread.interactions
+                        .select(.id)
+                        .order(Interaction.Columns.timestampMs.desc)
+                        .asRequest(of: Int64?.self)
+                        .fetchOne(db),
+                    threadId: thread.id,
+                    includingOlder: true,
+                    trySendReadReceipt: true
+                )
+            },
+            completion: { _, result in
+                switch result {
+                    case .success: seal.fulfill(())
+                    case .failure(let error): seal.reject(error)
+                }
+            }
+        )
+        
+        return promise
     }
 }
 

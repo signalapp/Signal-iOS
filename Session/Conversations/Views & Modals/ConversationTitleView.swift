@@ -1,138 +1,110 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class ConversationTitleView : UIView {
-    private let thread: TSThread
-    weak var delegate: ConversationTitleViewDelegate?
+import UIKit
+import SessionUIKit
+import SessionMessagingKit
+import SessionUtilitiesKit
 
+final class ConversationTitleView: UIView {
     override var intrinsicContentSize: CGSize {
         return UIView.layoutFittingExpandedSize
     }
 
-    // MARK: UI Components
+    // MARK: - UI Components
+    
     private lazy var titleLabel: UILabel = {
-        let result = UILabel()
+        let result: UILabel = UILabel()
         result.textColor = Colors.text
         result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.lineBreakMode = .byTruncatingTail
+        
         return result
     }()
 
     private lazy var subtitleLabel: UILabel = {
-        let result = UILabel()
+        let result: UILabel = UILabel()
         result.textColor = Colors.text
         result.font = .systemFont(ofSize: 13)
         result.lineBreakMode = .byTruncatingTail
+        
         return result
     }()
 
-    // MARK: Lifecycle
-    init(thread: TSThread) {
-        self.thread = thread
-        super.init(frame: CGRect.zero)
-        initialize()
-    }
-
-    override init(frame: CGRect) {
-        preconditionFailure("Use init(thread:) instead.")
-    }
-
-    required init?(coder: NSCoder) {
-        preconditionFailure("Use init(coder:) instead.")
-    }
-
-    private func initialize() {
-        let stackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
+    // MARK: - Initialization
+    
+    init() {
+        super.init(frame: .zero)
+        
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
         addSubview(stackView)
+        
         stackView.pin(to: self)
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        addGestureRecognizer(tapGestureRecognizer)
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.groupThreadUpdated, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.muteSettingUpdated, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.profileUpdated, object: nil)
-        update()
+    }
+    
+    required init?(coder: NSCoder) {
+        preconditionFailure("Use init() instead.")
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
-    // MARK: Updating
-    @objc private func update() {
-        DispatchQueue.main.async {
-            self.titleLabel.text = self.getTitle()
-            
-            let subtitle: NSAttributedString? = self.getSubtitle()
-            self.subtitleLabel.attributedText = subtitle
-            self.titleLabel.font = .boldSystemFont(
-                ofSize: (subtitle != nil ?
-                    Values.mediumFontSize :
-                    Values.veryLargeFontSize
-                )
-            )
-        }
-    }
-
-    // MARK: General
-    private func getTitle() -> String {
-        if let thread = thread as? TSGroupThread {
-            return thread.groupModel.groupName!
-        }
-        else if thread.isNoteToSelf() {
-            return "Note to Self"
-        }
-        else {
-            let sessionID = (thread as! TSContactThread).contactSessionID()
-            let middleTruncatedHexKey: String = "\(sessionID.prefix(4))...\(sessionID.suffix(4))"
-            
-            return Profile.displayName(id: sessionID, customFallback: middleTruncatedHexKey)
-        }
-    }
-
-    private func getSubtitle() -> NSAttributedString? {
-        let result = NSMutableAttributedString()
-        if thread.isMuted {
-            result.append(NSAttributedString(string: "\u{e067}  ", attributes: [ .font : UIFont.ows_elegantIconsFont(10), .foregroundColor : Colors.text ]))
-            result.append(NSAttributedString(string: "Muted"))
-            return result
-        } else if let thread = self.thread as? TSGroupThread {
-            if thread.isOnlyNotifyingForMentions {
-                let imageAttachment = NSTextAttachment()
-                let color: UIColor = isDarkMode ? .white : .black
-                imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: color)
-                imageAttachment.bounds = CGRect(x: 0, y: -2, width: Values.smallFontSize, height: Values.smallFontSize)
-                let imageAsString = NSAttributedString(attachment: imageAttachment)
-                result.append(imageAsString)
-                result.append(NSAttributedString(string: "  " + NSLocalizedString("view_conversation_title_notify_for_mentions_only", comment: "")))
-                return result
-            } else {
-                var userCount: UInt64?
-                switch thread.groupModel.groupType {
-                case .closedGroup: userCount = UInt64(thread.groupModel.groupMemberIds.count)
-                case .openGroup:
-                    guard let openGroupV2 = Storage.shared.getV2OpenGroup(for: self.thread.uniqueId!) else { return nil }
-                    userCount = Storage.shared.getUserCount(forV2OpenGroupWithID: openGroupV2.id)
-                default: break
-                }
-                if let userCount = userCount {
-                    return NSAttributedString(string: "\(userCount) members")
-                }
+    // MARK: - Content
+    
+    public func update(
+        with name: String,
+        notificationMode: SessionThread.NotificationMode,
+        userCount: Int?
+    ) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { [weak self] in
+                self?.update(with: name, notificationMode: notificationMode, userCount: userCount)
             }
+            return
         }
-        return nil
+        
+        // Generate the subtitle
+        let subtitle: NSAttributedString? = {
+            switch notificationMode {
+                case .none:
+                    return NSAttributedString(
+                        string: "\u{e067}  ",
+                        attributes: [
+                            .font: UIFont.ows_elegantIconsFont(10),
+                            .foregroundColor: Colors.text
+                        ]
+                    )
+                    .appending(string: "Muted")
+                    
+                case .mentionsOnly:
+                    // FIXME: This is going to have issues when swapping between light/dark mode
+                    let imageAttachment = NSTextAttachment()
+                    let color: UIColor = (isDarkMode ? .white : .black)
+                    imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: color)
+                    imageAttachment.bounds = CGRect(
+                        x: 0,
+                        y: -2,
+                        width: Values.smallFontSize,
+                        height: Values.smallFontSize
+                    )
+                    
+                    return NSAttributedString(attachment: imageAttachment)
+                        .appending(string: "  ")
+                        .appending(string: "view_conversation_title_notify_for_mentions_only".localized())
+                    
+                case .all:
+                    guard let userCount: Int = userCount else { return nil }
+                    
+                    return NSAttributedString(string: "\(userCount) member\(userCount == 1 ? "" : "s")")
+            }
+        }()
+        
+        self.titleLabel.text = name
+        self.titleLabel.font = .boldSystemFont(
+            ofSize: (subtitle != nil ?
+                Values.mediumFontSize :
+                Values.veryLargeFontSize
+            )
+        )
+        self.subtitleLabel.attributedText = subtitle
     }
-    
-    // MARK: Interaction
-    @objc private func handleTap() {
-        delegate?.handleTitleViewTapped()
-    }
-}
-
-// MARK: Delegate
-protocol ConversationTitleViewDelegate : AnyObject {
-    
-    func handleTitleViewTapped()
 }

@@ -7,9 +7,6 @@
 #import "VersionMigrations.h"
 #import <SignalUtilitiesKit/OWSDatabaseMigration.h>
 #import <SessionMessagingKit/OWSBackgroundTask.h>
-#import <SessionMessagingKit/OWSDisappearingMessagesJob.h>
-#import <SessionMessagingKit/OWSOutgoingReceiptManager.h>
-#import <SessionMessagingKit/OWSReadReceiptManager.h>
 #import <SessionMessagingKit/OWSStorage.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
@@ -48,12 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSPreferences *preferences = [OWSPreferences new];
 
         TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSDisappearingMessagesJob *disappearingMessagesJob =
-            [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
-        OWSReadReceiptManager *readReceiptManager =
-            [[OWSReadReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSOutgoingReceiptManager *outgoingReceiptManager =
-            [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
         id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
 

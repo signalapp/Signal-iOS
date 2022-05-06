@@ -88,9 +88,13 @@ public enum SyncPushTokensJob: JobExecutor {
     }
     
     public static func run(uploadOnlyIfStale: Bool) {
-        guard let job: Job = Job(variant: .syncPushTokens, details: SyncPushTokensJob.Details(uploadOnlyIfStale: uploadOnlyIfStale)) else {
-            return
-        }
+        guard let job: Job = Job(
+            variant: .syncPushTokens,
+            details: SyncPushTokensJob.Details(
+                uploadOnlyIfStale: uploadOnlyIfStale
+            )
+        )
+        else { return }
                                  
         SyncPushTokensJob.run(
             job,

@@ -28,7 +28,6 @@
 #import "OWSWindowManager.h"
 #import "PrivacySettingsTableViewController.h"
 #import "OWSQRCodeScanningViewController.h"
-#import "SignalApp.h"
 #import "MainAppContext.h"
 #import "UIViewController+Permissions.h"
 #import <PureLayout/PureLayout.h>

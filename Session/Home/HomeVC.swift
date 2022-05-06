@@ -8,6 +8,9 @@ import SessionUtilitiesKit
 import SignalUtilitiesKit
 
 final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
+    typealias Section = HomeViewModel.Section
+    typealias Item = HomeViewModel.Item
+    
     private let viewModel: HomeViewModel = HomeViewModel()
     private var dataChangeObservable: DatabaseCancellable?
     private var hasLoadedInitialData: Bool = false
@@ -147,9 +150,17 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         newConversationButtonSet.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
         
         // Notifications
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(applicationDidResignActive(_:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidBecomeActive(_:)),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidResignActive(_:)),
+            name: UIApplication.didEnterBackgroundNotification, object: nil
+        )
         
         notificationCenter.addObserver(self, selector: #selector(handleProfileDidChangeNotification(_:)), name: .otherUsersProfileDidChange, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleLocalProfileDidChangeNotification(_:)), name: .localProfileDidChange, object: nil)
@@ -214,7 +225,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         )
     }
     
-    private func handleUpdates(_ updatedViewData: [ArraySection<HomeViewModel.Section, HomeViewModel.Item>]) {
+    private func handleUpdates(_ updatedViewData: [ArraySection<Section, Item>]) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
         guard hasLoadedInitialData else {
@@ -240,7 +251,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         ) { [weak self] updatedData in
             self?.viewModel.updateData(updatedData)
         }
-        
     }
     
     @objc private func handleProfileDidChangeNotification(_ notification: Notification) {
@@ -271,8 +281,11 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         let profilePictureView = ProfilePictureView()
         profilePictureView.accessibilityLabel = "Settings button"
         profilePictureView.size = profilePictureSize
-        profilePictureView.publicKey = getUserHexEncodedPublicKey()
-        profilePictureView.update()
+        profilePictureView.update(
+            publicKey: getUserHexEncodedPublicKey(),
+            profile: Profile.fetchOrCreateCurrentUser(),
+            threadVariant: .contact
+        )
         profilePictureView.set(.width, to: profilePictureSize)
         profilePictureView.set(.height, to: profilePictureSize)
         
@@ -326,15 +339,17 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch viewModel.viewData[indexPath.section].model {
+        let section: ArraySection<Section, Item> = viewModel.viewData[indexPath.section]
+        
+        switch section.model {
             case .messageRequests:
-                let cell = tableView.dequeueReusableCell(withIdentifier: MessageRequestsCell.reuseIdentifier) as! MessageRequestsCell
-                cell.update(with: viewModel.viewData[indexPath.section].elements[indexPath.row].unreadCount)
+                let cell: MessageRequestsCell = tableView.dequeue(type: MessageRequestsCell.self, for: indexPath)
+                cell.update(with: section.elements[indexPath.row].unreadCount)
                 return cell
                 
             case .threads:
-                let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier) as! ConversationCell
-                cell.update(with: viewModel.viewData[indexPath.section].elements[indexPath.row].threadViewModel)
+                let cell: ConversationCell = tableView.dequeue(type: ConversationCell.self, for: indexPath)
+                cell.update(with: section.elements[indexPath.row].threadInfo)
                 return cell
         }
     }
@@ -344,15 +359,16 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        switch indexPath.section {
-            case 0:
+        let section: ArraySection<Section, Item> = viewModel.viewData[indexPath.section]
+        
+        switch section.model {
+            case .messageRequests:
                 let viewController: MessageRequestsViewController = MessageRequestsViewController()
                 self.navigationController?.pushViewController(viewController, animated: true)
-                return
                 
-            default:
-                guard let thread = self.thread(at: indexPath.row) else { return }
-                show(thread, with: ConversationViewAction.none, highlightedMessageID: nil, animated: true)
+            case .threads:
+                let threadId: String = section.elements[indexPath.row].threadInfo.id
+                show(threadId, with: .none, highlightedInteractionId: nil, animated: true)
         }
     }
     
@@ -361,7 +377,9 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        switch viewModel.viewData[indexPath.section].model {
+        let section: ArraySection<Section, Item> = viewModel.viewData[indexPath.section]
+        
+        switch section.model {
             case .messageRequests:
                 let hide = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_HIDE_TITLE", comment: "")) { [weak self] _, _ in
                     GRDBStorage.shared.write { db in db[.hasHiddenMessageRequests] = true }
@@ -375,95 +393,89 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 
                 return [hide]
                 
-            default:
-                guard let thread = self.thread(at: indexPath.row) else { return [] }
-                let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_DELETE_TITLE", comment: "")) { [weak self] _, _ in
-                    var message = NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE", comment: "")
-                    if let thread = thread as? TSGroupThread, thread.isClosedGroup, thread.groupModel.groupAdminIds.contains(getUserHexEncodedPublicKey()) {
-                        message = NSLocalizedString("admin_group_leave_warning", comment: "")
-                    }
-                    let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: message, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { [weak self] _ in
-                        self?.delete(thread)
+            case .threads:
+                let threadInfo: HomeViewModel.ThreadInfo = section.elements[indexPath.row].threadInfo
+                let delete: UITableViewRowAction = UITableViewRowAction(
+                    style: .destructive,
+                    title: "TXT_DELETE_TITLE".localized()
+                ) { [weak self] _, _ in
+                    let message = (threadInfo.isGroupAdmin ?
+                        "admin_group_leave_warning".localized() :
+                        "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE".localized()
+                    )
+                    
+                    let alert = UIAlertController(
+                        title: "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE".localized(),
+                        message: message,
+                        preferredStyle: .alert
+                    )
+                    alert.addAction(UIAlertAction(
+                        title: "TXT_DELETE_TITLE".localized(),
+                        style: .destructive
+                    ) { _ in
+                        GRDBStorage.shared.write { db in
+                            switch threadInfo.variant {
+                                case .closedGroup:
+                                    try MessageSender
+                                        .leave(db, groupPublicKey: threadInfo.id)
+                                        .retainUntilComplete()
+                                    
+                                case .openGroup:
+                                    OpenGroupManagerV2.shared.delete(db, openGroupId: threadInfo.id)
+                                    
+                                default: break
+                            }
+                            
+                            _ = try SessionThread
+                                .filter(id: threadInfo.id)
+                                .deleteAll(db)
+                        }
                     })
-                    alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .default) { _ in })
-                    guard let self = self else { return }
-                    self.present(alert, animated: true, completion: nil)
+                    alert.addAction(UIAlertAction(
+                        title: "TXT_CANCEL_TITLE".localized(),
+                        style: .default
+                    ))
+                    
+                    self?.present(alert, animated: true, completion: nil)
                 }
                 delete.backgroundColor = Colors.destructive
-                
-                let isPinned = thread.isPinned
-                let pin = UITableViewRowAction(style: .normal, title: NSLocalizedString("PIN_BUTTON_TEXT", comment: "")) { [weak self] _, _ in
-                    thread.isPinned = true
-                    thread.save()
-                    self?.threadViewModelCache.removeValue(forKey: thread.uniqueId!)
-                    tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
-                }
-                pin.backgroundColor = Colors.pathsBuilding
-                let unpin = UITableViewRowAction(style: .normal, title: NSLocalizedString("UNPIN_BUTTON_TEXT", comment: "")) { [weak self] _, _ in
-                    thread.isPinned = false
-                    thread.save()
-                    self?.threadViewModelCache.removeValue(forKey: thread.uniqueId!)
-                    tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
-                }
-                unpin.backgroundColor = Colors.pathsBuilding
-                
-                if let thread = thread as? TSContactThread, !thread.isNoteToSelf() {
-                    let publicKey = thread.contactSessionID()
 
-                    let block = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "")) { _, _ in
-                        GRDBStorage.shared.writeAsync(
-                            updates: { db in
-                                try Contact
-                                    .fetchOrCreate(db, id: publicKey)
-                                    .with(isBlocked: true)
-                                    .save(db)
-                            },
-                            completion: { db, result in
-                                switch result {
-                                    case .success:
-                                        MessageSender.syncConfiguration(db, forceSyncNow: true)
-                                            .retainUntilComplete()
-                                        
-                                        DispatchQueue.main.async {
-                                            tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
-                                        }
-                                        
-                                    default: break
-                                }
-                            }
-                        )
+                let pin: UITableViewRowAction = UITableViewRowAction(
+                    style: .normal,
+                    title: (threadInfo.isPinned ?
+                        "PIN_BUTTON_TEXT".localized() :
+                        "UNPIN_BUTTON_TEXT".localized()
+                    )
+                ) { _, _ in
+                    GRDBStorage.shared.write { db in
+                        try SessionThread
+                            .filter(id: threadInfo.id)
+                            .updateAll(db, SessionThread.Columns.isPinned.set(to: !threadInfo.isPinned))
                     }
-                    block.backgroundColor = Colors.unimportant
-                    let unblock = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "")) { _, _ in
-                        GRDBStorage.shared.writeAsync(
-                            updates: { db in
-                                try Contact
-                                    .fetchOrCreate(db, id: publicKey)
-                                    .with(isBlocked: false)
-                                    .save(db)
-                            },
-                            completion: { db, result in
-                                switch result {
-                                    case .success:
-                                        MessageSender.syncConfiguration(db, forceSyncNow: true)
-                                            .retainUntilComplete()
-                                        
-                                        DispatchQueue.main.async {
-                                            tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
-                                        }
-                                        
-                                    default: break
-                                }
-                            }
-                        )
+                }
+                
+                guard threadInfo.variant == .contact && !threadInfo.isNoteToSelf else {
+                    return [ delete, pin ]
+                }
+
+                let block: UITableViewRowAction = UITableViewRowAction(
+                    style: .normal,
+                    title: (threadInfo.isBlocked ?
+                        "BLOCK_LIST_UNBLOCK_BUTTON".localized() :
+                        "BLOCK_LIST_BLOCK_BUTTON".localized()
+                    )
+                ) { _, _ in
+                    GRDBStorage.shared.write { db in
+                        try Contact
+                            .filter(id: threadInfo.id)
+                            .updateAll(db, Contact.Columns.isBlocked.set(to: !threadInfo.isBlocked))
+                        try MessageSender.syncConfiguration(db, forceSyncNow: true)
+                            .retainUntilComplete()
                     }
-                    unblock.backgroundColor = Colors.unimportant
-                    return [ delete, (thread.isBlocked() ? unblock : block), (isPinned ? unpin : pin) ]
                 }
-                else {
-                    return [ delete, (isPinned ? unpin : pin) ]
-                }
+                block.backgroundColor = Colors.unimportant
+                
+                return [ delete, block, pin ]
         }
     }
     
@@ -475,33 +487,20 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         present(navigationController, animated: true, completion: nil)
     }
     
-    @objc func show(_ thread: TSThread, with action: ConversationViewAction, highlightedMessageID: String?, animated: Bool) {
-        DispatchMainThreadSafe {
-            if let presentedVC = self.presentedViewController {
-                presentedVC.dismiss(animated: false, completion: nil)
-            }
-            let conversationVC = ConversationVC(thread: thread)
-            self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
+    func show(
+        _ threadId: String,
+        with action: ConversationViewModel.Action,
+        highlightedInteractionId: Int64?,
+        animated: Bool
+    ) {
+        guard let conversationVC: ConversationVC = ConversationVC(threadId: threadId) else {
+            return
         }
-    }
-    
-    private func delete(_ thread: TSThread) {
-        let openGroupV2 = Storage.shared.getV2OpenGroup(for: thread.uniqueId!)
-        Storage.write { transaction in
-            Storage.shared.cancelPendingMessageSendJobs(for: thread.uniqueId!, using: transaction)
-            if let openGroupV2 = openGroupV2 {
-                OpenGroupManagerV2.shared.delete(openGroupV2, associatedWith: thread, using: transaction)
-            } else if let thread = thread as? TSGroupThread, thread.isClosedGroup == true {
-                let groupID = thread.groupModel.groupId
-                let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
-                MessageSender.leave(groupPublicKey, using: transaction).retainUntilComplete()
-                thread.removeAllThreadInteractions(with: transaction)
-                thread.remove(with: transaction)
-            } else {
-                thread.removeAllThreadInteractions(with: transaction)
-                thread.remove(with: transaction)
-            }
+        
+        if let presentedVC = self.presentedViewController {
+            presentedVC.dismiss(animated: false, completion: nil)
         }
+        self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
     }
     
     @objc private func openSettings() {
@@ -542,30 +541,5 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         let newClosedGroupVC = NewClosedGroupVC()
         let navigationController = OWSNavigationController(rootViewController: newClosedGroupVC)
         present(navigationController, animated: true, completion: nil)
-    }
-    
-    // MARK: Convenience
-    private func thread(at index: Int) -> TSThread? {
-        var thread: TSThread? = nil
-        dbConnection.read { transaction in
-            // Note: Section needs to be '1' as we now have 'TSMessageRequests' as the 0th section
-            let ext = transaction.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction
-            thread = ext.object(atRow: UInt(index), inSection: 1, with: self.threads) as? TSThread
-        }
-        return thread
-    }
-    
-    private func threadViewModel(at index: Int) -> ThreadViewModel? {
-        guard let thread = thread(at: index) else { return nil }
-        if let cachedThreadViewModel = threadViewModelCache[thread.uniqueId!] {
-            return cachedThreadViewModel
-        } else {
-            var threadViewModel: ThreadViewModel? = nil
-            dbConnection.read { transaction in
-                threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
-            }
-            threadViewModelCache[thread.uniqueId!] = threadViewModel
-            return threadViewModel
-        }
     }
 }

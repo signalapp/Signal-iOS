@@ -35,21 +35,79 @@ public enum MessageSendJob: JobExecutor {
                 return
             }
             
-            var shouldFailJob: Bool = false
-            
-            GRDBStorage.shared.read { db in
-                // Fetch all associated attachments
-                let attachmentCount: Int = try interaction.attachments
-                    .filter(Attachment.Columns.state == Attachment.State.pending)
-                    .fetchCount(db)
+            // Check if there are any attachments associated to this message, and if so
+            // upload them now
+            //
+            // Note: Normal attachments should be sent in a non-durable way but any
+            // attachments for LinkPreviews and Quotes will be processed through this mechanism
+            let attachmentState: (shouldFail: Bool, shouldDefer: Bool)? = GRDBStorage.shared.write { db in
+                let allAttachmentStateInfo: [Attachment.StateInfo] = try Attachment
+                    .stateInfo(interactionId: interactionId)
+                    .fetchAll(db)
                 
-                shouldFailJob = (attachmentCount > 0)
+                // If there were failed attachments then this job should fail (can't send a
+                // message which has associated attachments if the attachments fail to upload)
+                guard !allAttachmentStateInfo.contains(where: { $0.state == .failed }) else {
+                    return (true, false)
+                }
+                
+                // Create jobs for any pending attachment jobs and insert them into the
+                // queue before the current job (this will mean the current job will re-run
+                // after these inserted jobs complete)
+                //
+                // Note: If there are any 'downloaded' attachments then they also need to be
+                // uploaded (as a 'downloaded' attachment will be on the current users device
+                // but not on the message recipients device - both LinkPreview and Quote can
+                // have this case)
+                try allAttachmentStateInfo
+                    .filter { $0.state == .pending || $0.state == .downloaded }
+                    .compactMap { stateInfo in
+                        JobRunner
+                            .insert(
+                                db,
+                                job: Job(
+                                    variant: .attachmentUpload,
+                                    behaviour: .runOnce,
+                                    threadId: job.threadId,
+                                    interactionId: interactionId,
+                                    details: AttachmentUploadJob.Details(
+                                        attachmentId: stateInfo.attachmentId
+                                    )
+                                ),
+                                before: job
+                            )?
+                            .id
+                    }
+                    .forEach { otherJobId in
+                        // Create the dependency between the jobs
+                        try JobDependencies(
+                            jobId: jobId,
+                            dependantId: otherJobId
+                        )
+                        .insert(db)
+                    }
+                
+                // If there were pending or uploading attachments then stop here (we want to
+                // upload them first and then re-run this send job - the 'JobRunner.insert'
+                // method will take care of this)
+                return (
+                    false,
+                    allAttachmentStateInfo.contains(where: { $0.state != .uploaded })
+                )
             }
             
-            // Cannot send messages with pending attachments (the app doesn't currently
-            // support deferred attachment uploads)
-            guard !shouldFailJob else {
+            // Don't send messages with failed attachment uploads
+            //
+            // Note: If we have gotten to this point then any dependant attachment upload
+            // jobs will have permanently failed so this message send should also do so
+            guard attachmentState?.shouldFail == false else {
                 failure(job, Attachment.UploadError.notUploaded, true)
+                return
+            }
+
+            // Defer the job if we found incomplete uploads
+            guard attachmentState?.shouldDefer == false else {
+                deferred(job)
                 return
             }
         }
@@ -60,7 +118,7 @@ public enum MessageSendJob: JobExecutor {
                 db,
                 message: details.message,
                 to: details.destination,
-                interactionId: details.interactionId
+                interactionId: job.interactionId
             )
         }
         .done2 { _ in success(job, false) }
@@ -79,7 +137,7 @@ public enum MessageSendJob: JobExecutor {
                     
                     if details.message is VisibleMessage {
                         guard
-                            let interactionId: Int64 = details.interactionId,
+                            let interactionId: Int64 = job.interactionId,
                             GRDBStorage.shared.read({ db in try Interaction.exists(db, id: interactionId) }) == true
                         else {
                             // The message has been deleted so permanently fail the job
@@ -121,18 +179,15 @@ extension MessageSendJob {
             case message
         }
         
-        public let interactionId: Int64?
         public let destination: Message.Destination
         public let message: Message
         
         // MARK: - Initialization
         
         public init(
-            interactionId: Int64? = nil,
             destination: Message.Destination,
             message: Message
         ) {
-            self.interactionId = interactionId
             self.destination = destination
             self.message = message
         }
@@ -157,7 +212,6 @@ extension MessageSendJob {
             }
 
             self = Details(
-                interactionId: try? container.decode(Int64.self, forKey: .interactionId),
                 destination: try container.decode(Message.Destination.self, forKey: .destination),
                 message: message
             )
@@ -176,7 +230,6 @@ extension MessageSendJob {
                 throw GRDBStorageError.objectNotFound
             }
 
-            try container.encodeIfPresent(interactionId, forKey: .interactionId)
             try container.encode(destination, forKey: .destination)
             try container.encode(messageTypeString, forKey: .messageType)
             try container.encode(message, forKey: .message)

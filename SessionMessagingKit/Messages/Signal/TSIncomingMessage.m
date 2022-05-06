@@ -4,8 +4,6 @@
 
 #import "TSIncomingMessage.h"
 #import "NSNotificationCenter+OWS.h"
-#import "OWSDisappearingMessagesConfiguration.h"
-#import "OWSDisappearingMessagesJob.h"
 #import "TSAttachmentPointer.h"
 #import "TSContactThread.h"
 #import "TSDatabaseSecondaryIndexes.h"

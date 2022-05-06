@@ -5,7 +5,6 @@
 #import "TSMessage.h"
 #import "AppContext.h"
 #import "MIMETypeUtil.h"
-#import "OWSDisappearingMessagesConfiguration.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSQuotedMessage.h"

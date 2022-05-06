@@ -168,11 +168,9 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     [TSDatabaseView asyncRegisterLegacyThreadInteractionsDatabaseView:self];
     [TSDatabaseView asyncRegisterThreadInteractionsDatabaseView:self];
     [TSDatabaseView asyncRegisterThreadDatabaseView:self];
-    [TSDatabaseView asyncRegisterUnreadDatabaseView:self];
     [self asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex]
                         withName:[TSDatabaseSecondaryIndexes registerTimeStampIndexExtensionName]];
 
-    [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
     [TSDatabaseView asyncRegisterUnreadMentionDatabaseView:self];
     [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
 

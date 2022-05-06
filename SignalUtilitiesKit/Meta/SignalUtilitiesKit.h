@@ -24,8 +24,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSDatabaseMigrationRunner.h>
 #import <SignalUtilitiesKit/OWSDispatch.h>
 #import <SignalUtilitiesKit/OWSError.h>
-#import <SignalUtilitiesKit/OWSFailedAttachmentDownloadsJob.h>
-#import <SignalUtilitiesKit/OWSFailedMessagesJob.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/OWSMessageUtils.h>
 #import <SignalUtilitiesKit/OWSNavigationController.h>

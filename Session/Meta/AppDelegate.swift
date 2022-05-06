@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import PromiseKit
 import SessionMessagingKit
 import SessionUtilitiesKit
@@ -24,12 +25,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         verifyDBKeysAvailableBeforeBackgroundLaunch()
 
         AppModeManager.configure(delegate: self)
-
-        // OWSLinkPreview is now in SessionMessagingKit, so to still be able to deserialize them we
-        // need to tell NSKeyedUnarchiver about the changes.
-        // FIXME: Remove this once YapDatabase gets removed
-        NSKeyedUnarchiver.setClass(OWSLinkPreview.self, forClassName: "SessionServiceKit.OWSLinkPreview")
-        
         Cryptography.seedRandom()
 
         AppVersion.sharedInstance() // TODO: ???
@@ -44,7 +39,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             appSpecificSingletonBlock: {
                 // Create AppEnvironment
                 AppEnvironment.shared.setup()
-                SignalApp.shared().setup()
             },
             migrationCompletion: { [weak self] successful, needsConfigSync in
                 guard let strongSelf = self else { return }
@@ -298,7 +292,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private func clearAllNotificationsAndRestoreBadgeCount() {
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             AppEnvironment.shared.notificationPresenter.clearAllNotifications()
-            OWSMessageUtils.sharedManager().updateApplicationBadgeCount()
+            
+            guard CurrentAppContext().isMainApp else { return }
+            
+            CurrentAppContext().setMainAppBadgeNumber(
+                GRDBStorage.shared
+                    .read({ db in
+                        let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                        
+                        // Don't increase the count for muted threads or message requests
+                        return try Interaction
+                            .filter(Interaction.Columns.wasRead == false)
+                            .joining(
+                                required: Interaction.thread
+                                    .joining(optional: SessionThread.contact)
+                                    .filter(SessionThread.Columns.notificationMode != SessionThread.NotificationMode.none)
+                                    .filter(
+                                        SessionThread.Columns.variant != SessionThread.Variant.contact ||
+                                        !SessionThread.isMessageRequest(userPublicKey: userPublicKey)
+                                    )
+                            )
+                            .fetchCount(db)
+                    })
+                    .defaulting(to: 0)
+            )
         }
     }
     

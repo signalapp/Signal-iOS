@@ -9,10 +9,7 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/OWSAudioPlayer.h>
 #import <SessionMessagingKit/OWSBackgroundTask.h>
 #import <SessionMessagingKit/OWSBackupFragment.h>
-#import <SessionMessagingKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SessionMessagingKit/OWSDisappearingMessagesConfiguration.h>
 #import <SessionMessagingKit/OWSDisappearingMessagesFinder.h>
-#import <SessionMessagingKit/OWSDisappearingMessagesJob.h>
 #import <SessionMessagingKit/OWSIncomingMessageFinder.h>
 #import <SessionMessagingKit/OWSMediaGalleryFinder.h>
 #import <SessionMessagingKit/OWSPreferences.h>
