@@ -4,6 +4,8 @@
 
 #import <SignalServiceKit/SSKEnvironment.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class AvatarBuilder;
 @class BroadcastMediaMessageJobQueue;
 @class LaunchJobs;
@@ -60,3 +62,5 @@
 #endif
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -1,11 +1,13 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "Environment.h"
 #import "OWSPreferences.h"
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/SSKEnvironment.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 static Environment *sharedEnvironment = nil;
 
@@ -90,3 +92,5 @@ static Environment *sharedEnvironment = nil;
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
