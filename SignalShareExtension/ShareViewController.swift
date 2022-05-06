@@ -39,9 +39,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         SetCurrentAppContext(appContext)
 
         DebugLogger.shared().enableTTYLogging()
-        if _isDebugAssertConfiguration() {
-            DebugLogger.shared().enableFileLogging()
-        } else if OWSPreferences.isLoggingEnabled() {
+        if OWSPreferences.isLoggingEnabled() || _isDebugAssertConfiguration() {
             DebugLogger.shared().enableFileLogging()
         }
 

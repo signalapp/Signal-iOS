@@ -154,12 +154,7 @@ extension OutgoingMessagePreparer {
             expiresInSeconds = 0
         }
 
-        if _isDebugAssertConfiguration() {
-            for attachment in attachments {
-                assert(!attachment.hasError)
-                assert(attachment.mimeType.count > 0)
-            }
-        }
+        assert(attachments.allSatisfy { !$0.hasError && !$0.mimeType.isEmpty })
 
         let isVoiceMessage = attachments.count == 1 && attachments.last?.isVoiceMessage == true
 
