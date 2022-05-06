@@ -1147,7 +1147,6 @@ extension GroupUpdateCopy {
         guard count > 0 else {
             return
         }
-        let countString = OWSFormat.formatUInt(count)
 
         switch updater {
         case .localUser:
@@ -1157,28 +1156,13 @@ extension GroupUpdateCopy {
                 addItem(.debug, copy: "Error: Unexpected updater.")
             }
         case .otherUser(let updaterName, _):
-            if count == 1 {
-                let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT",
-                                               comment: "Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}.")
-                addItem(.userMembershipState_invitesRevoked,
-                        format: format, updaterName, countString)
-            } else {
-                let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT",
-                                               comment: "Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}.")
-                addItem(.userMembershipState_invitesRevoked,
-                        format: format, updaterName, countString)
-            }
+            let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d", tableName: "PluralAware",
+                                            comment: "Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ number of users, %2$@ user who revoked the invite }}.")
+            addItem(.userMembershipState_invitesRevoked, copy: String.localizedStringWithFormat(format, count, updaterName))
         case .unknown:
-            if count == 1 {
-                addItem(.userMembershipState_invitesRevoked,
-                        copy: OWSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_1",
-                                                comment: "Message indicating that a single remote user's invite was revoked."))
-            } else {
-                let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT",
-                                               comment: "Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}.")
-                addItem(.userMembershipState_invitesRevoked,
-                        format: format, countString)
-            }
+            let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_%d", tableName: "PluralAware",
+                                            comment: "Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}.")
+            addItem(.userMembershipState_invitesRevoked, copy: String.localizedStringWithFormat(format, count))
         }
     }
 
@@ -1364,35 +1348,18 @@ extension GroupUpdateCopy {
             }
             addUnnamedUsersWereInvitedPassiveTense(count: count)
         case .otherUser(let updaterName, _):
-            let countString = OWSFormat.formatUInt(count)
-            if count == 1 {
-                let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT",
-                                               comment: "Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}.")
-                addItem(.userMembershipState_invitesNew,
-                        format: format, updaterName, countString)
-            } else {
-                let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT",
-                                               comment: "Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}.")
-                addItem(.userMembershipState_invitesNew,
-                        format: format, updaterName, countString)
-            }
+            let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d", tableName: "PluralAware",
+                                            comment: "Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ number of invited users, %2$@ user who invited the user }}.")
+            addItem(.userMembershipState_invitesNew, copy: String.localizedStringWithFormat(format, count, updaterName))
         case .unknown:
             addUnnamedUsersWereInvitedPassiveTense(count: count)
         }
     }
 
     mutating func addUnnamedUsersWereInvitedPassiveTense(count: UInt) {
-        let countString = OWSFormat.formatUInt(count)
-        if count == 1 {
-            self.addItem(.userMembershipState_invitesNew,
-                         copy: OWSLocalizedString("GROUP_REMOTE_USER_INVITED_1",
-                                                 comment: "Message indicating that a single remote user was invited to the group."))
-        } else {
-            let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITED_N_FORMAT",
-                                           comment: "Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}.")
-            self.addItem(.userMembershipState_invitesNew,
-                         format: format, countString)
-        }
+        let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITED_%d", tableName: "PluralAware",
+                                        comment: "Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}.")
+        self.addItem(.userMembershipState_invitesNew, copy: String.localizedStringWithFormat(format, count))
     }
 
     // MARK: - Requesting Members
@@ -1910,29 +1877,15 @@ extension GroupUpdateCopy {
         }
 
         if !invitedMembers.isEmpty {
-            if invitedMembers.count == 1 {
-                let copy = OWSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_1",
-                                             comment: "Message indicating that 1 user was invited while migrating the group.")
-                addItem(.groupMigrated_usersInvited, copy: copy)
-            } else {
-                let format = OWSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT",
-                                               comment: "Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}.")
-                let countString = OWSFormat.formatInt(invitedMembers.count)
-                addItem(.groupMigrated_usersInvited, format: format, countString)
-            }
+            let format = OWSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_%d", tableName: "PluralAware",
+                                            comment: "Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}.")
+            addItem(.groupMigrated_usersInvited, copy: String.localizedStringWithFormat(format, invitedMembers.count))
         }
 
         if !droppedMembers.isEmpty {
-            if droppedMembers.count == 1 {
-                let copy = OWSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_1",
-                                             comment: "Message indicating that 1 user was dropped while migrating the group.")
-                addItem(.groupMigrated_usersDropped, copy: copy)
-            } else {
-                let format = OWSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT",
-                                               comment: "Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}.")
-                let countString = OWSFormat.formatInt(droppedMembers.count)
-                addItem(.groupMigrated_usersDropped, format: format, countString)
-            }
+            let format = OWSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_%d", tableName: "PluralAware",
+                                            comment: "Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}.")
+            addItem(.groupMigrated_usersDropped, copy: String.localizedStringWithFormat(format, droppedMembers.count))
         }
     }
 
