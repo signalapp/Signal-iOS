@@ -716,8 +716,6 @@
 		4C10B1AB23176D250099396B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A091169C9E5E00537ABF /* CoreGraphics.framework */; };
 		4C10B1AC23176D250099396B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
 		4C10B1AD23176D250099396B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A163E8AA16F3F6A90094D68B /* Security.framework */; };
-		4C10B1AE23176D250099396B /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4F17A06537000A904E /* AddressBookUI.framework */; };
-		4C10B1AF23176D250099396B /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
 		4C10B1B023176D250099396B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */; };
 		4C10B1B123176D250099396B /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */; };
 		4C10B1B223176D250099396B /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
@@ -990,8 +988,6 @@
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
 		A123C14916F902EE000AE905 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A163E8AA16F3F6A90094D68B /* Security.framework */; };
 		A163E8AB16F3F6AA0094D68B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A163E8AA16F3F6A90094D68B /* Security.framework */; };
-		A194D3B917A08CD1004BD3A9 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
-		A194D3BA17A08CD5004BD3A9 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4F17A06537000A904E /* AddressBookUI.framework */; };
 		A1A018521805C5E800A052A6 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
 		A1A018531805C60D00A052A6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A091169C9E5E00537ABF /* CoreGraphics.framework */; };
 		A5E7C675248C5443007C949A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A5E7C673248C5442007C949A /* InfoPlist.strings */; };
@@ -2480,8 +2476,6 @@
 				4C10B1AB23176D250099396B /* CoreGraphics.framework in Frameworks */,
 				4C10B1AC23176D250099396B /* QuartzCore.framework in Frameworks */,
 				4C10B1AD23176D250099396B /* Security.framework in Frameworks */,
-				4C10B1AE23176D250099396B /* AddressBookUI.framework in Frameworks */,
-				4C10B1AF23176D250099396B /* AddressBook.framework in Frameworks */,
 				4C10B1B023176D250099396B /* AVFoundation.framework in Frameworks */,
 				4C10B1B123176D250099396B /* CoreTelephony.framework in Frameworks */,
 				4C10B1B223176D250099396B /* SystemConfiguration.framework in Frameworks */,
@@ -2536,8 +2530,6 @@
 				A1A018531805C60D00A052A6 /* CoreGraphics.framework in Frameworks */,
 				A1A018521805C5E800A052A6 /* QuartzCore.framework in Frameworks */,
 				A123C14916F902EE000AE905 /* Security.framework in Frameworks */,
-				A194D3BA17A08CD5004BD3A9 /* AddressBookUI.framework in Frameworks */,
-				A194D3B917A08CD1004BD3A9 /* AddressBook.framework in Frameworks */,
 				D202868416DBE108009068E9 /* AVFoundation.framework in Frameworks */,
 				D202868316DBE0FC009068E9 /* CoreTelephony.framework in Frameworks */,
 				D202868216DBE0F4009068E9 /* SystemConfiguration.framework in Frameworks */,
