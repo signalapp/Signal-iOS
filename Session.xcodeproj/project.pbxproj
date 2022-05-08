@@ -855,8 +855,7 @@
 		FDC4381527B329CE00C60D73 /* NonceGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381427B329CE00C60D73 /* NonceGenerator.swift */; };
 		FDC4381727B32EC700C60D73 /* Personalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381627B32EC700C60D73 /* Personalization.swift */; };
 		FDC4382027B36ADC00C60D73 /* SOGSEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381F27B36ADC00C60D73 /* SOGSEndpoint.swift */; };
-		FDC4382F27B383AF00C60D73 /* UnregisterResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4382E27B383AF00C60D73 /* UnregisterResponse.swift */; };
-		FDC4383127B3841C00C60D73 /* RegisterResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4383027B3841C00C60D73 /* RegisterResponse.swift */; };
+		FDC4382F27B383AF00C60D73 /* UpdateRegistrationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4382E27B383AF00C60D73 /* UpdateRegistrationResponse.swift */; };
 		FDC4383827B3863200C60D73 /* VersionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4383727B3863200C60D73 /* VersionResponse.swift */; };
 		FDC4384C27B47F7700C60D73 /* OpenGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384B27B47F7700C60D73 /* OpenGroup.swift */; };
 		FDC4384F27B4804F00C60D73 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384E27B4804F00C60D73 /* Header.swift */; };
@@ -2041,8 +2040,7 @@
 		FDC4381427B329CE00C60D73 /* NonceGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonceGenerator.swift; sourceTree = "<group>"; };
 		FDC4381627B32EC700C60D73 /* Personalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Personalization.swift; sourceTree = "<group>"; };
 		FDC4381F27B36ADC00C60D73 /* SOGSEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOGSEndpoint.swift; sourceTree = "<group>"; };
-		FDC4382E27B383AF00C60D73 /* UnregisterResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnregisterResponse.swift; sourceTree = "<group>"; };
-		FDC4383027B3841C00C60D73 /* RegisterResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterResponse.swift; sourceTree = "<group>"; };
+		FDC4382E27B383AF00C60D73 /* UpdateRegistrationResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateRegistrationResponse.swift; sourceTree = "<group>"; };
 		FDC4383727B3863200C60D73 /* VersionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionResponse.swift; sourceTree = "<group>"; };
 		FDC4383D27B4708600C60D73 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		FDC4384B27B47F7700C60D73 /* OpenGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenGroup.swift; sourceTree = "<group>"; };
@@ -4112,8 +4110,7 @@
 		FDC4382D27B383A600C60D73 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				FDC4382E27B383AF00C60D73 /* UnregisterResponse.swift */,
-				FDC4383027B3841C00C60D73 /* RegisterResponse.swift */,
+				FDC4382E27B383AF00C60D73 /* UpdateRegistrationResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -5493,7 +5490,7 @@
 				B8566C63256F55930045A0B9 /* OWSLinkPreview+Conversion.swift in Sources */,
 				C32C5B3F256DC1DF003C73A2 /* TSQuotedMessage+Conversion.swift in Sources */,
 				B8EB20EE2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift in Sources */,
-				FDC4382F27B383AF00C60D73 /* UnregisterResponse.swift in Sources */,
+				FDC4382F27B383AF00C60D73 /* UpdateRegistrationResponse.swift in Sources */,
 				FDC4386327B4D94E00C60D73 /* SOGSMessage.swift in Sources */,
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
 				C32C5D19256DD493003C73A2 /* OWSLinkPreview.swift in Sources */,
@@ -5596,7 +5593,6 @@
 				C32C5C01256DC9A0003C73A2 /* OWSIdentityManager.m in Sources */,
 				FDC438AA27BB12BB00C60D73 /* UserModeratorRequest.swift in Sources */,
 				C32C59C4256DB41F003C73A2 /* TSContactThread.m in Sources */,
-				FDC4383127B3841C00C60D73 /* RegisterResponse.swift in Sources */,
 				C32C5AB0256DBE8F003C73A2 /* TSOutgoingMessage.m in Sources */,
 				B82A0C3826B9098200C1BCE3 /* MessageInvalidator.swift in Sources */,
 				FDC4385D27B4C18900C60D73 /* Room.swift in Sources */,
