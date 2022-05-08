@@ -23,21 +23,15 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
         case shouldBeVisible
         case isPinned
         case messageDraft
-        case notificationMode
         case notificationSound
         case mutedUntilTimestamp
+        case onlyNotifyForMentions
     }
     
     public enum Variant: Int, Codable, DatabaseValueConvertible {
         case contact
         case closedGroup
         case openGroup
-    }
-    
-    public enum NotificationMode: Int, Codable, DatabaseValueConvertible {
-        case none
-        case all
-        case mentionsOnly   // Only applicable to group threads
     }
 
     /// Unique identifier for a thread (formerly known as uniqueId)
@@ -63,9 +57,6 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
     /// The value the user started entering into the input field before they left the conversation screen
     public let messageDraft: String?
     
-    /// The notification mode this thread is set to
-    public let notificationMode: NotificationMode
-    
     /// The sound which should be used when receiving a notification for this thread
     ///
     /// **Note:** If unset this will use the `Preferences.Sound.defaultNotificationSound`
@@ -73,6 +64,9 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
     
     /// Timestamp (seconds since epoch) for when this thread should stop being muted
     public let mutedUntilTimestamp: TimeInterval?
+    
+    /// A flag indicating whether the thread should only notify for mentions
+    public let onlyNotifyForMentions: Bool
     
     // MARK: - Relationships
     
@@ -105,9 +99,9 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
         shouldBeVisible: Bool = false,
         isPinned: Bool = false,
         messageDraft: String? = nil,
-        notificationMode: NotificationMode = .all,
         notificationSound: Preferences.Sound? = nil,
-        mutedUntilTimestamp: TimeInterval? = nil
+        mutedUntilTimestamp: TimeInterval? = nil,
+        onlyNotifyForMentions: Bool = false
     ) {
         self.id = id
         self.variant = variant
@@ -115,9 +109,9 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
         self.shouldBeVisible = shouldBeVisible
         self.isPinned = isPinned
         self.messageDraft = messageDraft
-        self.notificationMode = notificationMode
         self.notificationSound = notificationSound
         self.mutedUntilTimestamp = mutedUntilTimestamp
+        self.onlyNotifyForMentions = onlyNotifyForMentions
     }
     
     // MARK: - Custom Database Interaction
@@ -146,9 +140,9 @@ public extension SessionThread {
             shouldBeVisible: (shouldBeVisible ?? self.shouldBeVisible),
             isPinned: (isPinned ?? self.isPinned),
             messageDraft: messageDraft,
-            notificationMode: notificationMode,
             notificationSound: notificationSound,
-            mutedUntilTimestamp: mutedUntilTimestamp
+            mutedUntilTimestamp: mutedUntilTimestamp,
+            onlyNotifyForMentions: onlyNotifyForMentions
         )
     }
 }
@@ -300,6 +294,69 @@ public extension SessionThread {
             case .closedGroup, .openGroup:
                 return displayName
                     .defaulting(to: "Group", useDefaultIfEmpty: true)
+        }
+    }
+}
+
+// MARK: - Objective-C Support
+
+// FIXME: Remove when possible
+
+@objc(SMKThread)
+public class SMKThread: NSObject {
+    @objc(isThreadMuted:)
+    public static func isThreadMuted(_ threadId: String) -> Bool {
+        return GRDBStorage.shared.read { db in
+            let mutedUntilTimestamp: TimeInterval? = try SessionThread
+                .select(SessionThread.Columns.mutedUntilTimestamp)
+                .filter(id: threadId)
+                .asRequest(of: TimeInterval?.self)
+                .fetchOne(db)
+            
+            return (mutedUntilTimestamp != nil)
+        }
+        .defaulting(to: false)
+    }
+    
+    @objc(isOnlyNotifyingForMentions:)
+    public static func isOnlyNotifyingForMentions(_ threadId: String) -> Bool {
+        return GRDBStorage.shared.read { db in
+            return try SessionThread
+                .select(SessionThread.Columns.onlyNotifyForMentions == true)
+                .filter(id: threadId)
+                .asRequest(of: Bool.self)
+                .fetchOne(db)
+        }
+        .defaulting(to: false)
+    }
+    
+    @objc(setIsOnlyNotifyingForMentions:to:)
+    public static func isOnlyNotifyingForMentions(_ threadId: String, isEnabled: Bool) {
+        GRDBStorage.shared.write { db in
+            try SessionThread
+                .filter(id: threadId)
+                .updateAll(db, SessionThread.Columns.onlyNotifyForMentions.set(to: isEnabled))
+        }
+    }
+    
+    @objc(mutedUntilDateFor:)
+    public static func mutedUntilDateFor(_ threadId: String) -> Date? {
+        return GRDBStorage.shared.read { db in
+            return try SessionThread
+                .select(SessionThread.Columns.mutedUntilTimestamp)
+                .filter(id: threadId)
+                .asRequest(of: TimeInterval.self)
+                .fetchOne(db)
+        }
+        .map { Date(timeIntervalSince1970: $0) }
+    }
+    
+    @objc(updateWithMutedUntilDateTo:forThreadId:)
+    public static func updateWithMutedUntilDate(to date: Date?, threadId: String) {
+        GRDBStorage.shared.write { db in
+            try SessionThread
+                .filter(id: threadId)
+                .updateAll(db, SessionThread.Columns.mutedUntilTimestamp.set(to: date?.timeIntervalSince1970))
         }
     }
 }

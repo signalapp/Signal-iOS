@@ -8,11 +8,16 @@ import SessionUtilitiesKit
 import AVFAudio
 import AVFoundation
 
-public struct Attachment: Codable, Identifiable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
+public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "attachment" }
     public static let interactionAttachments = hasOne(InteractionAttachment.self)
     internal static let quoteForeignKey = ForeignKey([Columns.id], to: [Quote.Columns.attachmentId])
     internal static let linkPreviewForeignKey = ForeignKey([Columns.id], to: [LinkPreview.Columns.attachmentId])
+    public static let interaction = hasOne(
+        Interaction.self,
+        through: interactionAttachments,
+        using: InteractionAttachment.interaction
+    )
     fileprivate static let quote = belongsTo(Quote.self, using: quoteForeignKey)
     fileprivate static let linkPreview = belongsTo(LinkPreview.self, using: linkPreviewForeignKey)
     
@@ -194,6 +199,28 @@ public struct Attachment: Codable, Identifiable, Equatable, FetchableRecord, Per
         self.encryptionKey = nil
         self.digest = nil
         self.caption = nil
+    }
+    
+    // MARK: - Custom Database Interaction
+    
+    public func delete(_ db: Database) throws -> Bool {
+        // Delete all associated files
+        if FileManager.default.fileExists(atPath: thumbnailsDirPath) {
+            try? FileManager.default.removeItem(atPath: thumbnailsDirPath)
+        }
+        
+        if
+            let legacyThumbnailPath: String = legacyThumbnailPath,
+            FileManager.default.fileExists(atPath: legacyThumbnailPath)
+        {
+            try? FileManager.default.removeItem(atPath: legacyThumbnailPath)
+        }
+        
+        if let originalFilePath: String = originalFilePath {
+            try? FileManager.default.removeItem(atPath: originalFilePath)
+        }
+        
+        return try performDelete(db)
     }
 }
 
@@ -621,6 +648,19 @@ extension Attachment {
         // Thumbnails are written to the caches directory, so that iOS can
         // remove them if necessary
         return "\(OWSFileSystem.cachesDirectoryPath())/\(id)-thumbnails"
+    }
+    
+    var legacyThumbnailPath: String? {
+        guard
+            let originalFilePath: String = originalFilePath,
+            (isImage || isVideo || isAnimated)
+        else { return nil }
+        
+        let fileUrl: URL = URL(fileURLWithPath: originalFilePath)
+        let filename: String = fileUrl.lastPathComponent.filenameWithoutExtension
+        let containingDir: String = fileUrl.deletingLastPathComponent().absoluteString
+        
+        return "\(containingDir)/\(filename)-signal-ios-thumbnail.jpg"
     }
     
     var originalImage: UIImage? {

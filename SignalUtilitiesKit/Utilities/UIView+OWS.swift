@@ -132,26 +132,35 @@ public extension UIView {
 
 @objc
 public extension UIViewController {
-    public func presentAlert(_ alert: UIAlertController) {
+    func presentAlert(_ alert: UIAlertController) {
         self.presentAlert(alert, animated: true)
     }
 
-    public func presentAlert(_ alert: UIAlertController, animated: Bool) {
-        self.present(alert,
-                     animated: animated,
-                     completion: {
-                        alert.applyAccessibilityIdentifiers()
-        })
+    func presentAlert(_ alert: UIAlertController, animated: Bool) {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async { [weak self] in
+                self?.presentAlert(alert, animated: animated)
+            }
+            return
+        }
+        
+        self.present(alert, animated: animated) {
+            alert.applyAccessibilityIdentifiers()
+        }
     }
 
-    public func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
-        self.present(alert,
-                     animated: true,
-                     completion: {
-                        alert.applyAccessibilityIdentifiers()
-
-                        completion()
-        })
+    func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async { [weak self] in
+                self?.presentAlert(alert, completion: completion)
+            }
+            return
+        }
+        
+        self.present(alert, animated: true) {
+            alert.applyAccessibilityIdentifiers()
+            completion()
+        }
     }
 }
 

@@ -10,6 +10,7 @@ public struct Profile: Codable, Identifiable, Equatable, FetchableRecord, Persis
     internal static let interactionForeignKey = ForeignKey([Columns.id], to: [Interaction.Columns.authorId])
     internal static let contactForeignKey = ForeignKey([Columns.id], to: [Contact.Columns.id])
     internal static let groupMemberForeignKey = ForeignKey([Columns.id], to: [GroupMember.Columns.profileId])
+    internal static let contact = hasOne(Contact.self, using: contactForeignKey)
     public static let groupMembers = hasMany(GroupMember.self, using: groupMemberForeignKey)
     
     public typealias Columns = CodingKeys
@@ -204,9 +205,9 @@ public extension Profile {
 public extension Profile {
     func with(
         name: String? = nil,
-        nickname: Updatable<String> = .existing,
-        profilePictureUrl: Updatable<String> = .existing,
-        profilePictureFileName: Updatable<String> = .existing,
+        nickname: Updatable<String?> = .existing,
+        profilePictureUrl: Updatable<String?> = .existing,
+        profilePictureFileName: Updatable<String?> = .existing,
         profileEncryptionKey: Updatable<OWSAES256Key> = .existing
     ) -> Profile {
         return Profile(
@@ -223,6 +224,22 @@ public extension Profile {
 // MARK: - GRDB Interactions
 
 public extension Profile {
+    static func fetchAllContactProfiles(excludeCurrentUser: Bool = true) -> [Profile] {
+        return GRDBStorage.shared
+            .read { db in
+                // Sort the contacts by their displayName value
+                return try Profile
+                    .filter(Profile.Columns.id != (excludeCurrentUser ? "" : getUserHexEncodedPublicKey(db)))
+                    .joining(
+                        required: Profile.contact
+                            .filter(Contact.Columns.didApproveMe == true)
+                    )
+                    .fetchAll(db)
+                    .sorted(by: { lhs, rhs -> Bool in lhs.displayName() < rhs.displayName() })
+            }
+            .defaulting(to: [])
+    }
+    
     static func displayName(_ db: Database? = nil, id: ID, thread: SessionThread, customFallback: String? = nil) -> String {
         return displayName(
             db,
@@ -402,8 +419,8 @@ public extension Profile {
     ) -> String {
         if let nickname: String = nickname { return nickname }
         
-        guard let name: String = name else {
-            return (customFallback ?? Profile.truncated(id: id, truncating: .start))
+        guard let name: String = name, name != id else {
+            return (customFallback ?? Profile.truncated(id: id, truncating: .middle))
         }
         
         switch context {
@@ -418,6 +435,9 @@ public extension Profile {
 }
 
 // MARK: - Objective-C Support
+
+// FIXME: Remove when possible
+
 @objc(SMKProfile)
 public class SMKProfile: NSObject {
     var id: String
@@ -479,5 +499,20 @@ public class SMKProfile: NSObject {
     
     @objc public static var localProfileKey: OWSAES256Key? {
         Profile.fetchOrCreateCurrentUser().profileEncryptionKey
+    }
+    
+    @objc(displayNameAfterSavingNickname:forProfileId:)
+    public static func displayNameAfterSaving(nickname: String?, for profileId: String) -> String {
+        return GRDBStorage.shared.write { db in
+            let profile: Profile = Profile.fetchOrCreate(id: profileId)
+            let targetNickname: String? = ((nickname ?? "").count > 0 ? nickname : nil)
+            
+            _ = try profile
+                .with(nickname: .update(targetNickname))
+                .saved(db)
+            
+            return (targetNickname ?? profile.name)
+        }
+        .defaulting(to: "")
     }
 }

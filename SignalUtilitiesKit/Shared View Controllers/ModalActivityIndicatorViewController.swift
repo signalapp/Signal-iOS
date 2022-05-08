@@ -41,8 +41,14 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     }
 
     @objc
-    public class func present(fromViewController: UIViewController, canCancel: Bool = false, message: String? = nil,
-        backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+    public class func present(
+        fromViewController: UIViewController?,
+        canCancel: Bool = false,
+        message: String? = nil,
+        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
+    ) {
+        guard let fromViewController: UIViewController = fromViewController else { return }
+        
         AssertIsOnMainThread()
 
         let view = ModalActivityIndicatorViewController(canCancel: canCancel, message: message)

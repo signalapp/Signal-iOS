@@ -5,15 +5,15 @@
 import PromiseKit
 import SessionUIKit
 
-public protocol GalleryRailItemProvider: class {
+public protocol GalleryRailItemProvider: AnyObject {
     var railItems: [GalleryRailItem] { get }
 }
 
-public protocol GalleryRailItem: class {
+public protocol GalleryRailItem: AnyObject {
     func buildRailItemView() -> UIView
 }
 
-protocol GalleryRailCellViewDelegate: class {
+protocol GalleryRailCellViewDelegate: AnyObject {
     func didTapGalleryRailCellView(_ galleryRailCellView: GalleryRailCellView)
 }
 

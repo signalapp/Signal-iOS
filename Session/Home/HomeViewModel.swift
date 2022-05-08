@@ -98,7 +98,8 @@ public class HomeViewModel {
         private let contactProfile: Profile?
         private let closedGroupAvatarProfiles: [GroupMemberInfo]?
         
-        public let notificationMode: SessionThread.NotificationMode
+        public let mutedUntilTimestamp: TimeInterval?
+        public let onlyNotifyForMentions: Bool
         public let isPinned: Bool
         
         /// A flag indicating whether the contact is blocked (will be null for non-contact threads)
@@ -113,17 +114,14 @@ public class HomeViewModel {
         public let lastInteractionInfo: InteractionInfo?
         
         public var displayName: String {
-            switch variant {
-                case .closedGroup: return (closedGroupName ?? "Unknown Group")
-                case .openGroup: return (openGroupName ?? "Unknown Group")
-                case .contact:
-                    guard !isNoteToSelf else { return "NOTE_TO_SELF".localized() }
-                    guard let profile: Profile = profile else {
-                        return Profile.truncated(id: id, truncating: .middle)
-                    }
-                    
-                    return (profile.nickname ?? profile.name)
-            }
+            return SessionThread.displayName(
+                threadId: id,
+                variant: variant,
+                closedGroupName: closedGroupName,
+                openGroupName: openGroupName,
+                isNoteToSelf: isNoteToSelf,
+                profile: contactProfile
+            )
         }
         
         public var profile: Profile? {
@@ -179,7 +177,8 @@ public class HomeViewModel {
             self.currentUserProfile = Profile(id: "", name: "")
             self.contactProfile = nil
             self.closedGroupAvatarProfiles = nil
-            self.notificationMode = .none
+            self.mutedUntilTimestamp = nil
+            self.onlyNotifyForMentions = false
             self.isPinned = false
             self.contactIsBlocked = nil
             self.isNoteToSelf = false
@@ -255,7 +254,8 @@ public class HomeViewModel {
                     openGroup[.name].forKey(ThreadInfo.openGroupNameKey),
                     openGroup[.imageData].forKey(ThreadInfo.openGroupProfilePictureDataKey),
 
-                    thread[.notificationMode],
+                    thread[.mutedUntilTimestamp],
+                    thread[.onlyNotifyForMentions],
                     thread[.isPinned],
                     contact[.isBlocked].forKey(ThreadInfo.contactIsBlockedKey),
                     SessionThread.isNoteToSelf(userPublicKey: userPublicKey).forKey(ThreadInfo.isNoteToSelfKey),
@@ -293,7 +293,10 @@ public class HomeViewModel {
                 )
                 .joining(optional: SessionThread.openGroup.aliased(openGroup))
                 .with(currentUserProfileExpression)
-                .including(required: SessionThread.association(to: currentUserProfileExpression).forKey(ThreadInfo.currentUserProfileKey))
+                .including(
+                    required: SessionThread.association(to: currentUserProfileExpression)
+                        .forKey(ThreadInfo.currentUserProfileKey)
+                )
                 .with(unreadInteractionExpression)
                 .joining(
                     optional: SessionThread

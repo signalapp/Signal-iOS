@@ -13,7 +13,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     )
     public static let thread = belongsTo(SessionThread.self, using: threadForeignKey)
     public static let profile = hasOne(Profile.self, using: Profile.interactionForeignKey)
-    internal static let interactionAttachments = hasMany(
+    public static let interactionAttachments = hasMany(
         InteractionAttachment.self,
         using: InteractionAttachment.interactionForeignKey
     )

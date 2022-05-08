@@ -102,7 +102,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
 
         let photoMediaSize = PhotoMediaSize(thumbnailSize: CGSize(width: kImageSize, height: kImageSize))
         if let assetItem = contents.lastAssetItem(photoMediaSize: photoMediaSize) {
-            imageView.image = assetItem.asyncThumbnail { [weak imageView] image in
+            assetItem.asyncThumbnail { [weak imageView] image in
                 AssertIsOnMainThread()
 
                 guard let imageView = imageView else {

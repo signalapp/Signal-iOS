@@ -52,50 +52,48 @@ final class ConversationTitleView: UIView {
     
     public func update(
         with name: String,
-        notificationMode: SessionThread.NotificationMode,
+        mutedUntilTimestamp: TimeInterval?,
+        onlyNotifyForMentions: Bool,
         userCount: Int?
     ) {
         guard Thread.isMainThread else {
             DispatchQueue.main.async { [weak self] in
-                self?.update(with: name, notificationMode: notificationMode, userCount: userCount)
+                self?.update(with: name, mutedUntilTimestamp: mutedUntilTimestamp, onlyNotifyForMentions: onlyNotifyForMentions, userCount: userCount)
             }
             return
         }
         
         // Generate the subtitle
         let subtitle: NSAttributedString? = {
-            switch notificationMode {
-                case .none:
-                    return NSAttributedString(
-                        string: "\u{e067}  ",
-                        attributes: [
-                            .font: UIFont.ows_elegantIconsFont(10),
-                            .foregroundColor: Colors.text
-                        ]
-                    )
-                    .appending(string: "Muted")
-                    
-                case .mentionsOnly:
-                    // FIXME: This is going to have issues when swapping between light/dark mode
-                    let imageAttachment = NSTextAttachment()
-                    let color: UIColor = (isDarkMode ? .white : .black)
-                    imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: color)
-                    imageAttachment.bounds = CGRect(
-                        x: 0,
-                        y: -2,
-                        width: Values.smallFontSize,
-                        height: Values.smallFontSize
-                    )
-                    
-                    return NSAttributedString(attachment: imageAttachment)
-                        .appending(string: "  ")
-                        .appending(string: "view_conversation_title_notify_for_mentions_only".localized())
-                    
-                case .all:
-                    guard let userCount: Int = userCount else { return nil }
-                    
-                    return NSAttributedString(string: "\(userCount) member\(userCount == 1 ? "" : "s")")
+            guard Date().timeIntervalSince1970 > (mutedUntilTimestamp ?? 0) else {
+                return NSAttributedString(
+                    string: "\u{e067}  ",
+                    attributes: [
+                        .font: UIFont.ows_elegantIconsFont(10),
+                        .foregroundColor: Colors.text
+                    ]
+                )
+                .appending(string: "Muted")
             }
+            guard !onlyNotifyForMentions else {
+                // FIXME: This is going to have issues when swapping between light/dark mode
+                let imageAttachment = NSTextAttachment()
+                let color: UIColor = (isDarkMode ? .white : .black)
+                imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: color)
+                imageAttachment.bounds = CGRect(
+                    x: 0,
+                    y: -2,
+                    width: Values.smallFontSize,
+                    height: Values.smallFontSize
+                )
+                
+                return NSAttributedString(attachment: imageAttachment)
+                    .appending(string: "  ")
+                    .appending(string: "view_conversation_title_notify_for_mentions_only".localized())
+            }
+            guard let userCount: Int = userCount else { return nil }
+            
+            return NSAttributedString(string: "\(userCount) member\(userCount == 1 ? "" : "s")")
         }()
         
         self.titleLabel.text = name

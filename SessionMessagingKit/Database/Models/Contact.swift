@@ -113,28 +113,11 @@ public extension Contact {
     static func fetchOrCreate(_ db: Database, id: ID) -> Contact {
         return ((try? fetchOne(db, id: id)) ?? Contact(id: id))
     }
-    
-    static func fetchAllIds() -> [String] {
-        return GRDBStorage.shared
-            .read { db in
-                let userPublicKey: String = getUserHexEncodedPublicKey(db)
-                let contacts: [Contact] = try Contact
-                    .filter(Contact.Columns.id != userPublicKey)
-                    .filter(Contact.Columns.didApproveMe == true)
-                    .fetchAll(db)
-                let profiles: [Profile] = try Profile
-                    .fetchAll(db, ids: contacts.map { $0.id })
-                
-                // Sort the contacts by their displayName value
-                return profiles
-                    .sorted(by: { lhs, rhs -> Bool in lhs.displayName() < rhs.displayName() })
-                    .map { $0.id }
-            }
-            .defaulting(to: [])
-    }
 }
 
 // MARK: - Objective-C Support
+
+// TODO: Remove this when possible
 @objc(SMKContact)
 public class SMKContact: NSObject {
     @objc let isApproved: Bool
@@ -158,5 +141,16 @@ public class SMKContact: NSObject {
             didApproveMe: existingContact?.didApproveMe ?? false
         )
     }
+    
+    @objc(isBlockedFor:)
+    public static func isBlocked(id: String) -> Bool {
+        return GRDBStorage.shared
+            .read { db in
+                try Contact
+                    .select(.isBlocked)
+                    .asRequest(of: Bool.self)
+                    .fetchOne(db)
+            }
+            .defaulting(to: false)
+    }
 }
-

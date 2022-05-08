@@ -9,41 +9,46 @@ import GRDB
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
-extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuActionDelegate, ScrollToBottomButtonDelegate,
-    SendMediaNavDelegate, UIDocumentPickerDelegate, AttachmentApprovalViewControllerDelegate, GifPickerViewControllerDelegate,
-    ConversationTitleViewDelegate {
+extension ConversationVC:
+    InputViewDelegate,
+    MessageCellDelegate,
+    ScrollToBottomButtonDelegate,
+    SendMediaNavDelegate,
+    UIDocumentPickerDelegate,
+    AttachmentApprovalViewControllerDelegate,
+    GifPickerViewControllerDelegate
+{
+    @objc func handleTitleViewTapped() {
+        // Don't take the user to settings for unapproved threads
+        guard !viewModel.viewData.requiresApproval else { return }
 
-    func handleTitleViewTapped() {
-        // Don't take the user to settings for message requests
-        guard
-            let contactThread: TSContactThread = thread as? TSContactThread,
-            let contact: Contact = GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: contactThread.contactSessionID()) }),
-            contact.isApproved,
-            contact.didApproveMe
-        else {
-            return
-        }
-        
         openSettings()
     }
-    
+
     @objc func openSettings() {
-        let settingsVC = OWSConversationSettingsViewController()
-        settingsVC.configure(with: thread, uiDatabaseConnection: OWSPrimaryStorage.shared().uiDatabaseConnection)
+        let settingsVC: OWSConversationSettingsViewController = OWSConversationSettingsViewController()
+        settingsVC.configure(
+            withThreadId: viewModel.viewData.thread.id,
+            threadName: viewModel.viewData.threadName,
+            isClosedGroup: (viewModel.viewData.thread.variant == .closedGroup),
+            isOpenGroup: (viewModel.viewData.thread.variant == .openGroup),
+            isNoteToSelf: viewModel.viewData.threadIsNoteToSelf
+        )
         settingsVC.conversationSettingsViewDelegate = self
-        navigationController!.pushViewController(settingsVC, animated: true, completion: nil)
+        navigationController?.pushViewController(settingsVC, animated: true, completion: nil)
     }
+    
+    // MARK: - ScrollToBottomButtonDelegate
 
     func handleScrollToBottomButtonTapped() {
         // The table view's content size is calculated by the estimated height of cells,
         // so the result may be inaccurate before all the cells are loaded. Use this
         // to scroll to the last row instead.
-        let indexPath = IndexPath(row: viewItems.count - 1, section: 0)
-        unreadViewItems.removeAll()
-        messagesTableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        scrollToBottom(isAnimated: true)
     }
 
-    // MARK: Blocking
+    // MARK: - Blocking
+    
     @objc func unblock() {
         guard let thread = thread as? TSContactThread else { return }
         let publicKey = thread.contactSessionID()
@@ -75,26 +80,18 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     func showBlockedModalIfNeeded() -> Bool {
-        guard let thread = thread as? TSContactThread, thread.isBlocked() else { return false }
+        guard viewModel.viewData.threadIsBlocked else { return false }
         
-        let blockedModal = BlockedModal(publicKey: thread.contactSessionID())
+        let blockedModal = BlockedModal(publicKey: viewModel.viewData.thread.id)
         blockedModal.modalPresentationStyle = .overFullScreen
         blockedModal.modalTransitionStyle = .crossDissolve
         present(blockedModal, animated: true, completion: nil)
+        
         return true
     }
 
-    // MARK: Attachments
-    func didPasteImageFromPasteboard(_ image: UIImage) {
-        guard let imageData = image.jpegData(compressionQuality: 1.0) else { return }
-        let dataSource = DataSourceValue.dataSource(with: imageData, utiType: kUTTypeJPEG as String)
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String, imageQuality: .medium)
-        
-        let approvalVC = AttachmentApprovalViewController.wrappedInNavController(attachments: [ attachment ], approvalDelegate: self)
-        approvalVC.modalPresentationStyle = .fullScreen
-        self.present(approvalVC, animated: true, completion: nil)
-    }
-    
+    // MARK: - SendMediaNavDelegate
+
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController) {
         dismiss(animated: true, completion: nil)
     }
@@ -111,14 +108,16 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?) {
-        snInputView.text = newMessageText ?? ""
+        snInputView.text = (newMessageText ?? "")
     }
 
+    // MARK: - AttachmentApprovalViewControllerDelegate
+    
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
         sendAttachments(attachments, with: messageText ?? "") { [weak self] in
             self?.dismiss(animated: true, completion: nil)
         }
-        
+
         scrollToBottom(isAnimated: false)
         resetMentions()
         self.snInputView.text = ""
@@ -142,6 +141,25 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         sendMediaNavController.sendMediaNavDelegate = self
         sendMediaNavController.modalPresentationStyle = .fullScreen
         present(sendMediaNavController, animated: true, completion: nil)
+    // MARK: - ExpandingAttachmentsButtonDelegate
+
+    func handleGIFButtonTapped() {
+        let gifVC = GifPickerViewController()
+        gifVC.delegate = self
+        
+        let navController = OWSNavigationController(rootViewController: gifVC)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true) { }
+    }
+
+    func handleDocumentButtonTapped() {
+        // UIDocumentPickerModeImport copies to a temp file within our container.
+        // It uses more memory than "open" but lets us avoid working with security scoped URLs.
+        let documentPickerVC = UIDocumentPickerViewController(documentTypes: [ kUTTypeItem as String ], in: UIDocumentPickerMode.import)
+        documentPickerVC.delegate = self
+        documentPickerVC.modalPresentationStyle = .fullScreen
+        SNAppearance.switchToDocumentPickerAppearance()
+        present(documentPickerVC, animated: true, completion: nil)
     }
     
     func handleLibraryButtonTapped() {
@@ -155,14 +173,20 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         }
     }
     
-    func handleGIFButtonTapped() {
-        let gifVC = GifPickerViewController(thread: thread)
-        gifVC.delegate = self
-        let navController = OWSNavigationController(rootViewController: gifVC)
-        navController.modalPresentationStyle = .fullScreen
-        present(navController, animated: true) { }
+    func handleCameraButtonTapped() {
+        guard requestCameraPermissionIfNeeded() else { return }
+        requestMicrophonePermissionIfNeeded { }
+        if AVAudioSession.sharedInstance().recordPermission != .granted {
+            SNLog("Proceeding without microphone access. Any recorded video will be silent.")
+        }
+        let sendMediaNavController = SendMediaNavigationController.showingCameraFirst()
+        sendMediaNavController.sendMediaNavDelegate = self
+        sendMediaNavController.modalPresentationStyle = .fullScreen
+        present(sendMediaNavController, animated: true, completion: nil)
     }
-
+    
+    // MARK: - GifPickerViewControllerDelegate
+    
     func gifPickerDidSelect(attachment: SignalAttachment) {
         showAttachmentApprovalDialog(for: [ attachment ])
     }
@@ -176,6 +200,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         SNAppearance.switchToDocumentPickerAppearance()
         present(documentPickerVC, animated: true, completion: nil)
     }
+    // MARK: - UIDocumentPickerDelegate
 
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
         SNAppearance.switchToSessionAppearance() // Switch back to the correct appearance
@@ -242,21 +267,24 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             }.retainUntilComplete()
         }
     }
+    
+    // MARK: - InputViewDelegate
 
-    // MARK: Message Sending
+    // MARK: --Message Sending
     func handleSendButtonTapped() {
         sendMessage()
     }
 
     func sendMessage(hasPermissionToSendSeed: Bool = false) {
         guard !showBlockedModalIfNeeded() else { return }
-        
+
         let text = replaceMentions(in: snInputView.text.trimmingCharacters(in: .whitespacesAndNewlines))
-        let thread = self.thread
         
         guard !text.isEmpty else { return }
-        
-        if text.contains(mnemonic) && !thread.isNoteToSelf() && !hasPermissionToSendSeed {
+
+        let isNoteToSelf: Bool = GRDBStorage.shared.read { db in viewModel.viewData.thread.isNoteToSelf(db) }
+            .defaulting(to: false)
+        if text.contains(mnemonic) && !isNoteToSelf && !hasPermissionToSendSeed {
             // Warn the user if they're about to send their seed to someone
             let modal = SendSeedModal()
             modal.modalPresentationStyle = .overFullScreen
@@ -264,118 +292,166 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             modal.proceed = { self.sendMessage(hasPermissionToSendSeed: true) }
             return present(modal, animated: true, completion: nil)
         }
-        
-        let sentTimestamp: UInt64 = NSDate.millisecondTimestamp()
-        let message: VisibleMessage = VisibleMessage()
-        message.sentTimestamp = sentTimestamp
-        message.text = text
-        message.quote = VisibleMessage.Quote.from(snInputView.quoteDraftInfo?.model)
-        
+
         // Note: 'shouldBeVisible' is set to true the first time a thread is saved so we can
         // use it to determine if the user is creating a new thread and update the 'isApproved'
         // flags appropriately
+        let thread: SessionThread = viewModel.viewData.thread
         let oldThreadShouldBeVisible: Bool = thread.shouldBeVisible
-        let linkPreviewDraft = snInputView.linkPreviewInfo?.draft
-        let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
+        let sentTimestampMs: Int64 = Int64(floor((Date().timeIntervalSince1970 * 1000)))
+        let linkPreviewDraft: OWSLinkPreviewDraft? = snInputView.linkPreviewInfo?.draft
+        let quoteModel: QuotedReplyModel? = snInputView.quoteDraftInfo?.model
         
-        let promise: Promise<Void> = self.approveMessageRequestIfNeeded(
             for: self.thread,
+        approveMessageRequestIfNeeded(
+            for: thread,
             isNewThread: !oldThreadShouldBeVisible,
-            timestamp: (sentTimestamp - 1)  // Set 1ms earlier as this is used for sorting
+            timestampMs: (sentTimestampMs - 1)  // Set 1ms earlier as this is used for sorting
         )
-        .map { [weak self] _ in
-            self?.viewModel.appendUnsavedOutgoingTextMessage(tsMessage)
-    
-            Storage.write(with: { transaction in
-                message.linkPreview = VisibleMessage.LinkPreview.from(linkPreviewDraft, using: transaction)
-            }, completion: { [weak self] in
-                tsMessage.linkPreview = OWSLinkPreview.from(message.linkPreview)
-                
-                Storage.shared.write(
-                    with: { transaction in
-                        tsMessage.save(with: transaction as! YapDatabaseReadWriteTransaction)
-                    },
-                    completion: { [weak self] in
-                        // At this point the TSOutgoingMessage should have its link preview set, so we can scroll to the bottom knowing
-                        // the height of the new message cell
-                        self?.scrollToBottom(isAnimated: false)
+        .done { [weak self] _ in
+            GRDBStorage.shared.writeAsync(
+                updates: { db in
+                    // Update the thread to be visible
+                    _ = try SessionThread
+                        .filter(id: thread.id)
+                        .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
+                    
+                    // Create the interaction
+                    let interaction: Interaction = try Interaction(
+                        threadId: thread.id,
+                        authorId: getUserHexEncodedPublicKey(db),
+                        variant: .standardOutgoing,
+                        body: text,
+                        timestampMs: sentTimestampMs,
+                        linkPreviewUrl: linkPreviewDraft?.urlString
+                    ).inserted(db)
+
+                    // If there is a LinkPreview add it now
+                    if let linkPreviewDraft: OWSLinkPreviewDraft = linkPreviewDraft {
+                        var attachmentId: String?
+
+                        // If the LinkPreview has image data then create an attachment first
+                        if let imageData: Data = linkPreviewDraft.jpegImageData {
+                            attachmentId = try LinkPreview.saveAttachmentIfPossible(
+                                db,
+                                imageData: imageData,
+                                mimeType: OWSMimeTypeImageJpeg
+                            )
+                        }
+
+                        try LinkPreview(
+                            url: linkPreviewDraft.urlString,
+                            title: linkPreviewDraft.title,
+                            attachmentId: attachmentId
+                        ).insert(db)
                     }
-                )
-                
-                Storage.shared.write { transaction in
-                    MessageSender.send(message, with: [], in: thread, using: transaction as! YapDatabaseReadWriteTransaction)
+
+                    guard let interactionId: Int64 = interaction.id else { return }
+
+                    // If there is a Quote the insert it now
+                    if let quoteModel: QuotedReplyModel = quoteModel {
+                        try Quote(
+                            interactionId: interactionId,
+                            authorId: quoteModel.authorId,
+                            timestampMs: quoteModel.timestampMs,
+                            body: quoteModel.body,
+                            attachmentId: quoteModel.attachment?.id
+                        ).insert(db)
+                    }
+                    
+                    try MessageSender.send(
+                        db,
+                        interaction: interaction,
+                        with: [],
+                        in: thread
+                    )
+                },
+                completion: { [weak self] _, _ in
+                    // At this point the Interaction should have its link preview set, so we can
+                    // scroll to the bottom knowing the height of the new message cell
+                    DispatchQueue.main.async {
+                        self?.scrollToBottom(isAnimated: false)
+                        self?.handleMessageSent()
+                    }
                 }
-                
-                self?.handleMessageSent()
-            })
+            )
         }
-        
-        // Show an error indicating that approving the thread failed
-        promise.catch(on: DispatchQueue.main) { [weak self] _ in
+        .catch(on: DispatchQueue.main) { [weak self] _ in
+            // Show an error indicating that approving the thread failed
             let alert = UIAlertController(title: "Session", message: "An error occurred when trying to accept this message request", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             self?.present(alert, animated: true, completion: nil)
         }
-        
-        promise.retainUntilComplete()
+        .retainUntilComplete()
     }
 
     func sendAttachments(_ attachments: [SignalAttachment], with text: String, onComplete: (() -> ())? = nil) {
         guard !showBlockedModalIfNeeded() else { return }
-        
+
         for attachment in attachments {
             if attachment.hasError {
                 return showErrorAlert(for: attachment, onDismiss: onComplete)
             }
         }
         
-        let thread = self.thread
-        let sentTimestamp: UInt64 = NSDate.millisecondTimestamp()
-        let message = VisibleMessage()
-        message.sentTimestamp = sentTimestamp
-        message.text = replaceMentions(in: text)
-        
+        let text = replaceMentions(in: snInputView.text.trimmingCharacters(in: .whitespacesAndNewlines))
+
         // Note: 'shouldBeVisible' is set to true the first time a thread is saved so we can
         // use it to determine if the user is creating a new thread and update the 'isApproved'
         // flags appropriately
+        let thread: SessionThread = viewModel.viewData.thread
         let oldThreadShouldBeVisible: Bool = thread.shouldBeVisible
-        let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
-        
-        let promise: Promise<Void> = self.approveMessageRequestIfNeeded(
-            for: self.thread,
+        let sentTimestampMs: Int64 = Int64(floor((Date().timeIntervalSince1970 * 1000)))
+
+        approveMessageRequestIfNeeded(
+            for: thread,
             isNewThread: !oldThreadShouldBeVisible,
-            timestamp: (sentTimestamp - 1)  // Set 1ms earlier as this is used for sorting
+            timestampMs: (sentTimestampMs - 1)  // Set 1ms earlier as this is used for sorting
         )
-        .map { [weak self] _ in
-            Storage.write(
-                with: { transaction in
-                    tsMessage.save(with: transaction)
-                    // The new message cell is inserted at this point, but the TSOutgoingMessage doesn't have its attachment yet
+        .done { [weak self] _ in
+            GRDBStorage.shared.writeAsync(
+                updates: { db in
+                    // Update the thread to be visible
+                    _ = try SessionThread
+                        .filter(id: thread.id)
+                        .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
+                    
+                    // Create the interaction
+                    let interaction: Interaction = try Interaction(
+                        threadId: thread.id,
+                        authorId: getUserHexEncodedPublicKey(db),
+                        variant: .standardOutgoing,
+                        body: text,
+                        timestampMs: sentTimestampMs
+                    ).inserted(db)
+
+                    try MessageSender.send(
+                        db,
+                        interaction: interaction,
+                        with: attachments,
+                        in: thread
+                    )
                 },
-                completion: { [weak self] in
-                    Storage.write(with: { transaction in
-                        MessageSender.send(message, with: attachments, in: thread, using: transaction)
-                    }, completion: { [weak self] in
-                        // At this point the TSOutgoingMessage should have its attachments set, so we can scroll to the bottom knowing
-                        // the height of the new message cell
+                completion: { [weak self] _, _ in
+                    // At this point the Interaction should have its link preview set, so we can
+                    // scroll to the bottom knowing the height of the new message cell
+                    DispatchQueue.main.async {
                         self?.scrollToBottom(isAnimated: false)
-                    })
-                    self?.handleMessageSent()
-            
-                    // Attachment successfully sent - dismiss the screen
-                    onComplete?()
+                        self?.handleMessageSent()
+                        
+                        // Attachment successfully sent - dismiss the screen
+                        onComplete?()
+                    }
                 }
             )
         }
-    
-        // Show an error indicating that approving the thread failed
-        promise.catch(on: DispatchQueue.main) { [weak self] _ in
+        .catch(on: DispatchQueue.main) { [weak self] _ in
+            // Show an error indicating that approving the thread failed
             let alert = UIAlertController(title: "Session", message: "An error occurred when trying to accept this message request", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             self?.present(alert, animated: true, completion: nil)
         }
-        
-        promise.retainUntilComplete()
+        .retainUntilComplete()
     }
 
     func handleMessageSent() {
@@ -399,7 +475,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         
         self.markAllAsRead()
         if Environment.shared.preferences.soundInForeground() {
-            let soundID = OWSSounds.systemSoundID(for: .messageSent, quiet: true)
+            let soundID = Preferences.Sound.systemSoundId(for: .messageSent, quiet: true)
             AudioServicesPlaySystemSound(soundID)
         }
         SSKEnvironment.shared.typingIndicators.didSendOutgoingMessage(inThread: thread)
@@ -467,6 +543,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         currentMentionStartIndex = nil
         mentions = []
     }
+    
+    // MARK: --Attachments
+    
+    func didPasteImageFromPasteboard(_ image: UIImage) {
+        guard let imageData = image.jpegData(compressionQuality: 1.0) else { return }
+        let dataSource = DataSourceValue.dataSource(with: imageData, utiType: kUTTypeJPEG as String)
+        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String, imageQuality: .medium)
 
     func replaceMentions(in text: String) -> String {
         var result = text
@@ -475,8 +558,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             result = result.replacingCharacters(in: range, with: "@\(mention.publicKey)")
         }
         return result
+        let approvalVC = AttachmentApprovalViewController.wrappedInNavController(attachments: [ attachment ], approvalDelegate: self)
+        approvalVC.modalPresentationStyle = .fullScreen
+        self.present(approvalVC, animated: true, completion: nil)
     }
 
+    // MARK: --Mentions
+    
     func handleMentionSelected(_ mention: Mention, from view: MentionSelectionView) {
         guard let currentMentionStartIndex = currentMentionStartIndex else { return }
         mentions.append(mention)

@@ -41,6 +41,7 @@ enum _003_YDBToGRDBMigration: Migration {
         var attachments: [String: Legacy.Attachment] = [:]
         var processedAttachmentIds: Set<String> = []
         var outgoingReadReceiptsTimestampsMs: [String: Set<Int64>] = [:]
+        var receivedMessageTimestamps: Set<UInt64> = []
         
         // Map the Legacy types for the NSKeyedUnarchiver
         NSKeyedUnarchiver.setClass(
@@ -192,6 +193,16 @@ enum _003_YDBToGRDBMigration: Migration {
                     .union(timestampsMs)
             }
             
+            receivedMessageTimestamps = receivedMessageTimestamps.inserting(
+                contentsOf: transaction
+                    .object(
+                        forKey: Legacy.receivedMessageTimestampsKey,
+                        inCollection: Legacy.receivedMessageTimestampsCollection
+                    )
+                    .asType([UInt64].self)
+                    .defaulting(to: [])
+                    .asSet()
+            )
         }
         
         // We can't properly throw within the 'enumerateKeysAndObjects' block so have to throw here
@@ -292,21 +303,16 @@ enum _003_YDBToGRDBMigration: Migration {
             }
             
             let threadVariant: SessionThread.Variant
-            let notificationMode: SessionThread.NotificationMode
+            let onlyNotifyForMentions: Bool
             
             switch thread {
                 case let groupThread as TSGroupThread:
                     threadVariant = (groupThread.isOpenGroup ? .openGroup : .closedGroup)
-                    notificationMode = (thread.isMuted ? .none :
-                        (groupThread.isOnlyNotifyingForMentions ?
-                            .mentionsOnly :
-                            .all
-                        )
-                    )
+                    onlyNotifyForMentions = groupThread.isOnlyNotifyingForMentions
                     
                 default:
                     threadVariant = .contact
-                    notificationMode = (thread.isMuted ? .none : .all)
+                    onlyNotifyForMentions = false
             }
             
             try autoreleasepool {
@@ -320,8 +326,8 @@ enum _003_YDBToGRDBMigration: Migration {
                         nil :
                         thread.messageDraft
                     ),
-                    notificationMode: notificationMode,
-                    mutedUntilTimestamp: thread.mutedUntilDate?.timeIntervalSince1970
+                    mutedUntilTimestamp: thread.mutedUntilDate?.timeIntervalSince1970,
+                    onlyNotifyForMentions: onlyNotifyForMentions
                 ).insert(db)
                 
                 // Disappearing Messages Configuration
@@ -564,7 +570,15 @@ enum _003_YDBToGRDBMigration: Migration {
                         
                         // Insert the data
                         let interaction: Interaction = try Interaction(
-                            serverHash: serverHash,
+                            serverHash: {
+                                switch variant {
+                                    // Don't store the 'serverHash' for these so sync messages
+                                    // are seen as duplicates
+                                    case .infoDisappearingMessagesUpdate: return nil
+                                        
+                                    default: return serverHash
+                                }
+                            }(),
                             threadId: threadId,
                             authorId: authorId,
                             variant: variant,
@@ -586,6 +600,17 @@ enum _003_YDBToGRDBMigration: Migration {
                             openGroupWhisperMods: false, // TODO: This in SOGSV4
                             openGroupWhisperTo: nil // TODO: This in SOGSV4
                         ).inserted(db)
+                        
+                        // Insert a 'ControlMessageProcessRecord' if needed (for duplication prevention)
+                        try ControlMessageProcessRecord(
+                            threadId: threadId,
+                            variant: variant,
+                            timestampMs: Int64(legacyInteraction.timestamp)
+                        )?.insert(db)
+                        
+                        // Remove timestamps we created records for (they will be protected by unique
+                        // constraints so don't need legacy process records)
+                        receivedMessageTimestamps.remove(legacyInteraction.timestamp)
                         
                         guard let interactionId: Int64 = interaction.id else {
                             // TODO: Is it possible the old database has duplicates which could hit this case?
@@ -777,6 +802,13 @@ enum _003_YDBToGRDBMigration: Migration {
             }
         }
         
+        // Insert a 'ControlMessageProcessRecord' for any remaining 'receivedMessageTimestamp'
+        // entries as "legacy"
+        try ControlMessageProcessRecord.generateLegacyProcessRecords(
+            db,
+            receivedMessageTimestamps: receivedMessageTimestamps.map { Int64($0) }
+        )
+        
         print("RAWR [\(Date().timeIntervalSince1970)] - Process thread inserts - End")
         
         // Clear out processed data (give the memory a change to be freed)
@@ -801,6 +833,7 @@ enum _003_YDBToGRDBMigration: Migration {
         
         interactions = [:]
         attachments = [:]
+        receivedMessageTimestamps = []
         
         // MARK: - Process Legacy Jobs
         
@@ -1009,7 +1042,8 @@ enum _003_YDBToGRDBMigration: Migration {
                         messages: [
                             MessageReceiveJob.Details.MessageInfo(
                                 data: legacyJob.data,
-                                serverHash: legacyJob.serverHash
+                                serverHash: legacyJob.serverHash,
+                                serverExpirationTimestamp: (Date().timeIntervalSince1970 + ControlMessageProcessRecord.defaultExpirationSeconds)
                             )
                         ],
                         isBackgroundPoll: legacyJob.isBackgroundPoll

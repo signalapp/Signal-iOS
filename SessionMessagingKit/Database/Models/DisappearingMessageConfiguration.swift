@@ -85,12 +85,6 @@ public extension DisappearingMessagesConfiguration {
         }
     }
     
-    var durationIndex: Int {
-        return DisappearingMessagesConfiguration.validDurationsSeconds
-            .firstIndex(of: durationSeconds)
-            .defaulting(to: 0)
-    }
-    
     var durationString: String {
         NSString.formatDurationSeconds(UInt32(durationSeconds), useShortFormat: false)
     }
@@ -133,7 +127,98 @@ extension DisappearingMessagesConfiguration {
 }
 
 // MARK: - Objective-C Support
+
+// TODO: Remove this when possible
+
 @objc(SMKDisappearingMessagesConfiguration)
 public class SMKDisappearingMessagesConfiguration: NSObject {
     @objc public static var maxDurationSeconds: UInt = UInt(DisappearingMessagesConfiguration.maxDurationSeconds)
+    
+    @objc public static var validDurationsSeconds: [UInt] = DisappearingMessagesConfiguration
+        .validDurationsSeconds
+        .map { UInt($0) }
+    
+    @objc(isEnabledFor:)
+    public static func isEnabled(for threadId: String) -> Bool {
+        return GRDBStorage.shared
+            .read { db in
+                try DisappearingMessagesConfiguration
+                    .select(.isEnabled)
+                    .filter(id: threadId)
+                    .asRequest(of: Bool.self)
+                    .fetchOne(db)
+            }
+            .defaulting(to: false)
+    }
+    
+    @objc(durationIndexFor:)
+    public static func durationIndex(for threadId: String) -> Int {
+        let durationSeconds: TimeInterval = GRDBStorage.shared
+            .read { db in
+                try DisappearingMessagesConfiguration
+                    .select(.durationSeconds)
+                    .filter(id: threadId)
+                    .asRequest(of: TimeInterval.self)
+                    .fetchOne(db)
+            }
+            .defaulting(to: DisappearingMessagesConfiguration.defaultDuration)
+        
+        return DisappearingMessagesConfiguration.validDurationsSeconds
+            .firstIndex(of: durationSeconds)
+            .defaulting(to: 0)
+    }
+    
+    @objc(durationStringFor:)
+    public static func durationString(for index: Int) -> String {
+        let durationSeconds: TimeInterval = (
+            index >= 0 && index < DisappearingMessagesConfiguration.validDurationsSeconds.count ?
+                DisappearingMessagesConfiguration.validDurationsSeconds[index] :
+                DisappearingMessagesConfiguration.validDurationsSeconds[0]
+        )
+        
+        return NSString.formatDurationSeconds(UInt32(durationSeconds), useShortFormat: false)
+    }
+    
+    @objc(update:isEnabled:durationIndex:)
+    public static func update(_ threadId: String, isEnabled: Bool, durationIndex: Int) {
+        let durationSeconds: TimeInterval = (
+            durationIndex >= 0 && durationIndex < DisappearingMessagesConfiguration.validDurationsSeconds.count ?
+                DisappearingMessagesConfiguration.validDurationsSeconds[durationIndex] :
+                DisappearingMessagesConfiguration.validDurationsSeconds[0]
+        )
+        
+        GRDBStorage.shared.write { db in
+            guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
+                return
+            }
+            
+            let config: DisappearingMessagesConfiguration = (try DisappearingMessagesConfiguration
+                .fetchOne(db, id: threadId)?
+                .with(
+                    isEnabled: isEnabled,
+                    durationSeconds: durationSeconds
+                )
+                .saved(db))
+                .defaulting(to: DisappearingMessagesConfiguration.defaultWith(threadId))
+            
+            let interaction: Interaction = try Interaction(
+                threadId: threadId,
+                authorId: getUserHexEncodedPublicKey(db),
+                variant: .infoDisappearingMessagesUpdate,
+                body: config.messageInfoString(with: nil),
+                timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
+            )
+            .saved(db)
+            
+            try MessageSender.send(
+                db,
+                message: ExpirationTimerUpdate(
+                    syncTarget: nil,
+                    duration: UInt32(floor(durationSeconds))
+                ),
+                interactionId: interaction.id,
+                in: thread
+            )
+        }
+    }
 }

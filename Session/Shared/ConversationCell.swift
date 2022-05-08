@@ -400,7 +400,7 @@ final class ConversationCell : UITableViewCell {
     private func getSnippet(threadInfo: HomeViewModel.ThreadInfo) -> NSMutableAttributedString {
         let result = NSMutableAttributedString()
         
-        if (threadInfo.notificationMode == .none) {
+        if Date().timeIntervalSince1970 < (threadInfo.mutedUntilTimestamp ?? 0) {
             result.append(NSAttributedString(
                 string: "\u{e067}  ",
                 attributes: [
@@ -409,7 +409,7 @@ final class ConversationCell : UITableViewCell {
                 ]
             ))
         }
-        else if threadInfo.notificationMode == .mentionsOnly {
+        else if threadInfo.onlyNotifyForMentions {
             let imageAttachment = NSTextAttachment()
             imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: Colors.unimportant)
             imageAttachment.bounds = CGRect(x: 0, y: -2, width: Values.smallFontSize, height: Values.smallFontSize)

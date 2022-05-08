@@ -8,7 +8,7 @@ public struct ClosedGroup: Codable, Identifiable, FetchableRecord, PersistableRe
     public static var databaseTableName: String { "closedGroup" }
     internal static let threadForeignKey = ForeignKey([Columns.threadId], to: [SessionThread.Columns.id])
     private static let thread = belongsTo(SessionThread.self, using: threadForeignKey)
-    private static let keyPairs = hasMany(
+    internal static let keyPairs = hasMany(
         ClosedGroupKeyPair.self,
         using: ClosedGroupKeyPair.closedGroupForeignKey
     )

@@ -49,11 +49,11 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.shouldBeVisible, .boolean).notNull()
             t.column(.isPinned, .boolean).notNull()
             t.column(.messageDraft, .text)
-            t.column(.notificationMode, .integer)
-                .notNull()
-                .defaults(to: SessionThread.NotificationMode.all)
             t.column(.notificationSound, .integer)
             t.column(.mutedUntilTimestamp, .double)
+            t.column(.onlyNotifyForMentions, .boolean)
+                .notNull()
+                .defaults(to: false)
         }
         
         try db.create(table: DisappearingMessagesConfiguration.self) { t in
@@ -274,12 +274,14 @@ enum _001_InitialSetupMigration: Migration {
         }
         
         try db.create(table: ControlMessageProcessRecord.self) { t in
-            t.column(.threadId, .text).notNull()
-            t.column(.sentTimestampMs, .integer).notNull()
-            t.column(.serverHash, .text).notNull()
-            t.column(.openGroupMessageServerId, .integer).notNull()
+            t.column(.threadId, .text)
+                .notNull()
+                .indexed()                                            // Quicker querying
+            t.column(.variant, .integer).notNull()
+            t.column(.timestampMs, .integer).notNull()
+            t.column(.serverExpirationTimestamp, .double)
             
-            t.uniqueKey([.threadId, .sentTimestampMs, .serverHash, .openGroupMessageServerId])
+            t.uniqueKey([.threadId, .variant, .timestampMs])
         }
     }
 }

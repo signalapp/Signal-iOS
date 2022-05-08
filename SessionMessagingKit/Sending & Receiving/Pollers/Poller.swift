@@ -124,7 +124,8 @@ public final class Poller : NSObject {
                                     .appending(
                                         MessageReceiveJob.Details.MessageInfo(
                                             data: try envelope.serializedData(),
-                                            serverHash: message.info.hash
+                                            serverHash: message.info.hash,
+                                            serverExpirationTimestamp: (TimeInterval(message.info.expirationDateMs) / 1000)
                                         )
                                     )
                                 

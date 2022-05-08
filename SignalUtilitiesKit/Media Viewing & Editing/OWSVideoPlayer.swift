@@ -5,26 +5,20 @@
 import Foundation
 import AVFoundation
 
-@objc
-public protocol OWSVideoPlayerDelegate: class {
+public protocol OWSVideoPlayerDelegate: AnyObject {
     func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer)
 }
 
-@objc
-public class OWSVideoPlayer: NSObject {
+public class OWSVideoPlayer {
 
-    @objc
     public let avPlayer: AVPlayer
     let audioActivity: AudioActivity
 
-    @objc
     public weak var delegate: OWSVideoPlayerDelegate?
 
     @objc public init(url: URL) {
         self.avPlayer = AVPlayer(url: url)
         self.audioActivity = AudioActivity(audioDescription: "[OWSVideoPlayer] url:\(url)", behavior: .playback)
-
-        super.init()
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(playerItemDidPlayToCompletion(_:)),

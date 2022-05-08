@@ -177,9 +177,9 @@ extension MessageReceiver {
         else { return }
         
         _ = try Interaction(
-            serverHash: message.serverHash, // TODO: Test this? (make sure it won't break anything?)
+            serverHash: message.serverHash,
             threadId: thread.id,
-            authorId: sender, // TODO: Confirm this
+            authorId: sender,
             variant: {
                 switch messageKind {
                     case .screenshot: return .infoScreenshotNotification
@@ -209,21 +209,16 @@ extension MessageReceiver {
             .defaulting(to: DisappearingMessagesConfiguration.defaultWith(thread.id))
             .with(
                 // If there is no duration then we should disable the expiration timer
-                isEnabled: (message.duration != nil),
+                isEnabled: ((message.duration ?? 0) > 0),
                 durationSeconds: (
                     message.duration.map { TimeInterval($0) } ??
                     DisappearingMessagesConfiguration.defaultDuration
                 )
             )
-            .saved(db)
         
         // Add an info message for the user
-        //
-        // Note: If it's a duplicate message (which the 'ExpirationTimerUpdate' frequently can be)
-        // then the write transaction will fail meaning the above config update won't be applied
-        // so we don't need to worry about order-of-execution)
         _ = try Interaction(
-            serverHash: message.serverHash,
+            serverHash: nil, // Intentionally null so sync messages are seen as duplicates
             threadId: thread.id,
             authorId: sender,
             variant: .infoDisappearingMessagesUpdate,
@@ -235,6 +230,10 @@ extension MessageReceiver {
             ),
             timestampMs: Int64(message.sentTimestamp ?? 0)   // Default to `0` if not set
         ).inserted(db)
+        
+        // Finally save the changes to the DisappearingMessagesConfiguration (If it's a duplicate
+        // then the interaction unique constraint will prevent the code from getting here)
+        try config.save(db)
     }
     
     // MARK: - Configuration Messages
@@ -822,10 +821,12 @@ extension MessageReceiver {
         let groupAlreadyExisted: Bool = ((try? SessionThread.exists(db, id: groupPublicKey)) ?? false)
         let thread: SessionThread = try SessionThread
             .fetchOrCreate(db, id: groupPublicKey, variant: .closedGroup)
+            .with(shouldBeVisible: true)
+            .saved(db)
         let closedGroup: ClosedGroup = try ClosedGroup(
             threadId: groupPublicKey,
             name: name,
-            formationTimestamp: Date().timeIntervalSince1970
+            formationTimestamp: (TimeInterval(messageSentTimestamp) / 1000)
         ).saved(db)
         
         // Clear the zombie list if the group wasn't active (ie. had no keys)
@@ -845,7 +846,7 @@ extension MessageReceiver {
                 threadId: thread.id,
                 authorId: getUserHexEncodedPublicKey(db),
                 variant: .infoClosedGroupCreated,
-                timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
+                timestampMs: Int64(messageSentTimestamp)
             ).inserted(db)
         }
         
@@ -862,8 +863,6 @@ extension MessageReceiver {
             )
             .save(db)
         
-        // Add the group to the user's set of public keys to poll for
-        Storage.shared.addClosedGroupPublicKey(groupPublicKey, using: transaction)
         // Store the key pair
         try ClosedGroupKeyPair(
             threadId: groupPublicKey,
@@ -952,7 +951,7 @@ extension MessageReceiver {
             guard name != closedGroup.name else { return }
             
             _ = try Interaction(
-                serverHash: message.serverHash, // TODO: Test this? (make sure it won't break anything?)
+                serverHash: message.serverHash,
                 threadId: thread.id,
                 authorId: sender,
                 variant: .infoClosedGroupUpdated,
@@ -1017,7 +1016,7 @@ extension MessageReceiver {
             guard members != Set(groupMembers.map { $0.profileId }) else { return }
             
             _ = try Interaction(
-                serverHash: message.serverHash, // TODO: Test this? (make sure it won't break anything?)
+                serverHash: message.serverHash,
                 threadId: thread.id,
                 authorId: sender,
                 variant: .infoClosedGroupUpdated,
@@ -1071,6 +1070,7 @@ extension MessageReceiver {
                 _ = try closedGroup
                     .keyPairs
                     .deleteAll(db)
+                
                 let _ = PushNotificationAPI.performOperation(
                     .unsubscribe,
                     for: id,
@@ -1090,7 +1090,7 @@ extension MessageReceiver {
             guard members != Set(groupMembers.map { $0.profileId }) else { return }
             
             _ = try Interaction(
-                serverHash: message.serverHash, // TODO: Test this? (make sure it won't break anything?)
+                serverHash: message.serverHash,
                 threadId: thread.id,
                 authorId: sender,
                 variant: (wasCurrentUserRemoved ? .infoClosedGroupCurrentUserLeft : .infoClosedGroupUpdated),
@@ -1140,6 +1140,7 @@ extension MessageReceiver {
                 _ = try closedGroup
                     .keyPairs
                     .deleteAll(db)
+                
                 let _ = PushNotificationAPI.performOperation(
                     .unsubscribe,
                     for: id,
@@ -1162,7 +1163,7 @@ extension MessageReceiver {
             guard updatedMemberIds != Set(members.map { $0.profileId }) else { return }
             
             _ = try Interaction(
-                serverHash: message.serverHash, // TODO: Test this? (make sure it won't break anything?)
+                serverHash: message.serverHash,
                 threadId: thread.id,
                 authorId: sender,
                 variant: .infoClosedGroupUpdated,
@@ -1272,7 +1273,7 @@ extension MessageReceiver {
         // Get the existing thead and notify the user
         if let thread: SessionThread = try? SessionThread.fetchOne(db, id: senderId) {
             _ = try Interaction(
-                serverHash: message.serverHash, // TODO: Test this? (make sure it won't break anything?)
+                serverHash: message.serverHash,
                 threadId: thread.id,
                 authorId: senderId,
                 variant: .infoMessageRequestAccepted,

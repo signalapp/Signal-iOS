@@ -154,7 +154,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread, isBackgroundPoll: Bool) {
-        guard thread.notificationMode != .none else { return }
+        guard Date().timeIntervalSince1970 < (thread.mutedUntilTimestamp ?? 0) else { return }
         
         let isMessageRequest = thread.isMessageRequest(db)
         
@@ -192,7 +192,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         
         // Don't fire the notification if the current user isn't mentioned
         // and isOnlyNotifyingForMentions is on.
-        if thread.notificationMode == .mentionsOnly && !interaction.isUserMentioned(db) {
+        if thread.onlyNotifyForMentions && !interaction.isUserMentioned(db) {
             return
         }
 
@@ -213,9 +213,21 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                         notificationTitle = (isMessageRequest ? "Session" : senderName)
                         
                     case .closedGroup, .openGroup:
-                        let groupName: String = thread.name(db)
+                        let groupName: String = SessionThread
+                            .displayName(
+                                threadId: thread.id,
+                                variant: thread.variant,
+                                closedGroupName: try? thread.closedGroup
+                                    .select(.name)
+                                    .asRequest(of: String.self)
+                                    .fetchOne(db),
+                                openGroupName: try? thread.openGroup
+                                    .select(.name)
+                                    .asRequest(of: String.self)
+                                    .fetchOne(db)
+                            )
                         
-                        notificationTitle = (isBackgroundPoll ? groupName:
+                        notificationTitle = (isBackgroundPoll ? groupName :
                             String(
                                 format: NotificationStrings.incomingGroupMessageTitleFormat,
                                 senderName,
@@ -269,7 +281,22 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         
         switch previewType {
             case .noNameNoPreview: notificationTitle = nil
-            case .nameNoPreview, .namePreview: notificationTitle = thread.name(db)
+            case .nameNoPreview, .namePreview:
+                notificationTitle = SessionThread.displayName(
+                    threadId: thread.id,
+                    variant: thread.variant,
+                    closedGroupName: try? thread.closedGroup
+                        .select(.name)
+                        .asRequest(of: String.self)
+                        .fetchOne(db),
+                    openGroupName: try? thread.openGroup
+                        .select(.name)
+                        .asRequest(of: String.self)
+                        .fetchOne(db),
+                    isNoteToSelf: (thread.isNoteToSelf(db) == true),
+                    profile: try? Profile.fetchOne(db, id: thread.id)
+                )
+                
             default: notificationTitle = nil
         }
 

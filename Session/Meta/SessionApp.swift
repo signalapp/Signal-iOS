@@ -9,29 +9,25 @@ public struct SessionApp {
     
     // MARK: - View Convenience Methods
     
-    public static func presentConversation(for recipientId: String, action: ConversationViewModel.Action = .none, animated: Bool) {
+    public static func presentConversation(for threadId: String, action: ConversationViewModel.Action = .none, animated: Bool) {
         let maybeThread: SessionThread? = GRDBStorage.shared.write { db in
-            try SessionThread.fetchOrCreate(db, id: recipientId, variant: .contact)
+            try SessionThread.fetchOrCreate(db, id: threadId, variant: .contact)
         }
         
         guard maybeThread != nil else { return }
         
-        self.presentConversation(for: recipientId, action: action, animated: animated)
-    }
-    
-    public static func presentConversation(for threadId: String, animated: Bool) {
-        guard GRDBStorage.shared.read({ db in try SessionThread.exists(db, id: threadId) }) == true else {
-            SNLog("Unable to find thread with id:\(threadId)")
-            return
-        }
-        
-        self.presentConversation(for: threadId, animated: animated)
+        self.presentConversation(
+            for: threadId,
+            action: action,
+            focusInteractionId: nil,
+            animated: animated
+        )
     }
     
     public static func presentConversation(
         for threadId: String,
-        action: ConversationViewModel.Action = .none,
-        focusInteractionId: Int64? = nil,
+        action: ConversationViewModel.Action,
+        focusInteractionId: Int64?,
         animated: Bool
     ) {
         guard Thread.isMainThread else {

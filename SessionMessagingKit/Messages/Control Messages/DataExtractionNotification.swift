@@ -27,7 +27,7 @@ public final class DataExtractionNotification : ControlMessage {
 
     // MARK: - Initialization
     
-    internal init(kind: Kind) {
+    public init(kind: Kind) {
         super.init()
         
         self.kind = kind

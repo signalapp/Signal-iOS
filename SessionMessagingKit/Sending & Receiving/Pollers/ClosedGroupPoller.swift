@@ -6,41 +6,57 @@ import PromiseKit
 import SessionSnodeKit
 
 @objc(LKClosedGroupPoller)
-public final class ClosedGroupPoller : NSObject {
-    private var isPolling: [String:Bool] = [:]
-    private var timers: [String:Timer] = [:]
-    private let internalQueue: DispatchQueue = DispatchQueue(label:"isPollingQueue")
+public final class ClosedGroupPoller: NSObject {
+    private var isPolling: [String: Bool] = [:]
+    private var timers: [String: Timer] = [:]
+    private let internalQueue: DispatchQueue = DispatchQueue(label: "isPollingQueue")
 
-    // MARK: Settings
+    // MARK: - Settings
+    
     private static let minPollInterval: Double = 2
     private static let maxPollInterval: Double = 30
 
-    // MARK: Error
-    private enum Error : LocalizedError {
+    // MARK: - Error
+    
+    private enum Error: LocalizedError {
         case insufficientSnodes
         case pollingCanceled
 
         internal var errorDescription: String? {
             switch self {
-            case .insufficientSnodes: return "No snodes left to poll."
-            case .pollingCanceled: return "Polling canceled."
+                case .insufficientSnodes: return "No snodes left to poll."
+                case .pollingCanceled: return "Polling canceled."
             }
         }
     }
 
-    // MARK: Initialization
+    // MARK: - Initialization
+    
     public static let shared = ClosedGroupPoller()
 
     private override init() { }
 
-    // MARK: Public API
+    // MARK: - Public API
+    
     @objc public func start() {
         #if DEBUG
         assert(Thread.current.isMainThread) // Timers don't do well on background queues
         #endif
-        let storage = SNMessagingKitConfiguration.shared.storage
-        let allGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
-        allGroupPublicKeys.forEach { startPolling(for: $0) }
+        
+        // Fetch all closed groups (excluding any which have no key pairs as the user is
+        // no longer a member of those
+        GRDBStorage.shared
+            .read { db in
+                try ClosedGroup
+                    .select(.threadId)
+                    .joining(required: ClosedGroup.keyPairs)
+                    .asRequest(of: String.self)
+                    .fetchAll(db)
+            }
+            .defaulting(to: [])
+            .forEach { [weak self] groupPublicKey in
+                self?.startPolling(for: groupPublicKey)
+            }
     }
 
     public func startPolling(for groupPublicKey: String) {
@@ -53,9 +69,17 @@ public final class ClosedGroupPoller : NSObject {
     }
 
     @objc public func stop() {
-        let storage = SNMessagingKitConfiguration.shared.storage
-        let allGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
-        allGroupPublicKeys.forEach { stopPolling(for: $0) }
+        GRDBStorage.shared
+            .read { db in
+                try ClosedGroup
+                    .select(.threadId)
+                    .asRequest(of: String.self)
+                    .fetchAll(db)
+            }
+            .defaulting(to: [])
+            .forEach { [weak self] groupPublicKey in
+                self?.stopPolling(for: groupPublicKey)
+            }
     }
 
     public func stopPolling(for groupPublicKey: String) {
@@ -63,29 +87,48 @@ public final class ClosedGroupPoller : NSObject {
         timers[groupPublicKey]?.invalidate()
     }
 
-    // MARK: Private API
+    // MARK: - Private API
+    
     private func setUpPolling(for groupPublicKey: String) {
         Threading.pollerQueue.async {
-            self.poll(groupPublicKey).done(on: Threading.pollerQueue) { [weak self] _ in
-                self?.pollRecursively(groupPublicKey)
-            }.catch(on: Threading.pollerQueue) { [weak self] error in
-                // The error is logged in poll(_:)
-                self?.pollRecursively(groupPublicKey)
-            }
+            self.poll(groupPublicKey)
+                .done(on: Threading.pollerQueue) { [weak self] _ in
+                    self?.pollRecursively(groupPublicKey)
+                }
+                .catch(on: Threading.pollerQueue) { [weak self] error in
+                    // The error is logged in poll(_:)
+                    self?.pollRecursively(groupPublicKey)
+                }
         }
     }
 
     private func pollRecursively(_ groupPublicKey: String) {
-        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
-        guard isPolling(for: groupPublicKey),
-            let thread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID)) else { return }
+        guard
+            isPolling(for: groupPublicKey),
+            let thread: SessionThread = GRDBStorage.shared.read({ db in try SessionThread.fetchOne(db, id: groupPublicKey) })
+        else { return }
+        
         // Get the received date of the last message in the thread. If we don't have any messages yet, pick some
-        // reasonable fake time interval to use instead.
-        let lastMessageDate =
-            (thread.numberOfInteractions() > 0) ? thread.lastInteraction.receivedAtDate() : Date().addingTimeInterval(-5 * 60)
-        let timeSinceLastMessage = Date().timeIntervalSince(lastMessageDate)
-        let minPollInterval = ClosedGroupPoller.minPollInterval
-        let limit: Double = 12 * 60 * 60
+        // reasonable fake time interval to use instead
+        
+        let lastMessageDate: Date = GRDBStorage.shared
+            .read { db in
+                try thread
+                    .interactions
+                    .select(.receivedAtTimestampMs)
+                    .order(Interaction.Columns.timestampMs.desc)
+                    .asRequest(of: Int64.self)
+                    .fetchOne(db)
+            }
+            .map { receivedAtTimestampMs -> Date? in
+                guard receivedAtTimestampMs > 0 else { return nil }
+                
+                return Date(timeIntervalSince1970: (TimeInterval(receivedAtTimestampMs) / 1000))
+            }
+            .defaulting(to: Date().addingTimeInterval(-5 * 60))
+        let timeSinceLastMessage: TimeInterval = Date().timeIntervalSince(lastMessageDate)
+        let minPollInterval: Double = ClosedGroupPoller.minPollInterval
+        let limit: Double = (12 * 60 * 60)
         let a = (ClosedGroupPoller.maxPollInterval - minPollInterval) / limit
         let nextPollInterval = a * min(timeSinceLastMessage, limit) + minPollInterval
         SNLog("Next poll interval for closed group with public key: \(groupPublicKey) is \(nextPollInterval) s.")
@@ -133,7 +176,8 @@ public final class ClosedGroupPoller : NSObject {
                             jobDetailMessages.append(
                                 MessageReceiveJob.Details.MessageInfo(
                                     data: try envelope.serializedData(),
-                                    serverHash: message.info.hash
+                                    serverHash: message.info.hash,
+                                    serverExpirationTimestamp: (TimeInterval(message.info.expirationDateMs) / 1000)
                                 )
                             )
                             

@@ -121,5 +121,45 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
 public extension OpenGroup {
     static func idFor(room: String, server: String) -> String {
         return "\(server.lowercased()).\(room)"
+
+// MARK: - Objective-C Support
+
+// TODO: Remove this when possible
+
+@objc(SMKOpenGroup)
+public class SMKOpenGroup: NSObject {
+    @objc(inviteUsers:toOpenGroupFor:)
+    public static func invite(selectedUsers: Set<String>, threadId: String) {
+        GRDBStorage.shared.write { db in
+            guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else { return }
+            
+            let urlString: String = "\(openGroup.server)/\(openGroup.room)?public_key=\(openGroup.publicKey)"
+            
+            try selectedUsers.forEach { userId in
+                let thread: SessionThread = try SessionThread.fetchOrCreate(db, id: userId, variant: .contact)
+                
+                try LinkPreview(
+                    url: urlString,
+                    variant: .openGroupInvitation,
+                    title: openGroup.name
+                )
+                .save(db)
+                
+                let interaction: Interaction = try Interaction(
+                    threadId: threadId,
+                    authorId: userId,
+                    variant: .standardOutgoing,
+                    timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000)),
+                    linkPreviewUrl: urlString
+                )
+                .saved(db)
+                
+                try MessageSender.send(
+                    db,
+                    interaction: interaction,
+                    in: thread
+                )
+            }
+        }
     }
 }

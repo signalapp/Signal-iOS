@@ -40,6 +40,7 @@ public enum MessageReceiveJob: JobExecutor {
                     let (message, proto) = try MessageReceiver.parse(
                         db,
                         data: messageInfo.data,
+                        serverExpirationTimestamp: messageInfo.serverExpirationTimestamp,
                         isRetry: isRetry
                     )
                     message.serverHash = messageInfo.serverHash
@@ -115,13 +116,16 @@ extension MessageReceiveJob {
         public struct MessageInfo: Codable {
             public let data: Data
             public let serverHash: String?
+            public let serverExpirationTimestamp: TimeInterval?
             
             public init(
                 data: Data,
-                serverHash: String?
+                serverHash: String?,
+                serverExpirationTimestamp: TimeInterval?
             ) {
                 self.data = data
                 self.serverHash = serverHash
+                self.serverExpirationTimestamp = serverExpirationTimestamp
             }
         }
         

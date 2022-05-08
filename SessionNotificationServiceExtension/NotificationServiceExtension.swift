@@ -45,7 +45,11 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
             // is added to notification center
             GRDBStorage.shared.write { db in
                 do {
-                    let (message, proto) = try MessageReceiver.parse(db, data: envelopeAsData)
+                    let (message, proto) = try MessageReceiver.parse(
+                        db,
+                        data: envelopeAsData,
+                        serverExpirationTimestamp: (Date().timeIntervalSince1970 + ControlMessageProcessRecord.defaultExpirationSeconds)
+                    )
                     switch message {
                         case let visibleMessage as VisibleMessage:
                             let interactionId: Int64 = try MessageReceiver.handleVisibleMessage(db, message: visibleMessage, associatedWithProto: proto, openGroupId: nil, isBackgroundPoll: false)

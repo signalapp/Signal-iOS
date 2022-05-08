@@ -35,7 +35,9 @@ public enum Legacy {
     internal static let interactionCollection = "TSInteraction"
     internal static let attachmentsCollection = "TSAttachements"    // Note: This is how it was previously spelt
     internal static let outgoingReadReceiptManagerCollection = "kOutgoingReadReceiptManagerCollection"
-    
+    internal static let receivedMessageTimestampsCollection = "ReceivedMessageTimestampsCollection"
+    internal static let receivedMessageTimestampsKey = "receivedMessageTimestamps"
+
     internal static let notifyPushServerJobCollection = "NotifyPNServerJobCollection"
     internal static let messageReceiveJobCollection = "MessageReceiveJobCollection"
     internal static let messageSendJobCollection = "MessageSendJobCollection"

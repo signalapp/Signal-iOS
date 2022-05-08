@@ -7,9 +7,9 @@ import SignalUtilitiesKit
 import SessionMessagingKit
 
 public class NSENotificationPresenter: NSObject, NotificationsProtocol {
-    
+     
     public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread, isBackgroundPoll: Bool) {
-        guard thread.notificationMode != .none else { return }
+        guard Date().timeIntervalSince1970 < (thread.mutedUntilTimestamp ?? 0) else { return }
         
         let isMessageRequest = thread.isMessageRequest(db)
         
@@ -48,7 +48,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         var notificationTitle = senderName
         
         if thread.variant == .closedGroup || thread.variant == .openGroup {
-            if thread.notificationMode == .mentionsOnly && !interaction.isUserMentioned(db) {
+            if thread.onlyNotifyForMentions && !interaction.isUserMentioned(db) {
                 // Ignore PNs if the group is set to only notify for mentions
                 return
             }

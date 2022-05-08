@@ -11,6 +11,7 @@ public enum MessageReceiver {
     public static func parse(
         _ db: Database,
         data: Data,
+        serverExpirationTimestamp: TimeInterval?,
         openGroupId: String? = nil,
         openGroupMessageServerId: UInt64? = nil,
         isRetry: Bool = false
@@ -159,47 +160,22 @@ public enum MessageReceiver {
                 throw MessageReceiverError.invalidMessage
             }
             
-            // If the message failed to process the first time around we retry it later (if the error is retryable). In this case the timestamp
-            // will already be in the database but we don't want to treat the message as a duplicate. The isRetry flag is a simple workaround
-            // for this issue.
-            
-            switch (isRetry, message, (message as? ClosedGroupControlMessage)?.kind) {
-                // Allow duplicates in this case to avoid the following situation:
-                // • The app performed a background poll or received a push notification
-                // • This method was invoked and the received message timestamps table was updated
-                // • Processing wasn't finished
-                // • The user doesn't see the new closed group
-                case (_, _, .new): break
+            // Prevent ControlMessages from being handled multiple times if not supported
+            try ControlMessageProcessRecord(
+                threadId: {
+                    if let groupPublicKey: String = groupPublicKey { return groupPublicKey }
+                    if let openGroupId: String = openGroupId { return openGroupId }
                     
-                // All `VisibleMessage` values will have an associated `Interaction` so just let
-                // the unique constraints on that table prevent duplicate messages
-                case is (Bool, VisibleMessage, ClosedGroupControlMessage.Kind?): break
-                
-                // If the message failed to process and we are retrying then there will already
-                // be a `ControlMessageProcessRecord`, so just allow this through
-                case (true, _, _): break
-                    
-                default:
-                    do {
-                        try ControlMessageProcessRecord(
-                            threadId: {
-                                if let openGroupId: String = openGroupId {
-                                    return openGroupId
-                                }
-                                
-                                if let groupPublicKey: String = groupPublicKey {
-                                    return groupPublicKey
-                                }
-                                
-                                return sender
-                            }(),
-                            sentTimestampMs: Int64(envelope.timestamp),
-                            serverHash: (message.serverHash ?? ""),
-                            openGroupMessageServerId: (openGroupMessageServerId.map { Int64($0) } ?? 0)
-                        ).insert(db)
+                    switch message {
+                        case let message as VisibleMessage: return (message.syncTarget ?? sender)
+                        case let message as ExpirationTimerUpdate: return (message.syncTarget ?? sender)
+                        default: return sender
                     }
-                    catch { throw MessageReceiverError.duplicateMessage }
-            }
+                }(),
+                message: message,
+                serverExpirationTimestamp: serverExpirationTimestamp,
+                isRetry: false
+            )?.insert(db)
             
             // Return
             return (message, proto)

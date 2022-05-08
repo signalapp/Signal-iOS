@@ -484,31 +484,23 @@ public final class MessageSender : NSObject {
             )
         }
         
-        // Prevent the same ExpirationTimerUpdate to be handled twice
-        if message is ControlMessage {
-            try? ControlMessageProcessRecord(
-                threadId: {
-                    switch destination {
-                        case .contact(let publicKey): return publicKey
-                        case .closedGroup(let groupPublicKey): return groupPublicKey
-                        case .openGroupV2(let room, let server):
-                            return OpenGroup.idFor(room: room, server: server)
-                            
-                        // FIXME: Remove support for V1 SOGS
-                        case .openGroup: return getUserHexEncodedPublicKey(db)
-                    }
-                }(),
-                sentTimestampMs: {
-                    if message.openGroupServerMessageId != nil {
-                        return (serverTimestampMs.map { Int64($0) } ?? 0)
-                    }
-                    
-                    return (message.sentTimestamp.map { Int64($0) } ?? 0)
-                }(),
-                serverHash: (message.serverHash ?? ""),
-                openGroupMessageServerId: (message.openGroupServerMessageId.map { Int64($0) } ?? 0)
-            ).insert(db)
-        }
+        // Prevent ControlMessages from being handled multiple times if not supported
+        try? ControlMessageProcessRecord(
+            threadId: {
+                switch destination {
+                    case .contact(let publicKey): return publicKey
+                    case .closedGroup(let groupPublicKey): return groupPublicKey
+                    case .openGroupV2(let room, let server):
+                        return OpenGroup.idFor(room: room, server: server)
+                        
+                    case .openGroup(_, _): return ""    // TODO: Remove this after merge
+                }
+            }(),
+            message: message,
+            serverExpirationTimestamp: (Date().timeIntervalSince1970 + ControlMessageProcessRecord.defaultExpirationSeconds),
+            isRetry: false
+        )?.insert(db)
+        
         // Sync the message if:
         // • it's a visible message or an expiration timer update
         // • the destination was a contact
