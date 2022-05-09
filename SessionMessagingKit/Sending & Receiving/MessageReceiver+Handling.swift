@@ -459,17 +459,14 @@ extension MessageReceiver {
             throw MessageReceiverError.noThread
         }
 
+        // Store the message variant so we can run variant-specific behaviours
+        let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
         let thread: SessionThread = try SessionThread
             .fetchOrCreate(db, id: threadInfo.id, variant: threadInfo.variant)
-        
-        // Store the message variant so we can run variant-specific behaviours
-        let variant: Interaction.Variant = {
-            if sender == getUserHexEncodedPublicKey(db) {
-                return .standardOutgoing
-            }
-            
-            return .standardIncoming
-        }()
+        let variant: Interaction.Variant = (sender == currentUserPublicKey ?
+            .standardOutgoing :
+            .standardIncoming
+        )
         
         // Retrieve the disappearing messages config to set the 'expiresInSeconds' value
         // accoring to the config
@@ -491,6 +488,10 @@ extension MessageReceiver {
                 variant: variant,
                 body: message.text,
                 timestampMs: Int64(messageSentTimestamp * 1000),
+                hasMention: (
+                    message.text?.contains("@\(currentUserPublicKey)") == true ||
+                    dataMessage.quote?.author == currentUserPublicKey
+                ),
                 // Note: Ensure we don't ever expire open group messages
                 expiresInSeconds: (disappearingMessagesConfiguration.isEnabled && message.openGroupServerMessageId == nil ?
                     disappearingMessagesConfiguration.durationSeconds :
@@ -836,6 +837,23 @@ extension MessageReceiver {
         
         // Notify the user
         if !groupAlreadyExisted {
+            // Create the GroupMember records
+            try members.forEach { memberId in
+                try GroupMember(
+                    groupId: groupPublicKey,
+                    profileId: memberId,
+                    role: .standard
+                ).save(db)
+            }
+            
+            try admins.forEach { adminId in
+                try GroupMember(
+                    groupId: groupPublicKey,
+                    profileId: adminId,
+                    role: .admin
+                ).save(db)
+            }
+            
             // Note: We don't provide a `serverHash` in this case as we want to allow duplicates
             // to avoid the following situation:
             // • The app performed a background poll or received a push notification
@@ -972,15 +990,19 @@ extension MessageReceiver {
             
             // Update the group
             let addedMembers: [String] = membersAsData.map { $0.toHexString() }
-            let members: Set<String> = Set(groupMembers.map { $0.profileId }).union(addedMembers)
+            let currentMemberIds: Set<String> = groupMembers.map { $0.profileId }.asSet()
+            let members: Set<String> = currentMemberIds.union(addedMembers)
             
-            try addedMembers.forEach { memberId in
-                try GroupMember(
-                    groupId: id,
-                    profileId: memberId,
-                    role: .standard
-                ).save(db)
-            }
+            // Create records for any new members
+            try addedMembers
+                .filter { !currentMemberIds.contains($0) }
+                .forEach { memberId in
+                    try GroupMember(
+                        groupId: id,
+                        profileId: memberId,
+                        role: .standard
+                    ).insert(db)
+                }
             
             // Send the latest encryption key pair to the added members if the current user is
             // the admin of the group
@@ -1148,11 +1170,17 @@ extension MessageReceiver {
                 )
             }
             else {
+                // Delete all old user roles and re-add them as a zombie
+                try closedGroup
+                    .allMembers
+                    .filter(GroupMember.Columns.profileId == sender)
+                    .deleteAll(db)
+                
                 try GroupMember(
                     groupId: id,
                     profileId: sender,
                     role: .zombie
-                ).save(db)
+                ).insert(db)
             }
             
             // Update the group

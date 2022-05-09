@@ -48,8 +48,8 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
             right: 0
         )
         result.showsVerticalScrollIndicator = false
-        result.register(MessageRequestsCell.self, forCellReuseIdentifier: MessageRequestsCell.reuseIdentifier)
-        result.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
+        result.register(view: MessageRequestsCell.self)
+        result.register(view: ConversationCell.self)
         result.dataSource = self
         result.delegate = self
         

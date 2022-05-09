@@ -224,14 +224,18 @@ public extension Profile {
 // MARK: - GRDB Interactions
 
 public extension Profile {
-    static func fetchAllContactProfiles(excludeCurrentUser: Bool = true) -> [Profile] {
+    static func fetchAllContactProfiles(excluding: Set<String> = [], excludeCurrentUser: Bool = true) -> [Profile] {
         return GRDBStorage.shared
             .read { db in
+                let idsToExclude: Set<String> = excluding
+                    .inserting(excludeCurrentUser ? getUserHexEncodedPublicKey(db) : nil)
+                
                 // Sort the contacts by their displayName value
                 return try Profile
-                    .filter(Profile.Columns.id != (excludeCurrentUser ? "" : getUserHexEncodedPublicKey(db)))
+                    .filter(!idsToExclude.contains(Profile.Columns.id))
                     .joining(
                         required: Profile.contact
+                            .filter(Contact.Columns.isApproved == true)
                             .filter(Contact.Columns.didApproveMe == true)
                     )
                     .fetchAll(db)

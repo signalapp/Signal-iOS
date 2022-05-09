@@ -83,6 +83,7 @@ public class HomeViewModel {
         fileprivate static let isNoteToSelfKey = CodingKeys.isNoteToSelf.stringValue
         fileprivate static let currentUserIsClosedGroupAdminKey = CodingKeys.currentUserIsClosedGroupAdmin.stringValue
         fileprivate static let threadUnreadCountKey = CodingKeys.threadUnreadCount.stringValue
+        fileprivate static let threadUnreadMentionCountKey = CodingKeys.threadUnreadMentionCount.stringValue
         fileprivate static let lastInteractionInfoKey = CodingKeys.lastInteractionInfo.stringValue
         
         public var differenceIdentifier: String { id }
@@ -109,7 +110,7 @@ public class HomeViewModel {
         private let currentUserIsClosedGroupAdmin: Bool?
         
         private let threadUnreadCount: UInt?
-        public let unreadMentionCount: UInt = 0 // TODO: This
+        private let threadUnreadMentionCount: UInt?
         
         public let lastInteractionInfo: InteractionInfo?
         
@@ -167,6 +168,10 @@ public class HomeViewModel {
             return (threadUnreadCount ?? 0)
         }
         
+        public var unreadMentionCount: UInt {
+            return (threadUnreadMentionCount ?? 0)
+        }
+        
         fileprivate init() {
             self.id = "FALLBACK"
             self.variant = .contact
@@ -184,6 +189,7 @@ public class HomeViewModel {
             self.isNoteToSelf = false
             self.currentUserIsClosedGroupAdmin = nil
             self.threadUnreadCount = nil
+            self.threadUnreadMentionCount = nil
             self.lastInteractionInfo = nil
         }
         
@@ -196,6 +202,7 @@ public class HomeViewModel {
             let closedGroupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
             let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
             let unreadInteractions: TableAlias = TableAlias()
+            let unreadMentions: TableAlias = TableAlias()
             let lastInteraction: TableAlias = TableAlias()
             let lastInteractionThread: TypedTableAlias<SessionThread> = TypedTableAlias()
             let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
@@ -212,6 +219,17 @@ public class HomeViewModel {
                         Interaction.Columns.threadId
                     )
                     .filter(Interaction.Columns.wasRead == false)
+                    .group(Interaction.Columns.threadId)
+            )
+            let unreadMentionsExpression: CommonTableExpression = CommonTableExpression(
+                named: ThreadInfo.threadUnreadMentionCountKey,
+                request: Interaction
+                    .select(
+                        count(Interaction.Columns.id).forKey(ThreadInfo.threadUnreadMentionCountKey),
+                        Interaction.Columns.threadId
+                    )
+                    .filter(Interaction.Columns.wasRead == false)
+                    .filter(Interaction.Columns.hasMention == true)
                     .group(Interaction.Columns.threadId)
             )
             let lastInteractionExpression: CommonTableExpression = CommonTableExpression(
@@ -261,7 +279,8 @@ public class HomeViewModel {
                     SessionThread.isNoteToSelf(userPublicKey: userPublicKey).forKey(ThreadInfo.isNoteToSelfKey),
                     (closedGroupMember[.profileId] != nil).forKey(ThreadInfo.currentUserIsClosedGroupAdminKey),
                     
-                    unreadInteractions[ThreadInfo.threadUnreadCountKey]
+                    unreadInteractions[ThreadInfo.threadUnreadCountKey],
+                    unreadMentions[ThreadInfo.threadUnreadMentionCountKey]
                 )
                 .aliased(thread)
                 .joining(
@@ -307,6 +326,17 @@ public class HomeViewModel {
                             }
                         )
                         .aliased(unreadInteractions)
+                )
+                .with(unreadMentionsExpression)
+                .joining(
+                    optional: SessionThread
+                        .association(
+                            to: unreadMentionsExpression,
+                            on: { thread, unreadMentions in
+                                thread[SessionThread.Columns.id] == unreadMentions[Interaction.Columns.threadId]
+                            }
+                        )
+                        .aliased(unreadMentions)
                 )
                 .with(lastInteractionExpression)
                 .including(

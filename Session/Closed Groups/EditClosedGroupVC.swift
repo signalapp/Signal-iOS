@@ -130,6 +130,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         
         setUpViewHierarchy()
         updateNavigationBarButtons()
+        handleMembersChanged()
     }
 
     private func setUpViewHierarchy() {
@@ -230,6 +231,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         let removeAction = UITableViewRowAction(style: .destructive, title: "Remove") { [weak self] _, _ in
             self?.adminIds.remove(profileId)
             self?.membersAndZombies.remove(at: indexPath.row)
+            self?.handleMembersChanged()
         }
         removeAction.backgroundColor = Colors.destructive
         
@@ -320,13 +322,16 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
                 .asSet()
         ) { [weak self] selectedUserIds in
             GRDBStorage.shared.read { [weak self] db in
-                let profileAlias: TypedTableAlias<Profile> = TypedTableAlias()
-                let selectedGroupMembers: [GroupMemberDisplayInfo] = try GroupMember
-                    .filter(selectedUserIds.contains(GroupMember.Columns.profileId))
-                    .including(optional: GroupMember.profile.aliased(profileAlias))
-                    .asRequest(of: GroupMemberDisplayInfo.self)
+                let selectedGroupMembers: [GroupMemberDisplayInfo] = try Profile
+                    .filter(selectedUserIds.contains(Profile.Columns.id))
                     .fetchAll(db)
-                
+                    .map { profile in
+                        GroupMemberDisplayInfo(
+                            profileId: profile.id,
+                            role: .standard,
+                            profile: profile
+                        )
+                    }
                 self?.membersAndZombies = (self?.membersAndZombies ?? [])
                     .appending(contentsOf: selectedGroupMembers)
                     .sorted(by: { lhs, rhs in
@@ -368,6 +373,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
             self?.addMembersButton.isUserInteractionEnabled = (self?.hasContactsToAdd == true)
             self?.addMembersButton.layer.borderColor = color.cgColor
             self?.addMembersButton.setTitleColor(color, for: UIControl.State.normal)
+            self?.handleMembersChanged()
         }
         
         navigationController?.pushViewController(userSelectionVC, animated: true, completion: nil)

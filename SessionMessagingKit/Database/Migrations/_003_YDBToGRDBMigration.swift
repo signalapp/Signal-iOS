@@ -586,6 +586,10 @@ enum _003_YDBToGRDBMigration: Migration {
                             timestampMs: Int64(legacyInteraction.timestamp),
                             receivedAtTimestampMs: Int64(legacyInteraction.receivedAtTimestamp),
                             wasRead: wasRead,
+                            hasMention: (
+                                body?.contains("@\(currentUserPublicKey)") == true ||
+                                quotedMessage?.authorId == currentUserPublicKey
+                            ),
                             // For both of these '0' used to be equivalent to null
                             expiresInSeconds: ((expiresInSeconds ?? 0) > 0 ?
                                 expiresInSeconds.map { TimeInterval($0) } :

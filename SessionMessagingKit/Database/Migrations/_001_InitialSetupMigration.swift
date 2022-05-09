@@ -153,6 +153,10 @@ enum _001_InitialSetupMigration: Migration {
                 .notNull()
                 .indexed()                                            // Quicker querying
                 .defaults(to: false)
+            t.column(.hasMention, .boolean)
+                .notNull()
+                .indexed()                                            // Quicker querying
+                .defaults(to: false)
             t.column(.expiresInSeconds, .double)
             t.column(.expiresStartedAtMs, .double)
             t.column(.linkPreviewUrl, .text)

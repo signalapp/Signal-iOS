@@ -22,6 +22,8 @@ extension MessageSender {
     }
     
     public static func send(_ db: Database, interaction: Interaction, in thread: SessionThread) throws {
+        // Only 'VisibleMessage' types can be sent via this method
+        guard interaction.variant == .standardOutgoing else { throw MessageSenderError.invalidMessage }
         guard let interactionId: Int64 = interaction.id else { throw GRDBStorageError.objectNotSaved }
         
         return try send(db, message: VisibleMessage.from(db, interaction: interaction), interactionId: interactionId, in: thread)

@@ -262,38 +262,24 @@ public extension SessionThread {
         )
     }
     
-    func name(_ db: Database) -> String {
+    static func displayName(
+        threadId: String,
+        variant: Variant,
+        closedGroupName: String? = nil,
+        openGroupName: String? = nil,
+        isNoteToSelf: Bool = false,
+        profile: Profile? = nil
+    ) -> String {
         switch variant {
+            case .closedGroup: return (closedGroupName ?? "Unknown Group")
+            case .openGroup: return (openGroupName ?? "Unknown Group")
             case .contact:
-                guard !isNoteToSelf(db) else { return name(isNoteToSelf: true) }
+                guard !isNoteToSelf else { return "NOTE_TO_SELF".localized() }
+                guard let profile: Profile = profile else {
+                    return Profile.truncated(id: threadId, truncating: .middle)
+                }
                 
-                return name(
-                    displayName: Profile.displayName(
-                        db,
-                        id: id,
-                        customFallback: Profile.truncated(id: id, truncating: .middle)
-                    )
-                )
-            
-            case .closedGroup:
-                return name(displayName: try? String.fetchOne(db, closedGroup.select(.name)))
-                
-            case .openGroup:
-                return name(displayName: try? String.fetchOne(db, openGroup.select(.name)))
-        }
-    }
-    
-    func name(isNoteToSelf: Bool = false, displayName: String? = nil) -> String {
-        switch variant {
-            case .contact:
-                guard !isNoteToSelf else { return "Note to Self" }
-                
-                return displayName
-                    .defaulting(to: "Anonymous", useDefaultIfEmpty: true)
-            
-            case .closedGroup, .openGroup:
-                return displayName
-                    .defaulting(to: "Group", useDefaultIfEmpty: true)
+                return profile.displayName()
         }
     }
 }

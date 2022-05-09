@@ -53,14 +53,15 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
                 return
             }
             
-            var groupName = thread.name(db)
-            if groupName.count < 1 {
-                groupName = MessageStrings.newGroupDefaultTitle
-            }
             notificationTitle = String(
                 format: NotificationStrings.incomingGroupMessageTitleFormat,
                 senderName,
-                groupName
+                SessionThread.displayName(
+                    threadId: thread.id,
+                    variant: thread.variant,
+                    closedGroupName: (try? thread.closedGroup.fetchOne(db))?.name,
+                    openGroupName: (try? thread.openGroup.fetchOne(db))?.name
+                )
             )
         }
         

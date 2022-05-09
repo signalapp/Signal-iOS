@@ -43,13 +43,16 @@ public final class ClosedGroupPoller: NSObject {
         assert(Thread.current.isMainThread) // Timers don't do well on background queues
         #endif
         
-        // Fetch all closed groups (excluding any which have no key pairs as the user is
-        // no longer a member of those
+        // Fetch all closed groups (excluding any don't contain the current user as a
+        // GroupMemeber as the user is no longer a member of those)
         GRDBStorage.shared
             .read { db in
                 try ClosedGroup
                     .select(.threadId)
-                    .joining(required: ClosedGroup.keyPairs)
+                    .joining(
+                        required: ClosedGroup.members
+                            .filter(GroupMember.Columns.profileId == getUserHexEncodedPublicKey(db))
+                    )
                     .asRequest(of: String.self)
                     .fetchAll(db)
             }

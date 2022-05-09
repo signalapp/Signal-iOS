@@ -766,11 +766,8 @@ CGFloat kIconViewLength = 24;
 
 - (void)leaveGroup
 {
-    TSGroupThread *gThread = (TSGroupThread *)self.thread;
-
-    if (gThread.isClosedGroup) {
-        NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:gThread.groupModel.groupId];
-        [[SNMessageSender leaveClosedGroupWithPublicKey:groupPublicKey] retainUntilComplete];
+    if (self.isClosedGroup) {
+        [[SNMessageSender leaveClosedGroupWithPublicKey:self.threadId] retainUntilComplete];
     }
 
     [self.navigationController popViewControllerAnimated:YES];

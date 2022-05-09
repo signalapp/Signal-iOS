@@ -47,6 +47,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
         case timestampMs
         case receivedAtTimestampMs
         case wasRead
+        case hasMention
         
         case expiresInSeconds
         case expiresStartedAtMs
@@ -136,6 +137,9 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     /// **Note:** This flag is not applicable to standardOutgoing or standardIncomingDeleted interactions
     public let wasRead: Bool
     
+    /// A flag indicating whether the current user was mentioned in this interaction (or the associated quote)
+    public let hasMention: Bool
+    
     /// The number of seconds until this message should expire
     public let expiresInSeconds: TimeInterval?
     
@@ -208,6 +212,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
         timestampMs: Int64,
         receivedAtTimestampMs: Int64,
         wasRead: Bool,
+        hasMention: Bool,
         expiresInSeconds: TimeInterval?,
         expiresStartedAtMs: Double?,
         linkPreviewUrl: String?,
@@ -224,6 +229,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
         self.timestampMs = timestampMs
         self.receivedAtTimestampMs = receivedAtTimestampMs
         self.wasRead = wasRead
+        self.hasMention = hasMention
         self.expiresInSeconds = expiresInSeconds
         self.expiresStartedAtMs = expiresStartedAtMs
         self.linkPreviewUrl = linkPreviewUrl
@@ -240,6 +246,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
         body: String? = nil,
         timestampMs: Int64 = 0,
         wasRead: Bool = false,
+        hasMention: Bool = false,
         expiresInSeconds: TimeInterval? = nil,
         expiresStartedAtMs: Double? = nil,
         linkPreviewUrl: String? = nil,
@@ -262,6 +269,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
             }
         }()
         self.wasRead = wasRead
+        self.hasMention = hasMention
         self.expiresInSeconds = expiresInSeconds
         self.expiresStartedAtMs = expiresStartedAtMs
         self.linkPreviewUrl = linkPreviewUrl
@@ -367,6 +375,7 @@ public extension Interaction {
         authorId: String? = nil,
         timestampMs: Int64? = nil,
         wasRead: Bool? = nil,
+        hasMention: Bool? = nil,
         expiresInSeconds: TimeInterval? = nil,
         expiresStartedAtMs: Double? = nil,
         openGroupServerMessageId: Int64? = nil
@@ -381,6 +390,7 @@ public extension Interaction {
             timestampMs: (timestampMs ?? self.timestampMs),
             receivedAtTimestampMs: receivedAtTimestampMs,
             wasRead: (wasRead ?? self.wasRead),
+            hasMention: (hasMention ?? self.hasMention),
             expiresInSeconds: (expiresInSeconds ?? self.expiresInSeconds),
             expiresStartedAtMs: (expiresStartedAtMs ?? self.expiresStartedAtMs),
             linkPreviewUrl: linkPreviewUrl,
@@ -524,6 +534,7 @@ public extension Interaction {
             timestampMs: timestampMs,
             receivedAtTimestampMs: receivedAtTimestampMs,
             wasRead: wasRead,
+            hasMention: hasMention,
             expiresInSeconds: expiresInSeconds,
             expiresStartedAtMs: expiresStartedAtMs,
             linkPreviewUrl: linkPreviewUrl,
