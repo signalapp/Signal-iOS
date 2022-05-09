@@ -1,13 +1,13 @@
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Not Now";
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "දැන් නොවේ";
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ is now available in the App Store.";
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Session Is Available";
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Update";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "යාවත්කාල";
 /* No comment provided by engineer. */
-"ATTACHMENT" = "Attachment";
+"ATTACHMENT" = "ඇමුණුම";
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
 /* placeholder text for an empty captioning field */
@@ -15,15 +15,15 @@
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Caption";
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ගොනුවේ වර්ගය: %@";
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Size: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "ප්‍රමාණය: %@";
 /* One-line label indicating the user can add no more text to the media message field. */
 "ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Message limit reached";
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "යවන්න";
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "Attachment";
+"ATTACHMENT_DEFAULT_FILENAME" = "ඇමුණුම";
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
 /* Attachment error message for image attachments which could not be converted to JPEG */
@@ -49,7 +49,7 @@
 /* Alert body when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "සහාය නොදක්වන ගොනුවකි";
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Voice Message";
 /* Error indicating the backup export could not export the user's data. */
@@ -61,17 +61,17 @@
 /* Indicates that the backup export is being configured. */
 "BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "දත්ත නිර්යාත වෙමින්";
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";
+"BACKUP_EXPORT_PHASE_EXPORT" = "උපස්ථය නිර්යාත වෙමින්";
 /* Indicates that the backup export data is being uploaded. */
 "BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading Backup";
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "උපස්ථය වින්‍යාසගත වෙමින්";
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloading Backup Data";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "උපස්ථ දත්ත බාගැනෙමින්";
 /* Indicates that the backup import data is being finalized. */
 "BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
 /* Indicates that the backup import data is being imported. */
@@ -87,11 +87,11 @@
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "Progress";
 /* Label for the backup restore status. */
-"BACKUP_RESTORE_STATUS" = "Status";
+"BACKUP_RESTORE_STATUS" = "තත්වය";
 /* Error shown when backup fails due to an unexpected error. */
 "BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+"BLOCK_LIST_BLOCK_BUTTON" = "අවහිර";
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Block %@?";
 /* A format for the 'unblock user' action sheet title. Embeds {{the unblocked user's name or phone number}}. */
@@ -103,7 +103,7 @@
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "User Blocked";
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Oseba %@ je bila odblokirana";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ has been unblocked.";
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
 /* An explanation of the consequences of blocking another user. */
@@ -173,17 +173,17 @@
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "දැන්";
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "අද";
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "ඊයේ";
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Disappearing Messages";
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "Edit Group";
+"EDIT_GROUP_ACTION" = "සමූහය සංස්කරණය";
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this conversation.";
 /* Label indicating loading is in progress */
@@ -201,13 +201,13 @@
 /* Indicates that an error occurred while searching. */
 "GIF_VIEW_SEARCH_ERROR" = "Error. Tap to Retry.";
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "No Results.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "ප්‍රතිඵල නැත.";
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "Group created";
 /* No comment provided by engineer. */
 "GROUP_MEMBER_JOINED" = " %@ joined the group. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = " %@ left the group. ";
+"GROUP_MEMBER_LEFT" = " %@ සමූහය හැරගියා. ";
 /* No comment provided by engineer. */
 "GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
 /* No comment provided by engineer. */
@@ -229,13 +229,13 @@
 /* Slider label when disappearing messages is off */
 "KEEP_MESSAGES_FOREVER" = "Messages do not disappear.";
 /* Confirmation button within contextual alert */
-"LEAVE_BUTTON_TITLE" = "Leave";
+"LEAVE_BUTTON_TITLE" = "හැරයන්න";
 /* table cell label in conversation settings */
-"LEAVE_GROUP_ACTION" = "Leave Group";
+"LEAVE_GROUP_ACTION" = "සමූහය හැරයන්න";
 /* Title for the 'long text message' view. */
-"LONG_TEXT_VIEW_TITLE" = "Message";
+"LONG_TEXT_VIEW_TITLE" = "පණිවිඩය";
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "සියළුම මාධ්‍යය";
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
@@ -247,9 +247,9 @@
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 /* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "ඔබ";
 /* Section header in media gallery collection view */
-"MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "මෙම මාසය";
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Delivered";
 /* status message for failed messages */
@@ -283,15 +283,15 @@
 /* Table cell switch label. When disabled, Session will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
 /* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "Sounds";
+"NOTIFICATIONS_SECTION_SOUNDS" = "ශබ්ද";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name and Content";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "නම සහ අන්තර්ගතය";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Name Only";
+"NOTIFICATIONS_SENDER_ONLY" = "නම පමණි";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "No Name or Content";
+"NOTIFICATIONS_NONE" = "නමක් හෝ අන්තර්ගතයක් නැත";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SHOW" = "Show";
+"NOTIFICATIONS_SHOW" = "පෙන්වන්න";
 /* No comment provided by engineer. */
 "BUTTON_OK" = "OK";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
@@ -309,11 +309,11 @@
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Mark as Read";
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Reply";
+"PUSH_MANAGER_REPLY" = "පිළිතුරු";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "We can't activate your account until you verify the code we sent you.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "ක්ෂණික";
 /* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Session.";
 /* Title for alert indicating that screen lock could not be unlocked. */
@@ -351,11 +351,11 @@
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PROGRESS" = "Progress";
 /* Label for backup status row in the in the backup settings view. */
-"SETTINGS_BACKUP_STATUS" = "Status";
+"SETTINGS_BACKUP_STATUS" = "තත්වය";
 /* Indicates that the last backup failed. */
 "SETTINGS_BACKUP_STATUS_FAILED" = "Backup Failed";
 /* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "Waiting";
+"SETTINGS_BACKUP_STATUS_IDLE" = "රැඳෙමින්";
 /* Indicates that app is backing up. */
 "SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Backing Up";
 /* Indicates that the last backup succeeded. */
@@ -367,63 +367,69 @@
 /* Section header */
 "SETTINGS_HISTORYLOG_TITLE" = "Clear Conversation History";
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "පණිවිඩ ශබ්දය";
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "සබැඳියේ පෙරදසුන් යවන්න";
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for most urls.";
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "සබැඳි පෙරදසුන්";
+/* Setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS" = "Voice and video calls";
+/* Footer for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_FOOTER" = "Allow access to accept voice and video calls from other users.";
+/* Header for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_HEADER" = "Calls";
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "දැනුම්දීමේ අන්තර්ගතය";
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Read Receipts";
+"SETTINGS_READ_RECEIPT" = "කියවූ බවට ලදුපත්";
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all conversations.";
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
 /* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "තිර අගුල";
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "තිර අගුල";
 /* Header Label for the sounds section of settings views. */
-"SETTINGS_SECTION_SOUNDS" = "Sounds";
+"SETTINGS_SECTION_SOUNDS" = "ශබ්ද";
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Screen Security";
+"SETTINGS_SECURITY_TITLE" = "තිරයේ ආරක්ෂාව";
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "None";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@ days";
+"TIME_AMOUNT_DAYS" = "දවස් %@";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ hours";
+"TIME_AMOUNT_HOURS" = "පැය %@";
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@ minutes";
+"TIME_AMOUNT_MINUTES" = "විනාඩි %@";
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@ seconds";
+"TIME_AMOUNT_SECONDS" = "තත්පර %@";
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ day";
+"TIME_AMOUNT_SINGLE_DAY" = "දවස් %@";
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@ hour";
+"TIME_AMOUNT_SINGLE_HOUR" = "පැය %@";
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minute";
+"TIME_AMOUNT_SINGLE_MINUTE" = "විනාඩි %@";
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@ week";
+"TIME_AMOUNT_SINGLE_WEEK" = "සති %@";
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@ weeks";
+"TIME_AMOUNT_WEEKS" = "සති %@";
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
 /* Label for the cancel button in an alert or action sheet. */
-"TXT_CANCEL_TITLE" = "Cancel";
+"TXT_CANCEL_TITLE" = "අවලංගු";
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "Delete";
 /* Filename for voice messages. */
@@ -437,24 +443,24 @@
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@";
 // MARK: - Session
-"continue_2" = "Continue";
-"copy" = "Copy";
-"invalid_url" = "Invalid URL";
-"next" = "Next";
-"share" = "Share";
+"continue_2" = "ඉදිරියට";
+"copy" = "පිටපත්";
+"invalid_url" = "ඒ.ස.නි. වලංගු නොවේ";
+"next" = "ඊළඟ";
+"share" = "බෙදාගන්න";
 "invalid_session_id" = "Invalid Session ID";
-"cancel" = "Cancel";
+"cancel" = "අවලංගු";
 "your_session_id" = "Your Session ID";
 "vc_landing_title_2" = "Your Session begins here...";
 "vc_landing_register_button_title" = "Create Session ID";
 "vc_landing_restore_button_title" = "Continue Your Session";
 "vc_landing_link_button_title" = "Link a Device";
-"view_fake_chat_bubble_1" = "What's Session?";
+"view_fake_chat_bubble_1" = "සෙෂන් යනු කුමක්ද?";
 "view_fake_chat_bubble_2" = "It's a decentralized, encrypted messaging app";
 "view_fake_chat_bubble_3" = "So it doesn't collect my personal information or my conversation metadata? How does it work?";
 "view_fake_chat_bubble_4" = "Using a combination of advanced anonymous routing and end-to-end encryption technologies.";
 "view_fake_chat_bubble_5" = "Friends don't let friends use compromised messengers. You're welcome.";
-"vc_register_title" = "Say hello to your Session ID";
+"vc_register_title" = "ඔබගේ සෙෂන් හැඳු. ආයුබෝවන් කියන්න";
 "vc_register_explanation" = "Your Session ID is the unique address people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design.";
 "vc_restore_title" = "Restore your account";
 "vc_restore_explanation" = "Enter the recovery phrase that was given to you when you signed up to restore your account.";
@@ -466,7 +472,7 @@
 "vc_display_name_text_field_hint" = "Enter a display name";
 "vc_display_name_display_name_missing_error" = "Please pick a display name";
 "vc_display_name_display_name_too_long_error" = "Please pick a shorter display name";
-"vc_pn_mode_recommended_option_tag" = "Recommended";
+"vc_pn_mode_recommended_option_tag" = "නිර්දේශිතයි";
 "vc_pn_mode_no_option_picked_modal_title" = "Please Pick an Option";
 "vc_home_empty_state_message" = "You don't have any contacts yet";
 "vc_home_empty_state_button_title" = "Start a Session";
@@ -479,7 +485,7 @@
 "view_seed_reminder_subtitle_3" = "Make sure to store your recovery phrase in a safe place";
 "vc_path_title" = "Path";
 "vc_path_explanation" = "Session hides your IP by routing your messages through multiple Service Nodes in Session's decentralized network. These are the countries your connection is currently being routed through:";
-"vc_path_device_row_title" = "You";
+"vc_path_device_row_title" = "ඔබ";
 "vc_path_guard_node_row_title" = "Entry Node";
 "vc_path_service_node_row_title" = "Service Node";
 "vc_path_destination_row_title" = "Destination";
@@ -503,16 +509,16 @@
 "vc_join_public_chat_scan_qr_code_tab_title" = "Scan QR Code";
 "vc_join_public_chat_scan_qr_code_explanation" = "Scan the QR code of the open group you'd like to join";
 "vc_enter_chat_url_text_field_hint" = "Enter an open group URL";
-"vc_settings_title" = "Settings";
+"vc_settings_title" = "සැකසුම්";
 "vc_settings_display_name_text_field_hint" = "Enter a display name";
 "vc_settings_display_name_missing_error" = "Please pick a display name";
 "vc_settings_display_name_too_long_error" = "Please pick a shorter display name";
-"vc_settings_privacy_button_title" = "Privacy";
-"vc_settings_notifications_button_title" = "Notifications";
+"vc_settings_privacy_button_title" = "පෞද්ගලිකත්වය";
+"vc_settings_notifications_button_title" = "දැනුම්දීම්";
 "vc_settings_recovery_phrase_button_title" = "Recovery Phrase";
 "vc_settings_clear_all_data_button_title" = "Clear Data";
-"vc_notification_settings_title" = "Notifications";
-"vc_privacy_settings_title" = "Privacy";
+"vc_notification_settings_title" = "දැනුම්දීම්";
+"vc_privacy_settings_title" = "පෞද්ගලිකත්වය";
 "preferences_notifications_strategy_category_title" = "Notification Strategy";
 "modal_seed_title" = "Your Recovery Phrase";
 "modal_seed_explanation" = "This is your recovery phrase. With it, you can restore or migrate your Session ID to a new device.";
@@ -533,52 +539,54 @@
 "fast_mode" = "Fast Mode";
 "slow_mode_explanation" = "Session will occasionally check for new messages in the background.";
 "slow_mode" = "Slow Mode";
-"vc_pn_mode_title" = "Message Notifications";
+"vc_pn_mode_title" = "පණිවිඩ දැනුම්දීම්";
 "vc_notification_settings_notification_mode_title" = "Use Fast Mode";
 "vc_link_device_recovery_phrase_tab_title" = "Recovery Phrase";
 "vc_link_device_scan_qr_code_explanation" = "Navigate to Settings → Recovery Phrase on your other device to show your QR code.";
 "vc_enter_recovery_phrase_title" = "Recovery Phrase";
 "vc_enter_recovery_phrase_explanation" = "To link your device, enter the recovery phrase that was given to you when you signed up.";
 "vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";
-"vc_home_title" = "Messages";
+"vc_home_title" = "පණිවිඩ";
 "admin_group_leave_warning" = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
 "vc_join_open_group_suggestions_title" = "Or join one of these...";
 "vc_settings_invite_a_friend_button_title" = "Invite a Friend";
 "vc_settings_help_us_translate_button_title" = "Help us Translate Session";
-"copied" = "Copied";
+"copied" = "පිටපත් විය";
 "vc_conversation_settings_copy_session_id_button_title" = "Copy Session ID";
-"vc_conversation_input_prompt" = "Message";
+"vc_conversation_input_prompt" = "පණිවිඩය";
 "vc_conversation_voice_message_cancel_message" = "Slide to Cancel";
-"modal_download_attachment_title" = "Trust %@?";
+"modal_download_attachment_title" = "%@ විශ්වාස ද?";
 "modal_download_attachment_explanation" = "Are you sure you want to download media sent by %@?";
-"modal_download_button_title" = "Download";
-"modal_open_url_title" = "Open URL?";
+"modal_download_button_title" = "බාගන්න";
+"modal_open_url_title" = "ඒ.ස.නි. විවෘත?";
 "modal_open_url_explanation" = "Are you sure you want to open %@?";
-"modal_open_url_button_title" = "Open";
-"modal_copy_url_button_title" = "Copy Link";
-"modal_blocked_title" = "Unblock %@?";
+"modal_open_url_button_title" = "විවෘත";
+"modal_copy_url_button_title" = "සබැඳිය පිටපත්";
+"modal_blocked_title" = "%@ අනවහිර?";
 "modal_blocked_explanation" = "Are you sure you want to unblock %@?";
-"modal_blocked_button_title" = "Unblock";
+"modal_blocked_button_title" = "අනවහිර";
 "modal_link_previews_title" = "Enable Link Previews?";
 "modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
-"modal_link_previews_button_title" = "Enable";
+"modal_link_previews_button_title" = "සබල කරන්න";
+"modal_call_title" = "Voice / video calls";
+"modal_call_explanation" = "The current implementation of voice / video calls will expose your IP address to the Oxen Foundation servers and the calling / called user.";
 "modal_share_logs_title" = "Share Logs";
 "modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
-"vc_share_title" = "Share to Session";
+"vc_share_title" = "සෙෂන් වෙත බෙදාගන්න";
 "vc_share_loading_message" = "Preparing attachments...";
-"vc_share_sending_message" = "Sending...";
+"vc_share_sending_message" = "යැවෙමින්...";
 "vc_share_link_previews_unsecure" = "Preview not loaded for unsecure link";
 "vc_share_link_previews_error" = "Unable to load preview";
 "vc_share_link_previews_disabled_title" = "Link Previews Disabled";
 "vc_share_link_previews_disabled_explanation" = "Enabling link previews will show previews for URLs you share. This can be useful, but Session will need to contact linked websites to generate previews.\n\nYou can enable link previews in Session's settings.";
 "view_open_group_invitation_description" = "Open group invitation";
-"vc_conversation_settings_invite_button_title" = "Add Members";
-"vc_settings_faq_button_title" = "FAQ";
+"vc_conversation_settings_invite_button_title" = "සාමාජිකයින් එක්කරන්න";
+"vc_settings_faq_button_title" = "නිති පැණ";
 "vc_settings_survey_button_title" = "Feedback / Survey";
 "vc_settings_support_button_title" = "Debug Log";
-"modal_send_seed_title" = "Warning";
+"modal_send_seed_title" = "අවවාදයයි";
 "modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
-"modal_send_seed_send_button_title" = "Send";
+"modal_send_seed_send_button_title" = "යවන්න";
 "vc_conversation_settings_notify_for_mentions_only_title" = "Notify for Mentions Only";
 "vc_conversation_settings_notify_for_mentions_only_explanation" = "When enabled, you'll only be notified for messages mentioning you.";
 "view_conversation_title_notify_for_mentions_only" = "Notifying for Mentions Only";
@@ -586,26 +594,44 @@
 "delete_message_for_me" = "Delete just for me";
 "delete_message_for_everyone" = "Delete for everyone";
 "delete_message_for_me_and_recipient" = "Delete for me and %@";
-"context_menu_reply" = "Reply";
-"context_menu_save" = "Save";
+"context_menu_reply" = "පිළිතුරු";
+"context_menu_save" = "සුරකින්න";
 "context_menu_ban_user" = "Ban User";
 "context_menu_ban_and_delete_all" = "Ban and Delete All";
-"accessibility_expanding_attachments_button" = "Add attachments";
+"accessibility_expanding_attachments_button" = "ඇමුණුම් එක්කරන්න";
 "accessibility_gif_button" = "Gif";
-"accessibility_document_button" = "Document";
+"accessibility_document_button" = "ලේඛනය";
 "accessibility_library_button" = "Photo library";
 "accessibility_camera_button" = "Camera";
 "accessibility_main_button_collapse" = "Collapse attachment options";
 "invalid_recovery_phrase" = "Invalid Recovery Phrase";
+"invalid_recovery_phrase" = "Invalid Recovery Phrase";
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 /* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Settings";
+"OPEN_SETTINGS_BUTTON" = "සැකසුම්";
+"call_outgoing" = "You called %@";
+"call_incoming" = "%@ called you";
+"call_missed" = "Missed Call from %@";
+"call_rejected" = "Rejected Call";
+"call_cancelled" = "Cancelled Call";
+"call_timeout" = "Unanswered Call";
 "voice_call" = "Voice Call";
 "video_call" = "Video Call";
-"APN_Message" = "You've got a new message";
+"APN_Message" = "You've got a new message.";
+"APN_Collapsed_Messages" = "You've got %@ new messages.";
 "system_mode_theme" = "System";
 "dark_mode_theme" = "Dark";
 "light_mode_theme" = "Light";
+"PIN_BUTTON_TEXT" = "Pin";
+"UNPIN_BUTTON_TEXT" = "Unpin";
+"modal_call_missed_tips_title" = "Call missed";
+"modal_call_missed_tips_explanation" = "Call missed from '%@' because you needed to enable the 'Voice and video calls' permission in the Privacy Settings.";
+"meida_saved" = "Media saved by %@.";
+"screenshot_taken" = "%@ took a screenshot.";
+"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_RECENT" = "Recent";
+"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";
 "MESSAGE_REQUESTS_TITLE" = "Message Requests";
 "MESSAGE_REQUESTS_EMPTY_TEXT" = "No pending message requests";
 "MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";

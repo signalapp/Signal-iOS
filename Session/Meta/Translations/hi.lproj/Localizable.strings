@@ -123,9 +123,9 @@
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
 "CLOUDKIT_STATUS_RESTRICTED" = "Session को बैकअप के लिए आपके iCloud खाते तक पहुंच से वंचित कर दिया गया था। अपने Session डेटा का बैकअप लेने के लिए iOS सेटिंग ऐप में अपने iCloud खाते में Session की पहुंच प्रदान करें।";
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "अब आप इस समूह में संदेश भेजने या प्राप्त करने में सक्षम नहीं होंगे।";
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Do you really want to leave?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "क्या आप वाकई छोड़ना चाहते हैं?";
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
 /* Title for the 'conversation delete confirmation' alert. */
@@ -141,45 +141,45 @@
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block This User";
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "म्यूट";
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Mute";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "म्यूट";
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Not muted";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "म्यूट नहीं";
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Mute for one day";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "एक दिन के लिए म्यूट करें";
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Mute for one hour";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "एक घंटे के लिए म्यूट करें";
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Mute for one minute";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "एक मिनट के लिए म्यूट करें";
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Mute for one week";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "एक हफ़्ते के लिए म्यूट करें";
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mute for one year";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "एक साल के लिए म्यूट करें";
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "जब तक %@";
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
+"CONVERSATION_SETTINGS_SEARCH" = "बातचीत खोजें";
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "अनम्यूट";
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Move and Scale";
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a few minutes.";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "इसमें कुछ मिनटों का समय लगेगा ।";
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizing Database";
+"DATABASE_VIEW_OVERLAY_TITLE" = "डाटाबेस का अनुकूलन";
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "%@ घंटा पहले";
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "%@ मिनट पहले";
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "अभी";
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "आज";
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "कल";
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Disappearing Messages";
+"DISAPPEARING_MESSAGES" = "गायब होने वाले संदेश";
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
 /* table cell label in conversation settings */
@@ -211,13 +211,13 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+"GROUP_MEMBERS_REMOVED" = " %@ समूह से हटा दिए गये हैं ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Title is now '%@'. ";
 /* No comment provided by engineer. */
 "GROUP_UPDATED" = "Group updated.";
 /* No comment provided by engineer. */
-"GROUP_YOU_LEFT" = "You have left the group.";
+"GROUP_YOU_LEFT" = "आपने समूह छोड़ दिया है";
 /* No comment provided by engineer. */
 "YOU_WERE_REMOVED" = " You were removed from the group. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
@@ -374,6 +374,12 @@
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for most urls.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+/* Setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS" = "Voice and video calls";
+/* Footer for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_FOOTER" = "Allow access to accept voice and video calls from other users.";
+/* Header for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_HEADER" = "Calls";
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
 /* Label for the 'read receipts' setting. */
@@ -562,6 +568,8 @@
 "modal_link_previews_title" = "लिंक पूर्वावलोकन सक्षम करें?";
 "modal_link_previews_explanation" = "लिंक पूर्वावलोकन सक्षम करने से आपके द्वारा भेजे और प्राप्त किए जाने वाले URL के पूर्वावलोकन दिखाई देंगे. यह उपयोगी हो सकता है, लेकिन Session को पूर्वावलोकन उत्पन्न करने के लिए लिंक की गई वेबसाइटों से संपर्क करने की आवश्यकता होगी। आप कभी भी Session की सेटिंग में लिंक पूर्वावलोकन अक्षम कर सकते हैं।";
 "modal_link_previews_button_title" = "सक्षम करें";
+"modal_call_title" = "Voice / video calls";
+"modal_call_explanation" = "The current implementation of voice / video calls will expose your IP address to the Oxen Foundation servers and the calling / called user.";
 "modal_share_logs_title" = "Share Logs";
 "modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
 "vc_share_title" = "सत्र में साझा करें";
@@ -597,15 +605,33 @@
 "accessibility_camera_button" = "Camera";
 "accessibility_main_button_collapse" = "Collapse attachment options";
 "invalid_recovery_phrase" = "Invalid Recovery Phrase";
+"invalid_recovery_phrase" = "Invalid Recovery Phrase";
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Settings";
+"call_outgoing" = "You called %@";
+"call_incoming" = "%@ called you";
+"call_missed" = "Missed Call from %@";
+"call_rejected" = "Rejected Call";
+"call_cancelled" = "Cancelled Call";
+"call_timeout" = "Unanswered Call";
 "voice_call" = "Voice Call";
 "video_call" = "Video Call";
-"APN_Message" = "You've got a new message";
+"APN_Message" = "You've got a new message.";
+"APN_Collapsed_Messages" = "You've got %@ new messages.";
 "system_mode_theme" = "System";
 "dark_mode_theme" = "Dark";
 "light_mode_theme" = "Light";
+"PIN_BUTTON_TEXT" = "Pin";
+"UNPIN_BUTTON_TEXT" = "Unpin";
+"modal_call_missed_tips_title" = "Call missed";
+"modal_call_missed_tips_explanation" = "Call missed from '%@' because you needed to enable the 'Voice and video calls' permission in the Privacy Settings.";
+"meida_saved" = "Media saved by %@.";
+"screenshot_taken" = "%@ took a screenshot.";
+"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_RECENT" = "Recent";
+"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";
 "MESSAGE_REQUESTS_TITLE" = "Message Requests";
 "MESSAGE_REQUESTS_EMPTY_TEXT" = "No pending message requests";
 "MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";
