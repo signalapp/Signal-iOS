@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,7 +13,7 @@ protocol CompareSafetyNumbersActivityDelegate {
     func compareSafetyNumbersActivity(_ activity: CompareSafetyNumbersActivity, failedWithError error: Error)
 }
 
-@objc (OWSCompareSafetyNumbersActivity)
+@objc(OWSCompareSafetyNumbersActivity)
 class CompareSafetyNumbersActivity: UIActivity {
 
     var mySafetyNumbers: String?

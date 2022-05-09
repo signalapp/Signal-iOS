@@ -9,9 +9,11 @@ import SignalMessaging
 /**
  * Creates an outbound call via WebRTC.
  */
-@objc public class OutboundIndividualCallInitiator: NSObject {
+@objc
+public class OutboundIndividualCallInitiator: NSObject {
 
-    @objc public override init() {
+    @objc
+    public override init() {
         super.init()
 
         SwiftSingletons.register(self)

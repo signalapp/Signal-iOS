@@ -290,7 +290,8 @@ public extension UIView {
         ]
     }
 
-    @discardableResult func autoPinWidthToSuperview(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
+    @discardableResult
+    func autoPinWidthToSuperview(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
         // We invert the relation because of the weird grammar switch when talking about
         // the size of widths to the positioning of edges
         // "Width less than or equal to superview margin width"
@@ -303,7 +304,8 @@ public extension UIView {
         ]
     }
 
-    @discardableResult func autoPinHeightToSuperview(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
+    @discardableResult
+    func autoPinHeightToSuperview(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
         // We invert the relation because of the weird grammar switch when talking about
         // the size of height to the positioning of edges
         // "Height less than or equal to superview margin height"
@@ -316,7 +318,8 @@ public extension UIView {
         ]
     }
 
-    @discardableResult func autoPinWidthToSuperviewMargins(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
+    @discardableResult
+    func autoPinWidthToSuperviewMargins(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
         // We invert the relation because of the weird grammar switch when talking about
         // the size of widths to the positioning of edges
         // "Width less than or equal to superview margin width"
@@ -329,7 +332,8 @@ public extension UIView {
         ]
     }
 
-    @discardableResult func autoPinHeightToSuperviewMargins(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
+    @discardableResult
+    func autoPinHeightToSuperviewMargins(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
         // We invert the relation because of the weird grammar switch when talking about
         // the size of height to the positioning of edges
         // "Height less than or equal to superview margin height"

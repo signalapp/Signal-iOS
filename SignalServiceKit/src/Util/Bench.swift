@@ -218,9 +218,7 @@ public class BenchManager: NSObject {
 // MARK: Memory
 
 private class MemoryBencher: MemorySampler {
-
-    @usableFromInline
-    lazy var byteFormatter = ByteCountFormatter()
+    @usableFromInline lazy var byteFormatter = ByteCountFormatter()
 
     let title: String
 
@@ -228,17 +226,10 @@ private class MemoryBencher: MemorySampler {
     ///
     /// We run the block , and then, to minimize performance impact, we only sample memory usage
     /// some of the time, depending on the sampleRatio.
-    @usableFromInline
-    let sampleRatio: Float
-
-    @usableFromInline
-    let growthMargin: UInt64 = 1_000_000
-
-    @usableFromInline
-    var maxSize: mach_vm_size_t?
-
-    @usableFromInline
-    var initialSize: mach_vm_size_t?
+    @usableFromInline let sampleRatio: Float
+    @usableFromInline let growthMargin: UInt64 = 1_000_000
+    @usableFromInline var maxSize: mach_vm_size_t?
+    @usableFromInline var initialSize: mach_vm_size_t?
 
     public init(title: String, sampleRatio: Float) {
         self.title = title

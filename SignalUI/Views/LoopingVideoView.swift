@@ -73,7 +73,8 @@ private class LoopingVideoPlayer: AVPlayer {
             object: newItem)
     }
 
-    @objc private func playerItemDidPlayToCompletion(_ notification: NSNotification) {
+    @objc
+    private func playerItemDidPlayToCompletion(_ notification: NSNotification) {
         guard (notification.object as AnyObject) === currentItem else { return }
         seek(to: .zero)
         play()

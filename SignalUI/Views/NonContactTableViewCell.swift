@@ -63,7 +63,8 @@ public class NonContactTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc public func configureWithUsername(_ username: String, hideHeaderLabel: Bool) {
+    @objc
+    public func configureWithUsername(_ username: String, hideHeaderLabel: Bool) {
         iconView.setTemplateImageName("username-search-48-black", tintColor: Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray75)
         headerLabel.text = OWSLocalizedString("NON_CONTACT_TABLE_CELL_NEW_MESSAGE",
                                              comment: "A string prompting the user to send a new mesaage to a user")
@@ -71,7 +72,8 @@ public class NonContactTableViewCell: UITableViewCell {
         identifierLabel.text = CommonFormats.formatUsername(username)
     }
 
-    @objc public func configureWithPhoneNumber(_ phoneNumber: String, isRegistered: Bool, hideHeaderLabel: Bool) {
+    @objc
+    public func configureWithPhoneNumber(_ phoneNumber: String, isRegistered: Bool, hideHeaderLabel: Bool) {
         identifierLabel.text = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
 
         if isRegistered {

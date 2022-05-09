@@ -178,7 +178,8 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         }
     }
 
-    @objc func handleSecondaryClickGesture(_ sender: UITapGestureRecognizer) {
+    @objc
+    func handleSecondaryClickGesture(_ sender: UITapGestureRecognizer) {
         guard let cell = findCell(forGesture: sender) else {
             return
         }

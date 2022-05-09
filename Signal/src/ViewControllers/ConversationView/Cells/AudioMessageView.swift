@@ -322,7 +322,8 @@ class AudioMessageView: ManualStackView {
 
     // MARK: - Scrubbing
 
-    @objc var isScrubbing = false
+    @objc
+    var isScrubbing = false
 
     func isPointInScrubbableRegion(_ point: CGPoint) -> Bool {
         // If we have a waveform but aren't done sampling it, don't allow scrubbing yet.

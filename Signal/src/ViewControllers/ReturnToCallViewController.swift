@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -187,7 +187,8 @@ public class ReturnToCallViewController: UIViewController {
         }
     }
 
-    @objc func handlePan(sender: UIPanGestureRecognizer) {
+    @objc
+    func handlePan(sender: UIPanGestureRecognizer) {
         guard let window = view.window else { return owsFailDebug("missing window") }
 
         switch sender.state {

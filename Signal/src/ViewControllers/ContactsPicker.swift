@@ -315,11 +315,13 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
     // MARK: - Button Actions
 
-    @objc func onTouchCancelButton() {
+    @objc
+    func onTouchCancelButton() {
         contactsPickerDelegate?.contactsPickerDidCancel(self)
     }
 
-    @objc func onTouchDoneButton() {
+    @objc
+    func onTouchDoneButton() {
         contactsPickerDelegate?.contactsPicker(self, didSelectMultipleContacts: selectedContacts)
     }
 
@@ -375,7 +377,8 @@ fileprivate extension CNContact {
     /**
      * Sorting Key used by collation
      */
-    @objc var nameForCollating: String {
+    @objc
+    var nameForCollating: String {
         get {
             if self.familyName.isEmpty && self.givenName.isEmpty {
                 return self.emailAddresses.first?.value as String? ?? ""

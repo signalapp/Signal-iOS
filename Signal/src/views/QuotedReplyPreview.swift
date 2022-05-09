@@ -80,7 +80,8 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
         self.heightConstraint.constant = size.height + draftMarginTop
     }
 
-    @objc func contentSizeCategoryDidChange(_ notification: Notification) {
+    @objc
+    func contentSizeCategoryDidChange(_ notification: Notification) {
         Logger.debug("")
 
         updateContents()

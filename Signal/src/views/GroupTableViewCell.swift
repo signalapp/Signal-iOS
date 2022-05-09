@@ -6,14 +6,16 @@ import UIKit
 import SignalServiceKit
 import SignalUI
 
-@objc class GroupTableViewCell: UITableViewCell {
+@objc
+class GroupTableViewCell: UITableViewCell {
 
     private let avatarView = ConversationAvatarView(sizeClass: .thirtySix, localUserDisplayMode: .asUser)
     private let nameLabel = UILabel()
     private let subtitleLabel = UILabel()
     private let accessoryLabel = UILabel()
 
-    @objc var accessoryMessage: String?
+    @objc
+    var accessoryMessage: String?
 
     init() {
         super.init(style: .default, reuseIdentifier: GroupTableViewCell.logTag())

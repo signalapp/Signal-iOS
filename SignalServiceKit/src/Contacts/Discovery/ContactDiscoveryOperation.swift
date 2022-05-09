@@ -41,10 +41,12 @@ public class ContactDiscoveryError: NSError, UserErrorDescriptionProvider {
     ///
     /// There are cases where an error may be marked as unretryable, but still have a retryAfterDate provided
     /// This is because the retryable flag is more of a server suggestion, where retryAfter is a server requirement.
-    @objc public let retrySuggested: Bool
+    @objc
+    public let retrySuggested: Bool
 
     /// Provided by the server. Clients should make every effort to respect the retryAfterDate.
-    @objc public let retryAfterDate: Date?
+    @objc
+    public let retryAfterDate: Date?
 
     // MARK: - Constructors
 

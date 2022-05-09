@@ -532,7 +532,8 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
     // MARK: -
 
-    @objc func registrationStateDidChange() {
+    @objc
+    func registrationStateDidChange() {
         AssertIsOnMainThread()
 
         guard tsAccountManager.isRegistered else { return }

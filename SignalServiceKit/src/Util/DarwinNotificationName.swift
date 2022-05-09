@@ -1,15 +1,19 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
 public class DarwinNotificationName: NSObject, ExpressibleByStringLiteral {
-    @objc public static let sdsCrossProcess: DarwinNotificationName = "org.signal.sdscrossprocess"
-    @objc public static let nseDidReceiveNotification: DarwinNotificationName = "org.signal.nseDidReceiveNotification"
-    @objc public static let mainAppHandledNotification: DarwinNotificationName = "org.signal.mainAppHandledNotification"
-    @objc public static let mainAppLaunched: DarwinNotificationName = "org.signal.mainAppLaunched"
+    @objc
+    public static let sdsCrossProcess: DarwinNotificationName = "org.signal.sdscrossprocess"
+    @objc
+    public static let nseDidReceiveNotification: DarwinNotificationName = "org.signal.nseDidReceiveNotification"
+    @objc
+    public static let mainAppHandledNotification: DarwinNotificationName = "org.signal.mainAppHandledNotification"
+    @objc
+    public static let mainAppLaunched: DarwinNotificationName = "org.signal.mainAppLaunched"
 
     public typealias StringLiteralType = String
 

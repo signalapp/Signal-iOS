@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -192,7 +192,8 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     // MARK: - CNContactViewControllerDelegate
 
-    @objc public func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
+    @objc
+    public func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
         Logger.info("")
 
         guard let delegate = delegate else {
@@ -203,7 +204,8 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         delegate.didCreateOrEditContact()
     }
 
-    @objc public func didFinishEditingContact() {
+    @objc
+    public func didFinishEditingContact() {
         Logger.info("")
 
         guard let delegate = delegate else {

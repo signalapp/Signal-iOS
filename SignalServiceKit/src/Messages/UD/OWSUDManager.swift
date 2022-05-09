@@ -118,7 +118,8 @@ public class OWSUDSendingAccess: NSObject {
 
 // MARK: -
 
-@objc public protocol OWSUDManager: AnyObject {
+@objc
+public protocol OWSUDManager: AnyObject {
     @objc
     var keyValueStore: SDSKeyValueStore { get }
     @objc
@@ -126,11 +127,14 @@ public class OWSUDSendingAccess: NSObject {
     @objc
     var uuidAccessStore: SDSKeyValueStore { get }
 
-    @objc func warmCaches()
+    @objc
+    func warmCaches()
 
-    @objc var trustRoot: ECPublicKey { get }
+    @objc
+    var trustRoot: ECPublicKey { get }
 
-    @objc func isUDVerboseLoggingEnabled() -> Bool
+    @objc
+    func isUDVerboseLoggingEnabled() -> Bool
 
     // MARK: - Recipient State
 

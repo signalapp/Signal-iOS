@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -215,7 +215,8 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
 
     // MARK: - Events
 
-    @objc func didSelectTransfer() {
+    @objc
+    func didSelectTransfer() {
         Logger.info("")
 
         switch onboardingController.onboardingMode {
@@ -227,7 +228,8 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
         }
     }
 
-    @objc func didSelectRegister() {
+    @objc
+    func didSelectRegister() {
         Logger.info("")
 
         switch onboardingController.onboardingMode {

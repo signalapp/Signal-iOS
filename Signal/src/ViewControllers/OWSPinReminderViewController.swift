@@ -241,7 +241,8 @@ public class PinReminderViewController: OWSViewController {
 
     // MARK: - Events
 
-    @objc func forgotPressed() {
+    @objc
+    func forgotPressed() {
         Logger.info("")
 
         let vc = PinSetupViewController.creating { [weak self] _, _ in
@@ -250,7 +251,8 @@ public class PinReminderViewController: OWSViewController {
         present(OWSNavigationController(rootViewController: vc), animated: true, completion: nil)
     }
 
-    @objc func dismissPressed() {
+    @objc
+    func dismissPressed() {
         Logger.info("")
 
         // If the user tried and guessed wrong, we'll dismiss the megaphone and
@@ -261,11 +263,13 @@ public class PinReminderViewController: OWSViewController {
         dismiss(animated: true, completion: nil)
     }
 
-    @objc func submitPressed() {
+    @objc
+    func submitPressed() {
         verifyAndDismissOnSuccess(pinTextField.text)
     }
 
-    @objc func verifySilently() {
+    @objc
+    func verifySilently() {
         verifyAndDismissOnSuccess(pinTextField.text, silent: true)
     }
 

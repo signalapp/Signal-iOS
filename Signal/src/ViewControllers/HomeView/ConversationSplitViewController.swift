@@ -18,13 +18,15 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     private lazy var detailNavController = OWSNavigationController()
     private lazy var lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
 
-    @objc private(set) weak var selectedConversationViewController: ConversationViewController?
+    @objc
+    private(set) weak var selectedConversationViewController: ConversationViewController?
 
     weak var navigationTransitionDelegate: UINavigationControllerDelegate?
 
     /// The thread, if any, that is currently presented in the view hieararchy. It may be currently
     /// covered by a modal presentation or a pushed view controller.
-    @objc var selectedThread: TSThread? {
+    @objc
+    var selectedThread: TSThread? {
         // If the placeholder view is in the view hierarchy, there is no selected thread.
         guard detailPlaceholderVC.view.superview == nil else { return nil }
         guard let selectedConversationViewController = selectedConversationViewController else { return nil }
@@ -39,13 +41,15 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
     /// Returns the currently selected thread if it is visible on screen, otherwise
     /// returns nil.
-    @objc var visibleThread: TSThread? {
+    @objc
+    var visibleThread: TSThread? {
         guard view.window?.isKeyWindow == true else { return nil }
         guard selectedConversationViewController?.isViewVisible == true else { return nil }
         return selectedThread
     }
 
-    @objc var topViewController: UIViewController? {
+    @objc
+    var topViewController: UIViewController? {
         guard !isCollapsed else {
             return chatListNavController.topViewController
         }
@@ -83,18 +87,21 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         return Theme.isDarkThemeEnabled ? .lightContent : .default
     }
 
-    @objc func applyTheme() {
+    @objc
+    func applyTheme() {
         view.backgroundColor = Theme.backgroundColor
         applyBarStyle(collapsed: isCollapsed)
     }
 
-    @objc func orientationDidChange() {
+    @objc
+    func orientationDidChange() {
         AssertIsOnMainThread()
         guard UIApplication.shared.applicationState == .active else { return }
         lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
     }
 
-    @objc func didBecomeActive() {
+    @objc
+    func didBecomeActive() {
         AssertIsOnMainThread()
         lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
     }
@@ -432,15 +439,18 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         return keyCommands
     }
 
-    @objc func showNewConversationView() {
+    @objc
+    func showNewConversationView() {
         homeVC.chatListViewController.showNewConversationView()
     }
 
-    @objc func showNewGroupView() {
+    @objc
+    func showNewGroupView() {
         homeVC.chatListViewController.showNewGroupView()
     }
 
-    @objc func showAppSettings() {
+    @objc
+    func showAppSettings() {
         homeVC.chatListViewController.showAppSettings()
     }
 
@@ -448,27 +458,33 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         homeVC.chatListViewController.showAppSettings(mode: mode)
     }
 
-    @objc func focusSearch() {
+    @objc
+    func focusSearch() {
         homeVC.chatListViewController.focusSearch()
     }
 
-    @objc func selectPreviousConversation() {
+    @objc
+    func selectPreviousConversation() {
         homeVC.chatListViewController.selectPreviousConversation()
     }
 
-    @objc func selectNextConversation(_ sender: UIKeyCommand) {
+    @objc
+    func selectNextConversation(_ sender: UIKeyCommand) {
         homeVC.chatListViewController.selectNextConversation()
     }
 
-    @objc func archiveSelectedConversation() {
+    @objc
+    func archiveSelectedConversation() {
         homeVC.chatListViewController.archiveSelectedConversation()
     }
 
-    @objc func unarchiveSelectedConversation() {
+    @objc
+    func unarchiveSelectedConversation() {
         homeVC.chatListViewController.unarchiveSelectedConversation()
     }
 
-    @objc func openConversationSettings() {
+    @objc
+    func openConversationSettings() {
         guard let selectedConversationViewController = selectedConversationViewController else {
             return owsFailDebug("unexpectedly missing selected conversation")
         }
@@ -476,7 +492,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         selectedConversationViewController.showConversationSettings()
     }
 
-    @objc func focusInputToolbar() {
+    @objc
+    func focusInputToolbar() {
         guard let selectedConversationViewController = selectedConversationViewController else {
             return owsFailDebug("unexpectedly missing selected conversation")
         }
@@ -484,7 +501,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         selectedConversationViewController.focusInputToolbar()
     }
 
-    @objc func openAllMedia() {
+    @objc
+    func openAllMedia() {
         guard let selectedConversationViewController = selectedConversationViewController else {
             return owsFailDebug("unexpectedly missing selected conversation")
         }
@@ -492,7 +510,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         selectedConversationViewController.openAllMedia()
     }
 
-    @objc func openStickerKeyboard() {
+    @objc
+    func openStickerKeyboard() {
         guard let selectedConversationViewController = selectedConversationViewController else {
             return owsFailDebug("unexpectedly missing selected conversation")
         }
@@ -500,7 +519,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         selectedConversationViewController.openStickerKeyboard()
     }
 
-    @objc func openAttachmentKeyboard() {
+    @objc
+    func openAttachmentKeyboard() {
         guard let selectedConversationViewController = selectedConversationViewController else {
             return owsFailDebug("unexpectedly missing selected conversation")
         }
@@ -508,7 +528,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         selectedConversationViewController.openAttachmentKeyboard()
     }
 
-    @objc func openGifSearch() {
+    @objc
+    func openGifSearch() {
         guard let selectedConversationViewController = selectedConversationViewController else {
             return owsFailDebug("unexpectedly missing selected conversation")
         }
@@ -595,7 +616,8 @@ extension ConversationSplitViewController: UINavigationControllerDelegate {
     }
 }
 
-@objc extension ChatListViewController {
+@objc
+extension ChatListViewController {
     var conversationSplitViewController: ConversationSplitViewController? {
         return splitViewController as? ConversationSplitViewController
     }
@@ -607,7 +629,8 @@ extension StoriesViewController {
     }
 }
 
-@objc extension ConversationViewController {
+@objc
+extension ConversationViewController {
     var conversationSplitViewController: ConversationSplitViewController? {
         return splitViewController as? ConversationSplitViewController
     }

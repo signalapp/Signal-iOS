@@ -211,7 +211,8 @@ class ContactShareFieldView: UIStackView {
         self.addArrangedSubview(previewView)
     }
 
-    @objc func wasTapped(sender: UIGestureRecognizer) {
+    @objc
+    func wasTapped(sender: UIGestureRecognizer) {
         Logger.info("")
 
         guard sender.state == .recognized else {
@@ -516,7 +517,8 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         delegate.approveContactShare(self, didApproveContactShare: filteredContactShare)
     }
 
-    @objc func didPressCancel() {
+    @objc
+    func didPressCancel() {
         Logger.info("")
 
         guard let delegate = self.delegate else {

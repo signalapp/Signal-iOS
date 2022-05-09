@@ -1110,13 +1110,20 @@ public class ModelReadCaches: NSObject {
         }
     }
 
-    @objc public let userProfileReadCache: UserProfileReadCache
-    @objc public let signalAccountReadCache: SignalAccountReadCache
-    @objc public let signalRecipientReadCache: SignalRecipientReadCache
-    @objc public let threadReadCache: ThreadReadCache
-    @objc public let interactionReadCache: InteractionReadCache
-    @objc public let attachmentReadCache: AttachmentReadCache
-    @objc public let installedStickerCache: InstalledStickerCache
+    @objc
+    public let userProfileReadCache: UserProfileReadCache
+    @objc
+    public let signalAccountReadCache: SignalAccountReadCache
+    @objc
+    public let signalRecipientReadCache: SignalRecipientReadCache
+    @objc
+    public let threadReadCache: ThreadReadCache
+    @objc
+    public let interactionReadCache: InteractionReadCache
+    @objc
+    public let attachmentReadCache: AttachmentReadCache
+    @objc
+    public let installedStickerCache: InstalledStickerCache
 
     @objc
     fileprivate static let evacuateAllModelCaches = Notification.Name("EvacuateAllModelCaches")

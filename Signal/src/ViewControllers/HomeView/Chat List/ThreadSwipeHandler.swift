@@ -8,7 +8,8 @@ import UIKit
 
 @objc
 protocol ThreadSwipeHandler {
-    @objc optional func updateUIAfterSwipeAction()
+    @objc
+    optional func updateUIAfterSwipeAction()
 }
 
 extension ThreadSwipeHandler where Self: UIViewController {

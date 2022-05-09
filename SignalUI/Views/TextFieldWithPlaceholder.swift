@@ -115,7 +115,8 @@ public class TextFieldWithPlaceholder: UIView {
 
     // MARK: - Private
 
-    @objc private func applyTheme() {
+    @objc
+    private func applyTheme() {
         placeholderLabel.textColor = Theme.placeholderColor
         textfield.textColor = Theme.primaryTextColor
     }

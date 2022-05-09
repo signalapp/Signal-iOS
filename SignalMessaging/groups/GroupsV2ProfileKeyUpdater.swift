@@ -29,7 +29,8 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
 
     // MARK: -
 
-    @objc func didBecomeActive() {
+    @objc
+    func didBecomeActive() {
         AssertIsOnMainThread()
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
@@ -37,7 +38,8 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
         }
     }
 
-    @objc func reachabilityChanged() {
+    @objc
+    func reachabilityChanged() {
         AssertIsOnMainThread()
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {

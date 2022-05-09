@@ -357,7 +357,8 @@ class GroupThreadPicker: OWSTableViewController {
 
     // MARK: - Actions
 
-    @objc func didTapCancel() {
+    @objc
+    func didTapCancel() {
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
 

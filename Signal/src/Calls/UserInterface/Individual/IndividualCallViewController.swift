@@ -229,7 +229,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
     // MARK: - View Lifecycle
 
-    @objc func didBecomeActive() {
+    @objc
+    func didBecomeActive() {
         if self.isViewLoaded {
             shouldRemoteVideoControlsBeHidden = false
         }
@@ -339,7 +340,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         createIncomingCallControls()
     }
 
-    @objc func didTouchRootView(sender: UIGestureRecognizer) {
+    @objc
+    func didTouchRootView(sender: UIGestureRecognizer) {
         if !remoteVideoView.isHidden {
             shouldRemoteVideoControlsBeHidden = !shouldRemoteVideoControlsBeHidden
         }
@@ -692,7 +694,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     }
 
     private var startingTranslation: CGPoint?
-    @objc func handleLocalVideoPan(sender: UIPanGestureRecognizer) {
+    @objc
+    func handleLocalVideoPan(sender: UIPanGestureRecognizer) {
         switch sender.state {
         case .began, .changed:
             let translation = sender.translation(in: localVideoView)
@@ -1056,7 +1059,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     /**
      * Ends a connected call. Do not confuse with `didPressDeclineCall`.
      */
-    @objc func didPressHangup(sender: UIButton) {
+    @objc
+    func didPressHangup(sender: UIButton) {
         Logger.info("")
 
         individualCallUIAdapter.localHangupCall(call)
@@ -1064,14 +1068,16 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         dismissIfPossible(shouldDelay: false)
     }
 
-    @objc func didPressMute(sender: UIButton) {
+    @objc
+    func didPressMute(sender: UIButton) {
         Logger.info("")
         let isMuted = !sender.isSelected
 
         individualCallUIAdapter.setIsMuted(call: call, isMuted: isMuted)
     }
 
-    @objc func didPressAudioSource(sender button: UIButton) {
+    @objc
+    func didPressAudioSource(sender button: UIButton) {
         Logger.info("")
 
         if self.hasAlternateAudioSources {
@@ -1094,7 +1100,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         dismissIfPossible(shouldDelay: false)
     }
 
-    @objc func didPressAnswerCall(sender: UIButton) {
+    @objc
+    func didPressAnswerCall(sender: UIButton) {
         Logger.info("")
 
         if sender == videoAnswerIncomingAudioOnlyButton {
@@ -1110,7 +1117,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         individualCallUIAdapter.setIsMuted(call: call, isMuted: false)
     }
 
-    @objc func didPressVideo(sender: UIButton) {
+    @objc
+    func didPressVideo(sender: UIButton) {
         Logger.info("")
         let hasLocalVideo = !sender.isSelected
 
@@ -1122,7 +1130,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         individualCallUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
     }
 
-    @objc func didPressFlipCamera(sender: UIButton) {
+    @objc
+    func didPressFlipCamera(sender: UIButton) {
         sender.isSelected = !sender.isSelected
 
         let isUsingFrontCamera = !sender.isSelected
@@ -1134,7 +1143,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     /**
      * Denies an incoming not-yet-connected call, Do not confuse with `didPressHangup`.
      */
-    @objc func didPressDeclineCall(sender: UIButton) {
+    @objc
+    func didPressDeclineCall(sender: UIButton) {
         Logger.info("")
 
         individualCallUIAdapter.localHangupCall(call)
@@ -1142,7 +1152,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         dismissIfPossible(shouldDelay: false)
     }
 
-    @objc func didTapLeaveCall(sender: UIButton) {
+    @objc
+    func didTapLeaveCall(sender: UIButton) {
         OWSWindowManager.shared.leaveCallView()
     }
 

@@ -181,7 +181,8 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
 
     // MARK: - Events
 
-    @objc func needHelpLinkWasTapped() {
+    @objc
+    func needHelpLinkWasTapped() {
         Logger.info("")
 
         let title = NSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_TITLE",
@@ -197,7 +198,8 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
                                          fromViewController: self)
     }
 
-    @objc func nextPressed() {
+    @objc
+    func nextPressed() {
         Logger.info("")
 
         tryToVerify()
@@ -443,7 +445,8 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
         pinTextField.reloadInputViews()
     }
 
-    @objc func togglePinType() {
+    @objc
+    func togglePinType() {
         switch pinType {
         case .numeric:
             pinType = .alphanumeric

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -28,7 +28,8 @@ class DownloadStickerOperation: CDNDownloadOperation {
     private let success: (URL) -> Void
     private let failure: (Error) -> Void
 
-    @objc public required init(stickerInfo: StickerInfo,
+    @objc
+    public required init(stickerInfo: StickerInfo,
                                success : @escaping (URL) -> Void,
                                failure : @escaping (Error) -> Void) {
         assert(stickerInfo.packId.count > 0)

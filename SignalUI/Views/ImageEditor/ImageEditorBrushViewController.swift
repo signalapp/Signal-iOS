@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -120,7 +120,8 @@ public class ImageEditorBrushViewController: OWSViewController {
 
     // MARK: - Actions
 
-    @objc func didTapUndo(sender: UIButton) {
+    @objc
+    func didTapUndo(sender: UIButton) {
         Logger.verbose("")
         guard model.canUndo() else {
             owsFailDebug("Can't undo.")
@@ -129,7 +130,8 @@ public class ImageEditorBrushViewController: OWSViewController {
         model.undo()
     }
 
-    @objc func didTapDone(sender: UIButton) {
+    @objc
+    func didTapDone(sender: UIButton) {
         Logger.verbose("")
 
         completeAndDismiss()
@@ -253,7 +255,8 @@ extension ImageEditorBrushViewController: ImageEditorPaletteViewDelegate {
 // MARK: -
 
 extension ImageEditorBrushViewController: UIGestureRecognizerDelegate {
-    @objc public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    @objc
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         // Ignore touches that begin inside the palette.
         let location = touch.location(in: paletteView)
         return !paletteView.bounds.contains(location)

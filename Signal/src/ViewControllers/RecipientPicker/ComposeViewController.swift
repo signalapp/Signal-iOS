@@ -40,11 +40,13 @@ class ComposeViewController: OWSViewController {
         recipientPicker.removeTheme(from: self)
     }
 
-    @objc func dismissPressed() {
+    @objc
+    func dismissPressed() {
         dismiss(animated: true)
     }
 
-    @objc func newGroupPressed() {
+    @objc
+    func newGroupPressed() {
         showNewGroupUI()
     }
 

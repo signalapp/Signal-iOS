@@ -159,7 +159,8 @@ public class ImageEditorBlurViewController: OWSViewController {
 
     // MARK: - Actions
 
-    @objc func didTapUndo(sender: UIButton) {
+    @objc
+    func didTapUndo(sender: UIButton) {
         Logger.verbose("")
         guard model.canUndo() else {
             owsFailDebug("Can't undo.")
@@ -168,7 +169,8 @@ public class ImageEditorBlurViewController: OWSViewController {
         model.undo()
     }
 
-    @objc func didTapDone(sender: UIButton) {
+    @objc
+    func didTapDone(sender: UIButton) {
         Logger.verbose("")
 
         completeAndDismiss()
@@ -185,7 +187,8 @@ public class ImageEditorBlurViewController: OWSViewController {
         return model.item(forId: ImageEditorBlurViewController.autoBlurItemIdentifier) as? ImageEditorBlurRegionsItem
     }
 
-    @objc func didToggleAutoBlur(sender: UISwitch) {
+    @objc
+    func didToggleAutoBlur(sender: UISwitch) {
         Logger.verbose("")
 
         if let currentAutoBlurItem = currentAutoBlurItem {
@@ -369,7 +372,8 @@ extension ImageEditorBlurViewController: ImageEditorModelObserver {
 // MARK: -
 
 extension ImageEditorBlurViewController: UIGestureRecognizerDelegate {
-    @objc public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    @objc
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         // Ignore touches that begin inside the autoBlurContainer.
         let location = touch.location(in: bottomControlsContainer)
         return !bottomControlsContainer.bounds.contains(location)

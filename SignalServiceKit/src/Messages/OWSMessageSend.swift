@@ -16,7 +16,8 @@ public class OWSMessageSend: NSObject {
     @objc
     public var plaintextContent: Data?
 
-    @objc(plaintextPayloadId) @available(swift, obsoleted: 1.0)
+    @objc(plaintextPayloadId)
+    @available(swift, obsoleted: 1.0)
     public var plaintextPayloadIdObjc: NSNumber? { plaintextPayloadId.map { NSNumber(value: $0) } }
     public var plaintextPayloadId: Int64?
 

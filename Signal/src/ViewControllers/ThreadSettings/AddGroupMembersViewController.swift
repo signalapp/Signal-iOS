@@ -54,7 +54,8 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
         }
     }
 
-    @objc func updateGroupPressed() {
+    @objc
+    func updateGroupPressed() {
         showConfirmationAlert()
     }
 

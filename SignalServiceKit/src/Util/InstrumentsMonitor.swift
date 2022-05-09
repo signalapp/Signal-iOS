@@ -10,7 +10,8 @@ import os.signpost
  */
 
 // "struct" must be accessible from objc, so we have to use a derived NSObject class
-@objc public class InstrumentsMonitor: NSObject {
+@objc
+public class InstrumentsMonitor: NSObject {
 
     /**
      The interface definition to be implemented for a monitor start.
@@ -39,10 +40,10 @@ import os.signpost
     */
     public static var stop: StopSpanInterface?
 
-    @usableFromInline
-    internal static let SUBSYSTEM = "org.whispersystems.signal"
+    @usableFromInline internal static let SUBSYSTEM = "org.whispersystems.signal"
 
-    @objc public static func enable() {
+    @objc
+    public static func enable() {
         #if TESTABLE_BUILD
         let environment = ProcessInfo.processInfo.environment["OS_ACTIVITY_MODE"]
         if environment == nil || environment!.lowercased() != "disable" {
@@ -90,7 +91,8 @@ import os.signpost
     }
 
     // @inlinable allows the call to be compiled out in non-testable builds where it does nothing.
-    @objc @inlinable
+    @objc
+    @inlinable
     public static func trackEvent(name s: String) {
         #if TESTABLE_BUILD
         let log = OSLog(subsystem: SUBSYSTEM, category: OSLog.Category.pointsOfInterest)
@@ -124,23 +126,28 @@ import os.signpost
         return try block()
     }
 
-    @objc public static func startSpan(category: String, name: String) -> UInt64 {
+    @objc
+    public static func startSpan(category: String, name: String) -> UInt64 {
         return start?(category, nil, name) ?? 0
     }
 
-    @objc public static func startSpan(category: String, parent: String, name: String) -> UInt64 {
+    @objc
+    public static func startSpan(category: String, parent: String, name: String) -> UInt64 {
         return start?(category, parent, name) ?? 0
     }
 
-    @objc public static func stopSpan(category: String, hash: UInt64) {
+    @objc
+    public static func stopSpan(category: String, hash: UInt64) {
         stop?(category, hash, nil, [])
     }
 
-    @objc public static func stopSpan(category: String, hash: UInt64, param: String) {
+    @objc
+    public static func stopSpan(category: String, hash: UInt64, param: String) {
         stop?(category, hash, nil, [param])
     }
 
-    @objc public static func measure(category: String, parent: String, name: String, block: () -> Void) {
+    @objc
+    public static func measure(category: String, parent: String, name: String, block: () -> Void) {
         let monitorId = startSpan(category: category, parent: parent, name: name)
         defer {
             stopSpan(category: category, hash: monitorId)

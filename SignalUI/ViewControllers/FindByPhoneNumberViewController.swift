@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -203,7 +203,8 @@ public class FindByPhoneNumberViewController: OWSViewController {
         return !phoneNumbers[0].toE164().isEmpty
     }
 
-    @objc func tryToSelectPhoneNumber() {
+    @objc
+    func tryToSelectPhoneNumber() {
         guard hasValidPhoneNumber() else { return }
 
         let phoneNumbers = possiblePhoneNumbers()
@@ -260,7 +261,8 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
                       countryCode: countryState.countryCode)
     }
 
-    @objc func didTapCountryRow() {
+    @objc
+    func didTapCountryRow() {
         let countryCodeController = CountryCodeViewController()
         countryCodeController.countryCodeDelegate = self
         presentFormSheet(OWSNavigationController(rootViewController: countryCodeController), animated: true)

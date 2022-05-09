@@ -311,7 +311,8 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    @objc func didBecomeActive() {
+    @objc
+    func didBecomeActive() {
         AssertIsOnMainThread()
 
         guard hasPendingCrossProcessWrite else {

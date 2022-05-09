@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -38,7 +38,8 @@ public class AnyMessageContentJobFinder: NSObject, MessageContentJobFinder {
         }
     }
 
-    @objc func allJobs(transaction: SDSAnyReadTransaction) -> [OWSMessageContentJob] {
+    @objc
+    func allJobs(transaction: SDSAnyReadTransaction) -> [OWSMessageContentJob] {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             return grdbAdapter.allJobs(transaction: grdbRead)

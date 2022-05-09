@@ -149,7 +149,8 @@ public class ConversationHeaderView: UIStackView {
 
     // MARK: Delegate Methods
 
-    @objc func didTapView(tapGesture: UITapGestureRecognizer) {
+    @objc
+    func didTapView(tapGesture: UITapGestureRecognizer) {
         guard tapGesture.state == .recognized else {
             return
         }

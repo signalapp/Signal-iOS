@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -110,7 +110,8 @@ public class LoadingViewController: UIViewController {
 
     // MARK: -
 
-    @objc func didBecomeActive() {
+    @objc
+    func didBecomeActive() {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -135,7 +136,8 @@ public class LoadingViewController: UIViewController {
 
     private var viewHasEnteredBackground = false
 
-    @objc func didEnterBackground() {
+    @objc
+    func didEnterBackground() {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -143,7 +145,8 @@ public class LoadingViewController: UIViewController {
         viewHasEnteredBackground = true
     }
 
-    @objc func themeDidChange() {
+    @objc
+    func themeDidChange() {
         view.backgroundColor = Theme.launchScreenBackground
     }
 

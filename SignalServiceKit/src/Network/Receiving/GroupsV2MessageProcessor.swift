@@ -57,31 +57,36 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
 
     // MARK: - Notifications
 
-    @objc func applicationWillEnterForeground() {
+    @objc
+    func applicationWillEnterForeground() {
         AssertIsOnMainThread()
 
         drainQueueWhenReady()
     }
 
-    @objc func applicationDidEnterBackground() {
+    @objc
+    func applicationDidEnterBackground() {
         AssertIsOnMainThread()
 
         drainQueueWhenReady()
     }
 
-    @objc func registrationStateDidChange() {
+    @objc
+    func registrationStateDidChange() {
         AssertIsOnMainThread()
 
         drainQueueWhenReady()
     }
 
-    @objc func webSocketStateDidChange() {
+    @objc
+    func webSocketStateDidChange() {
         AssertIsOnMainThread()
 
         drainQueueWhenReady()
     }
 
-    @objc func reachabilityChanged() {
+    @objc
+    func reachabilityChanged() {
         AssertIsOnMainThread()
 
         drainQueueWhenReady()
@@ -246,31 +251,36 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
 
     // MARK: - Notifications
 
-    @objc func applicationWillEnterForeground() {
+    @objc
+    func applicationWillEnterForeground() {
         AssertIsOnMainThread()
 
         tryToProcess()
     }
 
-    @objc func applicationDidEnterBackground() {
+    @objc
+    func applicationDidEnterBackground() {
         AssertIsOnMainThread()
 
         tryToProcess()
     }
 
-    @objc func registrationStateDidChange() {
+    @objc
+    func registrationStateDidChange() {
         AssertIsOnMainThread()
 
         tryToProcess()
     }
 
-    @objc func webSocketStateDidChange() {
+    @objc
+    func webSocketStateDidChange() {
         AssertIsOnMainThread()
 
         tryToProcess()
     }
 
-    @objc func reachabilityChanged() {
+    @objc
+    func reachabilityChanged() {
         AssertIsOnMainThread()
 
         tryToProcess()

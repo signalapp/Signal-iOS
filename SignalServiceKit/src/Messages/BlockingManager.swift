@@ -149,7 +149,8 @@ extension BlockingManager {
 
     // MARK: Writers
 
-    @objc public func addBlockedAddress(_ address: SignalServiceAddress, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
+    @objc
+    public func addBlockedAddress(_ address: SignalServiceAddress, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
         guard address.isValid else {
             owsFailDebug("Invalid address: \(address).")
             return
@@ -166,7 +167,8 @@ extension BlockingManager {
         }
     }
 
-    @objc public func removeBlockedAddress(_ address: SignalServiceAddress, wasLocallyInitiated: Bool, transaction: SDSAnyWriteTransaction) {
+    @objc
+    public func removeBlockedAddress(_ address: SignalServiceAddress, wasLocallyInitiated: Bool, transaction: SDSAnyWriteTransaction) {
         guard address.isValid else {
             owsFailDebug("Invalid address: \(address).")
             return
@@ -183,7 +185,8 @@ extension BlockingManager {
         }
     }
 
-    @objc public func addBlockedGroup(groupModel: TSGroupModel, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
+    @objc
+    public func addBlockedGroup(groupModel: TSGroupModel, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
         let groupId = groupModel.groupId
         guard GroupManager.isValidGroupIdOfAnyKind(groupId) else {
             owsFailDebug("Invalid group: \(groupId)")
@@ -213,7 +216,8 @@ extension BlockingManager {
         }
     }
 
-    @objc public func removeBlockedGroup(groupId: Data, wasLocallyInitiated: Bool, transaction: SDSAnyWriteTransaction) {
+    @objc
+    public func removeBlockedGroup(groupId: Data, wasLocallyInitiated: Bool, transaction: SDSAnyWriteTransaction) {
         guard GroupManager.isValidGroupIdOfAnyKind(groupId) else {
             owsFailDebug("Invalid group: \(groupId)")
             return
@@ -280,7 +284,8 @@ extension BlockingManager {
         }
     }
 
-    @objc public func addBlockedGroup(groupId: Data, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
+    @objc
+    public func addBlockedGroup(groupId: Data, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
         // Since we're in a write transaction, current state shouldn't have updated between this read
         // and the following write. I'm just using the `withCurrentState` method here to avoid reenterancy
         // that'd require having a separate helper implementation.
@@ -304,7 +309,8 @@ extension BlockingManager {
 // MARK: - Syncing
 
 extension BlockingManager {
-    @objc public func processIncomingSync(blockedPhoneNumbers: Set<String>, blockedUUIDs: Set<UUID>, blockedGroupIds: Set<Data>, transaction: SDSAnyWriteTransaction) {
+    @objc
+    public func processIncomingSync(blockedPhoneNumbers: Set<String>, blockedUUIDs: Set<UUID>, blockedGroupIds: Set<Data>, transaction: SDSAnyWriteTransaction) {
         Logger.info("")
         transaction.addAsyncCompletionOnMain {
             NotificationCenter.default.post(name: Self.blockedSyncDidComplete, object: nil)
@@ -347,7 +353,8 @@ extension BlockingManager {
         }
     }
 
-    @objc public func syncBlockList(completion: @escaping () -> Void) {
+    @objc
+    public func syncBlockList(completion: @escaping () -> Void) {
         DispatchQueue.global().async {
             self.sendBlockListSyncMessage(force: true)
             completion()
@@ -412,8 +419,10 @@ extension BlockingManager {
 // MARK: - Notifications
 
 extension BlockingManager {
-    @objc public static let blockListDidChange = Notification.Name("blockListDidChange")
-    @objc public static let blockedSyncDidComplete = Notification.Name("blockedSyncDidComplete")
+    @objc
+    public static let blockListDidChange = Notification.Name("blockListDidChange")
+    @objc
+    public static let blockedSyncDidComplete = Notification.Name("blockedSyncDidComplete")
 
     fileprivate func observeNotifications() {
         AssertIsOnMainThread()

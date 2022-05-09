@@ -55,7 +55,8 @@ class GroupDescriptionPreviewView: ManualLayoutView {
         textView.autoPinEdgesToSuperviewEdges()
     }
 
-    @objc required init(name: String) {
+    @objc
+    required init(name: String) {
         fatalError("init(name:) has not been implemented")
     }
 

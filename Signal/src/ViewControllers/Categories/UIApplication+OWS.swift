@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-@objc public extension UIApplication {
+@objc
+public extension UIApplication {
 
     var frontmostViewControllerIgnoringAlerts: UIViewController? {
         guard let window = CurrentAppContext().mainWindow else {

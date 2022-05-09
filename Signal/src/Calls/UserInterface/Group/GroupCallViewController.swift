@@ -465,7 +465,8 @@ class GroupCallViewController: UIViewController {
 
     // MARK: - Video control timeout
 
-    @objc func didTouchRootView(sender: UIGestureRecognizer) {
+    @objc
+    func didTouchRootView(sender: UIGestureRecognizer) {
         shouldRemoteVideoControlsBeHidden = !shouldRemoteVideoControlsBeHidden
     }
 

@@ -12,7 +12,8 @@ import CallKit
 // MARK: - CallService
 
 // This class' state should only be accessed on the main queue.
-@objc final public class IndividualCallService: NSObject {
+@objc
+final public class IndividualCallService: NSObject {
 
     private var callManager: CallService.CallManagerType {
         return callService.callManager
@@ -22,13 +23,15 @@ import CallKit
 
     // Exposed by environment.m
 
-    @objc public var callUIAdapter: CallUIAdapter!
+    @objc
+    public var callUIAdapter: CallUIAdapter!
 
     // MARK: Class
 
     static let fallbackIceServer = RTCIceServer(urlStrings: ["stun:stun1.l.google.com:19302"])
 
-    @objc public override init() {
+    @objc
+    public override init() {
         super.init()
 
         SwiftSingletons.register(self)
@@ -37,7 +40,8 @@ import CallKit
     /**
      * Choose whether to use CallKit or a Notification backed interface for calling.
      */
-    @objc public func createCallUIAdapter() {
+    @objc
+    public func createCallUIAdapter() {
         AssertIsOnMainThread()
 
         if let call = callService.currentCall {

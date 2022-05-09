@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -25,7 +25,8 @@ import SignalMessaging
 //   region b) the rectangle at which the src image should be rendered
 //   given a dst view or output context that will yield the 
 //   appropriate cropping.
-@objc class CropScaleImageViewController: OWSViewController {
+@objc
+class CropScaleImageViewController: OWSViewController {
 
     // MARK: Properties
 
@@ -73,7 +74,8 @@ import SignalMessaging
 
     // MARK: Initializers
 
-    @objc required init(srcImage: UIImage, successCompletion : @escaping (UIImage) -> Void) {
+    @objc
+    required init(srcImage: UIImage, successCompletion : @escaping (UIImage) -> Void) {
         // normalized() can be slightly expensive but in practice this is fine.
         self.srcImage = srcImage.normalized()
         self.successCompletion = successCompletion
@@ -335,7 +337,8 @@ import SignalMessaging
     var lastPinchLocation: CGPoint = CGPoint.zero
     var lastPinchScale: CGFloat = 1.0
 
-    @objc func handlePinch(sender: UIPinchGestureRecognizer) {
+    @objc
+    func handlePinch(sender: UIPinchGestureRecognizer) {
         switch sender.state {
         case .possible:
             break
@@ -397,7 +400,8 @@ import SignalMessaging
 
     var srcTranslationAtPanStart: CGPoint = CGPoint.zero
 
-    @objc func handlePan(sender: UIPanGestureRecognizer) {
+    @objc
+    func handlePan(sender: UIPanGestureRecognizer) {
         switch sender.state {
         case .possible:
             break
@@ -474,11 +478,13 @@ import SignalMessaging
 
     // MARK: - Event Handlers
 
-    @objc func cancelPressed(sender: UIButton) {
+    @objc
+    func cancelPressed(sender: UIButton) {
         dismiss(animated: true, completion: nil)
     }
 
-    @objc func donePressed(sender: UIButton) {
+    @objc
+    func donePressed(sender: UIButton) {
         let successCompletion = self.successCompletion
         dismiss(animated: true, completion: {
             guard let dstImage = self.generateDstImage() else {

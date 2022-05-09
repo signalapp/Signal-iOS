@@ -381,7 +381,8 @@ extension OWSProfileManager {
 
     // MARK: -
 
-    @objc public func updateProfileOnServiceIfNecessary() {
+    @objc
+    public func updateProfileOnServiceIfNecessary() {
         switch Self._updateProfileOnServiceIfNecessary() {
         case .notReady, .updating:
             return

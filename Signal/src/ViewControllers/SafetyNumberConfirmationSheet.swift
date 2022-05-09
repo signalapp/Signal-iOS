@@ -26,7 +26,8 @@ class SafetyNumberConfirmationSheet: UIViewController {
 
     public let theme: Theme.ActionSheet
 
-    @objc @available(swift, obsoleted: 1.0)
+    @objc
+    @available(swift, obsoleted: 1.0)
     convenience init(addressesToConfirm addresses: [SignalServiceAddress], confirmationText: String, completionHandler: @escaping (Bool) -> Void) {
         self.init(addressesToConfirm: addresses, confirmationText: confirmationText, completionHandler: completionHandler)
     }
@@ -221,7 +222,8 @@ class SafetyNumberConfirmationSheet: UIViewController {
         setupInteractiveSizing()
     }
 
-    @objc func didTapBackdrop(_ sender: UITapGestureRecognizer) {
+    @objc
+    func didTapBackdrop(_ sender: UITapGestureRecognizer) {
         guard allowsDismissal else { return }
         dismiss(animated: true)
     }
@@ -321,7 +323,8 @@ class SafetyNumberConfirmationSheet: UIViewController {
         handle.autoPinEdge(.bottom, to: .top, of: contentView, withOffset: -8)
     }
 
-    @objc func handlePan(_ sender: UIPanGestureRecognizer) {
+    @objc
+    func handlePan(_ sender: UIPanGestureRecognizer) {
         switch sender.state {
         case .began, .changed:
             guard beginInteractiveTransitionIfNecessary(sender),

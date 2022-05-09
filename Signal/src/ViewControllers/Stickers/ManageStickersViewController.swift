@@ -544,7 +544,8 @@ public class ManageStickersViewController: OWSTableViewController2 {
         }
     }
 
-    @objc func packsDidChange() {
+    @objc
+    func packsDidChange() {
         AssertIsOnMainThread()
 
         Logger.verbose("")

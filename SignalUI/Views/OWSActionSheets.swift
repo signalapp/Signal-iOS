@@ -5,7 +5,8 @@
 import Foundation
 import SignalMessaging
 
-@objc public class OWSActionSheets: NSObject {
+@objc
+public class OWSActionSheets: NSObject {
 
     @objc
     public class func showActionSheet(_ actionSheet: ActionSheetController) {

@@ -386,7 +386,8 @@ public class PinSetupViewController: OWSViewController {
 
     // MARK: - Events
 
-    @objc func navigateBack() {
+    @objc
+    func navigateBack() {
         Logger.info("")
 
         // If we're in creation mode AND we're the rootViewController, dismiss rather than pop
@@ -451,7 +452,8 @@ public class PinSetupViewController: OWSViewController {
         presentActionSheet(actionSheet)
     }
 
-    @objc func nextPressed() {
+    @objc
+    func nextPressed() {
         Logger.info("")
 
         tryToContinue()
@@ -584,7 +586,8 @@ public class PinSetupViewController: OWSViewController {
         }
     }
 
-    @objc func togglePinType() {
+    @objc
+    func togglePinType() {
         switch pinType {
         case .numeric:
             pinType = .alphanumeric

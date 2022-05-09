@@ -32,7 +32,8 @@ public class OWSUserProfileBadgeInfo: NSObject, SDSSwiftSerializable {
         case badgeId, expiration, isVisible
     }
 
-    @objc public func loadBadge(transaction: SDSAnyReadTransaction) {
+    @objc
+    public func loadBadge(transaction: SDSAnyReadTransaction) {
         badge = profileManager.badgeStore.fetchBadgeWithId(badgeId, readTx: transaction)
     }
 

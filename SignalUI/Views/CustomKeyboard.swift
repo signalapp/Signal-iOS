@@ -6,7 +6,8 @@ import Foundation
 
 @objc(OWSCustomKeyboard)
 open class CustomKeyboard: UIInputView {
-    @objc public let contentView = UIView()
+    @objc
+    public let contentView = UIView()
 
     @objc
     public init() {
@@ -35,7 +36,8 @@ open class CustomKeyboard: UIInputView {
     open func wasPresented() {}
     open func wasDismissed() {}
 
-    @objc public func registerWithView(_ view: UIView) {
+    @objc
+    public func registerWithView(_ view: UIView) {
         view.addSubview(responder)
     }
 
@@ -127,7 +129,8 @@ open class CustomKeyboard: UIInputView {
 }
 
 private class CustomKeyboardResponder: UITextView {
-    @objc public weak var customKeyboard: CustomKeyboard?
+    @objc
+    public weak var customKeyboard: CustomKeyboard?
 
     init(customKeyboard: CustomKeyboard) {
         self.customKeyboard = customKeyboard

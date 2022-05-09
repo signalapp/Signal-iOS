@@ -495,21 +495,24 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
 
      // MARK: - Events
 
-    @objc func countryRowTapped(sender: UIGestureRecognizer) {
+    @objc
+    func countryRowTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
         }
         showCountryPicker()
     }
 
-    @objc func countryCodeTapped(sender: UIGestureRecognizer) {
+    @objc
+    func countryCodeTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
         }
         showCountryPicker()
     }
 
-    @objc func continuePressed() {
+    @objc
+    func continuePressed() {
         Logger.info("")
 
         parseAndTryToRegister()

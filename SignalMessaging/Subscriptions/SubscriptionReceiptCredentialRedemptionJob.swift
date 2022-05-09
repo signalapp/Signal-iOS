@@ -132,7 +132,8 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     var amount: Decimal?
     var currencyCode: Currency.Code?
 
-    @objc public required init(_ jobRecord: OWSReceiptCredentialRedemptionJobRecord) throws {
+    @objc
+    public required init(_ jobRecord: OWSReceiptCredentialRedemptionJobRecord) throws {
         self.jobRecord = jobRecord
         self.isBoost = jobRecord.isBoost
         self.amount = jobRecord.amount.map { $0 as Decimal }

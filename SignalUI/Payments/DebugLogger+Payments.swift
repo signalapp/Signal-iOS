@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -56,16 +56,14 @@ public extension DebugLogger {
             }
         }
 
-        @inlinable
-        public var metadata: Logging.Logger.Metadata {
+        @inlinable public var metadata: Logging.Logger.Metadata {
             get {
                 return [:]
             }
             set {}
         }
 
-        @inlinable
-        public var logLevel: Logging.Logger.Level {
+        @inlinable public var logLevel: Logging.Logger.Level {
             get {
                 #if DEBUG
                 return .trace

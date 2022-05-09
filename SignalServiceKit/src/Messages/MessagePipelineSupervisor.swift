@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,14 +17,16 @@ public class MessagePipelineSupervisor: NSObject {
 
     /// Constructs an instance of `MessagePipelineSupervisor` to be treated as a shared instance for the application.
     /// Should not be called more than once per app launch
-    @objc public static func createStandardSupervisor() -> MessagePipelineSupervisor {
+    @objc
+    public static func createStandardSupervisor() -> MessagePipelineSupervisor {
         self.init(isolated: false)
     }
 
     /// Initializes a MessagePipelineSupervisor
     /// - Parameter isolated: If set true, the returned instance is not configured to be a singleton.
     ///   Only to be used by tests.
-    @objc required init(isolated: Bool = false) {
+    @objc
+    required init(isolated: Bool = false) {
         super.init()
         assert(!isolated || CurrentAppContext().isRunningTests,
                "The isolated parameter may only be set in a test context")
@@ -38,7 +40,8 @@ public class MessagePipelineSupervisor: NSObject {
     // MARK: - Public
 
     /// Returns whether or not the message processing pipeline is/should be suspended. Thread-safe.
-    @objc public var isMessageProcessingPermitted: Bool {
+    @objc
+    public var isMessageProcessingPermitted: Bool {
         if CurrentAppContext().shouldProcessIncomingMessages {
             return lock.withLock { (suspensionCount == 0) }
         } else {
@@ -49,7 +52,8 @@ public class MessagePipelineSupervisor: NSObject {
     /// Invoking this method will ensure that all registered message processing stages are notified that they should
     /// suspend their activity. This suppression will persist until the returned handle is invalidated.
     /// Note: The caller *must* invalidate the returned handle.
-    @objc public func suspendMessageProcessing(for reason: String) -> MessagePipelineSuspensionHandle {
+    @objc
+    public func suspendMessageProcessing(for reason: String) -> MessagePipelineSuspensionHandle {
         incrementSuspensionCount(for: reason)
         let handle = MessagePipelineSuspensionHandle {
             self.decrementSuspensionCount(for: "Handle invalidation: \(reason)")
@@ -149,7 +153,8 @@ public class MessagePipelineSuspensionHandle: NSObject {
     }
 
     /// Invalidate the pipeline suspension. This must be invoked before the object is deallocated
-    @objc public func invalidate() {
+    @objc
+    public func invalidate() {
         // Why require an explicit invalidation and not just implicitly invalidate on -deinit?
         // There's a possibility that the handle gets captured in an autoreleasepool for an
         // indeterminate amount of time. By mandating explicit invalidation, we ensure that we
@@ -169,8 +174,10 @@ public class MessagePipelineSuspensionHandle: NSObject {
 public protocol MessageProcessingPipelineStage {
     /// Invoked on a registered pipeline stage whenever the supervisor requests suspension of message processing
     /// Not guaranteed to be invoked on a particular thread
-    @objc optional func supervisorDidSuspendMessageProcessing(_ supervisor: MessagePipelineSupervisor)
+    @objc
+    optional func supervisorDidSuspendMessageProcessing(_ supervisor: MessagePipelineSupervisor)
     /// Invoked on a registered pipeline stage whenever the supervisor permits resumption of message processing
     /// Not guaranteed to be invoked on a particular thread
-    @objc optional func supervisorDidResumeMessageProcessing(_ supervisor: MessagePipelineSupervisor)
+    @objc
+    optional func supervisorDidResumeMessageProcessing(_ supervisor: MessagePipelineSupervisor)
 }

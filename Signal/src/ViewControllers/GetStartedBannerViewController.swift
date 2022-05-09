@@ -129,7 +129,8 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         collectionView.dataSource = self
     }
 
-    @objc func applyTheme() {
+    @objc
+    func applyTheme() {
         header.textColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_black
         let backdropColor = Theme.backgroundColor
         opaqueBackdrop.backgroundColor = backdropColor

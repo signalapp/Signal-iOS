@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -159,15 +159,24 @@ public class BadgeAssets: NSObject {
 extension BadgeAssets {
 
     // TODO: Badges — Lazy initialization? Double check backing memory is all purgable
-    @objc public var light16: UIImage? { imageForVariant(.light16) }
-    @objc public var light24: UIImage? { imageForVariant(.light24) }
-    @objc public var light36: UIImage? { imageForVariant(.light36) }
-    @objc public var dark16: UIImage? { imageForVariant(.dark16) }
-    @objc public var dark24: UIImage? { imageForVariant(.dark24) }
-    @objc public var dark36: UIImage? { imageForVariant(.dark36) }
-    @objc public var universal64: UIImage? { imageForVariant(.universal64) }
-    @objc public var universal112: UIImage? { imageForVariant(.universal112) }
-    @objc public var universal160: UIImage? { imageForVariant(.universal160) }
+    @objc
+    public var light16: UIImage? { imageForVariant(.light16) }
+    @objc
+    public var light24: UIImage? { imageForVariant(.light24) }
+    @objc
+    public var light36: UIImage? { imageForVariant(.light36) }
+    @objc
+    public var dark16: UIImage? { imageForVariant(.dark16) }
+    @objc
+    public var dark24: UIImage? { imageForVariant(.dark24) }
+    @objc
+    public var dark36: UIImage? { imageForVariant(.dark36) }
+    @objc
+    public var universal64: UIImage? { imageForVariant(.universal64) }
+    @objc
+    public var universal112: UIImage? { imageForVariant(.universal112) }
+    @objc
+    public var universal160: UIImage? { imageForVariant(.universal160) }
 
     private func imageForVariant(_ variant: Variant) -> UIImage? {
         let currentState = lock.withLock { state }

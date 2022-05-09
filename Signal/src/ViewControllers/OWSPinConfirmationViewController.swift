@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -219,13 +219,15 @@ public class PinConfirmationViewController: OWSViewController {
 
     // MARK: - Events
 
-    @objc func cancelPressed() {
+    @objc
+    func cancelPressed() {
         Logger.info("")
 
         dismiss(animated: true) { self.completionHandler(false) }
     }
 
-    @objc func submitPressed() {
+    @objc
+    func submitPressed() {
         verifyAndDismissOnSuccess(pinTextField.text)
     }
 

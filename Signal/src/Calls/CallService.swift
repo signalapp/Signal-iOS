@@ -607,12 +607,14 @@ public final class CallService: LightweightCallManager {
 
     // MARK: - Notifications
 
-    @objc func didEnterBackground() {
+    @objc
+    func didEnterBackground() {
         AssertIsOnMainThread()
         self.updateIsVideoEnabled()
     }
 
-    @objc func didBecomeActive() {
+    @objc
+    func didBecomeActive() {
         AssertIsOnMainThread()
         self.updateIsVideoEnabled()
     }

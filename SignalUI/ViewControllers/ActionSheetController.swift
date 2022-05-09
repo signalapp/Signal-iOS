@@ -217,7 +217,8 @@ open class ActionSheetController: OWSViewController {
         scrollView.contentOffset = CGPoint(x: 0, y: scrollView.contentSize.height - scrollView.height + bottomInset)
     }
 
-    @objc func didTapBackdrop(_ sender: UITapGestureRecognizer) {
+    @objc
+    func didTapBackdrop(_ sender: UITapGestureRecognizer) {
         guard isCancelable else { return }
         // If we have a cancel action, treat tapping the background
         // as tapping the cancel button.
@@ -484,7 +485,8 @@ public class ActionSheetAction: NSObject {
             }
         }
 
-        @objc func didTouchUpInside() {
+        @objc
+        func didTouchUpInside() {
             releaseAction?()
         }
     }

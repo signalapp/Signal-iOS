@@ -378,13 +378,15 @@ class RegistrationVerificationViewModel: NSObject {
         viewController.registrationNavigateBack()
     }
 
-    @objc func resendCodeButtonTapped() {
+    @objc
+    func resendCodeButtonTapped() {
         guard canResend else { return }
         Logger.info("")
         resendCode(asPhoneCall: false)
     }
 
-    @objc func callMeButtonTapped() {
+    @objc
+    func callMeButtonTapped() {
         guard canResend else { return }
         Logger.info("")
         resendCode(asPhoneCall: true)

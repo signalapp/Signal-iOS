@@ -156,7 +156,8 @@ class ToastView: UIView {
 
     // MARK: Gestures
 
-    @objc func applyTheme() {
+    @objc
+    func applyTheme() {
         darkThemeBackgroundOverlay.isHidden = !Theme.isDarkThemeEnabled
     }
 

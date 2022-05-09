@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,7 +17,8 @@ public class SSKTestKeychainStorage: NSObject, SSKKeychainStorage {
         super.init()
     }
 
-    @objc public func string(forService service: String, key: String) throws -> String {
+    @objc
+    public func string(forService service: String, key: String) throws -> String {
         let data = try self.data(forService: service, key: key)
         guard let string = String(bytes: data, encoding: String.Encoding.utf8) else {
             throw KeychainStorageError.failure(description: "\(logTag) could not retrieve string")
@@ -25,7 +26,8 @@ public class SSKTestKeychainStorage: NSObject, SSKKeychainStorage {
         return string
     }
 
-    @objc public func set(string: String, service: String, key: String) throws {
+    @objc
+    public func set(string: String, service: String, key: String) throws {
         guard let data = string.data(using: String.Encoding.utf8) else {
             throw KeychainStorageError.failure(description: "\(logTag) could not store data")
         }
@@ -36,7 +38,8 @@ public class SSKTestKeychainStorage: NSObject, SSKKeychainStorage {
         return "\(service) \(key)"
     }
 
-    @objc public func data(forService service: String, key: String) throws -> Data {
+    @objc
+    public func data(forService service: String, key: String) throws -> Data {
         try lock.withLock {
             let key = self.key(forService: service, key: key)
             guard let data = dataMap[key] else {
@@ -46,14 +49,16 @@ public class SSKTestKeychainStorage: NSObject, SSKKeychainStorage {
         }
     }
 
-    @objc public func set(data: Data, service: String, key: String) throws {
+    @objc
+    public func set(data: Data, service: String, key: String) throws {
         lock.withLock {
             let key = self.key(forService: service, key: key)
             dataMap[key] = data
         }
     }
 
-    @objc public func remove(service: String, key: String) throws {
+    @objc
+    public func remove(service: String, key: String) throws {
         lock.withLock {
             let key = self.key(forService: service, key: key)
             dataMap.removeValue(forKey: key)

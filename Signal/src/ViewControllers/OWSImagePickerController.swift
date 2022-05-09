@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-@objc class OWSImagePickerController: UIImagePickerController {
+@objc
+class OWSImagePickerController: UIImagePickerController {
 
     // MARK: Orientation
 

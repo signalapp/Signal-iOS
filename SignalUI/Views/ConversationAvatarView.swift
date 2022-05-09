@@ -441,12 +441,14 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         }
     }
 
-    @objc private func didTapAvatar(_ sender: UITapGestureRecognizer) {
+    @objc
+    private func didTapAvatar(_ sender: UITapGestureRecognizer) {
         guard avatarView.image != nil else { return }
         interactionDelegate?.didTapAvatar()
     }
 
-    @objc private func didTapBadge(_ sender: UITapGestureRecognizer) {
+    @objc
+    private func didTapBadge(_ sender: UITapGestureRecognizer) {
         guard badgeView.image != nil else { return }
         interactionDelegate?.didTapBadge()
     }

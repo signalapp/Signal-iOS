@@ -131,7 +131,8 @@ class AttachmentKeyboard: CustomKeyboard {
         galleryButton.addTarget(self, action: #selector(didTapGalleryButton), for: .touchUpInside)
     }
 
-    @objc func didTapGalleryButton() {
+    @objc
+    func didTapGalleryButton() {
         delegate?.didTapGalleryButton()
     }
 
@@ -159,7 +160,8 @@ class AttachmentKeyboard: CustomKeyboard {
         }
     }
 
-    @objc func keyboardFrameDidChange() {
+    @objc
+    func keyboardFrameDidChange() {
         updateItemSizes()
     }
 

@@ -1,12 +1,13 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-@objc public enum MessageReceiptStatus: Int {
+@objc
+public enum MessageReceiptStatus: Int {
     case uploading
     case sending
     case sent

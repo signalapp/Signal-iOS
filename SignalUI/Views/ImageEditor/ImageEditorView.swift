@@ -126,7 +126,8 @@ public class ImageEditorView: UIView {
 
     // MARK: - Actions
 
-    @objc func didTapUndo(sender: UIButton) {
+    @objc
+    func didTapUndo(sender: UIButton) {
         Logger.verbose("")
         guard model.canUndo() else {
             owsFailDebug("Can't undo.")
@@ -135,7 +136,8 @@ public class ImageEditorView: UIView {
         model.undo()
     }
 
-    @objc func didTapBrush(sender: UIButton) {
+    @objc
+    func didTapBrush(sender: UIButton) {
         Logger.verbose("")
 
         let brushView = ImageEditorBrushViewController(delegate: self, model: model, currentColor: currentColor)
@@ -143,13 +145,15 @@ public class ImageEditorView: UIView {
                                    isTransparent: false)
     }
 
-    @objc func didTapCrop(sender: UIButton) {
+    @objc
+    func didTapCrop(sender: UIButton) {
         Logger.verbose("")
 
         presentCropTool()
     }
 
-    @objc func didTapNewText(sender: UIButton) {
+    @objc
+    func didTapNewText(sender: UIButton) {
         Logger.verbose("")
 
         createNewTextItem()
@@ -181,14 +185,16 @@ public class ImageEditorView: UIView {
         edit(textItem: textItem, isNewItem: true)
     }
 
-    @objc func didTapBlur() {
+    @objc
+    func didTapBlur() {
         Logger.verbose("")
 
         let blurView = ImageEditorBlurViewController(model: model)
         self.delegate?.imageEditor(presentFullScreenView: blurView, isTransparent: false)
     }
 
-    @objc func didTapDone(sender: UIButton) {
+    @objc
+    func didTapDone(sender: UIButton) {
         Logger.verbose("")
     }
 
@@ -423,7 +429,8 @@ public class ImageEditorView: UIView {
 
 extension ImageEditorView: UIGestureRecognizerDelegate {
 
-    @objc public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    @objc
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard moveTextGestureRecognizer == gestureRecognizer else {
             owsFailDebug("Unexpected gesture.")
             return false

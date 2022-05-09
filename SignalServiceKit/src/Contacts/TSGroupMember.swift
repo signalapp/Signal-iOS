@@ -22,11 +22,15 @@ public final class TSGroupMember: NSObject, SDSCodableModel {
     }
 
     public var id: Int64?
-    @objc public let uniqueId: String
+    @objc
+    public let uniqueId: String
 
-    @objc public let address: SignalServiceAddress
-    @objc public let groupThreadId: String
-    @objc public private(set) var lastInteractionTimestamp: UInt64
+    @objc
+    public let address: SignalServiceAddress
+    @objc
+    public let groupThreadId: String
+    @objc
+    public private(set) var lastInteractionTimestamp: UInt64
 
     @objc
     required public init(address: SignalServiceAddress, groupThreadId: String, lastInteractionTimestamp: UInt64) {

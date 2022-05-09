@@ -113,7 +113,8 @@ public class ReminderView: UIView {
         }
     }
 
-    @objc func handleTap(gestureRecognizer: UIGestureRecognizer) {
+    @objc
+    func handleTap(gestureRecognizer: UIGestureRecognizer) {
         guard gestureRecognizer.state == .recognized else {
             return
         }

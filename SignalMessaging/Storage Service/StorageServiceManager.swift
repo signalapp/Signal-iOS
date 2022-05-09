@@ -197,7 +197,8 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         }
     }
 
-    @objc func backupTimerFired(_ timer: Timer) {
+    @objc
+    func backupTimerFired(_ timer: Timer) {
         AssertIsOnMainThread()
 
         Logger.info("")

@@ -23,7 +23,8 @@ public class TappableStackView: UIStackView {
         self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(wasTapped)))
     }
 
-    @objc func wasTapped(sender: UIGestureRecognizer) {
+    @objc
+    func wasTapped(sender: UIGestureRecognizer) {
         Logger.info("")
 
         guard sender.state == .recognized else {

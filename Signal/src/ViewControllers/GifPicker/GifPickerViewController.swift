@@ -145,7 +145,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     // MARK: -
-    @objc func didBecomeActive() {
+    @objc
+    func didBecomeActive() {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -154,7 +155,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         ensureCellState()
     }
 
-    @objc func reachabilityChanged() {
+    @objc
+    func reachabilityChanged() {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -535,7 +537,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: - Event Handlers
 
-    @objc func didPressCancel(sender: UIButton) {
+    @objc
+    func didPressCancel(sender: UIButton) {
         delegate?.gifPickerDidCancel()
     }
 
@@ -654,7 +657,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: - Event Handlers
 
-    @objc func retryTapped(sender: UIGestureRecognizer) {
+    @objc
+    func retryTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
         }

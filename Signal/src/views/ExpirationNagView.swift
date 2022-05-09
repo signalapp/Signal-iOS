@@ -8,13 +8,15 @@ import UIKit
 public class ExpirationNagView: ReminderView {
     private static let updateLink = URL(string: "itms-apps://itunes.apple.com/app/id874139669")!
 
-    @objc convenience init() {
+    @objc
+    convenience init() {
         self.init(mode: .nag, text: "") {
             UIApplication.shared.open(ExpirationNagView.updateLink, options: [:])
         }
     }
 
-    @objc func updateText() {
+    @objc
+    func updateText() {
         if appExpiry.isExpired {
             text = NSLocalizedString("EXPIRATION_ERROR", comment: "Label notifying the user that the app has expired.")
         } else if appExpiry.daysUntilBuildExpiry == 1 {

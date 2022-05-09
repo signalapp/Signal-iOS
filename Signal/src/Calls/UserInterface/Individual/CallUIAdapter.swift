@@ -192,7 +192,8 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
         adaptee(for: call).startOutgoingCall(call: call)
     }
 
-    @objc public func answerCall(localId: UUID) {
+    @objc
+    public func answerCall(localId: UUID) {
         AssertIsOnMainThread()
 
         guard let call = self.callService.currentCall else {
@@ -214,7 +215,8 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
         adaptee(for: call).answerCall(call)
     }
 
-    @objc public func startAndShowOutgoingCall(thread: TSContactThread, hasLocalVideo: Bool) {
+    @objc
+    public func startAndShowOutgoingCall(thread: TSContactThread, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
         defaultAdaptee.startAndShowOutgoingCall(thread: thread, hasLocalVideo: hasLocalVideo)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -232,7 +232,8 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
 
     // MARK: Events
 
-    @objc func stickersOrPacksDidChange() {
+    @objc
+    func stickersOrPacksDidChange() {
         AssertIsOnMainThread()
 
         Logger.verbose("")
@@ -240,7 +241,8 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
         ensureStateAsync()
     }
 
-    @objc func didBecomeActive() {
+    @objc
+    func didBecomeActive() {
         AssertIsOnMainThread()
 
         ensureStateAsync {
@@ -500,7 +502,8 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
 
     // MARK: Events
 
-    @objc func didBecomeActive() {
+    @objc
+    func didBecomeActive() {
         AssertIsOnMainThread()
 
         ensureState()

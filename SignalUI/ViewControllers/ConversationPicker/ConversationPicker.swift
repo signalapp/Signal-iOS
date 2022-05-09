@@ -331,7 +331,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     // MARK: - Button Actions
 
-    @objc func onTouchCancelButton() {
+    @objc
+    func onTouchCancelButton() {
         pickerDelegate?.conversationPickerDidCancel(self)
     }
 

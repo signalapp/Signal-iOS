@@ -23,7 +23,8 @@ public class OWSWindow: UIWindow {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc private func themeDidChange() {
+    @objc
+    private func themeDidChange() {
         applyTheme()
     }
 

@@ -74,7 +74,8 @@ public class AtomicBool: NSObject {
 public class AtomicUInt: NSObject {
     private let value: AtomicValue<UInt>
 
-    @objc @available(swift, obsoleted: 1.0)
+    @objc
+    @available(swift, obsoleted: 1.0)
     public required convenience init(_ value: UInt) {
         self.init(value, lock: nil)
     }

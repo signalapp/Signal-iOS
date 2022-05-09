@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #if DEBUG
 
-@objc class DebugUIFileBrowser: OWSTableViewController {
+@objc
+class DebugUIFileBrowser: OWSTableViewController {
 
     // MARK: - Dependencies
 
@@ -15,7 +16,8 @@
     // MARK: Overrides
     let fileURL: URL
 
-    @objc init(fileURL: URL) {
+    @objc
+    init(fileURL: URL) {
         self.fileURL = fileURL
 
         super.init()

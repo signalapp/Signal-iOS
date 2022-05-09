@@ -100,7 +100,8 @@ class AttachmentApprovalToolbar: UIView {
 
     // MARK: - Events
 
-    @objc func captionTapped(sender: UIGestureRecognizer) {
+    @objc
+    func captionTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
         }

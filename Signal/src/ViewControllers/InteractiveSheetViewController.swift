@@ -122,7 +122,8 @@ public class InteractiveSheetViewController: OWSViewController {
         }
     }
 
-    @objc func didTapBackdrop(_ sender: UITapGestureRecognizer) {
+    @objc
+    func didTapBackdrop(_ sender: UITapGestureRecognizer) {
         willDismissInteractively()
         dismiss(animated: true)
     }

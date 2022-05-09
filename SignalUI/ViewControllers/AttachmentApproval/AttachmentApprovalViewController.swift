@@ -37,11 +37,14 @@ public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
     @objc
     optional func attachmentApprovalBackButtonTitle() -> String
 
-    @objc var attachmentApprovalTextInputContextIdentifier: String? { get }
+    @objc
+    var attachmentApprovalTextInputContextIdentifier: String? { get }
 
-    @objc var attachmentApprovalRecipientNames: [String] { get }
+    @objc
+    var attachmentApprovalRecipientNames: [String] { get }
 
-    @objc var attachmentApprovalMentionableAddresses: [SignalServiceAddress] { get }
+    @objc
+    var attachmentApprovalMentionableAddresses: [SignalServiceAddress] { get }
 }
 
 // MARK: -
@@ -168,7 +171,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     // MARK: - Notifications
 
-    @objc func didBecomeActive() {
+    @objc
+    func didBecomeActive() {
         AssertIsOnMainThread()
 
         updateContents(isApproved: false)
@@ -818,13 +822,15 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         self.approvalDelegate?.attachmentApprovalDidCancel(self)
     }
 
-    @objc func didTapCaption(sender: UIButton) {
+    @objc
+    func didTapCaption(sender: UIButton) {
         Logger.verbose("")
 
         isEditingCaptions = true
     }
 
-    @objc func didTapCaptionDone(sender: UIButton) {
+    @objc
+    func didTapCaptionDone(sender: UIButton) {
         Logger.verbose("")
 
         isEditingCaptions = false

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -185,7 +185,8 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
 
     // MARK: - Event Handlers
 
-    @objc func cancelPressed(sender: UIButton) {
+    @objc
+    func cancelPressed(sender: UIButton) {
         delegate?.textApprovalDidCancel(self)
     }
 

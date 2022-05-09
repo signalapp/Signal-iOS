@@ -25,14 +25,21 @@ public final class OWSReaction: NSObject, SDSCodableModel, NSSecureCoding {
     }
 
     public var id: Int64?
-    @objc public let uniqueId: String
+    @objc
+    public let uniqueId: String
 
-    @objc public let uniqueMessageId: String
-    @objc public let emoji: String
-    @objc public let reactor: SignalServiceAddress
-    @objc public let sentAtTimestamp: UInt64
-    @objc public let receivedAtTimestamp: UInt64
-    @objc public private(set) var read: Bool
+    @objc
+    public let uniqueMessageId: String
+    @objc
+    public let emoji: String
+    @objc
+    public let reactor: SignalServiceAddress
+    @objc
+    public let sentAtTimestamp: UInt64
+    @objc
+    public let receivedAtTimestamp: UInt64
+    @objc
+    public private(set) var read: Bool
 
     @objc
     public required init(

@@ -5,7 +5,8 @@
 import Foundation
 
 // ObjC compatible searcher
-@objc class AnySearcher: NSObject {
+@objc
+class AnySearcher: NSObject {
     private let searcher: Searcher<AnyObject>
 
     public init(indexer: @escaping (AnyObject, SDSAnyReadTransaction) -> String ) {

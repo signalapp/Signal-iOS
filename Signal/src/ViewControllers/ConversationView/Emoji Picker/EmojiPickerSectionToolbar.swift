@@ -66,7 +66,8 @@ class EmojiPickerSectionToolbar: BlurredToolbarContainer {
         return button
     }
 
-    @objc func didSelectSection(sender: UIButton) {
+    @objc
+    func didSelectSection(sender: UIButton) {
         guard let selectedSection = buttons.firstIndex(of: sender) else {
             return owsFailDebug("Selectetd unexpected button")
         }

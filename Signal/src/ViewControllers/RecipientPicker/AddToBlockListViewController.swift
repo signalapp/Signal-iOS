@@ -11,7 +11,8 @@ protocol AddToBlockListDelegate: AnyObject {
 
 @objc
 class AddToBlockListViewController: OWSViewController {
-    @objc weak var delegate: AddToBlockListDelegate?
+    @objc
+    weak var delegate: AddToBlockListDelegate?
     let recipientPicker = RecipientPickerViewController()
 
     override func viewDidLoad() {

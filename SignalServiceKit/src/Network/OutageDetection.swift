@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +11,8 @@ public class OutageDetection: NSObject {
     @objc(shared)
     public static let shared = OutageDetection()
 
-    @objc public static let outageStateDidChange = Notification.Name("OutageStateDidChange")
+    @objc
+    public static let outageStateDidChange = Notification.Name("OutageStateDidChange")
 
     private let _hasOutage = AtomicBool(false)
     @objc

@@ -16,7 +16,8 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     private static var propertyLock: UnfairLock = UnfairLock()
 
     private var backingPhoneNumberUnsynchronized: String?
-    @objc public var phoneNumber: String? {
+    @objc
+    public var phoneNumber: String? {
         guard let phoneNumber = Self.propertyLock.withLock({backingPhoneNumberUnsynchronized}) else {
             // If we weren't initialized with a phone number, but the phone number exists in the cache, use it
             guard let uuid = Self.propertyLock.withLock({backingUuidUnsynchronized}),
@@ -35,7 +36,8 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     // TODO UUID: eventually this can be not optional
     private var backingUuidUnsynchronized: UUID?
-    @objc public var uuid: UUID? {
+    @objc
+    public var uuid: UUID? {
         guard let uuid = Self.propertyLock.withLock({backingUuidUnsynchronized}) else {
             // If we weren't initialized with a uuid, but the uuid exists in the cache, use it
             guard let phoneNumber = Self.propertyLock.withLock({backingPhoneNumberUnsynchronized}),

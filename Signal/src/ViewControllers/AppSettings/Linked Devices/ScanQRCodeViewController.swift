@@ -158,13 +158,15 @@ class QRCodeScanViewController: OWSViewController {
         )
     }
 
-    @objc func didEnterBackground() {
+    @objc
+    func didEnterBackground() {
         AssertIsOnMainThread()
 
         stopScanning()
     }
 
-    @objc func didBecomeActive() {
+    @objc
+    func didBecomeActive() {
         AssertIsOnMainThread()
 
         tryToStartScanning()

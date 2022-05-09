@@ -169,7 +169,8 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
     // MARK: - Events
 
-    @objc func needHelpLinkWasTapped() {
+    @objc
+    func needHelpLinkWasTapped() {
         Logger.info("")
         let title = NSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_TITLE",
                                       comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'.")
@@ -219,7 +220,8 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         ContactSupportAlert.presentAlert(title: title, message: message, emailSupportFilter: emailSupportFilter, fromViewController: self, additionalActions: additionalActions)
     }
 
-    @objc func nextPressed() {
+    @objc
+    func nextPressed() {
         Logger.info("")
 
         tryToVerify()
@@ -438,7 +440,8 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinTextField.reloadInputViews()
     }
 
-    @objc func togglePinType() {
+    @objc
+    func togglePinType() {
         guard isUsingKBS else {
             return owsFailDebug("unexpectedly tried to toggle PIN type when not using KBS")
         }

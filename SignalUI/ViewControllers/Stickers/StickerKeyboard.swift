@@ -185,7 +185,8 @@ public class StickerKeyboard: CustomKeyboard {
         updateHeaderView()
     }
 
-    @objc func keyboardFrameDidChange() {
+    @objc
+    func keyboardFrameDidChange() {
         Logger.verbose("")
 
         updatePageConstraints(ignoreScrollingState: true)

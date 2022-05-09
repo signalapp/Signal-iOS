@@ -76,7 +76,8 @@ class ContactNameFieldView: UIView {
         valueView.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
 
-    @objc func wasTapped(sender: UIGestureRecognizer) {
+    @objc
+    func wasTapped(sender: UIGestureRecognizer) {
         Logger.info("")
 
         guard sender.state == .recognized else {
@@ -86,7 +87,8 @@ class ContactNameFieldView: UIView {
         valueView.becomeFirstResponder()
     }
 
-    @objc func textFieldDidChange(sender: UITextField) {
+    @objc
+    func textFieldDidChange(sender: UITextField) {
         Logger.info("")
 
         hasUnsavedChanges = true
@@ -276,7 +278,8 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
 
     // MARK: -
 
-    @objc func didPressSave() {
+    @objc
+    func didPressSave() {
         Logger.info("")
 
         guard let newName = OWSContactName() else {
@@ -306,7 +309,8 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
         navigationController.popViewController(animated: true)
     }
 
-    @objc func didPressCancel() {
+    @objc
+    func didPressCancel() {
         Logger.info("")
 
         guard let navigationController = self.navigationController else {

@@ -4,7 +4,7 @@
 
 import UIKit
 
-@objc (OWSCircleView)
+@objc(OWSCircleView)
 public class CircleView: UIView {
 
     @available(*, unavailable, message: "use other constructor instead.")
@@ -43,7 +43,7 @@ public class CircleView: UIView {
     }
 }
 
-@objc (OWSCircleBlurView)
+@objc(OWSCircleBlurView)
 public class CircleBlurView: UIVisualEffectView {
 
     @available(*, unavailable, message: "use other constructor instead.")
@@ -85,7 +85,7 @@ public class CircleBlurView: UIVisualEffectView {
     }
 }
 
-@objc (OWSPillView)
+@objc(OWSPillView)
 open class PillView: UIView {
 
     public override init(frame: CGRect) {

@@ -21,7 +21,8 @@ private class VAlignTextView: UITextView {
     }
     private let alignment: Alignment
 
-    @objc public override var bounds: CGRect {
+    @objc
+    public override var bounds: CGRect {
         didSet {
             if oldValue != bounds {
                 updateInsets()
@@ -29,7 +30,8 @@ private class VAlignTextView: UITextView {
         }
     }
 
-    @objc public override var frame: CGRect {
+    @objc
+    public override var frame: CGRect {
         didSet {
             if oldValue != frame {
                 updateInsets()
@@ -269,7 +271,8 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
 
     // MARK: - Events
 
-    @objc func didTapUndo(sender: UIButton) {
+    @objc
+    func didTapUndo(sender: UIButton) {
         Logger.verbose("")
 
         self.delegate?.textEditDidCancel()
@@ -279,7 +282,8 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         }
     }
 
-    @objc func didTapDone(sender: UIButton) {
+    @objc
+    func didTapDone(sender: UIButton) {
         Logger.verbose("")
 
         completeAndDismiss()

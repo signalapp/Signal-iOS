@@ -758,7 +758,8 @@ class ImageEditorCropViewController: OWSViewController {
 
     // MARK: - Events
 
-    @objc func didTapDone(sender: UIButton) {
+    @objc
+    func didTapDone(sender: UIButton) {
         completeAndDismiss()
     }
 
@@ -770,7 +771,8 @@ class ImageEditorCropViewController: OWSViewController {
         }
     }
 
-    @objc public func rotate90ButtonPressed() {
+    @objc
+    public func rotate90ButtonPressed() {
         rotateButtonPressed(angleRadians: -CGFloat.pi * 0.5, rotateCanvas: true)
     }
 
@@ -790,7 +792,8 @@ class ImageEditorCropViewController: OWSViewController {
                                          isFlipped: transform.isFlipped).normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
-    @objc public func flipButtonPressed() {
+    @objc
+    public func flipButtonPressed() {
         updateTransform(ImageEditorTransform(outputSizePixels: transform.outputSizePixels,
                                              unitTranslation: transform.unitTranslation,
                                              rotationRadians: transform.rotationRadians,
@@ -798,13 +801,15 @@ class ImageEditorCropViewController: OWSViewController {
                                              isFlipped: !transform.isFlipped).normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
-    @objc func didTapReset(sender: UIButton) {
+    @objc
+    func didTapReset(sender: UIButton) {
         Logger.verbose("")
 
         updateTransform(ImageEditorTransform.defaultTransform(srcImageSizePixels: model.srcImageSizePixels))
     }
 
-    @objc public func cropLockButtonPressed() {
+    @objc
+    public func cropLockButtonPressed() {
         isCropLocked = !isCropLocked
         updateCropLockButton()
     }
@@ -814,7 +819,8 @@ class ImageEditorCropViewController: OWSViewController {
 
 extension ImageEditorCropViewController: UIGestureRecognizerDelegate {
 
-    @objc public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    @objc
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         // Until the GR recognizes, it should only see touches that start within the content.
         guard gestureRecognizer.state == .possible else {
             return true

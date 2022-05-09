@@ -14,7 +14,8 @@ protocol CallAudioServiceDelegate: AnyObject {
     func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?)
 }
 
-@objc class CallAudioService: NSObject, CallObserver {
+@objc
+class CallAudioService: NSObject, CallObserver {
 
     private var vibrateTimer: Timer?
 

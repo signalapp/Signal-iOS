@@ -131,7 +131,8 @@ public class RegistrationPhoneNumberDiscoverabilityViewController: OnboardingBas
         selectionDescriptionLabel.text = PhoneNumberDiscoverability.descriptionForDiscoverability(isDiscoverableByPhoneNumber)
     }
 
-    @objc func nextPressed() {
+    @objc
+    func nextPressed() {
         guard let navigationController = navigationController else {
             owsFailDebug("Missing navigationController")
             return

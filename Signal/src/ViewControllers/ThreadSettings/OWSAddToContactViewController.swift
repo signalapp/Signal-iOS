@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,7 +20,8 @@ public class OWSAddToContactViewController: OWSViewController {
 
     fileprivate let contactCellReuseIdentifier = "contactCellReuseIdentifier"
 
-    @objc public init(address: SignalServiceAddress) {
+    @objc
+    public init(address: SignalServiceAddress) {
         self.address = address
         super.init()
         contactsViewHelper.addObserver(self)

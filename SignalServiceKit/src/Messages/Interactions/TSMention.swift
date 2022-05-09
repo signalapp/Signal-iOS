@@ -21,14 +21,20 @@ public final class TSMention: NSObject, SDSCodableModel {
     }
 
     public var id: Int64?
-    @objc public let uniqueId: String
+    @objc
+    public let uniqueId: String
 
-    @objc public let uniqueMessageId: String
-    @objc public let uniqueThreadId: String
-    @objc public let uuidString: String
-    @objc public let creationDate: Date
+    @objc
+    public let uniqueMessageId: String
+    @objc
+    public let uniqueThreadId: String
+    @objc
+    public let uuidString: String
+    @objc
+    public let creationDate: Date
 
-    @objc public var address: SignalServiceAddress { SignalServiceAddress(uuidString: uuidString) }
+    @objc
+    public var address: SignalServiceAddress { SignalServiceAddress(uuidString: uuidString) }
 
     @objc
     required public init(uniqueMessageId: String, uniqueThreadId: String, uuidString: String) {

@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-@objc extension UIResponder {
+@objc
+extension UIResponder {
     private static weak var _currentFirstResponder: UIResponder?
     static var currentFirstResponder: UIResponder? {
         _currentFirstResponder = nil

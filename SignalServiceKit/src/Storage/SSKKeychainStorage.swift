@@ -15,15 +15,20 @@ public enum KeychainStorageError: Error {
 @objc
 public protocol SSKKeychainStorage: AnyObject {
 
-    @objc func string(forService service: String, key: String) throws -> String
+    @objc
+    func string(forService service: String, key: String) throws -> String
 
-    @objc(setString:service:key:error:) func set(string: String, service: String, key: String) throws
+    @objc(setString:service:key:error:)
+    func set(string: String, service: String, key: String) throws
 
-    @objc func data(forService service: String, key: String) throws -> Data
+    @objc
+    func data(forService service: String, key: String) throws -> Data
 
-    @objc func set(data: Data, service: String, key: String) throws
+    @objc
+    func set(data: Data, service: String, key: String) throws
 
-    @objc func remove(service: String, key: String) throws
+    @objc
+    func remove(service: String, key: String) throws
 }
 
 // MARK: -
@@ -55,7 +60,8 @@ public extension SSKKeychainStorage {
 @objc
 public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
 
-    @objc public static let shared = SSKDefaultKeychainStorage()
+    @objc
+    public static let shared = SSKDefaultKeychainStorage()
 
     // Force usage as a singleton
     override private init() {

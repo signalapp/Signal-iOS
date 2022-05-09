@@ -28,8 +28,7 @@ public extension RandomAccessCollection {
         }
     }
 
-    @inlinable
-    var nilIfEmpty: Self? {
+    @inlinable var nilIfEmpty: Self? {
         isEmpty ? nil : self
     }
 }

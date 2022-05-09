@@ -92,7 +92,8 @@ public class DisplayableText: NSObject {
     @objc
     public let fullLengthWithNewLineScalar: Int
 
-    @objc public let jumbomojiCount: UInt
+    @objc
+    public let jumbomojiCount: UInt
 
     @objc
     public static let kMaxJumbomojiCount: UInt = 5

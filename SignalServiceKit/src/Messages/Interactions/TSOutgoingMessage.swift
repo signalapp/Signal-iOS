@@ -132,7 +132,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
 }
 
 public extension TSOutgoingMessage {
-    @objc func failedRecipientAddresses(errorCode: Int) -> [SignalServiceAddress] {
+    @objc
+    func failedRecipientAddresses(errorCode: Int) -> [SignalServiceAddress] {
         guard let states = recipientAddressStates else { return [] }
 
         return states.filter { _, state in

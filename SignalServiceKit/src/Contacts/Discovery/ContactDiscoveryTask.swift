@@ -36,7 +36,8 @@ public class ContactDiscoveryTask: NSObject {
     /// Example:
     /// User contacts lookup starts, fails with retry-after of 30 minutes. UUIDBackfill starts shortly after. Instead of being blocked for 30 minutes it's allowed to proceed.
     /// If UUIDBackfill fails, the global retry-after counter will be set to the greater of the two failures and it will now affect both critical and non-critical tasks.
-    @objc var isCriticalPriority = false
+    @objc
+    var isCriticalPriority = false
 
     // MARK: - Public
 
@@ -155,7 +156,7 @@ public class ContactDiscoveryTask: NSObject {
 @objc
 public extension ContactDiscoveryTask {
 
-    @objc (performAtQoS:callbackQueue:success:failure:)
+    @objc(performAtQoS:callbackQueue:success:failure:)
     func perform(at rawQoS: qos_class_t,
                  callbackQueue: DispatchQueue,
                  success: @escaping (Set<SignalRecipient>) -> Void,

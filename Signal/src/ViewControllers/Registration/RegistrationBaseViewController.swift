@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -103,7 +103,8 @@ public class RegistrationBaseViewController: OWSViewController {
         primaryView.layoutMargins = primaryLayoutMargins
     }
 
-    @objc func navigateBack() {
+    @objc
+    func navigateBack() {
         navigationController?.popViewController(animated: true)
     }
 

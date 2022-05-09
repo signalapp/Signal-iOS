@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -97,19 +97,22 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
 
      // MARK: - Events
 
-    @objc func skipWasPressed() {
+    @objc
+    func skipWasPressed() {
         Logger.info("")
 
         onboardingController.onboardingPermissionsWasSkipped(viewController: self)
     }
 
-    @objc func giveAccessPressed() {
+    @objc
+    func giveAccessPressed() {
         Logger.info("")
 
         requestAccess()
     }
 
-    @objc func notNowPressed() {
+    @objc
+    func notNowPressed() {
         Logger.info("")
 
         onboardingController.onboardingPermissionsWasSkipped(viewController: self)

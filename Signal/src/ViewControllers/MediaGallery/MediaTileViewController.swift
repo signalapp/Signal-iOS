@@ -138,7 +138,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     // MARK: Theme
 
-    @objc func applyTheme() {
+    @objc
+    func applyTheme() {
         footerBar.barTintColor = Theme.navbarBackgroundColor
         footerBar.tintColor = Theme.primaryIconColor
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,12 +11,14 @@ public class AudioActivity: NSObject {
 
     let behavior: OWSAudioBehavior
 
-    @objc public var supportsBackgroundPlayback: Bool {
+    @objc
+    public var supportsBackgroundPlayback: Bool {
         // Currently, only audio messages support background playback
         return [.audioMessagePlayback, .call].contains(behavior)
     }
 
-    @objc public var backgroundPlaybackName: String? {
+    @objc
+    public var backgroundPlaybackName: String? {
         switch behavior {
         case .audioMessagePlayback:
             return OWSLocalizedString("AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE",

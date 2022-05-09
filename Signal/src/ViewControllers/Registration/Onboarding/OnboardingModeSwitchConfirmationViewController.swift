@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -83,7 +83,8 @@ class OnboardingModeSwitchConfirmationViewController: OnboardingBaseViewControll
         return true
     }
 
-    @objc func didPressNext() {
+    @objc
+    func didPressNext() {
         let actionSheet = ActionSheetController(message: warningText)
 
         let continueAction = ActionSheetAction(title: CommonStrings.continueButton,

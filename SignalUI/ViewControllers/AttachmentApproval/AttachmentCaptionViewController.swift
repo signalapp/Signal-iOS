@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -136,17 +136,20 @@ class AttachmentCaptionViewController: OWSViewController {
 
     // MARK: - Events
 
-    @objc func backgroundTapped(sender: UIGestureRecognizer) {
+    @objc
+    func backgroundTapped(sender: UIGestureRecognizer) {
         AssertIsOnMainThread()
 
         completeAndDismiss(didCancel: false)
     }
 
-    @objc public func didTapCancel() {
+    @objc
+    public func didTapCancel() {
         completeAndDismiss(didCancel: true)
     }
 
-    @objc public func didTapDone() {
+    @objc
+    public func didTapDone() {
         completeAndDismiss(didCancel: false)
     }
 

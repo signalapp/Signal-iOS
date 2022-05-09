@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +11,8 @@ public enum OWSThumbnailError: Error {
     case externalError(description: String, underlyingError: Error)
 }
 
-@objc public class OWSLoadedThumbnail: NSObject {
+@objc
+public class OWSLoadedThumbnail: NSObject {
     public typealias DataSourceBlock = () throws -> Data
 
     @objc

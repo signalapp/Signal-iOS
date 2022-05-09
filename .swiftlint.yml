@@ -15,7 +15,7 @@ disabled_rules:
 opt_in_rules:
 - attributes
 attributes:
-  always_on_line_above: ["@objc"]
+  always_on_line_above: ["@objc", "@nonobjc"]
 inclusive_language:
   override_allowed_terms: ["master", "whitelist"]
 large_tuple:

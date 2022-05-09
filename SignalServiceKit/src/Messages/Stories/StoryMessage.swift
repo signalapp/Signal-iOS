@@ -24,10 +24,13 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     }
 
     public var id: Int64?
-    @objc public let uniqueId: String
-    @objc public let timestamp: UInt64
+    @objc
+    public let uniqueId: String
+    @objc
+    public let timestamp: UInt64
     public let authorUuid: UUID
-    @objc public var authorAddress: SignalServiceAddress { SignalServiceAddress(uuid: authorUuid) }
+    @objc
+    public var authorAddress: SignalServiceAddress { SignalServiceAddress(uuid: authorUuid) }
     public let groupId: Data?
 
     public enum Direction: Int, Codable { case incoming = 0, outgoing = 1 }
@@ -54,7 +57,8 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
     }
 
-    @objc public var allAttachmentIds: [String] {
+    @objc
+    public var allAttachmentIds: [String] {
         switch attachment {
         case .file(let attachmentId):
             return [attachmentId]

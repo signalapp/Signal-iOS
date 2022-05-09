@@ -88,7 +88,8 @@ class MentionPicker: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc public override var center: CGPoint {
+    @objc
+    public override var center: CGPoint {
         didSet {
             // iOS 15 layout changes introduce a crash where we re-enterantly perform
             // layout. A stopgap candidate fix may be to only refresh height constraints
@@ -155,7 +156,8 @@ class MentionPicker: UIView {
 
     // MARK: -
 
-    @objc private func applyTheme() {
+    @objc
+    private func applyTheme() {
         if style == .composingAttachment {
             tableView.backgroundColor = UIColor.ows_gray95
             hairlineView.backgroundColor = .ows_gray65

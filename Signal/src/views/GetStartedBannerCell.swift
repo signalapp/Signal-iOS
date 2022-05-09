@@ -120,7 +120,8 @@ class GetStartedBannerCell: UICollectionViewCell {
         self.delegate = delegate
     }
 
-    @objc func applyTheme() {
+    @objc
+    func applyTheme() {
         let titleColor: UIColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_accentBlue
         actionButton.setTitleColor(titleColor, for: .normal)
 

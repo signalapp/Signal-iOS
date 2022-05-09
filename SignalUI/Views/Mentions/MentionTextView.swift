@@ -481,22 +481,26 @@ extension MentionTextView {
         ]
     }
 
-    @objc func upArrowPressed(_ sender: UIKeyCommand) {
+    @objc
+    func upArrowPressed(_ sender: UIKeyCommand) {
         guard let pickerView = pickerView else { return }
         pickerView.didTapUpArrow()
     }
 
-    @objc func downArrowPressed(_ sender: UIKeyCommand) {
+    @objc
+    func downArrowPressed(_ sender: UIKeyCommand) {
         guard let pickerView = pickerView else { return }
         pickerView.didTapDownArrow()
     }
 
-    @objc func returnPressed(_ sender: UIKeyCommand) {
+    @objc
+    func returnPressed(_ sender: UIKeyCommand) {
         guard let pickerView = pickerView else { return }
         pickerView.didTapReturn()
     }
 
-    @objc func tabPressed(_ sender: UIKeyCommand) {
+    @objc
+    func tabPressed(_ sender: UIKeyCommand) {
         guard let pickerView = pickerView else { return }
         pickerView.didTapTab()
     }

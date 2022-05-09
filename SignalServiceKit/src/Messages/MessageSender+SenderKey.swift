@@ -182,7 +182,8 @@ extension MessageSender {
         }
     }
 
-    @objc @available(swift, obsoleted: 1.0)
+    @objc
+    @available(swift, obsoleted: 1.0)
     func senderKeyMessageSendPromise(
         message: TSOutgoingMessage,
         plaintextContent: Data?,

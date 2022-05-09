@@ -86,7 +86,8 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         return contactThread.contactAddress
     }
 
-    @objc public required init(contactThread: TSContactThread, jobRecord: OWSSessionResetJobRecord) {
+    @objc
+    public required init(contactThread: TSContactThread, jobRecord: OWSSessionResetJobRecord) {
         self.contactThread = contactThread
         self.jobRecord = jobRecord
     }

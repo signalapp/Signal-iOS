@@ -91,13 +91,15 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
 
     // MARK: - Events
 
-    @objc func didTapModeSwitch() {
+    @objc
+    func didTapModeSwitch() {
         Logger.info("")
 
         onboardingController.onboardingSplashRequestedModeSwitch(viewController: self)
     }
 
-    @objc func explanationLabelTapped(sender: UIGestureRecognizer) {
+    @objc
+    func explanationLabelTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
         }
@@ -106,7 +108,8 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         present(safariVC, animated: true)
     }
 
-    @objc func continuePressed() {
+    @objc
+    func continuePressed() {
         Logger.info("")
 
         onboardingController.onboardingSplashDidComplete(viewController: self)

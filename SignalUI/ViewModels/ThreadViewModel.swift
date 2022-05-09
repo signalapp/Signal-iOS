@@ -7,19 +7,32 @@ import SignalMessaging
 
 @objc
 public class ThreadViewModel: NSObject {
-    @objc public let hasUnreadMessages: Bool
-    @objc public let isGroupThread: Bool
-    @objc public let threadRecord: TSThread
-    @objc public let unreadCount: UInt
-    @objc public let contactAddress: SignalServiceAddress?
-    @objc public let name: String
-    @objc public let associatedData: ThreadAssociatedData
-    @objc public let hasPendingMessageRequest: Bool
-    @objc public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
-    @objc public let groupCallInProgress: Bool
-    @objc public let hasWallpaper: Bool
-    @objc public let isWallpaperPhoto: Bool
-    @objc public let isBlocked: Bool
+    @objc
+    public let hasUnreadMessages: Bool
+    @objc
+    public let isGroupThread: Bool
+    @objc
+    public let threadRecord: TSThread
+    @objc
+    public let unreadCount: UInt
+    @objc
+    public let contactAddress: SignalServiceAddress?
+    @objc
+    public let name: String
+    @objc
+    public let associatedData: ThreadAssociatedData
+    @objc
+    public let hasPendingMessageRequest: Bool
+    @objc
+    public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
+    @objc
+    public let groupCallInProgress: Bool
+    @objc
+    public let hasWallpaper: Bool
+    @objc
+    public let isWallpaperPhoto: Bool
+    @objc
+    public let isBlocked: Bool
 
     public let storyState: ConversationAvatarView.Configuration.StoryState
 

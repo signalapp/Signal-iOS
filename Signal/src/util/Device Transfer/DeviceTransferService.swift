@@ -268,7 +268,8 @@ class DeviceTransferService: NSObject {
 
     // MARK: -
 
-    @objc func didEnterBackground() {
+    @objc
+    func didEnterBackground() {
         switch transferState {
         case .idle:
             break

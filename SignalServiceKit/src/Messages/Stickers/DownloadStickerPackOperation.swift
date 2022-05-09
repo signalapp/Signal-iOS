@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,7 +10,8 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
     private let success: (StickerPack) -> Void
     private let failure: (Error) -> Void
 
-    @objc public required init(stickerPackInfo: StickerPackInfo,
+    @objc
+    public required init(stickerPackInfo: StickerPackInfo,
                                success : @escaping (StickerPack) -> Void,
                                failure : @escaping (Error) -> Void) {
         owsAssertDebug(stickerPackInfo.packId.count > 0)

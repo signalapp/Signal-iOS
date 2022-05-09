@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -66,7 +66,8 @@ class ThemeSettingsTableViewController: OWSTableViewController2 {
         }
     }
 
-    @objc func didToggleAvatarPreference(_ sender: UISwitch) {
+    @objc
+    func didToggleAvatarPreference(_ sender: UISwitch) {
         Logger.info("Avatar preference toggled: \(sender.isOn)")
         SDSDatabaseStorage.shared.asyncWrite { writeTx in
             SSKPreferences.setPreferContactAvatars(sender.isOn, transaction: writeTx)

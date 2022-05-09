@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 /**
@@ -38,7 +38,8 @@ public final class WeakTimer {
                          action: action).timer!
     }
 
-    @objc public func fire(timer: Timer) {
+    @objc
+    public func fire(timer: Timer) {
         if target != nil {
             action(timer)
         } else {

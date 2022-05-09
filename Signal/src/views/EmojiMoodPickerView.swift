@@ -75,7 +75,8 @@ class EmojiMoodPickerView: UIView {
 
     // MARK: - Button responder
 
-    @objc func buttonWasTapped(_ button: UIButton) {
+    @objc
+    func buttonWasTapped(_ button: UIButton) {
         // When this action is invoked, our selection state hasn't been updated yet
         // If we were not selected, we're being selected
         // If we were selected, we're being unselected
@@ -87,7 +88,8 @@ class EmojiMoodPickerView: UIView {
         moodButtons.first(where: { $1 == button })?.key
     }
 
-    @objc private func applyTheme() {
+    @objc
+    private func applyTheme() {
         let defaultButtonBackground = Theme.isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
         let selectedButtonBackground = Theme.accentBlueColor
 

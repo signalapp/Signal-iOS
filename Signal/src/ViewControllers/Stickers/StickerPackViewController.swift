@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -413,7 +413,8 @@ public class StickerPackViewController: OWSViewController {
         updateContent()
     }
 
-    @objc func stickersOrPacksDidChange() {
+    @objc
+    func stickersOrPacksDidChange() {
         AssertIsOnMainThread()
 
         Logger.verbose("")

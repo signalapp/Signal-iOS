@@ -282,18 +282,22 @@ public protocol CVComponentView {
     func reset()
 
     // Allows component opportunity to configure and return a subview for context menu previews
-    @objc optional func contextMenuContentView() -> UIView?
+    @objc
+    optional func contextMenuContentView() -> UIView?
 
     // Allows component opportunity to configure and return an auxiliary content subview for context menu previews
     // This will only be used if contextMenuContentView() is implemented
-    @objc optional func contextMenuAuxiliaryContentView() -> UIView?
+    @objc
+    optional func contextMenuAuxiliaryContentView() -> UIView?
 
     // Called when the context menu presentation will begin,
     // can be used to configure component view below presenting context menu
-    @objc optional func contextMenuPresentationWillBegin()
+    @objc
+    optional func contextMenuPresentationWillBegin()
 
     // Called once the context menu presentation ends
-    @objc optional func contextMenuPresentationDidEnd()
+    @objc
+    optional func contextMenuPresentationDidEnd()
 }
 
 // MARK: -

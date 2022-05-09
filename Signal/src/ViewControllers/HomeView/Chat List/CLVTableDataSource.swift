@@ -777,11 +777,13 @@ extension CLVTableDataSource {
         }
     }
 
-    @objc public func stopRefreshTimer() {
+    @objc
+    public func stopRefreshTimer() {
         nextUpdateAt = nil
     }
 
-    @objc public func updateAndSetRefreshTimer() {
+    @objc
+    public func updateAndSetRefreshTimer() {
         for path in tableView.indexPathsForVisibleRows ?? [] {
             updateVisibleCellContent(at: path, for: tableView)
         }

@@ -37,8 +37,10 @@ public enum SMKSecretSessionCipherError: Int, Error {
 
 private class SMKSecretKeySpec: NSObject {
 
-    @objc public let keyData: Data
-    @objc public let algorithm: String
+    @objc
+    public let keyData: Data
+    @objc
+    public let algorithm: String
 
     init(keyData: Data, algorithm: String) {
         self.keyData = keyData
@@ -48,7 +50,8 @@ private class SMKSecretKeySpec: NSObject {
 
 // MARK: -
 
-@objc public enum SMKMessageType: Int {
+@objc
+public enum SMKMessageType: Int {
     case whisper
     case prekey
     case senderKey
@@ -58,10 +61,14 @@ private class SMKSecretKeySpec: NSObject {
 @objc
 public class SMKDecryptResult: NSObject {
 
-    @objc public let senderAddress: SignalServiceAddress
-    @objc public let senderDeviceId: Int
-    @objc public let paddedPayload: Data
-    @objc public let messageType: SMKMessageType
+    @objc
+    public let senderAddress: SignalServiceAddress
+    @objc
+    public let senderDeviceId: Int
+    @objc
+    public let paddedPayload: Data
+    @objc
+    public let messageType: SMKMessageType
 
     init(senderAddress: SignalServiceAddress,
          senderDeviceId: Int,
@@ -105,7 +112,8 @@ fileprivate extension SMKMessageType {
     }
 }
 
-@objc public class SMKSecretSessionCipher: NSObject {
+@objc
+public class SMKSecretSessionCipher: NSObject {
 
     private let kUDPrefixString = "UnidentifiedDelivery"
 

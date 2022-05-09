@@ -166,7 +166,8 @@ public enum ContactStoreAuthorizationStatus: UInt {
          authorized
 }
 
-@objc public protocol SystemContactsFetcherDelegate: AnyObject {
+@objc
+public protocol SystemContactsFetcherDelegate: AnyObject {
     func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [Contact], isUserRequested: Bool)
     func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, hasAuthorizationStatus authorizationStatus: ContactStoreAuthorizationStatus)
 }
