@@ -21,9 +21,33 @@ public class GRDBSchemaMigrator: NSObject {
 
         if hasCreatedInitialSchema {
             Logger.info("Using incrementalMigrator.")
-            let appliedMigrations = self.appliedMigrations
-            try! incrementalMigrator.migrate(grdbStorageAdapter.pool)
-            didPerformIncrementalMigrations = appliedMigrations != self.appliedMigrations
+            let previouslyAppliedMigrations = try! grdbStorageAdapter.read { transaction in
+                try! DatabaseMigrator().appliedIdentifiers(transaction.database)
+            }
+
+            // First do the schema migrations. (See the comment within MigrationId for why schema and data
+            // migrations are separate.)
+            let incrementalMigrator = DatabaseMigratorWrapper()
+            registerSchemaMigrations(migrator: incrementalMigrator)
+            incrementalMigrator.migrate(grdbStorageAdapter.pool)
+
+            // Hack: Load the account state now, so it can be accessed while performing other migrations.
+            // Otherwise one of them might indirectly try to load the account state using a sneaky transaction,
+            // which won't work because migrations use a barrier block to prevent observing database state
+            // before migration.
+            try! grdbStorageAdapter.read { transaction in
+                _ = self.tsAccountManager.localAddress(with: transaction.asAnyRead)
+            }
+
+            // Finally, do data migrations.
+            registerDataMigrations(migrator: incrementalMigrator)
+            incrementalMigrator.migrate(grdbStorageAdapter.pool)
+
+            let allAppliedMigrations = try! grdbStorageAdapter.read { transaction in
+                try! DatabaseMigrator().appliedIdentifiers(transaction.database)
+            }
+
+            didPerformIncrementalMigrations = allAppliedMigrations != previouslyAppliedMigrations
         } else {
             Logger.info("Using newUserMigrator.")
             try! newUserMigrator.migrate(grdbStorageAdapter.pool)
@@ -38,25 +62,11 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     private var hasCreatedInitialSchema: Bool {
-        let appliedMigrations = self.appliedMigrations
+        let appliedMigrations = try! grdbStorageAdapter.read { transaction in
+            try! DatabaseMigrator().appliedIdentifiers(transaction.database)
+        }
         Logger.info("appliedMigrations: \(appliedMigrations.sorted()).")
         return appliedMigrations.contains(MigrationId.createInitialSchema.rawValue)
-    }
-
-    private var appliedMigrations: Set<String> {
-        // HACK: GRDB doesn't create the grdb_migrations table until running a migration.
-        // So we can't cleanly check which migrations have run for new users until creating this
-        // table ourselves.
-        try! grdbStorageAdapter.write { transaction in
-            try! self.fixit_setupMigrations(transaction.database)
-        }
-
-        let migrations = try! grdbStorageAdapter.pool.read(incrementalMigrator.appliedMigrations)
-        return Set(migrations)
-    }
-
-    private func fixit_setupMigrations(_ db: Database) throws {
-        try db.execute(sql: "CREATE TABLE IF NOT EXISTS grdb_migrations (identifier TEXT NOT NULL PRIMARY KEY)")
     }
 
     // MARK: -
@@ -156,6 +166,9 @@ public class GRDBSchemaMigrator: NSObject {
         // The solution is to always split logic that leverages SDSModel serialization into a
         // separate migration, and ensure it runs *after* any schema migrations. That is, new schema
         // migrations must be inserted *before* any of these Data Migrations.
+        //
+        // Note that account state is loaded *before* running data migrations, because many model objects expect
+        // to be able to access that without a transaction.
         case dataMigration_populateGalleryItems
         case dataMigration_markOnboardedUsers_v2
         case dataMigration_clearLaunchScreenCache
@@ -209,7 +222,7 @@ public class GRDBSchemaMigrator: NSObject {
         return migrator
     }()
 
-    class DatabaseMigratorWrapper {
+    private class DatabaseMigratorWrapper {
         var migrator = DatabaseMigrator()
 
         func registerMigration(_ identifier: String, migrate: @escaping (Database) -> Void) {
@@ -222,20 +235,11 @@ public class GRDBSchemaMigrator: NSObject {
                 Logger.info("Migration completed: \(identifier), duration: \(formattedTime)")
             }
         }
+
+        func migrate(_ database: DatabaseWriter) {
+            try! migrator.migrate(database)
+        }
     }
-
-    // Used by existing users to incrementally update from their existing schema
-    // to the latest.
-    private lazy var incrementalMigrator: DatabaseMigrator = {
-        var migratorWrapper = DatabaseMigratorWrapper()
-
-        registerSchemaMigrations(migrator: migratorWrapper)
-
-        // Data Migrations must run *after* schema migrations
-        registerDataMigrations(migrator: migratorWrapper)
-
-        return migratorWrapper.migrator
-    }()
 
     private func registerSchemaMigrations(migrator: DatabaseMigratorWrapper) {
 
@@ -1739,7 +1743,7 @@ public class GRDBSchemaMigrator: NSObject {
         // MARK: - Schema Migration Insertion Point
     }
 
-    func registerDataMigrations(migrator: DatabaseMigratorWrapper) {
+    private func registerDataMigrations(migrator: DatabaseMigratorWrapper) {
 
         // The migration blocks should never throw. If we introduce a crashing
         // migration, we want the crash logs reflect where it occurred.
@@ -1998,11 +2002,6 @@ public class GRDBSchemaMigrator: NSObject {
             defer { transaction.finalizeTransaction() }
 
             do {
-                // Ensure the local address is loaded & cached. If it’s not, the
-                // `modelWasInserted` calls may try to load it with a sneaky transaction,
-                // which will fail since we’re in a barrier block on the queue.
-                _ = self.tsAccountManager.localAddress(with: transaction.asAnyRead)
-
                 let threadCursor = TSThread.grdbFetchCursor(
                     sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
                     transaction: transaction

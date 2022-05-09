@@ -109,6 +109,10 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         return self;
     }
 
+    // WARNING: TSAccountState is loaded before data migrations have run (as well as after).
+    // Do not use data migrations to update TSAccountState data; do it through schema migrations
+    // or through normal write transactions. TSAccountManager should be the only code accessing this state anyway.
+
     _localNumber = [keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
     _registrationDate = [keyValueStore getDate:TSAccountManager_RegistrationDateKey transaction:transaction];
 
