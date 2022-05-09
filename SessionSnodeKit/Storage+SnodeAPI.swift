@@ -110,6 +110,7 @@ extension Storage {
         if now >= expirationDate {
             Storage.writeSync { transaction in
                 self.removeLastMessageHashInfo(for: snode, namespace: namespace, associatedWith: publicKey, using: transaction)
+                self.setReceivedMessages(to: Set(), for: publicKey, using: transaction)
             }
         }
     }

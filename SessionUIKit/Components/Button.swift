@@ -70,7 +70,15 @@ public final class Button : UIButton {
         if heightConstraint == nil { heightConstraint = set(.height, to: height) }
         layer.cornerRadius = height / 2
         backgroundColor = fillColor
-        layer.borderColor = borderColor.cgColor
+        if #available(iOS 13.0, *) {
+            layer.borderColor = borderColor
+                .resolvedColor(
+                    // Note: This is needed for '.cgColor' to support dark mode
+                    with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
+                ).cgColor
+        } else {
+            layer.borderColor = borderColor.cgColor
+        }
         layer.borderWidth = 1
         let fontSize = (size == .small) ? Values.smallFontSize : Values.mediumFontSize
         titleLabel!.font = .boldSystemFont(ofSize: fontSize)

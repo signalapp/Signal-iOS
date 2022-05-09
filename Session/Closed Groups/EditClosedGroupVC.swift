@@ -1,4 +1,5 @@
 import PromiseKit
+import SessionMessagingKit
 
 @objc(SNEditClosedGroupVC)
 final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
@@ -292,6 +293,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
             }, completion: {
                 let _ = promise.done(on: DispatchQueue.main) {
                     guard let self = self else { return }
+                    MentionsManager.populateUserPublicKeyCacheIfNeeded(for: self.thread.uniqueId!)
                     self.dismiss(animated: true, completion: nil) // Dismiss the loader
                     popToConversationVC(self)
                 }

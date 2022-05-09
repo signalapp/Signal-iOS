@@ -815,6 +815,10 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         presentAlert(alert)
     }
+    
+    func contextMenuDismissed() {
+        recoverInputView()
+    }
 
     func handleQuoteViewCancelButtonTapped() {
         snInputView.quoteDraftInfo = nil
@@ -1192,11 +1196,15 @@ extension ConversationVC {
                     
                     // Delete all thread content
                     self?.thread.removeAllThreadInteractions(with: transaction)
-                    self?.thread.remove(with: transaction)
                 },
                 completion: { [weak self] in
                     // Force a config sync and pop to the previous screen
                     MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+                    
+                    // Remove the thread after the config message is sent.
+                    // Otherwise the blocked user won't be included in the
+                    // config message.
+                    self?.thread.remove()
                     
                     DispatchQueue.main.async {
                         self?.navigationController?.popViewController(animated: true)
