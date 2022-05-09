@@ -63,29 +63,21 @@ public final class BackgroundPoller : NSObject {
         return SnodeAPI.getSwarm(for: publicKey).then(on: DispatchQueue.main) { swarm -> Promise<Void> in
             guard let snode = swarm.randomElement() else { throw SnodeAPI.Error.generic }
             return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
-                var promises: [Promise<Void>] = []
+                var promises: [SnodeAPI.RawResponsePromise] = []
+                // We have to poll for both namespace 0 and -10 when hardfork == 19 && softfork == 0
                 if SnodeAPI.hardfork <= 19, SnodeAPI.softfork == 0 {
-                    let promise = SnodeAPI.getRawClosedGroupMessagesFromDefaultNamespace(from: snode, associatedWith: publicKey).then(on: DispatchQueue.main) { rawResponse -> Promise<Void> in
-                        let (messages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
-                        let promises = messages.compactMap { json -> Promise<Void>? in
-                            // Use a best attempt approach here; we don't want to fail the entire process if one of the
-                            // messages failed to parse.
-                            guard let envelope = SNProtoEnvelope.from(json),
-                                let data = try? envelope.serializedData() else { return nil }
-                            let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: true)
-                            return job.execute()
-                        }
-                        // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
-                        SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, namespace: SnodeAPI.defaultNamespace, associatedWith: publicKey, from: lastRawMessage)
-                        
-                        return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects
-                    }
+                    let promise = SnodeAPI.getRawClosedGroupMessagesFromDefaultNamespace(from: snode, associatedWith: publicKey)
                     promises.append(promise)
                 }
                 if SnodeAPI.hardfork >= 19 && SnodeAPI.softfork >= 0 {
-                    let promise = SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey, authenticated: false).then(on: DispatchQueue.main) { rawResponse -> Promise<Void> in
+                    let promise = SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey, authenticated: false)
+                    promises.append(promise)
+                }
+                return when(resolved: promises).then(on: DispatchQueue.main) { rawResponses -> Promise<Void> in
+                    var promises: [Promise<Void>] = []
+                    for rawResponse in rawResponses {
                         let (messages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
-                        let promises = messages.compactMap { json -> Promise<Void>? in
+                        let jobPromises = messages.compactMap { json -> Promise<Void>? in
                             // Use a best attempt approach here; we don't want to fail the entire process if one of the
                             // messages failed to parse.
                             guard let envelope = SNProtoEnvelope.from(json),
@@ -95,12 +87,10 @@ public final class BackgroundPoller : NSObject {
                         }
                         // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
                         SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, namespace: SnodeAPI.defaultNamespace, associatedWith: publicKey, from: lastRawMessage)
-                        
-                        return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects
+                        promises += jobPromises
                     }
-                    promises.append(promise)
+                    return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects
                 }
-                return when(resolved: promises).map { _ in }
             }
         }
     }
