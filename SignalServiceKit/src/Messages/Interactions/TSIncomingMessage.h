@@ -31,16 +31,21 @@ NS_ASSUME_NONNULL_BEGIN
                   uniqueThreadId:(NSString *)uniqueThreadId
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
+                      bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                     contactShare:(nullable OWSContact *)contactShare
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+               isGroupStoryReply:(BOOL)isGroupStoryReply
               isViewOnceComplete:(BOOL)isViewOnceComplete
                isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+           storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+              storyReactionEmoji:(nullable NSString *)storyReactionEmoji
+                  storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted NS_UNAVAILABLE;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

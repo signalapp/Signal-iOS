@@ -76,6 +76,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
                                albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer
                     transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                 albumMessageId:(nullable NSString *)albumMessageId
@@ -83,11 +84,11 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
                       blurHash:(nullable NSString *)blurHash
                      byteCount:(unsigned int)byteCount
                        caption:(nullable NSString *)caption
+                        cdnKey:(NSString *)cdnKey
+                     cdnNumber:(unsigned int)cdnNumber
                    contentType:(NSString *)contentType
                  encryptionKey:(nullable NSData *)encryptionKey
                       serverId:(unsigned long long)serverId
-                        cdnKey:(NSString *)cdnKey
-                     cdnNumber:(unsigned int)cdnNumber
                 sourceFilename:(nullable NSString *)sourceFilename
                uploadTimestamp:(unsigned long long)uploadTimestamp NS_UNAVAILABLE;
 

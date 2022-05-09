@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/TSThread.h>
@@ -19,6 +19,22 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO: We might want to make this initializer private once we
 //       convert getOrCreateThreadWithContactAddress to take "any" transaction.
 - (instancetype)initWithContactAddress:(SignalServiceAddress *)contactAddress NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                                       uniqueId:(NSString *)uniqueId
+                  conversationColorNameObsolete:(NSString *)conversationColorNameObsolete
+                                   creationDate:(nullable NSDate *)creationDate
+                             isArchivedObsolete:(BOOL)isArchivedObsolete
+                         isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
+                           lastInteractionRowId:(int64_t)lastInteractionRowId
+                      lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
+    lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
+                        mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
+                                   messageDraft:(nullable NSString *)messageDraft
+                         messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
+                         mutedUntilDateObsolete:(nullable NSDate *)mutedUntilDateObsolete
+                    mutedUntilTimestampObsolete:(uint64_t)mutedUntilTimestampObsolete
+                          shouldThreadBeVisible:(BOOL)shouldThreadBeVisible NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 
