@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -86,7 +86,7 @@ public struct CurrencyConversionInfo {
 
 // MARK: -
 
-public class MockPaymentsCurrencies: NSObject, PaymentsCurrenciesSwift {
+public class MockPaymentsCurrencies: NSObject, PaymentsCurrenciesSwift, PaymentsCurrencies {
 
     public let currentCurrencyCode: Currency.Code = PaymentsConstants.currencyCodeGBP
 

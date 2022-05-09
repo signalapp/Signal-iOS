@@ -55,7 +55,7 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
 // MARK: -
 
 @objc
-public class MockVersionedProfiles: NSObject, VersionedProfilesSwift {
+public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedProfiles {
     public func clearProfileKeyCredential(for address: SignalServiceAddress,
                                           transaction: SDSAnyWriteTransaction) {}
 

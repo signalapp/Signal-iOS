@@ -6,7 +6,7 @@ import Foundation
 import SignalCoreKit
 
 @objc
-public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
+public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
 
     public var isKillSwitchActive: Bool {
         RemoteConfig.paymentsResetKillSwitch || !hasValidPhoneNumberForPayments

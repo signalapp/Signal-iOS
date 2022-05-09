@@ -23,7 +23,7 @@ public class VersionedProfileRequestImpl: NSObject, VersionedProfileRequest {
 // MARK: -
 
 @objc
-public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
+public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedProfiles {
 
     public static let credentialStore = SDSKeyValueStore(collection: "VersionedProfiles.credentialStore")
 

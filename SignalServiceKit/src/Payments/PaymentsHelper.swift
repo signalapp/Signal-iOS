@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -140,7 +140,7 @@ public class MockPaymentsHelper: NSObject {
 
 // MARK: -
 
-extension MockPaymentsHelper: PaymentsHelperSwift {
+extension MockPaymentsHelper: PaymentsHelperSwift, PaymentsHelper {
 
     public var isKillSwitchActive: Bool { false }
     public var hasValidPhoneNumberForPayments: Bool { false }

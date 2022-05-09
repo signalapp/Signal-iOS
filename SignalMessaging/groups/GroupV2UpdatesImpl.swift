@@ -7,7 +7,7 @@ import SignalServiceKit
 import LibSignalClient
 
 @objc
-public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
+public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift, GroupV2Updates {
 
     @objc
     public required override init() {

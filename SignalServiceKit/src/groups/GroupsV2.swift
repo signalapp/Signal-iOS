@@ -494,7 +494,7 @@ public struct InvalidInvite: Equatable {
 
 // MARK: -
 
-public class MockGroupsV2: NSObject, GroupsV2Swift {
+public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
 
     public func createNewGroupOnService(groupModel: TSGroupModelV2,
                                         disappearingMessageToken: DisappearingMessageToken) -> Promise<Void> {
@@ -686,7 +686,7 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
 
 // MARK: -
 
-public class MockGroupV2Updates: NSObject, GroupV2UpdatesSwift {
+public class MockGroupV2Updates: NSObject, GroupV2UpdatesSwift, GroupV2Updates {
     @objc
     public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread) {
         owsFail("Not implemented.")

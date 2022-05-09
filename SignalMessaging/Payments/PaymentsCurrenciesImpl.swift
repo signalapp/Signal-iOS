@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
-public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
+public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, PaymentsCurrencies {
 
     private var refreshEvent: RefreshEvent?
 
