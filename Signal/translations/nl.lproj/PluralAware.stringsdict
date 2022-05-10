@@ -440,9 +440,9 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>1 groepslid heeft een vergelijkbare naam.</string>
+            <string>1 groepslid heeft dezelfde naam.</string>
             <key>other</key>
-            <string>%d groepsleden hebben een vergelijkbare naam.</string>
+            <string>%d groepsleden hebben dezelfde naam.</string>
         </dict>
     </dict>
     <key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -472,7 +472,7 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>1 groepslid hebben dezelfde naam. Vergelijk dit groepslid hieronder en neem actie indien je denkt dat hij of zij zich probeert voor te doen als een ander.</string>
+            <string>1 groepslid heeft dezelfde naam. Vergelijk dit groepslid hieronder en neem actie indien je denkt dat hij of zij zich probeert voor te doen als een ander.</string>
             <key>other</key>
             <string>%d groepsleden hebben dezelfde naam. Vergelijk deze groepsleden hieronder en neem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
         </dict>
@@ -600,7 +600,7 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Eén lid ondersteunt geen nieuwe-stijl groepen, daarom zal dit een verouderde groep zijn. %@</string>
+            <string>Eén lid ondersteunt geen nieuwe-stijl groepen, daarom zal dit een verouderde groep zijn. %2$@</string>
             <key>other</key>
             <string>%d groepsleden ondersteunen geen nieuwe-stijl groepen,  daarom zal dit een verouderde groep zijn. %2$@</string>
         </dict>

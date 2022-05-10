@@ -554,7 +554,7 @@
             <key>one</key>
             <string>1 üzv Yeni Qrupa əlavə edilə bilmədi və qrupdan çıxarıldı.</string>
             <key>other</key>
-            <string>%@ üzv Yeni Qrupa əlavə edilə bilmədi və qrupdan çıxarıldı.</string>
+            <string>%d üzv Yeni Qrupa əlavə edilə bilmədi və qrupdan çıxarıldı.</string>
         </dict>
     </dict>
     <key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>

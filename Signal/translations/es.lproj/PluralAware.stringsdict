@@ -474,7 +474,7 @@
             <key>one</key>
             <string>1 participante usa el mismo alias, revisa la lista de participantes debajo y selecciona la opción correcta.</string>
             <key>other</key>
-            <string>%@ participantes usan el mismo alias, revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
+            <string>%d participantes usan el mismo alias, revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
         </dict>
     </dict>
     <key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>

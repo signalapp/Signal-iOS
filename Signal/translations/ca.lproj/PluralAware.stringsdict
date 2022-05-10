@@ -234,7 +234,7 @@
             <key>one</key>
             <string>fa 1 minut</string>
             <key>other</key>
-            <string>fa %@ minuts</string>
+            <string>fa %d minuts</string>
         </dict>
     </dict>
     <key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -712,7 +712,7 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Suprimeix %d missatge</string>
+            <string>Suprimeix 1 missatge</string>
             <key>other</key>
             <string>Suprimeix %d missatges</string>
         </dict>

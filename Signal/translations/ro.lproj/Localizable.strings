@@ -488,7 +488,7 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Alege Moneda";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Donează o singură dată și obține insigna Boost pentru 30 de zile.";
+"BOOST_VIEW_BODY" = "Fă o donație unică și obține insigna Boost pentru 30 de zile.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Insigna ta Boost va expira pe %@.";
@@ -1619,13 +1619,13 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "Sprijinul meu";
 
 /* Title for the 'one-time donation' link in the donation view */
-"DONATION_VIEW_ONE_TIME_DONATION" = "One-time donation";
+"DONATION_VIEW_ONE_TIME_DONATION" = "Donație unică";
 
 /* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Alte modalități de a dona";
 
 /* Title for the 'receipts' section on the donation screen */
-"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Receipts";
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Bonuri fiscale ";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "FAQ Abonament";

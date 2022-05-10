@@ -872,7 +872,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Бачити імена контактів та фотографії у чатах.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Увімкнути Контакти?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Увімкнути контакти?";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Телефон";
@@ -902,22 +902,22 @@
 "CONTACT_SUPPORT" = "Зверніться в службу підтримки";
 
 /* The localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Хотів би попросити про нову можливість";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Бажаю запитати про нову функцію";
 
 /* A brief localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Запит нових можливостей";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Запит нових функцій";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Маю відгук про застосунок";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Маю відгук про програму";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Відгук про застосунок";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Відгук про програму";
 
 /* The localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER" = "Щось інше";
 
 /* A brief localized representation of the 'other' support filter. */
-"CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "Інший";
+"CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "Інше";
 
 /* The localized representation of the 'payments' support filter. */
 "CONTACT_SUPPORT_FILTER_PAYMENTS" = "Платежі";
@@ -926,10 +926,10 @@
 "CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Платежі";
 
 /* Prompt telling the user to select a filter for their support request. */
-"CONTACT_SUPPORT_FILTER_PROMPT" = "Ми можемо вам чимось допомогти?";
+"CONTACT_SUPPORT_FILTER_PROMPT" = "Чим ми можемо вам допомогти?";
 
 /* The localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION" = "Маю запитання";
+"CONTACT_SUPPORT_FILTER_QUESTION" = "У мене є запитання";
 
 /* A brief localized representation of the 'question' support filter. */
 "CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Запитання";
@@ -947,16 +947,16 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Підтримувачі та розвиток";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal не зміг завершити ваш запит в підтримку.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal не зміг виконати ваш запит до служби підтримки.";
 
 /* button text */
-"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Спробуйте знову";
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Спробувати знову";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Ваші журнали відладки допоможуть нам усунути вашу проблему швидше. Відправлення журналів необов'язково.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Ваш журнал зневадження допоможе нам швидше усунути вашу проблему. Надсилання журналу необов'язкове.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Надіслати журнал відладки?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Надіслати журнал зневадження?";
 
 /* Placeholder telling user they must select a filter. */
 "CONTACT_SUPPORT_SELECT_A_FILTER" = "Оберіть причину";

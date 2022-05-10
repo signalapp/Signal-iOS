@@ -15,11 +15,11 @@
             <key>one</key>
             <string>Голосове повідомлення 1 секунда</string>
             <key>few</key>
-            <string>Голосове повідомлення %d секунд</string>
+            <string>Голосове повідомлення %d секунди</string>
             <key>many</key>
             <string>Голосове повідомлення %d секунд</string>
             <key>other</key>
-            <string>Голосове повідомлення %d секунд</string>
+            <string>Голосове повідомлення %d секунди</string>
         </dict>
     </dict>
     <key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -93,13 +93,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Цей власний колір використовується в 1 чаті. Бажаєте його видалити для усіх чатів?</string>
+            <string>Цей власний колір використовується в 1 чаті. Хочете його видалити?</string>
             <key>few</key>
-            <string>Цей власний колір використовується в чатах: %d. Бажаєте його видалити для усіх чатів?</string>
+            <string>Цей власний колір використовується в %d чатах. Хочете його видалити?</string>
             <key>many</key>
-            <string>Цей власний колір використовується в чатах: %d. Бажаєте його видалити для усіх чатів?</string>
+            <string>Цей власний колір використовується в %d чатах. Хочете його видалити?</string>
             <key>other</key>
-            <string>Цей власний колір використовується в чатах: %d. Бажаєте його видалити для усіх чатів?</string>
+            <string>Цей власний колір використовується в %d чатах. Хочете його видалити?</string>
         </dict>
     </dict>
     <key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -113,13 +113,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Цей колір використовується в 1 чаті. Бажаєте зберегти зміни для усіх чатів?</string>
+            <string>Цей колір використовується в 1 чаті. Хочете зберегти зміни для всіх чатів?</string>
             <key>few</key>
-            <string>Цей колір використовується в чатах: %d. Бажаєте зберегти зміни для усіх чатів?</string>
+            <string>Цей колір використовується в %d чатах. Хочете зберегти зміни для всіх чатів?</string>
             <key>many</key>
-            <string>Цей колір використовується в чатах: %d. Бажаєте зберегти зміни для усіх чатів?</string>
+            <string>Цей колір використовується в %d чатах. Хочете зберегти зміни для всіх чатів?</string>
             <key>other</key>
-            <string>Цей колір використовується в чатах: %d. Бажаєте зберегти зміни для усіх чатів?</string>
+            <string>Цей колір використовується в %d чатах. Хочете зберегти зміни для всіх чатів?</string>
         </dict>
     </dict>
     <key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -135,11 +135,11 @@
             <key>one</key>
             <string>Видалити чат?</string>
             <key>few</key>
-            <string>Видалити чати: %d?</string>
+            <string>Видалити %d чати?</string>
             <key>many</key>
-            <string>Видалити чати: %d?</string>
+            <string>Видалити %d чатів?</string>
             <key>other</key>
-            <string>Видалити чати: %d?</string>
+            <string>Видалити %d чати?</string>
         </dict>
     </dict>
     <key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -173,13 +173,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Не можна обирати понад 1 чат.</string>
+            <string>Не можна вибрати більше ніж 1 чат.</string>
             <key>few</key>
-            <string>Не можна обирати більше %d чатів.</string>
+            <string>Не можна вибрати більше ніж %d чати.</string>
             <key>many</key>
-            <string>Не можна обирати більше %d чатів.</string>
+            <string>Не можна вибрати більше ніж %d чатів.</string>
             <key>other</key>
-            <string>Не можна обирати більше %d чатів.</string>
+            <string>Не можна вибрати більше ніж %d чати.</string>
         </dict>
     </dict>
     <key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -230,11 +230,11 @@
             <key>one</key>
             <string>1 учасник</string>
             <key>few</key>
-            <string>%d учасників</string>
+            <string>%d учасника</string>
             <key>many</key>
             <string>%d учасників</string>
             <key>other</key>
-            <string>%d учасників</string>
+            <string>%d учасника</string>
         </dict>
     </dict>
     <key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -250,7 +250,7 @@
             <key>one</key>
             <string>1 спільна група</string>
             <key>few</key>
-            <string>%d спільних груп</string>
+            <string>%d спільні групи</string>
             <key>many</key>
             <string>%d спільних груп</string>
             <key>other</key>
@@ -268,13 +268,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>%dm</string>
+            <string>%d хв</string>
             <key>few</key>
-            <string>%dm</string>
+            <string>%d хв</string>
             <key>many</key>
-            <string>%dm</string>
+            <string>%d хв</string>
             <key>other</key>
-            <string>%dm</string>
+            <string>%d хв</string>
         </dict>
     </dict>
     <key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -290,11 +290,11 @@
             <key>one</key>
             <string>1 хвилину тому</string>
             <key>few</key>
-            <string>%d хвилин тому</string>
+            <string>%d хвилини тому</string>
             <key>many</key>
             <string>%d хвилин тому</string>
             <key>other</key>
-            <string>%d хвилин тому</string>
+            <string>%d хвилини тому</string>
         </dict>
     </dict>
     <key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -310,11 +310,11 @@
             <key>one</key>
             <string>Видалити повідомлення?</string>
             <key>few</key>
-            <string>Видалити повідомлення: %d?</string>
+            <string>Видалити %d повідомлення?</string>
             <key>many</key>
-            <string>Видалити повідомлення: %d?</string>
+            <string>Видалити %d повідомлень?</string>
             <key>other</key>
-            <string>Видалити повідомлення: %d?</string>
+            <string>Видалити %d повідомлення?</string>
         </dict>
     </dict>
     <key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -348,13 +348,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Ваша версія Signal застаріє за 1 день. Торкніться для оновлення до найновішої версії.</string>
+            <string>Ваша версія Signal застаріє через 1 день. Торкніться для оновлення до актуальної версії.</string>
             <key>few</key>
-            <string>Ваша версія Signal застаріє за %d днів. Торкніться для оновлення до найновішої версії.</string>
+            <string>Ваша версія Signal застаріє через %d дні. Торкніться для оновлення до актуальної версії.</string>
             <key>many</key>
-            <string>Ваша версія Signal застаріє за %d днів. Торкніться для оновлення до найновішої версії.</string>
+            <string>Ваша версія Signal застаріє через %d днів. Торкніться для оновлення до актуальної версії.</string>
             <key>other</key>
-            <string>Ваша версія Signal застаріє за %d днів. Торкніться для оновлення до найновішої версії.</string>
+            <string>Ваша версія Signal застаріє через %d дні. Торкніться для оновлення до актуальної версії.</string>
         </dict>
     </dict>
     <key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -368,13 +368,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Відправити повідомлення</string>
+            <string>Надіслати повідомлення</string>
             <key>few</key>
-            <string>Відправити %d повідомлень</string>
+            <string>Надіслати %d повідомлення</string>
             <key>many</key>
-            <string>Відправити %d повідомлень</string>
+            <string>Надіслати %d повідомлень</string>
             <key>other</key>
-            <string>Відправити %d повідомлень</string>
+            <string>Надіслати %d повідомлення</string>
         </dict>
     </dict>
     <key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -388,13 +388,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Для цього дзвінка досягнуто максимальну кількість учасників — 1. Спробуйте пізніше.</string>
+            <string>Для цього виклику досягнуто максимальну кількість - 1 учасник. Спробуйте знову пізніше.</string>
             <key>few</key>
-            <string>Для цього дзвінка досягнуто максимальну кількість учасників — %d. Спробуйте пізніше.</string>
+            <string>Для цього виклику досягнуто максимальну кількість - %d учасника. Спробуйте знову пізніше.</string>
             <key>many</key>
-            <string>Для цього дзвінка досягнуто максимальну кількість учасників — %d. Спробуйте пізніше.</string>
+            <string>Для цього виклику досягнуто максимальну кількість - %d учасників. Спробуйте знову пізніше.</string>
             <key>other</key>
-            <string>Для цього дзвінка досягнуто максимальну кількість учасників — %d. Спробуйте пізніше.</string>
+            <string>Для цього виклику досягнуто максимальну кількість - %d учасника. Спробуйте знову пізніше.</string>
         </dict>
     </dict>
     <key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -408,13 +408,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>У цьому дзвінку · 1 особа</string>
+            <string>У цьому виклику · 1 людина</string>
             <key>few</key>
-            <string>У цьому дзвінку · осіб %d</string>
+            <string>У цьому виклику · %d людини</string>
             <key>many</key>
-            <string>У цьому дзвінку · осіб %d</string>
+            <string>У цьому виклику · %d людей</string>
             <key>other</key>
-            <string>У цьому дзвінку  · осіб %d</string>
+            <string>У цьому виклику · %d людини</string>
         </dict>
     </dict>
     <key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -428,13 +428,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>%2$@, %3$@ та 1 інший у цьому дзвінку</string>
+            <string>%2$@, %3$@ та ще 1 у цьому виклику</string>
             <key>few</key>
-            <string>%2$@, %3$@ та %d інші у цьому дзвінку</string>
+            <string>%2$@, %3$@ та ще %d у цьому виклику</string>
             <key>many</key>
-            <string>%2$@, %3$@ та %d інших у цьому дзвінку</string>
+            <string>%2$@, %3$@ та ще %d у цьому виклику</string>
             <key>other</key>
-            <string>%2$@, %3$@ та %d інших у цьому дзвінку</string>
+            <string>%2$@, %3$@ та ще %d у цьому виклику</string>
         </dict>
     </dict>
     <key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -448,13 +448,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>%2$@, %3$@ та 1 інший приєдналися до дзвінка</string>
+            <string>%2$@, %3$@ та ще 1 приєдналися до виклику</string>
             <key>few</key>
-            <string>%2$@, %3$@ та %d інші приєдналися до дзвінка</string>
+            <string>%2$@, %3$@ та ще %d приєдналися до виклику</string>
             <key>many</key>
-            <string>%2$@, %3$@ та %d інших приєдналися до дзвінка</string>
+            <string>%2$@, %3$@ та ще %d приєдналися до виклику</string>
             <key>other</key>
-            <string>%2$@, %3$@ та %d інших приєдналися до дзвінка</string>
+            <string>%2$@, %3$@ та ще %d приєдналися до виклику</string>
         </dict>
     </dict>
     <key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -468,13 +468,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>%2$@, %3$@ та 1 інший покинули дзвінок</string>
+            <string>%2$@, %3$@ та ще 1 покинули виклик</string>
             <key>few</key>
-            <string>%2$@, %3$@ та %d інші покинули дзвінок</string>
+            <string>%2$@, %3$@ та ще %d покинули виклик</string>
             <key>many</key>
-            <string>%2$@, %3$@ та %d інших покинули дзвінок</string>
+            <string>%2$@, %3$@ та ще %d покинули виклик</string>
             <key>other</key>
-            <string>%2$@, %3$@ та %d інших покинули дзвінок</string>
+            <string>%2$@, %3$@ та ще %d покинули виклик</string>
         </dict>
     </dict>
     <key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -510,11 +510,11 @@
             <key>one</key>
             <string>1 учасник</string>
             <key>few</key>
-            <string>%d учасників</string>
+            <string>%d учасника</string>
             <key>many</key>
             <string>%d учасників</string>
             <key>other</key>
-            <string>%d учасників</string>
+            <string>%d учасника</string>
         </dict>
     </dict>
     <key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -530,11 +530,11 @@
             <key>one</key>
             <string>1 учасник</string>
             <key>few</key>
-            <string>%d учасників</string>
+            <string>%d учасника</string>
             <key>many</key>
             <string>%d учасників</string>
             <key>other</key>
-            <string>%d учасників</string>
+            <string>%d учасника</string>
         </dict>
     </dict>
     <key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -550,7 +550,7 @@
             <key>one</key>
             <string>1 учасник групи має схоже ім'я.</string>
             <key>few</key>
-            <string>%d учасники групи мають схожі імена.</string>
+            <string>%d учасника групи мають схожі імена.</string>
             <key>many</key>
             <string>%d учасників групи мають схожі імена.</string>
             <key>other</key>
@@ -568,13 +568,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>1 учасник групи має схожє ім'я; перегляньте учасника нижче або оберіть щоб вжити заходів.</string>
+            <string>1 учасник групи має схоже ім'я. Перегляньте учасника нижче або виберіть для виконання дій.</string>
             <key>few</key>
-            <string>%d учасникі групи мають схожі імена; перегляньте учасників нижче або оберіть щоб вжити заходів.</string>
+            <string>%d учасника групи мають схожі імена. Перегляньте учасників нижче або виберіть для виконання дій.</string>
             <key>many</key>
-            <string>%d учасників групи мають схожі імена; перегляньте учасників нижче або оберіть щоб вжити заходів.</string>
+            <string>%d учасників групи мають схожі імена. Перегляньте учасників нижче або виберіть для виконання дій.</string>
             <key>other</key>
-            <string>%d учасників групи мають схожі імена; перегляньте учасників нижче або оберіть щоб вжити заходів.</string>
+            <string>%d учасника групи мають схожі імена. Перегляньте учасників нижче або виберіть для виконання дій.</string>
         </dict>
     </dict>
     <key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -588,13 +588,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>1 учасник групи маює однакове ім'я; перегляньте учасника нижче або оберіть щоб вжити заходів.</string>
+            <string>1 учасник групи має однакове ім'я. Перегляньте учасника нижче або виберіть для виконання дій.</string>
             <key>few</key>
-            <string>%d учасники групи мають однакові імена; перегляньте учасників нижче або оберіть щоб вжити заходів.</string>
+            <string>%d учасника групи мають однакове ім'я. Перегляньте учасників нижче або виберіть для виконання дій.</string>
             <key>many</key>
-            <string>%d учасників групи мають однакові імена; перегляньте учасників нижче або оберіть щоб вжити заходів.</string>
+            <string>%d учасників групи мають однакове ім'я. Перегляньте учасників нижче або виберіть для виконання дій.</string>
             <key>other</key>
-            <string>%d учасників групи мають однакові імена; перегляньте учасників нижче або оберіть щоб вжити заходів.</string>
+            <string>%d учасника групи мають однакове ім'я. Перегляньте учасників нижче або виберіть для виконання дій.</string>
         </dict>
     </dict>
     <key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -608,13 +608,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Запрошення в групу було відкликано для 1 людини.</string>
+            <string>Запрошення до групи було відкликано для 1 людини.</string>
             <key>few</key>
-            <string>Запрошення в групу було відкликано для %d чоловік.</string>
+            <string>Запрошення до групи було відкликано для %d людей.</string>
             <key>many</key>
-            <string>Запрошення в групу було відкликано для %d чоловік.</string>
+            <string>Запрошення до групи було відкликано для %d людей.</string>
             <key>other</key>
-            <string>Запрошення в групу було відкликано для %d чоловік.</string>
+            <string>Запрошення до групи було відкликано для %d людей.</string>
         </dict>
     </dict>
     <key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -628,13 +628,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>%2$@ відкликав(-ла) запрошення в групу для 1 людини.</string>
+            <string>%2$@ відкликає запрошення до групи для 1 людини.</string>
             <key>few</key>
-            <string>%2$@ відкликав(-ла) запрошення в групу для %d чоловік.</string>
+            <string>%2$@ відкликає запрошення до групи для %d людей.</string>
             <key>many</key>
-            <string>%2$@ відкликав(-ла) запрошення в групу для %d чоловік.</string>
+            <string>%2$@ відкликає запрошення до групи для %d людей.</string>
             <key>other</key>
-            <string>%2$@ відкликав(-ла) запрошення в групу для %d чоловік.</string>
+            <string>%2$@ відкликає запрошення до групи для %d людей.</string>
         </dict>
     </dict>
     <key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -650,11 +650,11 @@
             <key>one</key>
             <string>1 людина була запрошена до групи.</string>
             <key>few</key>
-            <string>%d чоловіки було запрошено до групи.</string>
+            <string>%d людини було запрошено до групи.</string>
             <key>many</key>
-            <string>%d чоловік було запрошено до групи.</string>
+            <string>%d людей було запрошено до групи.</string>
             <key>other</key>
-            <string>%d чоловік було запрошено до групи.</string>
+            <string>%d людей було запрошено до групи.</string>
         </dict>
     </dict>
     <key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -668,13 +668,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>%2$@ запросив %d 1 особу до групи.</string>
+            <string>%2$@ запрошує 1 людину до групи.</string>
             <key>few</key>
-            <string>%2$@ запросив %d осіб до групи.</string>
+            <string>%2$@ запрошує %d людини до групи.</string>
             <key>many</key>
-            <string>%2$@ запросив %d осіб до групи.</string>
+            <string>%2$@ запрошує %d людей до групи.</string>
             <key>other</key>
-            <string>%2$@ запросив %d осіб до групи.</string>
+            <string>%2$@ запрошує %d людей до групи.</string>
         </dict>
     </dict>
     <key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -688,13 +688,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Не вдалось додати учасника до Нової групи і тому його було видалено з групи.</string>
+            <string>Не вдалося додати учасника до нової групи й тому його було вилучено з групи.</string>
             <key>few</key>
-            <string>Не вдалось додати %@ учасників до Нової групи і тому їх було видалено з групи.</string>
+            <string>Не вдалося додати %d учасників до нової групи й тому їх було вилучено з групи.</string>
             <key>many</key>
-            <string>Не вдалось додати %@ учасників до Нової групи і тому їх було видалено з групи.</string>
+            <string>Не вдалося додати %d учасників до нової групи й тому їх було вилучено з групи.</string>
             <key>other</key>
-            <string>Не вдалось додати %@ учасників до Нової групи і тому їх було видалено з групи.</string>
+            <string>Не вдалося додати %d учасників до нової групи й тому їх було вилучено з групи.</string>
         </dict>
     </dict>
     <key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -708,13 +708,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Не вдалось додати учасника до Нової групи і тому його було запрошено приєднатись.</string>
+            <string>Не вдалося додати учасника до нової групи й тому його було запрошено приєднатись.</string>
             <key>few</key>
-            <string>Не вдалось додати %@ учасників до Нової групи і тому їх було запрошено приєднатись.</string>
+            <string>Не вдалося додати %d учасників до нової групи й тому їх було запрошено приєднатись.</string>
             <key>many</key>
-            <string>Не вдалось додати %@ учасників до Нової групи і тому їх було запрошено приєднатись.</string>
+            <string>Не вдалося додати %d учасників до нової групи й тому їх було запрошено приєднатись.</string>
             <key>other</key>
-            <string>Не вдалось додати %@ учасників до Нової групи і тому їх було запрошено приєднатись.</string>
+            <string>Не вдалося додати %d учасників до нової групи й тому їх було запрошено приєднатись.</string>
         </dict>
     </dict>
     <key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
@@ -728,13 +728,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Цю групу неможливо створити, оскільки 1 учасник користується застарілою версією Signal. Ви можете створити Нову групу за його участю після того, як він оновить Signal, або видаліть його перед створенням групи. %2$@</string>
+            <string>Цю групу неможливо створити, оскільки 1 учасник користується застарілою версією Signal. Ви зможете створити нову групу з його участю після того, як він оновить Signal, або видаліть його перед створенням групи. %2$@</string>
             <key>few</key>
-            <string>Цю групу неможливо створити, оскільки %d учасника користуються застарілою версією Signal. Ви можете створити Нову групу за їх участю після того, як вони оновлять Signal, або видалити їх перед створенням групи. %2$@</string>
+            <string>Цю групу неможливо створити, оскільки %d учасника користуються застарілою версією Signal. Ви зможете створити нову групу з їх участю після того, як вони оновлять Signal, або видалити їх перед створенням групи. %2$@</string>
             <key>many</key>
-            <string>Цю групу неможливо створити, оскільки %d учасників користуються застарілою версією Signal. Ви можете створити Нову групу за їх участю після того, як вони оновлять Signal, або видалити їх перед створенням групи. %2$@</string>
+            <string>Цю групу неможливо створити, оскільки %d учасників користуються застарілою версією Signal. Ви зможете створити нову групу з їх участю після того, як вони оновлять Signal, або видалити їх перед створенням групи. %2$@</string>
             <key>other</key>
-            <string>Цю групу неможливо створити, оскільки %d учасників користуються застарілою версією Signal. Ви можете створити Нову групу за їх участю після того, як вони оновлять Signal, або видалити їх перед створенням групи. %2$@</string>
+            <string>Цю групу неможливо створити, оскільки %d учасників користуються застарілою версією Signal. Ви зможете створити нову групу з їх участю після того, як вони оновлять Signal, або видалити їх перед створенням групи. %2$@</string>
         </dict>
     </dict>
     <key>GROUPS_LEGACY_GROUP_CREATION_WARNING_%d</key>
@@ -748,13 +748,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>1 учасник не підтримує Нові Групи, тому це буде Спадкова Група. %2$@</string>
+            <string>1 учасник не підтримує нові групи, тому це буде застаріла група. %2$@</string>
             <key>few</key>
-            <string>%d учасники не підтримують Нові Групи, тому це буде Спадкова Група. %2$@</string>
+            <string>%d учасника не підтримують нові групи, тому це буде застаріла група. %2$@</string>
             <key>many</key>
-            <string>%d учасників не підтримують Нові Групи, тому це буде Спадкова Група. %2$@</string>
+            <string>%d учасників не підтримують нові групи, тому це буде застаріла група. %2$@</string>
             <key>other</key>
-            <string>%d учасників не підтримують Нові Групи, тому це буде Спадкова Група. %2$@</string>
+            <string>%d учасників не підтримують нові групи, тому це буде застаріла група. %2$@</string>
         </dict>
     </dict>
     <key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -768,13 +768,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Цю групу неможливо створити, оскільки 1 учасник користується застарілою версією Signal. Ви можете створити Нову групу за його участю після того, як він оновить Signal, або видаліть його перед створенням групи.</string>
+            <string>Цю групу неможливо створити, оскільки 1 учасник користується застарілою версією Signal. Ви зможете створити нову групу з його участю після того, як він оновить Signal, або вилучити його перед створенням групи.</string>
             <key>few</key>
-            <string>Цю групу неможливо створити, оскільки %d учасники користуються застарілою версією Signal. Ви можете створити Нову групу за їх участю після того, як вони оновлять Signal, або видалити їх перед створенням групи.</string>
+            <string>Цю групу неможливо створити, оскільки %d учасника користуються застарілою версією Signal. Ви зможете створити нову групу з їх участю після того, як вони оновлять Signal, або вилучити їх перед створенням групи.</string>
             <key>many</key>
-            <string>Цю групу неможливо створити, оскільки %d учасників користуються застарілою версією Signal. Ви можете створити Нову групу за їх участю після того, як вони оновлять Signal, або видалити їх перед створенням групи.</string>
+            <string>Цю групу неможливо створити, оскільки %d учасників користуються застарілою версією Signal. Ви зможете створити нову групу з їх участю після того, як вони оновлять Signal, або вилучити їх перед створенням групи.</string>
             <key>other</key>
-            <string>Цю групу неможливо створити, оскільки %d учасників користуються застарілою версією Signal. Ви можете створити Нову групу за їх участю після того, як вони оновлять Signal, або видалити їх перед створенням групи.</string>
+            <string>Цю групу неможливо створити, оскільки %d учасників користуються застарілою версією Signal. Ви зможете створити нову групу з їх участю після того, як вони оновлять Signal, або вилучити їх перед створенням групи.</string>
         </dict>
     </dict>
     <key>GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_%d</key>
@@ -788,13 +788,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Буде створено Спадкову Групу, оскільки 1 учасник використовує застарілу версію Signal. Ви можете створити з ним Групу Нового Стилю після того, як він оновить Signal, або видаліть його перед створенням групи.</string>
+            <string>Буде створено застарілу групу, оскільки 1 учасник користується застарілою версією Signal. Ви зможете створити з ним нову групу після того, як він оновить Signal, або вилучити його перед створенням групи.</string>
             <key>few</key>
-            <string>Буде створено Спадкову Групу, оскільки %d учасники використовують застарілу версію Signal. Ви можете створити з ними Групу Нового Стилю після того, як вони оновлять Signal, або видаліть їх перед створенням групи.</string>
+            <string>Буде створено застарілу групу, оскільки %d учасника користуються застарілою версією Signal. Ви зможете створити з ними нову групу після того, як вони оновлять Signal, або вилучити їх перед створенням групи.</string>
             <key>many</key>
-            <string>Буде створено Спадкову Групу, оскільки %d учасників використовують застарілу версію Signal. Ви можете створити з ними Групу Нового Стилю після того, як вони оновлять Signal, або видаліть їх перед створенням групи.</string>
+            <string>Буде створено застарілу групу, оскільки %d учасників користуються застарілою версією Signal. Ви зможете створити з ними нову групу після того, як вони оновлять Signal, або вилучити їх перед створенням групи.</string>
             <key>other</key>
-            <string>Буде створено Спадкову Групу, оскільки %d учасників використовують застарілу версію Signal. Ви можете створити з ними Групу Нового Стилю після того, як вони оновлять Signal, або видаліть їх перед створенням групи.</string>
+            <string>Буде створено застарілу групу, оскільки %d учасників користуються застарілою версією Signal. Ви зможете створити з ними нову групу після того, як вони оновлять Signal, або вилучити їх перед створенням групи.</string>
         </dict>
     </dict>
     <key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -808,13 +808,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Не вдалось повторно додати до Нової групи 1 учасника. Бажаєте додати його зараз?</string>
+            <string>Не вдалося повторно додати до нової групи 1 учасника. Хочете додати його зараз?</string>
             <key>few</key>
-            <string>Не вдалось повторно додати до Нової групи %d учасників. Бажаєте додати їх зараз?</string>
+            <string>Не вдалося повторно додати до нової групи %d учасників. Хочете додати їх зараз?</string>
             <key>many</key>
-            <string>Не вдалось повторно додати до Нової групи %d учасників. Бажаєте додати їх зараз?</string>
+            <string>Не вдалося повторно додати до нової групи %d учасників. Хочете додати їх зараз?</string>
             <key>other</key>
-            <string>Не вдалось повторно додати до Нової групи %d учасників. Бажаєте додати їх зараз?</string>
+            <string>Не вдалося повторно додати до нової групи %d учасників. Хочете додати їх зараз?</string>
         </dict>
     </dict>
     <key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -828,13 +828,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Групи у Signal найкраще працює з кількістю учасників 1 або менше. Додавання нових учасників викличе затримки у відправленні та отримуванні повідомлень.</string>
+            <string>Групи у Signal найкраще працюють з кількістю учасників 1 або менше. Додавання нових учасників спричинить затримки надсилання та отримання повідомлень.</string>
             <key>few</key>
-            <string>Групи у Signal найкраще працюють з кількістю учасників %d або менше. Додавання нових учасників викличе затримки у відправленні та отримуванні повідомлень.</string>
+            <string>Групи у Signal найкраще працюють з кількістю учасників %d або менше. Додавання нових учасників спричинить затримки надсилання та отримання повідомлень.</string>
             <key>many</key>
-            <string>Групи у Signal найкраще працюють з кількістю учасників %d або менше. Додавання нових учасників викличе затримки у відправленні та отримуванні повідомлень.</string>
+            <string>Групи у Signal найкраще працюють з кількістю учасників %d або менше. Додавання нових учасників спричинить затримки надсилання та отримання повідомлень.</string>
             <key>other</key>
-            <string>Групи у Signal найкраще працюють з кількістю учасників %d або менше. Додавання нових учасників викличе затримки у відправленні та отримуванні повідомлень.</string>
+            <string>Групи у Signal найкраще працюють з кількістю учасників %d або менше. Додавання нових учасників спричинить затримки надсилання та отримання повідомлень.</string>
         </dict>
     </dict>
     <key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -848,13 +848,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Ви не можете поділитись більше ніж 1 елементом.</string>
+            <string>Ви не можете поділитись більш ніж 1 елементом.</string>
             <key>few</key>
-            <string>Ви не можете поділитись більше ніж %d елементами.</string>
+            <string>Ви не можете поділитись більш ніж %d елементами.</string>
             <key>many</key>
-            <string>Ви не можете поділитись більше ніж %d елементами.</string>
+            <string>Ви не можете поділитись більш ніж %d елементами.</string>
             <key>other</key>
-            <string>Ви не можете поділитись більше ніж %d елементами.</string>
+            <string>Ви не можете поділитись більш ніж %d елементами.</string>
         </dict>
     </dict>
     <key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -890,11 +890,11 @@
             <key>one</key>
             <string>Видалити 1 повідомлення</string>
             <key>few</key>
-            <string>Видалити %d повідомлень</string>
+            <string>Видалити %d повідомлення</string>
             <key>many</key>
             <string>Видалити %d повідомлень</string>
             <key>other</key>
-            <string>Видалити %d повідомлень</string>
+            <string>Видалити %d повідомлення</string>
         </dict>
     </dict>
     <key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -910,7 +910,7 @@
             <key>one</key>
             <string>1 фотографія</string>
             <key>few</key>
-            <string>%d фотографій</string>
+            <string>%d фотографії</string>
             <key>many</key>
             <string>%d фотографій</string>
             <key>other</key>
@@ -930,7 +930,7 @@
             <key>one</key>
             <string>1 елемент</string>
             <key>few</key>
-            <string>%d елементів</string>
+            <string>%d елементи</string>
             <key>many</key>
             <string>%d елементів</string>
             <key>other</key>
@@ -948,13 +948,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>1 Обраний</string>
+            <string>1 вибране</string>
             <key>few</key>
-            <string>%d Обрано</string>
+            <string>%d вибрані</string>
             <key>many</key>
-            <string>%d Обрано</string>
+            <string>%d вибраних</string>
             <key>other</key>
-            <string>%d Обрано</string>
+            <string>%d вибраних</string>
         </dict>
     </dict>
     <key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -970,7 +970,7 @@
             <key>one</key>
             <string>Ви заблокували 1 учасника цієї групи</string>
             <key>few</key>
-            <string>Ви заблокували %d учасників цієї групи</string>
+            <string>Ви заблокували %d учасники цієї групи</string>
             <key>many</key>
             <string>Ви заблокували %d учасників цієї групи</string>
             <key>other</key>
@@ -1008,13 +1008,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Невірний PIN-код. Залишилась 1 спроба.</string>
+            <string>Неправильний ПІН. Залишилась 1 спроба.</string>
             <key>few</key>
-            <string>Невірний PIN-код. Залишилось спроб: %d.</string>
+            <string>Неправильний ПІН. Залишилось %d спроби.</string>
             <key>many</key>
-            <string>Невірний PIN-код. Залишилось спроб: %d.</string>
+            <string>Неправильний ПІН. Залишилось %d спроб.</string>
             <key>other</key>
-            <string>Невірний PIN-код. Залишилось спроб: %d.</string>
+            <string>Неправильний ПІН. Залишилось %d спроб.</string>
         </dict>
     </dict>
     <key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -1028,13 +1028,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>%2$@ запросив 1 людину</string>
+            <string>%2$@ запрошує 1 людину</string>
             <key>few</key>
-            <string>%2$@ запросив %d людини</string>
+            <string>%2$@ запрошує %d людини</string>
             <key>many</key>
-            <string>%2$@ запросив %d людин</string>
+            <string>%2$@ запрошує %d людей</string>
             <key>other</key>
-            <string>%2$@ запросив %d людин</string>
+            <string>%2$@ запрошує %d людей</string>
         </dict>
     </dict>
     <key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -1048,13 +1048,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>1 запит учасника, що очікує розгляду.</string>
+            <string>1 запит учасника очікує розгляду.</string>
             <key>few</key>
-            <string>%d запити учасників, що очікують розгляду.</string>
+            <string>%d запити учасників очікують розгляду.</string>
             <key>many</key>
-            <string>%d запитів учасників, що очікують розгляду.</string>
+            <string>%d запитів учасників очікують розгляду.</string>
             <key>other</key>
-            <string>%d запитів учасників, що очікують розгляду.</string>
+            <string>%d запитів учасників очікують розгляду.</string>
         </dict>
     </dict>
     <key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -1068,13 +1068,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Відкликати 1 хибне запрошення</string>
+            <string>Відкликати недійсне запрошення</string>
             <key>few</key>
-            <string>Відкликати %d хибних запрошення</string>
+            <string>Відкликати %d недійсні запрошення</string>
             <key>many</key>
-            <string>Відкликати %d хибних запрошень</string>
+            <string>Відкликати %d недійсних запрошень</string>
             <key>other</key>
-            <string>Відкликати %d хибних запрошень</string>
+            <string>Відкликати %d недійсних запрошень</string>
         </dict>
     </dict>
     <key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -1088,13 +1088,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Відкликати запрошення, відправлене «%2$@»?</string>
+            <string>Відкликати запрошення, надіслане «%2$@»?</string>
             <key>few</key>
-            <string>Відкликати %d запрошень, відправлених «%2$@»?</string>
+            <string>Відкликати %d запрошення, надіслані «%2$@»?</string>
             <key>many</key>
-            <string>Відкликати %d запрошень, відправлених «%2$@»?</string>
+            <string>Відкликати %d запрошень, надісланих «%2$@»?</string>
             <key>other</key>
-            <string>Відкликати %d запрошень, відправлених «%2$@»?</string>
+            <string>Відкликати %d запрошень, надісланих «%2$@»?</string>
         </dict>
     </dict>
     <key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1128,13 +1128,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Ми нагадаємо вам пізніше. Створення PIN-коду стане обов'язковим через 1 день.</string>
+            <string>Ми нагадаємо вам пізніше. Створення ПІН стане обов'язковим через 1 день.</string>
             <key>few</key>
-            <string>Ми нагадаємо вам пізніше. Створення PIN-коду стане обов'язковим через %d дні.</string>
+            <string>Ми нагадаємо вам пізніше. Створення ПІН стане обов'язковим через %d дні.</string>
             <key>many</key>
-            <string>Ми нагадаємо вам пізніше. Створення PIN-коду стане обов'язковим через %d днів.</string>
+            <string>Ми нагадаємо вам пізніше. Створення ПІН стане обов'язковим через %d днів.</string>
             <key>other</key>
-            <string>Ми нагадаємо вам пізніше. Створення PIN-коду стане обов'язковим через %d днів.</string>
+            <string>Ми нагадаємо вам пізніше. Створення ПІН стане обов'язковим через %d дні.</string>
         </dict>
     </dict>
     <key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1148,13 +1148,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>У вас залишилось 1 спроба. Якщо ви вичерпаєте спроби, ви зможете створити новий PIN-код. Ви зможете зареєструватися та використовувати свій обліковий запис, але втратите деякі збережені налаштування, наприклад інформацію вашого профілю.</string>
+            <string>У вас залишилась 1 спроба. Після завершення всіх спроб ви зможете створити новий ПІН. Ви зможете зареєструватися та користуватися своїм обліковим записом, але втратите деякі збережені параметри, наприклад, інформацію профілю.</string>
             <key>few</key>
-            <string>У вас залишилось %d спроби. Якщо ви вичерпаєте спроби, ви зможете створити новий PIN-код. Ви зможете зареєструватися та використовувати свій обліковий запис, але втратите деякі збережені налаштування, наприклад інформацію вашого профілю.</string>
+            <string>У вас залишилось %d спроби. Після завершення всіх спроб ви зможете створити новий ПІН. Ви зможете зареєструватися та користуватися своїм обліковим записом, але втратите деякі збережені параметри, наприклад, інформацію профілю.</string>
             <key>many</key>
-            <string>У вас залишилось %d спроб. Якщо ви вичерпаєте спроби, ви зможете створити новий PIN-код. Ви зможете зареєструватися та використовувати свій обліковий запис, але втратите деякі збережені налаштування, наприклад інформацію вашого профілю.</string>
+            <string>У вас залишилось %d спроб. Після завершення всіх спроб ви зможете створити новий ПІН. Ви зможете зареєструватися та користуватися своїм обліковим записом, але втратите деякі збережені параметри, наприклад, інформацію профілю.</string>
             <key>other</key>
-            <string>У вас залишилось %d спроб. Якщо ви вичерпаєте спроби, ви зможете створити новий PIN-код. Ви зможете зареєструватися та використовувати свій обліковий запис, але втратите деякі збережені налаштування, наприклад інформацію вашого профілю.</string>
+            <string>У вас залишилось %d спроб. Після завершення всіх спроб ви зможете створити новий ПІН. Ви зможете зареєструватися та користуватися своїм обліковим записом, але втратите деякі збережені параметри, наприклад, інформацію профілю.</string>
         </dict>
     </dict>
     <key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -1168,13 +1168,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>У вас залишилося 1 спроба. Якщо ви вичерпаєте спроби, ваш обліковий запис буде заблоковано. Якщо після цього протягом 7 днів в ньому не буде активності, ви зможете зареєструватися знову без введення PIN-коду. При цьому обліковий запис буде стертий, а весь вміст видалений.</string>
+            <string>У вас залишилась 1 спроба. Після завершення всіх спроб ваш обліковий запис буде заблоковано. Через 7 днів без активності ви зможете зареєструватися знову без вашого ПІН. При цьому обліковий запис буде стертий, а весь вміст видалений.</string>
             <key>few</key>
-            <string>У вас залишилося %d спроби. Якщо ви вичерпаєте спроби, ваш обліковий запис буде заблоковано. Якщо після цього протягом 7 днів в ньому не буде активності, ви зможете зареєструватися знову без введення PIN-коду. При цьому обліковий запис буде стертий, а весь вміст видалений.</string>
+            <string>У вас залишилось %d спроби. Після завершення всіх спроб ваш обліковий запис буде заблоковано. Через 7 днів без активності ви зможете зареєструватися знову без вашого ПІН. При цьому обліковий запис буде стертий, а весь вміст видалений.</string>
             <key>many</key>
-            <string>У вас залишилося %d спроб. Якщо ви вичерпаєте спроби, ваш обліковий запис буде заблоковано. Якщо після цього протягом 7 днів в ньому не буде активності, ви зможете зареєструватися знову без введення PIN-коду. При цьому обліковий запис буде стертий, а весь вміст видалений.</string>
+            <string>У вас залишилось %d спроб. Після завершення всіх спроб ваш обліковий запис буде заблоковано. Через 7 днів без активності ви зможете зареєструватися знову без вашого ПІН. При цьому обліковий запис буде стертий, а весь вміст видалений.</string>
             <key>other</key>
-            <string>У вас залишилося %d спроб. Якщо ви вичерпаєте спроби, ваш обліковий запис буде заблоковано. Якщо після цього протягом 7 днів в ньому не буде активності, ви зможете зареєструватися знову без введення PIN-коду. При цьому обліковий запис буде стертий, а весь вміст видалений.</string>
+            <string>У вас залишилось %d спроб. Після завершення всіх спроб ваш обліковий запис буде заблоковано. Через 7 днів без активності ви зможете зареєструватися знову без вашого ПІН. При цьому обліковий запис буде стертий, а весь вміст видалений.</string>
         </dict>
     </dict>
     <key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -1188,13 +1188,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Учасник у %2$@, %3$@, та 1 додатковій групі</string>
+            <string>Учасник груп %2$@, %3$@, та ще 1</string>
             <key>few</key>
-            <string>Учасник у %2$@, %3$@, та %d додаткових групах</string>
+            <string>Учасник груп %2$@, %3$@, та ще %d</string>
             <key>many</key>
-            <string>Учасник у %2$@, %3$@, та %d додаткових групах</string>
+            <string>Учасник груп %2$@, %3$@, та ще %d</string>
             <key>other</key>
-            <string>Учасник у %2$@, %3$@, та %d додаткових групах</string>
+            <string>Учасник груп %2$@, %3$@, та ще %d</string>
         </dict>
     </dict>
     <key>TIME_AMOUNT_DAYS_%d</key>
@@ -1214,7 +1214,7 @@
             <key>many</key>
             <string>%d днів</string>
             <key>other</key>
-            <string>%d днів</string>
+            <string>%d дні</string>
         </dict>
     </dict>
     <key>TIME_AMOUNT_DAYS_SHORT_%d</key>
@@ -1254,7 +1254,7 @@
             <key>many</key>
             <string>%d годин</string>
             <key>other</key>
-            <string>%d годин</string>
+            <string>%d години</string>
         </dict>
     </dict>
     <key>TIME_AMOUNT_HOURS_SHORT_%d</key>
@@ -1294,7 +1294,7 @@
             <key>many</key>
             <string>%d хвилин</string>
             <key>other</key>
-            <string>%d хвилин</string>
+            <string>%d хвилини</string>
         </dict>
     </dict>
     <key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
@@ -1334,7 +1334,7 @@
             <key>many</key>
             <string>%d секунд</string>
             <key>other</key>
-            <string>%d секунд</string>
+            <string>%d секунди</string>
         </dict>
     </dict>
     <key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
@@ -1374,7 +1374,7 @@
             <key>many</key>
             <string>%d тижнів</string>
             <key>other</key>
-            <string>%d тижнів</string>
+            <string>%d тижні</string>
         </dict>
     </dict>
     <key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
@@ -1414,7 +1414,7 @@
             <key>many</key>
             <string>%d років</string>
             <key>other</key>
-            <string>%d років</string>
+            <string>%d роки</string>
         </dict>
     </dict>
     

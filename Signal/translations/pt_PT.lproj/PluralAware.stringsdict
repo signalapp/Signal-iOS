@@ -1130,7 +1130,7 @@
             <key>one</key>
             <string>1 ano</string>
             <key>other</key>
-            <string>%@ anos</string>
+            <string>%d anos</string>
         </dict>
     </dict>
     

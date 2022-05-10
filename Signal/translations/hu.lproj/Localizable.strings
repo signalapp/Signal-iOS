@@ -368,7 +368,7 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Adj egy Lökést a Signalnak";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "A Lökés Kitűző lejárt és így többé nem látható a profilképeden.\n\nA Signal további használata nem változik, de ha hosszútávon is támogatnád ezt a közösség számára fejlesztett technológiát, akkor fontold meg a havi támogatást.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "A Lökés Kitűző lejárt és így többé nem látható a profilképeden.\n\nA Signal további használata nem változik, de ha hosszútávon is támogatnál egy közösség számára fejlesztett technológiát, akkor fontold meg a havi támogatást.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "A Lökés Kitűző lejárt és így többé nem látható a profilképeden.\n\nA Lökés Kitűző újabb 30 napra történő aktiválását egy ismételt egyszeri hozzájárulással tudod megtenni.";
@@ -1616,7 +1616,7 @@
 "DONATION_VIEW_MORE_SECTION_TITLE" = "Tovább";
 
 /* Title for the 'my support' section in the donation view */
-"DONATION_VIEW_MY_SUPPORT_TITLE" = "Támogatás oldalam";
+"DONATION_VIEW_MY_SUPPORT_TITLE" = "Támogatásaim";
 
 /* Title for the 'one-time donation' link in the donation view */
 "DONATION_VIEW_ONE_TIME_DONATION" = "Egyszeri adomány";
@@ -6056,7 +6056,7 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "A Signal csapata elkötelezett, hogy nyílt forrású fejlesztéseivel előmozdítsa a privát technológiák térnyerését, amelyek a szólásszabadságot és a biztonságos globális kommunikáció elterjedését biztosítják. \n\nAdományoddal hozzájárulhatsz a fejlesztés és üzemeltetés költségeihez, amelyek a milliók által világszerte használt azonnali privát kommunikációt megteremtő alkalmazás működtetéséhez szükségesek. Nincs reklám. Nincs követés. Nincs trükk.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Támogasd a technológiát, ami számodra, nem pedig adataid megszerzéséért készült. A fenntartók, támogatók közössége vár.";
+"SUSTAINER_READ_MORE_TITLE" = "Támogass egy olyan technológiát, amely számodra, nem pedig adataid megszerzéséért készült. A fenntartók, támogatók közössége vár.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Miért támogassam?";
@@ -6143,7 +6143,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Frissítés";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Havi támogatással segítheted a technológiát, ami számodra, nem pedig adataid megszerzéséért készült.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "A Signal havi támogatásával segíthetsz egy olyan technológiát, amely számodra, nem pedig adataid megszerzéséért készült.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Ki";
