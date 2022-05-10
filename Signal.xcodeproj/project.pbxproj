@@ -20,6 +20,8 @@
 		179E8C31276A711100AF640F /* AFQueryString.m in Sources */ = {isa = PBXBuildFile; fileRef = 179E8C30276A711100AF640F /* AFQueryString.m */; };
 		179E8C33276A713300AF640F /* AFQueryString.h in Headers */ = {isa = PBXBuildFile; fileRef = 179E8C32276A713300AF640F /* AFQueryString.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		17ACF11E267D71E0009BE867 /* OWSAudioSession+WebRTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ACF11D267D71E0009BE867 /* OWSAudioSession+WebRTC.swift */; };
+		17B4F6CA281B17D300C2BFB1 /* MediaGallerySections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B4F6C9281B17D200C2BFB1 /* MediaGallerySections.swift */; };
+		17B4F6CD281B3AB000C2BFB1 /* MediaGallerySectionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B4F6CB281B3A2200C2BFB1 /* MediaGallerySectionsTest.swift */; };
 		17B78E0E260529E900E24A9E /* newlyInitializedSessionState in Resources */ = {isa = PBXBuildFile; fileRef = 17B78E0C2605299E00E24A9E /* newlyInitializedSessionState */; };
 		23B9887F4A95010141FCF725 /* Pods_SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E36B9FCE67E9FFDA471A085 /* Pods_SignalUI.framework */; };
 		3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */; };
@@ -1206,6 +1208,8 @@
 		179E8C30276A711100AF640F /* AFQueryString.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AFQueryString.m; sourceTree = "<group>"; };
 		179E8C32276A713300AF640F /* AFQueryString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AFQueryString.h; sourceTree = "<group>"; };
 		17ACF11D267D71E0009BE867 /* OWSAudioSession+WebRTC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSAudioSession+WebRTC.swift"; sourceTree = "<group>"; };
+		17B4F6C9281B17D200C2BFB1 /* MediaGallerySections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGallerySections.swift; sourceTree = "<group>"; };
+		17B4F6CB281B3A2200C2BFB1 /* MediaGallerySectionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGallerySectionsTest.swift; sourceTree = "<group>"; };
 		17B78E0C2605299E00E24A9E /* newlyInitializedSessionState */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = newlyInitializedSessionState; sourceTree = "<group>"; };
 		1BC279B87E730B066A5AFB2A /* Pods-SignalPerformanceTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.app store release.xcconfig"; sourceTree = "<group>"; };
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
@@ -3582,6 +3586,7 @@
 				4C2A538B23C5462300D28CD8 /* CVMessageMappingTest.swift */,
 				4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */,
 				88D6E94125535482003142D9 /* CVTextTest.swift */,
+				17B4F6CB281B3A2200C2BFB1 /* MediaGallerySectionsTest.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -3885,6 +3890,7 @@
 		4C4F360E2284516F00A8DF48 /* MediaGallery */ = {
 			isa = PBXGroup;
 			children = (
+				17B4F6C9281B17D200C2BFB1 /* MediaGallerySections.swift */,
 				45B9EE9A200E91FB005D2F2D /* MediaDetailViewController.h */,
 				45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */,
 				452EC6DE205E9E30000E787C /* MediaGallery.swift */,
@@ -6576,6 +6582,7 @@
 				348815BA2552063F00D4F4C4 /* CVAvatarBuilder.swift in Sources */,
 				32C584A825B81C6600256804 /* AvatarViewController.swift in Sources */,
 				346EAA14250199A400E8AB6F /* MemberRequestView.swift in Sources */,
+				17B4F6CA281B17D300C2BFB1 /* MediaGallerySections.swift in Sources */,
 				3426A37A2563F0EA0036407F /* CVComponentBottomButtons.swift in Sources */,
 				32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */,
 				88DBDFB9263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift in Sources */,
@@ -6657,6 +6664,7 @@
 				4C9D347B23679C25006A4307 /* GroupAndContactStreamTest.swift in Sources */,
 				4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift in Sources */,
 				4C5250D421E7C51900CE3D95 /* PhoneNumberValidatorTest.swift in Sources */,
+				17B4F6CD281B3AB000C2BFB1 /* MediaGallerySectionsTest.swift in Sources */,
 				452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */,
 				4C2A538C23C5462300D28CD8 /* CVMessageMappingTest.swift in Sources */,
 				4C4BC6C32102D697004040C9 /* ContactDiscoveryOperationTest.swift in Sources */,

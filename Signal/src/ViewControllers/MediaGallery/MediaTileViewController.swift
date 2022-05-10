@@ -15,8 +15,6 @@ fileprivate extension IndexSet {
 
 @objc
 public class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate, UICollectionViewDelegateFlowLayout {
-    private var galleryDates: [GalleryDate] { return mediaGallery.sections.orderedKeys }
-
     private let thread: TSThread
     private lazy var mediaGallery: MediaGallery = {
         let mediaGallery = MediaGallery(thread: thread)
@@ -106,21 +104,20 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     override public func viewWillAppear(_ animated: Bool) {
         defer { super.viewWillAppear(animated) }
 
-        if mediaGallery.sections.isEmpty {
+        if mediaGallery.galleryDates.isEmpty {
             databaseStorage.read { transaction in
                 _ = self.mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize, transaction: transaction)
             }
-            if mediaGallery.sections.isEmpty {
+            if mediaGallery.galleryDates.isEmpty {
                 // There must be no media.
                 return
             }
         }
 
         self.view.layoutIfNeeded()
-        let lastSectionItemCount = self.collectionView(self.collectionView!,
-                                                       numberOfItemsInSection: self.galleryDates.count)
+        let lastSectionItemCount = mediaGallery.numberOfItemsInSection(mediaGallery.galleryDates.count - 1)
         self.collectionView.scrollToItem(at: IndexPath(item: lastSectionItemCount - 1,
-                                                       section: self.galleryDates.count),
+                                                       section: mediaGallery.galleryDates.count),
                                          at: .bottom,
                                          animated: false)
     }
@@ -164,7 +161,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     override public func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
         defer { previousAdjustedContentInset = scrollView.adjustedContentInset }
-        guard !galleryDates.isEmpty else {
+        guard !mediaGallery.galleryDates.isEmpty else {
             return
         }
 
@@ -182,7 +179,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         Logger.debug("")
 
-        guard galleryDates.count > 0 else {
+        guard !mediaGallery.galleryDates.isEmpty else {
             return false
         }
 
@@ -198,7 +195,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         Logger.debug("")
 
-        guard galleryDates.count > 0 else {
+        guard !mediaGallery.galleryDates.isEmpty else {
             return false
         }
 
@@ -214,7 +211,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         Logger.debug("")
 
-        guard galleryDates.count > 0 else {
+        guard !mediaGallery.galleryDates.isEmpty else {
             return false
         }
 
@@ -267,19 +264,19 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     override public func numberOfSections(in collectionView: UICollectionView) -> Int {
         Logger.debug("")
 
-        guard galleryDates.count > 0 else {
+        guard !mediaGallery.galleryDates.isEmpty else {
             // empty gallery
             return 1
         }
 
         // One for each galleryDate plus a "loading older" and "loading newer" section
-        return galleryDates.count + 2
+        return mediaGallery.galleryDates.count + 2
     }
 
     override public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
         Logger.debug("\(sectionIdx)")
 
-        guard galleryDates.count > 0 else {
+        guard !mediaGallery.galleryDates.isEmpty else {
             // empty gallery
             return 0
         }
@@ -294,19 +291,14 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return 0
         }
 
-        guard let count = mediaGallery.sections[safe: sectionIdx - 1]?.value.count else {
-            owsFailDebug("unknown section: \(sectionIdx)")
-            return 0
-        }
-
-        return count
+        return mediaGallery.numberOfItemsInSection(sectionIdx - 1)
     }
 
     override public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
 
         let defaultView = UICollectionReusableView()
 
-        guard galleryDates.count > 0 else {
+        guard !mediaGallery.galleryDates.isEmpty else {
             guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier, for: indexPath) as? MediaGalleryStaticHeader else {
 
                 owsFailDebug("unable to build section header for kLoadOlderSectionIdx")
@@ -342,7 +334,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                     owsFailDebug("unable to build section header for indexPath: \(indexPath)")
                     return defaultView
                 }
-                guard let date = self.galleryDates[safe: indexPath.section - 1] else {
+                guard let date = mediaGallery.galleryDates[safe: indexPath.section - 1] else {
                     owsFailDebug("unknown section for indexPath: \(indexPath)")
                     return defaultView
                 }
@@ -360,7 +352,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         let defaultCell = UICollectionViewCell()
 
-        guard galleryDates.count > 0 else {
+        guard !mediaGallery.galleryDates.isEmpty else {
             owsFailDebug("unexpected cell for loadNewerSectionIdx")
             return defaultCell
         }
@@ -478,7 +470,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         let kMonthHeaderSize: CGSize = CGSize(width: 0, height: 50)
         let kStaticHeaderSize: CGSize = CGSize(width: 0, height: 100)
 
-        guard galleryDates.count > 0 else {
+        guard !mediaGallery.galleryDates.isEmpty else {
             return kStaticHeaderSize
         }
 
@@ -692,7 +684,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return
         }
 
-        guard galleryDates.count > 0 else {
+        guard !mediaGallery.galleryDates.isEmpty else {
             // Show Empty
             self.collectionView?.reloadData()
             return
@@ -715,7 +707,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     let kLoadOlderSectionIdx: Int = 0
     var loadNewerSectionIdx: Int {
-        return galleryDates.count + 1
+        return mediaGallery.galleryDates.count + 1
     }
 
     public func autoLoadMoreIfNecessary() {
@@ -760,7 +752,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                     case .after:
                         let newSectionCount = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize,
                                                                              transaction: transaction)
-                        newSections = (mediaGallery.sections.count - newSectionCount)..<mediaGallery.sections.count
+                        let newEnd = mediaGallery.galleryDates.count
+                        newSections = (newEnd - newSectionCount)..<newEnd
                     case .around:
                         preconditionFailure() // unused
                     }
