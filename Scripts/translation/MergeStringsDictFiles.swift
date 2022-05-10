@@ -23,6 +23,47 @@ func writePlistFile(contents: [String: Any], path: String) -> Bool {
     return false
 }
 
+func hasInvalidPlaceholder(string template: String, placeholder: String) -> Bool {
+    var template = template
+    var placeholderAlreadyReferenced = false
+    while let index = template.firstIndex(of: "%") {
+        template = String(template[index...])
+        template.removeFirst()
+        if template.starts(with: placeholder) {
+            if placeholderAlreadyReferenced {
+                return true
+            }
+            placeholderAlreadyReferenced = true
+        } else if let item = template.components(separatedBy: "$").first {
+            if !["2", "3"].contains(item) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
+func hasInvalidPlaceholder(contents: [String: Any]?) -> Bool {
+    guard let contents = contents else {
+        return true
+    }
+    var hasError = false
+    for entry in contents.values {
+        if let entry = entry as? [String: Any], let placeholder = entry["NSStringFormatValueTypeKey"] as? String,
+          "NSStringPluralRuleType" == entry["NSStringFormatSpecTypeKey"] as? String {
+            for key in ["zero", "one", "two", "few", "many", "other"] {
+                if let template = entry[key] as? String {
+                    if hasInvalidPlaceholder(string: template, placeholder: placeholder) {
+                        print("*** template for key \(key) with placeholder \(placeholder) is invalid: \(template)")
+                        hasError = true
+                    }
+                }
+            }
+        }
+    }
+    return hasError
+}
+
 if CommandLine.arguments.count != 3 {
     print("usage MergeStringsDictFiles <defaultLanguageFile> <targetLanguageFile>")
 } else {
@@ -44,6 +85,12 @@ if CommandLine.arguments.count != 3 {
                     destinationDict[key] = sourceDict[key]
                     changed = true
                     print("updated \(key)")
+                }
+                // if the entry contains invalid usage of placeholders replace it, too 
+                else if hasInvalidPlaceholder(contents: destinationDict[key] as? [String: Any]) {
+                    destinationDict[key] = sourceDict[key]
+                    changed = true
+                    print("replacing \(key) due to invalid format usage")
                 }
             }
             if changed {
