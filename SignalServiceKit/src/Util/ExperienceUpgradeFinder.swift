@@ -142,7 +142,7 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
     var snoozeDuration: TimeInterval {
         switch self {
         case .notificationPermissionReminder:
-            return kDayInterval * 30
+            return kDayInterval * 3
         case .contactPermissionReminder:
             return kDayInterval * 30
         case .subscriptionMegaphone:
