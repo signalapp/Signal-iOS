@@ -1047,16 +1047,3 @@ private class SubscriptionLevelCell: UITableViewCell {
         }
     }
 }
-
-extension SubscriptionViewController: BadgeExpirationSheetDelegate {
-
-    func badgeExpirationSheetActionButtonTapped(_ badgeExpirationSheet: BadgeExpirationSheet) {
-        SubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
-        requestApplePayDonation()
-    }
-
-    func badgeExpirationSheetNotNowButtonTapped(_ badgeExpirationSheet: BadgeExpirationSheet) {
-        SubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
-    }
-
-}
