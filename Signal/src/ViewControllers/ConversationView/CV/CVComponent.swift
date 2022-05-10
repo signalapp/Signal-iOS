@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -263,17 +263,6 @@ extension CVComponentBase: CVNode {
         default:
             return false
         }
-    }
-
-    var isTextOnlyMessage: Bool { messageCellType == .textOnlyMessage }
-
-    // This var should only be accessed for messages.
-    var bubbleChatColorForMessage: ColorOrGradientValue {
-        guard let message = interaction as? TSMessage else {
-            owsFailDebug("Invalid interaction.")
-            return .solidColor(color: conversationStyle.bubbleColorIncoming)
-        }
-        return conversationStyle.bubbleChatColor(message: message)
     }
 }
 

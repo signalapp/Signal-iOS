@@ -223,19 +223,6 @@ public class ConversationStyle: NSObject {
     @objc
     public let dateBreakTextColor = UIColor.ows_gray60
 
-    public func bubbleChatColor(message: TSMessage) -> ColorOrGradientValue {
-        if message.wasRemotelyDeleted {
-            return .solidColor(color: Theme.backgroundColor)
-        } else if message is TSIncomingMessage {
-            return .solidColor(color: bubbleColorIncoming)
-        } else if message is TSOutgoingMessage {
-            return bubbleChatColorOutgoing
-        } else {
-            owsFailDebug("Unexpected message type: \(message)")
-            return .solidColor(color: UIColor.ows_accentBlue)
-        }
-    }
-
     public func bubbleChatColor(isIncoming: Bool) -> ColorOrGradientValue {
         if isIncoming {
             return .solidColor(color: bubbleColorIncoming)
