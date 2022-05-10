@@ -6,6 +6,7 @@ disabled_rules:
 - for_where
 - function_body_length
 - function_parameter_count
+- identifier_name
 - line_length
 - nesting
 - todo
