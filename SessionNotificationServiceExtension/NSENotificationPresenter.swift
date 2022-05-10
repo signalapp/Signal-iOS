@@ -85,18 +85,21 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         CurrentAppContext().appUserDefaults().set(newBadgeNumber, forKey: "currentBadgeNumber")
         
         // Title & body
-        let notificationsPreference = Environment.shared.preferences!.notificationPreviewType()
-        switch notificationsPreference {
-        case .namePreview:
-            notificationContent.title = notificationTitle
-            notificationContent.body = snippet
-        case .nameNoPreview:
-            notificationContent.title = notificationTitle
-            notificationContent.body = NotificationStrings.incomingMessageBody
-        case .noNameNoPreview:
-            notificationContent.title = "Session"
-            notificationContent.body = NotificationStrings.incomingMessageBody
-        default: break
+        let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
+            .defaulting(to: .nameAndPreview)
+        
+        switch previewType {
+            case .nameAndPreview:
+                notificationContent.title = notificationTitle
+                notificationContent.body = snippet
+        
+            case .nameNoPreview:
+                notificationContent.title = notificationTitle
+                notificationContent.body = NotificationStrings.incomingMessageBody
+                
+            case .noNameNoPreview:
+                notificationContent.title = "Session"
+                notificationContent.body = NotificationStrings.incomingMessageBody
         }
         
         // If it's a message request then overwrite the body to be something generic (only show a notification

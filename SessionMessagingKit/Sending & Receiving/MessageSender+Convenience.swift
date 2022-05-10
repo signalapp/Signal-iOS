@@ -30,7 +30,6 @@ extension MessageSender {
     }
     
     public static func send(_ db: Database, message: Message, interactionId: Int64?, in thread: SessionThread) throws {
-        
         JobRunner.add(
             db,
             job: Job(

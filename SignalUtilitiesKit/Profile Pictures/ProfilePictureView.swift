@@ -65,22 +65,7 @@ public final class ProfilePictureView: UIView {
         additionalImageView.layer.cornerRadius = additionalImageViewSize / 2
     }
     
-    // MARK: - Updating
-    @objc(updateForContact:)
-    public func update(for publicKey: String?) {
-        guard let publicKey: String = publicKey else { return }
-        
-        let profile: Profile? = GRDBStorage.shared.read { db in
-            try? Profile.fetchOne(db, id: publicKey)
-        }
-        
-        update(
-            publicKey: publicKey,
-            profile: profile,
-            threadVariant: .contact
-        )
-    }
-    
+    // FIXME: Look to deprecate this and replace it with the pattern in HomeViewModel (screen should fetch only the required info)
     @objc(updateForThreadId:)
     public func update(forThreadId threadId: String?) {
         guard

@@ -1,8 +1,11 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import UIKit
 import SessionUIKit
+import SessionMessagingKit
 
-final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate, LinkPreviewViewDelegate, MentionSelectionViewDelegate {
-    enum MessageTypes {
+final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, MentionSelectionViewDelegate {
+    enum MessageTypes: Equatable {
         case all
         case textOnly
         case none
@@ -29,23 +32,22 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
             setEnabledMessageTypes(enabledMessageTypes, message: nil)
         }
     }
-    
+
     override var intrinsicContentSize: CGSize { CGSize.zero }
     var lastSearchedText: String? { nil }
-    
-    // MARK: UI Components
-    
+
+    // MARK: - UI
+
     private var bottomStackView: UIStackView?
     private lazy var attachmentsButton = ExpandingAttachmentsButton(delegate: delegate)
-    
+
     private lazy var voiceMessageButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "Microphone"), delegate: self)
         result.accessibilityLabel = NSLocalizedString("VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE", comment: "")
         result.accessibilityHint = NSLocalizedString("VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE", comment: "")
         return result
     }()
-    
-    
+
     private lazy var sendButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "ArrowUp"), isSendButton: true, delegate: self)
         result.isHidden = true
@@ -55,25 +57,28 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     private lazy var voiceMessageButtonContainer = container(for: voiceMessageButton)
 
     private lazy var mentionsView: MentionSelectionView = {
-        let result = MentionSelectionView()
+        let result: MentionSelectionView = MentionSelectionView()
         result.delegate = self
+        
         return result
     }()
 
     private lazy var mentionsViewContainer: UIView = {
-        let result = UIView()
+        let result: UIView = UIView()
         let backgroundView = UIView()
-        backgroundView.backgroundColor = isLightMode ? .white : .black
+        backgroundView.backgroundColor = (isLightMode ? .white : .black)
         backgroundView.alpha = Values.lowOpacity
         result.addSubview(backgroundView)
         backgroundView.pin(to: result)
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+        
+        let blurView: UIVisualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         result.addSubview(blurView)
         blurView.pin(to: result)
         result.alpha = 0
+        
         return result
     }()
-    
+
     private lazy var inputTextView: InputTextView = {
         // HACK: When restoring a draft the input text view won't have a frame yet, and therefore it won't
         // be able to calculate what size it should be to accommodate the draft text. As a workaround, we
@@ -83,7 +88,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         let maxWidth = UIScreen.main.bounds.width - 2 * InputViewButton.expandedSize - 2 * Values.smallSpacing - 2 * (Values.mediumSpacing - adjustment)
         return InputTextView(delegate: self, maxWidth: maxWidth)
     }()
-    
+
     private lazy var disabledInputLabel: UILabel = {
         let label: UILabel = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false

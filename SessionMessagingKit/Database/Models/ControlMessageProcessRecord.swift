@@ -78,13 +78,14 @@ public struct ControlMessageProcessRecord: Codable, FetchableRecord, Persistable
         // causing a unique constraint violation
         if isRetry { return nil }
         
-        // Allow '.new' closed group config message duplicates in this case to avoid
+        // Allow '.new' and 'encryptionKeyPair' closed group control message duplicates to avoid
         // the following situation:
         // • The app performed a background poll or received a push notification
         // • This method was invoked and the received message timestamps table was updated
         // • Processing wasn't finished
         // • The user doesn't see the new closed group
         if case .new = (message as? ClosedGroupControlMessage)?.kind { return nil }
+        if case .encryptionKeyPair = (message as? ClosedGroupControlMessage)?.kind { return nil }
         
         // For all other cases we want to prevent duplicate handling of the message (this
         // can happen in a number of situations, primarily with sync messages though hence

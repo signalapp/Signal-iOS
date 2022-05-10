@@ -4,112 +4,122 @@ import UIKit
 import SessionUIKit
 import SignalUtilitiesKit
 
-final class ConversationCell : UITableViewCell {
-    static let reuseIdentifier = "ConversationCell"
+final class ConversationCell: UITableViewCell {
+    // MARK: - UI
+    
+    private let accentLineView: UIView = UIView()
 
-    // MARK: UI Components
-    private let accentLineView = UIView()
-
-    private lazy var profilePictureView = ProfilePictureView()
+    private lazy var profilePictureView: ProfilePictureView = ProfilePictureView()
 
     private lazy var displayNameLabel: UILabel = {
-        let result = UILabel()
+        let result: UILabel = UILabel()
         result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.textColor = Colors.text
         result.lineBreakMode = .byTruncatingTail
+        
         return result
     }()
 
     private lazy var unreadCountView: UIView = {
-        let result = UIView()
+        let result: UIView = UIView()
         result.backgroundColor = Colors.text.withAlphaComponent(Values.veryLowOpacity)
         let size = ConversationCell.unreadCountViewSize
         result.set(.width, greaterThanOrEqualTo: size)
         result.set(.height, to: size)
         result.layer.masksToBounds = true
-        result.layer.cornerRadius = size / 2
+        result.layer.cornerRadius = (size / 2)
+        
         return result
     }()
 
     private lazy var unreadCountLabel: UILabel = {
-        let result = UILabel()
+        let result: UILabel = UILabel()
         result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
         result.textColor = Colors.text
         result.textAlignment = .center
+        
         return result
     }()
 
     private lazy var hasMentionView: UIView = {
-        let result = UIView()
+        let result: UIView = UIView()
         result.backgroundColor = Colors.accent
         let size = ConversationCell.unreadCountViewSize
         result.set(.width, to: size)
         result.set(.height, to: size)
         result.layer.masksToBounds = true
-        result.layer.cornerRadius = size / 2
+        result.layer.cornerRadius = (size / 2)
+        
         return result
     }()
 
     private lazy var hasMentionLabel: UILabel = {
-        let result = UILabel()
+        let result: UILabel = UILabel()
         result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
         result.textColor = Colors.text
         result.text = "@"
         result.textAlignment = .center
+        
         return result
     }()
 
     private lazy var isPinnedIcon: UIImageView = {
-        let result = UIImageView(image: UIImage(named: "Pin")!.withRenderingMode(.alwaysTemplate))
+        let result: UIImageView = UIImageView(image: UIImage(named: "Pin")?.withRenderingMode(.alwaysTemplate))
         result.contentMode = .scaleAspectFit
         let size = ConversationCell.unreadCountViewSize
         result.set(.width, to: size)
         result.set(.height, to: size)
         result.tintColor = Colors.pinIcon
         result.layer.masksToBounds = true
+        
         return result
     }()
 
     private lazy var timestampLabel: UILabel = {
-        let result = UILabel()
+        let result: UILabel = UILabel()
         result.font = .systemFont(ofSize: Values.smallFontSize)
         result.textColor = Colors.text
         result.lineBreakMode = .byTruncatingTail
         result.alpha = Values.lowOpacity
+        
         return result
     }()
 
     private lazy var snippetLabel: UILabel = {
-        let result = UILabel()
+        let result: UILabel = UILabel()
         result.font = .systemFont(ofSize: Values.smallFontSize)
         result.textColor = Colors.text
         result.lineBreakMode = .byTruncatingTail
+        
         return result
     }()
 
     private lazy var typingIndicatorView = TypingIndicatorView()
 
     private lazy var statusIndicatorView: UIImageView = {
-        let result = UIImageView()
+        let result: UIImageView = UIImageView()
         result.contentMode = .scaleAspectFit
-        result.layer.cornerRadius = ConversationCell.statusIndicatorSize / 2
+        result.layer.cornerRadius = (ConversationCell.statusIndicatorSize / 2)
         result.layer.masksToBounds = true
+        
         return result
     }()
 
     private lazy var topLabelStackView: UIStackView = {
-        let result = UIStackView()
+        let result: UIStackView = UIStackView()
         result.axis = .horizontal
         result.alignment = .center
         result.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
+        
         return result
     }()
 
     private lazy var bottomLabelStackView: UIStackView = {
-        let result = UIStackView()
+        let result: UIStackView = UIStackView()
         result.axis = .horizontal
         result.alignment = .center
         result.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
+        
         return result
     }()
 
@@ -118,7 +128,8 @@ final class ConversationCell : UITableViewCell {
     public static let unreadCountViewSize: CGFloat = 20
     private static let statusIndicatorSize: CGFloat = 14
 
-    // MARK: Initialization
+    // MARK: - Initialization
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setUpViewHierarchy()
@@ -131,69 +142,88 @@ final class ConversationCell : UITableViewCell {
 
     private func setUpViewHierarchy() {
         let cellHeight: CGFloat = 68
+        
         // Background color
         backgroundColor = Colors.cellBackground
+        
         // Highlight color
         let selectedBackgroundView = UIView()
         selectedBackgroundView.backgroundColor = Colors.cellSelected
         self.selectedBackgroundView = selectedBackgroundView
+        
         // Accent line view
         accentLineView.set(.width, to: Values.accentLineThickness)
         accentLineView.set(.height, to: cellHeight)
+        
         // Profile picture view
         let profilePictureViewSize = Values.mediumProfilePictureSize
         profilePictureView.set(.width, to: profilePictureViewSize)
         profilePictureView.set(.height, to: profilePictureViewSize)
         profilePictureView.size = profilePictureViewSize
+        
         // Unread count view
         unreadCountView.addSubview(unreadCountLabel)
         unreadCountLabel.pin([ VerticalEdge.top, VerticalEdge.bottom ], to: unreadCountView)
         unreadCountView.pin(.leading, to: .leading, of: unreadCountLabel, withInset: -4)
         unreadCountView.pin(.trailing, to: .trailing, of: unreadCountLabel, withInset: 4)
+        
         // Has mention view
         hasMentionView.addSubview(hasMentionLabel)
         hasMentionLabel.pin(to: hasMentionView)
+        
         // Label stack view
         let topLabelSpacer = UIView.hStretchingSpacer()
         [ displayNameLabel, isPinnedIcon, unreadCountView, hasMentionView, topLabelSpacer, timestampLabel ].forEach{ view in
             topLabelStackView.addArrangedSubview(view)
         }
+        
         let snippetLabelContainer = UIView()
         snippetLabelContainer.addSubview(snippetLabel)
         snippetLabelContainer.addSubview(typingIndicatorView)
+        
         let bottomLabelSpacer = UIView.hStretchingSpacer()
         [ snippetLabelContainer, bottomLabelSpacer, statusIndicatorView ].forEach{ view in
             bottomLabelStackView.addArrangedSubview(view)
         }
+        
         let labelContainerView = UIStackView(arrangedSubviews: [ topLabelStackView, bottomLabelStackView ])
         labelContainerView.axis = .vertical
         labelContainerView.alignment = .leading
         labelContainerView.spacing = 6
         labelContainerView.isUserInteractionEnabled = false
+        
         // Main stack view
         let stackView = UIStackView(arrangedSubviews: [ accentLineView, profilePictureView, labelContainerView ])
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.spacing = Values.mediumSpacing
         contentView.addSubview(stackView)
+        
         // Constraints
         accentLineView.pin(.top, to: .top, of: contentView)
         accentLineView.pin(.bottom, to: .bottom, of: contentView)
         timestampLabel.setContentCompressionResistancePriority(.required, for: NSLayoutConstraint.Axis.horizontal)
+        
         // HACK: The six lines below are part of a workaround for a weird layout bug
         topLabelStackView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - profilePictureViewSize - 3 * Values.mediumSpacing)
         topLabelStackView.set(.height, to: 20)
         topLabelSpacer.set(.height, to: 20)
+        
         bottomLabelStackView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - profilePictureViewSize - 3 * Values.mediumSpacing)
         bottomLabelStackView.set(.height, to: 18)
         bottomLabelSpacer.set(.height, to: 18)
+        
         statusIndicatorView.set(.width, to: ConversationCell.statusIndicatorSize)
         statusIndicatorView.set(.height, to: ConversationCell.statusIndicatorSize)
+        
         snippetLabel.pin(to: snippetLabelContainer)
+        
         typingIndicatorView.pin(.leading, to: .leading, of: snippetLabelContainer)
         typingIndicatorView.centerYAnchor.constraint(equalTo: snippetLabel.centerYAnchor).isActive = true
+        
         stackView.pin(.leading, to: .leading, of: contentView)
         stackView.pin(.top, to: .top, of: contentView)
+        
         // HACK: The two lines below are part of a workaround for a weird layout bug
         stackView.set(.width, to: UIScreen.main.bounds.width - Values.mediumSpacing)
         stackView.set(.height, to: cellHeight)
@@ -286,7 +316,7 @@ final class ConversationCell : UITableViewCell {
     }
 
     private func getHighlightedSnippet(snippet: String, searchText: String, fontSize: CGFloat) -> NSMutableAttributedString {
-        guard snippet != NSLocalizedString("NOTE_TO_SELF", comment: "") else {
+        guard snippet != "NOTE_TO_SELF".localized() else {
             return NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text])
         }
 

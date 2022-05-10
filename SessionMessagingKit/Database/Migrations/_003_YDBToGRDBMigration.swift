@@ -1215,8 +1215,8 @@ enum _003_YDBToGRDBMigration: Migration {
                 legacyPreferences[key] = object
             }
             
-            // Note: The 'int(forKey:inCollection:)' defaults to `0` which is an incorrect value for the notification
-            // sound so catch it and default
+            // Note: The 'int(forKey:inCollection:)' defaults to `0` which is an incorrect value
+            // for the notification sound so catch it and default
             let globalNotificationSoundValue: Int32 = transaction.int(
                 forKey: Legacy.soundsGlobalNotificationKey,
                 inCollection: Legacy.soundsStorageNotificationCollection
@@ -1226,17 +1226,17 @@ enum _003_YDBToGRDBMigration: Migration {
                 Preferences.Sound.defaultNotificationSound.rawValue
             )
             
-            legacyPreferences[Legacy.readReceiptManagerAreReadReceiptsEnabled] = (transaction.bool(
+            legacyPreferences[Legacy.readReceiptManagerAreReadReceiptsEnabled] = transaction.bool(
                 forKey: Legacy.readReceiptManagerAreReadReceiptsEnabled,
                 inCollection: Legacy.readReceiptManagerCollection,
                 defaultValue: false
-            ) ? 1 : 0)
+            )
             
-            legacyPreferences[Legacy.typingIndicatorsEnabledKey] = (transaction.bool(
+            legacyPreferences[Legacy.typingIndicatorsEnabledKey] = transaction.bool(
                 forKey: Legacy.typingIndicatorsEnabledKey,
                 inCollection: Legacy.typingIndicatorsCollection,
                 defaultValue: false
-            ) ? 1 : 0)
+            )
         }
         
         db[.preferencesNotificationPreviewType] = Preferences.NotificationPreviewType(rawValue: legacyPreferences[Legacy.preferencesKeyNotificationPreviewType] as? Int ?? -1)
@@ -1292,6 +1292,15 @@ enum _003_YDBToGRDBMigration: Migration {
             return nil
         }
 
+        let processedLocalRelativeFilePath: String? = (legacyAttachment as? Legacy.AttachmentStream)?
+            .localRelativeFilePath
+            .map { filePath -> String in
+                // The old 'localRelativeFilePath' seemed to have a leading forward slash (want
+                // to get rid of it so we can correctly use 'appendingPathComponent')
+                guard filePath.starts(with: "/") else { return filePath }
+                
+                return String(filePath.suffix(from: filePath.index(after: filePath.startIndex)))
+            }
         let state: Attachment.State = {
             switch legacyAttachment {
                 case let stream as Legacy.AttachmentStream:  // Outgoing or already downloaded
@@ -1307,7 +1316,22 @@ enum _003_YDBToGRDBMigration: Migration {
         let size: CGSize = {
             switch legacyAttachment {
                 case let stream as Legacy.AttachmentStream:
-                    guard let originalFilePath: String = Attachment.originalFilePath(id: legacyAttachmentId, mimeType: stream.contentType, sourceFilename: stream.localRelativeFilePath) else {
+                    // First try to get an image size using the 'localRelativeFilePath' value
+                    if
+                        let localRelativeFilePath: String = processedLocalRelativeFilePath,
+                        let specificImageSize: CGSize = Attachment.imageSize(
+                            contentType: stream.contentType,
+                            originalFilePath: URL(fileURLWithPath: Attachment.attachmentsFolder)
+                                .appendingPathComponent(localRelativeFilePath)
+                                .path
+                        ),
+                        specificImageSize != .zero
+                    {
+                        return specificImageSize
+                    }
+                    
+                    // Then fallback to trying to get the size from the 'originalFilePath'
+                    guard let originalFilePath: String = Attachment.originalFilePath(id: legacyAttachmentId, mimeType: stream.contentType, sourceFilename: stream.sourceFilename) else {
                         return .zero
                     }
                     
@@ -1328,7 +1352,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 let originalFilePath: String = Attachment.originalFilePath(
                     id: legacyAttachmentId,
                     mimeType: stream.contentType,
-                    sourceFilename: stream.localRelativeFilePath
+                    sourceFilename: stream.sourceFilename
                 )
             else {
                 return (false, nil)
@@ -1341,6 +1365,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 
                 let (isValid, duration): (Bool, TimeInterval?) = Attachment.determineValidityAndDuration(
                     contentType: stream.contentType,
+                    localRelativeFilePath: processedLocalRelativeFilePath,
                     originalFilePath: originalFilePath
                 )
                 
@@ -1376,9 +1401,11 @@ enum _003_YDBToGRDBMigration: Migration {
             state: state,
             contentType: legacyAttachment.contentType,
             byteCount: UInt(legacyAttachment.byteCount),
-            creationTimestamp: (legacyAttachment as? Legacy.AttachmentStream)?.creationTimestamp.timeIntervalSince1970,
+            creationTimestamp: (legacyAttachment as? Legacy.AttachmentStream)?
+                .creationTimestamp.timeIntervalSince1970,
             sourceFilename: legacyAttachment.sourceFilename,
             downloadUrl: legacyAttachment.downloadURL,
+            localRelativeFilePath: processedLocalRelativeFilePath,
             width: (size == .zero ? nil : UInt(size.width)),
             height: (size == .zero ? nil : UInt(size.height)),
             duration: duration,

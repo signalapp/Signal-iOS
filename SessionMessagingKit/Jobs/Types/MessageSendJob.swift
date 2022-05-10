@@ -112,6 +112,9 @@ public enum MessageSendJob: JobExecutor {
             }
         }
         
+        // Add the threadId to the message if there isn't one set
+        details.message.threadId = (details.message.threadId ?? job.threadId)
+        
         // Perform the actual message sending
         GRDBStorage.shared.write { db -> Promise<Void> in
             try MessageSender.send(

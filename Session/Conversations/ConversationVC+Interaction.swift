@@ -12,6 +12,7 @@ import SignalUtilitiesKit
 extension ConversationVC:
     InputViewDelegate,
     MessageCellDelegate,
+    ContextMenuActionDelegate,
     ScrollToBottomButtonDelegate,
     SendMediaNavDelegate,
     UIDocumentPickerDelegate,
@@ -50,31 +51,23 @@ extension ConversationVC:
     // MARK: - Blocking
     
     @objc func unblock() {
-        guard let thread = thread as? TSContactThread else { return }
-        let publicKey = thread.contactSessionID()
+        guard self.viewModel.viewData.thread.variant == .contact else { return }
         
+        let publicKey: String = self.viewModel.viewData.thread.id
+
         UIView.animate(
             withDuration: 0.25,
             animations: {
                 self.blockedBanner.alpha = 0
             },
             completion: { _ in
-                GRDBStorage.shared.writeAsync(
-                    updates: { db in
-                        try Contact
-                            .fetchOne(db, id: publicKey)?
-                            .with(isBlocked: false)
-                            .update(db)
-                    },
-                    completion: { db, result in
-                        switch result {
-                            case .success:
-                                MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
-                                
-                            default: break
-                        }
-                    }
-                )
+                GRDBStorage.shared.write { db in
+                    try Contact
+                        .filter(id: publicKey)
+                        .updateAll(db, Contact.Columns.isBlocked.set(to: true))
+                    
+                    try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                }
             }
         )
     }
@@ -484,15 +477,6 @@ extension ConversationVC:
         }
     }
 
-    // MARK: Input View
-    func inputTextViewDidChangeContent(_ inputTextView: InputTextView) {
-        let newText = inputTextView.text ?? ""
-        if !newText.isEmpty {
-            SSKEnvironment.shared.typingIndicators.didStartTypingOutgoingInput(inThread: thread)
-        }
-        updateMentions(for: newText)
-    }
-
     func showLinkPreviewSuggestionModal() {
         let linkPreviewModel = LinkPreviewModal() { [weak self] in
             self?.snInputView.autoGenerateLinkPreview()
@@ -501,45 +485,82 @@ extension ConversationVC:
         linkPreviewModel.modalTransitionStyle = .crossDissolve
         present(linkPreviewModel, animated: true, completion: nil)
     }
-
-    // MARK: Mentions
-    func updateMentions(for newText: String) {
-        if newText.count < oldText.count {
-            currentMentionStartIndex = nil
-            snInputView.hideMentionsUI()
-            mentions = mentions.filter { $0.isContained(in: newText) }
+    
+    func inputTextViewDidChangeContent(_ inputTextView: InputTextView) {
+        let newText: String = (inputTextView.text ?? "")
+        
+        if !newText.isEmpty {
         }
+        
+        updateMentions(for: newText)
+    }
+    
+    // MARK: --Attachments
+    
+    func didPasteImageFromPasteboard(_ image: UIImage) {
+        guard let imageData = image.jpegData(compressionQuality: 1.0) else { return }
+        let dataSource = DataSourceValue.dataSource(with: imageData, utiType: kUTTypeJPEG as String)
+        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String, imageQuality: .medium)
+
+        let approvalVC = AttachmentApprovalViewController.wrappedInNavController(attachments: [ attachment ], approvalDelegate: self)
+        approvalVC.modalPresentationStyle = .fullScreen
+        self.present(approvalVC, animated: true, completion: nil)
+    }
+
+    // MARK: --Mentions
+    
+    func handleMentionSelected(_ mentionInfo: ConversationViewModel.MentionInfo, from view: MentionSelectionView) {
+        guard let currentMentionStartIndex = currentMentionStartIndex else { return }
+        
+        mentions.append(mentionInfo)
+        
+        let newText: String = snInputView.text.replacingCharacters(
+            in: currentMentionStartIndex...,
+            with: "@\(mentionInfo.profile.displayName(for: self.viewModel.viewData.thread.variant)) "
+        )
+        
+        snInputView.text = newText
+        self.currentMentionStartIndex = nil
+        snInputView.hideMentionsUI()
+        
+        mentions = mentions.filter { mentionInfo -> Bool in
+            newText.contains(mentionInfo.profile.displayName(for: self.viewModel.viewData.thread.variant))
+        }
+    }
+    
+    func updateMentions(for newText: String) {
         if !newText.isEmpty {
             let lastCharacterIndex = newText.index(before: newText.endIndex)
             let lastCharacter = newText[lastCharacterIndex]
+            
             // Check if there is whitespace before the '@' or the '@' is the first character
             let isCharacterBeforeLastWhiteSpaceOrStartOfLine: Bool
             if newText.count == 1 {
                 isCharacterBeforeLastWhiteSpaceOrStartOfLine = true // Start of line
-            } else {
+            }
+            else {
                 let characterBeforeLast = newText[newText.index(before: lastCharacterIndex)]
                 isCharacterBeforeLastWhiteSpaceOrStartOfLine = characterBeforeLast.isWhitespace
             }
+            
             if lastCharacter == "@" && isCharacterBeforeLastWhiteSpaceOrStartOfLine {
-                let candidates = MentionsManager.getMentionCandidates(for: "", in: thread.uniqueId!)
                 currentMentionStartIndex = lastCharacterIndex
-                snInputView.showMentionsUI(for: candidates, in: thread)
-            } else if lastCharacter.isWhitespace || lastCharacter == "@" { // the lastCharacter == "@" is to check for @@
+                snInputView.showMentionsUI(for: self.viewModel.mentions())
+            }
+            else if lastCharacter.isWhitespace || lastCharacter == "@" { // the lastCharacter == "@" is to check for @@
                 currentMentionStartIndex = nil
                 snInputView.hideMentionsUI()
-            } else {
+            }
+            else {
                 if let currentMentionStartIndex = currentMentionStartIndex {
                     let query = String(newText[newText.index(after: currentMentionStartIndex)...]) // + 1 to get rid of the @
-                    let candidates = MentionsManager.getMentionCandidates(for: query, in: thread.uniqueId!)
-                    snInputView.showMentionsUI(for: candidates, in: thread)
+                    snInputView.showMentionsUI(for: self.viewModel.mentions(for: query))
                 }
             }
         }
-        oldText = newText
     }
 
     func resetMentions() {
-        oldText = ""
         currentMentionStartIndex = nil
         mentions = []
     }
@@ -554,33 +575,11 @@ extension ConversationVC:
     func replaceMentions(in text: String) -> String {
         var result = text
         for mention in mentions {
-            guard let range = result.range(of: "@\(mention.displayName)") else { continue }
-            result = result.replacingCharacters(in: range, with: "@\(mention.publicKey)")
+            guard let range = result.range(of: "@\(mention.profile.displayName(for: mention.threadVariant))") else { continue }
+            result = result.replacingCharacters(in: range, with: "@\(mention.profile.id)")
         }
+        
         return result
-        let approvalVC = AttachmentApprovalViewController.wrappedInNavController(attachments: [ attachment ], approvalDelegate: self)
-        approvalVC.modalPresentationStyle = .fullScreen
-        self.present(approvalVC, animated: true, completion: nil)
-    }
-
-    // MARK: --Mentions
-    
-    func handleMentionSelected(_ mention: Mention, from view: MentionSelectionView) {
-        guard let currentMentionStartIndex = currentMentionStartIndex else { return }
-        mentions.append(mention)
-        let oldText = snInputView.text
-        let newText = oldText.replacingCharacters(in: currentMentionStartIndex..., with: "@\(mention.displayName) ")
-        snInputView.text = newText
-        self.currentMentionStartIndex = nil
-        snInputView.hideMentionsUI()
-        self.oldText = newText
-    }
-    
-    func showInputAccessoryView() {
-        UIView.animate(withDuration: 0.25, animations: {
-            self.inputAccessoryView?.isHidden = false
-            self.inputAccessoryView?.alpha = 1
-        })
     }
 
     // MARK: View Item Interaction
@@ -925,14 +924,15 @@ extension ConversationVC:
         present(joinOpenGroupModal, animated: true, completion: nil)
     }
     
-    func handleReplyButtonTapped(for viewItem: ConversationViewItem) {
-        reply(viewItem)
+    func handleReplyButtonTapped(for item: ConversationViewModel.Item) {
+        reply(item)
     }
     
-    func showUserDetails(for sessionID: String) {
-        let userDetailsSheet = UserDetailsSheet(for: sessionID)
+    func showUserDetails(for profile: Profile) {
+        let userDetailsSheet = UserDetailsSheet(for: profile)
         userDetailsSheet.modalPresentationStyle = .overFullScreen
         userDetailsSheet.modalTransitionStyle = .crossDissolve
+        
         present(userDetailsSheet, animated: true, completion: nil)
     }
 

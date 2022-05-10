@@ -519,8 +519,8 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     }
     
     @objc func joinOpenGroup() {
-        let joinOpenGroupVC = JoinOpenGroupVC()
-        let navigationController = OWSNavigationController(rootViewController: joinOpenGroupVC)
+        let joinOpenGroupVC: JoinOpenGroupVC = JoinOpenGroupVC()
+        let navigationController: OWSNavigationController = OWSNavigationController(rootViewController: joinOpenGroupVC)
         present(navigationController, animated: true, completion: nil)
     }
     

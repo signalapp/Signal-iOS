@@ -287,5 +287,12 @@ enum _001_InitialSetupMigration: Migration {
             
             t.uniqueKey([.threadId, .variant, .timestampMs])
         }
+        
+        try db.create(table: ThreadTypingIndicator.self) { t in
+            t.column(.threadId, .text)
+                .primaryKey()
+                .references(SessionThread.self, onDelete: .cascade)      // Delete if thread deleted
+            t.column(.timestampMs, .integer).notNull()
+        }
     }
 }

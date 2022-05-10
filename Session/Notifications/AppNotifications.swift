@@ -124,10 +124,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return Environment.shared.preferences
     }
 
-    var previewType: NotificationType {
-        return preferences.notificationPreviewType()
-    }
-
     // MARK: -
 
     @objc
@@ -278,10 +274,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     public func notifyForFailedSend(_ db: Database, in thread: SessionThread) {
         let notificationTitle: String?
+        let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
+            .defaulting(to: .nameAndPreview)
         
         switch previewType {
             case .noNameNoPreview: notificationTitle = nil
-            case .nameNoPreview, .namePreview:
+            case .nameNoPreview, .nameAndPreview:
                 notificationTitle = SessionThread.displayName(
                     threadId: thread.id,
                     variant: thread.variant,
@@ -296,8 +294,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                     isNoteToSelf: (thread.isNoteToSelf(db) == true),
                     profile: try? Profile.fetchOne(db, id: thread.id)
                 )
-                
-            default: notificationTitle = nil
         }
 
         let notificationBody = NotificationStrings.failedToSendBody
@@ -411,12 +407,14 @@ class NotificationActionHandler {
         }
         
         let promise: Promise<Void> = GRDBStorage.shared.write { db in
+            let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
             let interaction: Interaction = try Interaction(
                 threadId: thread.id,
                 authorId: getUserHexEncodedPublicKey(db),
                 variant: .standardOutgoing,
                 body: replyText,
-                timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
+                timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000)),
+                hasMention: replyText.contains("@\(currentUserPublicKey)")
             ).inserted(db)
             
             try Interaction.markAsRead(

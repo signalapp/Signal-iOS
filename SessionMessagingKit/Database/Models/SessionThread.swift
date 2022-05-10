@@ -14,6 +14,10 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
         using: DisappearingMessagesConfiguration.threadForeignKey
     )
     public static let interactions = hasMany(Interaction.self, using: Interaction.threadForeignKey)
+    public static let typingIndicator = hasOne(
+        ThreadTypingIndicator.self,
+        using: ThreadTypingIndicator.threadForeignKey
+    )
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -90,6 +94,10 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
         request(for: SessionThread.interactions)
     }
     
+    public var typingIndicator: QueryInterfaceRequest<ThreadTypingIndicator> {
+        request(for: SessionThread.typingIndicator)
+    }
+    
     // MARK: - Initialization
     
     public init(
@@ -121,6 +129,13 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
         try Job
             .filter(Job.Columns.threadId == id)
             .deleteAll(db)
+        
+        // Delete any GroupMembers associated to this thread
+        if variant == .closedGroup || variant == .openGroup {
+            try GroupMember
+                .filter(GroupMember.Columns.groupId == id)
+                .deleteAll(db)
+        }
         
         return try performDelete(db)
     }

@@ -297,23 +297,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             
             CurrentAppContext().setMainAppBadgeNumber(
                 GRDBStorage.shared
-                    .read({ db in
+                    .read { db in
                         let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
                         
-                        // Don't increase the count for muted threads or message requests
                         return try Interaction
                             .filter(Interaction.Columns.wasRead == false)
+                            .filter(
+                                // Only count mentions if 'onlyNotifyForMentions' is set
+                                thread[.onlyNotifyForMentions] == false ||
+                                Interaction.Columns.hasMention == true
+                            )
                             .joining(
                                 required: Interaction.thread
+                                    .aliased(thread)
                                     .joining(optional: SessionThread.contact)
-                                    .filter(SessionThread.Columns.notificationMode != SessionThread.NotificationMode.none)
                                     .filter(
+                                        // Ignore muted threads
+                                        SessionThread.Columns.mutedUntilTimestamp == nil ||
+                                        SessionThread.Columns.mutedUntilTimestamp < Date().timeIntervalSince1970
+                                    )
+                                    .filter(
+                                        // Ignore message request threads
                                         SessionThread.Columns.variant != SessionThread.Variant.contact ||
                                         !SessionThread.isMessageRequest(userPublicKey: userPublicKey)
                                     )
                             )
                             .fetchCount(db)
-                    })
+                    }
                     .defaulting(to: 0)
             )
         }

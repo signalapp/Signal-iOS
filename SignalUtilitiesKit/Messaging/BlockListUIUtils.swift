@@ -34,7 +34,7 @@ import SessionMessagingKit
             handler: { _ in
                 GRDBStorage.shared.writeAsync(
                     updates: { db in
-                        try? Contact
+                        try Contact
                             .fetchOrCreate(db, id: threadId)
                             .with(isBlocked: true)
                             .save(db)
@@ -85,7 +85,7 @@ import SessionMessagingKit
             handler: { _ in
                 GRDBStorage.shared.writeAsync(
                     updates: { db in
-                        try? Contact
+                        try Contact
                             .fetchOrCreate(db, id: threadId)
                             .with(isBlocked: false)
                             .save(db)

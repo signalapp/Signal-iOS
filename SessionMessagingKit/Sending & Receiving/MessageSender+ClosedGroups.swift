@@ -24,13 +24,13 @@ extension MessageSender {
         let membersAsData = members.map { Data(hex: $0) }
         let admins = [ userPublicKey ]
         let adminsAsData = admins.map { Data(hex: $0) }
-        
+        let formationTimestamp: TimeInterval = Date().timeIntervalSince1970
         let thread: SessionThread = try SessionThread
             .fetchOrCreate(db, id: groupPublicKey, variant: .closedGroup)
         try ClosedGroup(
             threadId: groupPublicKey,
             name: name,
-            formationTimestamp: Date().timeIntervalSince1970
+            formationTimestamp: formationTimestamp
         ).insert(db)
         
         try admins.forEach { adminId in
@@ -74,6 +74,11 @@ extension MessageSender {
                             admins: adminsAsData,
                             expirationTimer: 0
                         )
+                    )
+                    .with(
+                        // Note: We set this here to ensure the value matches the 'ClosedGroup'
+                        // object we created
+                        sentTimestamp: UInt64(floor(formationTimestamp * 1000))
                     ),
                     interactionId: nil,
                     in: contactThread
@@ -501,23 +506,6 @@ extension MessageSender {
         }
         
         let userPublicKey: String = getUserHexEncodedPublicKey(db)
-        let isCurrentUserAdmin: Bool = allGroupMembers.contains(where: {
-            $0.role == .admin && $0.profileId == userPublicKey
-        })
-        let membersToRemove: [GroupMember] = allGroupMembers
-            .filter { member in
-                member.role == .standard && (
-                    isCurrentUserAdmin || // If the admin leaves the group is disbanded
-                    member.profileId == userPublicKey
-                )
-            }
-        let adminsToRemove: [GroupMember] = allGroupMembers
-            .filter { member in
-                member.role == .admin && (
-                    isCurrentUserAdmin || // If the admin leaves the group is disbanded
-                    member.profileId == userPublicKey
-                )
-            }
         
         // Notify the user
         let interaction: Interaction = try Interaction(
@@ -563,8 +551,9 @@ extension MessageSender {
             .map { _ in }
         
         // Update the group
-        try membersToRemove.deleteAll(db)
-        try adminsToRemove.deleteAll(db)
+        _ = try closedGroup
+            .allMembers
+            .deleteAll(db)
         
         // Return
         return promise

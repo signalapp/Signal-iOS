@@ -93,7 +93,7 @@
     [backgroundSection
         addItem:[OWSTableItem
                      disclosureItemWithText:NSLocalizedString(@"NOTIFICATIONS_SHOW", nil)
-                                 detailText:[prefs nameForNotificationPreviewType:[prefs notificationPreviewType]]
+                                 detailText:[SMKPreferences nameForNotificationPreviewType:[SMKPreferences notificationPreviewType]]
                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"options")
                                 actionBlock:^{
                                     NotificationSettingsOptionsViewController *vc =

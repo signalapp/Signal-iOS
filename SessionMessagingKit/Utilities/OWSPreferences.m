@@ -6,18 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *NSStringForNotificationType(NotificationType value)
-{
-    switch (value) {
-        case NotificationNamePreview:
-            return @"NotificationNamePreview";
-        case NotificationNameNoPreview:
-            return @"NotificationNameNoPreview";
-        case NotificationNoNameNoPreview:
-            return @"NotificationNoNameNoPreview";
-    }
-}
-
 NSString *const OWSPreferencesSignalDatabaseCollection = @"SignalPreferences";
 NSString *const OWSPreferencesCallLoggingDidChangeNotification = @"OWSPreferencesCallLoggingDidChangeNotification";
 NSString *const OWSPreferencesKeyScreenSecurity = @"Screen Security Key";

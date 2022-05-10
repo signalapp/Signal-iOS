@@ -12,8 +12,7 @@ final class UserSelectionVC: BaseVC, UITableViewDataSource, UITableViewDelegate 
 
     private lazy var users: [Profile] = {
         return Profile
-            .fetchAllContactProfiles()
-            .filter { usersToExclude.contains($0.id) }
+            .fetchAllContactProfiles(excluding: usersToExclude)
     }()
 
     // MARK: - Components

@@ -9,7 +9,6 @@ public struct QuotedReplyModel {
     public let timestampMs: Int64
     public let body: String?
     public let attachment: Attachment?
-    public let thumbnailImage: UIImage?
     public let contentType: String?
     public let sourceFileName: String?
     public let thumbnailDownloadFailed: Bool
@@ -22,7 +21,6 @@ public struct QuotedReplyModel {
         timestampMs: Int64,
         body: String?,
         attachment: Attachment?,
-        thumbnailImage: UIImage?,
         contentType: String?,
         sourceFileName: String?,
         thumbnailDownloadFailed: Bool
@@ -32,23 +30,26 @@ public struct QuotedReplyModel {
         self.authorId = authorId
         self.timestampMs = timestampMs
         self.body = body
-        self.thumbnailImage = thumbnailImage
         self.contentType = contentType
         self.sourceFileName = sourceFileName
         self.thumbnailDownloadFailed = thumbnailDownloadFailed
     }
     
     public static func quotedReplyForSending(
-        _ db: Database,
-        interaction: Interaction,
+        threadId: String,
+        authorId: String,
+        variant: Interaction.Variant,
+        body: String?,
+        timestampMs: Int64,
+        attachments: [Attachment]?,
         linkPreview: LinkPreview?
     ) -> QuotedReplyModel? {
-        guard interaction.variant == .standardOutgoing || interaction.variant == .standardOutgoing else {
+        guard variant == .standardOutgoing || variant == .standardIncoming else {
             return nil
         }
         
-        var quotedText: String? = interaction.body
-        var quotedAttachment: Attachment? = try? interaction.attachments.fetchOne(db)
+        var quotedText: String? = body
+        var quotedAttachment: Attachment? = attachments?.first
         
         // If the attachment is "oversize text", try the quote as a reply to text, not as
         // a reply to an attachment
@@ -57,7 +58,7 @@ public struct QuotedReplyModel {
             let attachment: Attachment = quotedAttachment,
             attachment.contentType == OWSMimeTypeOversizeTextMessage,
             (
-                (interaction.variant == .standardIncoming && attachment.state == .downloaded) ||
+                (variant == .standardIncoming && attachment.state == .downloaded) ||
                 attachment.state != .failed
             ),
             let originalFilePath: String = attachment.originalFilePath
@@ -100,12 +101,11 @@ public struct QuotedReplyModel {
         }
         
         return QuotedReplyModel(
-            threadId: interaction.threadId,
-            authorId: interaction.authorId,
-            timestampMs: interaction.timestampMs,
+            threadId: threadId,
+            authorId: authorId,
+            timestampMs: timestampMs,
             body: (quotedText == nil && quotedAttachment == nil ? "" : quotedText),
             attachment: quotedAttachment,
-            thumbnailImage: quotedAttachment?.thumbnailImageSmallSync(),
             contentType: quotedAttachment?.contentType,
             sourceFileName: quotedAttachment?.sourceFilename,
             thumbnailDownloadFailed: false

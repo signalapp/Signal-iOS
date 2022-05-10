@@ -93,8 +93,8 @@ public final class MessageSender : NSObject {
         
         // Set the timestamp, sender and recipient
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
-            message.sentTimestamp = NSDate.millisecondTimestamp()
         }
+            message.sentTimestamp = UInt64(floor(Date().timeIntervalSince1970 * 1000))
 
         let isSelfSend: Bool = (message.recipient == userPublicKey)
         message.sender = userPublicKey
@@ -340,7 +340,7 @@ public final class MessageSender : NSObject {
         
         // Set the timestamp, sender and recipient
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
-            message.sentTimestamp = NSDate.millisecondTimestamp()
+            message.sentTimestamp = UInt64(floor(Date().timeIntervalSince1970 * 1000))
         }
         message.sender = getUserHexEncodedPublicKey()
         
@@ -552,18 +552,8 @@ public final class MessageSender : NSObject {
         if let interactionId: Int64 = interactionId {
             return try Interaction.fetchOne(db, id: interactionId)
         }
-        else if let sentTimestamp: Double = message.sentTimestamp.map({ Double($0) }) {
-            // If we have a threadId then include that in the filter to make the request smaller
-            if
-                let threadId: String = message.threadId,
-                !threadId.isEmpty,
-                let thread: SessionThread = try? SessionThread.fetchOne(db, id: threadId)
-            {
-                return try thread.interactions
-                    .filter(Interaction.Columns.timestampMs == sentTimestamp)
-                    .fetchOne(db)
-            }
-            
+        
+        if let sentTimestamp: Double = message.sentTimestamp.map({ Double($0) }) {
             return try Interaction
                 .filter(Interaction.Columns.timestampMs == sentTimestamp)
                 .fetchOne(db)

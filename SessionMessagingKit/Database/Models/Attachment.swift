@@ -179,6 +179,7 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
         )
         let (isValid, duration): (Bool, TimeInterval?) = Attachment.determineValidityAndDuration(
             contentType: contentType,
+            localRelativeFilePath: nil,
             originalFilePath: originalFilePath
         )
         
@@ -191,7 +192,7 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
         self.creationTimestamp = nil
         self.sourceFilename = nil
         self.downloadUrl = nil
-        self.localRelativeFilePath = nil
+        self.localRelativeFilePath = URL(fileURLWithPath: originalFilePath).lastPathComponent
         self.width = imageSize.map { UInt(floor($0.width)) }
         self.height = imageSize.map { UInt(floor($0.height)) }
         self.duration = duration
@@ -282,6 +283,7 @@ public extension Attachment {
                 case (_, .downloaded):
                     return Attachment.determineValidityAndDuration(
                         contentType: contentType,
+                        localRelativeFilePath: localRelativeFilePath,
                         originalFilePath: originalFilePath
                     )
                 
@@ -570,7 +572,11 @@ public extension Attachment {
         )
     }
     
-    internal static func determineValidityAndDuration(contentType: String, originalFilePath: String?) -> (isValid: Bool, duration: TimeInterval?) {
+    internal static func determineValidityAndDuration(
+        contentType: String,
+        localRelativeFilePath: String?,
+        originalFilePath: String?
+    ) -> (isValid: Bool, duration: TimeInterval?) {
         guard let originalFilePath: String = originalFilePath else { return (false, nil) }
         
         // Process audio attachments
@@ -593,8 +599,23 @@ public extension Attachment {
         
         // Process image attachments
         if MIMETypeUtil.isImage(contentType) {
+            let specificFilePathIsValid: Bool = (
+                localRelativeFilePath != nil &&
+                localRelativeFilePath.map {
+                    NSData.ows_isValidImage(
+                        atPath: URL(fileURLWithPath: Attachment.attachmentsFolder)
+                            .appendingPathComponent($0)
+                            .path,
+                        mimeType: contentType
+                    )
+                } == true
+            )
+            
             return (
-                NSData.ows_isValidImage(atPath: originalFilePath, mimeType: contentType),
+                (
+                    specificFilePathIsValid ||
+                    NSData.ows_isValidImage(atPath: originalFilePath, mimeType: contentType)
+                ),
                 nil
             )
         }
@@ -607,9 +628,22 @@ public extension Attachment {
                     // Accorting to the CMTime docs "value/timescale = seconds"
                     (TimeInterval(item.duration.value) / TimeInterval(item.duration.timescale))
                 }
+            let specificFilePathIsValid: Bool = (
+                localRelativeFilePath != nil &&
+                localRelativeFilePath.map {
+                    OWSMediaUtils.isValidVideo(
+                        path: URL(fileURLWithPath: Attachment.attachmentsFolder)
+                            .appendingPathComponent($0)
+                            .path
+                    )
+                } == true
+            )
             
             return (
-                OWSMediaUtils.isValidVideo(path: originalFilePath),
+                (
+                    specificFilePathIsValid ||
+                    OWSMediaUtils.isValidVideo(path: originalFilePath)
+                ),
                 durationSeconds
             )
         }
@@ -637,6 +671,12 @@ extension Attachment {
     }
     
     public var originalFilePath: String? {
+        if let localRelativeFilePath: String = self.localRelativeFilePath {
+            return URL(fileURLWithPath: Attachment.attachmentsFolder)
+                .appendingPathComponent(localRelativeFilePath)
+                .path
+        }
+        
         return Attachment.originalFilePath(
             id: self.id,
             mimeType: self.contentType,
@@ -658,7 +698,7 @@ extension Attachment {
         
         let fileUrl: URL = URL(fileURLWithPath: originalFilePath)
         let filename: String = fileUrl.lastPathComponent.filenameWithoutExtension
-        let containingDir: String = fileUrl.deletingLastPathComponent().absoluteString
+        let containingDir: String = fileUrl.deletingLastPathComponent().path
         
         return "\(containingDir)/\(filename)-signal-ios-thumbnail.jpg"
     }
@@ -684,7 +724,7 @@ extension Attachment {
     public var isVisualMedia: Bool { isImage || isVideo || isAnimated }
     
     public func readDataFromFile() throws -> Data? {
-        guard let filePath: String = Attachment.originalFilePath(id: self.id, mimeType: self.contentType, sourceFilename: self.sourceFilename) else {
+        guard let filePath: String = self.originalFilePath else {
             return nil
         }
         
@@ -735,27 +775,6 @@ extension Attachment {
     
     public func thumbnail(size: ThumbnailSize, success: @escaping (UIImage) -> (), failure: @escaping () -> ()) {
         loadThumbnail(with: size.dimension, success: success, failure: failure)
-    }
-    
-    func thumbnailSync(size: ThumbnailSize) -> UIImage? {
-        guard isVideo || isImage || isAnimated else { return nil }
-        
-        let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0)
-        var image: UIImage?
-        
-        thumbnail(
-            size: size,
-            success: { loadedImage in
-                image = loadedImage
-                semaphore.signal()
-            },
-            failure: { semaphore.signal() }
-        )
-
-        // Wait up to 5 seconds for the thumbnail to be loaded
-        _ = semaphore.wait(timeout: .now() + .seconds(5))
-        
-        return image
     }
     
     public func cloneAsThumbnail() -> Attachment {

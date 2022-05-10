@@ -43,7 +43,7 @@ public extension Setting.StringKey {
 }
 
 public enum Preferences {
-    public enum NotificationPreviewType: Int, EnumSetting {
+    public enum NotificationPreviewType: Int, CaseIterable, EnumSetting {
         /// Notifications should include both the sender name and a preview of the message content
         case nameAndPreview
         
@@ -59,10 +59,6 @@ public enum Preferences {
                 case .nameNoPreview: return "NOTIFICATIONS_SENDER_ONLY".localized()
                 case .noNameNoPreview: return "NOTIFICATIONS_NONE".localized()
             }
-        }
-        
-        var accessibilityIdentifier: String {
-            return "NotificationSettingsOptionsViewController.\(name)"
         }
     }
     
@@ -265,7 +261,45 @@ public enum Preferences {
 
 // MARK: - Objective C Support
 
-// FIXME: Remove this once the 'NotificationSettingsViewController' and 'OWSSoundSettingsViewController' have been refactored to Swift
+// FIXME: Remove the below the 'NotificationSettingsViewController' and 'OWSSoundSettingsViewController' have been refactored to Swift
+
+@objc(SMKPreferences)
+public class SMKPreferences: NSObject {
+    @objc public static let notificationTypes: [Int] = Preferences.NotificationPreviewType
+        .allCases
+        .map { $0.rawValue }
+    
+    @objc public static func nameForNotificationPreviewType(_ previewType: Int) -> String {
+        return Preferences.NotificationPreviewType(rawValue: previewType)
+            .defaulting(to: .nameAndPreview)
+            .name
+    }
+    
+    @objc public static func notificationPreviewType() -> Int {
+        return GRDBStorage.shared[.preferencesNotificationPreviewType]
+            .defaulting(to: Preferences.NotificationPreviewType.nameAndPreview)
+            .rawValue
+    }
+    
+    @objc public static func setNotificationPreviewType(_ previewType: Int) {
+        GRDBStorage.shared.write { db in
+            db[.preferencesNotificationPreviewType] = Preferences.NotificationPreviewType(rawValue: previewType)
+                .defaulting(to: .nameAndPreview)
+        }
+    }
+    
+    @objc public static func accessibilityIdentifierForNotificationPreviewType(_ previewType: Int) -> String {
+        let notificationPreviewType: Preferences.NotificationPreviewType = Preferences.NotificationPreviewType(rawValue: previewType)
+            .defaulting(to: .nameAndPreview)
+        
+        switch notificationPreviewType {
+            case .nameAndPreview: return "NotificationNamePreview"
+            case .nameNoPreview: return "NotificationNameNoPreview"
+            case .noNameNoPreview: return "NotificationNoNameNoPreview"
+        }
+    }
+}
+
 @objc(SMKSound)
 public class SMKSound: NSObject {
     @objc public static var notificationSounds: [Int] = Preferences.Sound.notificationSounds.map { $0.rawValue }
@@ -285,7 +319,7 @@ public class SMKSound: NSObject {
     }
     
     @objc public static var defaultNotificationSound: Int {
-        GRDBStorage.shared[.defaultNotificationSound]
+        return GRDBStorage.shared[.defaultNotificationSound]
             .defaulting(to: Preferences.Sound.defaultNotificationSound)
             .rawValue
     }

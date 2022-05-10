@@ -96,75 +96,28 @@ extension MessageReceiver {
     // MARK: - Typing Indicators
     
     private static func handleTypingIndicator(_ db: Database, message: TypingIndicator) throws {
+        guard
+            let senderPublicKey: String = message.sender,
+            let thread: SessionThread = try SessionThread.fetchOne(db, id: senderPublicKey)
+        else { return }
+        
         switch message.kind {
-            case .started: try showTypingIndicatorIfNeeded(db, for: message.sender)
-            case .stopped: try hideTypingIndicatorIfNeeded(db, for: message.sender)
+            case .started:
+                TypingIndicators.didStartTyping(
+                    db,
+                    in: thread,
+                    direction: .incoming,
+                    timestampMs: message.sentTimestamp.map { Int64($0) }
+                )
+                
+            case .stopped:
+                TypingIndicators.didStopTyping(db, in: thread, direction: .incoming)
             
             default:
                 SNLog("Unknown TypingIndicator Kind ignored")
                 return
         }
     }
-
-    private static func showTypingIndicatorIfNeeded(_ db: Database, for senderPublicKey: String?) throws {
-        guard let senderPublicKey: String = senderPublicKey else { return }
-        
-        var threadOrNil: TSContactThread?
-        Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactSessionID(senderPublicKey, transaction: transaction)
-        }
-        guard let thread = threadOrNil else { return }
-        func showTypingIndicatorsIfNeeded() {
-            SSKEnvironment.shared.typingIndicators.didReceiveTypingStartedMessage(inThread: thread, recipientId: senderPublicKey, deviceId: 1)
-        }
-        if Thread.current.isMainThread {
-            showTypingIndicatorsIfNeeded()
-        } else {
-            DispatchQueue.main.async {
-                showTypingIndicatorsIfNeeded()
-            }
-        }
-    }
-
-    private static func hideTypingIndicatorIfNeeded(_ db: Database, for senderPublicKey: String?) throws {
-        guard let senderPublicKey: String = senderPublicKey else { return }
-        
-        var threadOrNil: TSContactThread?
-        Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactSessionID(senderPublicKey, transaction: transaction)
-        }
-        guard let thread = threadOrNil else { return }
-        func hideTypingIndicatorsIfNeeded() {
-            SSKEnvironment.shared.typingIndicators.didReceiveTypingStoppedMessage(inThread: thread, recipientId: senderPublicKey, deviceId: 1)
-        }
-        if Thread.current.isMainThread {
-            hideTypingIndicatorsIfNeeded()
-        } else {
-            DispatchQueue.main.async {
-                hideTypingIndicatorsIfNeeded()
-            }
-        }
-    }
-
-    public static func cancelTypingIndicatorsIfNeeded(for senderPublicKey: String) {
-        var threadOrNil: TSContactThread?
-        Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactSessionID(senderPublicKey, transaction: transaction)
-        }
-        guard let thread = threadOrNil else { return }
-        func cancelTypingIndicatorsIfNeeded() {
-            SSKEnvironment.shared.typingIndicators.didReceiveIncomingMessage(inThread: thread, recipientId: senderPublicKey, deviceId: 1)
-        }
-        if Thread.current.isMainThread {
-            cancelTypingIndicatorsIfNeeded()
-        } else {
-            DispatchQueue.main.async {
-                cancelTypingIndicatorsIfNeeded()
-            }
-        }
-    }
-    
-    
     
     // MARK: - Data Extraction Notification
     
@@ -549,15 +502,17 @@ extension MessageReceiver {
         )
             
         // Parse & persist attachments
-        let attachments: [Attachment] = dataMessage.attachments
-            .compactMap { proto in
+        let attachments: [Attachment] = try dataMessage.attachments
+            .compactMap { proto -> Attachment? in
                 let attachment: Attachment = Attachment(proto: proto)
                 
                 // Attachments on received messages must have a 'downloadUrl' otherwise
                 // they are invalid and we can ignore them
                 return (attachment.downloadUrl != nil ? attachment : nil)
             }
-        try attachments.saveAll(db)
+            .map { attachment in
+                try attachment.saved(db)
+            }
         
         message.attachmentIds = attachments.map { $0.id }
         
@@ -615,7 +570,7 @@ extension MessageReceiver {
         
         // Cancel any typing indicators if needed
         if isMainAppActive {
-            cancelTypingIndicatorsIfNeeded(for: message.sender!)
+            TypingIndicators.didStopTyping(db, in: thread, direction: .incoming)
         }
         
         // Update the contact's approval status of the current user if needed (if we are getting messages from
@@ -976,7 +931,10 @@ extension MessageReceiver {
                 body: ClosedGroupControlMessage.Kind
                     .nameChange(name: name)
                     .infoMessage(db, sender: sender),
-                timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
+                timestampMs: (
+                    message.sentTimestamp.map { Int64($0) } ??
+                    Int64(floor(Date().timeIntervalSince1970 * 1000))
+                )
             ).inserted(db)
         }
     }
@@ -992,7 +950,7 @@ extension MessageReceiver {
             let addedMembers: [String] = membersAsData.map { $0.toHexString() }
             let currentMemberIds: Set<String> = groupMembers.map { $0.profileId }.asSet()
             let members: Set<String> = currentMemberIds.union(addedMembers)
-            
+        
             // Create records for any new members
             try addedMembers
                 .filter { !currentMemberIds.contains($0) }
@@ -1025,14 +983,11 @@ extension MessageReceiver {
                 }
             }
             
-            // Update zombie members in case the added members are zombies
-            let zombies: [GroupMember] = ((try? closedGroup.zombies.fetchAll(db)) ?? [])
-            
-            if !zombies.map { $0.profileId }.asSet().intersection(addedMembers).isEmpty {
-                try zombies
-                    .filter { !addedMembers.contains($0.profileId) }
-                    .deleteAll(db)
-            }
+            // Remove any 'zombie' versions of the added members (in case they were re-added)
+            _ = try closedGroup
+                .zombies
+                .filter(addedMembers.contains(GroupMember.Columns.profileId))
+                .deleteAll(db)
             
             // Notify the user if needed
             guard members != Set(groupMembers.map { $0.profileId }) else { return }
@@ -1050,7 +1005,10 @@ extension MessageReceiver {
                             .map { Data(hex: $0) }
                     )
                     .infoMessage(db, sender: sender),
-                timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
+                timestampMs: (
+                    message.sentTimestamp.map { Int64($0) } ??
+                    Int64(floor(Date().timeIntervalSince1970 * 1000))
+                )
             ).inserted(db)
         }
     }
@@ -1124,7 +1082,10 @@ extension MessageReceiver {
                             .map { Data(hex: $0) }
                     )
                     .infoMessage(db, sender: sender),
-                timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
+                timestampMs: (
+                    message.sentTimestamp.map { Int64($0) } ??
+                    Int64(floor(Date().timeIntervalSince1970 * 1000))
+                )
             ).inserted(db)
         }
     }
@@ -1159,6 +1120,14 @@ extension MessageReceiver {
                 // Remove the group from the database and unsubscribe from PNs
                 ClosedGroupPoller.shared.stopPolling(for: id)
                 
+                try closedGroup
+                    .members
+                    .filter(
+                        GroupMember.Columns.role == GroupMember.Role.standard ||
+                        GroupMember.Columns.role == GroupMember.Role.zombie
+                    )
+                    .deleteAll(db)
+                
                 _ = try closedGroup
                     .keyPairs
                     .deleteAll(db)
@@ -1183,10 +1152,6 @@ extension MessageReceiver {
                 ).insert(db)
             }
             
-            // Update the group
-            try membersToRemove
-                .deleteAll(db)
-            
             // Notify the user if needed
             guard updatedMemberIds != Set(members.map { $0.profileId }) else { return }
             
@@ -1198,7 +1163,10 @@ extension MessageReceiver {
                 body: ClosedGroupControlMessage.Kind
                     .memberLeft
                     .infoMessage(db, sender: sender),
-                timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
+                timestampMs: (
+                    message.sentTimestamp.map { Int64($0) } ??
+                    Int64(floor(Date().timeIntervalSince1970 * 1000))
+                )
             ).inserted(db)
         }
     }

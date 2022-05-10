@@ -430,8 +430,10 @@ public final class OpenGroupAPIV2 : NSObject {
         return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
     }
 
-    public static func isUserModerator(_ publicKey: String, for room: String, on server: String) -> Bool {
-        return moderators[server]?[room]?.contains(publicKey) ?? false
+    public static func isUserModerator(_ publicKey: String, for room: String?, on server: String?) -> Bool {
+        guard let room: String = room, let server: String = server else { return false }
+        
+        return (moderators[server]?[room]?.contains(publicKey) ?? false)
     }
     
     // MARK: General

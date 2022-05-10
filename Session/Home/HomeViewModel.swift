@@ -73,6 +73,7 @@ public class HomeViewModel {
             }
         }
         
+        fileprivate static let contactIsTypingKey = CodingKeys.contactIsTyping.stringValue
         fileprivate static let closedGroupNameKey = CodingKeys.closedGroupName.stringValue
         fileprivate static let openGroupNameKey = CodingKeys.openGroupName.stringValue
         fileprivate static let openGroupProfilePictureDataKey = CodingKeys.openGroupProfilePictureData.stringValue
@@ -92,6 +93,7 @@ public class HomeViewModel {
         public let variant: SessionThread.Variant
         private let creationDateTimestamp: TimeInterval
         
+        public let contactIsTyping: Bool
         public let closedGroupName: String?
         public let openGroupName: String?
         public let openGroupProfilePictureData: Data?
@@ -176,6 +178,7 @@ public class HomeViewModel {
             self.id = "FALLBACK"
             self.variant = .contact
             self.creationDateTimestamp = 0
+            self.contactIsTyping = false
             self.closedGroupName = nil
             self.openGroupName = nil
             self.openGroupProfilePictureData = nil
@@ -198,6 +201,7 @@ public class HomeViewModel {
         public static func query(userPublicKey: String) -> QueryInterfaceRequest<ThreadInfo> {
             let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
             let contact: TypedTableAlias<Contact> = TypedTableAlias()
+            let typingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias()
             let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
             let closedGroupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
             let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
@@ -262,12 +266,14 @@ public class HomeViewModel {
                     )
                     .group(Interaction.Columns.threadId)    // One interaction per thread
             )
+            
             return SessionThread
                 .select(
                     thread[.id],
                     thread[.variant],
                     thread[.creationDateTimestamp],
 
+                    (typingIndicator[.threadId] != nil).forKey(ThreadInfo.contactIsTypingKey),
                     closedGroup[.name].forKey(ThreadInfo.closedGroupNameKey),
                     openGroup[.name].forKey(ThreadInfo.openGroupNameKey),
                     openGroup[.imageData].forKey(ThreadInfo.openGroupProfilePictureDataKey),
@@ -291,6 +297,7 @@ public class HomeViewModel {
                                 .forKey(ThreadInfo.contactProfileKey)
                         )
                 )
+                .joining(optional: SessionThread.typingIndicator.aliased(typingIndicator))
                 .joining(
                     optional: SessionThread.closedGroup
                         .aliased(closedGroup)

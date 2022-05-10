@@ -66,13 +66,21 @@ public class Message: Codable {
     public func setGroupContextIfNeeded(_ db: Database, on dataMessage: SNProtoDataMessage.SNProtoDataMessageBuilder) throws {
         guard
             let threadId: String = threadId,
-            let thread: SessionThread = try? SessionThread.fetchOne(db, id: threadId),
-            thread.variant == .closedGroup,
+            (try? ClosedGroup.exists(db, id: threadId)) == true,
             let legacyGroupId: Data = "\(Legacy.closedGroupIdPrefix)\(threadId)".data(using: .utf8)
         else { return }
         
         // Android needs a group context or it'll interpret the message as a one-to-one message
         let groupProto = SNProtoGroupContext.builder(id: legacyGroupId, type: .deliver)
         dataMessage.setGroup(try groupProto.build())
+    }
+}
+
+// MARK: - Mutation
+
+internal extension Message {
+    func with(sentTimestamp: UInt64) -> Message {
+        self.sentTimestamp = sentTimestamp
+        return self
     }
 }

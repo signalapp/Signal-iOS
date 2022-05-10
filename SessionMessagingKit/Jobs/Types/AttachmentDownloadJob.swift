@@ -45,7 +45,7 @@ public enum AttachmentDownloadJob: JobExecutor {
             }
             .defaulting(to: attachment)
         
-        let temporaryFilePath: URL = URL(
+        let temporaryFileUrl: URL = URL(
             fileURLWithPath: OWSTemporaryDirectoryAccessibleAfterFirstAuth() + UUID().uuidString
         )
         let downloadPromise: Promise<Data> = {
@@ -66,7 +66,7 @@ public enum AttachmentDownloadJob: JobExecutor {
         
         downloadPromise
             .then { data -> Promise<Void> in
-                try data.write(to: temporaryFilePath, options: .atomic)
+                try data.write(to: temporaryFileUrl, options: .atomic)
                 
                 let plaintext: Data = try {
                     guard
@@ -92,7 +92,7 @@ public enum AttachmentDownloadJob: JobExecutor {
             }
             .done {
                 // Remove the temporary file
-                OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
+                OWSFileSystem.deleteFile(temporaryFileUrl.path)
                 
                 // Update the attachment state
                 GRDBStorage.shared.write { db in
@@ -109,7 +109,7 @@ public enum AttachmentDownloadJob: JobExecutor {
                 success(job, false)
             }
             .catch { error in
-                OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
+                OWSFileSystem.deleteFile(temporaryFileUrl.path)
                 
                 switch error {
                     case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _, _) where statusCode == 400:

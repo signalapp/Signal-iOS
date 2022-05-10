@@ -11,8 +11,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SignalUtilitiesKit/AttachmentSharing.h>
 #import <SignalUtilitiesKit/ByteParser.h>
-#import <SignalUtilitiesKit/ContactCellView.h>
-#import <SignalUtilitiesKit/ContactTableViewCell.h>
 #import <SignalUtilitiesKit/FunctionalUtil.h>
 #import <SignalUtilitiesKit/NSArray+OWS.h>
 #import <SignalUtilitiesKit/NSAttributedString+OWS.h>
@@ -25,7 +23,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSDispatch.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
-#import <SignalUtilitiesKit/OWSMessageUtils.h>
 #import <SignalUtilitiesKit/OWSNavigationController.h>
 #import <SignalUtilitiesKit/OWSOperation.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage+keyFromIntLong.h>

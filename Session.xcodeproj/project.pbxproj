@@ -335,8 +335,6 @@
 		C32C5CAD256DD1DF003C73A2 /* TSAccountManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB94255A581300E217F9 /* TSAccountManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C32C5CF0256DD3E4003C73A2 /* Storage+Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A5FD255C988A007BE2A3 /* Storage+Shared.swift */; };
 		C32C5D19256DD493003C73A2 /* OWSLinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBA8255A581500E217F9 /* OWSLinkPreview.swift */; };
-		C32C5D23256DD4C0003C73A2 /* Mention.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA7E255A57FB00E217F9 /* Mention.swift */; };
-		C32C5D24256DD4C0003C73A2 /* MentionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA81255A57FC00E217F9 /* MentionsManager.swift */; };
 		C32C5D83256DD5B6003C73A2 /* SSKKeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBBC255A581600E217F9 /* SSKKeychainStorage.swift */; };
 		C32C5DBF256DD743003C73A2 /* ClosedGroupPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB34255A580B00E217F9 /* ClosedGroupPoller.swift */; };
 		C32C5DC0256DD743003C73A2 /* Poller.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB3A255A580B00E217F9 /* Poller.swift */; };
@@ -409,7 +407,6 @@
 		C33FDC96255A582000E217F9 /* NSObject+Casting.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDADC255A580400E217F9 /* NSObject+Casting.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDC98255A582000E217F9 /* SwiftSingletons.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDADE255A580400E217F9 /* SwiftSingletons.swift */; };
 		C33FDC9A255A582000E217F9 /* ByteParser.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAE0255A580400E217F9 /* ByteParser.m */; };
-		C33FDCA2255A582000E217F9 /* OWSMessageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAE8255A580500E217F9 /* OWSMessageUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDCC7255A582000E217F9 /* NSArray+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB0D255A580800E217F9 /* NSArray+OWS.m */; };
 		C33FDCD1255A582000E217F9 /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB17255A580800E217F9 /* FunctionalUtil.m */; };
 		C33FDCD3255A582000E217F9 /* GroupUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB19255A580900E217F9 /* GroupUtilities.swift */; };
@@ -427,7 +424,6 @@
 		C33FDD74255A582000E217F9 /* OWSPrimaryStorage+keyFromIntLong.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBBA255A581600E217F9 /* OWSPrimaryStorage+keyFromIntLong.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD7C255A582000E217F9 /* SSKAsserts.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBC2255A581700E217F9 /* SSKAsserts.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDD8D255A582000E217F9 /* OWSSignalAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBD3255A581800E217F9 /* OWSSignalAddress.swift */; };
-		C33FDD91255A582000E217F9 /* OWSMessageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBD7255A581900E217F9 /* OWSMessageUtils.m */; };
 		C33FDD92255A582000E217F9 /* SignalIOS.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBD8255A581900E217F9 /* SignalIOS.pb.swift */; };
 		C33FDDB0255A582000E217F9 /* NSURLSessionDataTask+StatusCode.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBF6255A581C00E217F9 /* NSURLSessionDataTask+StatusCode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FDDB2255A582000E217F9 /* NSArray+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBF8255A581C00E217F9 /* NSArray+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -557,7 +553,6 @@
 		C38EF3EF255B6DF7007E1867 /* ThreadViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3D1255B6DEE007E1867 /* ThreadViewHelper.m */; };
 		C38EF3F0255B6DF7007E1867 /* ThreadViewHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF3D2255B6DEE007E1867 /* ThreadViewHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF3F2255B6DF7007E1867 /* DisappearingTimerConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3D4255B6DEE007E1867 /* DisappearingTimerConfigurationView.swift */; };
-		C38EF3F4255B6DF7007E1867 /* ContactCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3D6255B6DEF007E1867 /* ContactCellView.m */; };
 		C38EF3F5255B6DF7007E1867 /* OWSTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF3D7255B6DF0007E1867 /* OWSTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF3F6255B6DF7007E1867 /* OWSTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF3D8255B6DF0007E1867 /* OWSTextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF3F7255B6DF7007E1867 /* OWSNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3D9255B6DF1007E1867 /* OWSNavigationBar.swift */; };
@@ -570,11 +565,8 @@
 		C38EF400255B6DF7007E1867 /* GalleryRailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3E2255B6DF3007E1867 /* GalleryRailView.swift */; };
 		C38EF401255B6DF7007E1867 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3E3255B6DF4007E1867 /* VideoPlayerView.swift */; };
 		C38EF402255B6DF7007E1867 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3E4255B6DF4007E1867 /* CommonStrings.swift */; };
-		C38EF403255B6DF7007E1867 /* ContactCellView.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF3E5255B6DF4007E1867 /* ContactCellView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C38EF404255B6DF7007E1867 /* ContactTableViewCell.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF3E6255B6DF4007E1867 /* ContactTableViewCell.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF405255B6DF7007E1867 /* OWSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3E7255B6DF5007E1867 /* OWSButton.swift */; };
 		C38EF407255B6DF7007E1867 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3E9255B6DF6007E1867 /* Toast.swift */; };
-		C38EF409255B6DF7007E1867 /* ContactTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3EB255B6DF6007E1867 /* ContactTableViewCell.m */; };
 		C38EF40A255B6DF7007E1867 /* OWSFlatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3EC255B6DF6007E1867 /* OWSFlatButton.swift */; };
 		C38EF40B255B6DF7007E1867 /* TappableStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3ED255B6DF6007E1867 /* TappableStackView.swift */; };
 		C38EF40C255B6DF7007E1867 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3EE255B6DF6007E1867 /* GradientView.swift */; };
@@ -729,6 +721,7 @@
 		FD09C5E428237209000CE219 /* MessageRequestsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09C5E328237209000CE219 /* MessageRequestsViewModel.swift */; };
 		FD09C5E628260FF9000CE219 /* MediaGalleryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09C5E528260FF9000CE219 /* MediaGalleryViewModel.swift */; };
 		FD09C5E828264937000CE219 /* MediaDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09C5E728264937000CE219 /* MediaDetailViewController.swift */; };
+		FD09C5EA282A1BB2000CE219 /* ThreadTypingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09C5E9282A1BB2000CE219 /* ThreadTypingIndicator.swift */; };
 		FD17D79927F40AB800122BE0 /* _003_YDBToGRDBMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79827F40AB800122BE0 /* _003_YDBToGRDBMigration.swift */; };
 		FD17D79C27F40B2E00122BE0 /* SMKLegacyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79B27F40B2E00122BE0 /* SMKLegacyModels.swift */; };
 		FD17D7A027F40CC800122BE0 /* _001_InitialSetupMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79F27F40CC800122BE0 /* _001_InitialSetupMigration.swift */; };
@@ -796,7 +789,6 @@
 		FDF0B7472804F0CE004C14C5 /* DisappearingMessagesJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF0B7462804F0CE004C14C5 /* DisappearingMessagesJob.swift */; };
 		FDF0B74928060D13004C14C5 /* QuotedReplyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF0B74828060D13004C14C5 /* QuotedReplyModel.swift */; };
 		FDF0B74B28061F7A004C14C5 /* InteractionAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF0B74A28061F7A004C14C5 /* InteractionAttachment.swift */; };
-		FDF0B74D280664E9004C14C5 /* PersistableRecord+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF0B74C280664E9004C14C5 /* PersistableRecord+Utilities.swift */; };
 		FDF0B74F28079E5E004C14C5 /* SendReadReceiptsJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF0B74E28079E5E004C14C5 /* SendReadReceiptsJob.swift */; };
 		FDF0B7512807BA56004C14C5 /* NotificationsProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF0B7502807BA56004C14C5 /* NotificationsProtocol.swift */; };
 		FDF0B7552807C4BB004C14C5 /* SSKEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF0B7542807C4BB004C14C5 /* SSKEnvironment.swift */; };
@@ -1339,8 +1331,6 @@
 		C33FDA73255A57FA00E217F9 /* ECKeyPair+Hexadecimal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ECKeyPair+Hexadecimal.swift"; sourceTree = "<group>"; };
 		C33FDA79255A57FB00E217F9 /* TSGroupThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSGroupThread.h; sourceTree = "<group>"; };
 		C33FDA7A255A57FB00E217F9 /* NSRegularExpression+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRegularExpression+SSK.swift"; sourceTree = "<group>"; };
-		C33FDA7E255A57FB00E217F9 /* Mention.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mention.swift; sourceTree = "<group>"; };
-		C33FDA81255A57FC00E217F9 /* MentionsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MentionsManager.swift; sourceTree = "<group>"; };
 		C33FDA86255A57FC00E217F9 /* OWSDisappearingMessagesFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisappearingMessagesFinder.m; sourceTree = "<group>"; };
 		C33FDA87255A57FC00E217F9 /* TypingIndicators.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicators.swift; sourceTree = "<group>"; };
 		C33FDA88255A57FD00E217F9 /* YapDatabaseTransaction+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "YapDatabaseTransaction+OWS.h"; sourceTree = "<group>"; };
@@ -1373,7 +1363,6 @@
 		C33FDAE0255A580400E217F9 /* ByteParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ByteParser.m; sourceTree = "<group>"; };
 		C33FDAE4255A580400E217F9 /* TSAttachmentStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAttachmentStream.h; sourceTree = "<group>"; };
 		C33FDAE6255A580400E217F9 /* TSInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInteraction.h; sourceTree = "<group>"; };
-		C33FDAE8255A580500E217F9 /* OWSMessageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageUtils.h; sourceTree = "<group>"; };
 		C33FDAEA255A580500E217F9 /* OWSBackupFragment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupFragment.h; sourceTree = "<group>"; };
 		C33FDAEC255A580500E217F9 /* SignalRecipient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalRecipient.h; sourceTree = "<group>"; };
 		C33FDAEF255A580500E217F9 /* NSData+Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Image.m"; sourceTree = "<group>"; };
@@ -1458,7 +1447,6 @@
 		C33FDBC2255A581700E217F9 /* SSKAsserts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKAsserts.h; sourceTree = "<group>"; };
 		C33FDBCA255A581700E217F9 /* LKGroupUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKGroupUtilities.h; sourceTree = "<group>"; };
 		C33FDBD3255A581800E217F9 /* OWSSignalAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSignalAddress.swift; sourceTree = "<group>"; };
-		C33FDBD7255A581900E217F9 /* OWSMessageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageUtils.m; sourceTree = "<group>"; };
 		C33FDBD8255A581900E217F9 /* SignalIOS.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalIOS.pb.swift; sourceTree = "<group>"; };
 		C33FDBDE255A581900E217F9 /* PushNotificationAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushNotificationAPI.swift; sourceTree = "<group>"; };
 		C33FDBE1255A581A00E217F9 /* LKGroupUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKGroupUtilities.m; sourceTree = "<group>"; };
@@ -1619,7 +1607,6 @@
 		C38EF3D1255B6DEE007E1867 /* ThreadViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ThreadViewHelper.m; path = SignalUtilitiesKit/Database/ThreadViewHelper.m; sourceTree = SOURCE_ROOT; };
 		C38EF3D2255B6DEE007E1867 /* ThreadViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadViewHelper.h; path = SignalUtilitiesKit/Database/ThreadViewHelper.h; sourceTree = SOURCE_ROOT; };
 		C38EF3D4255B6DEE007E1867 /* DisappearingTimerConfigurationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DisappearingTimerConfigurationView.swift; path = SignalUtilitiesKit/Messaging/DisappearingTimerConfigurationView.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3D6255B6DEF007E1867 /* ContactCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactCellView.m; path = "SignalUtilitiesKit/To Do/ContactCellView.m"; sourceTree = SOURCE_ROOT; };
 		C38EF3D7255B6DF0007E1867 /* OWSTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSTextField.h; path = "SignalUtilitiesKit/Shared Views/OWSTextField.h"; sourceTree = SOURCE_ROOT; };
 		C38EF3D8255B6DF0007E1867 /* OWSTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSTextView.h; path = "SignalUtilitiesKit/Shared Views/OWSTextView.h"; sourceTree = SOURCE_ROOT; };
 		C38EF3D9255B6DF1007E1867 /* OWSNavigationBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSNavigationBar.swift; path = "SignalUtilitiesKit/Shared Views/OWSNavigationBar.swift"; sourceTree = SOURCE_ROOT; };
@@ -1632,11 +1619,8 @@
 		C38EF3E2255B6DF3007E1867 /* GalleryRailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GalleryRailView.swift; path = "SignalUtilitiesKit/Shared Views/GalleryRailView.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3E3255B6DF4007E1867 /* VideoPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VideoPlayerView.swift; path = "SignalUtilitiesKit/Media Viewing & Editing/VideoPlayerView.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3E4255B6DF4007E1867 /* CommonStrings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommonStrings.swift; path = SignalUtilitiesKit/Utilities/CommonStrings.swift; sourceTree = SOURCE_ROOT; };
-		C38EF3E5255B6DF4007E1867 /* ContactCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContactCellView.h; path = "SignalUtilitiesKit/To Do/ContactCellView.h"; sourceTree = SOURCE_ROOT; };
-		C38EF3E6255B6DF4007E1867 /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContactTableViewCell.h; path = "SignalUtilitiesKit/To Do/ContactTableViewCell.h"; sourceTree = SOURCE_ROOT; };
 		C38EF3E7255B6DF5007E1867 /* OWSButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSButton.swift; path = "SignalUtilitiesKit/Shared Views/OWSButton.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3E9255B6DF6007E1867 /* Toast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Toast.swift; path = "SignalUtilitiesKit/Shared Views/Toast.swift"; sourceTree = SOURCE_ROOT; };
-		C38EF3EB255B6DF6007E1867 /* ContactTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactTableViewCell.m; path = "SignalUtilitiesKit/To Do/ContactTableViewCell.m"; sourceTree = SOURCE_ROOT; };
 		C38EF3EC255B6DF6007E1867 /* OWSFlatButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSFlatButton.swift; path = "SignalUtilitiesKit/Shared Views/OWSFlatButton.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3ED255B6DF6007E1867 /* TappableStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TappableStackView.swift; path = "SignalUtilitiesKit/Shared Views/TappableStackView.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3EE255B6DF6007E1867 /* GradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GradientView.swift; path = "SignalUtilitiesKit/Shared Views/GradientView.swift"; sourceTree = SOURCE_ROOT; };
@@ -1786,6 +1770,7 @@
 		FD09C5E328237209000CE219 /* MessageRequestsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsViewModel.swift; sourceTree = "<group>"; };
 		FD09C5E528260FF9000CE219 /* MediaGalleryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryViewModel.swift; sourceTree = "<group>"; };
 		FD09C5E728264937000CE219 /* MediaDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetailViewController.swift; sourceTree = "<group>"; };
+		FD09C5E9282A1BB2000CE219 /* ThreadTypingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadTypingIndicator.swift; sourceTree = "<group>"; };
 		FD17D79527F3E04600122BE0 /* _001_InitialSetupMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _001_InitialSetupMigration.swift; sourceTree = "<group>"; };
 		FD17D79827F40AB800122BE0 /* _003_YDBToGRDBMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _003_YDBToGRDBMigration.swift; sourceTree = "<group>"; };
 		FD17D79B27F40B2E00122BE0 /* SMKLegacyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMKLegacyModels.swift; sourceTree = "<group>"; };
@@ -1851,7 +1836,6 @@
 		FDF0B7462804F0CE004C14C5 /* DisappearingMessagesJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisappearingMessagesJob.swift; sourceTree = "<group>"; };
 		FDF0B74828060D13004C14C5 /* QuotedReplyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyModel.swift; sourceTree = "<group>"; };
 		FDF0B74A28061F7A004C14C5 /* InteractionAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionAttachment.swift; sourceTree = "<group>"; };
-		FDF0B74C280664E9004C14C5 /* PersistableRecord+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistableRecord+Utilities.swift"; sourceTree = "<group>"; };
 		FDF0B74E28079E5E004C14C5 /* SendReadReceiptsJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendReadReceiptsJob.swift; sourceTree = "<group>"; };
 		FDF0B7502807BA56004C14C5 /* NotificationsProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsProtocol.swift; sourceTree = "<group>"; };
 		FDF0B7542807C4BB004C14C5 /* SSKEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKEnvironment.swift; sourceTree = "<group>"; };
@@ -2521,7 +2505,6 @@
 				C3D9E3B52567685D0040E4F3 /* Attachments */,
 				B8F5F61925EDE4B0003BF8D4 /* Data Extraction */,
 				C32C5D22256DD496003C73A2 /* Link Previews */,
-				C32C5D2D256DD4C4003C73A2 /* Mentions */,
 				C379DC6825672B5E0002D4EB /* Notifications */,
 				C32C59F8256DB5A6003C73A2 /* Pollers */,
 				C32C5B1B256DC160003C73A2 /* Quotes */,
@@ -2710,15 +2693,6 @@
 				B8566C62256F55930045A0B9 /* OWSLinkPreview+Conversion.swift */,
 			);
 			path = "Link Previews";
-			sourceTree = "<group>";
-		};
-		C32C5D2D256DD4C4003C73A2 /* Mentions */ = {
-			isa = PBXGroup;
-			children = (
-				C33FDA7E255A57FB00E217F9 /* Mention.swift */,
-				C33FDA81255A57FC00E217F9 /* MentionsManager.swift */,
-			);
-			path = Mentions;
 			sourceTree = "<group>";
 		};
 		C331FF1C2558F9D300070591 /* SessionUIKit */ = {
@@ -3097,10 +3071,6 @@
 			isa = PBXGroup;
 			children = (
 				C33FDB19255A580900E217F9 /* GroupUtilities.swift */,
-				C38EF3E5255B6DF4007E1867 /* ContactCellView.h */,
-				C38EF3D6255B6DEF007E1867 /* ContactCellView.m */,
-				C38EF3E6255B6DF4007E1867 /* ContactTableViewCell.h */,
-				C38EF3EB255B6DF6007E1867 /* ContactTableViewCell.m */,
 				C38EF2D2255B6DAF007E1867 /* OWSProfileManager.h */,
 				C38EF2CF255B6DAE007E1867 /* OWSProfileManager.m */,
 			);
@@ -3117,8 +3087,6 @@
 				C38EF2E4255B6DB9007E1867 /* FullTextSearcher.swift */,
 				C38EF2E9255B6DBA007E1867 /* OWSUnreadIndicator.h */,
 				C38EF2E3255B6DB9007E1867 /* OWSUnreadIndicator.m */,
-				C33FDAE8255A580500E217F9 /* OWSMessageUtils.h */,
-				C33FDBD7255A581900E217F9 /* OWSMessageUtils.m */,
 			);
 			path = Messaging;
 			sourceTree = "<group>";
@@ -3598,6 +3566,7 @@
 				FD09799827FFC1A300936362 /* Attachment.swift */,
 				FD09799A27FFC82D00936362 /* Quote.swift */,
 				FDF0B73B27FFD3D6004C14C5 /* LinkPreview.swift */,
+				FD09C5E9282A1BB2000CE219 /* ThreadTypingIndicator.swift */,
 				FDE77F6A280FEB28002CFC5D /* ControlMessageProcessRecord.swift */,
 			);
 			path = Models;
@@ -3687,7 +3656,6 @@
 				FD17D7C227F5204C00122BE0 /* Database+Utilities.swift */,
 				FD17D7C627F5207C00122BE0 /* DatabaseMigrator+Utilities.swift */,
 				FD17D7BC27F51F6900122BE0 /* GRDB+Notifications.swift */,
-				FDF0B74C280664E9004C14C5 /* PersistableRecord+Utilities.swift */,
 				FDF22210281B5E0B000A4995 /* TableRecord+Utilities.swift */,
 				FDF2220E281B55E6000A4995 /* QueryInterfaceRequest+Utilities.swift */,
 			);
@@ -3838,11 +3806,9 @@
 				C33FDDD3255A582000E217F9 /* OWSQueues.h in Headers */,
 				C33FDC96255A582000E217F9 /* NSObject+Casting.h in Headers */,
 				C33FDDB3255A582000E217F9 /* OWSError.h in Headers */,
-				C38EF403255B6DF7007E1867 /* ContactCellView.h in Headers */,
 				C33FDD68255A582000E217F9 /* SignalAccount.h in Headers */,
 				C38EF35E255B6DCC007E1867 /* OWSViewController.h in Headers */,
 				C37F5396255B95BD002AEA92 /* OWSAnyTouchGestureRecognizer.h in Headers */,
-				C38EF404255B6DF7007E1867 /* ContactTableViewCell.h in Headers */,
 				C33FDDB2255A582000E217F9 /* NSArray+OWS.h in Headers */,
 				C38EF2D7255B6DAF007E1867 /* OWSProfileManager.h in Headers */,
 				C38EF367255B6DCC007E1867 /* OWSTableViewController.h in Headers */,
@@ -3850,7 +3816,6 @@
 				C33FD9AF255A548A00E217F9 /* SignalUtilitiesKit.h in Headers */,
 				C33FDC50255A582000E217F9 /* OWSDispatch.h in Headers */,
 				C33FDD06255A582000E217F9 /* AppVersion.h in Headers */,
-				C33FDCA2255A582000E217F9 /* OWSMessageUtils.h in Headers */,
 				C38EF28F255B6D86007E1867 /* VersionMigrations.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4657,7 +4622,6 @@
 				C33FDC29255A581F00E217F9 /* ReachabilityManager.swift in Sources */,
 				C38EF407255B6DF7007E1867 /* Toast.swift in Sources */,
 				C38EF38C255B6DD2007E1867 /* ApprovalRailCellView.swift in Sources */,
-				C38EF409255B6DF7007E1867 /* ContactTableViewCell.m in Sources */,
 				FD3C907327E8387300CD579F /* OpenGroupServerIdLookupMigration.swift in Sources */,
 				C38EF32A255B6DBF007E1867 /* UIUtil.m in Sources */,
 				C38EF2A6255B6D93007E1867 /* PlaceholderIcon.swift in Sources */,
@@ -4705,7 +4669,6 @@
 				C33FDC9A255A582000E217F9 /* ByteParser.m in Sources */,
 				C33FDDC0255A582000E217F9 /* SignalAccount.m in Sources */,
 				C33FDC58255A582000E217F9 /* ReverseDispatchQueue.swift in Sources */,
-				C38EF3F4255B6DF7007E1867 /* ContactCellView.m in Sources */,
 				C33FDC78255A582000E217F9 /* TSConstants.m in Sources */,
 				C38EF324255B6DBF007E1867 /* Bench.swift in Sources */,
 				FDCDB8DE2810F73B00352A0C /* Differentiable+Utilities.swift in Sources */,
@@ -4721,7 +4684,6 @@
 				FD88BADB27A750F200BBC442 /* MessageRequestsMigration.swift in Sources */,
 				C38EF326255B6DBF007E1867 /* ConversationStyle.swift in Sources */,
 				C38EF3B8255B6DE7007E1867 /* ImageEditorTextViewController.swift in Sources */,
-				C33FDD91255A582000E217F9 /* OWSMessageUtils.m in Sources */,
 				B8C2B332256376F000551B4D /* ThreadUtil.m in Sources */,
 				C38EF40B255B6DF7007E1867 /* TappableStackView.swift in Sources */,
 				C38EF31D255B6DBF007E1867 /* UIImage+OWS.swift in Sources */,
@@ -4796,7 +4758,6 @@
 				FD09C5E2282212B3000CE219 /* JobDependencies.swift in Sources */,
 				FD09796727F6B0B600936362 /* Sodium+Conversion.swift in Sources */,
 				FD9004122818ABDC00ABAAF6 /* Job.swift in Sources */,
-				FDF0B74D280664E9004C14C5 /* PersistableRecord+Utilities.swift in Sources */,
 				FD09797927FAB7E800936362 /* ImageFormat.swift in Sources */,
 				C32C5DC9256DD935003C73A2 /* ProxiedContentDownloader.swift in Sources */,
 				C3D9E4C02567767F0040E4F3 /* DataSource.m in Sources */,
@@ -4937,7 +4898,6 @@
 				C3A71D0B2558989C0043A11F /* MessageWrapper.swift in Sources */,
 				FDE77F6B280FEB28002CFC5D /* ControlMessageProcessRecord.swift in Sources */,
 				B8F5F60325EDE16F003BF8D4 /* DataExtractionNotification.swift in Sources */,
-				C32C5D24256DD4C0003C73A2 /* MentionsManager.swift in Sources */,
 				C3A71D1E25589AC30043A11F /* WebSocketProto.swift in Sources */,
 				C3C2A7852553AAF300C340D1 /* SessionProtos.pb.swift in Sources */,
 				B8566C63256F55930045A0B9 /* OWSLinkPreview+Conversion.swift in Sources */,
@@ -5014,7 +4974,6 @@
 				C3A3A13C256E1B27004D228D /* OWSMediaGalleryFinder.m in Sources */,
 				FD09797027FA6FF300936362 /* Profile.swift in Sources */,
 				C32C5AAE256DBE8F003C73A2 /* TSInteraction.m in Sources */,
-				C32C5D23256DD4C0003C73A2 /* Mention.swift in Sources */,
 				C32C5FD6256E0346003C73A2 /* Notification+Thread.swift in Sources */,
 				FD09798B27FD1CFE00936362 /* Capability.swift in Sources */,
 				C3BBE0C72554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift in Sources */,
@@ -5026,6 +4985,7 @@
 				C32C5A75256DBBCF003C73A2 /* TSAttachmentPointer+Conversion.swift in Sources */,
 				C32C5EBA256DE130003C73A2 /* OWSQuotedReplyModel.m in Sources */,
 				C32C59C4256DB41F003C73A2 /* TSContactThread.m in Sources */,
+				FD09C5EA282A1BB2000CE219 /* ThreadTypingIndicator.swift in Sources */,
 				FDF0B75E280AAF35004C14C5 /* Preferences.swift in Sources */,
 				C32C5AB0256DBE8F003C73A2 /* TSOutgoingMessage.m in Sources */,
 				B82A0C3826B9098200C1BCE3 /* MessageInvalidator.swift in Sources */,

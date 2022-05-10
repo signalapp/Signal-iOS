@@ -167,7 +167,7 @@ public extension Database {
             
             return T(rawValue: rawValue)
         }
-        set { self[key.rawValue] = Setting(key: key.rawValue, value: newValue) }
+        set { self[key.rawValue] = Setting(key: key.rawValue, value: newValue?.rawValue) }
     }
     
     /// Value will be stored as a timestamp in seconds since 1970

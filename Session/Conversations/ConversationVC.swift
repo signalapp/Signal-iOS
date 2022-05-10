@@ -39,9 +39,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     var contextMenuVC: ContextMenuVC?
     
     // Mentions
-    var oldText = ""
     var currentMentionStartIndex: String.Index?
-    var mentions: [Mention] = []
+    var mentions: [ConversationViewModel.MentionInfo] = []
     
     // Scrolling & paging
     var isUserScrolling = false
@@ -321,6 +320,13 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         // Nav bar
         setUpNavBarStyle()
         navigationItem.titleView = titleView
+        
+        titleView.update(
+            with: viewModel.viewData.threadName,
+            mutedUntilTimestamp: viewModel.viewData.thread.mutedUntilTimestamp,
+            onlyNotifyForMentions: viewModel.viewData.thread.onlyNotifyForMentions,
+            userCount: viewModel.viewData.userCount
+        )
         updateNavBarButtons(viewData: viewModel.viewData)
         
         // Constraints
