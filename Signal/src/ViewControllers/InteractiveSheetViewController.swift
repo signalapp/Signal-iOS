@@ -35,8 +35,6 @@ public class InteractiveSheetViewController: OWSViewController {
     public var maxWidth: CGFloat { 512 }
     public var minHeight: CGFloat { 346 }
 
-    public var allowsInteractiveDismisssal: Bool { true }
-
     var handlePosition: HandlePosition { .inside }
     private let handle = UIView()
     private lazy var handleContainer = UIView()
@@ -125,7 +123,6 @@ public class InteractiveSheetViewController: OWSViewController {
     }
 
     @objc func didTapBackdrop(_ sender: UITapGestureRecognizer) {
-        guard allowsInteractiveDismisssal else { return }
         willDismissInteractively()
         dismiss(animated: true)
     }
@@ -219,11 +216,11 @@ public class InteractiveSheetViewController: OWSViewController {
                 if currentVelocity < 0 {
                     completionState = .growing
                 } else {
-                    completionState = allowsInteractiveDismisssal ? .dismissing : .cancelling
+                    completionState = .dismissing
                 }
             } else if currentHeight >= growThreshold {
                 completionState = .growing
-            } else if currentHeight <= dismissThreshold, allowsInteractiveDismisssal {
+            } else if currentHeight <= dismissThreshold {
                 completionState = .dismissing
             } else {
                 completionState = .cancelling
@@ -262,8 +259,6 @@ public class InteractiveSheetViewController: OWSViewController {
 
                 self.backdropView?.alpha = completionState == .dismissing ? 0 : 1
             }) { _ in
-                owsAssertDebug(completionState != .dismissing || self.allowsInteractiveDismisssal)
-
                 self.heightConstraint?.constant = finalHeight
                 self.view.layoutIfNeeded()
 
