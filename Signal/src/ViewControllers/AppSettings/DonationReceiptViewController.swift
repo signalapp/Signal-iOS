@@ -152,6 +152,9 @@ class DonationReceiptViewController: OWSTableViewController2 {
 
         let image = DonationReceiptImageActivityItemProvider(donationReceipt: model)
         let shareActivityViewController = UIActivityViewController(activityItems: [image], applicationActivities: [])
+        if let popoverPresentationController = shareActivityViewController.popoverPresentationController {
+            popoverPresentationController.sourceView = self.view
+        }
         shareActivityViewController.excludedActivityTypes = [
             .addToReadingList,
             .assignToContact,
