@@ -9,15 +9,12 @@ from typing import Iterable
 from pathlib import Path
 
 
-EXTENSIONS_TO_CHECK = set((
-    ".h", ".hpp", ".cpp", ".m", ".mm", ".pch", ".swift"
-))
+EXTENSIONS_TO_CHECK = set((".h", ".hpp", ".cpp", ".m", ".mm", ".pch", ".swift"))
 
 
 git_repo_path = os.path.abspath(
-    subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], text=True).strip()
+    subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip()
 )
-
 
 
 class include:
@@ -28,22 +25,22 @@ class include:
         self.comment = comment
 
     def format(self):
-        result = '%s %s%s%s' % (
-                                ('#include' if self.isInclude else '#import'),
-                                ('"' if self.isQuote else '<'),
-                                self.body.strip(),
-                                ('"' if self.isQuote else '>'),
-                                )
+        result = "%s %s%s%s" % (
+            ("#include" if self.isInclude else "#import"),
+            ('"' if self.isQuote else "<"),
+            self.body.strip(),
+            ('"' if self.isQuote else ">"),
+        )
         if self.comment.strip():
-            result += ' ' + self.comment.strip()
+            result += " " + self.comment.strip()
         return result
 
 
 def is_include_or_import(line):
     line = line.strip()
-    if line.startswith('#include '):
+    if line.startswith("#include "):
         return True
-    elif line.startswith('#import '):
+    elif line.startswith("#import "):
         return True
     else:
         return False
@@ -52,18 +49,18 @@ def is_include_or_import(line):
 def parse_include(line):
     remainder = line.strip()
 
-    if remainder.startswith('#include '):
+    if remainder.startswith("#include "):
         isInclude = True
-        remainder = remainder[len('#include '):]
-    elif remainder.startswith('#import '):
+        remainder = remainder[len("#include ") :]
+    elif remainder.startswith("#import "):
         isInclude = False
-        remainder = remainder[len('#import '):]
-    elif remainder == '//':
+        remainder = remainder[len("#import ") :]
+    elif remainder == "//":
         return None
     elif not remainder:
         return None
     else:
-        print('Unexpected import or include: ' + line)
+        print("Unexpected import or include: " + line)
         sys.exit(1)
 
     comment = None
@@ -71,27 +68,27 @@ def parse_include(line):
         isQuote = True
         endIndex = remainder.find('"', 1)
         if endIndex < 0:
-            print('Unexpected import or include: ' + line)
+            print("Unexpected import or include: " + line)
             sys.exit(1)
         body = remainder[1:endIndex]
-        comment = remainder[endIndex+1:]
-    elif remainder.startswith('<'):
+        comment = remainder[endIndex + 1 :]
+    elif remainder.startswith("<"):
         isQuote = False
-        endIndex = remainder.find('>', 1)
+        endIndex = remainder.find(">", 1)
         if endIndex < 0:
-            print('Unexpected import or include: ' + line)
+            print("Unexpected import or include: " + line)
             sys.exit(1)
         body = remainder[1:endIndex]
-        comment = remainder[endIndex+1:]
+        comment = remainder[endIndex + 1 :]
     else:
-        print('Unexpected import or include: ' + remainder)
+        print("Unexpected import or include: " + remainder)
         sys.exit(1)
 
     return include(isInclude, isQuote, body, comment)
 
 
 def parse_includes(text):
-    lines = text.split('\n')
+    lines = text.split("\n")
 
     includes = []
     for line in lines:
@@ -112,20 +109,22 @@ def sort_include_block(text, filepath, filename, file_extension):
     for include in includes:
         include.isInclude = False
 
-    if file_extension in ('c', 'cpp', 'hpp'):
+    if file_extension in ("c", "cpp", "hpp"):
         for include in includes:
             include.isInclude = True
-    elif file_extension in ('m'):
+    elif file_extension in ("m"):
         for include in includes:
             include.isInclude = False
 
     # Make sure matching header is first.
     matching_header_includes = []
     other_includes = []
+
     def is_matching_header(include):
         filename_wo_ext = os.path.splitext(filename)[0]
         include_filename_wo_ext = os.path.splitext(os.path.basename(include.body))[0]
         return filename_wo_ext == include_filename_wo_ext
+
     for include in includes:
         if is_matching_header(include):
             matching_header_includes.append(include)
@@ -137,10 +136,20 @@ def sort_include_block(text, filepath, filename, file_extension):
         lines = set([include.format() for include in includes])
         return "\n".join(sorted(lines))
 
-    includeAngles = [include for include in includes if include.isInclude and not include.isQuote]
-    includeQuotes = [include for include in includes if include.isInclude and include.isQuote]
-    importAngles = [include for include in includes if (not include.isInclude) and not include.isQuote]
-    importQuotes = [include for include in includes if (not include.isInclude) and include.isQuote]
+    includeAngles = [
+        include for include in includes if include.isInclude and not include.isQuote
+    ]
+    includeQuotes = [
+        include for include in includes if include.isInclude and include.isQuote
+    ]
+    importAngles = [
+        include
+        for include in includes
+        if (not include.isInclude) and not include.isQuote
+    ]
+    importQuotes = [
+        include for include in includes if (not include.isInclude) and include.isQuote
+    ]
     if matching_header_includes:
         blocks.append(formatBlock(matching_header_includes))
     if includeQuotes:
@@ -152,19 +161,19 @@ def sort_include_block(text, filepath, filename, file_extension):
     if importAngles:
         blocks.append(formatBlock(importAngles))
 
-    return '\n'.join(blocks) + '\n'
+    return "\n".join(blocks) + "\n"
 
 
 def sort_forward_decl_statement_block(text, filepath, filename, file_extension):
-    lines = text.split('\n')
+    lines = text.split("\n")
     lines = [line.strip() for line in lines if line.strip()]
     lines = list(set(lines))
     lines.sort()
-    return '\n' + '\n'.join(lines) + '\n'
+    return "\n" + "\n".join(lines) + "\n"
 
 
 def find_matching_section(text, match_test):
-    lines = text.split('\n')
+    lines = text.split("\n")
     first_matching_line_index = None
     for index, line in enumerate(lines):
         if match_test(line):
@@ -190,18 +199,22 @@ def find_matching_section(text, match_test):
             first_non_matching_line_index = index + first_matching_line_index
             break
 
-    text0 = '\n'.join(lines[:first_matching_line_index])
+    text0 = "\n".join(lines[:first_matching_line_index])
     if first_non_matching_line_index is None:
-        text1 = '\n'.join(lines[first_matching_line_index:])
+        text1 = "\n".join(lines[first_matching_line_index:])
         text2 = None
     else:
-        text1 = '\n'.join(lines[first_matching_line_index:first_non_matching_line_index])
-        text2 = '\n'.join(lines[first_non_matching_line_index:])
+        text1 = "\n".join(
+            lines[first_matching_line_index:first_non_matching_line_index]
+        )
+        text2 = "\n".join(lines[first_non_matching_line_index:])
 
     return text0, text1, text2
 
 
-def sort_matching_blocks(sort_name, filepath, filename, file_extension, text, match_func, sort_func):
+def sort_matching_blocks(
+    sort_name, filepath, filename, file_extension, text, match_func, sort_func
+):
     unprocessed = text
     processed = None
     while True:
@@ -209,7 +222,12 @@ def sort_matching_blocks(sort_name, filepath, filename, file_extension, text, ma
         # print '\t', 'sort_matching_blocks', section
         if not section:
             if processed:
-                processed = '\n'.join((processed, unprocessed,))
+                processed = "\n".join(
+                    (
+                        processed,
+                        unprocessed,
+                    )
+                )
             else:
                 processed = unprocessed
             break
@@ -217,7 +235,12 @@ def sort_matching_blocks(sort_name, filepath, filename, file_extension, text, ma
         text0, text1, text2 = section
 
         if processed:
-            processed = '\n'.join((processed, text0,))
+            processed = "\n".join(
+                (
+                    processed,
+                    text0,
+                )
+            )
         else:
             processed = text0
 
@@ -236,7 +259,12 @@ def sort_matching_blocks(sort_name, filepath, filename, file_extension, text, ma
         #     if index < 3 or index + 3 >= len(temp_lines):
         #         print '\t', index, line
         # print
-        processed = '\n'.join((processed, text1,))
+        processed = "\n".join(
+            (
+                processed,
+                text1,
+            )
+        )
         if text2:
             unprocessed = text2
         else:
@@ -249,14 +277,14 @@ def sort_matching_blocks(sort_name, filepath, filename, file_extension, text, ma
 
 def find_forward_class_statement_section(text):
     def is_forward_class_statement(line):
-        return line.strip().startswith('@class ')
+        return line.strip().startswith("@class ")
 
     return find_matching_section(text, is_forward_class_statement)
 
 
 def find_forward_protocol_statement_section(text):
     def is_forward_protocol_statement(line):
-        return line.strip().startswith('@protocol ') and line.strip().endswith(';') 
+        return line.strip().startswith("@protocol ") and line.strip().endswith(";")
 
     return find_matching_section(text, is_forward_protocol_statement)
 
@@ -271,23 +299,47 @@ def find_include_section(text):
 
 def sort_includes(filepath, filename, file_extension, text):
     # print 'sort_includes', filepath
-    if file_extension not in ('.h', '.m', '.mm'):
+    if file_extension not in (".h", ".m", ".mm"):
         return text
-    return sort_matching_blocks('sort_includes', filepath, filename, file_extension, text, find_include_section, sort_include_block)
+    return sort_matching_blocks(
+        "sort_includes",
+        filepath,
+        filename,
+        file_extension,
+        text,
+        find_include_section,
+        sort_include_block,
+    )
 
 
 def sort_forward_class_statements(filepath, filename, file_extension, text):
     # print 'sort_class_statements', filepath
-    if file_extension not in ('.h', '.m', '.mm'):
+    if file_extension not in (".h", ".m", ".mm"):
         return text
-    return sort_matching_blocks('sort_class_statements', filepath, filename, file_extension, text, find_forward_class_statement_section, sort_forward_decl_statement_block)
+    return sort_matching_blocks(
+        "sort_class_statements",
+        filepath,
+        filename,
+        file_extension,
+        text,
+        find_forward_class_statement_section,
+        sort_forward_decl_statement_block,
+    )
 
 
 def sort_forward_protocol_statements(filepath, filename, file_extension, text):
     # print 'sort_class_statements', filepath
-    if file_extension not in ('.h', '.m', '.mm'):
+    if file_extension not in (".h", ".m", ".mm"):
         return text
-    return sort_matching_blocks('sort_forward_protocol_statements', filepath, filename, file_extension, text, find_forward_protocol_statement_section, sort_forward_decl_statement_block)
+    return sort_matching_blocks(
+        "sort_forward_protocol_statements",
+        filepath,
+        filename,
+        file_extension,
+        text,
+        find_forward_protocol_statement_section,
+        sort_forward_decl_statement_block,
+    )
 
 
 def get_ext(file: str) -> str:
@@ -295,16 +347,16 @@ def get_ext(file: str) -> str:
 
 
 def process(filepath):
-    short_filepath = filepath[len(git_repo_path):]
+    short_filepath = filepath[len(git_repo_path) :]
     if short_filepath.startswith(os.sep):
-       short_filepath = short_filepath[len(os.sep):]
+        short_filepath = short_filepath[len(os.sep) :]
 
     filename = os.path.basename(filepath)
-    if filename.startswith('.'):
+    if filename.startswith("."):
         raise Exception("shouldn't call process with dotfile")
     file_ext = get_ext(filename)
 
-    with open(filepath, 'rt') as f:
+    with open(filepath, "rt") as f:
         text = f.read()
 
     original_text = text
@@ -313,33 +365,33 @@ def process(filepath):
     text = sort_forward_class_statements(filepath, filename, file_ext, text)
     text = sort_forward_protocol_statements(filepath, filename, file_ext, text)
 
-    lines = text.split('\n')
+    lines = text.split("\n")
 
     shebang = ""
-    if lines[0].startswith('#!'):
-        shebang = lines[0] + '\n'
+    if lines[0].startswith("#!"):
+        shebang = lines[0] + "\n"
         lines = lines[1:]
 
-    while lines and lines[0].startswith('//'):
+    while lines and lines[0].startswith("//"):
         lines = lines[1:]
-    text = '\n'.join(lines)
+    text = "\n".join(lines)
     text = text.strip()
 
-    header = '''//
+    header = """//
 //  Copyright (c) %s Open Whisper Systems. All rights reserved.
 //
 
-''' % (
-    datetime.datetime.now().year,
+""" % (
+        datetime.datetime.now().year,
     )
-    text = shebang + header + text + '\n'
+    text = shebang + header + text + "\n"
 
     if original_text == text:
         return
 
-    print('Updating:', short_filepath)
+    print("Updating:", short_filepath)
 
-    with open(filepath, 'wt') as f:
+    with open(filepath, "wt") as f:
         f.write(text)
 
 
@@ -363,21 +415,22 @@ def should_process_file(file_path: str) -> bool:
         return False
 
     for component in Path(file_path).parts:
-        if component.startswith('.'):
+        if component.startswith("."):
             return False
-        if component.endswith('.framework'):
+        if component.endswith(".framework"):
             return False
-        if component in ('Pods', 'ThirdParty', 'Carthage',):
+        if component in (
+            "Pods",
+            "ThirdParty",
+            "Carthage",
+        ):
             return False
 
     return True
 
 
 def lint_swift_files(file_paths: set[str]) -> None:
-    swift_file_paths = list(filter(
-        lambda f: get_ext(f) == ".swift",
-        file_paths
-    ))
+    swift_file_paths = list(filter(lambda f: get_ext(f) == ".swift", file_paths))
 
     file_count = len(swift_file_paths)
     if file_count < 1:
@@ -392,7 +445,7 @@ def lint_swift_files(file_paths: set[str]) -> None:
         lint_output = subprocess.check_output(
             ["swiftlint", "lint", "--fix", "--use-script-input-files"],
             env=env,
-            text=True
+            text=True,
         )
     except subprocess.CalledProcessError as error:
         lint_output = error.output
@@ -400,9 +453,7 @@ def lint_swift_files(file_paths: set[str]) -> None:
 
     try:
         lint_output = subprocess.check_output(
-            ["swiftlint", "lint", "--use-script-input-files"],
-            env=env,
-            text=True
+            ["swiftlint", "lint", "--use-script-input-files"], env=env, text=True
         )
     except subprocess.CalledProcessError as error:
         lint_output = error.output
@@ -426,13 +477,15 @@ def check_diff_for_keywords():
         "fatalError\(",
         "dispatchPrecondition\(",
         "preconditionFailure\(",
-        "notImplemented\("
+        "notImplemented\(",
     ]
 
     keywords = objc_keywords + swift_keywords
 
     matching_expression = "|".join(keywords)
-    command_line = 'git diff --staged | grep --color=always -C 3 -E "%s"' % matching_expression
+    command_line = (
+        'git diff --staged | grep --color=always -C 3 -E "%s"' % matching_expression
+    )
     try:
         output = subprocess.check_output(command_line, shell=True)
     except subprocess.CalledProcessError as e:
@@ -453,30 +506,37 @@ def check_diff_for_keywords():
         print("⚠️  keywords detected in diff:")
         print(output)
 
+
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description='Precommit script.')
-    parser.add_argument('--all', action='store_true', help='process all files in or below current dir')
-    parser.add_argument('--path', help='used to specify a path to process.')
-    parser.add_argument('--ref', help='process all files that have changed since the given ref')
+    parser = argparse.ArgumentParser(description="Precommit script.")
+    parser.add_argument(
+        "--all", action="store_true", help="process all files in or below current dir"
+    )
+    parser.add_argument("--path", help="used to specify a path to process.")
+    parser.add_argument(
+        "--ref", help="process all files that have changed since the given ref"
+    )
     args = parser.parse_args()
 
     all_file_paths: Iterable[str] = []
-    clang_format_commit = 'HEAD'
+    clang_format_commit = "HEAD"
     if args.all:
         all_file_paths = get_file_paths_in(git_repo_path)
     elif args.path:
         all_file_paths = get_file_paths_in(args.path)
     elif args.ref:
-        all_file_paths = get_file_paths_for_commands([
-            ["git", "diff", "--name-only", "--diff-filter=ACMR", args.ref, "HEAD"]
-        ])
+        all_file_paths = get_file_paths_for_commands(
+            [["git", "diff", "--name-only", "--diff-filter=ACMR", args.ref, "HEAD"]]
+        )
         clang_format_commit = args.ref
     else:
-        all_file_paths = get_file_paths_for_commands([
-            ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR"],
-            ["git", "diff", "--name-only", "--diff-filter=ACMR"]
-        ])
+        all_file_paths = get_file_paths_for_commands(
+            [
+                ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR"],
+                ["git", "diff", "--name-only", "--diff-filter=ACMR"],
+            ]
+        )
 
     file_paths = set(filter(should_process_file, all_file_paths))
 
@@ -485,8 +545,13 @@ if __name__ == "__main__":
     for file_path in file_paths:
         process(file_path)
 
-    print('git clang-format...')
+    print("git clang-format...")
     # we don't want to format .proto files, so we specify every other supported extension
-    print(subprocess.getoutput('git clang-format --extensions "c,h,m,mm,cc,cp,cpp,c++,cxx,hh,hxx,cu,java,js,ts,cs" --commit %s' % clang_format_commit))
- 
+    print(
+        subprocess.getoutput(
+            'git clang-format --extensions "c,h,m,mm,cc,cp,cpp,c++,cxx,hh,hxx,cu,java,js,ts,cs" --commit %s'
+            % clang_format_commit
+        )
+    )
+
     check_diff_for_keywords()
