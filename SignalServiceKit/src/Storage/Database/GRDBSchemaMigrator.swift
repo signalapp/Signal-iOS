@@ -225,8 +225,8 @@ public class GRDBSchemaMigrator: NSObject {
     private class DatabaseMigratorWrapper {
         var migrator = DatabaseMigrator()
 
-        func registerMigration(_ identifier: String, migrate: @escaping (Database) -> Void) {
-            migrator.registerMigration(identifier) { (database: Database) in
+        func registerMigration(_ identifier: MigrationId, migrate: @escaping (Database) -> Void) {
+            migrator.registerMigration(identifier.rawValue) {  (database: Database) in
                 let startTime = CACurrentMediaTime()
                 Logger.info("Running migration: \(identifier)")
                 migrate(database)
@@ -246,11 +246,11 @@ public class GRDBSchemaMigrator: NSObject {
         // The migration blocks should never throw. If we introduce a crashing
         // migration, we want the crash logs reflect where it occurred.
 
-        migrator.registerMigration(MigrationId.createInitialSchema.rawValue) { _ in
+        migrator.registerMigration(.createInitialSchema) { _ in
             owsFail("This migration should have already been run by the last YapDB migration.")
         }
 
-        migrator.registerMigration(MigrationId.signalAccount_add_contactAvatars.rawValue) { database in
+        migrator.registerMigration(.signalAccount_add_contactAvatars) { database in
             do {
                 let sql = """
                 DROP TABLE "model_SignalAccount";
@@ -275,7 +275,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.signalAccount_add_contactAvatars_indices.rawValue) { db in
+        migrator.registerMigration(.signalAccount_add_contactAvatars_indices) { db in
             do {
                 let sql = """
                 CREATE
@@ -302,7 +302,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.jobRecords_add_attachmentId.rawValue) { db in
+        migrator.registerMigration(.jobRecords_add_attachmentId) { db in
             do {
                 try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
                     table.add(column: "attachmentId", .text)
@@ -312,7 +312,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.createMediaGalleryItems.rawValue) { db in
+        migrator.registerMigration(.createMediaGalleryItems) { db in
             do {
                 try db.create(table: "media_gallery_items") { table in
                     table.column("attachmentId", .integer)
@@ -343,7 +343,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.createReaction.rawValue) { db in
+        migrator.registerMigration(.createReaction) { db in
             do {
                 try db.create(table: "model_OWSReaction") { table in
                     table.autoIncrementedPrimaryKey("id")
@@ -378,7 +378,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.dedupeSignalRecipients.rawValue) { db in
+        migrator.registerMigration(.dedupeSignalRecipients) { db in
             do {
                 try autoreleasepool {
                     let transaction = GRDBWriteTransaction(database: db)
@@ -407,12 +407,12 @@ public class GRDBSchemaMigrator: NSObject {
         // Creating gallery records here can crash since it's run in the middle of schema migrations.
         // It instead has been moved to a separate Data Migration.
         // see: "dataMigration_populateGalleryItems"
-        // migrator.registerMigration(MigrationId.indexMediaGallery2.rawValue) { db in
+        // migrator.registerMigration(.indexMediaGallery2) { db in
         //     // re-index the media gallery for those who failed to create during the initial YDB migration
         //     try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
         // }
 
-        migrator.registerMigration(MigrationId.unreadThreadInteractions.rawValue) { db in
+        migrator.registerMigration(.unreadThreadInteractions) { db in
             do {
                 try db.create(index: "index_interactions_on_threadId_read_and_id",
                               on: "model_TSInteraction",
@@ -423,7 +423,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.createFamilyName.rawValue) { db in
+        migrator.registerMigration(.createFamilyName) { db in
             do {
                 try db.alter(table: "model_OWSUserProfile", body: { alteration in
                     alteration.add(column: "familyName", .text)
@@ -433,7 +433,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.createIndexableFTSTable.rawValue) { db in
+        migrator.registerMigration(.createIndexableFTSTable) { db in
             do {
                 try Bench(title: MigrationId.createIndexableFTSTable.rawValue, logInProduction: true) {
                     try db.create(table: "indexable_text") { table in
@@ -480,7 +480,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.dropContactQuery.rawValue) { db in
+        migrator.registerMigration(.dropContactQuery) { db in
             do {
                 try db.drop(table: "model_OWSContactQuery")
             } catch {
@@ -488,7 +488,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.indexFailedJob.rawValue) { db in
+        migrator.registerMigration(.indexFailedJob) { db in
             do {
                 // index this query:
                 //      SELECT \(interactionColumn: .uniqueId)
@@ -514,7 +514,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.groupsV2MessageJobs.rawValue) { db in
+        migrator.registerMigration(.groupsV2MessageJobs) { db in
             do {
                 try db.create(table: "model_IncomingGroupsV2MessageJob") { table in
                     table.autoIncrementedPrimaryKey("id")
@@ -538,7 +538,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addUserInfoToInteractions.rawValue) { db in
+        migrator.registerMigration(.addUserInfoToInteractions) { db in
             do {
                 try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
                     table.add(column: "infoMessageUserInfo", .blob)
@@ -548,7 +548,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.recreateExperienceUpgradeWithNewColumns.rawValue) { db in
+        migrator.registerMigration(.recreateExperienceUpgradeWithNewColumns) { db in
             do {
                 // It's safe to just throw away old experience upgrade data since
                 // there are no campaigns actively running that we need to preserve
@@ -573,7 +573,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.recreateExperienceUpgradeIndex.rawValue) { db in
+        migrator.registerMigration(.recreateExperienceUpgradeIndex) { db in
             do {
                 try db.create(index: "index_model_ExperienceUpgrade_on_uniqueId", on: "model_ExperienceUpgrade", columns: ["uniqueId"])
             } catch {
@@ -581,7 +581,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.indexInfoMessageOnType_v2.rawValue) { db in
+        migrator.registerMigration(.indexInfoMessageOnType_v2) { db in
             do {
                 // cleanup typo in index name that was released to a small number of internal testflight users
                 try db.execute(sql: "DROP INDEX IF EXISTS index_model_TSInteraction_on_threadUniqueId_recordType_messagType")
@@ -594,7 +594,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.createPendingReadReceipts.rawValue) { db in
+        migrator.registerMigration(.createPendingReadReceipts) { db in
             do {
                 try db.create(table: "pending_read_receipts") { table in
                     table.autoIncrementedPrimaryKey("id")
@@ -611,7 +611,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.createInteractionAttachmentIdsIndex.rawValue) { db in
+        migrator.registerMigration(.createInteractionAttachmentIdsIndex) { db in
             do {
                 try db.create(index: "index_model_TSInteraction_on_threadUniqueId_and_attachmentIds",
                               on: "model_TSInteraction",
@@ -621,7 +621,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addIsUuidCapableToUserProfiles.rawValue) { db in
+        migrator.registerMigration(.addIsUuidCapableToUserProfiles) { db in
             do {
                 try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
                     table.add(column: "isUuidCapable", .boolean).notNull().defaults(to: false)
@@ -631,7 +631,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.uploadTimestamp.rawValue) { db in
+        migrator.registerMigration(.uploadTimestamp) { db in
             do {
                 try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
                     table.add(column: "uploadTimestamp", .integer).notNull().defaults(to: 0)
@@ -641,7 +641,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addRemoteDeleteToInteractions.rawValue) { db in
+        migrator.registerMigration(.addRemoteDeleteToInteractions) { db in
             do {
                 try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
                     table.add(column: "wasRemotelyDeleted", .boolean)
@@ -651,7 +651,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.cdnKeyAndCdnNumber.rawValue) { db in
+        migrator.registerMigration(.cdnKeyAndCdnNumber) { db in
             do {
                 try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
                     table.add(column: "cdnKey", .text).notNull().defaults(to: "")
@@ -662,7 +662,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addGroupIdToGroupsV2IncomingMessageJobs.rawValue) { db in
+        migrator.registerMigration(.addGroupIdToGroupsV2IncomingMessageJobs) { db in
             do {
                 try db.alter(table: "model_IncomingGroupsV2MessageJob") { (table: TableAlteration) -> Void in
                     table.add(column: "groupId", .blob)
@@ -675,7 +675,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.removeEarlyReceiptTables.rawValue) { db in
+        migrator.registerMigration(.removeEarlyReceiptTables) { db in
             do {
                 try db.drop(table: "model_TSRecipientReadReceipt")
                 try db.drop(table: "model_OWSLinkedDeviceReadReceipt")
@@ -690,7 +690,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addReadToReactions.rawValue) { db in
+        migrator.registerMigration(.addReadToReactions) { db in
             do {
                 try db.alter(table: "model_OWSReaction") { (table: TableAlteration) -> Void in
                     table.add(column: "read", .boolean).notNull().defaults(to: false)
@@ -707,7 +707,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addIsMarkedUnreadToThreads.rawValue) { db in
+        migrator.registerMigration(.addIsMarkedUnreadToThreads) { db in
             do {
                 try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
                     table.add(column: "isMarkedUnread", .boolean).notNull().defaults(to: false)
@@ -717,7 +717,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addIsMediaMessageToMessageSenderJobQueue.rawValue) { db in
+        migrator.registerMigration(.addIsMediaMessageToMessageSenderJobQueue) { db in
             do {
                 try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
                     table.add(column: "isMediaMessage", .boolean)
@@ -735,7 +735,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.readdAttachmentIndex.rawValue) { db in
+        migrator.registerMigration(.readdAttachmentIndex) { db in
             do {
                 try db.create(
                     index: "index_model_TSAttachment_on_uniqueId",
@@ -749,7 +749,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addLastVisibleRowIdToThreads.rawValue) { db in
+        migrator.registerMigration(.addLastVisibleRowIdToThreads) { db in
             do {
                 try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
                     table.add(column: "lastVisibleSortIdOnScreenPercentage", .double).notNull().defaults(to: 0)
@@ -760,7 +760,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addMarkedUnreadIndexToThread.rawValue) { db in
+        migrator.registerMigration(.addMarkedUnreadIndexToThread) { db in
             do {
                 try db.create(
                     index: "index_model_TSThread_on_isMarkedUnread",
@@ -772,7 +772,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.fixIncorrectIndexes.rawValue) { db in
+        migrator.registerMigration(.fixIncorrectIndexes) { db in
             do {
                 try db.drop(index: "index_model_TSInteraction_on_threadUniqueId_recordType_messageType")
                 try db.create(index: "index_model_TSInteraction_on_uniqueThreadId_recordType_messageType",
@@ -789,7 +789,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.resetThreadVisibility.rawValue) { db in
+        migrator.registerMigration(.resetThreadVisibility) { db in
             do {
                 try db.execute(sql: "UPDATE model_TSThread SET lastVisibleSortIdOnScreenPercentage = 0, lastVisibleSortId = 0")
             } catch {
@@ -797,7 +797,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.trackUserProfileFetches.rawValue) { db in
+        migrator.registerMigration(.trackUserProfileFetches) { db in
             do {
                 try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
                     table.add(column: "lastFetchDate", .double)
@@ -811,7 +811,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addMentions.rawValue) { db in
+        migrator.registerMigration(.addMentions) { db in
             do {
                 try db.create(table: "model_TSMention") { table in
                     table.autoIncrementedPrimaryKey("id")
@@ -853,7 +853,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addMentionNotificationMode.rawValue) { db in
+        migrator.registerMigration(.addMentionNotificationMode) { db in
             do {
                 try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
                     table.add(column: "mentionNotificationMode", .integer)
@@ -865,7 +865,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addOfferTypeToCalls.rawValue) { db in
+        migrator.registerMigration(.addOfferTypeToCalls) { db in
             do {
                 try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
                     table.add(column: "offerType", .integer)
@@ -878,7 +878,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addServerDeliveryTimestamp.rawValue) { db in
+        migrator.registerMigration(.addServerDeliveryTimestamp) { db in
             do {
                 try db.alter(table: "model_IncomingGroupsV2MessageJob") { (table: TableAlteration) -> Void in
                     table.add(column: "serverDeliveryTimestamp", .integer).notNull().defaults(to: 0)
@@ -906,7 +906,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.updateAnimatedStickers.rawValue) { db in
+        migrator.registerMigration(.updateAnimatedStickers) { db in
             do {
                 try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
                     table.add(column: "isAnimatedCached", .integer)
@@ -919,7 +919,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.updateMarkedUnreadIndex.rawValue) { db in
+        migrator.registerMigration(.updateMarkedUnreadIndex) { db in
             do {
                 try db.drop(index: "index_model_TSThread_on_isMarkedUnread")
                 try db.create(
@@ -932,7 +932,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addGroupCallMessage2.rawValue) { db in
+        migrator.registerMigration(.addGroupCallMessage2) { db in
             do {
                 try db.alter(table: "model_TSInteraction") { table in
                     table.add(column: "eraId", .text)
@@ -951,7 +951,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addGroupCallEraIdIndex.rawValue) { db in
+        migrator.registerMigration(.addGroupCallEraIdIndex) { db in
             do {
                 try db.create(
                     index: "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType",
@@ -963,7 +963,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addProfileBio.rawValue) { db in
+        migrator.registerMigration(.addProfileBio) { db in
             do {
                 try db.alter(table: "model_OWSUserProfile") { table in
                     table.add(column: "bio", .text)
@@ -974,7 +974,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addWasIdentityVerified.rawValue) { db in
+        migrator.registerMigration(.addWasIdentityVerified) { db in
             do {
                 try db.alter(table: "model_TSInteraction") { table in
                     table.add(column: "wasIdentityVerified", .boolean)
@@ -986,7 +986,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.storeMutedUntilDateAsMillisecondTimestamp.rawValue) { db in
+        migrator.registerMigration(.storeMutedUntilDateAsMillisecondTimestamp) { db in
             do {
                 try db.alter(table: "model_TSThread") { table in
                     table.add(column: "mutedUntilTimestamp", .integer).notNull().defaults(to: 0)
@@ -1000,7 +1000,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addPaymentModels15.rawValue) { db in
+        migrator.registerMigration(.addPaymentModels15) { db in
             do {
                 try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
                     table.add(column: "paymentCancellation", .blob)
@@ -1012,7 +1012,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addPaymentModels40.rawValue) { db in
+        migrator.registerMigration(.addPaymentModels40) { db in
             do {
                 // PAYMENTS TODO: Remove.
                 try db.execute(sql: "DROP TABLE IF EXISTS model_TSPaymentModel")
@@ -1058,7 +1058,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.fixPaymentModels.rawValue) { db in
+        migrator.registerMigration(.fixPaymentModels) { db in
             // We released a build with an out-of-date schema that didn't reflect
             // `addPaymentModels15`. To fix this, we need to run the column adds
             // again to get all users in a consistent state. We can safely skip
@@ -1075,7 +1075,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addGroupMember.rawValue) { db in
+        migrator.registerMigration(.addGroupMember) { db in
             do {
                 try db.create(table: "model_TSGroupMember") { table in
                     table.autoIncrementedPrimaryKey("id")
@@ -1112,7 +1112,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.createPendingViewedReceipts.rawValue) { db in
+        migrator.registerMigration(.createPendingViewedReceipts) { db in
             do {
                 try db.create(table: "pending_viewed_receipts") { table in
                     table.autoIncrementedPrimaryKey("id")
@@ -1129,7 +1129,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addViewedToInteractions.rawValue) { db in
+        migrator.registerMigration(.addViewedToInteractions) { db in
             do {
                 try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
                     table.add(column: "viewed", .boolean)
@@ -1141,7 +1141,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.createThreadAssociatedData.rawValue) { db in
+        migrator.registerMigration(.createThreadAssociatedData) { db in
             do {
                 try db.create(table: "thread_associated_data") { table in
                     table.autoIncrementedPrimaryKey("id")
@@ -1174,7 +1174,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addServerGuidToInteractions.rawValue) { db in
+        migrator.registerMigration(.addServerGuidToInteractions) { db in
             do {
                 try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
                     table.add(column: "serverGuid", .text)
@@ -1184,7 +1184,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addMessageSendLog.rawValue) { db in
+        migrator.registerMigration(.addMessageSendLog) { db in
             do {
                 // Records all sent payloads
                 // The sentTimestamp is the timestamp of the outgoing payload
@@ -1291,7 +1291,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.updatePendingReadReceipts.rawValue) { db in
+        migrator.registerMigration(.updatePendingReadReceipts) { db in
             do {
                 try db.alter(table: "pending_read_receipts") { (table: TableAlteration) -> Void in
                     table.add(column: "messageUniqueId", .text)
@@ -1304,7 +1304,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addSendCompletionToMessageSendLog.rawValue) { db in
+        migrator.registerMigration(.addSendCompletionToMessageSendLog) { db in
             do {
                 try db.alter(table: "MessageSendLog_Payload") { (table: TableAlteration) -> Void in
                     table.add(column: "sendComplete", .boolean).notNull().defaults(to: false)
@@ -1333,7 +1333,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addExclusiveProcessIdentifierAndHighPriorityToJobRecord.rawValue) { db in
+        migrator.registerMigration(.addExclusiveProcessIdentifierAndHighPriorityToJobRecord) { db in
             do {
                 try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
                     table.add(column: "exclusiveProcessIdentifier", .text)
@@ -1345,7 +1345,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.updateMessageSendLogColumnTypes.rawValue) { db in
+        migrator.registerMigration(.updateMessageSendLogColumnTypes) { db in
             do {
                 // Since the MessageSendLog hasn't shipped yet, we can get away with just dropping and rebuilding
                 // the tables instead of performing a more expensive migration.
@@ -1434,7 +1434,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addRecordTypeIndex.rawValue) { db in
+        migrator.registerMigration(.addRecordTypeIndex) { db in
             do {
                 try db.create(
                     index: "index_model_TSInteraction_on_nonPlaceholders_uniqueThreadId_id",
@@ -1447,7 +1447,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.tunedConversationLoadIndices.rawValue) { db in
+        migrator.registerMigration(.tunedConversationLoadIndices) { db in
             do {
                 // These two indices are hyper-tuned for queries used to fetch the conversation load window. Specifically:
                 // - GRDBInteractionFinder.count(excludingPlaceholders:transaction:)
@@ -1478,7 +1478,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.messageDecryptDeduplicationV6.rawValue) { db in
+        migrator.registerMigration(.messageDecryptDeduplicationV6) { db in
             do {
                 if try db.tableExists("MessageDecryptDeduplication") {
                     try db.drop(table: "MessageDecryptDeduplication")
@@ -1488,7 +1488,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.createProfileBadgeTable.rawValue) { db in
+        migrator.registerMigration(.createProfileBadgeTable) { db in
             do {
                 try db.alter(table: "model_OWSUserProfile", body: { alteration in
                     alteration.add(column: "profileBadgeInfo", .blob)
@@ -1509,7 +1509,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.createSubscriptionDurableJob.rawValue) { db in
+        migrator.registerMigration(.createSubscriptionDurableJob) { db in
             do {
                 try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
                     table.add(column: "receiptCredentailRequest", .blob)
@@ -1525,7 +1525,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addReceiptPresentationToSubscriptionDurableJob.rawValue) { db in
+        migrator.registerMigration(.addReceiptPresentationToSubscriptionDurableJob) { db in
             do {
                 try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
                     table.add(column: "receiptCredentialPresentation", .blob)
@@ -1535,7 +1535,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.createStoryMessageTable.rawValue) { db in
+        migrator.registerMigration(.createStoryMessageTable) { db in
             do {
                 try db.create(table: "model_StoryMessage") { table in
                     table.autoIncrementedPrimaryKey("id")
@@ -1586,7 +1586,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addColumnsForStoryContextRedux.rawValue) { db in
+        migrator.registerMigration(.addColumnsForStoryContextRedux) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
             guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
@@ -1603,7 +1603,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addIsStoriesCapableToUserProfiles.rawValue) { db in
+        migrator.registerMigration(.addIsStoriesCapableToUserProfiles) { db in
             do {
                 try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
                     table.add(column: "isStoriesCapable", .boolean).notNull().defaults(to: false)
@@ -1615,7 +1615,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.createDonationReceiptTable.rawValue) { db in
+        migrator.registerMigration(.createDonationReceiptTable) { db in
             do {
                 try db.create(table: "model_DonationReceipt") { table in
                     table.autoIncrementedPrimaryKey("id")
@@ -1636,7 +1636,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addBoostAmountToSubscriptionDurableJob.rawValue) { db in
+        migrator.registerMigration(.addBoostAmountToSubscriptionDurableJob) { db in
             do {
                 try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
                     table.add(column: "amount", .numeric)
@@ -1650,7 +1650,7 @@ public class GRDBSchemaMigrator: NSObject {
         // These index migrations are *expensive* for users with large interaction tables. For external
         // users who don't yet have access to stories and don't have need for the indices, we will perform
         // one migration per release to keep the blocking time low (ideally one 5-7s migration per release).
-        migrator.registerMigration(MigrationId.updateConversationLoadInteractionCountIndex.rawValue) { db in
+        migrator.registerMigration(.updateConversationLoadInteractionCountIndex) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
             guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
@@ -1668,7 +1668,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.updateConversationLoadInteractionDistanceIndex.rawValue) { db in
+        migrator.registerMigration(.updateConversationLoadInteractionDistanceIndex) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
             guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
@@ -1686,7 +1686,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.updateConversationUnreadCountIndex.rawValue) { db in
+        migrator.registerMigration(.updateConversationUnreadCountIndex) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
             guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
@@ -1704,7 +1704,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addStoryContextIndexToInteractions.rawValue) { db in
+        migrator.registerMigration(.addStoryContextIndexToInteractions) { db in
             do {
                 try db.create(
                     index: "index_model_TSInteraction_on_StoryContext",
@@ -1719,7 +1719,7 @@ public class GRDBSchemaMigrator: NSObject {
         // This will be a big perf win, but since we only allow one migration per release it'll wait until
         // the rest of the stories changes make it in.
         if FeatureFlags.storiesMigration5 {
-            migrator.registerMigration(MigrationId.improvedDisappearingMessageIndices.rawValue) { db in
+            migrator.registerMigration(.improvedDisappearingMessageIndices) { db in
                 do {
                     // The old index was created in an order that made it practically useless for the query
                     // we needed it for. This rebuilds it as a partial index.
@@ -1748,7 +1748,7 @@ public class GRDBSchemaMigrator: NSObject {
         // The migration blocks should never throw. If we introduce a crashing
         // migration, we want the crash logs reflect where it occurred.
 
-        migrator.registerMigration(MigrationId.dataMigration_populateGalleryItems.rawValue) { db in
+        migrator.registerMigration(.dataMigration_populateGalleryItems) { db in
             do {
                 let transaction = GRDBWriteTransaction(database: db)
                 defer { transaction.finalizeTransaction() }
@@ -1759,7 +1759,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_markOnboardedUsers_v2.rawValue) { db in
+        migrator.registerMigration(.dataMigration_markOnboardedUsers_v2) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -1769,11 +1769,11 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_clearLaunchScreenCache.rawValue) { _ in
+        migrator.registerMigration(.dataMigration_clearLaunchScreenCache) { _ in
             OWSFileSystem.deleteFileIfExists(NSHomeDirectory() + "/Library/SplashBoard")
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_enableV2RegistrationLockIfNecessary.rawValue) { db in
+        migrator.registerMigration(.dataMigration_enableV2RegistrationLockIfNecessary) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -1782,14 +1782,14 @@ public class GRDBSchemaMigrator: NSObject {
             OWS2FAManager.keyValueStore().setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction.asAnyWrite)
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_resetStorageServiceData.rawValue) { db in
+        migrator.registerMigration(.dataMigration_resetStorageServiceData) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
             Self.storageServiceManager.resetLocalData(transaction: transaction.asAnyWrite)
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_markAllInteractionsAsNotDeleted.rawValue) { db in
+        migrator.registerMigration(.dataMigration_markAllInteractionsAsNotDeleted) { db in
             do {
                 try db.execute(sql: "UPDATE model_TSInteraction SET wasRemotelyDeleted = 0")
             } catch {
@@ -1797,7 +1797,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_recordMessageRequestInteractionIdEpoch.rawValue) { db in
+        migrator.registerMigration(.dataMigration_recordMessageRequestInteractionIdEpoch) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -1809,7 +1809,7 @@ public class GRDBSchemaMigrator: NSObject {
             SSKPreferences.setMessageRequestInteractionIdEpoch(maxId, transaction: transaction)
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_indexSignalRecipients.rawValue) { db in
+        migrator.registerMigration(.dataMigration_indexSignalRecipients) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -1824,7 +1824,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_kbsStateCleanup.rawValue) { db in
+        migrator.registerMigration(.dataMigration_kbsStateCleanup) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -1841,7 +1841,7 @@ public class GRDBSchemaMigrator: NSObject {
             KeyBackupService.useDeviceLocalMasterKey(transaction: transaction.asAnyWrite)
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_turnScreenSecurityOnForExistingUsers.rawValue) { db in
+        migrator.registerMigration(.dataMigration_turnScreenSecurityOnForExistingUsers) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -1857,7 +1857,7 @@ public class GRDBSchemaMigrator: NSObject {
             preferencesKeyValueStore.setBool(true, key: screenSecurityKey, transaction: transaction.asAnyWrite)
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_groupIdMapping.rawValue) { db in
+        migrator.registerMigration(.dataMigration_groupIdMapping) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -1872,13 +1872,13 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_disableSharingSuggestionsForExistingUsers.rawValue) { db in
+        migrator.registerMigration(.dataMigration_disableSharingSuggestionsForExistingUsers) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
             SSKPreferences.setAreIntentDonationsEnabled(false, transaction: transaction.asAnyWrite)
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_removeOversizedGroupAvatars.rawValue) { db in
+        migrator.registerMigration(.dataMigration_removeOversizedGroupAvatars) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -1900,7 +1900,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_scheduleStorageServiceUpdateForMutedThreads.rawValue) { db in
+        migrator.registerMigration(.dataMigration_scheduleStorageServiceUpdateForMutedThreads) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -1924,7 +1924,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_populateGroupMember.rawValue) { db in
+        migrator.registerMigration(.dataMigration_populateGroupMember) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -1961,7 +1961,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_cullInvalidIdentityKeySendingErrors.rawValue) { db in
+        migrator.registerMigration(.dataMigration_cullInvalidIdentityKeySendingErrors) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -1972,7 +1972,7 @@ public class GRDBSchemaMigrator: NSObject {
             transaction.executeUpdate(sql: sql, arguments: [SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue])
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_moveToThreadAssociatedData.rawValue) { db in
+        migrator.registerMigration(.dataMigration_moveToThreadAssociatedData) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -1990,14 +1990,14 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_senderKeyStoreKeyIdMigration.rawValue) { db in
+        migrator.registerMigration(.dataMigration_senderKeyStoreKeyIdMigration) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
             SenderKeyStore.performKeyIdMigration(transaction: transaction.asAnyWrite)
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarDataFixed.rawValue) { db in
+        migrator.registerMigration(.dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarDataFixed) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -2032,7 +2032,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_repairAvatar.rawValue) { db in
+        migrator.registerMigration(.dataMigration_repairAvatar) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -2043,7 +2043,7 @@ public class GRDBSchemaMigrator: NSObject {
             preferencesKeyValueStore.setInt(0, key: key, transaction: transaction.asAnyWrite)
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_dropEmojiAvailabilityStore.rawValue) { db in
+        migrator.registerMigration(.dataMigration_dropEmojiAvailabilityStore) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
