@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -320,12 +320,12 @@ class ProfileBioViewController: OWSTableViewController2 {
     private var anyReactionPicker: EmojiPickerSheet?
 
     private func showAnyEmojiPicker() {
-        let picker = EmojiPickerSheet(completionHandler: { [weak self] emoji in
+        let picker = EmojiPickerSheet(allowReactionConfiguration: false) { [weak self] emoji in
             guard let emoji = emoji else {
                 return
             }
             self?.didSelectEmoji(emoji.rawValue)
-        })
+        }
         anyReactionPicker = picker
 
         present(picker, animated: true)
