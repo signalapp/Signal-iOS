@@ -145,10 +145,14 @@ public final class SnodeAPI : NSObject {
             return OnionRequestAPI.sendOnionRequest(to: snode, invoking: method, with: parameters, associatedWith: publicKey)
                 .map2 { json in
                     if let hf = json["hf"] as? [Int] {
-                        if hf[0] != hardfork || hf[1] != softfork {
-                            hardfork = hf[0]
+                        if hf[1] > softfork {
                             softfork = hf[1]
+                            UserDefaults.standard[.softfork] = softfork
+                        }
+                        if hf[0] > hardfork {
+                            hardfork = hf[0]
                             UserDefaults.standard[.hardfork] = hardfork
+                            softfork = hf[1]
                             UserDefaults.standard[.softfork] = softfork
                         }
                     }
