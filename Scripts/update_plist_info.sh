@@ -10,9 +10,9 @@ fi
 
 # Capture project hashes that we want to add to the Info.plist
 cd $PROJECT_DIR/ThirdParty/WebRTC/
-_git_commit_webrtc=`git log --pretty=oneline | head -1`
+_git_commit_webrtc=`git log --pretty=oneline --decorate=no | head -1`
 cd $PROJECT_DIR
-_git_commit_signal=`git log --pretty=oneline | head -1`
+_git_commit_signal=`git log --pretty=oneline --decorate=no | head -1`
 
 # Remove existing .plist entry, if any.
 /usr/libexec/PlistBuddy -c "Delete BuildDetails" Signal/Signal-Info.plist || true
@@ -33,4 +33,3 @@ if [ "${CONFIGURATION}" = "App Store Release" ]; then
     _build_timestamp=`date +%s`
     /usr/libexec/PlistBuddy -c "add :BuildDetails:Timestamp string '$_build_timestamp'" Signal/Signal-Info.plist
 fi
-
