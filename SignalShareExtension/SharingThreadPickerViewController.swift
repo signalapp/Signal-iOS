@@ -547,7 +547,7 @@ extension SharingThreadPickerViewController: TextApprovalViewControllerDelegate 
     }
 
     func textApprovalCustomTitle(_ textApproval: TextApprovalViewController) -> String? {
-        return OWSLocalizedString("FORWARD_MESSAGE", comment: "Label and title for 'message forwarding' views.")
+        return nil
     }
 
     func textApprovalRecipientsDescription(_ textApproval: TextApprovalViewController) -> String? {
@@ -579,7 +579,7 @@ extension SharingThreadPickerViewController: ContactShareApprovalViewControllerD
     }
 
     func contactApprovalCustomTitle(_ contactApproval: ContactShareApprovalViewController) -> String? {
-        return OWSLocalizedString("FORWARD_CONTACT", comment: "Label and title for 'contact forwarding' views.")
+        return nil
     }
 
     func contactApprovalRecipientsDescription(_ contactApproval: ContactShareApprovalViewController) -> String? {
