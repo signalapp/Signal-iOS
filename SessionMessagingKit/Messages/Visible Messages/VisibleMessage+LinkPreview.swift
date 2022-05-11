@@ -5,12 +5,14 @@ import GRDB
 import SessionUtilitiesKit
 
 public extension VisibleMessage {
-    struct LinkPreview: Codable {
+    struct VMLinkPreview: Codable {
         public let title: String?
         public let url: String?
         public let attachmentId: String?
 
         public var isValid: Bool { title != nil && url != nil && attachmentId != nil }
+        
+        // MARK: - Initialization
 
         internal init(title: String?, url: String, attachmentId: String?) {
             self.title = title
@@ -20,10 +22,12 @@ public extension VisibleMessage {
         
         // MARK: - Proto Conversion
 
-        public static func fromProto(_ proto: SNProtoDataMessagePreview) -> LinkPreview? {
-            let title = proto.title
-            let url = proto.url
-            return LinkPreview(title: title, url: url, attachmentId: nil)
+        public static func fromProto(_ proto: SNProtoDataMessagePreview) -> VMLinkPreview? {
+            return VMLinkPreview(
+                title: proto.title,
+                url: proto.url,
+                attachmentId: nil
+            )
         }
 
         public func toProto() -> SNProtoDataMessagePreview? {
@@ -40,8 +44,7 @@ public extension VisibleMessage {
             
             if
                 let attachmentId = attachmentId,
-                // TODO: try to ditch `SessionMessagingKit.`
-                let attachment: SessionMessagingKit.Attachment = try? SessionMessagingKit.Attachment.fetchOne(db, id: attachmentId),
+                let attachment: Attachment = try? Attachment.fetchOne(db, id: attachmentId),
                 let attachmentProto = attachment.buildProto()
             {
                 linkPreviewProto.setImage(attachmentProto)
@@ -71,9 +74,9 @@ public extension VisibleMessage {
 
 // MARK: - Database Type Conversion
 
-public extension VisibleMessage.LinkPreview {
-    static func from(_ db: Database, linkPreview: LinkPreview) -> VisibleMessage.LinkPreview {
-        return VisibleMessage.LinkPreview(
+public extension VisibleMessage.VMLinkPreview {
+    static func from(_ db: Database, linkPreview: LinkPreview) -> VisibleMessage.VMLinkPreview {
+        return VisibleMessage.VMLinkPreview(
             title: linkPreview.title,
             url: linkPreview.url,
             attachmentId: linkPreview.attachmentId

@@ -6,7 +6,7 @@ import SessionUtilitiesKit
 
 public extension VisibleMessage {
 
-    struct Quote: Codable {
+    struct VMQuote: Codable {
         public let timestamp: UInt64?
         public let publicKey: String?
         public let text: String?
@@ -25,11 +25,13 @@ public extension VisibleMessage {
         
         // MARK: - Proto Conversion
 
-        public static func fromProto(_ proto: SNProtoDataMessageQuote) -> Quote? {
-            let timestamp = proto.id
-            let publicKey = proto.author
-            let text = proto.text
-            return Quote(timestamp: timestamp, publicKey: publicKey, text: text, attachmentId: nil)
+        public static func fromProto(_ proto: SNProtoDataMessageQuote) -> VMQuote? {
+            return VMQuote(
+                timestamp: proto.id,
+                publicKey: proto.author,
+                text: proto.text,
+                attachmentId: nil
+            )
         }
 
         public func toProto() -> SNProtoDataMessageQuote? {
@@ -55,8 +57,8 @@ public extension VisibleMessage {
         private func addAttachmentsIfNeeded(_ db: Database, to quoteProto: SNProtoDataMessageQuote.SNProtoDataMessageQuoteBuilder) {
             guard let attachmentId = attachmentId else { return }
             guard
-                let attachment: SessionMessagingKit.Attachment = try? SessionMessagingKit.Attachment.fetchOne(db, id: attachmentId),
-                attachment.state != .uploaded
+                let attachment: Attachment = try? Attachment.fetchOne(db, id: attachmentId),
+                attachment.state == .uploaded
             else {
                 #if DEBUG
                 preconditionFailure("Sending a message before all associated attachments have been uploaded.")
@@ -95,13 +97,24 @@ public extension VisibleMessage {
 
 // MARK: - Database Type Conversion
 
-public extension VisibleMessage.Quote {
-    static func from(_ db: Database, quote: Quote) -> VisibleMessage.Quote {
-        return VisibleMessage.Quote(
+public extension VisibleMessage.VMQuote {
+    static func from(_ db: Database, quote: Quote) -> VisibleMessage.VMQuote {
+        return VisibleMessage.VMQuote(
             timestamp: UInt64(quote.timestampMs),
             publicKey: quote.authorId,
             text: quote.body,
             attachmentId: quote.attachmentId
+        )
+    }
+    
+    static func from(_ quote: TSQuotedMessage?) -> VisibleMessage.VMQuote? {
+        guard let quote = quote else { return nil }
+        
+        return VisibleMessage.VMQuote(
+            timestamp: quote.timestamp,
+            publicKey: quote.authorId,
+            text: quote.body,
+            attachmentId: quote.quotedAttachments.first?.attachmentId
         )
     }
 }

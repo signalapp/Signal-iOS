@@ -9,10 +9,12 @@ final class JoinOpenGroupModal: Modal {
     private let name: String
     private let url: String
     
-    // MARK: Lifecycle
-    init(name: String, url: String) {
-        self.name = name
+    // MARK: - Lifecycle
+    
+    init(name: String?, url: String) {
+        self.name = (name ?? "Open Group")
         self.url = url
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -31,6 +33,7 @@ final class JoinOpenGroupModal: Modal {
         titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
         titleLabel.text = "Join \(name)?"
         titleLabel.textAlignment = .center
+        
         // Message
         let messageLabel = UILabel()
         messageLabel.textColor = Colors.text
@@ -42,6 +45,7 @@ final class JoinOpenGroupModal: Modal {
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.textAlignment = .center
+        
         // Join button
         let joinButton = UIButton()
         joinButton.set(.height, to: Values.mediumButtonHeight)
@@ -51,11 +55,13 @@ final class JoinOpenGroupModal: Modal {
         joinButton.setTitleColor(Colors.text, for: UIControl.State.normal)
         joinButton.setTitle("Join", for: UIControl.State.normal)
         joinButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
+        
         // Button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, joinButton ])
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually
+        
         // Main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ titleLabel, messageLabel, buttonStackView ])
         mainStackView.axis = .vertical
@@ -67,7 +73,8 @@ final class JoinOpenGroupModal: Modal {
         contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: Values.largeSpacing)
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func joinOpenGroup() {
         guard let presentingViewController: UIViewController = self.presentingViewController else { return }
         guard let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: url) else {

@@ -1102,6 +1102,7 @@ extension MessageReceiver {
                 return
             }
             
+            let userPublicKey: String = getUserHexEncodedPublicKey(db)
             let didAdminLeave: Bool = allGroupMembers.contains(where: { member in
                 member.role == .admin && member.profileId == sender
             })
@@ -1116,16 +1117,13 @@ extension MessageReceiver {
                 .asSet()
                 .subtracting(membersToRemove.map { $0.profileId })
             
-            if didAdminLeave {
+            
+            if didAdminLeave || sender == userPublicKey {
                 // Remove the group from the database and unsubscribe from PNs
                 ClosedGroupPoller.shared.stopPolling(for: id)
                 
                 try closedGroup
-                    .members
-                    .filter(
-                        GroupMember.Columns.role == GroupMember.Role.standard ||
-                        GroupMember.Columns.role == GroupMember.Role.zombie
-                    )
+                    .allMembers
                     .deleteAll(db)
                 
                 _ = try closedGroup
@@ -1135,7 +1133,7 @@ extension MessageReceiver {
                 let _ = PushNotificationAPI.performOperation(
                     .unsubscribe,
                     for: id,
-                    publicKey: getUserHexEncodedPublicKey(db)
+                    publicKey: userPublicKey
                 )
             }
             else {

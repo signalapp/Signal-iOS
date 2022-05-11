@@ -501,9 +501,6 @@ extension MessageSender {
         guard let closedGroup: ClosedGroup = try? thread.closedGroup.fetchOne(db) else {
             return Promise(error: MessageSenderError.invalidClosedGroupUpdate)
         }
-        guard let allGroupMembers: [GroupMember] = try? closedGroup.allMembers.fetchAll(db) else {
-            return Promise(error: MessageSenderError.invalidClosedGroupUpdate)
-        }
         
         let userPublicKey: String = getUserHexEncodedPublicKey(db)
         
@@ -533,10 +530,10 @@ extension MessageSender {
                 in: thread
             )
             .done {
+                // Remove the group from the database and unsubscribe from PNs
+                ClosedGroupPoller.shared.stopPolling(for: groupPublicKey)
+                
                 GRDBStorage.shared.write { db in
-                    // Remove the group from the database and unsubscribe from PNs
-                    ClosedGroupPoller.shared.stopPolling(for: groupPublicKey)
-                    
                     _ = try closedGroup
                         .keyPairs
                         .deleteAll(db)

@@ -437,7 +437,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             if let focusedInteractionId: Int64 = self.viewModel.focusedInteractionId {
                 self.scrollToInteraction(with: focusedInteractionId, isAnimated: false, highlighted: true)
             }
-            else if let firstUnreadInteractionId: Int64 = self.viewModel.firstUnreadInteractionId {
+            else if let firstUnreadInteractionId: Int64 = self.viewModel.viewData.firstUnreadInteractionId {
                 self.scrollToInteraction(with: firstUnreadInteractionId, position: .top, isAnimated: false)
                 self.unreadCountView.alpha = self.scrollButton.alpha
             }
@@ -561,10 +561,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             self?.viewModel.updateData(updatedViewData.with(items: items))
         }
         
-        // Scroll to the bottom if we just sent a message or are close enough
+        // Scroll to the bottom if we just inserted a message and are close enough
         // to the bottom
-        
-        // Only if it was an insert
         if
             changeset.contains(where: { !$0.elementInserted.isEmpty }) && (
                 updatedViewData.items.last?.interactionVariant == .standardOutgoing ||
@@ -576,6 +574,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         
         // Mark received messages as read
         viewModel.markAllAsRead()
+        viewModel.sentMessageBeforeUpdate = false
     }
     
     func updateNavBarButtons(viewData: ConversationViewModel.ViewData) {
@@ -867,7 +866,21 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let item: ConversationViewModel.Item = viewModel.viewData.items[indexPath.row]
         let cell: MessageCell = tableView.dequeue(type: MessageCell.cellType(for: item), for: indexPath)
-        cell.update(with: item, mediaCache: mediaCache, lastSearchText: viewModel.viewData.lastSearchedText)
+        cell.update(
+            with: item,
+            mediaCache: mediaCache,
+            playbackInfo: viewModel.playbackInfo(for: item) { [weak self] updatedInfo, error in
+                DispatchQueue.main.async {
+                    guard error == nil else {
+                        OWSAlerts.showErrorAlert(message: "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE".localized())
+                        return
+                    }
+                    
+                    cell.dynamicUpdate(with: item, playbackInfo: updatedInfo)
+                }
+            },
+            lastSearchText: viewModel.viewData.lastSearchedText
+        )
         cell.delegate = self
         
         return cell
@@ -935,7 +948,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         // Not currently in use
     }
 
-    // MARK: Search
+    // MARK: - Search
+    
     func conversationSettingsDidRequestConversationSearch(_ conversationSettingsViewController: OWSConversationSettingsViewController) {
         showSearchUI()
         popAllConversationSettingsViews {

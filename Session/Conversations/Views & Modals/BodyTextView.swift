@@ -3,17 +3,12 @@
 import UIKit
 
 // Requirements:
-// • Links should show up properly and be tappable.
-// • Text should * not * be selectable.
-// • The long press interaction that shows the context menu should still work.
-
+// • Links should show up properly and be tappable
+// • Text should * not * be selectable (this is handled via the 'textViewDidChangeSelection(_:)'
+// delegate method)
+// • The long press interaction that shows the context menu should still work
 final class BodyTextView: UITextView {
     private let snDelegate: BodyTextViewDelegate?
-    
-    override var selectedTextRange: UITextRange? {
-        get { return nil }
-        set { }
-    }
     
     init(snDelegate: BodyTextViewDelegate?) {
         self.snDelegate = snDelegate

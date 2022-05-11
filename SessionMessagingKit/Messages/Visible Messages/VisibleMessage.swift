@@ -21,10 +21,10 @@ public final class VisibleMessage: Message {
     public var syncTarget: String?
     public let text: String?
     public var attachmentIds: [String]
-    public let quote: Quote?
-    public let linkPreview: LinkPreview?
-    public var profile: Profile?
-    public let openGroupInvitation: OpenGroupInvitation?
+    public let quote: VMQuote?
+    public let linkPreview: VMLinkPreview?
+    public var profile: VMProfile?
+    public let openGroupInvitation: VMOpenGroupInvitation?
 
     public override var isSelfSendValid: Bool { true }
     
@@ -47,10 +47,10 @@ public final class VisibleMessage: Message {
         syncTarget: String? = nil,
         text: String?,
         attachmentIds: [String] = [],
-        quote: Quote? = nil,
-        linkPreview: LinkPreview? = nil,
-        profile: Profile? = nil,
-        openGroupInvitation: OpenGroupInvitation? = nil
+        quote: VMQuote? = nil,
+        linkPreview: VMLinkPreview? = nil,
+        profile: VMProfile? = nil,
+        openGroupInvitation: VMOpenGroupInvitation? = nil
     ) {
         self.syncTarget = syncTarget
         self.text = text
@@ -75,10 +75,10 @@ public final class VisibleMessage: Message {
         syncTarget = try? container.decode(String.self, forKey: .syncTarget)
         text = try? container.decode(String.self, forKey: .text)
         attachmentIds = ((try? container.decode([String].self, forKey: .attachmentIds)) ?? [])
-        quote = try? container.decode(Quote.self, forKey: .quote)
-        linkPreview = try? container.decode(LinkPreview.self, forKey: .linkPreview)
-        profile = try? container.decode(Profile.self, forKey: .profile)
-        openGroupInvitation = try? container.decode(OpenGroupInvitation.self, forKey: .openGroupInvitation)
+        quote = try? container.decode(VMQuote.self, forKey: .quote)
+        linkPreview = try? container.decode(VMLinkPreview.self, forKey: .linkPreview)
+        profile = try? container.decode(VMProfile.self, forKey: .profile)
+        openGroupInvitation = try? container.decode(VMOpenGroupInvitation.self, forKey: .openGroupInvitation)
         
         try super.init(from: decoder)
     }
@@ -106,10 +106,10 @@ public final class VisibleMessage: Message {
             syncTarget: dataMessage.syncTarget,
             text: dataMessage.body,
             attachmentIds: [],    // Attachments are handled in MessageReceiver
-            quote: dataMessage.quote.map { Quote.fromProto($0) },
-            linkPreview: dataMessage.preview.first.map { LinkPreview.fromProto($0) },
-            profile: Profile.fromProto(dataMessage),
-            openGroupInvitation: dataMessage.openGroupInvitation.map { OpenGroupInvitation.fromProto($0) }
+            quote: dataMessage.quote.map { VMQuote.fromProto($0) },
+            linkPreview: dataMessage.preview.first.map { VMLinkPreview.fromProto($0) },
+            profile: VMProfile.fromProto(dataMessage),
+            openGroupInvitation: dataMessage.openGroupInvitation.map { VMOpenGroupInvitation.fromProto($0) }
         )
     }
 
@@ -150,7 +150,7 @@ public final class VisibleMessage: Message {
         
         // Attachments
         
-        let attachments: [SessionMessagingKit.Attachment]? = try? SessionMessagingKit.Attachment.fetchAll(db, ids: self.attachmentIds)
+        let attachments: [Attachment]? = try? Attachment.fetchAll(db, ids: self.attachmentIds)
         
         if !(attachments ?? []).allSatisfy({ $0.state == .uploaded }) {
             #if DEBUG
@@ -204,7 +204,7 @@ public final class VisibleMessage: Message {
 
 public extension VisibleMessage {
     static func from(_ db: Database, interaction: Interaction) -> VisibleMessage {
-        let linkPreview: SessionMessagingKit.LinkPreview? = try? interaction.linkPreview.fetchOne(db)
+        let linkPreview: LinkPreview? = try? interaction.linkPreview.fetchOne(db)
         
         return VisibleMessage(
             sentTimestamp: UInt64(interaction.timestampMs),
@@ -219,18 +219,18 @@ public extension VisibleMessage {
             attachmentIds: ((try? interaction.attachments.fetchAll(db)) ?? [])
                 .map { $0.id },
             quote: (try? interaction.quote.fetchOne(db))
-                .map { VisibleMessage.Quote.from(db, quote: $0) },
+                .map { VMQuote.from(db, quote: $0) },
             linkPreview: linkPreview
                 .map { linkPreview in
                     guard linkPreview.variant == .standard else { return nil }
                     
-                    return VisibleMessage.LinkPreview.from(db, linkPreview: linkPreview)
+                    return VMLinkPreview.from(db, linkPreview: linkPreview)
                 },
-            profile: nil,   // TODO: Confirm this
+            profile: nil,   // Don't attach the profile to avoid sending a legacy version (set in MessageSender)
             openGroupInvitation: linkPreview.map { linkPreview in
                 guard linkPreview.variant == .openGroupInvitation else { return nil }
                 
-                return VisibleMessage.OpenGroupInvitation.from(
+                return VMOpenGroupInvitation.from(
                     db,
                     linkPreview: linkPreview
                 )

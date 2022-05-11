@@ -475,7 +475,9 @@ public final class JobRunner {
         // The job is removed from the queue before it runs so all we need to to is remove it
         // from the 'currentlyRunning' set and start the next one
         jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
-        runNextJob()
+        internalQueue.async {
+            runNextJob()
+        }
     }
 
     /// This function is called when a job fails, if it's wasn't a permanent failure then the 'failureCount' for the job will be incremented and it'll

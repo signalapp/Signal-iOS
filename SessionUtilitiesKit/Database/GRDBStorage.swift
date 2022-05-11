@@ -228,6 +228,10 @@ public final class GRDBStorage {
         return try? dbPool.write(updates)
     }
     
+    public func writeAsync<T>(updates: @escaping (Database) throws -> T) {
+        writeAsync(updates: updates, completion: { _, _ in })
+    }
+    
     public func writeAsync<T>(updates: @escaping (Database) throws -> T, completion: @escaping (Database, Swift.Result<T, Error>) throws -> Void) {
         dbPool.asyncWrite(
             updates,

@@ -124,16 +124,6 @@ extension ConversationVC:
         snInputView.text = newMessageText ?? ""
     }
 
-    func handleCameraButtonTapped() {
-        guard requestCameraPermissionIfNeeded() else { return }
-        requestMicrophonePermissionIfNeeded { }
-        if AVAudioSession.sharedInstance().recordPermission != .granted {
-            SNLog("Proceeding without microphone access. Any recorded video will be silent.")
-        }
-        let sendMediaNavController = SendMediaNavigationController.showingCameraFirst()
-        sendMediaNavController.sendMediaNavDelegate = self
-        sendMediaNavController.modalPresentationStyle = .fullScreen
-        present(sendMediaNavController, animated: true, completion: nil)
     // MARK: - ExpandingAttachmentsButtonDelegate
 
     func handleGIFButtonTapped() {
@@ -168,13 +158,17 @@ extension ConversationVC:
     
     func handleCameraButtonTapped() {
         guard requestCameraPermissionIfNeeded() else { return }
+        
         requestMicrophonePermissionIfNeeded { }
+        
         if AVAudioSession.sharedInstance().recordPermission != .granted {
             SNLog("Proceeding without microphone access. Any recorded video will be silent.")
         }
+        
         let sendMediaNavController = SendMediaNavigationController.showingCameraFirst()
         sendMediaNavController.sendMediaNavDelegate = self
         sendMediaNavController.modalPresentationStyle = .fullScreen
+        
         present(sendMediaNavController, animated: true, completion: nil)
     }
     
@@ -184,15 +178,6 @@ extension ConversationVC:
         showAttachmentApprovalDialog(for: [ attachment ])
     }
     
-    func handleDocumentButtonTapped() {
-        // UIDocumentPickerModeImport copies to a temp file within our container.
-        // It uses more memory than "open" but lets us avoid working with security scoped URLs.
-        let documentPickerVC = UIDocumentPickerViewController(documentTypes: [ kUTTypeItem as String ], in: UIDocumentPickerMode.import)
-        documentPickerVC.delegate = self
-        documentPickerVC.modalPresentationStyle = .fullScreen
-        SNAppearance.switchToDocumentPickerAppearance()
-        present(documentPickerVC, animated: true, completion: nil)
-    }
     // MARK: - UIDocumentPickerDelegate
 
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
@@ -202,37 +187,47 @@ extension ConversationVC:
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         SNAppearance.switchToSessionAppearance()
         guard let url = urls.first else { return } // TODO: Handle multiple?
+        
         let urlResourceValues: URLResourceValues
         do {
             urlResourceValues = try url.resourceValues(forKeys: [ .typeIdentifierKey, .isDirectoryKey, .nameKey ])
-        } catch {
-            let alert = UIAlertController(title: "Session", message: "An error occurred.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            return present(alert, animated: true, completion: nil)
         }
-        let type = urlResourceValues.typeIdentifier ?? (kUTTypeData as String)
-        guard urlResourceValues.isDirectory != true else {
-            DispatchQueue.main.async {
-                let title = NSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE", comment: "")
-                let message = NSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY", comment: "")
-                OWSAlerts.showAlert(title: title, message: message)
+        catch {
+            DispatchQueue.main.async { [weak self] in
+                let alert = UIAlertController(title: "Session", message: "An error occurred.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                
+                self?.present(alert, animated: true, completion: nil)
             }
             return
         }
+        
+        let type = urlResourceValues.typeIdentifier ?? (kUTTypeData as String)
+        guard urlResourceValues.isDirectory != true else {
+            DispatchQueue.main.async {
+                OWSAlerts.showAlert(
+                    title: "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE".localized(),
+                    message: "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY".localized()
+                )
+            }
+            return
+        }
+        
         let fileName = urlResourceValues.name ?? NSLocalizedString("ATTACHMENT_DEFAULT_FILENAME", comment: "")
         guard let dataSource = DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false) else {
             DispatchQueue.main.async {
-                let title = NSLocalizedString("ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE", comment: "")
-                OWSAlerts.showAlert(title: title)
+                OWSAlerts.showAlert(title: "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE".localized())
             }
             return
         }
         dataSource.sourceFilename = fileName
+        
         // Although we want to be able to send higher quality attachments through the document picker
         // it's more imporant that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
         guard !SignalAttachment.isInvalidVideo(dataSource: dataSource, dataUTI: type) else {
             return showAttachmentApprovalDialogAfterProcessingVideo(at: url, with: fileName)
         }
+        
         // "Document picker" attachments _SHOULD NOT_ be resized
         let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: type, imageQuality: .original)
         showAttachmentApprovalDialog(for: [ attachment ])
@@ -247,23 +242,36 @@ extension ConversationVC:
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true, message: nil) { [weak self] modalActivityIndicator in
             let dataSource = DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false)!
             dataSource.sourceFilename = fileName
-            let compressionResult: SignalAttachment.VideoCompressionResult = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
-            compressionResult.attachmentPromise.done { attachment in
-                guard !modalActivityIndicator.wasCancelled, let attachment = attachment as? SignalAttachment else { return }
-                modalActivityIndicator.dismiss {
-                    if !attachment.hasError {
+            
+            SignalAttachment
+                .compressVideoAsMp4(
+                    dataSource: dataSource,
+                    dataUTI: kUTTypeMPEG4 as String
+                )
+                .attachmentPromise
+                .done { attachment in
+                    guard
+                        !modalActivityIndicator.wasCancelled,
+                        let attachment = attachment as? SignalAttachment
+                    else { return }
+                    
+                    modalActivityIndicator.dismiss {
+                        guard !attachment.hasError else {
+                            self?.showErrorAlert(for: attachment, onDismiss: nil)
+                            return
+                        }
+                        
                         self?.showAttachmentApprovalDialog(for: [ attachment ])
-                    } else {
-                        self?.showErrorAlert(for: attachment, onDismiss: nil)
                     }
                 }
-            }.retainUntilComplete()
+                .retainUntilComplete()
         }
     }
     
     // MARK: - InputViewDelegate
 
     // MARK: --Message Sending
+    
     func handleSendButtonTapped() {
         sendMessage()
     }
@@ -275,9 +283,7 @@ extension ConversationVC:
         
         guard !text.isEmpty else { return }
 
-        let isNoteToSelf: Bool = GRDBStorage.shared.read { db in viewModel.viewData.thread.isNoteToSelf(db) }
-            .defaulting(to: false)
-        if text.contains(mnemonic) && !isNoteToSelf && !hasPermissionToSendSeed {
+        if text.contains(mnemonic) && !viewModel.viewData.threadIsNoteToSelf && !hasPermissionToSendSeed {
             // Warn the user if they're about to send their seed to someone
             let modal = SendSeedModal()
             modal.modalPresentationStyle = .overFullScreen
@@ -310,17 +316,22 @@ extension ConversationVC:
                         .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
                     
                     // Create the interaction
+                    let userPublicKey: String = getUserHexEncodedPublicKey(db)
                     let interaction: Interaction = try Interaction(
                         threadId: thread.id,
                         authorId: getUserHexEncodedPublicKey(db),
                         variant: .standardOutgoing,
                         body: text,
                         timestampMs: sentTimestampMs,
+                        hasMention: text.contains("@\(userPublicKey)"),
                         linkPreviewUrl: linkPreviewDraft?.urlString
                     ).inserted(db)
 
-                    // If there is a LinkPreview add it now
-                    if let linkPreviewDraft: OWSLinkPreviewDraft = linkPreviewDraft {
+                    // If there is a LinkPreview and it doesn't match an existing one then add it now
+                    if
+                        let linkPreviewDraft: OWSLinkPreviewDraft = linkPreviewDraft,
+                        (try? interaction.linkPreview.isEmpty(db)) == true
+                    {
                         var attachmentId: String?
 
                         // If the LinkPreview has image data then create an attachment first
@@ -360,12 +371,8 @@ extension ConversationVC:
                     )
                 },
                 completion: { [weak self] _, _ in
-                    // At this point the Interaction should have its link preview set, so we can
-                    // scroll to the bottom knowing the height of the new message cell
-                    DispatchQueue.main.async {
-                        self?.scrollToBottom(isAnimated: false)
-                        self?.handleMessageSent()
-                    }
+                    self?.viewModel.sentMessageBeforeUpdate = true
+                    self?.handleMessageSent()
                 }
             )
         }
@@ -410,12 +417,14 @@ extension ConversationVC:
                         .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
                     
                     // Create the interaction
+                    let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
                     let interaction: Interaction = try Interaction(
                         threadId: thread.id,
                         authorId: getUserHexEncodedPublicKey(db),
                         variant: .standardOutgoing,
                         body: text,
-                        timestampMs: sentTimestampMs
+                        timestampMs: sentTimestampMs,
+                        hasMention: text.contains("@\(currentUserPublicKey)")
                     ).inserted(db)
 
                     try MessageSender.send(
@@ -426,13 +435,11 @@ extension ConversationVC:
                     )
                 },
                 completion: { [weak self] _, _ in
-                    // At this point the Interaction should have its link preview set, so we can
-                    // scroll to the bottom knowing the height of the new message cell
+                    self?.viewModel.sentMessageBeforeUpdate = true
+                    self?.handleMessageSent()
+                    
+                    // Attachment successfully sent - dismiss the screen
                     DispatchQueue.main.async {
-                        self?.scrollToBottom(isAnimated: false)
-                        self?.handleMessageSent()
-                        
-                        // Attachment successfully sent - dismiss the screen
                         onComplete?()
                     }
                 }
@@ -448,32 +455,26 @@ extension ConversationVC:
     }
 
     func handleMessageSent() {
-        resetMentions()
-        self.snInputView.text = ""
-        self.snInputView.quoteDraftInfo = nil
-        
-        // Update the input state if this is a contact thread
-        if let contactThread: TSContactThread = thread as? TSContactThread {
-            let contact: Contact? = GRDBStorage.shared.read { db in try Contact.fetchOne(db, id: contactThread.contactSessionID()) }
-            
-            // If the contact doesn't exist yet then it's a message request without the first message sent
-            // so only allow text-based messages
-            self.snInputView.setEnabledMessageTypes(
-                (thread.isNoteToSelf() || contact?.didApproveMe == true || thread.isMessageRequest() ?
-                    .all : .textOnly
-                ),
-                message: nil
-            )
+        DispatchQueue.main.async { [weak self] in
+            self?.snInputView.text = ""
+            self?.snInputView.quoteDraftInfo = nil
         }
         
-        self.markAllAsRead()
+        resetMentions()
+
         if Environment.shared.preferences.soundInForeground() {
             let soundID = Preferences.Sound.systemSoundId(for: .messageSent, quiet: true)
             AudioServicesPlaySystemSound(soundID)
         }
-        SSKEnvironment.shared.typingIndicators.didSendOutgoingMessage(inThread: thread)
-        Storage.write { transaction in
-            self.thread.setDraft("", transaction: transaction)
+        
+        let thread: SessionThread = self.viewModel.viewData.thread
+        
+        GRDBStorage.shared.writeAsync { db in
+            TypingIndicators.didStopTyping(db, in: thread, direction: .outgoing)
+            
+            _ = try SessionThread
+                .filter(id: thread.id)
+                .updateAll(db, SessionThread.Columns.messageDraft.set(to: ""))
         }
     }
 
@@ -490,6 +491,16 @@ extension ConversationVC:
         let newText: String = (inputTextView.text ?? "")
         
         if !newText.isEmpty {
+            let thread: SessionThread = self.viewModel.viewData.thread
+            
+            GRDBStorage.shared.writeAsync { db in
+                TypingIndicators.didStartTyping(
+                    db,
+                    in: thread,
+                    direction: .outgoing,
+                    timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
+                )
+            }
         }
         
         updateMentions(for: newText)
@@ -499,11 +510,13 @@ extension ConversationVC:
     
     func didPasteImageFromPasteboard(_ image: UIImage) {
         guard let imageData = image.jpegData(compressionQuality: 1.0) else { return }
+        
         let dataSource = DataSourceValue.dataSource(with: imageData, utiType: kUTTypeJPEG as String)
         let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String, imageQuality: .medium)
 
         let approvalVC = AttachmentApprovalViewController.wrappedInNavController(attachments: [ attachment ], approvalDelegate: self)
         approvalVC.modalPresentationStyle = .fullScreen
+        
         self.present(approvalVC, animated: true, completion: nil)
     }
 
@@ -529,33 +542,40 @@ extension ConversationVC:
     }
     
     func updateMentions(for newText: String) {
-        if !newText.isEmpty {
-            let lastCharacterIndex = newText.index(before: newText.endIndex)
-            let lastCharacter = newText[lastCharacterIndex]
-            
-            // Check if there is whitespace before the '@' or the '@' is the first character
-            let isCharacterBeforeLastWhiteSpaceOrStartOfLine: Bool
-            if newText.count == 1 {
-                isCharacterBeforeLastWhiteSpaceOrStartOfLine = true // Start of line
-            }
-            else {
-                let characterBeforeLast = newText[newText.index(before: lastCharacterIndex)]
-                isCharacterBeforeLastWhiteSpaceOrStartOfLine = characterBeforeLast.isWhitespace
-            }
-            
-            if lastCharacter == "@" && isCharacterBeforeLastWhiteSpaceOrStartOfLine {
-                currentMentionStartIndex = lastCharacterIndex
-                snInputView.showMentionsUI(for: self.viewModel.mentions())
-            }
-            else if lastCharacter.isWhitespace || lastCharacter == "@" { // the lastCharacter == "@" is to check for @@
-                currentMentionStartIndex = nil
+        guard !newText.isEmpty else {
+            if currentMentionStartIndex != nil {
                 snInputView.hideMentionsUI()
             }
-            else {
-                if let currentMentionStartIndex = currentMentionStartIndex {
-                    let query = String(newText[newText.index(after: currentMentionStartIndex)...]) // + 1 to get rid of the @
-                    snInputView.showMentionsUI(for: self.viewModel.mentions(for: query))
-                }
+            
+            resetMentions()
+            return
+        }
+        
+        let lastCharacterIndex = newText.index(before: newText.endIndex)
+        let lastCharacter = newText[lastCharacterIndex]
+        
+        // Check if there is whitespace before the '@' or the '@' is the first character
+        let isCharacterBeforeLastWhiteSpaceOrStartOfLine: Bool
+        if newText.count == 1 {
+            isCharacterBeforeLastWhiteSpaceOrStartOfLine = true // Start of line
+        }
+        else {
+            let characterBeforeLast = newText[newText.index(before: lastCharacterIndex)]
+            isCharacterBeforeLastWhiteSpaceOrStartOfLine = characterBeforeLast.isWhitespace
+        }
+        
+        if lastCharacter == "@" && isCharacterBeforeLastWhiteSpaceOrStartOfLine {
+            currentMentionStartIndex = lastCharacterIndex
+            snInputView.showMentionsUI(for: self.viewModel.mentions())
+        }
+        else if lastCharacter.isWhitespace || lastCharacter == "@" { // the lastCharacter == "@" is to check for @@
+            currentMentionStartIndex = nil
+            snInputView.hideMentionsUI()
+        }
+        else {
+            if let currentMentionStartIndex = currentMentionStartIndex {
+                let query = String(newText[newText.index(after: currentMentionStartIndex)...]) // + 1 to get rid of the @
+                snInputView.showMentionsUI(for: self.viewModel.mentions(for: query))
             }
         }
     }
@@ -564,13 +584,6 @@ extension ConversationVC:
         currentMentionStartIndex = nil
         mentions = []
     }
-    
-    // MARK: --Attachments
-    
-    func didPasteImageFromPasteboard(_ image: UIImage) {
-        guard let imageData = image.jpegData(compressionQuality: 1.0) else { return }
-        let dataSource = DataSourceValue.dataSource(with: imageData, utiType: kUTTypeJPEG as String)
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String, imageQuality: .medium)
 
     func replaceMentions(in text: String) -> String {
         var result = text
@@ -582,56 +595,78 @@ extension ConversationVC:
         return result
     }
 
-    // MARK: View Item Interaction
-    func handleViewItemLongPressed(_ viewItem: ConversationViewItem) {
-        // Show the context menu if applicable
-        guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
-            let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell,
-            let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false), contextMenuWindow == nil,
-            !ContextMenuVC.actions(for: viewItem, delegate: self).isEmpty else { return }
-        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-        let frame = cell.convert(cell.bubbleView.frame, to: UIApplication.shared.keyWindow!)
-        let window = ContextMenuWindow()
-        let contextMenuVC = ContextMenuVC(snapshot: snapshot, viewItem: viewItem, frame: frame, delegate: self) { [weak self] in
-            window.isHidden = true
-            guard let self = self else { return }
-            self.contextMenuVC = nil
-            self.contextMenuWindow = nil
-            self.scrollButton.alpha = 0
-            UIView.animate(withDuration: 0.25) {
-                self.scrollButton.alpha = self.getScrollButtonOpacity()
-                self.unreadCountView.alpha = self.scrollButton.alpha
-            }
-        }
-        self.contextMenuVC = contextMenuVC
-        contextMenuWindow = window
-        window.rootViewController = contextMenuVC
-        window.makeKeyAndVisible()
-        window.backgroundColor = .clear
+    func showInputAccessoryView() {
+        UIView.animate(withDuration: 0.25, animations: {
+            self.inputAccessoryView?.isHidden = false
+            self.inputAccessoryView?.alpha = 1
+        })
     }
 
-    func handleViewItemTapped(_ viewItem: ConversationViewItem, gestureRecognizer: UITapGestureRecognizer) {
-        func confirmDownload() {
-            let modal = DownloadAttachmentModal(viewItem: viewItem)
+    // MARK: MessageCellDelegate
+
+    func handleItemLongPressed(_ item: ConversationViewModel.Item) {
+        // Show the context menu if applicable
+        guard
+            let keyWindow: UIWindow = UIApplication.shared.keyWindow,
+            let index = viewModel.viewData.items.firstIndex(of: item),
+            let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell,
+            let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false),
+            contextMenuWindow == nil,
+            let actions: [ContextMenuVC.Action] = ContextMenuVC.actions(
+                for: item,
+                currentUserIsOpenGroupModerator: OpenGroupAPIV2.isUserModerator(
+                    self.viewModel.viewData.userPublicKey,
+                    for: self.viewModel.viewData.openGroupRoom,
+                    on: self.viewModel.viewData.openGroupServer
+                ),
+                delegate: self
+            )
+        else { return }
+        
+        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+        self.contextMenuWindow = ContextMenuWindow()
+        self.contextMenuVC = ContextMenuVC(
+            snapshot: snapshot,
+            frame: cell.convert(cell.bubbleView.frame, to: keyWindow),
+            item: item,
+            actions: actions
+        ) { [weak self] in
+            self?.contextMenuWindow?.isHidden = true
+            self?.contextMenuVC = nil
+            self?.contextMenuWindow = nil
+            self?.scrollButton.alpha = 0
+            
+            UIView.animate(withDuration: 0.25) {
+                self?.scrollButton.alpha = (self?.getScrollButtonOpacity() ?? 0)
+                self?.unreadCountView.alpha = (self?.scrollButton.alpha ?? 0)
+            }
+        }
+        
+        self.contextMenuWindow?.backgroundColor = .clear
+        self.contextMenuWindow?.rootViewController = self.contextMenuVC
+        self.contextMenuWindow?.makeKeyAndVisible()
+    }
+
+    func handleItemTapped(_ item: ConversationViewModel.Item, gestureRecognizer: UITapGestureRecognizer) {
+        guard item.interactionVariant != .standardOutgoing || item.state != .failed else {
+            // Show the failed message sheet
+            showFailedMessageSheet(for: item)
+            return
+        }
+        
+        // If it's an incoming media message and the thread isn't trusted then show the placeholder view
+        if item.cellType != .textOnlyMessage && item.interactionVariant == .standardIncoming && !item.isThreadTrusted {
+            let modal = DownloadAttachmentModal(profile: item.profile)
             modal.modalPresentationStyle = .overFullScreen
             modal.modalTransitionStyle = .crossDissolve
+            
             present(modal, animated: true, completion: nil)
+            return
         }
-        if let message = viewItem.interaction as? TSOutgoingMessage, message.messageState == .failed {
-            // Show the failed message sheet
-            showFailedMessageSheet(for: message)
-        } else {
-            switch viewItem.messageCellType {
-            case .audio:
-                if
-                    viewItem.interaction is TSIncomingMessage,
-                    let thread = self.thread as? TSContactThread,
-                    let contact: Contact? = GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: thread.contactSessionID()) }),
-                    contact?.isTrusted != true {
-                    confirmDownload()
-                } else {
-                    playOrPauseAudio(for: viewItem)
-                }
+        
+        switch item.cellType {
+            case .audio: viewModel.playOrPauseAudio(for: item)
+            
             case .mediaMessage:
                 guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
                     let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell else { return }
@@ -661,29 +696,29 @@ extension ConversationVC:
                     gallery.presentDetailView(fromViewController: self, mediaAttachment: stream)
                 }
             case .genericAttachment:
+                guard
+                    let attachment: Attachment = item.attachments?.first,
+                    let originalFilePath: String = attachment.originalFilePath
+                else { return }
+                
+                let fileUrl: URL = URL(fileURLWithPath: originalFilePath)
+                
+                // Open a preview of the document for text, pdf or microsoft files
                 if
-                    viewItem.interaction is TSIncomingMessage,
-                    let thread = self.thread as? TSContactThread,
-                    let contact: Contact? = GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: thread.contactSessionID()) }),
-                    contact?.isTrusted != true {
-                    confirmDownload()
-                }
-                else if (
-                    viewItem.attachmentStream?.isText == true ||
-                    viewItem.attachmentStream?.isMicrosoftDoc == true ||
-                    viewItem.attachmentStream?.contentType == OWSMimeTypeApplicationPdf
-                ), let filePathString: String = viewItem.attachmentStream?.originalFilePath {
-                    let fileUrl: URL = URL(fileURLWithPath: filePathString)
+                    attachment.isText ||
+                    attachment.isMicrosoftDoc ||
+                    attachment.contentType == OWSMimeTypeApplicationPdf
+                {
+                    
                     let interactionController: UIDocumentInteractionController = UIDocumentInteractionController(url: fileUrl)
                     interactionController.delegate = self
                     interactionController.presentPreview(animated: true)
+                    return
                 }
-                else {
-                    // Open the document if possible
-                    guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
-                    let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
-                    navigationController!.present(shareVC, animated: true, completion: nil)
-                }
+                
+                // Otherwise share the file
+                let shareVC = UIActivityViewController(activityItems: [ fileUrl ], applicationActivities: nil)
+                navigationController?.present(shareVC, animated: true, completion: nil)
             case .textOnlyMessage:
                 if let reply = viewItem.quotedReply {
                     // Scroll to the source of the reply
@@ -698,12 +733,11 @@ extension ConversationVC:
         }
     }
     
-    func handleViewItemSwiped(_ viewItem: ConversationViewItem, state: SwipeState) {
-        switch state {
-        case .began:
-            messagesTableView.isScrollEnabled = false
-        case .ended, .cancelled:
-            messagesTableView.isScrollEnabled = true
+    func handleItemDoubleTapped(_ item: ConversationViewModel.Item) {
+        switch item.cellType {
+            // The user can double tap a voice message when it's playing to speed it up
+            case .audio: self.viewModel.speedUpAudio(for: item)
+            default: break
         }
     }
 
@@ -742,16 +776,13 @@ extension ConversationVC:
                     UIPasteboard.general.string = snodeAddress
                 }))
             }
+    func handleItemSwiped(_ item: ConversationViewModel.Item, state: SwipeState) {
+        switch state {
+            case .began: tableView.isScrollEnabled = false
+            case .ended, .cancelled: tableView.isScrollEnabled = true
         }
-        present(sheet, animated: true, completion: nil)
     }
 
-    func handleViewItemDoubleTapped(_ viewItem: ConversationViewItem) {
-        switch viewItem.messageCellType {
-        case .audio: speedUpAudio(for: viewItem) // The user can double tap a voice message when it's playing to speed it up
-        default: break
-        }
-    }
     
     func showFullText(_ viewItem: ConversationViewItem) {
         let longMessageVC = LongTextViewController(viewItem: viewItem)

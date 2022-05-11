@@ -16,13 +16,13 @@ enum _003_YDBToGRDBMigration: Migration {
         // MARK: - Process Contacts, Threads & Interactions
         print("RAWR [\(Date().timeIntervalSince1970)] - SessionMessagingKit migration - Start")
         var shouldFailMigration: Bool = false
-        var contacts: Set<Legacy.Contact> = []
+        var contacts: Set<Legacy._Contact> = []
         var validProfileIds: Set<String> = []
         var contactThreadIds: Set<String> = []
         
         var legacyThreadIdToIdMap: [String: String] = [:]
         var threads: Set<TSThread> = []
-        var disappearingMessagesConfiguration: [String: Legacy.DisappearingMessagesConfiguration] = [:]
+        var disappearingMessagesConfiguration: [String: Legacy._DisappearingMessagesConfiguration] = [:]
         
         var closedGroupKeys: [String: [TimeInterval: SUKLegacy.KeyPair]] = [:]
         var closedGroupName: [String: String] = [:]
@@ -38,37 +38,37 @@ enum _003_YDBToGRDBMigration: Migration {
 //        var openGroupServerToUniqueIdLookup: [String: [String]] = [:]   // TODO: Not needed????
         
         var interactions: [String: [TSInteraction]] = [:]
-        var attachments: [String: Legacy.Attachment] = [:]
+        var attachments: [String: Legacy._Attachment] = [:]
         var processedAttachmentIds: Set<String> = []
         var outgoingReadReceiptsTimestampsMs: [String: Set<Int64>] = [:]
         var receivedMessageTimestamps: Set<UInt64> = []
         
         // Map the Legacy types for the NSKeyedUnarchiver
         NSKeyedUnarchiver.setClass(
-            Legacy.Contact.self,
+            Legacy._Contact.self,
             forClassName: "SNContact"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.Attachment.self,
+            Legacy._Attachment.self,
             forClassName: "TSAttachment"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.AttachmentStream.self,
+            Legacy._AttachmentStream.self,
             forClassName: "TSAttachmentStream"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.AttachmentPointer.self,
+            Legacy._AttachmentPointer.self,
             forClassName: "TSAttachmentPointer"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.DisappearingConfigurationUpdateInfoMessage.self,
+            Legacy._DisappearingConfigurationUpdateInfoMessage.self,
             forClassName: "OWSDisappearingConfigurationUpdateInfoMessage"
         )
         
         Storage.read { transaction in
             // Process the Contacts
             transaction.enumerateRows(inCollection: Legacy.contactCollection) { _, object, _, _ in
-                guard let contact = object as? Legacy.Contact else { return }
+                guard let contact = object as? Legacy._Contact else { return }
                 contacts.insert(contact)
                 validProfileIds.insert(contact.sessionID)
             }
@@ -91,7 +91,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 // Get the disappearing messages config
                 disappearingMessagesConfiguration[threadId] = transaction
                     .object(forKey: threadId, inCollection: Legacy.disappearingMessagesCollection)
-                    .asType(Legacy.DisappearingMessagesConfiguration.self)
+                    .asType(Legacy._DisappearingMessagesConfiguration.self)
                 
                 // Process group-specific info
                 guard let groupThread: TSGroupThread = thread as? TSGroupThread else {
@@ -175,7 +175,7 @@ enum _003_YDBToGRDBMigration: Migration {
             // Process attachments
             print("RAWR [\(Date().timeIntervalSince1970)] - Process attachments - Start")
             transaction.enumerateKeysAndObjects(inCollection: Legacy.attachmentsCollection) { key, object, _ in
-                guard let attachment: Legacy.Attachment = object as? Legacy.Attachment else {
+                guard let attachment: Legacy._Attachment = object as? Legacy._Attachment else {
                     SNLog("[Migration Error] Unable to process attachment")
                     shouldFailMigration = true
                     return
@@ -331,7 +331,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 ).insert(db)
                 
                 // Disappearing Messages Configuration
-                if let config: Legacy.DisappearingMessagesConfiguration = disappearingMessagesConfiguration[threadId] {
+                if let config: Legacy._DisappearingMessagesConfiguration = disappearingMessagesConfiguration[threadId] {
                     try DisappearingMessagesConfiguration(
                         threadId: threadId,
                         isEnabled: config.isEnabled,
@@ -524,7 +524,7 @@ enum _003_YDBToGRDBMigration: Migration {
                                     // a string at display time so we want to continue that behaviour
                                     guard
                                         infoMessage.messageType == .disappearingMessagesUpdate,
-                                        let updateMessage: Legacy.DisappearingConfigurationUpdateInfoMessage = infoMessage as? Legacy.DisappearingConfigurationUpdateInfoMessage,
+                                        let updateMessage: Legacy._DisappearingConfigurationUpdateInfoMessage = infoMessage as? Legacy._DisappearingConfigurationUpdateInfoMessage,
                                         let infoMessageData: Data = try? JSONEncoder().encode(
                                             DisappearingMessagesConfiguration.MessageInfo(
                                                 senderName: updateMessage.createdByRemoteName,
@@ -843,127 +843,127 @@ enum _003_YDBToGRDBMigration: Migration {
         
         print("RAWR [\(Date().timeIntervalSince1970)] - Process jobs - Start")
         
-        var notifyPushServerJobs: Set<Legacy.NotifyPNServerJob> = []
-        var messageReceiveJobs: Set<Legacy.MessageReceiveJob> = []
-        var messageSendJobs: Set<Legacy.MessageSendJob> = []
-        var attachmentUploadJobs: Set<Legacy.AttachmentUploadJob> = []
-        var attachmentDownloadJobs: Set<Legacy.AttachmentDownloadJob> = []
+        var notifyPushServerJobs: Set<Legacy._NotifyPNServerJob> = []
+        var messageReceiveJobs: Set<Legacy._MessageReceiveJob> = []
+        var messageSendJobs: Set<Legacy._MessageSendJob> = []
+        var attachmentUploadJobs: Set<Legacy._AttachmentUploadJob> = []
+        var attachmentDownloadJobs: Set<Legacy._AttachmentDownloadJob> = []
         
         // Map the Legacy types for the NSKeyedUnarchiver
         NSKeyedUnarchiver.setClass(
-            Legacy.NotifyPNServerJob.self,
+            Legacy._NotifyPNServerJob.self,
             forClassName: "SessionMessagingKit.NotifyPNServerJob"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.NotifyPNServerJob.SnodeMessage.self,
+            Legacy._NotifyPNServerJob._SnodeMessage.self,
             forClassName: "SessionSnodeKit.SnodeMessage"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.MessageSendJob.self,
+            Legacy._MessageSendJob.self,
             forClassName: "SessionMessagingKit.SNMessageSendJob"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.MessageReceiveJob.self,
+            Legacy._MessageReceiveJob.self,
             forClassName: "SessionMessagingKit.MessageReceiveJob"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.AttachmentUploadJob.self,
+            Legacy._AttachmentUploadJob.self,
             forClassName: "SessionMessagingKit.AttachmentUploadJob"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.AttachmentDownloadJob.self,
+            Legacy._AttachmentDownloadJob.self,
             forClassName: "SessionMessagingKit.AttachmentDownloadJob"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.Message.self,
+            Legacy._Message.self,
             forClassName: "SNMessage"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.VisibleMessage.self,
+            Legacy._VisibleMessage.self,
             forClassName: "SNVisibleMessage"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.Quote.self,
+            Legacy._Quote.self,
             forClassName: "SNQuote"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.LinkPreview.self,
+            Legacy._LinkPreview.self,
             forClassName: "SessionServiceKit.OWSLinkPreview"    // Very old legacy name
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.LinkPreview.self,
+            Legacy._LinkPreview.self,
             forClassName: "SNLinkPreview"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.Profile.self,
+            Legacy._Profile.self,
             forClassName: "SNProfile"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.OpenGroupInvitation.self,
+            Legacy._OpenGroupInvitation.self,
             forClassName: "SNOpenGroupInvitation"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.ControlMessage.self,
+            Legacy._ControlMessage.self,
             forClassName: "SNControlMessage"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.ReadReceipt.self,
+            Legacy._ReadReceipt.self,
             forClassName: "SNReadReceipt"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.TypingIndicator.self,
+            Legacy._TypingIndicator.self,
             forClassName: "SNTypingIndicator"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.ClosedGroupControlMessage.self,
+            Legacy._ClosedGroupControlMessage.self,
             forClassName: "SessionMessagingKit.ClosedGroupControlMessage"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.ClosedGroupControlMessage.KeyPairWrapper.self,
+            Legacy._ClosedGroupControlMessage._KeyPairWrapper.self,
             forClassName: "ClosedGroupControlMessage.SNKeyPairWrapper"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.DataExtractionNotification.self,
+            Legacy._DataExtractionNotification.self,
             forClassName: "SessionMessagingKit.DataExtractionNotification"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.ExpirationTimerUpdate.self,
+            Legacy._ExpirationTimerUpdate.self,
             forClassName: "SNExpirationTimerUpdate"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.ConfigurationMessage.self,
+            Legacy._ConfigurationMessage.self,
             forClassName: "SNConfigurationMessage"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.CMClosedGroup.self,
+            Legacy._CMClosedGroup.self,
             forClassName: "SNClosedGroup"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.CMContact.self,
+            Legacy._CMContact.self,
             forClassName: "SNConfigurationMessage.SNConfigurationMessageContact"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.UnsendRequest.self,
+            Legacy._UnsendRequest.self,
             forClassName: "SNUnsendRequest"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy.MessageRequestResponse.self,
+            Legacy._MessageRequestResponse.self,
             forClassName: "SNMessageRequestResponse"
         )
         
         Storage.read { transaction in
             transaction.enumerateRows(inCollection: Legacy.notifyPushServerJobCollection) { _, object, _, _ in
-                guard let job = object as? Legacy.NotifyPNServerJob else { return }
+                guard let job = object as? Legacy._NotifyPNServerJob else { return }
                 notifyPushServerJobs.insert(job)
             }
             
             transaction.enumerateRows(inCollection: Legacy.messageReceiveJobCollection) { _, object, _, _ in
-                guard let job = object as? Legacy.MessageReceiveJob else { return }
+                guard let job = object as? Legacy._MessageReceiveJob else { return }
                 messageReceiveJobs.insert(job)
             }
             
             transaction.enumerateRows(inCollection: Legacy.messageSendJobCollection) { _, object, _, _ in
-                guard let job = object as? Legacy.MessageSendJob else { return }
+                guard let job = object as? Legacy._MessageSendJob else { return }
                 messageSendJobs.insert(job)
             }
             
@@ -973,7 +973,7 @@ enum _003_YDBToGRDBMigration: Migration {
             }
             
             transaction.enumerateRows(inCollection: Legacy.attachmentDownloadJobCollection) { _, object, _, _ in
-                guard let job = object as? Legacy.AttachmentDownloadJob else { return }
+                guard let job = object as? Legacy._AttachmentDownloadJob else { return }
                 attachmentDownloadJobs.insert(job)
             }
         }
@@ -1103,7 +1103,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         destination: legacyJob.destination,
                         variant: {
                             switch legacyJob.message {
-                                case is Legacy.ExpirationTimerUpdate:
+                                case is Legacy._ExpirationTimerUpdate:
                                     return .infoDisappearingMessagesUpdate
                                 default: return nil
                             }
@@ -1274,7 +1274,7 @@ enum _003_YDBToGRDBMigration: Migration {
         for legacyAttachmentId: String?,
         interactionVariant: Interaction.Variant? = nil,
         isQuotedMessage: Bool = false,
-        attachments: [String: Legacy.Attachment],
+        attachments: [String: Legacy._Attachment],
         processedAttachmentIds: inout Set<String>
     ) throws -> String? {
         guard let legacyAttachmentId: String = legacyAttachmentId else { return nil }
@@ -1287,12 +1287,12 @@ enum _003_YDBToGRDBMigration: Migration {
             return legacyAttachmentId
         }
         
-        guard let legacyAttachment: Legacy.Attachment = attachments[legacyAttachmentId] else {
+        guard let legacyAttachment: Legacy._Attachment = attachments[legacyAttachmentId] else {
             SNLog("[Migration Warning] Missing attachment - interaction will appear as blank")
             return nil
         }
 
-        let processedLocalRelativeFilePath: String? = (legacyAttachment as? Legacy.AttachmentStream)?
+        let processedLocalRelativeFilePath: String? = (legacyAttachment as? Legacy._AttachmentStream)?
             .localRelativeFilePath
             .map { filePath -> String in
                 // The old 'localRelativeFilePath' seemed to have a leading forward slash (want
@@ -1303,7 +1303,7 @@ enum _003_YDBToGRDBMigration: Migration {
             }
         let state: Attachment.State = {
             switch legacyAttachment {
-                case let stream as Legacy.AttachmentStream:  // Outgoing or already downloaded
+                case let stream as Legacy._AttachmentStream:  // Outgoing or already downloaded
                     switch interactionVariant {
                         case .standardOutgoing: return (stream.isUploaded ? .uploaded : .pending)
                         default: return .downloaded
@@ -1315,7 +1315,7 @@ enum _003_YDBToGRDBMigration: Migration {
         }()
         let size: CGSize = {
             switch legacyAttachment {
-                case let stream as Legacy.AttachmentStream:
+                case let stream as Legacy._AttachmentStream:
                     // First try to get an image size using the 'localRelativeFilePath' value
                     if
                         let localRelativeFilePath: String = processedLocalRelativeFilePath,
@@ -1342,13 +1342,13 @@ enum _003_YDBToGRDBMigration: Migration {
                         )
                         .defaulting(to: .zero)
                     
-                case let pointer as Legacy.AttachmentPointer: return pointer.mediaSize
+                case let pointer as Legacy._AttachmentPointer: return pointer.mediaSize
                 default: return CGSize.zero
             }
         }()
         let (isValid, duration): (Bool, TimeInterval?) = {
             guard
-                let stream: Legacy.AttachmentStream = legacyAttachment as? Legacy.AttachmentStream,
+                let stream: Legacy._AttachmentStream = legacyAttachment as? Legacy._AttachmentStream,
                 let originalFilePath: String = Attachment.originalFilePath(
                     id: legacyAttachmentId,
                     mimeType: stream.contentType,
@@ -1401,7 +1401,7 @@ enum _003_YDBToGRDBMigration: Migration {
             state: state,
             contentType: legacyAttachment.contentType,
             byteCount: UInt(legacyAttachment.byteCount),
-            creationTimestamp: (legacyAttachment as? Legacy.AttachmentStream)?
+            creationTimestamp: (legacyAttachment as? Legacy._AttachmentStream)?
                 .creationTimestamp.timeIntervalSince1970,
             sourceFilename: legacyAttachment.sourceFilename,
             downloadUrl: legacyAttachment.downloadURL,
@@ -1411,7 +1411,7 @@ enum _003_YDBToGRDBMigration: Migration {
             duration: duration,
             isValid: isValid,
             encryptionKey: legacyAttachment.encryptionKey,
-            digest: (legacyAttachment as? Legacy.AttachmentStream)?.digest,
+            digest: (legacyAttachment as? Legacy._AttachmentStream)?.digest,
             caption: legacyAttachment.caption
         ).inserted(db)
         

@@ -5,73 +5,87 @@ import SessionUIKit
 import SessionMessagingKit
 
 final class InfoMessageCell: MessageCell {
+    private static let iconSize: CGFloat = 16
+    private static let inset = Values.mediumSpacing
+    
+    // MARK: - UI
+    
     private lazy var iconImageViewWidthConstraint = iconImageView.set(.width, to: InfoMessageCell.iconSize)
     private lazy var iconImageViewHeightConstraint = iconImageView.set(.height, to: InfoMessageCell.iconSize)
     
-    // MARK: UI Components
-    private lazy var iconImageView = UIImageView()
-    
+    private lazy var iconImageView: UIImageView = UIImageView()
+
     private lazy var label: UILabel = {
-        let result = UILabel()
+        let result: UILabel = UILabel()
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
         result.textColor = Colors.text
         result.textAlignment = .center
+        
         return result
     }()
-    
+
     private lazy var stackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ iconImageView, label ])
+        let result: UIStackView = UIStackView(arrangedSubviews: [ iconImageView, label ])
         result.axis = .vertical
         result.alignment = .center
         result.spacing = Values.smallSpacing
+        
         return result
     }()
+
+    // MARK: - Lifecycle
     
-    // MARK: Settings
-    private static let iconSize: CGFloat = 16
-    private static let inset = Values.mediumSpacing
-    
-    override class var identifier: String { "InfoMessageCell" }
-    
-    // MARK: Lifecycle
     override func setUpViewHierarchy() {
         super.setUpViewHierarchy()
+        
         iconImageViewWidthConstraint.isActive = true
         iconImageViewHeightConstraint.isActive = true
         addSubview(stackView)
+        
         stackView.pin(.left, to: .left, of: self, withInset: InfoMessageCell.inset)
         stackView.pin(.top, to: .top, of: self, withInset: InfoMessageCell.inset)
         stackView.pin(.right, to: .right, of: self, withInset: -InfoMessageCell.inset)
         stackView.pin(.bottom, to: .bottom, of: self, withInset: -InfoMessageCell.inset)
     }
+
+    // MARK: - Updating
     
-    // MARK: Updating
-    override func update() {
-        guard let message = viewItem?.interaction as? TSInfoMessage else { return }
-        let icon: UIImage?
-        switch message.messageType {
-        case .disappearingMessagesUpdate:
-            var configuration: SessionMessagingKit.Legacy.DisappearingMessagesConfiguration?
-            Storage.read { transaction in
-                configuration = message.thread(with: transaction).disappearingMessagesConfiguration(with: transaction)
-            }
-            if let configuration = configuration {
-                icon = configuration.isEnabled ? UIImage(named: "ic_timer") : UIImage(named: "ic_timer_disabled")
-            } else {
-                icon = nil
-            }
-        case .mediaSavedNotification: icon = UIImage(named: "ic_download")
-        default: icon = nil
+    override func update(with item: ConversationViewModel.Item, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
+        switch item.interactionVariant {
+            case .infoClosedGroupCreated, .infoClosedGroupUpdated, .infoClosedGroupCurrentUserLeft,
+                .infoDisappearingMessagesUpdate, .infoScreenshotNotification, .infoMediaSavedNotification,
+                .infoMessageRequestAccepted:
+                break
+                
+            default: return // Ignore non-info variants
         }
+        
+        let icon: UIImage? = {
+            switch item.interactionVariant {
+                case .infoDisappearingMessagesUpdate:
+                    return (item.threadHasDisappearingMessagesEnabled ?
+                        UIImage(named: "ic_timer") :
+                        UIImage(named: "ic_timer_disabled")
+                    )
+                    
+                case .infoMediaSavedNotification: return UIImage(named: "ic_download")
+                    
+                default: return nil
+            }
+        }()
+        
         if let icon = icon {
             iconImageView.image = icon.withTint(Colors.text)
         }
+        
         iconImageViewWidthConstraint.constant = (icon != nil) ? InfoMessageCell.iconSize : 0
         iconImageViewHeightConstraint.constant = (icon != nil) ? InfoMessageCell.iconSize : 0
-        Storage.read { transaction in
-            self.label.text = message.previewText(with: transaction)
-        }
+        
+        self.label.text = item.body
+    }
+    
+    override func dynamicUpdate(with item: ConversationViewModel.Item, playbackInfo: ConversationViewModel.PlaybackInfo?) {
     }
 }

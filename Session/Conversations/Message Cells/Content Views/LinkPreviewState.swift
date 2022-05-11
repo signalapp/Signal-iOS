@@ -1,6 +1,7 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import SessionMessagingKit
 
 extension CGPoint {
     
@@ -125,22 +126,19 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
 
 // MARK: -
 
-@objc
-public class LinkPreviewSent: NSObject, LinkPreviewState {
-    private let linkPreview: OWSLinkPreview
-    private let imageAttachment: TSAttachment?
+public class LinkPreviewSent: LinkPreviewState {
+    private let linkPreview: LinkPreview
+    private let imageAttachment: Attachment?
 
-    @objc
     public var imageSize: CGSize {
-        guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
+        guard let width: UInt = imageAttachment?.width, let height: UInt = imageAttachment?.height else {
             return CGSize.zero
         }
-        return attachmentStream.imageSize()
+        
+        return CGSize(width: CGFloat(width), height: CGFloat(height))
     }
 
-    @objc
-    public required init(linkPreview: OWSLinkPreview,
-                  imageAttachment: TSAttachment?) {
+    public required init(linkPreview: LinkPreview, imageAttachment: Attachment?) {
         self.linkPreview = linkPreview
         self.imageAttachment = imageAttachment
     }
@@ -148,20 +146,17 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
     public func isLoaded() -> Bool {
         return true
     }
-
+    
     public func urlString() -> String? {
-        guard let urlString = linkPreview.urlString else {
-            owsFailDebug("Missing url")
-            return nil
-        }
-        return urlString
+        return linkPreview.url
     }
 
     public func displayDomain() -> String? {
-        guard let displayDomain = linkPreview.displayDomain() else {
+        guard let displayDomain: String = URL(string: linkPreview.url)?.host else {
             Logger.error("Missing display domain")
             return nil
         }
+        
         return displayDomain
     }
 
@@ -174,39 +169,37 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
     }
 
     public func imageState() -> LinkPreviewImageState {
-        guard linkPreview.imageAttachmentId != nil else {
-            return .none
-        }
-        guard let imageAttachment = imageAttachment else {
+        guard linkPreview.attachmentId != nil else { return .none }
+        guard let imageAttachment: Attachment = imageAttachment else {
             owsFailDebug("Missing imageAttachment.")
             return .none
         }
-        guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
-            return .loading
+        
+        switch imageAttachment.state {
+            case .downloaded, .uploaded:
+                guard imageAttachment.isImage && imageAttachment.isValid else {
+                    return .invalid
+                }
+                
+                return .loaded
+                
+            case .pending, .downloading, .uploading: return .loading
+            case .failed: return .invalid
         }
-        guard attachmentStream.isImage,
-            attachmentStream.isValidImage else {
-            return .invalid
-        }
-        return .loaded
     }
 
     public func image() -> UIImage? {
-        guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
+        // Note: We don't check if the image is valid here because that can be confirmed
+        // in 'imageState' and it's a little inefficient
+        guard imageAttachment?.isImage == true else { return nil }
+        guard let imageData: Data = try? imageAttachment?.readDataFromFile() else {
             return nil
         }
-        guard attachmentStream.isImage,
-            attachmentStream.isValidImage else {
+        guard let image = UIImage(data: imageData) else {
+            owsFailDebug("Could not load image: \(imageAttachment?.localRelativeFilePath ?? "unknown")")
             return nil
         }
-        guard let imageFilepath = attachmentStream.originalFilePath else {
-            owsFailDebug("Attachment is missing file path.")
-            return nil
-        }
-        guard let image = UIImage(contentsOfFile: imageFilepath) else {
-            owsFailDebug("Could not load image: \(imageFilepath)")
-            return nil
-        }
+        
         return image
     }
 }

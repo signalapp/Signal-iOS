@@ -5,9 +5,11 @@ import GRDB
 import SessionUtilitiesKit
 
 public extension VisibleMessage {
-    struct OpenGroupInvitation: Codable {
+    struct VMOpenGroupInvitation: Codable {
         public let name: String?
         public let url: String?
+        
+        // MARK: - Initialization
 
         public init(name: String, url: String) {
             self.name = name
@@ -16,10 +18,11 @@ public extension VisibleMessage {
 
         // MARK: - Proto Conversion
 
-        public static func fromProto(_ proto: SNProtoDataMessageOpenGroupInvitation) -> OpenGroupInvitation? {
-            let url = proto.url
-            let name = proto.name
-            return OpenGroupInvitation(name: name, url: url)
+        public static func fromProto(_ proto: SNProtoDataMessageOpenGroupInvitation) -> VMOpenGroupInvitation? {
+            return VMOpenGroupInvitation(
+                name: proto.name,
+                url: proto.url
+            )
         }
 
         public func toProto() -> SNProtoDataMessageOpenGroupInvitation? {
@@ -51,11 +54,11 @@ public extension VisibleMessage {
 
 // MARK: - Database Type Conversion
 
-public extension VisibleMessage.OpenGroupInvitation {
-    static func from(_ db: Database, linkPreview: LinkPreview) -> VisibleMessage.OpenGroupInvitation? {
+public extension VisibleMessage.VMOpenGroupInvitation {
+    static func from(_ db: Database, linkPreview: LinkPreview) -> VisibleMessage.VMOpenGroupInvitation? {
         guard let name: String = linkPreview.title else { return nil }
         
-        return VisibleMessage.OpenGroupInvitation(
+        return VisibleMessage.VMOpenGroupInvitation(
             name: name,
             url: linkPreview.url
         )

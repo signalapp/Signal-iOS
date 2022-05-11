@@ -64,7 +64,7 @@ public enum Legacy {
     // MARK: - Types (and NSCoding)
     
     @objc(SNContact)
-    public class Contact: NSObject, NSCoding {
+    public class _Contact: NSObject, NSCoding {
         @objc public let sessionID: String
         @objc public var profilePictureURL: String?
         @objc public var profilePictureFileName: String?
@@ -104,7 +104,7 @@ public enum Legacy {
     }
     
     @objc(OWSDisappearingMessagesConfiguration)
-    internal class DisappearingMessagesConfiguration: MTLModel {
+    internal class _DisappearingMessagesConfiguration: MTLModel {
         @objc public let uniqueId: String
         @objc public var isEnabled: Bool
         @objc public var durationSeconds: UInt32
@@ -133,7 +133,7 @@ public enum Legacy {
     
     /// Abstract base class for `VisibleMessage` and `ControlMessage`.
     @objc(SNMessage)
-    internal class Message: NSObject, NSCoding {
+    internal class _Message: NSObject, NSCoding {
         internal var id: String?
         internal var threadID: String?
         internal var sentTimestamp: UInt64?
@@ -166,8 +166,8 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
-            let result: SessionMessagingKit.Message = (instance ?? SessionMessagingKit.Message())
+        internal func toNonLegacy(_ instance: Message? = nil) throws -> Message {
+            let result: Message = (instance ?? Message())
             result.id = self.id
             result.threadId = self.threadID
             result.sentTimestamp = self.sentTimestamp
@@ -184,14 +184,14 @@ public enum Legacy {
     }
 
     @objc(SNVisibleMessage)
-    internal final class VisibleMessage: Message {
+    internal final class _VisibleMessage: _Message {
         internal var syncTarget: String?
         internal var text: String?
         internal var attachmentIDs: [String] = []
-        internal var quote: Quote?
-        internal var linkPreview: LinkPreview?
-        internal var profile: Profile?
-        internal var openGroupInvitation: OpenGroupInvitation?
+        internal var quote: _Quote?
+        internal var linkPreview: _LinkPreview?
+        internal var profile: _Profile?
+        internal var openGroupInvitation: _OpenGroupInvitation?
 
         // MARK: - NSCoding
         
@@ -201,10 +201,10 @@ public enum Legacy {
             if let syncTarget = coder.decodeObject(forKey: "syncTarget") as! String? { self.syncTarget = syncTarget }
             if let text = coder.decodeObject(forKey: "body") as! String? { self.text = text }
             if let attachmentIDs = coder.decodeObject(forKey: "attachments") as! [String]? { self.attachmentIDs = attachmentIDs }
-            if let quote = coder.decodeObject(forKey: "quote") as! Quote? { self.quote = quote }
-            if let linkPreview = coder.decodeObject(forKey: "linkPreview") as! LinkPreview? { self.linkPreview = linkPreview }
-            if let profile = coder.decodeObject(forKey: "profile") as! Profile? { self.profile = profile }
-            if let openGroupInvitation = coder.decodeObject(forKey: "openGroupInvitation") as! OpenGroupInvitation? { self.openGroupInvitation = openGroupInvitation }
+            if let quote = coder.decodeObject(forKey: "quote") as! _Quote? { self.quote = quote }
+            if let linkPreview = coder.decodeObject(forKey: "linkPreview") as! _LinkPreview? { self.linkPreview = linkPreview }
+            if let profile = coder.decodeObject(forKey: "profile") as! _Profile? { self.profile = profile }
+            if let openGroupInvitation = coder.decodeObject(forKey: "openGroupInvitation") as! _OpenGroupInvitation? { self.openGroupInvitation = openGroupInvitation }
         }
         
         public override func encode(with coder: NSCoder) {
@@ -213,9 +213,9 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+        override internal func toNonLegacy(_ instance: Message? = nil) throws -> Message {
             return try super.toNonLegacy(
-                SessionMessagingKit.VisibleMessage(
+                VisibleMessage(
                     syncTarget: syncTarget,
                     text: text,
                     attachmentIds: attachmentIDs,
@@ -229,7 +229,7 @@ public enum Legacy {
     }
     
     @objc(SNQuote)
-    internal class Quote: NSObject, NSCoding {
+    internal class _Quote: NSObject, NSCoding {
         internal var timestamp: UInt64?
         internal var publicKey: String?
         internal var text: String?
@@ -250,8 +250,8 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        internal func toNonLegacy() -> SessionMessagingKit.VisibleMessage.Quote {
-            return SessionMessagingKit.VisibleMessage.Quote(
+        internal func toNonLegacy() -> VisibleMessage.VMQuote {
+            return VisibleMessage.VMQuote(
                 timestamp: (timestamp ?? 0),
                 publicKey: (publicKey ?? ""),
                 text: text,
@@ -261,7 +261,7 @@ public enum Legacy {
     }
     
     @objc(SNLinkPreview)
-    internal class LinkPreview: NSObject, NSCoding {
+    internal class _LinkPreview: NSObject, NSCoding {
         internal var title: String?
         internal var url: String?
         internal var attachmentID: String?
@@ -280,8 +280,8 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        internal func toNonLegacy() -> SessionMessagingKit.VisibleMessage.LinkPreview {
-            return SessionMessagingKit.VisibleMessage.LinkPreview(
+        internal func toNonLegacy() -> VisibleMessage.VMLinkPreview {
+            return VisibleMessage.VMLinkPreview(
                 title: title,
                 url: (url ?? ""),
                 attachmentId: attachmentID
@@ -290,7 +290,7 @@ public enum Legacy {
     }
     
     @objc(SNProfile)
-    internal class Profile: NSObject, NSCoding {
+    internal class _Profile: NSObject, NSCoding {
         internal var displayName: String?
         internal var profileKey: Data?
         internal var profilePictureURL: String?
@@ -309,8 +309,8 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        internal func toNonLegacy() -> SessionMessagingKit.VisibleMessage.Profile {
-            return SessionMessagingKit.VisibleMessage.Profile(
+        internal func toNonLegacy() -> VisibleMessage.VMProfile {
+            return VisibleMessage.VMProfile(
                 displayName: (displayName ?? ""),
                 profileKey: profileKey,
                 profilePictureUrl: profilePictureURL
@@ -319,7 +319,7 @@ public enum Legacy {
     }
     
     @objc(SNOpenGroupInvitation)
-    internal class OpenGroupInvitation: NSObject, NSCoding {
+    internal class _OpenGroupInvitation: NSObject, NSCoding {
         internal var name: String?
         internal var url: String?
         
@@ -336,8 +336,8 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        internal func toNonLegacy() -> SessionMessagingKit.VisibleMessage.OpenGroupInvitation {
-            return SessionMessagingKit.VisibleMessage.OpenGroupInvitation(
+        internal func toNonLegacy() -> VisibleMessage.VMOpenGroupInvitation {
+            return VisibleMessage.VMOpenGroupInvitation(
                 name: (name ?? ""),
                 url: (url ?? "")
             )
@@ -345,10 +345,10 @@ public enum Legacy {
     }
     
     @objc(SNControlMessage)
-    internal class ControlMessage: Message {}
+    internal class _ControlMessage: _Message {}
     
     @objc(SNReadReceipt)
-    internal final class ReadReceipt: ControlMessage {
+    internal final class _ReadReceipt: _ControlMessage {
         internal var timestamps: [UInt64]?
 
         // MARK: - NSCoding
@@ -364,9 +364,9 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+        override internal func toNonLegacy(_ instance: Message? = nil) throws -> Message {
             return try super.toNonLegacy(
-                SessionMessagingKit.ReadReceipt(
+                ReadReceipt(
                     timestamps: (timestamps ?? [])
                 )
             )
@@ -374,7 +374,7 @@ public enum Legacy {
     }
     
     @objc(SNTypingIndicator)
-    internal final class TypingIndicator: ControlMessage {
+    internal final class _TypingIndicator: _ControlMessage {
         public var rawKind: Int?
 
         // MARK: - NSCoding
@@ -391,11 +391,11 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+        override internal func toNonLegacy(_ instance: Message? = nil) throws -> Message {
             return try super.toNonLegacy(
-                SessionMessagingKit.TypingIndicator(
-                    kind: SessionMessagingKit.TypingIndicator.Kind(
-                        rawValue: (rawKind ?? SessionMessagingKit.TypingIndicator.Kind.stopped.rawValue)
+                TypingIndicator(
+                    kind: TypingIndicator.Kind(
+                        rawValue: (rawKind ?? TypingIndicator.Kind.stopped.rawValue)
                     )
                     .defaulting(to: .stopped)
                 )
@@ -404,11 +404,11 @@ public enum Legacy {
     }
 
     @objc(SNClosedGroupControlMessage)
-    internal final class ClosedGroupControlMessage: ControlMessage {
+    internal final class _ClosedGroupControlMessage: _ControlMessage {
         internal var rawKind: String?
         
         internal var publicKey: Data?
-        internal var wrappers: [KeyPairWrapper]?
+        internal var wrappers: [_KeyPairWrapper]?
         internal var name: String?
         internal var encryptionKeyPair: SUKLegacy.KeyPair?
         internal var members: [Data]?
@@ -418,7 +418,7 @@ public enum Legacy {
         // MARK: - Key Pair Wrapper
         
         @objc(SNKeyPairWrapper)
-        internal final class KeyPairWrapper: NSObject, NSCoding {
+        internal final class _KeyPairWrapper: NSObject, NSCoding {
             internal var publicKey: String?
             internal var encryptedKeyPair: Data?
             
@@ -440,7 +440,7 @@ public enum Legacy {
             self.rawKind = coder.decodeObject(forKey: "kind") as? String
             
             self.publicKey = coder.decodeObject(forKey: "publicKey") as? Data
-            self.wrappers = coder.decodeObject(forKey: "wrappers") as? [KeyPairWrapper]
+            self.wrappers = coder.decodeObject(forKey: "wrappers") as? [_KeyPairWrapper]
             self.name = coder.decodeObject(forKey: "name") as? String
             self.encryptionKeyPair = coder.decodeObject(forKey: "encryptionKeyPair") as? SUKLegacy.KeyPair
             self.members = coder.decodeObject(forKey: "members") as? [Data]
@@ -456,9 +456,9 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+        override internal func toNonLegacy(_ instance: Message? = nil) throws -> Message {
             return try super.toNonLegacy(
-                SessionMessagingKit.ClosedGroupControlMessage(
+                ClosedGroupControlMessage(
                     kind: try {
                         switch rawKind {
                             case "new":
@@ -486,7 +486,7 @@ public enum Legacy {
                                 )
                                 
                             case "encryptionKeyPair":
-                                guard let wrappers: [KeyPairWrapper] = self.wrappers else {
+                                guard let wrappers: [_KeyPairWrapper] = self.wrappers else {
                                     SNLog("[Migration Error] Unable to decode Legacy ClosedGroupControlMessage")
                                     throw GRDBStorageError.migrationFailed
                                 }
@@ -546,7 +546,7 @@ public enum Legacy {
     }
     
     @objc(SNDataExtractionNotification)
-    internal final class DataExtractionNotification: ControlMessage {
+    internal final class _DataExtractionNotification: _ControlMessage {
         internal let rawKind: String?
         internal let timestamp: UInt64?
         
@@ -565,9 +565,9 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+        override internal func toNonLegacy(_ instance: Message? = nil) throws -> Message {
             return try super.toNonLegacy(
-                SessionMessagingKit.DataExtractionNotification(
+                DataExtractionNotification(
                     kind: try {
                         switch rawKind {
                             case "screenshot": return .screenshot
@@ -588,7 +588,7 @@ public enum Legacy {
     }
     
     @objc(SNExpirationTimerUpdate)
-    internal final class ExpirationTimerUpdate: ControlMessage {
+    internal final class _ExpirationTimerUpdate: _ControlMessage {
         internal var syncTarget: String?
         internal var duration: UInt32?
         
@@ -606,9 +606,9 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+        override internal func toNonLegacy(_ instance: Message? = nil) throws -> Message {
             return try super.toNonLegacy(
-                SessionMessagingKit.ExpirationTimerUpdate(
+                ExpirationTimerUpdate(
                     syncTarget: syncTarget,
                     duration: (duration ?? 0)
                 )
@@ -617,24 +617,24 @@ public enum Legacy {
     }
     
     @objc(SNConfigurationMessage)
-    internal final class ConfigurationMessage: ControlMessage {
-        internal var closedGroups: Set<CMClosedGroup> = []
+    internal final class _ConfigurationMessage: _ControlMessage {
+        internal var closedGroups: Set<_CMClosedGroup> = []
         internal var openGroups: Set<String> = []
         internal var displayName: String?
         internal var profilePictureURL: String?
         internal var profileKey: Data?
-        internal var contacts: Set<CMContact> = []
+        internal var contacts: Set<_CMContact> = []
         
         // MARK: - NSCoding
         
         public required init?(coder: NSCoder) {
             super.init(coder: coder)
-            if let closedGroups = coder.decodeObject(forKey: "closedGroups") as! Set<CMClosedGroup>? { self.closedGroups = closedGroups }
+            if let closedGroups = coder.decodeObject(forKey: "closedGroups") as! Set<_CMClosedGroup>? { self.closedGroups = closedGroups }
             if let openGroups = coder.decodeObject(forKey: "openGroups") as! Set<String>? { self.openGroups = openGroups }
             if let displayName = coder.decodeObject(forKey: "displayName") as! String? { self.displayName = displayName }
             if let profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String? { self.profilePictureURL = profilePictureURL }
             if let profileKey = coder.decodeObject(forKey: "profileKey") as! Data? { self.profileKey = profileKey }
-            if let contacts = coder.decodeObject(forKey: "contacts") as! Set<CMContact>? { self.contacts = contacts }
+            if let contacts = coder.decodeObject(forKey: "contacts") as! Set<_CMContact>? { self.contacts = contacts }
         }
 
         public override func encode(with coder: NSCoder) {
@@ -643,9 +643,9 @@ public enum Legacy {
     
         // MARK: Non-Legacy Conversion
         
-        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+        override internal func toNonLegacy(_ instance: Message? = nil) throws -> Message {
             return try super.toNonLegacy(
-                SessionMessagingKit.ConfigurationMessage(
+                ConfigurationMessage(
                     displayName: displayName,
                     profilePictureUrl: profilePictureURL,
                     profileKey: profileKey,
@@ -662,7 +662,7 @@ public enum Legacy {
     }
 
     @objc(CMClosedGroup)
-    internal final class CMClosedGroup: NSObject, NSCoding {
+    internal final class _CMClosedGroup: NSObject, NSCoding {
         internal let publicKey: String
         internal let name: String
         internal let encryptionKeyPair: SUKLegacy.KeyPair
@@ -695,8 +695,8 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        internal func toNonLegacy() -> SessionMessagingKit.ConfigurationMessage.CMClosedGroup {
-            return SessionMessagingKit.ConfigurationMessage.CMClosedGroup(
+        internal func toNonLegacy() -> ConfigurationMessage.CMClosedGroup {
+            return ConfigurationMessage.CMClosedGroup(
                 publicKey: publicKey,
                 name: name,
                 encryptionKeyPublicKey: encryptionKeyPair.publicKey,
@@ -709,7 +709,7 @@ public enum Legacy {
     }
 
     @objc(SNConfigurationMessageContact)
-    internal final class CMContact: NSObject, NSCoding {
+    internal final class _CMContact: NSObject, NSCoding {
         internal var publicKey: String?
         internal var displayName: String?
         internal var profilePictureURL: String?
@@ -748,8 +748,8 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        internal func toNonLegacy() -> SessionMessagingKit.ConfigurationMessage.CMContact {
-            return SessionMessagingKit.ConfigurationMessage.CMContact(
+        internal func toNonLegacy() -> ConfigurationMessage.CMContact {
+            return ConfigurationMessage.CMContact(
                 publicKey: publicKey,
                 displayName: displayName,
                 profilePictureUrl: profilePictureURL,
@@ -765,7 +765,7 @@ public enum Legacy {
     }
     
     @objc(SNUnsendRequest)
-    internal final class UnsendRequest: ControlMessage {
+    internal final class _UnsendRequest: _ControlMessage {
         internal var timestamp: UInt64?
         internal var author: String?
         
@@ -784,9 +784,9 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+        override internal func toNonLegacy(_ instance: Message? = nil) throws -> Message {
             return try super.toNonLegacy(
-                SessionMessagingKit.UnsendRequest(
+                UnsendRequest(
                     timestamp: (timestamp ?? 0),
                     author: (author ?? "")
                 )
@@ -795,7 +795,7 @@ public enum Legacy {
     }
     
     @objc(SNMessageRequestResponse)
-    internal final class MessageRequestResponse: ControlMessage {
+    internal final class _MessageRequestResponse: _ControlMessage {
         internal var isApproved: Bool
         
         // MARK: - NSCoding
@@ -812,9 +812,9 @@ public enum Legacy {
         
         // MARK: Non-Legacy Conversion
         
-        override internal func toNonLegacy(_ instance: SessionMessagingKit.Message? = nil) throws -> SessionMessagingKit.Message {
+        override internal func toNonLegacy(_ instance: Message? = nil) throws -> Message {
             return try super.toNonLegacy(
-                SessionMessagingKit.MessageRequestResponse(
+                MessageRequestResponse(
                     isApproved: isApproved
                 )
             )
@@ -824,9 +824,9 @@ public enum Legacy {
     // MARK: - Attachments
     
     @objc(TSAttachment)
-    internal class Attachment: NSObject, NSCoding {
+    internal class _Attachment: NSObject, NSCoding {
         @objc(TSAttachmentType)
-        public enum AttachmentType: Int {
+        public enum _AttachmentType: Int {
             case `default`
             case voiceMessage
         }
@@ -835,7 +835,7 @@ public enum Legacy {
         @objc public var encryptionKey: Data?
         @objc public var contentType: String
         @objc public var isDownloaded: Bool
-        @objc public var attachmentType: AttachmentType
+        @objc public var attachmentType: _AttachmentType
         @objc public var downloadURL: String
         @objc public var byteCount: UInt32
         @objc public var sourceFilename: String?
@@ -856,7 +856,7 @@ public enum Legacy {
             self.encryptionKey = coder.decodeObject(forKey: "encryptionKey") as? Data
             self.contentType = coder.decodeObject(forKey: "contentType") as! String
             self.isDownloaded = (coder.decodeObject(forKey: "isDownloaded") as? Bool == true)
-            self.attachmentType = AttachmentType(
+            self.attachmentType = _AttachmentType(
                 rawValue: (coder.decodeObject(forKey: "attachmentType") as! NSNumber).intValue
             ).defaulting(to: .default)
             self.downloadURL = (coder.decodeObject(forKey: "downloadURL") as? String ?? "")
@@ -869,15 +869,15 @@ public enum Legacy {
     }
     
     @objc(TSAttachmentPointer)
-    internal class AttachmentPointer: Attachment {
+    internal class _AttachmentPointer: _Attachment {
         @objc(TSAttachmentPointerState)
-        public enum State: Int {
+        public enum _State: Int {
             case enqueued
             case downloading
             case failed
         }
         
-        @objc public var state: State
+        @objc public var state: _State
         @objc public var mostRecentFailureLocalizedText: String?
         @objc public var digest: Data?
         @objc public var mediaSize: CGSize
@@ -886,7 +886,7 @@ public enum Legacy {
         // MARK: - NSCoder
         
         public required init(coder: NSCoder) {
-            self.state = State(
+            self.state = _State(
                 rawValue: coder.decodeObject(forKey: "state") as! Int
             ).defaulting(to: .failed)
             self.mostRecentFailureLocalizedText = coder.decodeObject(forKey: "mostRecentFailureLocalizedText") as? String
@@ -903,7 +903,7 @@ public enum Legacy {
     }
     
     @objc(TSAttachmentStream)
-    internal class AttachmentStream: Attachment {
+    internal class _AttachmentStream: _Attachment {
         @objc public var digest: Data?
         @objc public var isUploaded: Bool
         @objc public var creationTimestamp: Date
@@ -947,9 +947,9 @@ public enum Legacy {
     }
 
     @objc(NotifyPNServerJob)
-    internal final class NotifyPNServerJob: NSObject, NSCoding {
+    internal final class _NotifyPNServerJob: NSObject, NSCoding {
         @objc(SnodeMessage)
-        internal final class SnodeMessage: NSObject, NSCoding {
+        internal final class _SnodeMessage: NSObject, NSCoding {
             public let recipient: String
             public let data: LosslessStringConvertible
             public let ttl: UInt64
@@ -978,7 +978,7 @@ public enum Legacy {
             }
         }
         
-        public let message: SnodeMessage
+        public let message: _SnodeMessage
         public var id: String?
         public var failureCount: UInt = 0
 
@@ -986,7 +986,7 @@ public enum Legacy {
         
         public init?(coder: NSCoder) {
             guard
-                let message = coder.decodeObject(forKey: "message") as! SnodeMessage?,
+                let message = coder.decodeObject(forKey: "message") as! _SnodeMessage?,
                 let id = coder.decodeObject(forKey: "id") as! String?
             else { return nil }
             
@@ -1001,7 +1001,7 @@ public enum Legacy {
     }
 
     @objc(MessageReceiveJob)
-    public final class MessageReceiveJob: NSObject, NSCoding {
+    public final class _MessageReceiveJob: NSObject, NSCoding {
         public let data: Data
         public let serverHash: String?
         public let openGroupMessageServerID: UInt64?
@@ -1037,29 +1037,29 @@ public enum Legacy {
     }
 
     @objc(SNMessageSendJob)
-    internal final class MessageSendJob: NSObject, NSCoding {
-        internal let message: Message
-        internal let destination: SessionMessagingKit.Message.Destination
+    internal final class _MessageSendJob: NSObject, NSCoding {
+        internal let message: _Message
+        internal let destination: Message.Destination
         internal var id: String?
         internal var failureCount: UInt = 0
 
         // MARK: - Coding
         
         public init?(coder: NSCoder) {
-            guard let message = coder.decodeObject(forKey: "message") as! Message?,
+            guard let message = coder.decodeObject(forKey: "message") as! _Message?,
                 let rawDestination = coder.decodeObject(forKey: "destination") as! String?,
                 let id = coder.decodeObject(forKey: "id") as! String?
             else { return nil }
             
             self.message = message
             
-            if let destString: String = MessageSendJob.process(rawDestination, type: "contact") {
+            if let destString: String = _MessageSendJob.process(rawDestination, type: "contact") {
                 destination = .contact(publicKey: destString)
             }
-            else if let destString: String = MessageSendJob.process(rawDestination, type: "closedGroup") {
+            else if let destString: String = _MessageSendJob.process(rawDestination, type: "closedGroup") {
                 destination = .closedGroup(groupPublicKey: destString)
             }
-            else if let destString: String = MessageSendJob.process(rawDestination, type: "openGroup") {
+            else if let destString: String = _MessageSendJob.process(rawDestination, type: "openGroup") {
                 let components = destString
                     .split(separator: ",")
                     .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -1069,7 +1069,7 @@ public enum Legacy {
                 let server = components[1]
                 destination = .openGroup(channel: channel, server: server)
             }
-            else if let destString: String = MessageSendJob.process(rawDestination, type: "openGroupV2") {
+            else if let destString: String = _MessageSendJob.process(rawDestination, type: "openGroupV2") {
                 let components = destString
                     .split(separator: ",")
                     .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -1107,7 +1107,7 @@ public enum Legacy {
     }
     
     @objc(AttachmentUploadJob)
-    internal final class AttachmentUploadJob: NSObject, NSCoding {
+    internal final class _AttachmentUploadJob: NSObject, NSCoding {
         internal let attachmentID: String
         internal let threadID: String
         internal let message: Message
@@ -1140,7 +1140,7 @@ public enum Legacy {
     }
     
     @objc(AttachmentDownloadJob)
-    public final class AttachmentDownloadJob: NSObject, NSCoding {
+    public final class _AttachmentDownloadJob: NSObject, NSCoding {
         public let attachmentID: String
         public let tsMessageID: String
         public let threadID: String
@@ -1171,7 +1171,7 @@ public enum Legacy {
         }
     }
     
-    public final class DisappearingConfigurationUpdateInfoMessage: TSInfoMessage {
+    public final class _DisappearingConfigurationUpdateInfoMessage: TSInfoMessage {
         // Note: Due to how Mantle works we need to set default values for these as the 'init(dictionary:)'
         // method doesn't actually get values for them but the must be set before calling a super.init method
         // so this allows us to work around the behaviour until 'init(coder:)' method completes it's super call

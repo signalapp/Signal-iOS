@@ -1,3 +1,5 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import UIKit
 import SessionMessagingKit
 
@@ -7,59 +9,63 @@ public enum SwipeState {
     case cancelled
 }
 
-class MessageCell : UITableViewCell {
+class MessageCell: UITableViewCell {
     weak var delegate: MessageCellDelegate?
-    var thread: TSThread? {
-        didSet {
-            if viewItem != nil { update() }
-        }
-    }
-    var viewItem: ConversationViewItem? {
-        didSet {
-            if thread != nil { update() }
-        }
-    }
+    var item: ConversationViewModel.Item?
+
+    // MARK: - Lifecycle
     
-    // MARK: Settings
-    class var identifier: String { preconditionFailure("Must be overridden by subclasses.") }
-    
-    // MARK: Lifecycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
         setUpViewHierarchy()
         setUpGestureRecognizers()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        
         setUpViewHierarchy()
         setUpGestureRecognizers()
     }
 
     func setUpViewHierarchy() {
         backgroundColor = .clear
+        
         let selectedBackgroundView = UIView()
         selectedBackgroundView.backgroundColor = .clear
         self.selectedBackgroundView = selectedBackgroundView
     }
-    
+
     func setUpGestureRecognizers() {
         // To be overridden by subclasses
     }
+
+    // MARK: - Updating
     
-    // MARK: Updating
-    func update() {
+    func update(with item: ConversationViewModel.Item, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
         preconditionFailure("Must be overridden by subclasses.")
     }
     
-    // MARK: Convenience
-    static func getCellType(for viewItem: ConversationViewItem) -> MessageCell.Type {
-        switch viewItem.interaction {
-        case is TSIncomingMessage: fallthrough
-        case is TSOutgoingMessage: return VisibleMessageCell.self
-        case is TSInfoMessage: return InfoMessageCell.self
-        case is TypingIndicatorInteraction: return TypingIndicatorCell.self
-        default: preconditionFailure()
+    /// This is a cut-down version of the 'update' function which doesn't re-create the UI (it should be used for dynamically-updating content
+    /// like playing inline audio/video)
+    func dynamicUpdate(with item: ConversationViewModel.Item, playbackInfo: ConversationViewModel.PlaybackInfo?) {
+        preconditionFailure("Must be overridden by subclasses.")
+    }
+
+    // MARK: - Convenience
+    
+    static func cellType(for item: ConversationViewModel.Item) -> MessageCell.Type {
+        guard item.cellType != .typingIndicator else { return TypingIndicatorCell.self }
+        
+        switch item.interactionVariant {
+            case .standardOutgoing, .standardIncoming, .standardIncomingDeleted:
+                return VisibleMessageCell.self
+                
+            case .infoClosedGroupCreated, .infoClosedGroupUpdated, .infoClosedGroupCurrentUserLeft,
+                .infoDisappearingMessagesUpdate, .infoScreenshotNotification, .infoMediaSavedNotification,
+                .infoMessageRequestAccepted:
+                return InfoMessageCell.self
         }
     }
 }

@@ -4,10 +4,12 @@ import Foundation
 import SessionUtilitiesKit
 
 public extension VisibleMessage {
-    struct Profile: Codable {
+    struct VMProfile: Codable {
         public let displayName: String?
         public let profileKey: Data?
         public let profilePictureUrl: String?
+        
+        // MARK: - Initialization
 
         internal init(displayName: String, profileKey: Data? = nil, profilePictureUrl: String? = nil) {
             self.displayName = displayName
@@ -17,13 +19,13 @@ public extension VisibleMessage {
 
         // MARK: - Proto Conversion
 
-        public static func fromProto(_ proto: SNProtoDataMessage) -> Profile? {
+        public static func fromProto(_ proto: SNProtoDataMessage) -> VMProfile? {
             guard
                 let profileProto = proto.profile,
                 let displayName = profileProto.displayName
             else { return nil }
             
-            return Profile(
+            return VMProfile(
                 displayName: displayName,
                 profileKey: proto.profileKey,
                 profilePictureUrl: profileProto.profilePicture
@@ -68,8 +70,8 @@ public extension VisibleMessage {
 
 // MARK: - Conversion
 
-extension VisibleMessage.Profile {
-    init(profile: SessionMessagingKit.Profile) {
+extension VisibleMessage.VMProfile {
+    init(profile: Profile) {
         self.displayName = profile.name
         self.profileKey = profile.profileEncryptionKey?.keyData
         self.profilePictureUrl = profile.profilePictureUrl
