@@ -170,7 +170,23 @@ const NSUInteger kMinimumSearchLength = 1;
 - (void)viewSafeAreaInsetsDidChange
 {
     [super viewSafeAreaInsetsDidChange];
-    self.searchBar.layoutMargins = self.tableViewController.cellOuterInsets;
+    [self updateSearchBarMargins];
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    [self updateSearchBarMargins];
+}
+
+- (void)updateSearchBarMargins
+{
+    // This should ideally compute the insets for self.tableView, but that
+    // view's size hasn't been updated when the viewDidLayoutSubviews method is
+    // called. As a quick fix, use self.view's size, which matches the eventual
+    // width of self.tableView. (A more complete fix would likely add a
+    // callback when self.tableView’s size is available.)
+    self.searchBar.layoutMargins = [OWSTableViewController2 cellOuterInsetsIn:self.view];
 }
 
 - (void)dealloc
