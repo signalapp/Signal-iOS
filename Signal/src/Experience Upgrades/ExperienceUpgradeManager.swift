@@ -188,7 +188,7 @@ class ExperienceUpgradeManager: NSObject {
         case .contactPermissionReminder:
             return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .subscriptionMegaphone:
-            return SubscriptionMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+            return DonationMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }

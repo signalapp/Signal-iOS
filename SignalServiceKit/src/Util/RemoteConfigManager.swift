@@ -20,7 +20,7 @@ public class RemoteConfig: BaseFlags {
          valueFlags: [String: AnyObject]) {
         self.isEnabledFlags = isEnabledFlags
         self.valueFlags = valueFlags
-        self.subscriptionMegaphone = Self.isCountryCodeBucketEnabled(.subscriptionMegaphone2, valueFlags: valueFlags)
+        self.subscriptionMegaphone = Self.isCountryCodeBucketEnabled(.donationMegaphone, valueFlags: valueFlags)
         self.standardMediaQualityLevel = Self.determineStandardMediaQualityLevel(valueFlags: valueFlags)
         self.paymentsDisabledRegions = Self.parsePaymentsDisabledRegions(valueFlags: valueFlags)
     }
@@ -121,7 +121,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var subscriptionMegaphoneSnoozeInterval: TimeInterval {
-        interval(.subscriptionMegaphoneSnoozeInterval, defaultInterval: kMonthInterval * 6)
+        interval(.donationMegaphoneSnoozeInterval, defaultInterval: kMonthInterval * 6)
     }
 
     @objc
@@ -415,8 +415,8 @@ private struct Flags {
         case automaticSessionResetAttemptInterval
         case reactiveProfileKeyAttemptInterval
         case paymentsDisabledRegions
-        case subscriptionMegaphone2
-        case subscriptionMegaphoneSnoozeInterval
+        case donationMegaphone
+        case donationMegaphoneSnoozeInterval
     }
 
     // We filter the received config down to just the supported values.
@@ -434,8 +434,8 @@ private struct Flags {
         case replaceableInteractionExpiration
         case messageSendLogEntryLifetime
         case paymentsDisabledRegions
-        case subscriptionMegaphone2
-        case subscriptionMegaphoneSnoozeInterval
+        case donationMegaphone
+        case donationMegaphoneSnoozeInterval
     }
 }
 
