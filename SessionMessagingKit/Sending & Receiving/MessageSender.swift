@@ -324,7 +324,7 @@ public final class MessageSender : NSObject {
                     server,
                     room,
                     whisperTo,
-                    (whisperTo == nil && whisperMods ? "mods" : nil)
+                    (whisperMods ? "mods" : nil)
                 ]
                 .compactMap { $0 }
                 .joined(separator: ".")
