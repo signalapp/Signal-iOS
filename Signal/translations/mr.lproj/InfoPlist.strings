@@ -1,6 +1,6 @@
-NSAppleMusicUsageDescription = "Signal ला मिडीया संलग्नके प्ले करण्यासाठी Apple म्युझिक वापरण्याची गरज आहे.";
+NSAppleMusicUsageDescription = "Signal ला मिडीया संलग्नके चालवण्यासाठी Apple म्युझिक वापरण्याची गरज आहे.";
 NSCameraUsageDescription = "Signal फोटो घेण्यासाठी आणि व्हिडिओ कॉल करण्यासाठी आपला कॅमेरा वापरतो.";
-NSContactsUsageDescription = "Signal आपल्या ओळखीचे वापरकर्ता शोधण्यासाठी आपल्या संपर्काचा वापर करतो. आम्ही आपले संपर्क सर्व्हरमध्ये ठेवत नाही.";
+NSContactsUsageDescription = "Signal आपल्या ओळखीचे वापरकर्ता शोधण्यासाठी आपल्या संपर्काचा वापर करतो. आम्ही आपले संपर्क सर्व्हरमध्ये साठवत नाही.";
 NSFaceIDUsageDescription = "Signal च्या स्क्रीन लॉक मध्ये फेस आयडीचा वापर केला जातो.";
 NSLocationWhenInUseUsageDescription = "आपले हल्लीचे स्थान सामायिक करण्यासाठी Signal ला आपले स्थान अॅक्सेस करण्याची आवश्यकता आहे.";
 NSMicrophoneUsageDescription = "फोन कॉल्स करण्यासाठी आणि  प्राप्त करण्यासाठी आणि व्हॉईस संदेश रेकॉर्ड करण्यासाठी Signal ला आपला मायक्रोफोन अॅक्सेस करण्याची आवश्यकता आहे. ";

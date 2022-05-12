@@ -1,2 +1,2 @@
-• If you're a donor, we've reorganized some of the screens to make it easier to manage your subscription, badges, and receipts. Thanks for supporting Signal!
-• Poprawki innych błędów i wydajności, pomagających zapewnić płynne działanie aplikacji.
+• Zmodyfikowaliśmy kilka ekranów, aby ułatwić Ci zarządzanie Twoją subskrypcją, odznakami i fakturami. Dzięki, że wspierasz Signal!
+• Naprawiliśmy kilka błędów powodujących zawieszanie się aplikacji.

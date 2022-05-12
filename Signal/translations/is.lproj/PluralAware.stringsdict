@@ -13,25 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Messaggio vocale 1 secondo</string>
+			<string>Talskilaboð 1 sekúnda</string>
 			<key>other</key>
-			<string>Messaggio vocale %d secondi</string>
-		</dict>
-	</dict>
-	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Aggiungi membro</string>
-			<key>other</key>
-			<string>Aggiungi membri</string>
+			<string>Talskilaboð %d sekúndur</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -45,9 +29,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aggiungere membro a “%2$@”?</string>
+			<string>Bæta meðlimi í "%2$@"?</string>
 			<key>other</key>
-			<string>Aggiungere %d membri a “%2$@”?</string>
+			<string>Bæta %d meðlimum í “%2$@”?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -61,9 +45,25 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aggiungi nuovo membro</string>
+			<string>Bæta við nýjum meðlimi</string>
 			<key>other</key>
-			<string>Aggiungi nuovi membri</string>
+			<string>Bæta við nýjum meðlimum</string>
+		</dict>
+	</dict>
+	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Bæta við meðlimi</string>
+			<key>other</key>
+			<string>Bæta við meðlimum</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Questo colore personalizzato è usato in 1 chat. Vuoi eliminarlo?</string>
+			<string>Þessi sérsniðni litur er notaður í 1 spjallrás. Viltu eyða honum?</string>
 			<key>other</key>
-			<string>Questo colore personalizzato è usato in %d chat. Vuoi eliminarlo per tutte le chat?</string>
+			<string>Þessi sérsniðni litur er notaður í %d spjallrásum. Viltu eyða honum í öllum spjallrásum?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Questo colore è usato in 1 chat. Vuoi salvare le modifiche per tutte le chat?</string>
+			<string>Þessi litur er notaður í 1 spjallrás. Viltu vista breytingar í öllum spjallrásum?</string>
 			<key>other</key>
-			<string>Questo colore è usato in %d chat. Vuoi salvare le modifiche per tutte le chat?</string>
+			<string>Þessi litur er notaður í %d spjallrásum. Viltu vista breytingar í þeim öllum?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Eliminare chat?</string>
+			<string>Eyða spjalli?</string>
 			<key>other</key>
-			<string>Eliminare %d chat?</string>
+			<string>Eyða %d spjallþráðum?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Questa chat verrà eliminata da questo dispositivo.</string>
+			<string>Þessu spjalli verður eytt úr þessu tæki.</string>
 			<key>other</key>
-			<string>Queste chat verranno eliminate da questo dispositivo.</string>
+			<string>Þessum spallþráðum verður eytt úr þessu tæki.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can't select more than 1 chat.</string>
+			<string>Ekki er hægt að velja fleiri en 1 spjallþráð.</string>
 			<key>other</key>
-			<string>You can't select more than %d chats.</string>
+			<string>Ekki er hægt að velja fleiri en %d spjallþræði.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -168,9 +168,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>risultato</string>
+			<string>samsvörun</string>
 			<key>other</key>
-			<string>di %d risultati</string>
+			<string>af %d samsvörunum</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -184,9 +184,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membro</string>
+			<string>1 meðlimur</string>
 			<key>other</key>
-			<string>%d membri</string>
+			<string>%d meðlimir</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -200,9 +200,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 gruppo in comune</string>
+			<string>1 sameiginlegur hópur</string>
 			<key>other</key>
-			<string>%d gruppi in comune</string>
+			<string>%d hópar sameiginlegir</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -216,9 +216,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%dmin</string>
+			<string>%dm</string>
 			<key>other</key>
-			<string>%dmin</string>
+			<string>%dm</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -232,9 +232,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 minuto fa</string>
+			<string>fyrir 1 mínútu</string>
 			<key>other</key>
-			<string>%d minuti fa</string>
+			<string>fyrir %d mínútum</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -248,9 +248,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Eliminare il messaggio?</string>
+			<string>Eyða skilaboðum?</string>
 			<key>other</key>
-			<string>Eliminare %d messaggi?</string>
+			<string>Eyða %d skilaboðum?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -264,9 +264,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Massima dimensione del gruppo di %d membro raggiunta.</string>
+			<string>Hámarksstærð hóps upp á %d meðlim er náð.</string>
 			<key>other</key>
-			<string>Massima dimensione del gruppo di %d membri raggiunta.</string>
+			<string>Hámarksstærð hóps upp á %d meðlimi er náð.</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -280,9 +280,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>La tua versione di Signal scadrà in 1 giorno. Tocca per aggiornare alla versione più recente.</string>
+			<string>Útgáfa þín af Signal rennur út eftir 1 dag. Ýttu til að uppfæra í nýjustu útgáfuna.</string>
 			<key>other</key>
-			<string>La tua versione di Signal scadrà in %d giorni. Tocca per aggiornare alla versione più recente.</string>
+			<string>Útgáfa þín af Signal rennur út eftir %d daga. Ýttu til að uppfæra í nýjustu útgáfuna.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -296,105 +296,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invia messaggio</string>
+			<string>Senda skilaboð</string>
 			<key>other</key>
-			<string>Invia %d messaggi</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Questo gruppo non può essere creato perché 1 membro utilizza una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo. %2$@</string>
-			<key>other</key>
-			<string>Questo gruppo non può essere creato perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo. %2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Questo gruppo non può essere creato perché 1 membro utilizza una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo.</string>
-			<key>other</key>
-			<string>Questo gruppo non può essere creato perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 membro non supporta i Nuovi Gruppi, quindi questo sarà un Gruppo Legacy. %2$@</string>
-			<key>other</key>
-			<string>%d membri non supportano i Nuovi Gruppi, quindi questo sarà un Gruppo Legacy. %2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Verrà creato un Gruppo Legacy perché 1 membro utilizza una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo aver aggiornato Signal o puoi rimuoverli prima di creare il Gruppo.</string>
-			<key>other</key>
-			<string>Verrà creato un Gruppo Legacy perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo aver aggiornato Signal o puoi rimuoverli prima di creare il Gruppo.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Non è stato possibile aggiungere di nuovo 1 membro al Nuovo Gruppo. Vuoi aggiungerlo adesso?</string>
-			<key>other</key>
-			<string>Non è stato possibile aggiungere di nuovo %d membri al Nuovo Gruppo. Vuoi aggiungerli adesso?</string>
-		</dict>
-	</dict>
-	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>I gruppi di Signal funzionano meglio con 1 membro o meno. Aggiungere più membri causerà ritardi nell'invio e nella ricezione dei messaggi.</string>
-			<key>other</key>
-			<string>I gruppi di Signal funzionano meglio con %d membri o meno. Aggiungere più membri causerà ritardi nell'invio e nella ricezione dei messaggi.</string>
+			<string>Senda %d skilaboð</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -408,9 +312,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>È stato raggiunto il numero massimo di 1 partecipante per questa chiamata. Riprova più tardi.</string>
+			<string>Takmörkum á hámarksfjöldanum 1 þátttakandi í þessu símtali hefur verið náð. Reyndu aftur síðar.</string>
 			<key>other</key>
-			<string>È stato raggiunto il numero massimo di %d partecipanti per questa chiamata. Riprova più tardi.</string>
+			<string>Takmörkum á hámarksfjöldanum %d þátttakendum í þessu símtali hefur verið náð. Reyndu aftur síðar.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -424,9 +328,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>In questa chiamata · 1 persona</string>
+			<string>Í þessu símtali · 1 aðili</string>
 			<key>other</key>
-			<string>In questa chiamata · %d persone</string>
+			<string>Í þessu símtali · %d aðilar</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -440,9 +344,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, e 1 altro sono in questa chiamata</string>
+			<string>%2$@, %3$@ og 1 til viðbótar eru í þessu símtali</string>
 			<key>other</key>
-			<string>%2$@, %3$@, e altri %d sono in questa chiamata</string>
+			<string>%2$@, %3$@ og %d til viðbótar eru í þessu símtali</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -456,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, e 1 altro si sono uniti alla chiamata</string>
+			<string>%2$@, %3$@ og 1 til viðbótar komu inn í símtalið</string>
 			<key>other</key>
-			<string>%2$@, %3$@, e altri %d si sono uniti alla chiamata</string>
+			<string>%2$@, %3$@ og %d til viðbótar komu inn í símtalið</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -472,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, e 1 altro hanno lasciato la chiamata</string>
+			<string>%2$@, %3$@ og 1 til viðbótar hættu í símtalinu</string>
 			<key>other</key>
-			<string>%2$@, %3$@, e altri %d hanno lasciato la chiamata</string>
+			<string>%2$@, %3$@ og %d til viðbótar hættu í símtalinu</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -488,57 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invito inviato</string>
+			<string>Boð var sent</string>
 			<key>other</key>
-			<string>%d inviti inviati</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 membro del gruppo ha nome simile.</string>
-			<key>other</key>
-			<string>%d membri del gruppo hanno nomi simili.</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 membro del gruppo ha nome simile, controlla il membro di seguito o scegli di agire.</string>
-			<key>other</key>
-			<string>%d membri del gruppo hanno nomi simili, controlla i membri di seguito o scegli di agire.</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 membro del gruppo ha lo stesso nome, controlla il membro di seguito o scegli di agire.</string>
-			<key>other</key>
-			<string>%d membri del gruppo hanno lo stesso nome, controlla i membri di seguito o scegli di agire.</string>
+			<string>%d boð send</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -552,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membro</string>
+			<string>1 meðlimur</string>
 			<key>other</key>
-			<string>%d membri</string>
+			<string>%d meðlimir</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -568,12 +424,12 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membro</string>
+			<string>1 meðlimur</string>
 			<key>other</key>
-			<string>%d membri</string>
+			<string>%d meðlimir</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
+	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -584,15 +440,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 persona è stata invitata al gruppo.</string>
+			<string>1 meðlimur hóps er með svipað nafn.</string>
 			<key>other</key>
-			<string>%d persone sono state invitate al gruppo.</string>
+			<string>%d meðlimir hóps eru með svipuð nöfn.</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
+	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
+		<string>%#@text@</string>
 		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -600,9 +456,25 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ ha invitato 1 persona al gruppo.</string>
+			<string>1 hópmeðlimur eru með svipað nafn, yfirfarðu meðliminn hér fyrir neðan og ákveddu hvað eigi að gera.</string>
 			<key>other</key>
-			<string>%2$@ ha invitato %d persone al gruppo.</string>
+			<string>%d hópmeðlimir eru með svipað nafn, yfirfarðu meðlimina hér fyrir neðan og ákveddu hvað eigi að gera.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 hópmeðlimur eru með sama nafn, yfirfarðu meðliminn hér fyrir neðan og ákveddu hvað eigi að gera.</string>
+			<key>other</key>
+			<string>%d hópmeðlimir eru með sama nafn, yfirfarðu meðlimina hér fyrir neðan og ákveddu hvað eigi að gera.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -616,9 +488,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>L'invito al gruppo è stato revocato per 1 persona.</string>
+			<string>Boð til 1 aðila um að ganga í hópinn var afturkallað.</string>
 			<key>other</key>
-			<string>Gli inviti al gruppo sono stati revocati per %d persone.</string>
+			<string>Boð til %d aðila um að ganga í hópinn var afturkallað.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -632,9 +504,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ ha revocato un invito al gruppo per 1 persona.</string>
+			<string>%2$@ afturkallaði boð til 1 aðila um að ganga í hópinn.</string>
 			<key>other</key>
-			<string>%2$@ ha revocato un invito al gruppo per %d persone.</string>
+			<string>%2$@ afturkallaði boð til %d aðila um að ganga í hópinn.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 aðila var boðið að ganga í hópinn.</string>
+			<key>other</key>
+			<string>%d aðilum var boðið að ganga í hópinn.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@ bauð 1 aðila í hópinn.</string>
+			<key>other</key>
+			<string>%2$@ bauð %d aðilum að ganga í hópinn.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -648,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Un membro non può essere aggiunto al Nuovo Gruppo ed è stato rimosso dal gruppo.</string>
+			<string>Ekki var hægt að bæta meðlimi í nýju gerðina af hópum og var hann því fjarlægður.</string>
 			<key>other</key>
-			<string>%d membri non possono essere aggiunti al Nuovo Gruppo e sono stati rimossi dal gruppo.</string>
+			<string>Ekki var hægt að bæta %d meðlimum í nýju gerðina af hópum og voru þeir því fjarlægðir.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -664,9 +568,105 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Un membro non può essere aggiunto al Nuovo Gruppo ed è stato invitato a unirsi.</string>
+			<string>Ekki var hægt að bæta meðlimi í nýju gerðina af hópum og var honum því boðin innganga.</string>
 			<key>other</key>
-			<string>%d membri non possono essere aggiunti al Nuovo Gruppo e sono stati invitati a unirsi.</string>
+			<string>Ekki var hægt að bæta %d meðlimum í nýju gerðina af hópum og var þeim því boðin innganga.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ekki er hægt að búa til þennan hóp þar sem 1 meðlimur er að nota gamla útgáfu af Signal. Þú getur búið til hóp af nýju gerðinni með viðkomandi eftir að hann hefur uppfært Signal, eða að fjarlægja hann áður en hópurinn er útbúinn. %2$@</string>
+			<key>other</key>
+			<string>Ekki er hægt að búa til þennan hóp þar sem %d meðlimir eru að nota gamla útgáfu af Signal. Þú getur búið til hóp af nýju gerðinni með viðkomandi eftir að þeir hafa uppfært Signal, eða að fjarlægja þessa meðlimi áður en hópurinn er útbúinn. %2$@</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 meðlimur er ekki með stuðning við nýju gerðina af hópum, þannig að þessi hópur verður af eldri gerðinni. %2$@</string>
+			<key>other</key>
+			<string>%d meðlimir eru ekki með stuðning við nýju gerðina af hópum, þannig að þessi hópur verður af eldri gerðinni. %2$@</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ekki er hægt að búa til þennan hóp þar sem 1 meðlimur er að nota gamla útgáfu af Signal. Þú getur búið til hóp af nýju gerðinni með viðkomandi eftir að hann hefur uppfært Signal, eða að fjarlægja hann áður en hópurinn er útbúinn.</string>
+			<key>other</key>
+			<string>Ekki er hægt að búa til þennan hóp þar sem %d meðlimir eru að nota gamla útgáfu af Signal. Þú getur búið til hóp af nýju gerðinni með viðkomandi eftir að þeir hafa uppfært Signal, eða að fjarlægja þessa meðlimi áður en hópurinn er útbúinn.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Búinn verður til hópur af eldri gerðinni þar sem 1 meðlimur er að nota gamla útgáfu af Signal. Þú getur búið til hóp af nýju gerðinni með viðkomandi eftir að hann hefur uppfært Signal, eða að fjarlægja hann áður en hópurinn er útbúinn.</string>
+			<key>other</key>
+			<string>Búinn verður til hópur af eldri gerðinni þar sem %d meðlimir eru að nota gamla útgáfu af Signal. Þú getur búið til hóp af nýju gerðinni með viðkomandi eftir að þeir hafa uppfært Signal, eða að fjarlægja þessa meðlimi áður en hópurinn er útbúinn.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ekki var hægt að bæta 1 meðlimi aftur í nýju gerðina af hópum. Viltu bæta honum við núna?</string>
+			<key>other</key>
+			<string>Ekki var hægt að bæta %d meðlimum aftur í nýju gerðina af hópum. Viltu bæta þeim við núna?</string>
+		</dict>
+	</dict>
+	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Signal-hópar virka best með 1 meðlimi eða færri. Sé fleiri meðlimum bætt við, munu tafir verða á sendingum og móttöku skilaboða.</string>
+			<key>other</key>
+			<string>Signal-hópar virka best með %d meðlimum eða færri. Sé fleiri meðlimum bætt við, munu tafir verða á sendingum og móttöku skilaboða.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can't share more than 1 item.</string>
+			<string>Ekki er hægt að deila fleira en 1 atriði.</string>
 			<key>other</key>
-			<string>You can't share more than %d items.</string>
+			<string>Ekki er hægt að deila fleiri en %d atriðum.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -696,9 +696,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 gruppo in comune</string>
+			<string>1 sameiginlegur hópur</string>
 			<key>other</key>
-			<string>%d gruppi in comune</string>
+			<string>%d sameiginlegir hópar</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -712,9 +712,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Elimina 1 messaggio</string>
+			<string>Eyða 1 skilaboðum</string>
 			<key>other</key>
-			<string>Elimina %d messaggi</string>
+			<string>Eyða %d skilaboðum</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -728,9 +728,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Foto</string>
+			<string>1 ljósmynd</string>
 			<key>other</key>
-			<string>%d Foto</string>
+			<string>%d ljósmyndir</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -744,25 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 elemento</string>
+			<string>1 atriði</string>
 			<key>other</key>
-			<string>%d elementi</string>
-		</dict>
-	</dict>
-	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Hai bloccato 1 membro di questo gruppo</string>
-			<key>other</key>
-			<string>Hai bloccato %d membri di questo gruppo</string>
+			<string>%d atriði</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -776,9 +760,25 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 selezionato</string>
+			<string>1 valið</string>
 			<key>other</key>
-			<string>%d selezionati</string>
+			<string>%d valið</string>
+		</dict>
+	</dict>
+	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Þú lokaðir á 1 meðlim í þessum hópi.</string>
+			<key>other</key>
+			<string>Þú lokaðir á %d meðlimi í þessum hópi.</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membro</string>
+			<string>1 meðlimur</string>
 			<key>other</key>
-			<string>%d membri</string>
+			<string>%d meðlimir</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -808,9 +808,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>PIN errato. 1 tentativo rimanente.</string>
+			<string>Rangt PIN-númer. 1 tilraun eftir.</string>
 			<key>other</key>
-			<string>PIN errato. %d tentativi rimanenti.</string>
+			<string>Rangt PIN-númer. %d tilraunir eftir.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -824,9 +824,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ ha invitato 1 persona</string>
+			<string>%2$@ bauð 1 aðila</string>
 			<key>other</key>
-			<string>%2$@ ha invitato %d persone</string>
+			<string>%2$@ bauð %d aðilum</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -840,9 +840,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 richiesta di diventare membro in attesa.</string>
+			<string>1 beiðni um þátttöku í bið.</string>
 			<key>other</key>
-			<string>%d richieste di diventare membro in attesa.</string>
+			<string>%d beiðnir um þátttöku í bið.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -856,25 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoca invito non valido</string>
+			<string>Afturkalla ógilt boð</string>
 			<key>other</key>
-			<string>Revoca %d inviti non validi</string>
-		</dict>
-	</dict>
-	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Revoca invito</string>
-			<key>other</key>
-			<string>Revoca inviti</string>
+			<string>Afturkalla %d ógild boð</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -888,9 +872,25 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoke group invite sent by "%2$@"?</string>
+			<string>Afturkalla boð í hóp send af &quot;%2$@&quot;?</string>
 			<key>other</key>
-			<string>Revoke %d invites sent by "%2$@"?</string>
+			<string>Afturkalla %d boð í hóp send af &quot;%2$@&quot;?</string>
+		</dict>
+	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Afturkalla boð</string>
+			<key>other</key>
+			<string>Afturkalla boð</string>
 		</dict>
 	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
@@ -904,9 +904,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Te lo ricorderemo più tardi. Creare un PIN diventerà obbligatorio tra 1 giorno.</string>
+			<string>Við munum áminna þig síðar. Gerð PIN-númera verður skylda eftir 1 dag.</string>
 			<key>other</key>
-			<string>Te lo ricorderemo più tardi. Creare un PIN diventerà obbligatorio tra %d giorni.</string>
+			<string>Við munum áminna þig síðar. Gerð PIN-númera verður skylda eftir %d daga.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -920,9 +920,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Hai 1 tentativo rimanente. Se esaurisci i tentativi, puoi creare un nuovo PIN. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.</string>
+			<string>Þú átt eftir 1 tilraun. Ef þú færð ekki fleiri tilraunir, geturðu búið til nýtt PIN-númer. Þú getur skráð og notað aðganginn þinn, en þú munt tapa einhverju af vistuðum stillingum á borð við upplýsingar í notandasniðinu þínu.</string>
 			<key>other</key>
-			<string>Hai %d tentativi rimanenti. Se esaurisci i tentativi, puoi creare un nuovo PIN. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.</string>
+			<string>Þú átt eftir %d tilraunir. Ef þær klárast, geturðu búið til nýtt PIN-númer. Þú getur skráð og notað aðganginn þinn, en þú munt tapa einhverju af vistuðum stillingum á borð við upplýsingar í notandasniðinu þínu.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -936,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Hai 1 tentativo rimanente. Se esaurisci i tentativi il tuo account verrà bloccato. Dopo 7 giorni di inattività, potrai registrarti nuovamente senza il tuo PIN. Il tuo account sarà cancellato e tutti i contenuti eliminati.</string>
+			<string>Þú átt eftir 1 tilraun. Ef þú færð ekki fleiri tilraunir verður aðgangnum þínum lokað. Eftir 7 daga án virkni, geturðu endurskráð þig án PIN-númersins þíns. Aðgangurinn þinn verður tæmdur og öllu efni á honum eytt.</string>
 			<key>other</key>
-			<string>Hai %d tentativi rimanenti. Se esaurisci i tentativi il tuo account verrà bloccato. Dopo 7 giorni di inattività, potrai registrarti nuovamente senza il tuo PIN. Il tuo account sarà cancellato e tutti i contenuti eliminati.</string>
+			<string>Þú átt eftir %d tilraunir. Ef þú færð ekki fleiri tilraunir verður aðgangnum þínum lokað. Eftir 7 daga án virkni, geturðu endurskráð þig án PIN-númersins þíns. Aðgangurinn þinn verður tæmdur og öllu efni á honum eytt.</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -952,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Membro di %2$@, %3$@, e 1 altro gruppo</string>
+			<string>Meðlimur í %2$@, %3$@ og 1 hópi til viðbótar</string>
 			<key>other</key>
-			<string>Membro di %2$@, %3$@, e altri %d gruppi</string>
+			<string>Meðlimur í %2$@, %3$@ og %d hópum til viðbótar</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -968,9 +968,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 giorno</string>
+			<string>1 dagur</string>
 			<key>other</key>
-			<string>%d giorni</string>
+			<string>%d dagar</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
@@ -1000,9 +1000,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 ora</string>
+			<string>1 klukkustund</string>
 			<key>other</key>
-			<string>%d ore</string>
+			<string>%d klukkustundir</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
@@ -1016,9 +1016,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1h</string>
+			<string>1klst</string>
 			<key>other</key>
-			<string>%dh</string>
+			<string>%dklst</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_%d</key>
@@ -1032,9 +1032,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 minuto</string>
+			<string>1 mínúta</string>
 			<key>other</key>
-			<string>%d minuti</string>
+			<string>%d mínútur</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
@@ -1048,9 +1048,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1min</string>
+			<string>1mín</string>
 			<key>other</key>
-			<string>%dmin</string>
+			<string>%dmín</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_%d</key>
@@ -1064,9 +1064,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 secondo</string>
+			<string>1 sekúnda</string>
 			<key>other</key>
-			<string>%d secondi</string>
+			<string>%d sekúndur</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
@@ -1080,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1s</string>
+			<string>1sek</string>
 			<key>other</key>
-			<string>%ds</string>
+			<string>%dsek</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_%d</key>
@@ -1096,9 +1096,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 settimana</string>
+			<string>1 vika</string>
 			<key>other</key>
-			<string>%d settimane</string>
+			<string>%d vikur</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
@@ -1112,9 +1112,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1set</string>
+			<string>1vk</string>
 			<key>other</key>
-			<string>%dset</string>
+			<string>%dvk</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_YEARS_%d</key>
@@ -1128,9 +1128,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 anno</string>
+			<string>1 ár</string>
 			<key>other</key>
-			<string>%d anni</string>
+			<string>%d ár</string>
 		</dict>
 	</dict>
 </dict>

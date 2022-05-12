@@ -12,10 +12,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Mesaj vocal %d secunde</string>
 			<key>one</key>
-			<string>Messaggio vocale 1 secondo</string>
+			<string>Mesaj vocal 1 secundă</string>
 			<key>other</key>
-			<string>Messaggio vocale %d secondi</string>
+			<string>Mesaj vocal %d de secunde</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -28,10 +30,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Adaugă membri</string>
 			<key>one</key>
-			<string>Aggiungi membro</string>
+			<string>Adaugă membru</string>
 			<key>other</key>
-			<string>Aggiungi membri</string>
+			<string>Adaugă membri</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -44,10 +48,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Adaugi %d membri la “%2$@”?</string>
 			<key>one</key>
-			<string>Aggiungere membro a “%2$@”?</string>
+			<string>Adaugi membrul la “%2$@”?</string>
 			<key>other</key>
-			<string>Aggiungere %d membri a “%2$@”?</string>
+			<string>Adaugi %d de membri la “%2$@”?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -60,10 +66,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Adaugă membri noi</string>
 			<key>one</key>
-			<string>Aggiungi nuovo membro</string>
+			<string>Adaugă membru nou</string>
 			<key>other</key>
-			<string>Aggiungi nuovi membri</string>
+			<string>Adaugă membri noi</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -76,10 +84,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Această culoare personalizată este folosită pentru %d conversații. Vrei să o ștergi pentru toate conversațiile?</string>
 			<key>one</key>
-			<string>Questo colore personalizzato è usato in 1 chat. Vuoi eliminarlo?</string>
+			<string>Această culoare personalizată este folosită pentru 1 conversație. Vrei să o ștergi?</string>
 			<key>other</key>
-			<string>Questo colore personalizzato è usato in %d chat. Vuoi eliminarlo per tutte le chat?</string>
+			<string>Această culoare personalizată este folosită pentru %d de conversații. Vrei să o ștergi pentru toate conversațiile?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -92,10 +102,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Această culoare este folosită pentru %d conversații. Vrei să salvezi modificările pentru toate conversațiile?</string>
 			<key>one</key>
-			<string>Questo colore è usato in 1 chat. Vuoi salvare le modifiche per tutte le chat?</string>
+			<string>Această culoare este folosită pentru 1 conversație. Vrei să salvezi modificările?</string>
 			<key>other</key>
-			<string>Questo colore è usato in %d chat. Vuoi salvare le modifiche per tutte le chat?</string>
+			<string>Această culoare este folosită pentru %d de conversații. Vrei să salvezi modificările pentru toate conversațiile?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -108,10 +120,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Ștergi %d conversații?</string>
 			<key>one</key>
-			<string>Eliminare chat?</string>
+			<string>Ștergi conversația?</string>
 			<key>other</key>
-			<string>Eliminare %d chat?</string>
+			<string>Ștergi %d de conversații?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -124,10 +138,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Aceste conversații vor fi șterse de pe acest dispozitiv.</string>
 			<key>one</key>
-			<string>Questa chat verrà eliminata da questo dispositivo.</string>
+			<string>Această conversație va fi ștearsă de pe acest dispozitiv.</string>
 			<key>other</key>
-			<string>Queste chat verranno eliminate da questo dispositivo.</string>
+			<string>Aceste conversații vor fi șterse de pe acest dispozitiv.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -156,6 +172,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d %2$#@total@</string>
 			<key>one</key>
 			<string>1 %2$#@total@</string>
 			<key>other</key>
@@ -167,10 +185,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>din %d rezultate</string>
 			<key>one</key>
-			<string>risultato</string>
+			<string>rezultat</string>
 			<key>other</key>
-			<string>di %d risultati</string>
+			<string>din %d de rezultate</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -183,10 +203,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d Membri</string>
 			<key>one</key>
-			<string>1 membro</string>
+			<string>1 Membru</string>
 			<key>other</key>
-			<string>%d membri</string>
+			<string>%d de Membri</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -199,10 +221,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d grupuri în comun</string>
 			<key>one</key>
-			<string>1 gruppo in comune</string>
+			<string>1 grup în comun</string>
 			<key>other</key>
-			<string>%d gruppi in comune</string>
+			<string>%d grupuri în comun</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -215,10 +239,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%dm</string>
 			<key>one</key>
-			<string>%dmin</string>
+			<string>%dm</string>
 			<key>other</key>
-			<string>%dmin</string>
+			<string>%dm</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -231,10 +257,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>acum %d minute</string>
 			<key>one</key>
-			<string>1 minuto fa</string>
+			<string>acum 1 minut</string>
 			<key>other</key>
-			<string>%d minuti fa</string>
+			<string>acum %d minute</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -247,10 +275,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Ștergi %d mesaje?</string>
 			<key>one</key>
-			<string>Eliminare il messaggio?</string>
+			<string>Ștergi mesajul?</string>
 			<key>other</key>
-			<string>Eliminare %d messaggi?</string>
+			<string>Ștergi %d mesaje?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -263,10 +293,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Mărimea maximă a grupului de %d membri a fost atinsă.</string>
 			<key>one</key>
-			<string>Massima dimensione del gruppo di %d membro raggiunta.</string>
+			<string>Mărimea maximă a grupului de %d membru a fost atinsă.</string>
 			<key>other</key>
-			<string>Massima dimensione del gruppo di %d membri raggiunta.</string>
+			<string>Mărimea maximă a grupului de %d membri a fost atinsă.</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -279,10 +311,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Versiunea ta Signal va expira în %d zile. Atinge pentru a actualiza la cea mai recentă versiune.</string>
 			<key>one</key>
-			<string>La tua versione di Signal scadrà in 1 giorno. Tocca per aggiornare alla versione più recente.</string>
+			<string>Versiunea ta Signal va expira peste 1 zi. Atinge pentru a actualiza la cea mai recentă versiune.</string>
 			<key>other</key>
-			<string>La tua versione di Signal scadrà in %d giorni. Tocca per aggiornare alla versione più recente.</string>
+			<string>Versiunea ta Signal va expira în %d de zile. Atinge pentru a actualiza la cea mai recentă versiune.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -295,10 +329,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Trimite %d mesaje</string>
 			<key>one</key>
-			<string>Invia messaggio</string>
+			<string>Trimite mesajul</string>
 			<key>other</key>
-			<string>Invia %d messaggi</string>
+			<string>Trimite %d mesaje</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
@@ -311,10 +347,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Acest grup nu poate fi creat deoarece %d membri folosesc o versiune Signal învechită. Poți crea un grup de tip nou cu aceștia, după ce își actualizează Signal, sau elimină-i înainte de a crea grupul. %2$@</string>
 			<key>one</key>
-			<string>Questo gruppo non può essere creato perché 1 membro utilizza una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo. %2$@</string>
+			<string>Acest grup nu poate fi creat deoarece 1 membru folosește o versiune Signal învechită. Poți crea un grup de tip nou cu acesta, după ce își actualizează Signal, sau elimină-l înainte de a crea grupul. %2$@</string>
 			<key>other</key>
-			<string>Questo gruppo non può essere creato perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo. %2$@</string>
+			<string>Acest grup nu poate fi creat deoarece %d de membri folosesc o versiune Signal învechită. Poți crea un grup de tip nou cu aceștia, după ce își actualizează Signal, sau elimină-i înainte de a crea grupul. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -327,10 +365,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Acest grup nu poate fi creat deoarece %d membri folosesc o versiune Signal învechită. Poți crea un grup de tip nou cu aceștia, după ce își actualizează Signal, sau elimină-i înainte de a crea grupul.</string>
 			<key>one</key>
-			<string>Questo gruppo non può essere creato perché 1 membro utilizza una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo.</string>
+			<string>Acest grup nu poate fi creat deoarece 1 membru folosește o versiune Signal învechită. Poți crea un grup de tip nou cu acesta, după ce își actualizează Signal, sau elimină-l înainte de a crea grupul.</string>
 			<key>other</key>
-			<string>Questo gruppo non può essere creato perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo.</string>
+			<string>Acest grup nu poate fi creat deoarece %d de membri folosesc o versiune Signal învechită. Poți crea un grup de tip nou cu aceștia, după ce își actualizează Signal, sau elimină-i înainte de a crea grupul.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_%d</key>
@@ -343,10 +383,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d membri nu suportă Noile Grupuri, prin urmare acesta va fi un Grup Vechi. %2$@</string>
 			<key>one</key>
-			<string>1 membro non supporta i Nuovi Gruppi, quindi questo sarà un Gruppo Legacy. %2$@</string>
+			<string>1 membru nu suportă Noile Grupuri, prin urmare acesta va fi un Grup Vechi. %2$@</string>
 			<key>other</key>
-			<string>%d membri non supportano i Nuovi Gruppi, quindi questo sarà un Gruppo Legacy. %2$@</string>
+			<string>%d de membri nu suportă Noile Grupuri, prin urmare acesta va fi un Grup Vechi. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_%d</key>
@@ -359,10 +401,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Un Grup Vechi ca fi creat deoarece %d membri folosesc o versiune Signal veche. Poți crea un Grup de tip Nou cu aceștia după ce își actualizează Signal, sau elimină-i înainte de a crea grupul.</string>
 			<key>one</key>
-			<string>Verrà creato un Gruppo Legacy perché 1 membro utilizza una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo aver aggiornato Signal o puoi rimuoverli prima di creare il Gruppo.</string>
+			<string>Un Grup Vechi ca fi creat deoarece 1 membru folosește o versiune Signal veche. Poți crea un Grup de tip Nou cu acesta după ce își actualizează Signal, sau elimină-l înainte de a crea grupul.</string>
 			<key>other</key>
-			<string>Verrà creato un Gruppo Legacy perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo aver aggiornato Signal o puoi rimuoverli prima di creare il Gruppo.</string>
+			<string>Un Grup Vechi ca fi creat deoarece %d de membri folosesc o versiune Signal veche. Poți crea un Grup de tip Nou cu aceștia după ce își actualizează Signal, sau elimină-i înainte de a crea grupul.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -375,10 +419,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d membri nu au putut fi adăugați noului grup. Vrei să-i adaugi acum?</string>
 			<key>one</key>
-			<string>Non è stato possibile aggiungere di nuovo 1 membro al Nuovo Gruppo. Vuoi aggiungerlo adesso?</string>
+			<string>1 membru nu a putut fi adăugat noului grup. Vrei să-l adaugi acum?</string>
 			<key>other</key>
-			<string>Non è stato possibile aggiungere di nuovo %d membri al Nuovo Gruppo. Vuoi aggiungerli adesso?</string>
+			<string>%d de membri nu au putut fi adăugați noului grup. Vrei să-i adaugi acum?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -391,10 +437,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Grupurile Signal funcționează optim cu %d membri sau mai puțin. Adăugarea mai multor membri va provoca întârzieri la trimiterea și primirea mesajelor.</string>
 			<key>one</key>
-			<string>I gruppi di Signal funzionano meglio con 1 membro o meno. Aggiungere più membri causerà ritardi nell'invio e nella ricezione dei messaggi.</string>
+			<string>Grupurile Signal funcționează optim cu 1 membru sau mai puțin. Adăugarea mai multor membri va provoca întârzieri la trimiterea și primirea mesajelor.</string>
 			<key>other</key>
-			<string>I gruppi di Signal funzionano meglio con %d membri o meno. Aggiungere più membri causerà ritardi nell'invio e nella ricezione dei messaggi.</string>
+			<string>Grupurile Signal funcționează optim cu %d de membri sau mai puțin. Adăugarea mai multor membri va provoca întârzieri la trimiterea și primirea mesajelor.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -407,10 +455,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Numărul maxim de %d participanți a fost atins pentru acest apel. Încearcă mai târziu. </string>
 			<key>one</key>
-			<string>È stato raggiunto il numero massimo di 1 partecipante per questa chiamata. Riprova più tardi.</string>
+			<string>Numărul maxim de 1 participant a fost atins pentru acest apel. Încearcă mai târziu. </string>
 			<key>other</key>
-			<string>È stato raggiunto il numero massimo di %d partecipanti per questa chiamata. Riprova più tardi.</string>
+			<string>Numărul maxim de %d participanți a fost atins pentru acest apel. Încearcă mai târziu. </string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -423,10 +473,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>În acest apel · %d persoane</string>
 			<key>one</key>
-			<string>In questa chiamata · 1 persona</string>
+			<string>În acest apel · 1 persoană</string>
 			<key>other</key>
-			<string>In questa chiamata · %d persone</string>
+			<string>În acest apel · %d persoane</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -439,10 +491,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%2$@, %3$@ și alți %d sunt în acest apel</string>
 			<key>one</key>
-			<string>%2$@, %3$@, e 1 altro sono in questa chiamata</string>
+			<string>%2$@, %3$@ și încă 1 sunt în acest apel</string>
 			<key>other</key>
-			<string>%2$@, %3$@, e altri %d sono in questa chiamata</string>
+			<string>%2$@, %3$@ și alți %d sunt în acest apel</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -455,10 +509,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%2$@, %3$@ și alți %d s-au alăturat apelului</string>
 			<key>one</key>
-			<string>%2$@, %3$@, e 1 altro si sono uniti alla chiamata</string>
+			<string>%2$@, %3$@ și încă 1 s-au alăturat apelului</string>
 			<key>other</key>
-			<string>%2$@, %3$@, e altri %d si sono uniti alla chiamata</string>
+			<string>%2$@, %3$@ și alți %d s-au alăturat apelului</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -471,10 +527,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%2$@, %3$@ și alți %d au părăsit apelul</string>
 			<key>one</key>
-			<string>%2$@, %3$@, e 1 altro hanno lasciato la chiamata</string>
+			<string>%2$@, %3$@ și încă 1 au părăsit apelul</string>
 			<key>other</key>
-			<string>%2$@, %3$@, e altri %d hanno lasciato la chiamata</string>
+			<string>%2$@, %3$@ și alți %d au părăsit apelul</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -487,10 +545,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d invitații trimise</string>
 			<key>one</key>
-			<string>Invito inviato</string>
+			<string>Invitație trimisă</string>
 			<key>other</key>
-			<string>%d inviti inviati</string>
+			<string>%d de invitații trimise</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -503,10 +563,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d membri ai grupului au nume similare.</string>
 			<key>one</key>
-			<string>1 membro del gruppo ha nome simile.</string>
+			<string>1 membru al grupului are nume similar.</string>
 			<key>other</key>
-			<string>%d membri del gruppo hanno nomi simili.</string>
+			<string>%d de membri ai grupului au nume similare.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -519,10 +581,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d membri ai grupului au nume similare, examinează membri mai jos sau ia măsuri.</string>
 			<key>one</key>
-			<string>1 membro del gruppo ha nome simile, controlla il membro di seguito o scegli di agire.</string>
+			<string>1 membru al grupului are nume similar, verifică membrul mai jos sau ia măsuri.</string>
 			<key>other</key>
-			<string>%d membri del gruppo hanno nomi simili, controlla i membri di seguito o scegli di agire.</string>
+			<string>%d de membri ai grupului au nume similare, examinează membri mai jos sau ia măsuri.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -535,10 +599,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d membri ai grupului au același nume, examinează membri mai jos sau ia măsuri.</string>
 			<key>one</key>
-			<string>1 membro del gruppo ha lo stesso nome, controlla il membro di seguito o scegli di agire.</string>
+			<string>1 membru al grupului are același nume, examinează membrul mai jos sau ia măsuri.</string>
 			<key>other</key>
-			<string>%d membri del gruppo hanno lo stesso nome, controlla i membri di seguito o scegli di agire.</string>
+			<string>%d de membri ai grupului au același nume, examinează membri mai jos sau ia măsuri.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -551,10 +617,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 membro</string>
-			<key>other</key>
+			<key>few</key>
 			<string>%d membri</string>
+			<key>one</key>
+			<string>1 membru</string>
+			<key>other</key>
+			<string>%d de membri</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -567,10 +635,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 membro</string>
-			<key>other</key>
+			<key>few</key>
 			<string>%d membri</string>
+			<key>one</key>
+			<string>1 membru</string>
+			<key>other</key>
+			<string>%d de membri</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -583,10 +653,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d persoane au fost invitate la grup.</string>
 			<key>one</key>
-			<string>1 persona è stata invitata al gruppo.</string>
+			<string>1 persoană a fost invitată la grup.</string>
 			<key>other</key>
-			<string>%d persone sono state invitate al gruppo.</string>
+			<string>%d persoane au fost invitate la grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -599,10 +671,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%2$@ a invitat %d persoane la grup.</string>
 			<key>one</key>
-			<string>%2$@ ha invitato 1 persona al gruppo.</string>
+			<string>%2$@ a invitat 1 persoană la grup.</string>
 			<key>other</key>
-			<string>%2$@ ha invitato %d persone al gruppo.</string>
+			<string>%2$@ a invitat %d persoane la grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -615,10 +689,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Au fost revocate invitațiile la grup pentru %d persoane.</string>
 			<key>one</key>
-			<string>L'invito al gruppo è stato revocato per 1 persona.</string>
+			<string>A fost revocată o invitație la grup pentru 1 persoană.</string>
 			<key>other</key>
-			<string>Gli inviti al gruppo sono stati revocati per %d persone.</string>
+			<string>Au fost revocate invitațiile la grup pentru %d de persoane.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -631,10 +707,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%2$@ a revocat o invitație la grup pentru %d persoane.</string>
 			<key>one</key>
-			<string>%2$@ ha revocato un invito al gruppo per 1 persona.</string>
+			<string>%2$@ a revocat o invitație la grup pentru 1 persoană.</string>
 			<key>other</key>
-			<string>%2$@ ha revocato un invito al gruppo per %d persone.</string>
+			<string>%2$@ a revocat o invitație la grup pentru %d persoane.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -647,10 +725,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d membri nu au putut fi adăugați noului grup și au fost eliminați din grup.</string>
 			<key>one</key>
-			<string>Un membro non può essere aggiunto al Nuovo Gruppo ed è stato rimosso dal gruppo.</string>
+			<string>Un membru nu a putut fi adăugat noului grup și a fost eliminat din grup.</string>
 			<key>other</key>
-			<string>%d membri non possono essere aggiunti al Nuovo Gruppo e sono stati rimossi dal gruppo.</string>
+			<string>%d de membri nu au putut fi adăugați noului grup și au fost eliminați din grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -663,10 +743,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d membri nu au putut fi adăugați noului grup și au fost invitați să se alăture.</string>
 			<key>one</key>
-			<string>Un membro non può essere aggiunto al Nuovo Gruppo ed è stato invitato a unirsi.</string>
+			<string>Un membru nu a putut fi adăugat noului grup și a fost invitat să se alăture.</string>
 			<key>other</key>
-			<string>%d membri non possono essere aggiunti al Nuovo Gruppo e sono stati invitati a unirsi.</string>
+			<string>%d de membri nu au putut fi adăugați noului grup și au fost invitați să se alăture.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -695,10 +777,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d grupuri în comun</string>
 			<key>one</key>
-			<string>1 gruppo in comune</string>
+			<string>1 grup în comun</string>
 			<key>other</key>
-			<string>%d gruppi in comune</string>
+			<string>%d grupuri în comun</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -711,10 +795,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Șterge %d mesaje</string>
 			<key>one</key>
-			<string>Elimina 1 messaggio</string>
+			<string>Șterge 1 mesaj</string>
 			<key>other</key>
-			<string>Elimina %d messaggi</string>
+			<string>Șterge %d de mesaje</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -727,10 +813,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d poze</string>
 			<key>one</key>
-			<string>1 Foto</string>
+			<string>1 poză</string>
 			<key>other</key>
-			<string>%d Foto</string>
+			<string>%d poze</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -743,10 +831,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d elemente</string>
 			<key>one</key>
-			<string>1 elemento</string>
+			<string>1 element</string>
 			<key>other</key>
-			<string>%d elementi</string>
+			<string>%d elemente</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -759,10 +849,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Ai blocat %d membri ai acestui grup</string>
 			<key>one</key>
-			<string>Hai bloccato 1 membro di questo gruppo</string>
+			<string>Ai blocat 1 membru al acestui grup</string>
 			<key>other</key>
-			<string>Hai bloccato %d membri di questo gruppo</string>
+			<string>Ai blocat %d membri ai acestui grup</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -775,10 +867,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d Selectate</string>
 			<key>one</key>
-			<string>1 selezionato</string>
+			<string>1 Selectat</string>
 			<key>other</key>
-			<string>%d selezionati</string>
+			<string>%d Selectate</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -791,8 +885,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d membri</string>
 			<key>one</key>
-			<string>1 membro</string>
+			<string>1 membru</string>
 			<key>other</key>
 			<string>%d membri</string>
 		</dict>
@@ -807,10 +903,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>PIN incorect. %d încercări rămase.</string>
 			<key>one</key>
-			<string>PIN errato. 1 tentativo rimanente.</string>
+			<string>PIN incorect. 1 încercare rămasă.</string>
 			<key>other</key>
-			<string>PIN errato. %d tentativi rimanenti.</string>
+			<string>PIN incorect. %d încercări rămase.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -823,10 +921,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%2$@ a invitat %d persoane</string>
 			<key>one</key>
-			<string>%2$@ ha invitato 1 persona</string>
+			<string>%2$@ a invitat 1 persoană</string>
 			<key>other</key>
-			<string>%2$@ ha invitato %d persone</string>
+			<string>%2$@ a invitat %d persoane</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -839,10 +939,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d solicitări de membru în așteptare.</string>
 			<key>one</key>
-			<string>1 richiesta di diventare membro in attesa.</string>
+			<string>1 solicitare de membru în așteptare.</string>
 			<key>other</key>
-			<string>%d richieste di diventare membro in attesa.</string>
+			<string>%d solicitări de membru în așteptare.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -855,10 +957,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Anulează %d invitații nevalide</string>
 			<key>one</key>
-			<string>Revoca invito non valido</string>
+			<string>Anulează invitația nevalidă</string>
 			<key>other</key>
-			<string>Revoca %d inviti non validi</string>
+			<string>Anulează %d de invitații nevalide</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -871,10 +975,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Revocare invitații</string>
 			<key>one</key>
-			<string>Revoca invito</string>
+			<string>Revocare invitație</string>
 			<key>other</key>
-			<string>Revoca inviti</string>
+			<string>Revocare invitații</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -903,10 +1009,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Îți vom reaminti mai târziu. Crearea unui PIN va deveni obligatorie în %d zile.</string>
 			<key>one</key>
-			<string>Te lo ricorderemo più tardi. Creare un PIN diventerà obbligatorio tra 1 giorno.</string>
+			<string>Îți vom reaminti mai târziu. Crearea unui PIN va deveni obligatorie în 1 zi.</string>
 			<key>other</key>
-			<string>Te lo ricorderemo più tardi. Creare un PIN diventerà obbligatorio tra %d giorni.</string>
+			<string>Îți vom reaminti mai târziu. Crearea unui PIN va deveni obligatorie în %d zile.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -919,10 +1027,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Mai ai %d încercări rămasă. Dacă rămâi fără încercări, poți crea un PIN nou. Poți să te înregistrezi și să-ți utilizezi contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.</string>
 			<key>one</key>
-			<string>Hai 1 tentativo rimanente. Se esaurisci i tentativi, puoi creare un nuovo PIN. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.</string>
+			<string>Mai ai 1 încercare rămasă. Dacă rămâi fără încercări, poți crea un PIN nou. Poți să te înregistrezi și să-ți utilizezi contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.</string>
 			<key>other</key>
-			<string>Hai %d tentativi rimanenti. Se esaurisci i tentativi, puoi creare un nuovo PIN. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.</string>
+			<string>Mai ai %d de încercări rămasă. Dacă rămâi fără încercări, poți crea un PIN nou. Poți să te înregistrezi și să-ți utilizezi contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -935,10 +1045,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Mai ai %d încercări rămase. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți înregistra din nou fără PIN. Contul tău va fi eliminat și tot conținutul acestuia șters.</string>
 			<key>one</key>
-			<string>Hai 1 tentativo rimanente. Se esaurisci i tentativi il tuo account verrà bloccato. Dopo 7 giorni di inattività, potrai registrarti nuovamente senza il tuo PIN. Il tuo account sarà cancellato e tutti i contenuti eliminati.</string>
+			<string>Mai ai 1 încercare rămasă. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți înregistra din nou fără PIN. Contul tău va fi eliminat și tot conținutul acestuia șters.</string>
 			<key>other</key>
-			<string>Hai %d tentativi rimanenti. Se esaurisci i tentativi il tuo account verrà bloccato. Dopo 7 giorni di inattività, potrai registrarti nuovamente senza il tuo PIN. Il tuo account sarà cancellato e tutti i contenuti eliminati.</string>
+			<string>Mai ai %d de încercări rămase. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți înregistra din nou fără PIN. Contul tău va fi eliminat și tot conținutul acestuia șters.</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -951,10 +1063,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Membru al %2$@, %3$@, și %d grupuri adiționale</string>
 			<key>one</key>
-			<string>Membro di %2$@, %3$@, e 1 altro gruppo</string>
+			<string>Membru al %2$@, %3$@, și 1 grup adițional</string>
 			<key>other</key>
-			<string>Membro di %2$@, %3$@, e altri %d gruppi</string>
+			<string>Membru al %2$@, %3$@, și %d grupuri adiționale</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -967,10 +1081,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d zile</string>
 			<key>one</key>
-			<string>1 giorno</string>
+			<string>1 zi</string>
 			<key>other</key>
-			<string>%d giorni</string>
+			<string>%d zile</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
@@ -983,10 +1099,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%dz</string>
 			<key>one</key>
-			<string>1d</string>
+			<string>1z</string>
 			<key>other</key>
-			<string>%dd</string>
+			<string>%dz</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_%d</key>
@@ -999,8 +1117,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d ore</string>
 			<key>one</key>
-			<string>1 ora</string>
+			<string>1 oră</string>
 			<key>other</key>
 			<string>%d ore</string>
 		</dict>
@@ -1015,6 +1135,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%dh</string>
 			<key>one</key>
 			<string>1h</string>
 			<key>other</key>
@@ -1031,10 +1153,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d minute</string>
 			<key>one</key>
-			<string>1 minuto</string>
+			<string>1 minut</string>
 			<key>other</key>
-			<string>%d minuti</string>
+			<string>%d minute</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
@@ -1047,10 +1171,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%dm</string>
 			<key>one</key>
-			<string>1min</string>
+			<string>1m</string>
 			<key>other</key>
-			<string>%dmin</string>
+			<string>%dm</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_%d</key>
@@ -1063,10 +1189,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d secunde</string>
 			<key>one</key>
-			<string>1 secondo</string>
+			<string>1 secundă</string>
 			<key>other</key>
-			<string>%d secondi</string>
+			<string>%d secunde</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
@@ -1079,6 +1207,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%ds</string>
 			<key>one</key>
 			<string>1s</string>
 			<key>other</key>
@@ -1095,10 +1225,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d săptămâni</string>
 			<key>one</key>
-			<string>1 settimana</string>
+			<string>1 săptămână</string>
 			<key>other</key>
-			<string>%d settimane</string>
+			<string>%d săptămâni</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
@@ -1111,10 +1243,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d săpt.</string>
 			<key>one</key>
-			<string>1set</string>
+			<string>1 săpt.</string>
 			<key>other</key>
-			<string>%dset</string>
+			<string>%d săpt.</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_YEARS_%d</key>
@@ -1127,10 +1261,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d ani</string>
 			<key>one</key>
-			<string>1 anno</string>
+			<string>1 an</string>
 			<key>other</key>
-			<string>%d anni</string>
+			<string>%d ani</string>
 		</dict>
 	</dict>
 </dict>

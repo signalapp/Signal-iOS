@@ -1,2 +1,2 @@
-• If you're a donor, we've reorganized some of the screens to make it easier to manage your subscription, badges, and receipts. Thanks for supporting Signal!
-• Various other bugfixes and performance improvements help keep your app running smoothly.
+• Dacă ești un donator, am reorganizat anumite meniuri pentru ați putea gestiona mai ușor abonamentele, insignele sau bonurile fiscale. Îți mulțumim pentru că susții Signal!
+• Am remediat câteva erori pentru ca aplicația ta să ruleze fără probleme.

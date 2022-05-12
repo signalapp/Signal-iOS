@@ -13,13 +13,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Hlasová správa 1 sekunda</string>
+			<string>1 sekundės balso žinutė</string>
 			<key>few</key>
-			<string>Hlasová správa %d sekundy</string>
+			<string>%d sekundžių balso žinutė</string>
 			<key>many</key>
-			<string>Hlasová správa %d sekúnd</string>
+			<string>%d sekundžių balso žinutė</string>
 			<key>other</key>
-			<string>Hlasová správa %d sekúnd</string>
+			<string>%d sekundės balso žinutė</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -33,13 +33,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pridať člena do „%2$@“?</string>
+			<string>Pridėti narį į „%2$@“?</string>
 			<key>few</key>
-			<string>Pridať %d členov do „%2$@“?</string>
+			<string>Pridėti %d narius į „%2$@“?</string>
 			<key>many</key>
-			<string>Pridať %d členov do „%2$@“?</string>
+			<string>Pridėti %d narių į „%2$@“?</string>
 			<key>other</key>
-			<string>Pridať %d členov do „%2$@“?</string>
+			<string>Pridėti %d narį į „%2$@“?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -53,13 +53,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pridať nového člena</string>
+			<string>Pridėti naują narį</string>
 			<key>few</key>
-			<string>Pridať nových členov</string>
+			<string>Pridėti naujus narius</string>
 			<key>many</key>
-			<string>Pridať nových členov</string>
+			<string>Pridėti naujus narius</string>
 			<key>other</key>
-			<string>Pridať nových členov</string>
+			<string>Pridėti naujus narius</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -73,13 +73,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pridať člena</string>
+			<string>Pridėti narį</string>
 			<key>few</key>
-			<string>Pridať členov</string>
+			<string>Pridėti narius</string>
 			<key>many</key>
-			<string>Pridať členov</string>
+			<string>Pridėti narius</string>
 			<key>other</key>
-			<string>Pridať členov</string>
+			<string>Pridėti narius</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Táto vlastná farba sa používa v 1 rozhovore. Chcete ju odstrániť?</string>
+			<string>Ši tinkinta spalva yra naudojama 1 pokalbyje. Ar norite ją ištrinti?</string>
 			<key>few</key>
-			<string>Táto vlastná farba sa používa v %d rozhovoroch. Chcete ho odstrániť pre všetky rozhovory?</string>
+			<string>Ši tinkinta spalva yra naudojama %d pokalbiuose. Ar norite ją ištrinti visuose pokalbiuose?</string>
 			<key>many</key>
-			<string>Táto vlastná farba sa používa v %d rozhovoroch. Chcete ho odstrániť pre všetky rozhovory?</string>
+			<string>Ši tinkinta spalva yra naudojama %d pokalbių. Ar norite ją ištrinti visuose pokalbiuose?</string>
 			<key>other</key>
-			<string>Táto vlastná farba sa používa v %d rozhovoroch. Chcete ho odstrániť pre všetky rozhovory?</string>
+			<string>Ši tinkinta spalva yra naudojama %d pokalbyje. Ar norite ją ištrinti visuose pokalbiuose?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -113,13 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Táto farba je použitá v 1 rozhovore. Chcete uložiť zmeny pre všetky rozhovory?</string>
+			<string>Ši spalva yra naudojama 1 pokalbyje. Ar norite įrašyti pakeitimus visuose pokalbiuose?</string>
 			<key>few</key>
-			<string>Táto farba sa používa v %d rozhovoroch. Chcete uložiť zmeny pre všetky rozhovory?</string>
+			<string>Ši spalva yra naudojama %d pokalbiuose. Ar norite įrašyti pakeitimus visuose pokalbiuose?</string>
 			<key>many</key>
-			<string>Táto farba sa používa v %d rozhovoroch. Chcete uložiť zmeny pre všetky rozhovory?</string>
+			<string>Ši spalva yra naudojama %d pokalbių. Ar norite įrašyti pakeitimus visuose pokalbiuose?</string>
 			<key>other</key>
-			<string>Táto farba sa používa v %d rozhovoroch. Chcete uložiť zmeny pre všetky rozhovory?</string>
+			<string>Ši spalva yra naudojama %d pokalbyje. Ar norite įrašyti pakeitimus visuose pokalbiuose?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -133,13 +133,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odstrániť rozhovor?</string>
+			<string>Ištrinti pokalbį?</string>
 			<key>few</key>
-			<string>Odstrániť %d rozhovory?</string>
+			<string>Ištrinti %d pokalbius?</string>
 			<key>many</key>
-			<string>Odstrániť %d rozhovorov?</string>
+			<string>Ištrinti %d pokalbių?</string>
 			<key>other</key>
-			<string>Odstrániť %d rozhovorov?</string>
+			<string>Ištrinti %d pokalbį?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -153,13 +153,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tento rozhovor bude z tohto zariadenia odstránený.</string>
+			<string>Šis pokalbis bus ištrintas iš šio įrenginio.</string>
 			<key>few</key>
-			<string>Tieto rozhovory budú z tohto zariadenia odstránené.</string>
+			<string>Šie pokalbiai bus ištrinti iš šio įrenginio.</string>
 			<key>many</key>
-			<string>Tieto rozhovory budú z tohto zariadenia odstránené.</string>
+			<string>Šie pokalbiai bus ištrinti iš šio įrenginio.</string>
 			<key>other</key>
-			<string>Tieto rozhovory budú z tohto zariadenia odstránené.</string>
+			<string>Šie pokalbiai bus ištrinti iš šio įrenginio.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -173,13 +173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nemôžete vybrať viac ako 1 rozhovor.</string>
+			<string>Negalite žymėti daugiau kaip 1 pokalbį.</string>
 			<key>few</key>
-			<string>Nemôžete vybrať viac ako %d rozhovory.</string>
+			<string>Negalite žymėti daugiau kaip %d pokalbius.</string>
 			<key>many</key>
-			<string>Nemôžete vybrať viac ako %d rozhovorov.</string>
+			<string>Negalite žymėti daugiau kaip %d pokalbių.</string>
 			<key>other</key>
-			<string>Nemôžete vybrať viac ako %d rozhovorov.</string>
+			<string>Negalite žymėti daugiau kaip %d pokalbį.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -208,13 +208,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>zhoda</string>
+			<string>atitikmuo</string>
 			<key>few</key>
-			<string>z %d zhôd</string>
+			<string>iš %d atitikmenų</string>
 			<key>many</key>
-			<string>z %d zhôd</string>
+			<string>iš %d atitikmenų</string>
 			<key>other</key>
-			<string>z %d zhôd</string>
+			<string>iš %d atitikmens</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -228,13 +228,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Člen</string>
+			<string>1 narys</string>
 			<key>few</key>
-			<string>%d Členovia</string>
+			<string>%d nariai</string>
 			<key>many</key>
-			<string>%d Členov</string>
+			<string>%d narių</string>
 			<key>other</key>
-			<string>%d Členov</string>
+			<string>%d narys</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -248,13 +248,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 %d spoločná skupina</string>
+			<string>1 bendra grupė</string>
 			<key>few</key>
-			<string>%d spoločné skupiny</string>
+			<string>%d bendros grupės</string>
 			<key>many</key>
-			<string>%d spoločných skupín</string>
+			<string>%d bendrų grupių</string>
 			<key>other</key>
-			<string>%d spoločných skupín</string>
+			<string>%d bendra grupė</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -268,13 +268,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%dm</string>
+			<string>%d min.</string>
 			<key>few</key>
-			<string>%dm</string>
+			<string>%d min.</string>
 			<key>many</key>
-			<string>%dm</string>
+			<string>%d min.</string>
 			<key>other</key>
-			<string>%dm</string>
+			<string>%d min.</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -288,13 +288,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>pred 1 minútou</string>
+			<string>prieš 1 minutę</string>
 			<key>few</key>
-			<string>pred %d minútami</string>
+			<string>prieš %d minutes</string>
 			<key>many</key>
-			<string>pred %d minútami</string>
+			<string>prieš %d minučių</string>
 			<key>other</key>
-			<string>pred %d minútami</string>
+			<string>prieš %d minutę</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -308,13 +308,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odstrániť správu?</string>
+			<string>Ištrinti žinutę?</string>
 			<key>few</key>
-			<string>Odstrániť %d správy?</string>
+			<string>Ištrinti %d žinutes?</string>
 			<key>many</key>
-			<string>Odstrániť %d správ?</string>
+			<string>Ištrinti %d žinučių?</string>
 			<key>other</key>
-			<string>Odstrániť %d správ?</string>
+			<string>Ištrinti %d žinutę?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -328,13 +328,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Bola dosiahnutá maximálna veľkosť skupiny, %d člen.</string>
+			<string>Pasiekta didžiausios grupės iš %d nario riba.</string>
 			<key>few</key>
-			<string>Bola dosiahnutá maximálna veľkosť skupiny, %d členovia.</string>
+			<string>Pasiekta didžiausios grupės iš %d narių riba.</string>
 			<key>many</key>
-			<string>Bola dosiahnutá maximálna veľkosť skupiny, %d členov.</string>
+			<string>Pasiekta didžiausios grupės iš %d narių riba.</string>
 			<key>other</key>
-			<string>Bola dosiahnutá maximálna veľkosť skupiny, %d členov.</string>
+			<string>Pasiekta didžiausios grupės iš %d nario riba.</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -348,13 +348,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Platnosť vašej verzie Signal vyprší o 1 deň. Klepnutím aktualizujte na najnovšiu verziu.</string>
+			<string>Jūsų Signal versija nustos galioti po 1 dienos. Bakstelėkite norėdami atnaujinti į naujausią versiją.</string>
 			<key>few</key>
-			<string>Platnosť vašej verzie Signal vyprší o %d dni. Klepnutím aktualizujte na najnovšiu verziu.</string>
+			<string>Jūsų Signal versija nustos galioti po %d dienų. Bakstelėkite norėdami atnaujinti į naujausią versiją.</string>
 			<key>many</key>
-			<string>Platnosť vašej verzie Signal vyprší o %d dní. Klepnutím aktualizujte na najnovšiu verziu.</string>
+			<string>Jūsų Signal versija nustos galioti po %d dienų. Bakstelėkite norėdami atnaujinti į naujausią versiją.</string>
 			<key>other</key>
-			<string>Platnosť vašej verzie Signal vyprší o %d dní. Klepnutím aktualizujte na najnovšiu verziu.</string>
+			<string>Jūsų Signal versija nustos galioti po %d dienos. Bakstelėkite norėdami atnaujinti į naujausią versiją.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -368,13 +368,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odoslať správu</string>
+			<string>Siųsti žinutę</string>
 			<key>few</key>
-			<string>Odoslať %d správy</string>
+			<string>Siųsti %d žinutes</string>
 			<key>many</key>
-			<string>Odoslať %d správ</string>
+			<string>Siųsti %d žinučių</string>
 			<key>other</key>
-			<string>Odoslať %d správ</string>
+			<string>Siųsti %d žinutę</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -388,13 +388,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pre tento hovor bol dosiahnutý maximálny počet 1 účastníka. Skúste to znova neskôr.</string>
+			<string>Šiame skambutyje yra pasiektas didžiausias 1 dalyvio skaičius. Vėliau bandykite dar kartą.</string>
 			<key>few</key>
-			<string>Pre tento hovor bol dosiahnutý maximálny počet %d účastníkov. Skúste to znova neskôr.</string>
+			<string>Šiame skambutyje yra pasiektas didžiausias %d dalyvių skaičius. Vėliau bandykite dar kartą.</string>
 			<key>many</key>
-			<string>Pre tento hovor bol dosiahnutý maximálny počet %d účastníkov. Skúste to znova neskôr.</string>
+			<string>Šiame skambutyje yra pasiektas didžiausias %d dalyvių skaičius. Vėliau bandykite dar kartą.</string>
 			<key>other</key>
-			<string>Pre tento hovor bol dosiahnutý maximálny počet %d účastníkov. Skúste to znova neskôr.</string>
+			<string>Šiame skambutyje yra pasiektas didžiausias %d dalyvio skaičius. Vėliau bandykite dar kartą.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -408,13 +408,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>V tomto hovore · 1 človek</string>
+			<string>Šiame skambutyje · 1 žmogus</string>
 			<key>few</key>
-			<string>V tomto hovore · %d ľudia</string>
+			<string>Šiame skambutyje · %d žmonės</string>
 			<key>many</key>
-			<string>V tomto hovore · %d ľudí</string>
+			<string>Šiame skambutyje · %d žmonių</string>
 			<key>other</key>
-			<string>V tomto hovore · %d ľudí</string>
+			<string>Šiame skambutyje · %d žmogus</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -428,13 +428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tohto hovoru sa zúčastňujú %2$@, %3$@ a 1 ďalší</string>
+			<string>Šiame skambutyje yra %2$@, %3$@ ir dar 1 žmogus</string>
 			<key>few</key>
-			<string>Tohto hovoru sa zúčastňujú %2$@, %3$@ a %d ďalší</string>
+			<string>Šiame skambutyje yra %2$@, %3$@ ir dar %d žmonės</string>
 			<key>many</key>
-			<string>Tohto hovoru sa zúčastňujú %2$@, %3$@ a %d ďalší</string>
+			<string>Šiame skambutyje yra %2$@, %3$@ ir dar %d žmonių</string>
 			<key>other</key>
-			<string>Tohto hovoru sa zúčastňujú %2$@, %3$@ a %d ďalší</string>
+			<string>Šiame skambutyje yra %2$@, %3$@ ir dar %d žmogus</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -448,13 +448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ a 1 ďalší sa pripojili k hovoru</string>
+			<string>%2$@, %3$@ ir dar 1 žmogus prisijungė prie skambučio</string>
 			<key>few</key>
-			<string>%2$@, %3$@ a %d ďalší sa pripojili k hovoru</string>
+			<string>%2$@, %3$@ ir dar %d žmonės prisijungė prie skambučio</string>
 			<key>many</key>
-			<string>%2$@, %3$@ a %d ďalší sa pripojili k hovoru</string>
+			<string>%2$@, %3$@ ir dar %d žmonių prisijungė prie skambučio</string>
 			<key>other</key>
-			<string>%2$@, %3$@ a %d ďalší sa pripojili k hovoru</string>
+			<string>%2$@, %3$@ ir dar %d žmogus prisijungė prie skambučio</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -468,13 +468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ a 1 ďalší opustili hovor</string>
+			<string>%2$@, %3$@ ir dar 1 žmogus išėjo iš skambučio</string>
 			<key>few</key>
-			<string>%2$@, %3$@ a %d ďalší opustili hovor</string>
+			<string>%2$@, %3$@ ir dar %d žmonės išėjo iš skambučio</string>
 			<key>many</key>
-			<string>%2$@, %3$@ a %d ďalší opustili hovor</string>
+			<string>%2$@, %3$@ ir dar %d žmonių išėjo iš skambučio</string>
 			<key>other</key>
-			<string>%2$@, %3$@ a %d ďalší opustili hovor</string>
+			<string>%2$@, %3$@ ir dar %d žmogus išėjo iš skambučio</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -488,13 +488,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pozvánka bola odoslaná</string>
+			<string>Pakvietimas išsiųstas</string>
 			<key>few</key>
-			<string>Počet odoslaných pozvánok: %d</string>
+			<string>Išsiųsti %d pakvietimai</string>
 			<key>many</key>
-			<string>Počet odoslaných pozvánok: %d</string>
+			<string>Išsiųsta %d pakvietimų</string>
 			<key>other</key>
-			<string>Počet odoslaných pozvánok: %d</string>
+			<string>Išsiųstas %d pakvietimas</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -508,13 +508,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 člen</string>
+			<string>1 narys</string>
 			<key>few</key>
-			<string>%d členovia</string>
+			<string>%d nariai</string>
 			<key>many</key>
-			<string>%d členov</string>
+			<string>%d narių</string>
 			<key>other</key>
-			<string>%d členov</string>
+			<string>%d narys</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -528,13 +528,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 člen</string>
+			<string>1 narys</string>
 			<key>few</key>
-			<string>%d členovia</string>
+			<string>%d nariai</string>
 			<key>many</key>
-			<string>%d členov</string>
+			<string>%d narių</string>
 			<key>other</key>
-			<string>%d členov</string>
+			<string>%d narys</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -548,13 +548,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 člen skupiny má podobné meno.</string>
+			<string>1 grupės narys turi panašų vardą.</string>
 			<key>few</key>
-			<string>%d členovia skupiny má podobné meno.</string>
+			<string>%d grupės nariai turi panašius vardus.</string>
 			<key>many</key>
-			<string>%d členov skupiny má podobné meno.</string>
+			<string>%d grupės narių turi panašius vardus.</string>
 			<key>other</key>
-			<string>%d členov skupiny má podobné meno.</string>
+			<string>%d grupės narys turi panašius vardus.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -568,13 +568,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 člen skupiny má podobné meno, skontrolujte člena nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>1 grupės narys turi panašų vardą, peržiūrėkite žemiau esantį narį ar pasirinkite norėdami imtis veiksmų.</string>
 			<key>few</key>
-			<string>%d členovia skupiny má podobné meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>%d grupės nariai turi panašius vardus, peržiūrėkite žemiau esančius narius ar pasirinkite norėdami imtis veiksmų.</string>
 			<key>many</key>
-			<string>%d členov skupiny má podobné meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>%d grupės narių turi panašius vardus, peržiūrėkite žemiau esančius narius ar pasirinkite norėdami imtis veiksmų.</string>
 			<key>other</key>
-			<string>%d členov skupiny má podobné meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>%d grupės narys turi panašius vardus, peržiūrėkite žemiau esančius narius ar pasirinkite norėdami imtis veiksmų.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -588,13 +588,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 člen skupiny má rovnaké meno, skontrolujte člena nižšie, alebo vyberte akciu.</string>
+			<string>1 grupės narys turi tokį patį vardą, peržiūrėkite žemiau esantį narį ar pasirinkite norėdami imtis veiksmų.</string>
 			<key>few</key>
-			<string>%d členovia skupiny majú rovnaké meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>%d grupės nariai turi tokį patį vardą, peržiūrėkite žemiau esančius narius ar pasirinkite norėdami imtis veiksmų.</string>
 			<key>many</key>
-			<string>%d členov skupiny má rovnaké meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>%d grupės narių turi tokį patį vardą, peržiūrėkite žemiau esančius narius ar pasirinkite norėdami imtis veiksmų.</string>
 			<key>other</key>
-			<string>%d členov skupiny má rovnaké meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
+			<string>%d grupės narys turi tokį patį vardą, peržiūrėkite žemiau esančius narius ar pasirinkite norėdami imtis veiksmų.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -608,13 +608,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pozvánka do skupiny bolo zrušená pre 1 osobu.</string>
+			<string>1 žmogui buvo panaikintas pakvietimas prisijungti prie grupės.</string>
 			<key>few</key>
-			<string>Pozvánka do skupiny bola odvolaná pre %d osoby.</string>
+			<string>%d žmonėms buvo panaikinti pakvietimai prisijungti prie grupės.</string>
 			<key>many</key>
-			<string>Pozvánka do skupiny bola odvolaná pre %d ľudí.</string>
+			<string>%d žmonių buvo panaikinti pakvietimai prisijungti prie grupės.</string>
 			<key>other</key>
-			<string>Pozvánka do skupiny bola odvolaná pre %d ľudí.</string>
+			<string>%d žmogui buvo panaikinti pakvietimai prisijungti prie grupės.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -628,13 +628,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ zrušil pozvánku do skupiny pre 1 osobu.</string>
+			<string>%2$@ panaikino 1 žmogui pakvietimą prisijungti prie grupės.</string>
 			<key>few</key>
-			<string>%2$@ zrušil pozvanie do skupiny pre %d osoby.</string>
+			<string>%2$@ panaikino %d žmonėms pakvietimus prisijungti prie grupės.</string>
 			<key>many</key>
-			<string>%2$@ zrušil pozvanie do skupiny pre %d ľudí.</string>
+			<string>%2$@ panaikino %d žmonių pakvietimus prisijungti prie grupės.</string>
 			<key>other</key>
-			<string>%2$@ zrušil pozvanie do skupiny pre %d ľudí.</string>
+			<string>%2$@ panaikino %d žmogui pakvietimus prisijungti prie grupės.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -648,13 +648,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Do skupiny bola pozvaná 1 osoba.</string>
+			<string>Į grupę buvo pakviestas 1 žmogus.</string>
 			<key>few</key>
-			<string>Do skupiny bolo pozvaných %d ľudia.</string>
+			<string>Į grupę buvo pakviesti %d žmonės.</string>
 			<key>many</key>
-			<string>Do skupiny bolo pozvaných %d ľudí.</string>
+			<string>Į grupę buvo pakviesta %d žmonių.</string>
 			<key>other</key>
-			<string>Do skupiny bolo pozvaných %d ľudí.</string>
+			<string>Į grupę buvo pakviestas %d žmogus.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -668,13 +668,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ pozval 1 osobu do skupiny.</string>
+			<string>%2$@ pakvietė į grupę 1 žmogų.</string>
 			<key>few</key>
-			<string>%2$@ pozval %d osoby do skupiny.</string>
+			<string>%2$@ pakvietė į grupę %d žmones.</string>
 			<key>many</key>
-			<string>%2$@ pozval %d ľudí do skupiny.</string>
+			<string>%2$@ pakvietė į grupę %d žmonių.</string>
 			<key>other</key>
-			<string>%2$@ pozval %d ľudí do skupiny.</string>
+			<string>%2$@ pakvietė į grupę %d žmogų.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -688,13 +688,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Člena sa nepodarilo pridať do novej skupiny a bol zo skupiny odstránený.</string>
+			<string>Nario nepavyko pridėti į naująją grupę ir jis buvo pašalintas iš grupės.</string>
 			<key>few</key>
-			<string>%d členov nebolo možné pridať do novej skupiny a boli odstránení zo skupiny.</string>
+			<string>%d narių nepavyko pridėti į naująją grupę ir jie buvo pašalinti iš grupės.</string>
 			<key>many</key>
-			<string>%d členov nebolo možné pridať do novej skupiny a boli odstránení zo skupiny.</string>
+			<string>%d narių nepavyko pridėti į naująją grupę ir jie buvo pašalinti iš grupės.</string>
 			<key>other</key>
-			<string>%d členov nebolo možné pridať do novej skupiny a boli odstránení zo skupiny.</string>
+			<string>%d nario nepavyko pridėti į naująją grupę ir jie buvo pašalinti iš grupės.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -708,13 +708,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d člena sa nepodarilo pridať do novej skupiny a bol pozvaní, aby sa pripojili.</string>
+			<string>Nario nepavyko pridėti į naująją grupę ir todėl, jis buvo pakviestas prie jos prisijungti.</string>
 			<key>few</key>
-			<string>%d členov sa nepodarilo pridať do novej skupiny a boli pozvaní, aby sa pripojili.</string>
+			<string>%d narių nepavyko pridėti į naująją grupę ir todėl, jie buvo pakviesti prie jos prisijungti.</string>
 			<key>many</key>
-			<string>%d členov sa nepodarilo pridať do novej skupiny a boli pozvaní, aby sa pripojili.</string>
+			<string>%d narių nepavyko pridėti į naująją grupę ir todėl, jie buvo pakviesti prie jos prisijungti.</string>
 			<key>other</key>
-			<string>%d členov sa nepodarilo pridať do novej skupiny a boli pozvaní, aby sa pripojili.</string>
+			<string>%d nario nepavyko pridėti į naująją grupę ir todėl, jie buvo pakviesti prie jos prisijungti.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
@@ -728,13 +728,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Túto skupinu nie je možné vytvoriť, pretože 1 člen používa starú verziu programu Signal. Po aktualizácii Signal s ním môžete vytvoriť vynovenú skupinu, alebo ho pred vytvorením skupiny odstrániť. %2$@</string>
+			<string>Ši grupė negali būti sukurta, nes 1 narys naudoja seną Signal versiją. Šiam žmogui atnaujinus Signal, galėsite sukurti naujojo stiliaus grupę arba, prieš sukurdami grupę, pašalinkite šį žmogų. %2$@</string>
 			<key>few</key>
-			<string>Túto skupinu nie je možné vytvoriť, pretože %d členov používa starú verziu programu Signal. Po aktualizácii Signal s nimi môžete vytvoriť vynovenú skupinu, alebo ich pred vytvorením skupiny odstrániť. %2$@</string>
+			<string>Ši grupė negali būti sukurta, nes %d nariai naudoja seną Signal versiją. Šiems žmonėms atnaujinus Signal, galėsite sukurti naujojo stiliaus grupę arba, prieš sukurdami grupę, pašalinkite šiuos žmones. %2$@</string>
 			<key>many</key>
-			<string>Túto skupinu nie je možné vytvoriť, pretože %d členov používa starú verziu programu Signal. Po aktualizácii Signal s nimi môžete vytvoriť vynovenú skupinu, alebo ich pred vytvorením skupiny odstrániť. %2$@</string>
+			<string>Ši grupė negali būti sukurta, nes %d narių naudoja seną Signal versiją. Šiems žmonėms atnaujinus Signal, galėsite sukurti naujojo stiliaus grupę arba, prieš sukurdami grupę, pašalinkite šiuos žmones. %2$@</string>
 			<key>other</key>
-			<string>Túto skupinu nie je možné vytvoriť, pretože %d členov používa starú verziu programu Signal. Po aktualizácii Signal s nimi môžete vytvoriť vynovenú skupinu, alebo ich pred vytvorením skupiny odstrániť. %2$@</string>
+			<string>Ši grupė negali būti sukurta, nes %d narys naudoja seną Signal versiją. Šiems žmonėms atnaujinus Signal, galėsite sukurti naujojo stiliaus grupę arba, prieš sukurdami grupę, pašalinkite šiuos žmones. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_%d</key>
@@ -748,13 +748,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 člen nepodporuje Nové skupiny, takže toto bude Staršia skupina. %2$@</string>
+			<string>1 narys nepalaiko naujųjų grupių, todėl tai bus pasenusi grupė. %2$@</string>
 			<key>few</key>
-			<string>%d členovia nepodporuje Nové skupiny, takže toto bude Staršia skupina. %2$@</string>
+			<string>%d nariai nepalaiko naujųjų grupių, todėl tai bus pasenusi grupė. %2$@</string>
 			<key>many</key>
-			<string>%d členov nepodporuje Nové skupiny, takže toto bude Staršia skupina. %2$@</string>
+			<string>%d narių nepalaiko naujųjų grupių, todėl tai bus pasenusi grupė. %2$@</string>
 			<key>other</key>
-			<string>%d členov nepodporuje Nové skupiny, takže toto bude Staršia skupina. %2$@</string>
+			<string>%d narys nepalaiko naujųjų grupių, todėl tai bus pasenusi grupė. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -768,13 +768,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Túto skupinu nie je možné vytvoriť, pretože 1 člen používa starú verziu programu Signal. Po aktualizácii Signal s ním môžete vytvoriť vynovenú skupinu, alebo ho pred vytvorením skupiny odstrániť.</string>
+			<string>Ši grupė negali būti sukurta, nes 1 narys naudoja seną Signal versiją. Šiam žmogui atnaujinus Signal, galėsite sukurti naujojo stiliaus grupę arba, prieš sukurdami grupę, pašalinkite šį žmogų.</string>
 			<key>few</key>
-			<string>Túto skupinu nie je možné vytvoriť, pretože %d členovia používa starú verziu programu Signal. Po aktualizácii Signal s nimi môžete vytvoriť vynovenú skupinu, alebo ich pred vytvorením skupiny odstrániť.</string>
+			<string>Ši grupė negali būti sukurta, nes %d nariai naudoja seną Signal versiją. Šiems žmonėms atnaujinus Signal, galėsite sukurti naujojo stiliaus grupę arba, prieš sukurdami grupę, pašalinkite šiuos žmones.</string>
 			<key>many</key>
-			<string>Túto skupinu nie je možné vytvoriť, pretože %d členov používa starú verziu programu Signal. Po aktualizácii Signal s nimi môžete vytvoriť vynovenú skupinu, alebo ich pred vytvorením skupiny odstrániť.</string>
+			<string>Ši grupė negali būti sukurta, nes %d narių naudoja seną Signal versiją. Šiems žmonėms atnaujinus Signal, galėsite sukurti naujojo stiliaus grupę arba, prieš sukurdami grupę, pašalinkite šiuos žmones.</string>
 			<key>other</key>
-			<string>Túto skupinu nie je možné vytvoriť, pretože %d členov používa starú verziu programu Signal. Po aktualizácii Signal s nimi môžete vytvoriť vynovenú skupinu, alebo ich pred vytvorením skupiny odstrániť.</string>
+			<string>Ši grupė negali būti sukurta, nes %d narys naudoja seną Signal versiją. Šiems žmonėms atnaujinus Signal, galėsite sukurti naujojo stiliaus grupę arba, prieš sukurdami grupę, pašalinkite šiuos žmones.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_%d</key>
@@ -788,13 +788,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Bude vytvorená skupina staršieho typu, pretože 1 člen používa starú verziu Signal. Po aktualizácii Signal s ním môžete vytvoriť vynovenú skupinu, alebo ho pred vytvorením skupiny odstrániť.</string>
+			<string>Kadangi 1 narys naudoja seną Signal versiją, tai bus sukurta pasenusi grupė. Šiam žmogui atnaujinus Signal, galėsite sukurti naujojo stiliaus grupę arba, prieš sukurdami grupę, galite šį žmogų pašalinti.</string>
 			<key>few</key>
-			<string>Bude vytvorená skupina staršieho typu, pretože %d členovia používa starú verziu Signal. Po aktualizácii Signal s nimi môžete vytvoriť vynovenú skupinu, alebo ich pred vytvorením skupiny odstrániť.</string>
+			<string>Kadangi %d nariai naudoja seną Signal versiją, tai bus sukurta pasenusi grupė. Šiems žmonėms atnaujinus Signal, galėsite sukurti naujojo stiliaus grupę arba, prieš sukurdami grupę, galite šiuos žmones pašalinti.</string>
 			<key>many</key>
-			<string>Bude vytvorená skupina staršieho typu, pretože %d členov používa starú verziu Signal. Po aktualizácii Signal s nimi môžete vytvoriť vynovenú skupinu, alebo ich pred vytvorením skupiny odstrániť.</string>
+			<string>Kadangi %d narių naudoja seną Signal versiją, tai bus sukurta pasenusi grupė. Šiems žmonėms atnaujinus Signal, galėsite sukurti naujojo stiliaus grupę arba, prieš sukurdami grupę, galite šiuos žmones pašalinti.</string>
 			<key>other</key>
-			<string>Bude vytvorená skupina staršieho typu, pretože %d členov používa starú verziu Signal. Po aktualizácii Signal s nimi môžete vytvoriť vynovenú skupinu, alebo ich pred vytvorením skupiny odstrániť.</string>
+			<string>Kadangi %d narys naudoja seną Signal versiją, tai bus sukurta pasenusi grupė. Šiems žmonėms atnaujinus Signal, galėsite sukurti naujojo stiliaus grupę arba, prieš sukurdami grupę, galite šiuos žmones pašalinti.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -808,13 +808,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 člena sa nepodarilo znova pridať do novej skupiny. Chcete ho pridať teraz?</string>
+			<string>1 nario nepavyko iš naujo pridėti į naująją grupę. Ar norite pridėti jį dabar?</string>
 			<key>few</key>
-			<string>%d členov nebolo možné znova pridať do novej skupiny. Chcete ich pridať teraz?</string>
+			<string>%d narių nepavyko iš naujo pridėti į naująją grupę. Ar norite pridėti juos dabar?</string>
 			<key>many</key>
-			<string>%d členov nebolo možné znova pridať do novej skupiny. Chcete ich pridať teraz?</string>
+			<string>%d narių nepavyko iš naujo pridėti į naująją grupę. Ar norite pridėti juos dabar?</string>
 			<key>other</key>
-			<string>%d členov nebolo možné znova pridať do novej skupiny. Chcete ich pridať teraz?</string>
+			<string>%d nario nepavyko iš naujo pridėti į naująją grupę. Ar norite pridėti juos dabar?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -828,13 +828,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal skupiny fungujú najlepšie s 1 členom, alebo menej. Pridanie ďalšieho člena spôsobí oneskorenie pri odosielaní a prijímaní správ.</string>
+			<string>Signal grupės geriausiai veikia, kai jose yra 1 ar mažiau narių. Pridėjus daugiau narių, žinučių išsiuntimas ir gavimas bus uždelsiamas.</string>
 			<key>few</key>
-			<string>Signal skupiny fungujú najlepšie s %d členmi, alebo menej. Pridanie ďalších členov spôsobí oneskorenie pri odosielaní a prijímaní správ.</string>
+			<string>Signal grupės geriausiai veikia, kai jose yra %d ar mažiau narių. Pridėjus daugiau narių, žinučių išsiuntimas ir gavimas bus uždelsiamas.</string>
 			<key>many</key>
-			<string>Signal skupiny fungujú najlepšie s %d členmi, alebo menej. Pridanie ďalších členov spôsobí oneskorenie pri odosielaní a prijímaní správ.</string>
+			<string>Signal grupės geriausiai veikia, kai jose yra %d ar mažiau narių. Pridėjus daugiau narių, žinučių išsiuntimas ir gavimas bus uždelsiamas.</string>
 			<key>other</key>
-			<string>Signal skupiny fungujú najlepšie s %d členmi, alebo menej. Pridanie ďalších členov spôsobí oneskorenie pri odosielaní a prijímaní správ.</string>
+			<string>Signal grupės geriausiai veikia, kai jose yra %d ar mažiau narių. Pridėjus daugiau narių, žinučių išsiuntimas ir gavimas bus uždelsiamas.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -848,13 +848,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nemôžete zdieľať viac ako 1 položku.</string>
+			<string>Jūs negalite bendrinti daugiau nei 1 elementą.</string>
 			<key>few</key>
-			<string>Nemôžete zdieľať viac ako %d položky.</string>
+			<string>Jūs negalite bendrinti daugiau nei %d elementus.</string>
 			<key>many</key>
-			<string>Nemôžete zdieľať viac ako %d položiek.</string>
+			<string>Jūs negalite bendrinti daugiau nei %d elementų.</string>
 			<key>other</key>
-			<string>Nemôžete zdieľať viac ako %d položiek.</string>
+			<string>Jūs negalite bendrinti daugiau nei %d elementą.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -868,13 +868,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 spoločná skupina</string>
+			<string>1 bendra grupė</string>
 			<key>few</key>
-			<string>%d spoločných skupín</string>
+			<string>%d bendros grupės</string>
 			<key>many</key>
-			<string>%d spoločných skupín</string>
+			<string>%d bendrų grupių</string>
 			<key>other</key>
-			<string>%d spoločných skupín</string>
+			<string>%d bendra grupė</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -888,13 +888,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odstrániť 1 správu</string>
+			<string>Ištrinti 1 žinutę</string>
 			<key>few</key>
-			<string>Odstrániť %d správy</string>
+			<string>Ištrinti %d žinutes</string>
 			<key>many</key>
-			<string>Odstrániť %d správ</string>
+			<string>Ištrinti %d žinučių</string>
 			<key>other</key>
-			<string>Odstrániť %d správ</string>
+			<string>Ištrinti %d žinutę</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -908,13 +908,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 fotka</string>
+			<string>1 nuotrauka</string>
 			<key>few</key>
-			<string>%d fotky</string>
+			<string>%d nuotraukos</string>
 			<key>many</key>
-			<string>%d fotiek</string>
+			<string>%d nuotraukų</string>
 			<key>other</key>
-			<string>%d fotiek</string>
+			<string>%d nuotrauka</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -928,13 +928,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 položka</string>
+			<string>1 elementas</string>
 			<key>few</key>
-			<string>%d položky</string>
+			<string>%d elementai</string>
 			<key>many</key>
-			<string>%d položiek</string>
+			<string>%d elementų</string>
 			<key>other</key>
-			<string>%d položiek</string>
+			<string>%d elementas</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -948,13 +948,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 vybraté</string>
+			<string>Pažymėta: 1</string>
 			<key>few</key>
-			<string>%d vybraté</string>
+			<string>Pažymėta: %d</string>
 			<key>many</key>
-			<string>%d vybratých</string>
+			<string>Pažymėta: %d</string>
 			<key>other</key>
-			<string>%d vybratých</string>
+			<string>Pažymėta: %d</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -968,13 +968,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Zablokovali ste 1 člena tejto skupiny</string>
+			<string>Jūs užblokavote 1 šios grupės narį</string>
 			<key>few</key>
-			<string>Zablokovali ste %d členov tejto skupiny</string>
+			<string>Jūs užblokavote %d šios grupės narius</string>
 			<key>many</key>
-			<string>Zablokovali ste %d členov tejto skupiny</string>
+			<string>Jūs užblokavote %d šios grupės narių</string>
 			<key>other</key>
-			<string>Zablokovali ste %d členov tejto skupiny</string>
+			<string>Jūs užblokavote %d šios grupės narį</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -988,13 +988,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 člen</string>
+			<string>1 narys</string>
 			<key>few</key>
-			<string>%d členovia</string>
+			<string>%d nariai</string>
 			<key>many</key>
-			<string>%d členov</string>
+			<string>%d narių</string>
 			<key>other</key>
-			<string>%d členov</string>
+			<string>%d narys</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -1008,13 +1008,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nesprávny PIN. Zostáva 1 pokus.</string>
+			<string>Neteisingas PIN kodas. Liko 1 bandymas.</string>
 			<key>few</key>
-			<string>Nesprávny PIN. Zostáva %d pokusy.</string>
+			<string>Neteisingas PIN kodas. Liko %d bandymai.</string>
 			<key>many</key>
-			<string>Nesprávny PIN. Zostáva %d pokusov.</string>
+			<string>Neteisingas PIN kodas. Liko %d bandymų.</string>
 			<key>other</key>
-			<string>Nesprávny PIN. Zostáva %d pokusov.</string>
+			<string>Neteisingas PIN kodas. Liko %d bandymas.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -1028,13 +1028,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ pozval 1 osobu</string>
+			<string>%2$@ pakvietė 1 žmogų</string>
 			<key>few</key>
-			<string>%2$@ pozval %d ľudí</string>
+			<string>%2$@ pakvietė %d žmones</string>
 			<key>many</key>
-			<string>%2$@ pozval %d ľudí</string>
+			<string>%2$@ pakvietė %d žmonių</string>
 			<key>other</key>
-			<string>%2$@ pozval %d ľudí</string>
+			<string>%2$@ pakvietė %d žmogų</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -1048,13 +1048,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 čakajúca žiadosť o členstvo.</string>
+			<string>1 laukiantis prašymas tapti nariu.</string>
 			<key>few</key>
-			<string>%d čakajúce žiadosti o členstvo.</string>
+			<string>%d laukiantys prašymai tapti nariais.</string>
 			<key>many</key>
-			<string>%d čakajúcich žiadostí o členstvo.</string>
+			<string>%d laukiančių prašymų tapti nariais.</string>
 			<key>other</key>
-			<string>%d čakajúcich žiadostí o členstvo.</string>
+			<string>%d laukiantis prašymas tapti nariais.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -1068,13 +1068,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odvolať neplatnú pozvánku</string>
+			<string>Panaikinti neteisingą pakvietimą</string>
 			<key>few</key>
-			<string>Odvolať %d neplatné pozvánoky</string>
+			<string>Panaikinti %d neteisingus pakvietimus</string>
 			<key>many</key>
-			<string>Odvolať %d neplatných pozvánok</string>
+			<string>Panaikinti %d neteisingų pakvietimų</string>
 			<key>other</key>
-			<string>Odvolať %d neplatných pozvánok</string>
+			<string>Panaikinti %d neteisingą pakvietimą</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -1088,13 +1088,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odvolať pozvánku do skupiny odoslanú používateľom „%2$@“?</string>
+			<string>Panaikinti pakvietimą prisijungti prie grupės, kurį išsiuntė „%2$@“?</string>
 			<key>few</key>
-			<string>Odvolať %d pozvánky odoslaných používateľom „%2$@“?</string>
+			<string>Panaikinti %d pakvietimus, kuriuos išsiuntė „%2$@“?</string>
 			<key>many</key>
-			<string>Odvolať %d pozvánok odoslaných používateľom „%2$@“?</string>
+			<string>Panaikinti %d pakvietimų, kuriuos išsiuntė „%2$@“?</string>
 			<key>other</key>
-			<string>Odvolať %d pozvánok odoslaných používateľom „%2$@“?</string>
+			<string>Panaikinti %d pakvietimą, kuriuos išsiuntė „%2$@“?</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1108,13 +1108,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odvolať pozvánku</string>
+			<string>Panaikinti pakvietimą</string>
 			<key>few</key>
-			<string>Odvolať pozvánky</string>
+			<string>Panaikinti pakvietimus</string>
 			<key>many</key>
-			<string>Odvolať pozvánky</string>
+			<string>Panaikinti pakvietimus</string>
 			<key>other</key>
-			<string>Odvolať pozvánky</string>
+			<string>Panaikinti pakvietimus</string>
 		</dict>
 	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
@@ -1128,13 +1128,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pripomenieme vám to neskôr. Vytvorenie PIN sa stane povinným o 1 deň.</string>
+			<string>Priminsime jums vėliau. PIN kodo sukūrimas po 1 dienos taps privalomas.</string>
 			<key>few</key>
-			<string>Pripomenieme vám to neskôr. Vytvorenie kódu PIN bude povinné o %d dni.</string>
+			<string>Priminsime jums vėliau. PIN kodo sukūrimas po %d dienų taps privalomas.</string>
 			<key>many</key>
-			<string>Pripomenieme vám to neskôr. Vytvorenie kódu PIN bude povinné o %d dní.</string>
+			<string>Priminsime jums vėliau. PIN kodo sukūrimas po %d dienų taps privalomas.</string>
 			<key>other</key>
-			<string>Pripomenieme vám to neskôr. Vytvorenie kódu PIN bude povinné o %d dní.</string>
+			<string>Priminsime jums vėliau. PIN kodo sukūrimas po %d dienos taps privalomas.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1148,13 +1148,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Zostáva vám 1 pokus. Ak sa vám minú pokusy, môžete si vytvoriť nový PIN. Môžete sa zaregistrovať a používať svoj účet, ale stratíte niektoré uložené nastavenia, ako sú informácie o vašom profile.</string>
+			<string>Jums liko 1 bandymas. Jei išnaudosite visus bandymus, galėsite susikurti naują PIN kodą. Galėsite registruotis ir naudotis savo paskyra, bet prarasite kai kuriuos įrašytus nustatymus, kaip pavyzdžiui, profilio informaciją.</string>
 			<key>few</key>
-			<string>Zostáva vám %d pokusy. Ak sa vám minú pokusy, môžete si vytvoriť nový PIN. Môžete sa zaregistrovať a používať svoj účet, ale stratíte niektoré uložené nastavenia, ako sú informácie o vašom profile.</string>
+			<string>Jums liko %d bandymai. Jei išnaudosite visus bandymus, galėsite susikurti naują PIN kodą. Galėsite registruotis ir naudotis savo paskyra, bet prarasite kai kuriuos įrašytus nustatymus, kaip pavyzdžiui, profilio informaciją.</string>
 			<key>many</key>
-			<string>Zostáva vám %d pokusov. Ak sa vám minú pokusy, môžete si vytvoriť nový PIN. Môžete sa zaregistrovať a používať svoj účet, ale stratíte niektoré uložené nastavenia, ako sú informácie o vašom profile.</string>
+			<string>Jums liko %d bandymų. Jei išnaudosite visus bandymus, galėsite susikurti naują PIN kodą. Galėsite registruotis ir naudotis savo paskyra, bet prarasite kai kuriuos įrašytus nustatymus, kaip pavyzdžiui, profilio informaciją.</string>
 			<key>other</key>
-			<string>Zostáva vám %d pokusov. Ak sa vám minú pokusy, môžete si vytvoriť nový PIN. Môžete sa zaregistrovať a používať svoj účet, ale stratíte niektoré uložené nastavenia, ako sú informácie o vašom profile.</string>
+			<string>Jums liko %d bandymas. Jei išnaudosite visus bandymus, galėsite susikurti naują PIN kodą. Galėsite registruotis ir naudotis savo paskyra, bet prarasite kai kuriuos įrašytus nustatymus, kaip pavyzdžiui, profilio informaciją.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -1168,13 +1168,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Zostáva vám 1 pokus. Ak vám dôjdu pokusy, váš účet bude zablokovaný. Po 7 dňoch nečinnosti sa môžete znova zaregistrovať bez vášho PIN. Váš účet bude vymazaný a všetok obsah odstránený.</string>
+			<string>Jums liko 1 bandymas. Jei išnaudosite visus bandymus, jūsų paskyra bus užrakinta. Po 7 dienų neveiklumo galėsite iš naujo registruotis be savo PIN kodo. Jūsų paskyra bus išvalyta, o visas turinys ištrintas.</string>
 			<key>few</key>
-			<string>Zostáva vám %d pokusy. Ak vám dôjdu pokusy, váš účet bude zablokovaný. Po 7 dňoch nečinnosti sa môžete znova zaregistrovať bez vášho PIN. Váš účet bude vymazaný a všetok obsah odstránený.</string>
+			<string>Jums liko %d bandymai. Jei išnaudosite visus bandymus, jūsų paskyra bus užrakinta. Po 7 dienų neveiklumo galėsite iš naujo registruotis be savo PIN kodo. Jūsų paskyra bus išvalyta, o visas turinys ištrintas.</string>
 			<key>many</key>
-			<string>Zostáva vám %d pokusov. Ak vám dôjdu pokusy, váš účet bude zablokovaný. Po 7 dňoch nečinnosti sa môžete znova zaregistrovať bez vášho PIN. Váš účet bude vymazaný a všetok obsah odstránený.</string>
+			<string>Jums liko %d bandymų. Jei išnaudosite visus bandymus, jūsų paskyra bus užrakinta. Po 7 dienų neveiklumo galėsite iš naujo registruotis be savo PIN kodo. Jūsų paskyra bus išvalyta, o visas turinys ištrintas.</string>
 			<key>other</key>
-			<string>Zostáva vám %d pokusov. Ak vám dôjdu pokusy, váš účet bude zablokovaný. Po 7 dňoch nečinnosti sa môžete znova zaregistrovať bez vášho PIN. Váš účet bude vymazaný a všetok obsah odstránený.</string>
+			<string>Jums liko %d bandymas. Jei išnaudosite visus bandymus, jūsų paskyra bus užrakinta. Po 7 dienų neveiklumo galėsite iš naujo registruotis be savo PIN kodo. Jūsų paskyra bus išvalyta, o visas turinys ištrintas.</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -1188,13 +1188,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Člen %2$@, %3$@ a 1 ďalšej skupiny</string>
+			<string>%2$@, %3$@ ir dar 1 grupės narys</string>
 			<key>few</key>
-			<string>Člen %2$@, %3$@ a %d ďalších skupín</string>
+			<string>%2$@, %3$@ ir dar %d grupių narys</string>
 			<key>many</key>
-			<string>Člen %2$@, %3$@ a %d ďalších skupín</string>
+			<string>%2$@, %3$@ ir dar %d grupių narys</string>
 			<key>other</key>
-			<string>Člen %2$@, %3$@ a %d ďalších skupín</string>
+			<string>%2$@, %3$@ ir dar %d grupės narys</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -1208,13 +1208,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 deň</string>
+			<string>1 diena</string>
 			<key>few</key>
-			<string>%d dni</string>
+			<string>%d dienos</string>
 			<key>many</key>
-			<string>%d dní</string>
+			<string>%d dienų</string>
 			<key>other</key>
-			<string>%d dní</string>
+			<string>%d diena</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
@@ -1228,13 +1228,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1d</string>
+			<string>1 d.</string>
 			<key>few</key>
-			<string>%dd</string>
+			<string>%d d.</string>
 			<key>many</key>
-			<string>%dd</string>
+			<string>%d d.</string>
 			<key>other</key>
-			<string>%dd</string>
+			<string>%d d.</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_%d</key>
@@ -1248,13 +1248,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 hodina</string>
+			<string>1 valanda</string>
 			<key>few</key>
-			<string>%d hodiny</string>
+			<string>%d valandos</string>
 			<key>many</key>
-			<string>%d hodín</string>
+			<string>%d valandų</string>
 			<key>other</key>
-			<string>%d hodín</string>
+			<string>%d valanda</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
@@ -1268,13 +1268,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1h</string>
+			<string>1 val.</string>
 			<key>few</key>
-			<string>%dh</string>
+			<string>%d val.</string>
 			<key>many</key>
-			<string>%dh</string>
+			<string>%d val.</string>
 			<key>other</key>
-			<string>%dh</string>
+			<string>%d val.</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_%d</key>
@@ -1288,13 +1288,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 minúta</string>
+			<string>1 minutė</string>
 			<key>few</key>
-			<string>%d minúty</string>
+			<string>%d minutės</string>
 			<key>many</key>
-			<string>%d minút</string>
+			<string>%d minučių</string>
 			<key>other</key>
-			<string>%d minút</string>
+			<string>%d minutė</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
@@ -1308,13 +1308,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1m</string>
+			<string>1 min.</string>
 			<key>few</key>
-			<string>%dm</string>
+			<string>%d min.</string>
 			<key>many</key>
-			<string>%dm</string>
+			<string>%d min.</string>
 			<key>other</key>
-			<string>%dm</string>
+			<string>%d min.</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_%d</key>
@@ -1328,13 +1328,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 sekunda</string>
+			<string>1 sekundė</string>
 			<key>few</key>
-			<string>%d sekúndy</string>
+			<string>%d sekundės</string>
 			<key>many</key>
-			<string>%d sekúnd</string>
+			<string>%d sekundžių</string>
 			<key>other</key>
-			<string>%d sekúnd</string>
+			<string>%d sekundė</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
@@ -1348,13 +1348,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1s</string>
+			<string>1 sek.</string>
 			<key>few</key>
-			<string>%ds</string>
+			<string>%d sek.</string>
 			<key>many</key>
-			<string>%ds</string>
+			<string>%d sek.</string>
 			<key>other</key>
-			<string>%ds</string>
+			<string>%d sek.</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_%d</key>
@@ -1368,13 +1368,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 týždeň</string>
+			<string>1 savaitė</string>
 			<key>few</key>
-			<string>%d týždne</string>
+			<string>%d savaitės</string>
 			<key>many</key>
-			<string>%d týždňov</string>
+			<string>%d savaičių</string>
 			<key>other</key>
-			<string>%d týždňov</string>
+			<string>%d savaitė</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
@@ -1388,13 +1388,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1t</string>
+			<string>1 sav.</string>
 			<key>few</key>
-			<string>%dt</string>
+			<string>%d sav.</string>
 			<key>many</key>
-			<string>%dt</string>
+			<string>%d sav.</string>
 			<key>other</key>
-			<string>%dt</string>
+			<string>%d sav.</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_YEARS_%d</key>
@@ -1408,13 +1408,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 rok</string>
+			<string>1 metai</string>
 			<key>few</key>
-			<string>%d roky</string>
+			<string>%d metai</string>
 			<key>many</key>
-			<string>%d rokov</string>
+			<string>%d metų</string>
 			<key>other</key>
-			<string>%d rokov</string>
+			<string>%d metai</string>
 		</dict>
 	</dict>
 </dict>

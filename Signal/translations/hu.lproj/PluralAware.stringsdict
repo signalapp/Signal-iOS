@@ -2,1126 +2,1125 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Hangüzenet 1 másodperc</string>
-            <key>other</key>
-            <string>Hangüzenet %d másodperc</string>
-        </dict>
-    </dict>
-    <key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%1$#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Hozzáadod ehhez: "%2$@"?</string>
-            <key>other</key>
-            <string>Hozzáadsz %d tagot itt: "%2$@"?</string>
-        </dict>
-    </dict>
-    <key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Új tag hozzáadása</string>
-            <key>other</key>
-            <string>Új tagok hozzáadása</string>
-        </dict>
-    </dict>
-    <key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Tag hozzáadása</string>
-            <key>other</key>
-            <string>Tagok hozzáadása</string>
-        </dict>
-    </dict>
-    <key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Ez az egyedi szín használatban van egy csevegésben. Valóban törölni akarod?</string>
-            <key>other</key>
-            <string>Ez az egyedi szín használatban van %d csevegésben. Valóban törölni akarod?</string>
-        </dict>
-    </dict>
-    <key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Ez az egyedi szín használatban van egy csevegésben. Menteni akarod a változásokat mindegyikhez?</string>
-            <key>other</key>
-            <string>Ez az egyedi szín használatban van %d csevegésben. Menteni akarod a változásokat mindegyikhez?</string>
-        </dict>
-    </dict>
-    <key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Törlöd a beszélgetést?</string>
-            <key>other</key>
-            <string>Törölsz %d beszélgetést?</string>
-        </dict>
-    </dict>
-    <key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>A beszélgetés ezen az eszközön törlésre kerül.</string>
-            <key>other</key>
-            <string>Ezek a beszélgetések ezen az eszközön törlésre kerülnek.</string>
-        </dict>
-    </dict>
-    <key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Legfeljebb 1 beszélgetést jelölhetsz ki.</string>
-            <key>other</key>
-            <string>Legfeljebb %d beszélgetést jelölhetsz ki.</string>
-        </dict>
-    </dict>
-    <key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%1$#@position@</string>
-        <key>total</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>találat</string>
-            <key>other</key>
-            <string>/%d találat</string>
-        </dict>
-    </dict>
-    <key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 tag</string>
-            <key>other</key>
-            <string>%d tag</string>
-        </dict>
-    </dict>
-    <key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 közös csoport</string>
-            <key>other</key>
-            <string>%d közös csoport</string>
-        </dict>
-    </dict>
-    <key>DATE_MINUTES_AGO_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>%dp</string>
-            <key>other</key>
-            <string>%dp</string>
-        </dict>
-    </dict>
-    <key>DATE_MINUTES_AGO_LONG_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 perce</string>
-            <key>other</key>
-            <string>%d perce</string>
-        </dict>
-    </dict>
-    <key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Törlöd az üzenetet?</string>
-            <key>other</key>
-            <string>Törölsz %d üzenetet?</string>
-        </dict>
-    </dict>
-    <key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>A csoport elérte a maximális, %d fős taglétszámot.</string>
-            <key>other</key>
-            <string>A csoport elérte a maximális, %d fős taglétszámot.</string>
-        </dict>
-    </dict>
-    <key>EXPIRATION_WARNING_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Signal verziód 1 napon belül lejár. Koppints a legújabb verzióra frissítéshez.</string>
-            <key>other</key>
-            <string>Signal verziód %d napon belül lejár. Koppints a legújabb verzióra frissítéshez.</string>
-        </dict>
-    </dict>
-    <key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Üzenetküldés</string>
-            <key>other</key>
-            <string>%d üzenet küldése</string>
-        </dict>
-    </dict>
-    <key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>A csoporthívás létszáma elérte a maximális 1 főt. Kérlek próbáld később.</string>
-            <key>other</key>
-            <string>A csoporthívás létszáma elérte a maximális %d főt. Kérlek próbáld később.</string>
-        </dict>
-    </dict>
-    <key>GROUP_CALL_IN_THIS_CALL_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 személy ebben a hívásban</string>
-            <key>other</key>
-            <string>%d személy ebben a hívásban</string>
-        </dict>
-    </dict>
-    <key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%1$#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>%2$@, %3$@ és még 1 személy ebben a hívásban</string>
-            <key>other</key>
-            <string>%2$@, %3$@ és még %d másik személy ebben a hívásban</string>
-        </dict>
-    </dict>
-    <key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%1$#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>%2$@, %3$@, és 1 további tag belépett a hívásba</string>
-            <key>other</key>
-            <string>%2$@, %3$@, és %d további tag belépett a hívásba</string>
-        </dict>
-    </dict>
-    <key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%1$#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>%2$@, %3$@, and 1 további tag kilépett a hívásból</string>
-            <key>other</key>
-            <string>%2$@, %3$@, and %d további tag kilépett a hívásból</string>
-        </dict>
-    </dict>
-    <key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Meghívó elküldve</string>
-            <key>other</key>
-            <string>%d meghívó elküldve</string>
-        </dict>
-    </dict>
-    <key>GROUP_MEMBER_COUNT_LABEL_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 tag</string>
-            <key>other</key>
-            <string>%d tag</string>
-        </dict>
-    </dict>
-    <key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 tag</string>
-            <key>other</key>
-            <string>%d tag</string>
-        </dict>
-    </dict>
-    <key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 csoporttag hasonló névvel szerepel.</string>
-            <key>other</key>
-            <string>%d csoporttag hasonló névvel szerepel.</string>
-        </dict>
-    </dict>
-    <key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 csoporttag hasonló névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
-            <key>other</key>
-            <string>%d csoporttag hasonló névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
-        </dict>
-    </dict>
-    <key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 csoporttag azonos névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
-            <key>other</key>
-            <string>%d csoporttag azonos névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
-        </dict>
-    </dict>
-    <key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 személy csoportmeghívása visszavonásra került.</string>
-            <key>other</key>
-            <string>%d személy csoportmeghívása visszavonásra került.</string>
-        </dict>
-    </dict>
-    <key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%1$#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string> %2$@ visszavonta 1 személy csoportmeghívását.</string>
-            <key>other</key>
-            <string> %2$@ visszavonta %d személy csoportmeghívását.</string>
-        </dict>
-    </dict>
-    <key>GROUP_REMOTE_USER_INVITED_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 személy csoportmeghívást kapott.</string>
-            <key>other</key>
-            <string>%d személy csoportmeghívást kapott.</string>
-        </dict>
-    </dict>
-    <key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%1$#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>%2$@ meghívott 1 személyt a csoportba.</string>
-            <key>other</key>
-            <string>%2$@ meghívott %d személyt a csoportba.</string>
-        </dict>
-    </dict>
-    <key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Egy tagot nem lehetett közvetlenül az új típusú csoporthoz adni és így el lett távolítva.</string>
-            <key>other</key>
-            <string>%d tagot nem lehetett közvetlenül az új típusú csoporthoz adni és így el lettek távolítva.</string>
-        </dict>
-    </dict>
-    <key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Egy tagot nem lehetett közvetlenül az új típusú csoporthoz adni, ezért meghívót kapott.</string>
-            <key>other</key>
-            <string>%d tagot nem lehetett közvetlenül az új típusú csoporthoz adni, ezért meghívót kaptak.</string>
-        </dict>
-    </dict>
-    <key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%1$#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Ez a csoport sajnos nem hozható létre, mivel egy tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ő is frissítette a Signalt, vagy ha eltávolítod őt a felvételre kerülő tagok közül. %2$@</string>
-            <key>other</key>
-            <string>Ez a csoport sajnos nem hozható létre, mivel %d tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ők is frissítették a Signalt, vagy ha eltávolítod őket a felvételre kerülő tagok közül. %2$@</string>
-        </dict>
-    </dict>
-    <key>GROUPS_LEGACY_GROUP_CREATION_WARNING_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%1$#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Egy tag nem támogatja az új típusú csoportokat, ezért a csoport továbbra is régi típusú marad. %2$@</string>
-            <key>other</key>
-            <string>%d tag nem támogatja az új típusú csoportokat, ezért a csoport továbbra is régi típusú marad. %2$@</string>
-        </dict>
-    </dict>
-    <key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Ez a csoport sajnos nem hozható létre, mivel egy tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ő is frissítette a Signalt, vagy ha eltávolítod őt a felvételre kerülő tagok közül.</string>
-            <key>other</key>
-            <string>Ez a csoport sajnos nem hozható létre, mivel %d tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ők is frissítették a Signalt, vagy ha eltávolítod őket a felvételre kerülő tagok közül.</string>
-        </dict>
-    </dict>
-    <key>GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Régi típusú csoport lesz létrehozva, mivel 1 tag a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ő is frissítette a Signalt, vagy ha eltávolítod őt a felvételre kerülő tagok közül.</string>
-            <key>other</key>
-            <string>Régi típusú csoport lesz létrehozva, mivel %d tag a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ők is frissítették a Signalt, vagy ha eltávolítod őket a felvételre kerülő tagok közül.</string>
-        </dict>
-    </dict>
-    <key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Egy tagot nem sikerült az új típusú csoporthoz újra hozzáadni. Hozzá akarod adni most?</string>
-            <key>other</key>
-            <string>%d tagot nem sikerült az új típusú csoporthoz újra hozzáadni. Hozzá akarod őket adni most?</string>
-        </dict>
-    </dict>
-    <key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>A Signal csoportok 1 vagy kevesebb taggal működnek hatékonyan. Ennél több tag esetén lassulások tapasztalhatóak az üzenetek küldése és fogadása során.</string>
-            <key>other</key>
-            <string>A Signal csoportok %d vagy kevesebb taggal működnek hatékonyan. Ennél több tag esetén lassulások tapasztalhatóak az üzenetek küldése és fogadása során.</string>
-        </dict>
-    </dict>
-    <key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Nem oszthatsz meg egynél több elemet.</string>
-            <key>other</key>
-            <string>Nem oszthatsz meg többet, mint %d elem.</string>
-        </dict>
-    </dict>
-    <key>MANY_GROUPS_IN_COMMON_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 közös csoport</string>
-            <key>other</key>
-            <string>%d közös csoport</string>
-        </dict>
-    </dict>
-    <key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 üzenet törlése</string>
-            <key>other</key>
-            <string>%d üzenet törlése</string>
-        </dict>
-    </dict>
-    <key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 fotó</string>
-            <key>other</key>
-            <string>%d fotó</string>
-        </dict>
-    </dict>
-    <key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 elem</string>
-            <key>other</key>
-            <string>%d elem</string>
-        </dict>
-    </dict>
-    <key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@caption@</string>
-        <key>caption</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 kiválasztva</string>
-            <key>other</key>
-            <string>%d kiválasztva</string>
-        </dict>
-    </dict>
-    <key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@caption@</string>
-        <key>caption</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>A csoport 1 tagja a tiltólistádon van</string>
-            <key>other</key>
-            <string>A csoport %d tagja a tiltólistádon van</string>
-        </dict>
-    </dict>
-    <key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@caption@</string>
-        <key>caption</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 tag</string>
-            <key>other</key>
-            <string>%d tag</string>
-        </dict>
-    </dict>
-    <key>ONBOARDING_2FA_INVALID_PIN_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@caption@</string>
-        <key>caption</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Hibás PIN kód. 1 próbálkozás maradt.</string>
-            <key>other</key>
-            <string>Hibás PIN kód. %d próbálkozás maradt.</string>
-        </dict>
-    </dict>
-    <key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%1$#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>%2$@ meghívott 1 személyt</string>
-            <key>other</key>
-            <string>%2$@ meghívott %d személyt</string>
-        </dict>
-    </dict>
-    <key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@caption@</string>
-        <key>caption</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 függőben lévő tagsági kérés.</string>
-            <key>other</key>
-            <string>%d függőben lévő tagsági kérés.</string>
-        </dict>
-    </dict>
-    <key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@caption@</string>
-        <key>caption</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Érvénytelen meghívó visszavonása</string>
-            <key>other</key>
-            <string>%d érvénytelen meghívó visszavonása</string>
-        </dict>
-    </dict>
-    <key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%1$#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Visszavonod a "%2$@" által kiküldött meghívót?</string>
-            <key>other</key>
-            <string>Visszavonod a "%2$@" által kiküldött %d meghívót?</string>
-        </dict>
-    </dict>
-    <key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@caption@</string>
-        <key>caption</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Meghívó visszavonása</string>
-            <key>other</key>
-            <string>Meghívók visszavonása</string>
-        </dict>
-    </dict>
-    <key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@caption@</string>
-        <key>caption</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Később újra emlékeztetünk. PIN kódod létrehozása 1 nap múlva kötelezővé válik.</string>
-            <key>other</key>
-            <string>Később újra emlékeztetünk. PIN kódod létrehozása %d nap múlva kötelezővé válik.</string>
-        </dict>
-    </dict>
-    <key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@caption@</string>
-        <key>caption</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Még 1 próbálkozásod maradt. Ha ez sem sikerül, lehetőséged lesz új PIN létrehozására. Regisztrálhatsz újra, majd használatba veheted a fiókodat, de mentett beállításaid egy része, mint például a profil-információid elvesznek. </string>
-            <key>other</key>
-            <string>Még %d próbálkozásod maradt. Ha kifogysz belőlük, lehetőséged lesz új PIN létrehozására.  Regisztrálhatsz újra, majd használatba veheted a fiókodat, de mentett beállításaid egy része, mint például a profil-információid elvesznek. </string>
-        </dict>
-    </dict>
-    <key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@caption@</string>
-        <key>caption</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 próbálkozásod maradt. Ha ezt is elrontod, a fiókod zárolásra kerül, majd 7 inaktív nap után a fiókod mindenestül törlésre kerül, ami után már újraregisztrálhatsz - immár PIN kód nélkül.</string>
-            <key>other</key>
-            <string>%d próbálkozásod maradt. Ha mindet elrontod, a fiókod zárolásra kerül, majd 7 inaktív nap után a fiókod mindenestül törlésre kerül, ami után már újraregisztrálhatsz - immár PIN kód nélkül.</string>
-        </dict>
-    </dict>
-    <key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%1$#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>Az alábbi csoportok tagja: %2$@, %3$@ és még 1 további</string>
-            <key>other</key>
-            <string>Az alábbi csoportok tagja:  %2$@, %3$@ és még %d további</string>
-        </dict>
-    </dict>
-    <key>TIME_AMOUNT_DAYS_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 nap</string>
-            <key>other</key>
-            <string>%d nap</string>
-        </dict>
-    </dict>
-    <key>TIME_AMOUNT_DAYS_SHORT_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1n</string>
-            <key>other</key>
-            <string>%dn</string>
-        </dict>
-    </dict>
-    <key>TIME_AMOUNT_HOURS_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 óra</string>
-            <key>other</key>
-            <string>%d óra</string>
-        </dict>
-    </dict>
-    <key>TIME_AMOUNT_HOURS_SHORT_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1ó</string>
-            <key>other</key>
-            <string>%dó</string>
-        </dict>
-    </dict>
-    <key>TIME_AMOUNT_MINUTES_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 perc</string>
-            <key>other</key>
-            <string>%d perc</string>
-        </dict>
-    </dict>
-    <key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1p</string>
-            <key>other</key>
-            <string>%dp</string>
-        </dict>
-    </dict>
-    <key>TIME_AMOUNT_SECONDS_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 másodperc</string>
-            <key>other</key>
-            <string>%d másodperc</string>
-        </dict>
-    </dict>
-    <key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1mp</string>
-            <key>other</key>
-            <string>%dmp</string>
-        </dict>
-    </dict>
-    <key>TIME_AMOUNT_WEEKS_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 hét</string>
-            <key>other</key>
-            <string>%d hét</string>
-        </dict>
-    </dict>
-    <key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1h</string>
-            <key>other</key>
-            <string>%dh</string>
-        </dict>
-    </dict>
-    <key>TIME_AMOUNT_YEARS_%d</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@text@</string>
-        <key>text</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>one</key>
-            <string>1 év</string>
-            <key>other</key>
-            <string>%d év</string>
-        </dict>
-    </dict>
-    
+	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Hangüzenet 1 másodperc</string>
+			<key>other</key>
+			<string>Hangüzenet %d másodperc</string>
+		</dict>
+	</dict>
+	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Tag hozzáadása</string>
+			<key>other</key>
+			<string>Tagok hozzáadása</string>
+		</dict>
+	</dict>
+	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Hozzáadod ehhez: "%2$@"?</string>
+			<key>other</key>
+			<string>Hozzáadsz %d tagot itt: "%2$@"?</string>
+		</dict>
+	</dict>
+	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Új tag hozzáadása</string>
+			<key>other</key>
+			<string>Új tagok hozzáadása</string>
+		</dict>
+	</dict>
+	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ez az egyedi szín használatban van egy csevegésben. Valóban törölni akarod?</string>
+			<key>other</key>
+			<string>Ez az egyedi szín használatban van %d csevegésben. Valóban törölni akarod?</string>
+		</dict>
+	</dict>
+	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ez az egyedi szín használatban van egy csevegésben. Menteni akarod a változásokat mindegyikhez?</string>
+			<key>other</key>
+			<string>Ez az egyedi szín használatban van %d csevegésben. Menteni akarod a változásokat mindegyikhez?</string>
+		</dict>
+	</dict>
+	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Törlöd a beszélgetést?</string>
+			<key>other</key>
+			<string>Törölsz %d beszélgetést?</string>
+		</dict>
+	</dict>
+	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>A beszélgetés ezen az eszközön törlésre kerül.</string>
+			<key>other</key>
+			<string>Ezek a beszélgetések ezen az eszközön törlésre kerülnek.</string>
+		</dict>
+	</dict>
+	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>You can't select more than 1 chat.</string>
+			<key>other</key>
+			<string>You can't select more than %d chats.</string>
+		</dict>
+	</dict>
+	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@position@</string>
+		<key>total</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>találat</string>
+			<key>other</key>
+			<string>/%d találat</string>
+		</dict>
+	</dict>
+	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 tag</string>
+			<key>other</key>
+			<string>%d tag</string>
+		</dict>
+	</dict>
+	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 közös csoport</string>
+			<key>other</key>
+			<string>%d közös csoport</string>
+		</dict>
+	</dict>
+	<key>DATE_MINUTES_AGO_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%dp</string>
+			<key>other</key>
+			<string>%dp</string>
+		</dict>
+	</dict>
+	<key>DATE_MINUTES_AGO_LONG_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 perce</string>
+			<key>other</key>
+			<string>%d perce</string>
+		</dict>
+	</dict>
+	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Törlöd az üzenetet?</string>
+			<key>other</key>
+			<string>Törölsz %d üzenetet?</string>
+		</dict>
+	</dict>
+	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>A csoport elérte a maximális, %d fős taglétszámot.</string>
+			<key>other</key>
+			<string>A csoport elérte a maximális, %d fős taglétszámot.</string>
+		</dict>
+	</dict>
+	<key>EXPIRATION_WARNING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Signal verziód 1 napon belül lejár. Koppints a legújabb verzióra frissítéshez.</string>
+			<key>other</key>
+			<string>Signal verziód %d napon belül lejár. Koppints a legújabb verzióra frissítéshez.</string>
+		</dict>
+	</dict>
+	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Üzenetküldés</string>
+			<key>other</key>
+			<string>%d üzenet küldése</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ez a csoport sajnos nem hozható létre, mivel egy tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ő is frissítette a Signalt, vagy ha eltávolítod őt a felvételre kerülő tagok közül. %2$@</string>
+			<key>other</key>
+			<string>Ez a csoport sajnos nem hozható létre, mivel %d tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ők is frissítették a Signalt, vagy ha eltávolítod őket a felvételre kerülő tagok közül. %2$@</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ez a csoport sajnos nem hozható létre, mivel egy tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ő is frissítette a Signalt, vagy ha eltávolítod őt a felvételre kerülő tagok közül.</string>
+			<key>other</key>
+			<string>Ez a csoport sajnos nem hozható létre, mivel %d tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ők is frissítették a Signalt, vagy ha eltávolítod őket a felvételre kerülő tagok közül.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Egy tag nem támogatja az új típusú csoportokat, ezért a csoport továbbra is régi típusú marad. %2$@</string>
+			<key>other</key>
+			<string>%d tag nem támogatja az új típusú csoportokat, ezért a csoport továbbra is régi típusú marad. %2$@</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Régi típusú csoport lesz létrehozva, mivel 1 tag a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ő is frissítette a Signalt, vagy ha eltávolítod őt a felvételre kerülő tagok közül.</string>
+			<key>other</key>
+			<string>Régi típusú csoport lesz létrehozva, mivel %d tag a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ők is frissítették a Signalt, vagy ha eltávolítod őket a felvételre kerülő tagok közül.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Egy tagot nem sikerült az új típusú csoporthoz újra hozzáadni. Hozzá akarod adni most?</string>
+			<key>other</key>
+			<string>%d tagot nem sikerült az új típusú csoporthoz újra hozzáadni. Hozzá akarod őket adni most?</string>
+		</dict>
+	</dict>
+	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>A Signal csoportok 1 vagy kevesebb taggal működnek hatékonyan. Ennél több tag esetén lassulások tapasztalhatóak az üzenetek küldése és fogadása során.</string>
+			<key>other</key>
+			<string>A Signal csoportok %d vagy kevesebb taggal működnek hatékonyan. Ennél több tag esetén lassulások tapasztalhatóak az üzenetek küldése és fogadása során.</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>A csoporthívás létszáma elérte a maximális 1 főt. Kérlek próbáld később.</string>
+			<key>other</key>
+			<string>A csoporthívás létszáma elérte a maximális %d főt. Kérlek próbáld később.</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 személy ebben a hívásban</string>
+			<key>other</key>
+			<string>%d személy ebben a hívásban</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@, %3$@ és még 1 személy ebben a hívásban</string>
+			<key>other</key>
+			<string>%2$@, %3$@ és még %d másik személy ebben a hívásban</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@, %3$@, és 1 további tag belépett a hívásba</string>
+			<key>other</key>
+			<string>%2$@, %3$@, és %d további tag belépett a hívásba</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@, %3$@, and 1 további tag kilépett a hívásból</string>
+			<key>other</key>
+			<string>%2$@, %3$@, and %d további tag kilépett a hívásból</string>
+		</dict>
+	</dict>
+	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Meghívó elküldve</string>
+			<key>other</key>
+			<string>%d meghívó elküldve</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 csoporttag hasonló névvel szerepel.</string>
+			<key>other</key>
+			<string>%d csoporttag hasonló névvel szerepel.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 csoporttag hasonló névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
+			<key>other</key>
+			<string>%d csoporttag hasonló névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 csoporttag azonos névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
+			<key>other</key>
+			<string>%d csoporttag azonos névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 tag</string>
+			<key>other</key>
+			<string>%d tag</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 tag</string>
+			<key>other</key>
+			<string>%d tag</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 személy csoportmeghívást kapott.</string>
+			<key>other</key>
+			<string>%d személy csoportmeghívást kapott.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@ meghívott 1 személyt a csoportba.</string>
+			<key>other</key>
+			<string>%2$@ meghívott %d személyt a csoportba.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 személy csoportmeghívása visszavonásra került.</string>
+			<key>other</key>
+			<string>%d személy csoportmeghívása visszavonásra került.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string> %2$@ visszavonta 1 személy csoportmeghívását.</string>
+			<key>other</key>
+			<string> %2$@ visszavonta %d személy csoportmeghívását.</string>
+		</dict>
+	</dict>
+	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Egy tagot nem lehetett közvetlenül az új típusú csoporthoz adni és így el lett távolítva.</string>
+			<key>other</key>
+			<string>%d tagot nem lehetett közvetlenül az új típusú csoporthoz adni és így el lettek távolítva.</string>
+		</dict>
+	</dict>
+	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Egy tagot nem lehetett közvetlenül az új típusú csoporthoz adni, ezért meghívót kapott.</string>
+			<key>other</key>
+			<string>%d tagot nem lehetett közvetlenül az új típusú csoporthoz adni, ezért meghívót kaptak.</string>
+		</dict>
+	</dict>
+	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>You can't share more than 1 item.</string>
+			<key>other</key>
+			<string>You can't share more than %d items.</string>
+		</dict>
+	</dict>
+	<key>MANY_GROUPS_IN_COMMON_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 közös csoport</string>
+			<key>other</key>
+			<string>%d közös csoport</string>
+		</dict>
+	</dict>
+	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 üzenet törlése</string>
+			<key>other</key>
+			<string>%d üzenet törlése</string>
+		</dict>
+	</dict>
+	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 fotó</string>
+			<key>other</key>
+			<string>%d fotó</string>
+		</dict>
+	</dict>
+	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 elem</string>
+			<key>other</key>
+			<string>%d elem</string>
+		</dict>
+	</dict>
+	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>A csoport 1 tagja a tiltólistádon van</string>
+			<key>other</key>
+			<string>A csoport %d tagja a tiltólistádon van</string>
+		</dict>
+	</dict>
+	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 kiválasztva</string>
+			<key>other</key>
+			<string>%d kiválasztva</string>
+		</dict>
+	</dict>
+	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 tag</string>
+			<key>other</key>
+			<string>%d tag</string>
+		</dict>
+	</dict>
+	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Hibás PIN kód. 1 próbálkozás maradt.</string>
+			<key>other</key>
+			<string>Hibás PIN kód. %d próbálkozás maradt.</string>
+		</dict>
+	</dict>
+	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@ meghívott 1 személyt</string>
+			<key>other</key>
+			<string>%2$@ meghívott %d személyt</string>
+		</dict>
+	</dict>
+	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 függőben lévő tagsági kérés.</string>
+			<key>other</key>
+			<string>%d függőben lévő tagsági kérés.</string>
+		</dict>
+	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Érvénytelen meghívó visszavonása</string>
+			<key>other</key>
+			<string>%d érvénytelen meghívó visszavonása</string>
+		</dict>
+	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Meghívó visszavonása</string>
+			<key>other</key>
+			<string>Meghívók visszavonása</string>
+		</dict>
+	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Revoke group invite sent by "%2$@"?</string>
+			<key>other</key>
+			<string>Revoke %d invites sent by "%2$@"?</string>
+		</dict>
+	</dict>
+	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Később újra emlékeztetünk. PIN kódod létrehozása 1 nap múlva kötelezővé válik.</string>
+			<key>other</key>
+			<string>Később újra emlékeztetünk. PIN kódod létrehozása %d nap múlva kötelezővé válik.</string>
+		</dict>
+	</dict>
+	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Még 1 próbálkozásod maradt. Ha ez sem sikerül, lehetőséged lesz új PIN létrehozására. Regisztrálhatsz újra, majd használatba veheted a fiókodat, de mentett beállításaid egy része, mint például a profil-információid elvesznek. </string>
+			<key>other</key>
+			<string>Még %d próbálkozásod maradt. Ha kifogysz belőlük, lehetőséged lesz új PIN létrehozására.  Regisztrálhatsz újra, majd használatba veheted a fiókodat, de mentett beállításaid egy része, mint például a profil-információid elvesznek. </string>
+		</dict>
+	</dict>
+	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 próbálkozásod maradt. Ha ezt is elrontod, a fiókod zárolásra kerül, majd 7 inaktív nap után a fiókod mindenestül törlésre kerül, ami után már újraregisztrálhatsz - immár PIN kód nélkül.</string>
+			<key>other</key>
+			<string>%d próbálkozásod maradt. Ha mindet elrontod, a fiókod zárolásra kerül, majd 7 inaktív nap után a fiókod mindenestül törlésre kerül, ami után már újraregisztrálhatsz - immár PIN kód nélkül.</string>
+		</dict>
+	</dict>
+	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Az alábbi csoportok tagja: %2$@, %3$@ és még 1 további</string>
+			<key>other</key>
+			<string>Az alábbi csoportok tagja:  %2$@, %3$@ és még %d további</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_DAYS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 nap</string>
+			<key>other</key>
+			<string>%d nap</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1n</string>
+			<key>other</key>
+			<string>%dn</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_HOURS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 óra</string>
+			<key>other</key>
+			<string>%d óra</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1ó</string>
+			<key>other</key>
+			<string>%dó</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_MINUTES_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 perc</string>
+			<key>other</key>
+			<string>%d perc</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1p</string>
+			<key>other</key>
+			<string>%dp</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_SECONDS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 másodperc</string>
+			<key>other</key>
+			<string>%d másodperc</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1mp</string>
+			<key>other</key>
+			<string>%dmp</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_WEEKS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 hét</string>
+			<key>other</key>
+			<string>%d hét</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1h</string>
+			<key>other</key>
+			<string>%dh</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_YEARS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 év</string>
+			<key>other</key>
+			<string>%d év</string>
+		</dict>
+	</dict>
 </dict>
 </plist>
