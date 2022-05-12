@@ -171,6 +171,7 @@ public class SSKWebSocketNative: SSKWebSocket {
     private let hasEverConnected = AtomicBool(false)
     private let isConnected = AtomicBool(false)
     private let isDisconnecting = AtomicBool(false)
+    private let hasUnansweredPing = AtomicBool(false)
 
     // This method is thread-safe.
     public var state: SSKWebSocketState {
@@ -261,8 +262,14 @@ public class SSKWebSocketNative: SSKWebSocket {
             reportError(OWSGenericError("Missing webSocketTask."))
             return
         }
+        guard hasUnansweredPing.tryToSetFlag() else {
+            reportError(OWSGenericError("Websocket ping did not get a response [\(self.id)]"))
+            return
+        }
         webSocketTask.sendPing { [weak self] error in
-            guard let self = self, let error = error else { return }
+            guard let self = self else { return }
+            self.hasUnansweredPing.set(false)
+            guard let error = error else { return }
             Logger.warn("Error sending websocket ping \(error), [\(self.id)]")
             self.reportError(error)
         }
