@@ -23,19 +23,24 @@ func writePlistFile(contents: [String: Any], path: String) -> Bool {
     return false
 }
 
-func hasInvalidPlaceholder(string template: String, placeholder: String) -> Bool {
-    var template = template
+func hasInvalidPlaceholder(string template: String, placeholder: String, fallback: String?) -> Bool {
+    var template = template[...]
     var placeholderAlreadyReferenced = false
     while let index = template.firstIndex(of: "%") {
-        template = String(template[index...])
-        template.removeFirst()
+        template = template[index...].dropFirst()
+        // check whether the placeholder is referenced more than once (which isn't allowed)
         if template.starts(with: placeholder) {
             if placeholderAlreadyReferenced {
                 return true
             }
             placeholderAlreadyReferenced = true
         } else if let item = template.components(separatedBy: "$").first {
+            // we never have more than three arguments passed to NSLocalizedString
             if !["2", "3"].contains(item) {
+                return true
+            }
+            // check whether this placeholder is contained in the fallback (if provided)
+            else if let fallback = fallback, !fallback.contains("%\(item)$") {
                 return true
             }
         }
@@ -43,18 +48,19 @@ func hasInvalidPlaceholder(string template: String, placeholder: String) -> Bool
     return false
 }
 
-func hasInvalidPlaceholder(contents: [String: Any]?) -> Bool {
+func hasInvalidPlaceholder(contents: [String: Any]?, fallback: [String: Any]?) -> Bool {
     guard let contents = contents else {
         return true
     }
     var hasError = false
-    for entry in contents.values {
-        if let entry = entry as? [String: Any], let placeholder = entry["NSStringFormatValueTypeKey"] as? String,
+    for key in contents.keys {
+        let fallback = fallback?[key] as? [String: Any]
+        if let entry = contents[key] as? [String: Any], let placeholder = entry["NSStringFormatValueTypeKey"] as? String,
           "NSStringPluralRuleType" == entry["NSStringFormatSpecTypeKey"] as? String {
-            for key in ["zero", "one", "two", "few", "many", "other"] {
-                if let template = entry[key] as? String {
-                    if hasInvalidPlaceholder(string: template, placeholder: placeholder) {
-                        print("*** template for key \(key) with placeholder \(placeholder) is invalid: \(template)")
+            for variant in ["zero", "one", "two", "few", "many", "other"] {
+                if let template = entry[variant] as? String {
+                    if hasInvalidPlaceholder(string: template, placeholder: placeholder, fallback: fallback?[variant] as? String) {
+                        print("*** template for variant \(variant) with placeholder \(placeholder) is invalid: \(template)")
                         hasError = true
                     }
                 }
@@ -87,7 +93,8 @@ if CommandLine.arguments.count != 3 {
                     print("updated \(key)")
                 }
                 // if the entry contains invalid usage of placeholders replace it, too 
-                else if hasInvalidPlaceholder(contents: destinationDict[key] as? [String: Any]) {
+                else if hasInvalidPlaceholder(contents: destinationDict[key] as? [String: Any],
+                  fallback: sourceDict[key] as? [String: Any]) {
                     destinationDict[key] = sourceDict[key]
                     changed = true
                     print("replacing \(key) due to invalid format usage")
