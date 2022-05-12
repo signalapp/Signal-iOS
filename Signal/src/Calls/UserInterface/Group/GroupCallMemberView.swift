@@ -283,7 +283,9 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     }
 
     var avatarDiameter: UInt {
-        layoutIfNeeded()
+        // This must not call layoutIfNeeded(); it should pick a diameter based on the most recent width.
+        // Otherwise, we can end up re-layout-ing multiple times when reconfiguring,
+        // and avatarView may try to open a read transaction while we're already in one.
 
         if width > 180 {
             return 112
