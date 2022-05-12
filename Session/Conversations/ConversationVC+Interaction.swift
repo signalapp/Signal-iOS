@@ -741,41 +741,6 @@ extension ConversationVC:
         }
     }
 
-    func showFailedMessageSheet(for tsMessage: TSOutgoingMessage) {
-        let thread = self.thread
-        let error = tsMessage.mostRecentFailureText
-        let sheet = UIAlertController(title: error, message: nil, preferredStyle: .actionSheet)
-        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        sheet.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in
-            Storage.write { transaction in
-                tsMessage.remove(with: transaction)
-                Storage.shared.cancelPendingMessageSendJobIfNeeded(for: tsMessage.timestamp, using: transaction)
-            }
-        }))
-        sheet.addAction(UIAlertAction(title: "Resend", style: .default, handler: { _ in
-            let message = VisibleMessage.from(tsMessage)
-            Storage.write { transaction in
-                var attachments: [TSAttachmentStream] = []
-                tsMessage.attachmentIds.forEach { attachmentID in
-                    guard let attachmentID = attachmentID as? String else { return }
-                    let attachment = TSAttachment.fetch(uniqueId: attachmentID, transaction: transaction)
-                    guard let stream = attachment as? TSAttachmentStream else { return }
-                    attachments.append(stream)
-                }
-                MessageSender.prep(attachments, for: message, using: transaction)
-                MessageSender.send(message, in: thread, using: transaction)
-            }
-        }))
-        // HACK: Extracting this info from the error string is pretty dodgy
-        let prefix = "HTTP request failed at destination (Service node "
-        if error.hasPrefix(prefix) {
-            let rest = error.substring(from: prefix.count)
-            if let index = rest.firstIndex(of: ")") {
-                let snodeAddress = String(rest[rest.startIndex..<index])
-                sheet.addAction(UIAlertAction(title: "Copy Service Node Info", style: .default, handler: { _ in
-                    UIPasteboard.general.string = snodeAddress
-                }))
-            }
     func handleItemSwiped(_ item: ConversationViewModel.Item, state: SwipeState) {
         switch state {
             case .began: tableView.isScrollEnabled = false
@@ -783,176 +748,31 @@ extension ConversationVC:
         }
     }
 
-    
-    func showFullText(_ viewItem: ConversationViewItem) {
-        let longMessageVC = LongTextViewController(viewItem: viewItem)
-        navigationController!.pushViewController(longMessageVC, animated: true)
+    func showFullText(_ item: ConversationViewModel.Item) {
     }
     
-    func reply(_ viewItem: ConversationViewItem) {
-        var quoteDraftOrNil: OWSQuotedReplyModel?
-        Storage.read { transaction in
-            quoteDraftOrNil = OWSQuotedReplyModel.quotedReplyForSending(with: viewItem, threadId: viewItem.interaction.uniqueThreadId, transaction: transaction)
-        }
-        guard let quoteDraft = quoteDraftOrNil else { return }
-        let isOutgoing = (viewItem.interaction.interactionType() == .outgoingMessage)
-        snInputView.quoteDraftInfo = (model: quoteDraft, isOutgoing: isOutgoing)
-        snInputView.becomeFirstResponder()
-    }
-    
-    func copy(_ viewItem: ConversationViewItem) {
-        if viewItem.canCopyMedia() {
-            viewItem.copyMediaAction()
-        } else {
-            viewItem.copyTextAction()
-        }
-    }
-    
-    func copySessionID(_ viewItem: ConversationViewItem) {
-        // FIXME: Copying media
-        guard let message = viewItem.interaction as? TSIncomingMessage else { return }
-        UIPasteboard.general.string = message.authorId
-    }
-    
-    func delete(_ viewItem: ConversationViewItem) {
-        guard let message = viewItem.interaction as? TSMessage else { return self.deleteLocally(viewItem) }
+    func openUrl(_ urlString: String) {
+        guard let url: URL = URL(string: urlString) else { return }
         
-        // Handle open group messages the old way
-        if message.isOpenGroupMessage { return self.deleteForEveryone(viewItem) }
-        
-        // Handle 1-1 and closed group messages with unsend request
-        if viewItem.interaction.interactionType() == .outgoingMessage, message.serverHash != nil  {
-            let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
-            let deleteLocallyAction = UIAlertAction.init(title: NSLocalizedString("delete_message_for_me", comment: ""), style: .destructive) { _ in
-                self.deleteLocally(viewItem)
-                self.showInputAccessoryView()
-            }
-            alertVC.addAction(deleteLocallyAction)
-            
-            var title = NSLocalizedString("delete_message_for_everyone", comment: "")
-            if !viewItem.isGroupThread {
-                title = String(format: NSLocalizedString("delete_message_for_me_and_recipient", comment: ""), viewItem.interaction.thread.name())
-            }
-            let deleteRemotelyAction = UIAlertAction.init(title: title, style: .destructive) { _ in
-                self.deleteForEveryone(viewItem)
-                self.showInputAccessoryView()
-            }
-            alertVC.addAction(deleteRemotelyAction)
-            
-            let cancelAction = UIAlertAction.init(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel) {_ in
-                self.showInputAccessoryView()
-            }
-            alertVC.addAction(cancelAction)
-            
-            self.inputAccessoryView?.isHidden = true
-            self.inputAccessoryView?.alpha = 0
-            self.presentAlert(alertVC)
-        } else {
-            deleteLocally(viewItem)
-        }
-    }
-    
-    private func buildUnsendRequest(_ viewItem: ConversationViewItem) -> UnsendRequest? {
-        if let message = viewItem.interaction as? TSMessage,
-           message.isOpenGroupMessage || message.serverHash == nil { return nil }
-        let unsendRequest = UnsendRequest()
-        switch viewItem.interaction.interactionType() {
-        case .incomingMessage:
-            if let incomingMessage = viewItem.interaction as? TSIncomingMessage {
-                unsendRequest.author = incomingMessage.authorId
-            }
-        case .outgoingMessage: unsendRequest.author = getUserHexEncodedPublicKey()
-        default: return nil // Should never occur
-        }
-        unsendRequest.timestamp = viewItem.interaction.timestamp
-        return unsendRequest
-    }
-    
-    func deleteLocally(_ viewItem: ConversationViewItem) {
-        viewItem.deleteLocallyAction()
-        if let unsendRequest = buildUnsendRequest(viewItem) {
-            SNMessagingKitConfiguration.shared.storage.write { transaction in
-                MessageSender.send(unsendRequest, to: .contact(publicKey: getUserHexEncodedPublicKey()), using: transaction).retainUntilComplete()
-            }
-        }
-    }
-    
-    func deleteForEveryone(_ viewItem: ConversationViewItem) {
-        viewItem.deleteLocallyAction()
-        viewItem.deleteRemotelyAction()
-        if let unsendRequest = buildUnsendRequest(viewItem) {
-            SNMessagingKitConfiguration.shared.storage.write { transaction in
-                MessageSender.send(unsendRequest, in: self.thread, using: transaction as! YapDatabaseReadWriteTransaction)
-            }
-        }
-    }
-    
-    func save(_ viewItem: ConversationViewItem) {
-        guard viewItem.canSaveMedia() else { return }
-        viewItem.saveMediaAction()
-        sendMediaSavedNotificationIfNeeded(for: viewItem)
-    }
-    
-    func ban(_ viewItem: ConversationViewItem) {
-        guard let message = viewItem.interaction as? TSIncomingMessage, message.isOpenGroupMessage else { return }
-        let explanation = "This will ban the selected user from this room. It won't ban them from other rooms."
-        let alert = UIAlertController(title: "Session", message: explanation, preferredStyle: .alert)
-        let threadID = thread.uniqueId!
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-            let publicKey = message.authorId
-            guard let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadID) else { return }
-            OpenGroupAPIV2.ban(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
-        }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
-    }
-    
-    func banAndDeleteAllMessages(_ viewItem: ConversationViewItem) {
-        guard let message = viewItem.interaction as? TSIncomingMessage, message.isOpenGroupMessage else { return }
-        let explanation = "This will ban the selected user from this room and delete all messages sent by them. It won't ban them from other rooms or delete the messages they sent there."
-        let alert = UIAlertController(title: "Session", message: explanation, preferredStyle: .alert)
-        let threadID = thread.uniqueId!
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-            let publicKey = message.authorId
-            guard let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadID) else { return }
-            OpenGroupAPIV2.banAndDeleteAllMessages(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
-        }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
-    }
-
-    func handleQuoteViewCancelButtonTapped() {
-        snInputView.quoteDraftInfo = nil
-    }
-    
-    func openURL(_ url: URL) {
         // URLs can be unsafe, so always ask the user whether they want to open one
-        let title = NSLocalizedString("modal_open_url_title", comment: "")
-        let message = String(format: NSLocalizedString("modal_open_url_explanation", comment: ""), url.absoluteString)
-        let alertVC = UIAlertController.init(title: title, message: message, preferredStyle: .actionSheet)
-        let openAction = UIAlertAction.init(title: NSLocalizedString("modal_open_url_button_title", comment: ""), style: .default) { _ in
+        let alertVC = UIAlertController.init(
+            title: "modal_open_url_title".localized(),
+            message: String(format: "modal_open_url_explanation".localized(), url.absoluteString),
+            preferredStyle: .actionSheet
+        )
+        alertVC.addAction(UIAlertAction.init(title: "modal_open_url_button_title".localized(), style: .default) { [weak self] _ in
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            self.showInputAccessoryView()
-        }
-        alertVC.addAction(openAction)
-        let copyAction = UIAlertAction.init(title: NSLocalizedString("modal_copy_url_button_title", comment: ""), style: .default) { _ in
+            self?.showInputAccessoryView()
+        })
+        alertVC.addAction(UIAlertAction.init(title: "modal_copy_url_button_title".localized(), style: .default) { [weak self] _ in
             UIPasteboard.general.string = url.absoluteString
-            self.showInputAccessoryView()
-        }
-        alertVC.addAction(copyAction)
-        let cancelAction = UIAlertAction.init(title: NSLocalizedString("cancel", comment: ""), style: .cancel) {_ in
-            self.showInputAccessoryView()
-        }
-        alertVC.addAction(cancelAction)
+            self?.showInputAccessoryView()
+        })
+        alertVC.addAction(UIAlertAction.init(title: "cancel".localized(), style: .cancel) { [weak self] _ in
+            self?.showInputAccessoryView()
+        })
+        
         self.presentAlert(alertVC)
-    }
-    
-    func joinOpenGroup(name: String, url: String) {
-        // Open groups can be unsafe, so always ask the user whether they want to join one
-        let joinOpenGroupModal = JoinOpenGroupModal(name: name, url: url)
-        joinOpenGroupModal.modalPresentationStyle = .overFullScreen
-        joinOpenGroupModal.modalTransitionStyle = .crossDissolve
-        present(joinOpenGroupModal, animated: true, completion: nil)
     }
     
     func handleReplyButtonTapped(for item: ConversationViewModel.Item) {
@@ -966,93 +786,450 @@ extension ConversationVC:
         
         present(userDetailsSheet, animated: true, completion: nil)
     }
-
-    // MARK: Voice Message Playback
-    @objc func handleAudioDidFinishPlayingNotification(_ notification: Notification) {
-        // Play the next voice message if there is one
-        guard let audioPlayer = audioPlayer, let viewItem = audioPlayer.owner as? ConversationViewItem,
-            let index = viewItems.firstIndex(where: { $0 === viewItem }), index < (viewItems.endIndex - 1) else { return }
-        let nextViewItem = viewItems[index + 1]
-        guard nextViewItem.messageCellType == .audio else { return }
-        playOrPauseAudio(for: nextViewItem)
-    }
     
-    func playOrPauseAudio(for viewItem: ConversationViewItem) {
-        guard let attachment = viewItem.attachmentStream else { return }
-        let fileManager = FileManager.default
-        guard let path = attachment.originalFilePath, fileManager.fileExists(atPath: path),
-            let url = attachment.originalMediaURL else { return }
-        if let audioPlayer = audioPlayer {
-            if let owner = audioPlayer.owner as? ConversationViewItem, owner === viewItem {
-                audioPlayer.playbackRate = 1
-                audioPlayer.togglePlayState()
-                return
-            } else {
-                audioPlayer.stop()
-                self.audioPlayer = nil
+    // MARK: --action handling
+    
+    
+    func showFailedMessageSheet(for item: ConversationViewModel.Item) {
+        let sheet = UIAlertController(title: item.mostRecentFailureText, message: nil, preferredStyle: .actionSheet)
+        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        sheet.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in
+            GRDBStorage.shared.writeAsync { db in
+                try Interaction
+                    .filter(id: item.interactionId)
+                    .deleteAll(db)
+            }
+        }))
+        sheet.addAction(UIAlertAction(title: "Resend", style: .default, handler: { _ in
+            GRDBStorage.shared.writeAsync { [weak self] db in
+                guard
+                    let interaction: Interaction = try? Interaction.fetchOne(db, id: item.interactionId),
+                    let thread: SessionThread = self?.viewModel.viewData.thread
+                else { return }
+                try MessageSender.send(
+                    db,
+                    interaction: interaction,
+                    in: thread
+                )
+            }
+        }))
+        
+        // HACK: Extracting this info from the error string is pretty dodgy
+        let prefix: String = "HTTP request failed at destination (Service node "
+        if let mostRecentFailureText: String = item.mostRecentFailureText, mostRecentFailureText.hasPrefix(prefix) {
+            let rest = mostRecentFailureText.substring(from: prefix.count)
+            
+            if let index = rest.firstIndex(of: ")") {
+                let snodeAddress = String(rest[rest.startIndex..<index])
+                
+                sheet.addAction(UIAlertAction(title: "Copy Service Node Info", style: .default) { _ in
+                    UIPasteboard.general.string = snodeAddress
+                })
             }
         }
-        let audioPlayer = OWSAudioPlayer(mediaUrl: url, audioBehavior: .audioMessagePlayback, delegate: viewItem)
-        self.audioPlayer = audioPlayer
-        audioPlayer.owner = viewItem
-        audioPlayer.play()
-        audioPlayer.setCurrentTime(Double(viewItem.audioProgressSeconds))
+        
+        present(sheet, animated: true, completion: nil)
+    }
+    
+    func joinOpenGroup(name: String?, url: String) {
+        // Open groups can be unsafe, so always ask the user whether they want to join one
+        let joinOpenGroupModal: JoinOpenGroupModal = JoinOpenGroupModal(name: name, url: url)
+        joinOpenGroupModal.modalPresentationStyle = .overFullScreen
+        joinOpenGroupModal.modalTransitionStyle = .crossDissolve
+        
+        present(joinOpenGroupModal, animated: true, completion: nil)
+    }
+    
+    // MARK: - ContextMenuActionDelegate
+
+    func reply(_ item: ConversationViewModel.Item) {
+        let maybeQuoteDraft: QuotedReplyModel? = QuotedReplyModel.quotedReplyForSending(
+            threadId: self.viewModel.viewData.thread.id,
+            authorId: item.authorId,
+            variant: item.interactionVariant,
+            body: item.body,
+            timestampMs: item.timestampMs,
+            attachments: item.attachments,
+            linkPreview: item.linkPreview
+        )
+        
+        guard let quoteDraft: QuotedReplyModel = maybeQuoteDraft else { return }
+        
+        snInputView.quoteDraftInfo = (
+            model: quoteDraft,
+            isOutgoing: (item.interactionVariant == .standardOutgoing)
+        )
+        snInputView.becomeFirstResponder()
     }
 
-    func speedUpAudio(for viewItem: ConversationViewItem) {
-        guard let audioPlayer = audioPlayer, let owner = audioPlayer.owner as? ConversationViewItem, owner === viewItem, audioPlayer.isPlaying else { return }
-        audioPlayer.playbackRate = 1.5
-        viewItem.lastAudioMessageView?.showSpeedUpLabel()
+    func copy(_ item: ConversationViewModel.Item) {
+        switch item.cellType {
+            case .typingIndicator: break
+            
+            case .textOnlyMessage:
+                UIPasteboard.general.string = item.body
+            
+            case .audio, .genericAttachment, .mediaMessage:
+                guard
+                    item.attachments?.count == 1,
+                    let attachment: Attachment = item.attachments?.first,
+                    attachment.isValid,
+                    (
+                        attachment.state == .downloaded ||
+                        attachment.state == .uploaded
+                    ),
+                    let utiType: String = MIMETypeUtil.utiType(forMIMEType: attachment.contentType),
+                    let originalFilePath: String = attachment.originalFilePath,
+                    let data: Data = try? Data(contentsOf: URL(fileURLWithPath: originalFilePath))
+                else { return }
+            
+                UIPasteboard.general.setData(data, forPasteboardType: utiType)
+        }
     }
 
-    // MARK: Voice Message Recording
+    func copySessionID(_ item: ConversationViewModel.Item) {
+        guard item.interactionVariant == .standardIncoming || item.interactionVariant == .standardIncomingDeleted else {
+            return
+        }
+        
+        UIPasteboard.general.string = item.authorId
+    }
+
+    func delete(_ item: ConversationViewModel.Item) {
+        // Only allow deletion on incoming and outgoing messages
+        guard item.interactionVariant == .standardIncoming || item.interactionVariant == .standardOutgoing else {
+            return
+        }
+        
+        let thread: SessionThread = self.viewModel.viewData.thread
+        let threadName: String = self.viewModel.viewData.threadName
+        let userPublicKey: String = getUserHexEncodedPublicKey()
+        
+        // Remote deletion logic
+        func deleteRemotely(from viewController: UIViewController?, request: Promise<Void>, onComplete: (() -> ())?) {
+            // Show a loading indicator
+            let (promise, seal) = Promise<Void>.pending()
+            
+            ModalActivityIndicatorViewController.present(fromViewController: viewController, canCancel: false) { _ in
+                seal.fulfill(())
+            }
+            
+            promise
+                .then { _ -> Promise<Void> in request }
+                .done { _ in
+                    // Delete the interaction (and associated data) from the database
+                    GRDBStorage.shared.writeAsync { db in
+                        _ = try Interaction
+                            .filter(id: item.interactionId)
+                            .deleteAll(db)
+                    }
+                }
+                .ensure {
+                    DispatchQueue.main.async { [weak self] in
+                        if self?.presentedViewController is ModalActivityIndicatorViewController {
+                            self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                        }
+                        
+                        onComplete?()
+                    }
+                }
+                .retainUntilComplete()
+        }
+        
+        // How we delete the message differs depending on the type of thread
+        switch item.threadVariant {
+            // Handle open group messages the old way
+            case .openGroup:
+                // If it's an incoming message the user must have moderator status
+                let result: (openGroupServerMessageId: Int64?, openGroup: OpenGroup?)? = GRDBStorage.shared.read { db -> (Int64?, OpenGroup?) in
+                    (
+                        try Interaction
+                            .select(.openGroupServerMessageId)
+                            .filter(id: item.interactionId)
+                            .asRequest(of: Int64.self)
+                            .fetchOne(db),
+                        try OpenGroup.fetchOne(db, id: thread.id)
+                    )
+                }
+                
+                guard
+                    let openGroup: OpenGroup = result?.openGroup,
+                    let openGroupServerMessageId: Int64 = result?.openGroupServerMessageId, (
+                        item.interactionVariant != .standardIncoming ||
+                        OpenGroupAPIV2.isUserModerator(userPublicKey, for: openGroup.room, on: openGroup.server)
+                    )
+                else { return }
+                
+                // Delete the message from the open group
+                deleteRemotely(
+                    from: self,
+                    request: OpenGroupAPIV2.deleteMessage(
+                        with: openGroupServerMessageId,
+                        from: openGroup.room,
+                        on: openGroup.server
+                    )
+                ) { [weak self] in
+                    self?.showInputAccessoryView()
+                }
+                
+            case .contact, .closedGroup:
+                let serverHash: String? = GRDBStorage.shared.read { db -> String? in
+                    try Interaction
+                        .select(.serverHash)
+                        .filter(id: item.interactionId)
+                        .asRequest(of: String.self)
+                        .fetchOne(db)
+                }
+                let unsendRequest: UnsendRequest = UnsendRequest(
+                    timestamp: UInt64(item.timestampMs),
+                    author: (item.interactionVariant == .standardOutgoing ?
+                        userPublicKey :
+                        item.authorId
+                    )
+                )
+                
+                // For incoming interactions or interactions with no serverHash just delete them locally
+                guard item.interactionVariant == .standardOutgoing, let serverHash: String = serverHash else {
+                    GRDBStorage.shared.writeAsync { db in
+                        _ = try Interaction
+                            .filter(id: item.interactionId)
+                            .deleteAll(db)
+                        
+                        // No need to send the unsendRequest if there is no serverHash (ie. the message
+                        // was outgoing but never got to the server)
+                        guard serverHash != nil else { return }
+                        
+                        MessageSender
+                            .send(
+                                db,
+                                message: unsendRequest,
+                                threadId: thread.id,
+                                interactionId: nil,
+                                to: .contact(publicKey: userPublicKey)
+                            )
+                    }
+                    return
+                }
+                
+                let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
+                alertVC.addAction(UIAlertAction(title: "delete_message_for_me".localized(), style: .destructive) { [weak self] _ in
+                    GRDBStorage.shared.writeAsync { db in
+                        _ = try Interaction
+                            .filter(id: item.interactionId)
+                            .deleteAll(db)
+                        
+                        MessageSender
+                            .send(
+                                db,
+                                message: unsendRequest,
+                                threadId: thread.id,
+                                interactionId: nil,
+                                to: .contact(publicKey: userPublicKey)
+                            )
+                    }
+                    self?.showInputAccessoryView()
+                })
+                
+                alertVC.addAction(UIAlertAction(
+                    title: (item.threadVariant == .closedGroup ?
+                        "delete_message_for_everyone".localized() :
+                        String(format: "delete_message_for_me_and_recipient".localized(), threadName)
+                    ),
+                    style: .destructive
+                ) { [weak self] _ in
+                    deleteRemotely(
+                        from: self,
+                        request: SnodeAPI
+                            .deleteMessage(
+                                publicKey: thread.id,
+                                serverHashes: [serverHash]
+                            )
+                            .map { _ in () }
+                    ) { [weak self] in
+                        GRDBStorage.shared.writeAsync { db in
+                            try MessageSender
+                                .send(
+                                    db,
+                                    message: unsendRequest,
+                                    interactionId: nil,
+                                    in: thread
+                                )
+                        }
+                        
+                        self?.showInputAccessoryView()
+                    }
+                })
+
+                alertVC.addAction(UIAlertAction.init(title: "TXT_CANCEL_TITLE".localized(), style: .cancel) { [weak self] _ in
+                    self?.showInputAccessoryView()
+                })
+
+                self.inputAccessoryView?.isHidden = true
+                self.inputAccessoryView?.alpha = 0
+                self.presentAlert(alertVC)
+        }
+    }
+
+    func save(_ item: ConversationViewModel.Item) {
+        guard item.cellType == .mediaMessage else { return }
+        
+        let mediaAttachments: [(Attachment, String)] = (item.attachments ?? [])
+            .filter { attachment in
+                attachment.isValid &&
+                attachment.isVisualMedia && (
+                    attachment.state == .downloaded ||
+                    attachment.state == .uploaded
+                )
+            }
+            .compactMap { attachment in
+                guard let originalFilePath: String = attachment.originalFilePath else { return nil }
+                
+                return (attachment, originalFilePath)
+            }
+        
+        guard !mediaAttachments.isEmpty else { return }
+    
+        mediaAttachments.forEach { attachment, originalFilePath in
+            PHPhotoLibrary.shared().performChanges(
+                {
+                    if attachment.isImage || attachment.isAnimated {
+                        PHAssetChangeRequest.creationRequestForAssetFromImage(
+                            atFileURL: URL(fileURLWithPath: originalFilePath)
+                        )
+                    }
+                    else if attachment.isVideo {
+                        PHAssetChangeRequest.creationRequestForAssetFromVideo(
+                            atFileURL: URL(fileURLWithPath: originalFilePath)
+                        )
+                    }
+                },
+                completionHandler: { _, _ in }
+            )
+        }
+        
+        // Send a 'media saved' notification if needed
+        guard self.viewModel.viewData.thread.variant == .contact, item.interactionVariant == .standardIncoming else {
+            return
+        }
+        
+        let thread: SessionThread = self.viewModel.viewData.thread
+        
+        GRDBStorage.shared.writeAsync { db in
+            try MessageSender.send(
+                db,
+                message: DataExtractionNotification(
+                    kind: .mediaSaved(timestamp: UInt64(item.timestampMs))
+                ),
+                interactionId: nil,
+                in: thread
+            )
+        }
+    }
+
+    func ban(_ item: ConversationViewModel.Item) {
+        guard item.threadVariant == .openGroup else { return }
+        
+        let threadId: String = self.viewModel.viewData.thread.id
+        let alert: UIAlertController = UIAlertController(
+            title: "Session",
+            message: "This will ban the selected user from this room. It won't ban them from other rooms.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            guard let openGroup: OpenGroup = GRDBStorage.shared.read({ db in try OpenGroup.fetchOne(db, id: threadId) }) else {
+                return
+            }
+            
+            OpenGroupAPIV2
+                .ban(item.authorId, from: openGroup.room, on: openGroup.server)
+                .retainUntilComplete()
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        
+        present(alert, animated: true, completion: nil)
+    }
+
+    func banAndDeleteAllMessages(_ item: ConversationViewModel.Item) {
+        guard item.threadVariant == .openGroup else { return }
+        
+        let threadId: String = self.viewModel.viewData.thread.id
+        let alert: UIAlertController = UIAlertController(
+            title: "Session",
+            message: "This will ban the selected user from this room and delete all messages sent by them. It won't ban them from other rooms or delete the messages they sent there.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            guard let openGroup: OpenGroup = GRDBStorage.shared.read({ db in try OpenGroup.fetchOne(db, id: threadId) }) else {
+                return
+            }
+            
+            OpenGroupAPIV2
+                .banAndDeleteAllMessages(item.authorId, from: openGroup.room, on: openGroup.server)
+                .retainUntilComplete()
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        
+        present(alert, animated: true, completion: nil)
+    }
+
+    // MARK: - VoiceMessageRecordingViewDelegate
+
     func startVoiceMessageRecording() {
         // Request permission if needed
         requestMicrophonePermissionIfNeeded() { [weak self] in
             self?.cancelVoiceMessageRecording()
         }
+        
         // Keep screen on
         UIApplication.shared.isIdleTimerDisabled = false
         guard AVAudioSession.sharedInstance().recordPermission == .granted else { return }
+        
         // Cancel any current audio playback
-        audioPlayer?.stop()
-        audioPlayer = nil
+        self.viewModel.stopAudio()
+        
         // Create URL
-        let directory = OWSTemporaryDirectory()
-        let fileName = "\(NSDate.millisecondTimestamp()).m4a"
-        let path = (directory as NSString).appendingPathComponent(fileName)
-        let url = URL(fileURLWithPath: path)
+        let directory: String = OWSTemporaryDirectory()
+        let fileName: String = "\(Int64(floor(Date().timeIntervalSince1970 * 1000))).m4a"
+        let url: URL = URL(fileURLWithPath: directory).appendingPathComponent(fileName)
+        
         // Set up audio session
         let isConfigured = audioSession.startAudioActivity(recordVoiceMessageActivity)
         guard isConfigured else {
             return cancelVoiceMessageRecording()
         }
+        
         // Set up audio recorder
-        let settings: [String:NSNumber] = [
-            AVFormatIDKey : NSNumber(value: kAudioFormatMPEG4AAC),
-            AVSampleRateKey : NSNumber(value: 44100),
-            AVNumberOfChannelsKey : NSNumber(value: 2),
-            AVEncoderBitRateKey : NSNumber(value: 128 * 1024)
-        ]
         let audioRecorder: AVAudioRecorder
         do {
-            audioRecorder = try AVAudioRecorder(url: url, settings: settings)
+            audioRecorder = try AVAudioRecorder(
+                url: url,
+                settings: [
+                    AVFormatIDKey: NSNumber(value: kAudioFormatMPEG4AAC),
+                    AVSampleRateKey: NSNumber(value: 44100),
+                    AVNumberOfChannelsKey: NSNumber(value: 2),
+                    AVEncoderBitRateKey: NSNumber(value: 128 * 1024)
+                ]
+            )
             audioRecorder.isMeteringEnabled = true
             self.audioRecorder = audioRecorder
-        } catch {
+        }
+        catch {
             SNLog("Couldn't start audio recording due to error: \(error).")
             return cancelVoiceMessageRecording()
         }
+        
         // Limit voice messages to a minute
         audioTimer = Timer.scheduledTimer(withTimeInterval: 180, repeats: false, block: { [weak self] _ in
             self?.snInputView.hideVoiceMessageUI()
             self?.endVoiceMessageRecording()
         })
+        
         // Prepare audio recorder
         guard audioRecorder.prepareToRecord() else {
             SNLog("Couldn't prepare audio recorder.")
             return cancelVoiceMessageRecording()
         }
+        
         // Start recording
         guard audioRecorder.record() else {
             SNLog("Couldn't record audio.")
@@ -1062,34 +1239,49 @@ extension ConversationVC:
 
     func endVoiceMessageRecording() {
         UIApplication.shared.isIdleTimerDisabled = true
+        
         // Hide the UI
         snInputView.hideVoiceMessageUI()
+        
         // Cancel the timer
         audioTimer?.invalidate()
+        
         // Check preconditions
         guard let audioRecorder = audioRecorder else { return }
+        
         // Get duration
         let duration = audioRecorder.currentTime
+        
         // Stop the recording
         stopVoiceMessageRecording()
+        
         // Check for user misunderstanding
         guard duration > 1 else {
             self.audioRecorder = nil
-            let title = NSLocalizedString("VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE", comment: "")
-            let message = NSLocalizedString("VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE", comment: "")
-            return OWSAlerts.showAlert(title: title, message: message)
+            
+            OWSAlerts.showAlert(
+                title: "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE".localized(),
+                message: "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE".localized()
+            )
+            return
         }
+        
         // Get data
         let dataSourceOrNil = DataSourcePath.dataSource(with: audioRecorder.url, shouldDeleteOnDeallocation: true)
         self.audioRecorder = nil
+        
         guard let dataSource = dataSourceOrNil else { return SNLog("Couldn't load recorded data.") }
+        
         // Create attachment
-        let fileName = (NSLocalizedString("VOICE_MESSAGE_FILE_NAME", comment: "") as NSString).appendingPathExtension("m4a")
+        let fileName = ("VOICE_MESSAGE_FILE_NAME".localized() as NSString).appendingPathExtension("m4a")
         dataSource.sourceFilename = fileName
+        
         let attachment = SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4Audio as String)
+        
         guard !attachment.hasError else {
             return showErrorAlert(for: attachment, onDismiss: nil)
         }
+        
         // Send attachment
         sendAttachments([ attachment ], with: "")
     }
@@ -1106,59 +1298,43 @@ extension ConversationVC:
         audioSession.endAudioActivity(recordVoiceMessageActivity)
     }
     
-    // MARK: Data Extraction Notifications
-    @objc func sendScreenshotNotificationIfNeeded() {
-        /*
-        guard thread is TSContactThread else { return }
-        let message = DataExtractionNotification()
-        message.kind = .screenshot
-        Storage.write { transaction in
-            MessageSender.send(message, in: self.thread, using: transaction)
-        }
-         */
-    }
+    // MARK: - Permissions
     
-    func sendMediaSavedNotificationIfNeeded(for viewItem: ConversationViewItem) {
-        guard thread is TSContactThread, viewItem.interaction.interactionType() == .incomingMessage else { return }
-        let message = DataExtractionNotification()
-        message.kind = .mediaSaved(timestamp: viewItem.interaction.timestamp)
-        Storage.write { transaction in
-            MessageSender.send(message, in: self.thread, using: transaction)
-        }
-    }
-
-    // MARK: Requesting Permission
     func requestCameraPermissionIfNeeded() -> Bool {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .authorized: return true
-        case .denied, .restricted:
-            let modal = PermissionMissingModal(permission: "camera") { }
-            modal.modalPresentationStyle = .overFullScreen
-            modal.modalTransitionStyle = .crossDissolve
-            present(modal, animated: true, completion: nil)
-            return false
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .video, completionHandler: { _ in })
-            return false
-        default: return false
+            case .authorized: return true
+            case .denied, .restricted:
+                let modal = PermissionMissingModal(permission: "camera") { }
+                modal.modalPresentationStyle = .overFullScreen
+                modal.modalTransitionStyle = .crossDissolve
+                present(modal, animated: true, completion: nil)
+                return false
+                
+            case .notDetermined:
+                AVCaptureDevice.requestAccess(for: .video, completionHandler: { _ in })
+                return false
+                
+            default: return false
         }
     }
 
     func requestMicrophonePermissionIfNeeded(onNotGranted: @escaping () -> Void) {
         switch AVAudioSession.sharedInstance().recordPermission {
-        case .granted: break
-        case .denied:
-            onNotGranted()
-            let modal = PermissionMissingModal(permission: "microphone") {
+            case .granted: break
+            case .denied:
                 onNotGranted()
-            }
-            modal.modalPresentationStyle = .overFullScreen
-            modal.modalTransitionStyle = .crossDissolve
-            present(modal, animated: true, completion: nil)
-        case .undetermined:
-            onNotGranted()
-            AVAudioSession.sharedInstance().requestRecordPermission { _ in }
-        default: break
+                let modal = PermissionMissingModal(permission: "microphone") {
+                    onNotGranted()
+                }
+                modal.modalPresentationStyle = .overFullScreen
+                modal.modalTransitionStyle = .crossDissolve
+                present(modal, animated: true, completion: nil)
+                
+            case .undetermined:
+                onNotGranted()
+                AVAudioSession.sharedInstance().requestRecordPermission { _ in }
+                
+            default: break
         }
     }
 
@@ -1201,25 +1377,29 @@ extension ConversationVC:
                 }
             }
         }
+        
         switch authorizationStatus {
-        case .authorized, .limited:
-            onAuthorized()
-        case .denied, .restricted:
-            let modal = PermissionMissingModal(permission: "library") { }
-            modal.modalPresentationStyle = .overFullScreen
-            modal.modalTransitionStyle = .crossDissolve
-            present(modal, animated: true, completion: nil)
-        default: return
+            case .authorized, .limited:
+                onAuthorized()
+                
+            case .denied, .restricted:
+                let modal = PermissionMissingModal(permission: "library") { }
+                modal.modalPresentationStyle = .overFullScreen
+                modal.modalTransitionStyle = .crossDissolve
+                present(modal, animated: true, completion: nil)
+                
+            default: return
         }
     }
 
     // MARK: - Convenience
-    
+
     func showErrorAlert(for attachment: SignalAttachment, onDismiss: (() -> ())?) {
-        let title = NSLocalizedString("ATTACHMENT_ERROR_ALERT_TITLE", comment: "")
-        let message = attachment.localizedErrorDescription ?? SignalAttachment.missingDataErrorMessage
-        
-        OWSAlerts.showAlert(title: title, message: message, buttonTitle: nil) { _ in
+        OWSAlerts.showAlert(
+            title: "ATTACHMENT_ERROR_ALERT_TITLE".localized(),
+            message: (attachment.localizedErrorDescription ?? SignalAttachment.missingDataErrorMessage),
+            buttonTitle: nil
+        ) { _ in
             onDismiss?()
         }
     }
@@ -1236,52 +1416,52 @@ extension ConversationVC: UIDocumentInteractionControllerDelegate {
 // MARK: - Message Request Actions
 
 extension ConversationVC {
-    
-    fileprivate func approveMessageRequestIfNeeded(for thread: TSThread?, isNewThread: Bool, timestamp: Double) -> Promise<Void> {
-        guard let contactThread: TSContactThread = thread as? TSContactThread else { return Promise.value(()) }
-        
+    fileprivate func approveMessageRequestIfNeeded(
+        for thread: SessionThread?,
+        isNewThread: Bool,
+        timestampMs: Int64
+    ) -> Promise<Void> {
+        guard let thread: SessionThread = thread, thread.variant == .contact else { return Promise.value(()) }
+
         // If the contact doesn't exist then we should create it so we can store the 'isApproved' state
         // (it'll be updated with correct profile info if they accept the message request so this
         // shouldn't cause weird behaviours)
-        let sessionId: String = contactThread.contactSessionID()
-        
         guard
-            let contact: Contact = GRDBStorage.shared.read({ db in Contact.fetchOrCreate(db, id: sessionId) }),
+            let contact: Contact = GRDBStorage.shared.read({ db in Contact.fetchOrCreate(db, id: thread.id) }),
             !contact.isApproved
         else {
             return Promise.value(())
         }
-        
+
         return Promise.value(())
             .then { [weak self] _ -> Promise<Void> in
                 guard !isNewThread else { return Promise.value(()) }
-                guard let strongSelf = self else { return Promise(error: MessageSender.Error.noThread) }
-                
+                guard let strongSelf = self else { return Promise(error: MessageSenderError.noThread) }
+
                 // If we aren't creating a new thread (ie. sending a message request) then send a
                 // messageRequestResponse back to the sender (this allows the sender to know that
                 // they have been approved and can now use this contact in closed groups)
                 let (promise, seal) = Promise<Void>.pending()
                 let messageRequestResponse: MessageRequestResponse = MessageRequestResponse(
-                    isApproved: true
+                    isApproved: true,
+                    sentTimestampMs: UInt64(timestampMs)
                 )
-                messageRequestResponse.sentTimestamp = timestamp
-                
+
                 // Show a loading indicator
                 ModalActivityIndicatorViewController.present(fromViewController: strongSelf, canCancel: false) { _ in
                     seal.fulfill(())
                 }
-                
+
                 return promise
                     .then { _ -> Promise<Void> in
-                        let (promise, seal) = Promise<Void>.pending()
-                        Storage.writeSync { transaction in
-                            MessageSender.sendNonDurably(messageRequestResponse, in: contactThread, using: transaction)
-                                .done { seal.fulfill(()) }
-                                .catch { _ in seal.fulfill(()) } // Fulfill even if this failed; the configuration in the swarm should be at most 2 days old
-                                .retainUntilComplete()
+                        GRDBStorage.shared.write { db in
+                            try MessageSender.sendNonDurably(
+                                db,
+                                message: messageRequestResponse,
+                                interactionId: nil,
+                                in: thread
+                            )
                         }
-                        
-                        return promise
                     }
                     .map { _ in
                         if self?.presentedViewController is ModalActivityIndicatorViewController {
@@ -1299,26 +1479,26 @@ extension ConversationVC {
                                 didApproveMe: .update(contact.didApproveMe || !isNewThread)
                             )
                             .save(db)
+                        
+                        // Send a sync message with the details of the contact
+                        try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
                     },
                     completion: { db, _ in
-                        // Send a sync message with the details of the contact
-                        MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
-                        
                         // Hide the 'messageRequestView' since the request has been approved
                         DispatchQueue.main.async { [weak self] in
                             let messageRequestViewWasVisible: Bool = (self?.messageRequestView.isHidden == false)
-                            
+
                             UIView.animate(withDuration: 0.3) {
                                 self?.messageRequestView.isHidden = true
                                 self?.scrollButtonMessageRequestsBottomConstraint?.isActive = false
                                 self?.scrollButtonBottomConstraint?.isActive = true
-                                
+
                                 // Update the table content inset and offset to account for
                                 // the dissapearance of the messageRequestsView
                                 if messageRequestViewWasVisible {
                                     let messageRequestsOffset: CGFloat = ((self?.messageRequestView.bounds.height ?? 0) + 16)
-                                    let oldContentInset: UIEdgeInsets = (self?.messagesTableView.contentInset ?? UIEdgeInsets.zero)
-                                    self?.messagesTableView.contentInset = UIEdgeInsets(
+                                    let oldContentInset: UIEdgeInsets = (self?.tableView.contentInset ?? UIEdgeInsets.zero)
+                                    self?.tableView.contentInset = UIEdgeInsets(
                                         top: 0,
                                         leading: 0,
                                         bottom: max(oldContentInset.bottom - messageRequestsOffset, 0),
@@ -1326,9 +1506,6 @@ extension ConversationVC {
                                     )
                                 }
                             }
-                            
-                            // Update UI
-                            self?.updateNavBarButtons()
                             
                             // Remove the 'MessageRequestsViewController' from the nav hierarchy if present
                             if
@@ -1345,80 +1522,67 @@ extension ConversationVC {
                 )
             }
     }
-    
+
     @objc func acceptMessageRequest() {
-        let promise: Promise<Void> = self.approveMessageRequestIfNeeded(
-            for: self.thread,
+        self.approveMessageRequestIfNeeded(
+            for: self.viewModel.viewData.thread,
             isNewThread: false,
-            timestamp: NSDate.millisecondTimestamp()
+            timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
         )
-        
-        // Show an error indicating that approving the thread failed
-        promise.catch(on: DispatchQueue.main) { [weak self] _ in
-            let alert = UIAlertController(title: "Session", message: NSLocalizedString("MESSAGE_REQUESTS_APPROVAL_ERROR_MESSAGE", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+        .catch(on: DispatchQueue.main) { [weak self] _ in
+            // Show an error indicating that approving the thread failed
+            let alert = UIAlertController(
+                title: "Session",
+                message: "MESSAGE_REQUESTS_APPROVAL_ERROR_MESSAGE".localized(),
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
             self?.present(alert, animated: true, completion: nil)
         }
-        
-        promise.retainUntilComplete()
+        .retainUntilComplete()
     }
-    
+
     @objc func deleteMessageRequest() {
-        guard let uniqueId: String = thread.uniqueId else { return }
+        guard self.viewModel.viewData.thread.variant == .contact else { return }
         
-        let alertVC: UIAlertController = UIAlertController(title: NSLocalizedString("MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON", comment: ""), message: nil, preferredStyle: .actionSheet)
-        alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
+        let threadId: String = self.viewModel.viewData.thread.id
+        let alertVC: UIAlertController = UIAlertController(
+            title: "MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON".localized(),
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        alertVC.addAction(UIAlertAction(title: "TXT_DELETE_TITLE".localized(), style: .destructive) { _ in
             // Delete the request
             GRDBStorage.shared.writeAsync(
                 updates: { [weak self] db in
                     // Update the contact
-                    if let contactThread: TSContactThread = self?.thread as? TSContactThread {
-                        let sessionId: String = contactThread.contactSessionID()
-                        
-                        // Stop observing the `BlockListDidChange` notification (we are about to pop the screen
-                        // so showing the banner just looks buggy)
-                        if let strongSelf = self {
-                            NotificationCenter.default.removeObserver(strongSelf, name: .contactBlockedStateChanged, object: nil)
-                        }
-                        
-                        try? Contact
-                            .fetchOne(db, id: sessionId)?
-                            .with(
-                                isApproved: false,
-                                isBlocked: true,
-                                
-                                // Note: We set this to true so the current user will be able to send a
-                                // message to the person who originally sent them the message request in
-                                // the future if they unblock them
-                                didApproveMe: true
-                            )
-                            .update(db)
-                    }
+                    try? Contact
+                        .fetchOrCreate(db, id: threadId)
+                        .with(
+                            isApproved: false,
+                            isBlocked: true,
+
+                            // Note: We set this to true so the current user will be able to send a
+                            // message to the person who originally sent them the message request in
+                            // the future if they unblock them
+                            didApproveMe: true
+                        )
+                        .saved(db)
+                    
+                    _ = try SessionThread
+                        .filter(id: threadId)
+                        .deleteAll(db)
+                    
+                    try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
                 },
                 completion: { db, _ in
-                    Storage.write(
-                        with: { [weak self] transaction in
-                            // TODO: This should be above the contact updating
-                            Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
-                            
-                            // Delete all thread content
-                            self?.thread.removeAllThreadInteractions(with: transaction)
-                            self?.thread.remove(with: transaction)
-                        },
-                        completion: { [weak self] in
-                            // Force a config sync and pop to the previous screen
-                            // TODO: This might cause an "incorrect thread" crash
-                            MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
-                            
-                            DispatchQueue.main.async {
-                                self?.navigationController?.popViewController(animated: true)
-                            }
-                        }
-                    )
+                    DispatchQueue.main.async { [weak self] in
+                        self?.navigationController?.popViewController(animated: true)
+                    }
                 }
             )
         })
-        alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel, handler: nil))
+        alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
         self.present(alertVC, animated: true, completion: nil)
     }
 }

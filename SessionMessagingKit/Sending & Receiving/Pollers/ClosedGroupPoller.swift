@@ -7,7 +7,7 @@ import SessionSnodeKit
 
 @objc(LKClosedGroupPoller)
 public final class ClosedGroupPoller: NSObject {
-    private var isPolling: [String: Bool] = [:]
+    private var isPolling: Atomic<[String: Bool]> = Atomic([:])
     private var timers: [String: Timer] = [:]
     private let internalQueue: DispatchQueue = DispatchQueue(label: "isPollingQueue")
 
@@ -63,11 +63,12 @@ public final class ClosedGroupPoller: NSObject {
     }
 
     public func startPolling(for groupPublicKey: String) {
-        guard !isPolling(for: groupPublicKey) else { return }
+        guard isPolling.wrappedValue[groupPublicKey] != true else { return }
+        
         // Might be a race condition that the setUpPolling finishes too soon,
         // and the timer is not created, if we mark the group as is polling
         // after setUpPolling. So the poller may not work, thus misses messages.
-        internalQueue.sync{ isPolling[groupPublicKey] = true }
+        isPolling.mutate { $0[groupPublicKey] = true }
         setUpPolling(for: groupPublicKey)
     }
 
@@ -86,7 +87,7 @@ public final class ClosedGroupPoller: NSObject {
     }
 
     public func stopPolling(for groupPublicKey: String) {
-        internalQueue.sync{ isPolling[groupPublicKey] = false }
+        isPolling.mutate { $0[groupPublicKey] = false }
         timers[groupPublicKey]?.invalidate()
     }
 
@@ -107,7 +108,7 @@ public final class ClosedGroupPoller: NSObject {
 
     private func pollRecursively(_ groupPublicKey: String) {
         guard
-            isPolling(for: groupPublicKey),
+            isPolling.wrappedValue[groupPublicKey] == true,
             let thread: SessionThread = GRDBStorage.shared.read({ db in try SessionThread.fetchOne(db, id: groupPublicKey) })
         else { return }
         
@@ -149,78 +150,82 @@ public final class ClosedGroupPoller: NSObject {
     }
 
     private func poll(_ groupPublicKey: String) -> Promise<Void> {
-        guard isPolling(for: groupPublicKey) else { return Promise.value(()) }
+        guard isPolling.wrappedValue[groupPublicKey] == true else { return Promise.value(()) }
         
-        let promise = SnodeAPI.getSwarm(for: groupPublicKey)
+        let promise: Promise<Void> = SnodeAPI.getSwarm(for: groupPublicKey)
             .then2 { [weak self] swarm -> Promise<(Snode, [SnodeReceivedMessage])> in
                 // randomElement() uses the system's default random generator, which is cryptographically secure
                 guard let snode = swarm.randomElement() else { return Promise(error: Error.insufficientSnodes) }
-                guard let self = self, self.isPolling(for: groupPublicKey) else {
+                guard self?.isPolling.wrappedValue[groupPublicKey] == true else {
                     return Promise(error: Error.pollingCanceled)
                 }
                 
                 return SnodeAPI.getMessages(from: snode, associatedWith: groupPublicKey)
                     .map2 { messages in (snode, messages) }
             }
-        
-        promise.done2 { [weak self] snode, messages in
-            guard self?.isPolling(for: groupPublicKey) == true else { return }
-            
-            if !messages.isEmpty {
-                SNLog("Received \(messages.count) message(s) in closed group with public key: \(groupPublicKey).")
+            .done2 { [weak self] snode, messages in
+                guard self?.isPolling.wrappedValue[groupPublicKey] == true else { return }
                 
-                GRDBStorage.shared.write { db in
-                    var jobDetailMessages: [MessageReceiveJob.Details.MessageInfo] = []
+                if !messages.isEmpty {
+                    var messageCount: Int = 0
                     
-                    messages.forEach { message in
-                        guard let envelope = SNProtoEnvelope.from(message) else { return }
+                    GRDBStorage.shared.write { db in
+                        var jobDetailMessages: [MessageReceiveJob.Details.MessageInfo] = []
                         
-                        do {
-                            jobDetailMessages.append(
-                                MessageReceiveJob.Details.MessageInfo(
-                                    data: try envelope.serializedData(),
-                                    serverHash: message.info.hash,
-                                    serverExpirationTimestamp: (TimeInterval(message.info.expirationDateMs) / 1000)
-                                )
-                            )
+                        messages.forEach { message in
+                            guard let envelope = SNProtoEnvelope.from(message) else { return }
                             
-                            // Persist the received message after the MessageReceiveJob is created
-                            _ = try message.info.saved(db)
-                        }
-                        catch {
-                            switch error {
-                                // Ignore unique constraint violations here (they will be hanled in the MessageReceiveJob)
-                                case .SQLITE_CONSTRAINT_UNIQUE: break
-                                    
-                                default:
-                                    SNLog("Failed to deserialize envelope due to error: \(error).")
+                            do {
+                                let serialisedData: Data = try envelope.serializedData()
+                                _ = try message.info.inserted(db)
+                                
+                                // Ignore hashes for messages we have previously handled
+                                guard try SnodeReceivedMessageInfo.filter(SnodeReceivedMessageInfo.Columns.hash == message.info.hash).fetchCount(db) == 1 else {
+                                    throw MessageReceiverError.duplicateMessage
+                                }
+                                
+                                jobDetailMessages.append(
+                                    MessageReceiveJob.Details.MessageInfo(
+                                        data: serialisedData,
+                                        serverHash: message.info.hash,
+                                        serverExpirationTimestamp: (TimeInterval(message.info.expirationDateMs) / 1000)
+                                    )
+                                )
+                            }
+                            catch {
+                                switch error {
+                                    // Ignore duplicate messages
+                                    case .SQLITE_CONSTRAINT_UNIQUE, MessageReceiverError.duplicateMessage: break
+                                    default: SNLog("Failed to deserialize envelope due to error: \(error).")
+                                }
                             }
                         }
-                    }
-                    
-                    JobRunner.add(
-                        db,
-                        job: Job(
-                            variant: .messageReceive,
-                            behaviour: .runOnce,
-                            threadId: groupPublicKey,
-                            details: MessageReceiveJob.Details(
-                                messages: jobDetailMessages,
-                                isBackgroundPoll: false
+                        
+                        messageCount = jobDetailMessages.count
+                        
+                        JobRunner.add(
+                            db,
+                            job: Job(
+                                variant: .messageReceive,
+                                behaviour: .runOnce,
+                                threadId: groupPublicKey,
+                                details: MessageReceiveJob.Details(
+                                    messages: jobDetailMessages,
+                                    isBackgroundPoll: false
+                                )
                             )
                         )
-                    )
+                    }
+                    
+                    SNLog("Received \(messageCount) message(s) in closed group with public key: \(groupPublicKey).")
                 }
             }
-        }
+            .map { _ in }
+        
         promise.catch2 { error in
             SNLog("Polling failed for closed group with public key: \(groupPublicKey) due to error: \(error).")
         }
-        return promise.map { _ in }
-    }
-
-    // MARK: Convenience
-    private func isPolling(for groupPublicKey: String) -> Bool {
-        return internalQueue.sync{ isPolling[groupPublicKey] ?? false }
+        
+        return promise
     }
 }

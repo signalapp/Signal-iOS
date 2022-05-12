@@ -28,10 +28,10 @@ public class BlockingManagerRemovalMigration: OWSDatabaseMigration {
 
         Storage.write(
             with: { transaction in
-                var result: Set<SessionMessagingKit.Legacy.Contact> = []
+                var result: Set<SessionMessagingKit.Legacy._Contact> = []
                 
                 transaction.enumerateRows(inCollection: Legacy.contactCollection) { _, object, _, _ in
-                    guard let contact = object as? SessionMessagingKit.Legacy.Contact else { return }
+                    guard let contact = object as? SessionMessagingKit.Legacy._Contact else { return }
                     result.insert(contact)
                 }
                 

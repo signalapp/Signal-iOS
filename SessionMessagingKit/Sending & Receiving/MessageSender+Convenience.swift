@@ -13,11 +13,12 @@ extension MessageSender {
         guard let interactionId: Int64 = interaction.id else { throw GRDBStorageError.objectNotSaved }
         // TODO: Is the 'prep' method needed anymore?
 //        prep(db, attachments, for: message)
-        try send(
+        send(
             db,
             message: VisibleMessage.from(db, interaction: interaction),
+            threadId: thread.id,
             interactionId: interactionId,
-            in: thread
+            to: try Message.Destination.from(db, thread: thread)
         )
     }
     
@@ -26,18 +27,34 @@ extension MessageSender {
         guard interaction.variant == .standardOutgoing else { throw MessageSenderError.invalidMessage }
         guard let interactionId: Int64 = interaction.id else { throw GRDBStorageError.objectNotSaved }
         
-        return try send(db, message: VisibleMessage.from(db, interaction: interaction), interactionId: interactionId, in: thread)
+        send(
+            db,
+            message: VisibleMessage.from(db, interaction: interaction),
+            threadId: thread.id,
+            interactionId: interactionId,
+            to: try Message.Destination.from(db, thread: thread)
+        )
     }
     
     public static func send(_ db: Database, message: Message, interactionId: Int64?, in thread: SessionThread) throws {
+        send(
+            db,
+            message: message,
+            threadId: thread.id,
+            interactionId: interactionId,
+            to: try Message.Destination.from(db, thread: thread)
+        )
+    }
+    
+    public static func send(_ db: Database, message: Message, threadId: String?, interactionId: Int64?, to destination: Message.Destination) {
         JobRunner.add(
             db,
             job: Job(
                 variant: .messageSend,
-                threadId: thread.id,
+                threadId: threadId,
                 interactionId: interactionId,
                 details: MessageSendJob.Details(
-                    destination: try Message.Destination.from(db, thread: thread),
+                    destination: destination,
                     message: message
                 )
             )
@@ -98,7 +115,7 @@ extension MessageSender {
 
     
     public static func sendNonDurably(_ db: Database, message: Message, interactionId: Int64?, in thread: SessionThread) throws -> Promise<Void> {
-        return try MessageSender.send(
+        return try MessageSender.sendImmediate(
             db,
             message: message,
             to: try Message.Destination.from(db, thread: thread),
@@ -110,7 +127,7 @@ extension MessageSender {
     }
     
     public static func sendNonDurably(_ db: Database, message: Message, interactionId: Int64?, to destination: Message.Destination) throws -> Promise<Void> {
-        return try MessageSender.send(
+        return try MessageSender.sendImmediate(
             db,
             message: message,
             to: destination,
@@ -136,7 +153,7 @@ extension MessageSender {
         
         if forceSyncNow {
             try MessageSender
-                .send(db, message: configurationMessage, to: destination, interactionId: nil)
+                .sendImmediate(db, message: configurationMessage, to: destination, interactionId: nil)
                 .done { seal.fulfill(()) }
                 .catch { _ in seal.reject(GRDBStorageError.generic) }
                 .retainUntilComplete()

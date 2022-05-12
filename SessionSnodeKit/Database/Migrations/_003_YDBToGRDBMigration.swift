@@ -122,8 +122,8 @@ enum _003_YDBToGRDBMigration: Migration {
                 guard let lastMessageJson = object as? JSON else { return }
                 guard let lastMessageHash: String = lastMessageJson["hash"] as? String else { return }
                 
-                // Note: We remove the value from 'receivedMessageResults' as we don't want to default it's
-                // expiration value to 0
+                // Note: We remove the value from 'receivedMessageResults' as we want to try and use
+                // it's actual 'expirationDate' value
                 lastMessageResults[key] = (lastMessageHash, lastMessageJson)
                 receivedMessageResults[key] = receivedMessageResults[key]?.removing(lastMessageHash)
             }
@@ -135,16 +135,21 @@ enum _003_YDBToGRDBMigration: Migration {
                     _ = try SnodeReceivedMessageInfo(
                         key: key,
                         hash: hash,
-                        expirationDateMs: 0
+                        expirationDateMs: SnodeReceivedMessage.defaultExpirationSeconds
                     ).inserted(db)
                 }
             }
             
             try lastMessageResults.forEach { key, data in
+                let expirationDateMs: Int64 = ((data.json["expirationDate"] as? Int64) ?? 0)
+                
                 _ = try SnodeReceivedMessageInfo(
                     key: key,
                     hash: data.hash,
-                    expirationDateMs: ((data.json["expirationDate"] as? Int64) ?? 0)
+                    expirationDateMs: (expirationDateMs > 0 ?
+                        expirationDateMs :
+                        SnodeReceivedMessage.defaultExpirationSeconds
+                    )
                 ).inserted(db)
             }
         }

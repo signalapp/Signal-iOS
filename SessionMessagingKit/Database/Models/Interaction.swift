@@ -474,6 +474,9 @@ public extension Interaction {
         )
     }
     
+    /// This method flags sent messages as read for the specified recipients
+    ///
+    /// **Note:** This method won't update the 'wasRead' flag (it will be updated via the above method)
     static func markAsRead(_ db: Database, recipientId: String, timestampMsValues: [Double], readTimestampMs: Double) throws {
         guard db[.areReadReceiptsEnabled] == true else { return }
         

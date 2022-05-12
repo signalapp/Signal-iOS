@@ -579,10 +579,17 @@ public extension Attachment {
     ) -> (isValid: Bool, duration: TimeInterval?) {
         guard let originalFilePath: String = originalFilePath else { return (false, nil) }
         
+        let constructedFilePath: String? = localRelativeFilePath.map {
+            URL(fileURLWithPath: Attachment.attachmentsFolder)
+                .appendingPathComponent($0)
+                .path
+        }
+        let targetPath: String = (constructedFilePath ?? originalFilePath)
+        
         // Process audio attachments
         if MIMETypeUtil.isAudio(contentType) {
             do {
-                let audioPlayer: AVAudioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: originalFilePath))
+                let audioPlayer: AVAudioPlayer = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: targetPath))
                 
                 return ((audioPlayer.duration > 0), audioPlayer.duration)
             }
@@ -590,7 +597,7 @@ public extension Attachment {
                 switch (error as NSError).code {
                     case Int(kAudioFileInvalidFileError), Int(kAudioFileStreamError_InvalidFile):
                         // Ignore "invalid audio file" errors
-                        return (false, nil) // TODO: Confirm this behaviour (previously returned 0)
+                        return (false, nil)
                         
                     default: return (false, nil)
                 }
@@ -599,51 +606,23 @@ public extension Attachment {
         
         // Process image attachments
         if MIMETypeUtil.isImage(contentType) {
-            let specificFilePathIsValid: Bool = (
-                localRelativeFilePath != nil &&
-                localRelativeFilePath.map {
-                    NSData.ows_isValidImage(
-                        atPath: URL(fileURLWithPath: Attachment.attachmentsFolder)
-                            .appendingPathComponent($0)
-                            .path,
-                        mimeType: contentType
-                    )
-                } == true
-            )
-            
             return (
-                (
-                    specificFilePathIsValid ||
-                    NSData.ows_isValidImage(atPath: originalFilePath, mimeType: contentType)
-                ),
+                NSData.ows_isValidImage(atPath: targetPath, mimeType: contentType),
                 nil
             )
         }
         
         // Process video attachments
         if MIMETypeUtil.isVideo(contentType) {
-            let videoPlayer: AVPlayer = AVPlayer(url: URL(fileURLWithPath: originalFilePath))
+            let videoPlayer: AVPlayer = AVPlayer(url: URL(fileURLWithPath: targetPath))
             let durationSeconds: TimeInterval? = videoPlayer.currentItem
                 .map { item -> TimeInterval in
                     // Accorting to the CMTime docs "value/timescale = seconds"
                     (TimeInterval(item.duration.value) / TimeInterval(item.duration.timescale))
                 }
-            let specificFilePathIsValid: Bool = (
-                localRelativeFilePath != nil &&
-                localRelativeFilePath.map {
-                    OWSMediaUtils.isValidVideo(
-                        path: URL(fileURLWithPath: Attachment.attachmentsFolder)
-                            .appendingPathComponent($0)
-                            .path
-                    )
-                } == true
-            )
             
             return (
-                (
-                    specificFilePathIsValid ||
-                    OWSMediaUtils.isValidVideo(path: originalFilePath)
-                ),
+                OWSMediaUtils.isValidVideo(path: targetPath),
                 durationSeconds
             )
         }
@@ -720,6 +699,8 @@ extension Attachment {
     public var isVideo: Bool { MIMETypeUtil.isVideo(contentType) }
     public var isAnimated: Bool { MIMETypeUtil.isAnimated(contentType) }
     public var isAudio: Bool { MIMETypeUtil.isAudio(contentType) }
+    public var isText: Bool { MIMETypeUtil.isText(contentType) }
+    public var isMicrosoftDoc: Bool { MIMETypeUtil.isMicrosoftDoc(contentType) }
     
     public var isVisualMedia: Bool { isImage || isVideo || isAnimated }
     
@@ -793,22 +774,6 @@ extension Attachment {
 // MARK: - Upload
 
 extension Attachment {
-    internal enum UploadError: LocalizedError {
-        case invalidStartState
-        case noAttachment
-        case notUploaded
-        case encryptionFailed
-
-        public var errorDescription: String? {
-            switch self {
-                case .invalidStartState: return "Cannot upload an attachment in this state."
-                case .noAttachment: return "No such attachment."
-                case .notUploaded: return "Attachment not uploaded."
-                case .encryptionFailed: return "Couldn't encrypt file."
-            }
-        }
-    }
-    
     internal func upload(
         using upload: (Data) -> Promise<UInt64>,
         encrypt: Bool,
@@ -817,14 +782,14 @@ extension Attachment {
     ) {
         guard state != .uploaded else {
             SNLog("Attempted to upload an already uploaded/downloaded attachment.")
-            failure?(UploadError.invalidStartState)
+            failure?(AttachmentError.invalidStartState)
             return
         }
         
         // Get the attachment
         guard var data = try? readDataFromFile() else {
             SNLog("Couldn't read attachment from disk.")
-            failure?(UploadError.noAttachment)
+            failure?(AttachmentError.noAttachment)
             return
         }
         
@@ -868,7 +833,7 @@ extension Attachment {
             
             guard let ciphertext = Cryptography.encryptAttachmentData(data, shouldPad: true, outKey: &encryptionKey, outDigest: &digest) else {
                 SNLog("Couldn't encrypt attachment.")
-                failure?(UploadError.encryptionFailed)
+                failure?(AttachmentError.encryptionFailed)
                 return
             }
             

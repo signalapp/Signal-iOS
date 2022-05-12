@@ -7,7 +7,6 @@ public extension Notification.Name {
     static let profileUpdated = Notification.Name("profileUpdated")
     static let localProfileDidChange = Notification.Name("localProfileDidChange")
     static let otherUsersProfileDidChange = Notification.Name("otherUsersProfileDidChange")
-    static let contactBlockedStateChanged = Notification.Name("contactBlockedStateChanged")
 }
 
 @objc public extension NSNotification {
@@ -15,7 +14,6 @@ public extension Notification.Name {
     @objc static let profileUpdated = Notification.Name.profileUpdated.rawValue as NSString
     @objc static let localProfileDidChange = Notification.Name.localProfileDidChange.rawValue as NSString
     @objc static let otherUsersProfileDidChange = Notification.Name.otherUsersProfileDidChange.rawValue as NSString
-    @objc static let contactBlockedStateChanged = Notification.Name.contactBlockedStateChanged.rawValue as NSString
 }
 
 extension Notification.Key {

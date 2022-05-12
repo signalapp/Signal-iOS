@@ -365,15 +365,17 @@ final class ConversationCell: UITableViewCell {
         )
         displayNameLabel.text = threadInfo.displayName
         timestampLabel.text = DateUtil.formatDate(forDisplay: threadInfo.lastInteractionDate)
-//        if SSKEnvironment.shared.typingIndicators.typingRecipientId(forThread: thread) != nil {
-//            snippetLabel.text = ""
-//            typingIndicatorView.isHidden = false
-//            typingIndicatorView.startAnimation()
-//        } else {
+        
+        if threadInfo.contactIsTyping {
+            snippetLabel.text = ""
+            typingIndicatorView.isHidden = false
+            typingIndicatorView.startAnimation()
+        }
+        else {
             snippetLabel.attributedText = getSnippet(threadInfo: threadInfo)
             typingIndicatorView.isHidden = true
             typingIndicatorView.stopAnimation()
-//        }
+        }
         
         statusIndicatorView.backgroundColor = nil
         

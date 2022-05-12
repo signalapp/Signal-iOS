@@ -129,9 +129,9 @@ public extension OpenGroup {
 @objc(SMKOpenGroup)
 public class SMKOpenGroup: NSObject {
     @objc(inviteUsers:toOpenGroupFor:)
-    public static func invite(selectedUsers: Set<String>, threadId: String) {
+    public static func invite(selectedUsers: Set<String>, openGroupThreadId: String) {
         GRDBStorage.shared.write { db in
-            guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else { return }
+            guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: openGroupThreadId) else { return }
             
             let urlString: String = "\(openGroup.server)/\(openGroup.room)?public_key=\(openGroup.publicKey)"
             
@@ -146,7 +146,7 @@ public class SMKOpenGroup: NSObject {
                 .save(db)
                 
                 let interaction: Interaction = try Interaction(
-                    threadId: threadId,
+                    threadId: thread.id,
                     authorId: userId,
                     variant: .standardOutgoing,
                     timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000)),

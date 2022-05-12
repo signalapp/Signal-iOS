@@ -95,7 +95,7 @@ public struct LinkPreview: Codable, Equatable, FetchableRecord, PersistableRecor
 // MARK: - Protobuf
 
 public extension LinkPreview {
-    init?(_ db: Database, proto: SNProtoDataMessage, body: String?) throws {
+    init?(_ db: Database, proto: SNProtoDataMessage, body: String?, sentTimestampMs: TimeInterval) throws {
         guard OWSLinkPreview.featureEnabled else { throw LinkPreviewError.noPreview }
         guard let previewProto = proto.preview.first else { throw LinkPreviewError.noPreview }
         guard proto.attachments.count < 1 else { throw LinkPreviewError.invalidInput }
@@ -107,7 +107,7 @@ public extension LinkPreview {
         }
         
         // Try to get an existing link preview first
-        let timestamp: TimeInterval = LinkPreview.timestampFor(sentTimestampMs: Double(proto.timestamp))
+        let timestamp: TimeInterval = LinkPreview.timestampFor(sentTimestampMs: sentTimestampMs)
         let maybeLinkPreview: LinkPreview? = try? LinkPreview
             .filter(LinkPreview.Columns.url == previewProto.url)
             .filter(LinkPreview.Columns.timestamp == LinkPreview.timestampFor(

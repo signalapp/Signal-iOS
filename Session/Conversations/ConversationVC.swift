@@ -410,8 +410,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
-        // Mentions
-        MentionsManager.populateUserPublicKeyCacheIfNeeded(for: viewModel.viewData.thread.id)
         
         // Draft
         if let draft: String = viewModel.viewData.thread.messageDraft, !draft.isEmpty {
@@ -533,6 +531,10 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             viewModel.viewData.threadAvatarProfiles != updatedViewData.threadAvatarProfiles
         {
             updateNavBarButtons(viewData: updatedViewData)
+        }
+        
+        if viewModel.viewData.isClosedGroupMember != updatedViewData.isClosedGroupMember {
+            reloadInputViews()
         }
         
         if initialLoad || viewModel.viewData.enabledMessageTypes != updatedViewData.enabledMessageTypes {
@@ -821,11 +823,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     func conversationViewModelDidReset() {
         // Not currently in use
     }
-    
-    @objc private func handleGroupUpdatedNotification() {
-        thread.reload() // Needed so that thread.isCurrentUserMemberInGroup() is up to date
-        reloadInputViews()
-    }
 
     @objc private func handleMessageSentStatusChanged() {
         DispatchQueue.main.async {
@@ -869,7 +866,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         cell.update(
             with: item,
             mediaCache: mediaCache,
-            playbackInfo: viewModel.playbackInfo(for: item) { [weak self] updatedInfo, error in
+            playbackInfo: viewModel.playbackInfo(for: item) { updatedInfo, error in
                 DispatchQueue.main.async {
                     guard error == nil else {
                         OWSAlerts.showErrorAlert(message: "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE".localized())

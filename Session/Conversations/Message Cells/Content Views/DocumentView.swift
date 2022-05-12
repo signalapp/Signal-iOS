@@ -32,21 +32,25 @@ final class DocumentView: UIView {
         let iconImageViewSize = DocumentView.iconImageViewSize
         imageView.set(.width, to: iconImageViewSize.width)
         imageView.set(.height, to: iconImageViewSize.height)
+        
         // Body label
         let titleLabel = UILabel()
         titleLabel.lineBreakMode = .byTruncatingTail
-        titleLabel.text = attachment.sourceFilename ?? "File"
+        titleLabel.text = (attachment.sourceFilename ?? "File")
         titleLabel.textColor = textColor
         titleLabel.font = .systemFont(ofSize: Values.smallFontSize, weight: .light)
+        
         // Size label
         let sizeLabel = UILabel()
         sizeLabel.lineBreakMode = .byTruncatingTail
         sizeLabel.text = OWSFormat.formatFileSize(UInt(attachment.byteCount))
         sizeLabel.textColor = textColor
         sizeLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
+        
         // Label stack view
         let labelStackView = UIStackView(arrangedSubviews: [ titleLabel, sizeLabel ])
         labelStackView.axis = .vertical
+        
         // Stack view
         let stackView = UIStackView(arrangedSubviews: [ imageView, labelStackView ])
         stackView.axis = .horizontal

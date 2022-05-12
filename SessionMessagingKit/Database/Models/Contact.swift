@@ -64,20 +64,6 @@ public struct Contact: Codable, Identifiable, Equatable, FetchableRecord, Persis
         self.didApproveMe = didApproveMe
         self.hasBeenBlocked = (isBlocked || hasBeenBlocked)
     }
-    
-    // MARK: - PersistableRecord
-    
-    public func save(_ db: Database) throws {
-        let oldContact: Contact? = try? Contact.fetchOne(db, id: id)
-        
-        try performSave(db)
-        
-        db.afterNextTransactionCommit { db in
-            if isBlocked != oldContact?.isBlocked {
-                NotificationCenter.default.post(name: .contactBlockedStateChanged, object: id)
-            }
-        }
-    }
 }
 
 // MARK: - Convenience

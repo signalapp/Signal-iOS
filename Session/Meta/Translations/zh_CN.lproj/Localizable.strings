@@ -620,3 +620,4 @@
 "NEW_CONVERSATION_MENU_CLOSED_GROUP" = "Closed Group";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
+"ALERT_ERROR_TITLE" = "错误";

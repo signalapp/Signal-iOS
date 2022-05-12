@@ -35,7 +35,7 @@ public enum MessageReceiver {
         else {
             switch envelope.type {
                 case .sessionMessage:
-                    guard let userX25519KeyPair: Box.KeyPair = Identity.fetchUserKeyPair() else {
+                    guard let userX25519KeyPair: Box.KeyPair = Identity.fetchUserKeyPair(db) else {
                         throw MessageReceiverError.noUserX25519KeyPair
                     }
                     

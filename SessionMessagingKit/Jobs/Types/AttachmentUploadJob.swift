@@ -57,16 +57,4 @@ extension AttachmentUploadJob {
             self.attachmentId = attachmentId
         }
     }
-    
-    public enum AttachmentUploadError: LocalizedError {
-        case noAttachment
-        case encryptionFailed
-
-        public var errorDescription: String? {
-            switch self {
-                case .noAttachment: return "No such attachment."
-                case .encryptionFailed: return "Couldn't encrypt file."
-            }
-        }
-    }
 }

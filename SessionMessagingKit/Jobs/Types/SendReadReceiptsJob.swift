@@ -36,7 +36,7 @@ public enum SendReadReceiptsJob: JobExecutor {
         
         GRDBStorage.shared
             .write { db in
-                try MessageSender.send(
+                try MessageSender.sendImmediate(
                     db,
                     message: ReadReceipt(
                         timestamps: details.timestampMsValues.map { UInt64($0) }

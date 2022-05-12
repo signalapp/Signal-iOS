@@ -355,8 +355,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return false
         }
 
-        let now = NSDate.ows_millisecondTimeStamp()
-        let recentThreshold = now - UInt64(kAudioNotificationsThrottleInterval * Double(kSecondInMs))
+        let nowMs: UInt64 = UInt64(floor(Date().timeIntervalSince1970 * 1000))
+        let recentThreshold = nowMs - UInt64(kAudioNotificationsThrottleInterval * Double(kSecondInMs))
 
         let recentNotifications = mostRecentNotifications.filter { $0 > recentThreshold }
 
@@ -364,7 +364,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return false
         }
 
-        mostRecentNotifications.append(now)
+        mostRecentNotifications.append(nowMs)
         return true
     }
 }

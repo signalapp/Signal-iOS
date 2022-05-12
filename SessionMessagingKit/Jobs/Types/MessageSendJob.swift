@@ -101,7 +101,7 @@ public enum MessageSendJob: JobExecutor {
             // Note: If we have gotten to this point then any dependant attachment upload
             // jobs will have permanently failed so this message send should also do so
             guard attachmentState?.shouldFail == false else {
-                failure(job, Attachment.UploadError.notUploaded, true)
+                failure(job, AttachmentError.notUploaded, true)
                 return
             }
 
@@ -117,7 +117,7 @@ public enum MessageSendJob: JobExecutor {
         
         // Perform the actual message sending
         GRDBStorage.shared.write { db -> Promise<Void> in
-            try MessageSender.send(
+            try MessageSender.sendImmediate(
                 db,
                 message: details.message,
                 to: details.destination,

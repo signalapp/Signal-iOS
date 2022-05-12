@@ -161,7 +161,12 @@ public final class VisibleMessage: Message {
         dataMessage.setAttachments(attachmentProtos)
         
         // Open group invitation
-        if let openGroupInvitation = openGroupInvitation, let openGroupInvitationProto = openGroupInvitation.toProto() { dataMessage.setOpenGroupInvitation(openGroupInvitationProto) }
+        if
+            let openGroupInvitation = openGroupInvitation,
+            let openGroupInvitationProto = openGroupInvitation.toProto()
+        {
+            dataMessage.setOpenGroupInvitation(openGroupInvitationProto)
+        }
         
         // Group context
         do {

@@ -83,24 +83,33 @@ final class DownloadAttachmentModal: Modal {
     // MARK: - Interaction
     
     @objc private func trust() {
-        guard let message = viewItem.interaction as? TSIncomingMessage else { return }
-        
-        GRDBStorage.shared.writeAsync(
-            updates: { db in
-                try? Contact
-                    .fetchOrCreate(db, id: message.authorId)
-                    .with(isTrusted: true)
-                    .save(db)
-            },
-            completion: { _, _ in
-                Storage.write(with: { transaction in
-                    MessageInvalidator.invalidate(message, with: transaction)
-                }, completion: {
-                    Storage.shared.resumeAttachmentDownloadJobsIfNeeded(for: message.uniqueThreadId)
-                })
-            }
-        )
-        
+        guard let profileId: String = profile?.id else { return }
+
+        GRDBStorage.shared.writeAsync { db in
+            try Contact
+                .filter(id: profileId)
+                .updateAll(db, Contact.Columns.isTrusted.set(to: true))
+            
+            // Start downloading any pending attachments for this contact (UI will automatically be
+            // updated due to the database observation)
+            try Attachment
+                .stateInfo(authorId: profileId, state: .pending)
+                .fetchAll(db)
+                .forEach { attachmentDownloadInfo in
+                    JobRunner.add(
+                        db,
+                        job: Job(
+                            variant: .attachmentDownload,
+                            threadId: profileId,
+                            interactionId: attachmentDownloadInfo.interactionId,
+                            details: AttachmentDownloadJob.Details(
+                                attachmentId: attachmentDownloadInfo.attachmentId
+                            )
+                        )
+                    )
+                }
+        }
+
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
 }

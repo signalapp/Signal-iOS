@@ -85,8 +85,15 @@ extension ContextMenuVC {
             )
         )
         let canSave: Bool = (
-            item.cellType != .textOnlyMessage &&
-            canCopy
+            item.cellType == .mediaMessage &&
+            (item.attachments ?? [])
+                .filter { attachment in
+                    attachment.isValid &&
+                    attachment.isVisualMedia && (
+                        attachment.state == .downloaded ||
+                        attachment.state == .uploaded
+                    )
+                }.isEmpty == false
         )
         let canCopySessionId: Bool = (
             item.interactionVariant == .standardIncoming &&

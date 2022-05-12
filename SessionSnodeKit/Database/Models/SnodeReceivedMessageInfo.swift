@@ -29,7 +29,8 @@ public struct SnodeReceivedMessageInfo: Codable, FetchableRecord, MutablePersist
     
     /// This is the timestamp (in milliseconds since epoch) when the message hash should expire
     ///
-    /// **Note:** A value of `0` means this hash should not expire
+    /// **Note:** If no value exists this will default to 15 days from now (since the service node caches messages for
+    /// 14 days)
     public let expirationDateMs: Int64
     
     // MARK: - Custom Database Interaction
@@ -62,9 +63,17 @@ public extension SnodeReceivedMessageInfo {
 
 public extension SnodeReceivedMessageInfo {
     static func pruneExpiredMessageHashInfo(for snode: Snode, associatedWith publicKey: String) {
-        // Delete any expired (but non-0) SnodeReceivedMessageInfo values associated to a specific node
+        // Delete any expired SnodeReceivedMessageInfo values associated to a specific node
         GRDBStorage.shared.write { db in
-            try? SnodeReceivedMessageInfo
+            // Only prune the hashes if new hashes exist for this Snode (if they don't then we don't want
+            // to clear out the legacy hashes)
+            let hasNonLegacyHash: Bool = try SnodeReceivedMessageInfo
+                .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey))
+                .isNotEmpty(db)
+            
+            guard hasNonLegacyHash else { return }
+            
+            try SnodeReceivedMessageInfo
                 .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey))
                 .filter(SnodeReceivedMessageInfo.Columns.expirationDateMs <= (Date().timeIntervalSince1970 * 1000))
                 .deleteAll(db)
@@ -78,9 +87,18 @@ public extension SnodeReceivedMessageInfo {
     /// pointless fetch for data the app has already received
     static func fetchLastNotExpired(for snode: Snode, associatedWith publicKey: String) -> SnodeReceivedMessageInfo? {
         return GRDBStorage.shared.write { db in
-            try SnodeReceivedMessageInfo
+            let nonLegacyHash: SnodeReceivedMessageInfo? = try SnodeReceivedMessageInfo
                 .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey))
                 .filter(SnodeReceivedMessageInfo.Columns.expirationDateMs > (Date().timeIntervalSince1970 * 1000))
+                .order(SnodeReceivedMessageInfo.Columns.id.desc)
+                .fetchOne(db)
+            
+            // If we have a non-legacy hash then return it immediately (legacy hashes had a different
+            // 'key' structure)
+            if nonLegacyHash != nil { return nonLegacyHash }
+            
+            return try SnodeReceivedMessageInfo
+                .filter(SnodeReceivedMessageInfo.Columns.key == publicKey)
                 .order(SnodeReceivedMessageInfo.Columns.id.desc)
                 .fetchOne(db)
         }

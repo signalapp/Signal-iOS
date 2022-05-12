@@ -67,7 +67,7 @@ public final class MessageSender : NSObject {
 
     // MARK: - Convenience
     
-    public static func send(_ db: Database, message: Message, to destination: Message.Destination, interactionId: Int64?) throws -> Promise<Void> {
+    public static func sendImmediate(_ db: Database, message: Message, to destination: Message.Destination, interactionId: Int64?) throws -> Promise<Void> {
         switch destination {
             case .contact(_), .closedGroup(_):
                 return try sendToSnodeDestination(db, message: message, to: destination, interactionId: interactionId)
@@ -88,15 +88,13 @@ public final class MessageSender : NSObject {
     ) throws -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         let userPublicKey: String = getUserHexEncodedPublicKey(db)
-        
         let isMainAppActive: Bool = (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false)
         
         // Set the timestamp, sender and recipient
-        if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
-        }
-            message.sentTimestamp = UInt64(floor(Date().timeIntervalSince1970 * 1000))
-
-        let isSelfSend: Bool = (message.recipient == userPublicKey)
+        message.sentTimestamp = (
+            message.sentTimestamp ??     // Visible messages will already have their sent timestamp set
+            UInt64(floor(Date().timeIntervalSince1970 * 1000))
+        )
         message.sender = userPublicKey
         message.recipient = {
             switch destination {
@@ -123,6 +121,7 @@ public final class MessageSender : NSObject {
         // • a sync message
         // • a closed group control message of type `new`
         // • an unsend request
+        let isSelfSend: Bool = (message.recipient == userPublicKey)
         let isNewClosedGroupControlMessage: Bool = {
             switch (message as? ClosedGroupControlMessage)?.kind {
                 case .new: return true
@@ -147,14 +146,14 @@ public final class MessageSender : NSObject {
             let profile: Profile = Profile.fetchOrCreateCurrentUser(db)
             
             if let profileKey: Data = profile.profileEncryptionKey?.keyData, let profilePictureUrl: String = profile.profilePictureUrl {
-                message.profile = VisibleMessage.Profile(
+                message.profile = VisibleMessage.VMProfile(
                     displayName: profile.name,
                     profileKey: profileKey,
                     profilePictureUrl: profilePictureUrl
                 )
             }
             else {
-                message.profile = VisibleMessage.Profile(displayName: profile.name)
+                message.profile = VisibleMessage.VMProfile(displayName: profile.name)
             }
         }
         
@@ -371,7 +370,7 @@ public final class MessageSender : NSObject {
         }
         
         // Attach the user's profile
-        message.profile = VisibleMessage.Profile(
+        message.profile = VisibleMessage.VMProfile(
             profile: Profile.fetchOrCreateCurrentUser()
         )
 
@@ -470,8 +469,6 @@ public final class MessageSender : NSObject {
             // Mark the message as sent
             try interaction.recipientStates
                 .updateAll(db, RecipientState.Columns.state.set(to: RecipientState.State.sent))
-            
-            NotificationCenter.default.post(name: .messageSentStatusDidChange, object: nil, userInfo: nil)
             
             // Start the disappearing messages timer if needed
             JobRunner.upsert(

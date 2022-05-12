@@ -25,7 +25,7 @@ public final class UnsendRequest: ControlMessage {
     
     // MARK: - Initialization
     
-    internal init(timestamp: UInt64, author: String) {
+    public init(timestamp: UInt64, author: String) {
         super.init()
         
         self.timestamp = timestamp

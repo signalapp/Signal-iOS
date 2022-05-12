@@ -39,7 +39,9 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.key, .text)
                 .notNull()
                 .indexed()                                            // Quicker querying
-            t.column(.hash, .text).notNull()
+            t.column(.hash, .text)
+                .notNull()
+                .indexed()                                            // Quicker querying
             t.column(.expirationDateMs, .integer)
                 .notNull()
                 .indexed()                                            // Quicker querying

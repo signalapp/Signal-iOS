@@ -356,20 +356,21 @@ extension MessageReceiver {
             UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: interaction.notificationIdentifiers)
         }
         
-        if author == message.sender {
-            if let serverHash: String = interaction.serverHash {
-                SnodeAPI.deleteMessage(publicKey: author, serverHashes: [serverHash]).retainUntilComplete()
-            }
-            
-            _ = try interaction
-                .markingAsDeleted()
-                .saved(db)
-            
-            _ = try interaction.attachments
-                .deleteAll(db)
+        if author == message.sender, let serverHash: String = interaction.serverHash {
+            SnodeAPI.deleteMessage(publicKey: author, serverHashes: [serverHash]).retainUntilComplete()
         }
-        else {
-            _ = try interaction.delete(db)
+         
+        switch (interaction.variant, (author == message.sender)) {
+            case (.standardOutgoing, _), (_, false):
+                _ = try interaction.delete(db)
+                
+            case (_, true):
+                _ = try interaction
+                    .markingAsDeleted()
+                    .saved(db)
+                
+                _ = try interaction.attachments
+                    .deleteAll(db)
         }
     }
     
@@ -511,7 +512,15 @@ extension MessageReceiver {
                 return (attachment.downloadUrl != nil ? attachment : nil)
             }
             .map { attachment in
-                try attachment.saved(db)
+                let savedAttachment: Attachment = try attachment.saved(db)
+                
+                // Link the attachment to the interaction and add to the id lookup
+                try InteractionAttachment(
+                    interactionId: interactionId,
+                    attachmentId: savedAttachment.id
+                ).insert(db)
+                
+                return savedAttachment
             }
         
         message.attachmentIds = attachments.map { $0.id }
@@ -528,7 +537,8 @@ extension MessageReceiver {
         let linkPreview: LinkPreview? = try? LinkPreview(
             db,
             proto: dataMessage,
-            body: message.text
+            body: message.text,
+            sentTimestampMs: (messageSentTimestamp * 1000)
         )?.saved(db)
         
         // Open group invitations are stored as LinkPreview values so create one if needed

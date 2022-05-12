@@ -16,17 +16,17 @@ public class ContactsMigration : OWSDatabaseMigration {
     }
     
     private func doMigrationAsync(completion: @escaping OWSDatabaseMigrationCompletion) {
-        var contacts: [SMKLegacy.Contact] = []
+        var contacts: [SMKLegacy._Contact] = []
         TSContactThread.enumerateCollectionObjects { object, _ in
             guard let thread = object as? TSContactThread else { return }
             let sessionID = thread.contactSessionID()
-            var contact: SMKLegacy.Contact?
+            var contact: SMKLegacy._Contact?
             
             Storage.read { transaction in
-                contact = transaction.object(forKey: sessionID, inCollection: SMKLegacy.contactCollection) as? SMKLegacy.Contact
+                contact = transaction.object(forKey: sessionID, inCollection: SMKLegacy.contactCollection) as? SMKLegacy._Contact
             }
             
-            if let contact: SMKLegacy.Contact = contact {
+            if let contact: SMKLegacy._Contact = contact {
                 contact.isTrusted = true
                 contacts.append(contact)
             }

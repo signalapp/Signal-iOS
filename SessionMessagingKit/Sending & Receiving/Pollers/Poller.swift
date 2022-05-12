@@ -9,11 +9,12 @@ import SessionSnodeKit
 @objc(LKPoller)
 public final class Poller : NSObject {
     private let storage = OWSPrimaryStorage.shared()
-    private var isPolling = false
+    private var isPolling: Atomic<Bool> = Atomic(false)
     private var usedSnodes = Set<Snode>()
     private var pollCount = 0
 
-    // MARK: Settings
+    // MARK: - Settings
+    
     private static let pollInterval: TimeInterval = 1.5
     private static let retryInterval: TimeInterval = 0.25
     /// After polling a given snode this many times we always switch to a new one.
@@ -22,89 +23,103 @@ public final class Poller : NSObject {
     /// it isn't actually getting messages from other snodes.
     private static let maxPollCount: UInt = 6
 
-    // MARK: Error
+    // MARK: - Error
+    
     private enum Error : LocalizedError {
         case pollLimitReached
 
         var localizedDescription: String {
             switch self {
-            case .pollLimitReached: return "Poll limit reached for current snode."
+                case .pollLimitReached: return "Poll limit reached for current snode."
             }
         }
     }
 
-    // MARK: Public API
+    // MARK: - Public API
+    
     @objc public func startIfNeeded() {
-        guard !isPolling else { return }
+        guard !isPolling.wrappedValue else { return }
+        
         SNLog("Started polling.")
-        isPolling = true
+        isPolling.mutate { $0 = true }
         setUpPolling()
     }
 
     @objc public func stop() {
         SNLog("Stopped polling.")
-        isPolling = false
+        isPolling.mutate { $0 = false }
         usedSnodes.removeAll()
     }
 
-    // MARK: Private API
+    // MARK: - Private API
+    
     private func setUpPolling() {
-        guard isPolling else { return }
-        Threading.pollerQueue.async {
-            let _ = SnodeAPI.getSwarm(for: getUserHexEncodedPublicKey()).then(on: Threading.pollerQueue) { [weak self] _ -> Promise<Void> in
-                guard let strongSelf = self else { return Promise { $0.fulfill(()) } }
-                strongSelf.usedSnodes.removeAll()
-                let (promise, seal) = Promise<Void>.pending()
-                strongSelf.pollNextSnode(seal: seal)
-                return promise
-            }.ensure(on: Threading.pollerQueue) { [weak self] in // Timers don't do well on background queues
-                guard let strongSelf = self, strongSelf.isPolling else { return }
-                Timer.scheduledTimerOnMainThread(withTimeInterval: Poller.retryInterval, repeats: false) { _ in
-                    guard let strongSelf = self else { return }
-                    strongSelf.setUpPolling()
-                }
-            }
-        }
+        guard isPolling.wrappedValue else { return }
         
+        Threading.pollerQueue.async {
+            let _ = SnodeAPI.getSwarm(for: getUserHexEncodedPublicKey())
+                .then(on: Threading.pollerQueue) { [weak self] _ -> Promise<Void> in
+                    let (promise, seal) = Promise<Void>.pending()
+                    
+                    self?.usedSnodes.removeAll()
+                    self?.pollNextSnode(seal: seal)
+                    
+                    return promise
+                }
+                .ensure(on: Threading.pollerQueue) { [weak self] in // Timers don't do well on background queues
+                    guard self?.isPolling.wrappedValue == true else { return }
+                    
+                    Timer.scheduledTimerOnMainThread(withTimeInterval: Poller.retryInterval, repeats: false) { _ in
+                        self?.setUpPolling()
+                    }
+                }
+        }
     }
 
     private func pollNextSnode(seal: Resolver<Void>) {
         let userPublicKey = getUserHexEncodedPublicKey()
         let swarm = SnodeAPI.swarmCache[userPublicKey] ?? []
         let unusedSnodes = swarm.subtracting(usedSnodes)
-        if !unusedSnodes.isEmpty {
-            // randomElement() uses the system's default random generator, which is cryptographically secure
-            let nextSnode = unusedSnodes.randomElement()!
-            usedSnodes.insert(nextSnode)
-            poll(nextSnode, seal: seal).done2 {
+        
+        guard !unusedSnodes.isEmpty else {
+            seal.fulfill(())
+            return
+        }
+        
+        // randomElement() uses the system's default random generator, which is cryptographically secure
+        let nextSnode = unusedSnodes.randomElement()!
+        usedSnodes.insert(nextSnode)
+        
+        poll(nextSnode, seal: seal)
+            .done2 {
                 seal.fulfill(())
-            }.catch2 { [weak self] error in
+            }
+            .catch2 { [weak self] error in
                 if let error = error as? Error, error == .pollLimitReached {
                     self?.pollCount = 0
-                } else {
+                }
+                else {
                     SNLog("Polling \(nextSnode) failed; dropping it and switching to next snode.")
                     SnodeAPI.dropSnodeFromSwarmIfNeeded(nextSnode, publicKey: userPublicKey)
                 }
+                
                 Threading.pollerQueue.async {
                     self?.pollNextSnode(seal: seal)
                 }
             }
-        } else {
-            seal.fulfill(())
-        }
     }
 
     private func poll(_ snode: Snode, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
-        guard isPolling else { return Promise { $0.fulfill(()) } }
+        guard isPolling.wrappedValue else { return Promise { $0.fulfill(()) } }
         
         let userPublicKey = getUserHexEncodedPublicKey()
         
         return SnodeAPI.getMessages(from: snode, associatedWith: userPublicKey)
             .then(on: Threading.pollerQueue) { [weak self] messages -> Promise<Void> in
-                guard self?.isPolling == true else { return Promise { $0.fulfill(()) } }
+                guard self?.isPolling.wrappedValue == true else { return Promise { $0.fulfill(()) } }
                 
                 if !messages.isEmpty {
-                    SNLog("Received \(messages.count) message(s).")
+                    var messageCount: Int = 0
                     
                     GRDBStorage.shared.write { db in
                         var threadMessages: [String: [MessageReceiveJob.Details.MessageInfo]] = [:]
@@ -117,31 +132,43 @@ public final class Poller : NSObject {
                             let threadId: String? = MessageReceiver.extractSenderPublicKey(db, from: envelope)
                             
                             if threadId == nil {
+                                // TODO: I assume a configuration message doesn't need a 'threadId' (confirm this and set the 'requiresThreadId' requirement accordingly)
+                                // TODO: Does the configuration message come through here????
+                                print("RAWR WHAT CASES LETS THIS BE NIL????")
                             }
                             
                             do {
+                                let serialisedData: Data = try envelope.serializedData()
+                                _ = try message.info.inserted(db)
+                                
+                                // Ignore hashes for messages we have previously handled
+                                guard try SnodeReceivedMessageInfo.filter(SnodeReceivedMessageInfo.Columns.hash == message.info.hash).fetchCount(db) == 1 else {
+                                    throw MessageReceiverError.duplicateMessage
+                                }
+                                
                                 threadMessages[threadId ?? ""] = (threadMessages[threadId ?? ""] ?? [])
                                     .appending(
                                         MessageReceiveJob.Details.MessageInfo(
-                                            data: try envelope.serializedData(),
+                                            data: serialisedData,
                                             serverHash: message.info.hash,
                                             serverExpirationTimestamp: (TimeInterval(message.info.expirationDateMs) / 1000)
                                         )
                                     )
-                                
-                                // Persist the received message after the MessageReceiveJob is created
-                                _ = try message.info.saved(db)
                             }
                             catch {
                                 switch error {
-                                    // Ignore unique constraint violations here (they will be hanled in the MessageReceiveJob)
-                                    case .SQLITE_CONSTRAINT_UNIQUE: break
+                                    // Ignore duplicate messages
+                                    case .SQLITE_CONSTRAINT_UNIQUE, MessageReceiverError.duplicateMessage: break
                                         
                                     default:
                                         SNLog("Failed to deserialize envelope due to error: \(error).")
                                 }
                             }
                         }
+                        
+                        messageCount = threadMessages
+                            .values
+                            .reduce(into: 0) { prev, next in prev += next.count }
                         
                         threadMessages.forEach { threadId, threadMessages in
                             JobRunner.add(
@@ -158,6 +185,8 @@ public final class Poller : NSObject {
                             )
                         }
                     }
+                    
+                    SNLog("Received \(messageCount) message(s).")
                 }
                 
                 self?.pollCount += 1
@@ -167,7 +196,8 @@ public final class Poller : NSObject {
                 }
                 
                 return withDelay(Poller.pollInterval, completionQueue: Threading.pollerQueue) {
-                    guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
+                    guard let strongSelf = self, strongSelf.isPolling.wrappedValue else { return Promise { $0.fulfill(()) } }
+                    
                     return strongSelf.poll(snode, seal: longTermSeal)
                 }
             }

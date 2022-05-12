@@ -16,7 +16,7 @@ public class MessageRequestsMigration : OWSDatabaseMigration {
     }
 
     private func doMigrationAsync(completion: @escaping OWSDatabaseMigrationCompletion) {
-        var contacts: Set<SessionMessagingKit.Legacy.Contact> = Set()
+        var contacts: Set<SMKLegacy._Contact> = Set()
         var threads: [TSThread] = []
 
         TSThread.enumerateCollectionObjects { object, _ in
@@ -26,7 +26,7 @@ public class MessageRequestsMigration : OWSDatabaseMigration {
                 if let contactThread: TSContactThread = thread as? TSContactThread {
                     let sessionId: String = contactThread.contactSessionID()
                     
-                    if let contact: SessionMessagingKit.Legacy.Contact = transaction.object(forKey: sessionId, inCollection: Legacy.contactCollection) as? SessionMessagingKit.Legacy.Contact {
+                    if let contact: SMKLegacy._Contact = transaction.object(forKey: sessionId, inCollection: Legacy.contactCollection) as? SMKLegacy._Contact {
                         contact.isApproved = true
                         contact.didApproveMe = true
                         contacts.insert(contact)
@@ -36,7 +36,7 @@ public class MessageRequestsMigration : OWSDatabaseMigration {
                     let groupAdmins: [String] = groupThread.groupModel.groupAdminIds
                     
                     groupAdmins.forEach { sessionId in
-                        if let contact: SessionMessagingKit.Legacy.Contact = transaction.object(forKey: sessionId, inCollection: Legacy.contactCollection) as? SessionMessagingKit.Legacy.Contact {
+                        if let contact: SMKLegacy._Contact = transaction.object(forKey: sessionId, inCollection: Legacy.contactCollection) as? SMKLegacy._Contact {
                             contact.isApproved = true
                             contact.didApproveMe = true
                             contacts.insert(contact)
@@ -51,7 +51,7 @@ public class MessageRequestsMigration : OWSDatabaseMigration {
         let userPublicKey: String = getUserHexEncodedPublicKey()
         
         Storage.read { transaction in
-            if let user = transaction.object(forKey: userPublicKey, inCollection: Legacy.contactCollection) as? SessionMessagingKit.Legacy.Contact {
+            if let user = transaction.object(forKey: userPublicKey, inCollection: Legacy.contactCollection) as? SMKLegacy._Contact {
                 user.isApproved = true
                 user.didApproveMe = true
                 contacts.insert(user)

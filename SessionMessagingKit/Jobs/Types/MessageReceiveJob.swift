@@ -56,10 +56,11 @@ public enum MessageReceiveJob: JobExecutor {
                 catch {
                     switch error {
                         // Note: This is the same as the 'MessageReceiverError.duplicateMessage'
-                        // which is not retryable so just skip to the next message to process
-                        case DatabaseError.SQLITE_CONSTRAINT_UNIQUE:
-                            SNLog("MessageReceiveJob skipping duplicate message.")
-                            continue
+                        // which is not retryable so just skip to the next message to process (no
+                        // longer logging this because all de-duping happens here now rather than
+                        // when parsing as it did previously - this change results in excessive
+                        // logging which isn't useful)
+                        case DatabaseError.SQLITE_CONSTRAINT_UNIQUE: continue
                             
                         default: break
                     }
@@ -67,6 +68,11 @@ public enum MessageReceiveJob: JobExecutor {
                     // If the current message is a permanent failure then override it with the
                     // new error (we want to retry if there is a single non-permanent error)
                     switch error {
+                        // Ignore self-send errors (they will be permanently failed but no need
+                        // to log since we are going to have a lot of the due to the change to the
+                        // de-duping logic)
+                        case MessageReceiverError.selfSend: continue
+                        
                         case let receiverError as MessageReceiverError where !receiverError.isRetryable:
                             SNLog("MessageReceiveJob permanently failed message due to error: \(error)")
                             continue

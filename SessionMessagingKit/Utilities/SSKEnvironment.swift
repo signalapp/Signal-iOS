@@ -8,7 +8,6 @@ public class SSKEnvironment: NSObject {
     @objc public let primaryStorage: OWSPrimaryStorage
     public let tsAccountManager: TSAccountManager
     public let reachabilityManager: SSKReachabilityManager
-    @objc public let typingIndicators: TypingIndicators
     
     // Note: This property is configured after Environment is created.
     public let notificationsManager: Atomic<NotificationsProtocol?> = Atomic(nil)
@@ -29,13 +28,11 @@ public class SSKEnvironment: NSObject {
     @objc public init(
         primaryStorage: OWSPrimaryStorage,
         tsAccountManager: TSAccountManager,
-        reachabilityManager: SSKReachabilityManager,
-        typingIndicators: TypingIndicators
+        reachabilityManager: SSKReachabilityManager
     ) {
         self.primaryStorage = primaryStorage
         self.tsAccountManager = tsAccountManager
         self.reachabilityManager = reachabilityManager
-        self.typingIndicators = typingIndicators
         
         self.objectReadWriteConnection = primaryStorage.newDatabaseConnection()
         self.sessionStoreDBConnection = primaryStorage.newDatabaseConnection()

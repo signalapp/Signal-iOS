@@ -4,6 +4,10 @@ import Foundation
 import SessionUtilitiesKit
 
 public struct SnodeReceivedMessage: CustomDebugStringConvertible {
+    /// Service nodes cache messages for 14 days so default the expiration for message hashes to '15' days
+    /// so we don't end up indefinitely storing records which will never be used
+    public static let defaultExpirationSeconds: Int64 = ((15 * 24 * 60 * 60) * 1000)
+    
     public let info: SnodeReceivedMessageInfo
     public let data: Data
     
@@ -18,11 +22,12 @@ public struct SnodeReceivedMessage: CustomDebugStringConvertible {
             return nil
         }
         
+        let expirationDateMs: Int64? = (rawMessage["expiration"] as? Int64)
         self.info = SnodeReceivedMessageInfo(
             snode: snode,
             publicKey: publicKey,
             hash: hash,
-            expirationDateMs: rawMessage["expiration"] as? Int64
+            expirationDateMs: (expirationDateMs ?? SnodeReceivedMessage.defaultExpirationSeconds)
         )
         self.data = data
     }

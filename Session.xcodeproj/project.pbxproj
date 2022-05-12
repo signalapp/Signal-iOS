@@ -251,7 +251,6 @@
 		B8F5F56525EC8453003BF8D4 /* Notification+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F56425EC8453003BF8D4 /* Notification+Contacts.swift */; };
 		B8F5F58325EC94A6003BF8D4 /* Collection+Subscripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F58225EC94A6003BF8D4 /* Collection+Subscripting.swift */; };
 		B8F5F60325EDE16F003BF8D4 /* DataExtractionNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F60225EDE16F003BF8D4 /* DataExtractionNotification.swift */; };
-		B8F5F61B25EDE4BF003BF8D4 /* DataExtractionNotificationInfoMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F61A25EDE4BF003BF8D4 /* DataExtractionNotificationInfoMessage.swift */; };
 		B8F5F71A25F1B35C003BF8D4 /* MediaPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F71925F1B35C003BF8D4 /* MediaPlaceholderView.swift */; };
 		B8F5F72325F1B4CA003BF8D4 /* DownloadAttachmentModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F72225F1B4CA003BF8D4 /* DownloadAttachmentModal.swift */; };
 		B8FF8DAE25C0D00F004D1F22 /* SessionMessagingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */; };
@@ -722,6 +721,7 @@
 		FD09C5E628260FF9000CE219 /* MediaGalleryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09C5E528260FF9000CE219 /* MediaGalleryViewModel.swift */; };
 		FD09C5E828264937000CE219 /* MediaDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09C5E728264937000CE219 /* MediaDetailViewController.swift */; };
 		FD09C5EA282A1BB2000CE219 /* ThreadTypingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09C5E9282A1BB2000CE219 /* ThreadTypingIndicator.swift */; };
+		FD09C5EC282B8F18000CE219 /* AttachmentError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09C5EB282B8F17000CE219 /* AttachmentError.swift */; };
 		FD17D79927F40AB800122BE0 /* _003_YDBToGRDBMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79827F40AB800122BE0 /* _003_YDBToGRDBMigration.swift */; };
 		FD17D79C27F40B2E00122BE0 /* SMKLegacyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79B27F40B2E00122BE0 /* SMKLegacyModels.swift */; };
 		FD17D7A027F40CC800122BE0 /* _001_InitialSetupMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79F27F40CC800122BE0 /* _001_InitialSetupMigration.swift */; };
@@ -1278,7 +1278,6 @@
 		B8F5F56425EC8453003BF8D4 /* Notification+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Contacts.swift"; sourceTree = "<group>"; };
 		B8F5F58225EC94A6003BF8D4 /* Collection+Subscripting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Subscripting.swift"; sourceTree = "<group>"; };
 		B8F5F60225EDE16F003BF8D4 /* DataExtractionNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtractionNotification.swift; sourceTree = "<group>"; };
-		B8F5F61A25EDE4BF003BF8D4 /* DataExtractionNotificationInfoMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtractionNotificationInfoMessage.swift; sourceTree = "<group>"; };
 		B8F5F71925F1B35C003BF8D4 /* MediaPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlaceholderView.swift; sourceTree = "<group>"; };
 		B8F5F72225F1B4CA003BF8D4 /* DownloadAttachmentModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadAttachmentModal.swift; sourceTree = "<group>"; };
 		B8FF8E6125C10DA5004D1F22 /* GeoLite2-Country-Blocks-IPv4 */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "GeoLite2-Country-Blocks-IPv4"; path = "Countries/GeoLite2-Country-Blocks-IPv4"; sourceTree = "<group>"; };
@@ -1771,6 +1770,7 @@
 		FD09C5E528260FF9000CE219 /* MediaGalleryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryViewModel.swift; sourceTree = "<group>"; };
 		FD09C5E728264937000CE219 /* MediaDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetailViewController.swift; sourceTree = "<group>"; };
 		FD09C5E9282A1BB2000CE219 /* ThreadTypingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadTypingIndicator.swift; sourceTree = "<group>"; };
+		FD09C5EB282B8F17000CE219 /* AttachmentError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentError.swift; sourceTree = "<group>"; };
 		FD17D79527F3E04600122BE0 /* _001_InitialSetupMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _001_InitialSetupMigration.swift; sourceTree = "<group>"; };
 		FD17D79827F40AB800122BE0 /* _003_YDBToGRDBMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _003_YDBToGRDBMigration.swift; sourceTree = "<group>"; };
 		FD17D79B27F40B2E00122BE0 /* SMKLegacyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMKLegacyModels.swift; sourceTree = "<group>"; };
@@ -2439,14 +2439,6 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
-		B8F5F61925EDE4B0003BF8D4 /* Data Extraction */ = {
-			isa = PBXGroup;
-			children = (
-				B8F5F61A25EDE4BF003BF8D4 /* DataExtractionNotificationInfoMessage.swift */,
-			);
-			path = "Data Extraction";
-			sourceTree = "<group>";
-		};
 		B8FF8E6025C10D8B004D1F22 /* Countries */ = {
 			isa = PBXGroup;
 			children = (
@@ -2503,7 +2495,6 @@
 			children = (
 				FDF0B7562807F35E004C14C5 /* Errors */,
 				C3D9E3B52567685D0040E4F3 /* Attachments */,
-				B8F5F61925EDE4B0003BF8D4 /* Data Extraction */,
 				C32C5D22256DD496003C73A2 /* Link Previews */,
 				C379DC6825672B5E0002D4EB /* Notifications */,
 				C32C59F8256DB5A6003C73A2 /* Pollers */,
@@ -3759,6 +3750,7 @@
 			children = (
 				FDF0B7572807F368004C14C5 /* MessageReceiverError.swift */,
 				FDF0B7592807F3A3004C14C5 /* MessageSenderError.swift */,
+				FD09C5EB282B8F17000CE219 /* AttachmentError.swift */,
 			);
 			path = Errors;
 			sourceTree = "<group>";
@@ -4877,7 +4869,6 @@
 				FDA8EAFE280E8B78002B68E5 /* FailedMessagesJob.swift in Sources */,
 				C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */,
 				C3DB66AC260ACA42001EFC55 /* OpenGroupManagerV2.swift in Sources */,
-				B8F5F61B25EDE4BF003BF8D4 /* DataExtractionNotificationInfoMessage.swift in Sources */,
 				C379DCF4256735770002D4EB /* VisibleMessage+Attachment.swift in Sources */,
 				FD09797F27FCFBFF00936362 /* OWSAES256Key+Utilities.swift in Sources */,
 				FD09798327FD1A1500936362 /* ClosedGroup.swift in Sources */,
@@ -4890,6 +4881,7 @@
 				FDF0B7552807C4BB004C14C5 /* SSKEnvironment.swift in Sources */,
 				C32C59C3256DB41F003C73A2 /* TSGroupModel.m in Sources */,
 				B8856ECE256F1E58001CE70E /* OWSPreferences.m in Sources */,
+				FD09C5EC282B8F18000CE219 /* AttachmentError.swift in Sources */,
 				FD17D79927F40AB800122BE0 /* _003_YDBToGRDBMigration.swift in Sources */,
 				C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */,
 				FDF0B7512807BA56004C14C5 /* NotificationsProtocol.swift in Sources */,

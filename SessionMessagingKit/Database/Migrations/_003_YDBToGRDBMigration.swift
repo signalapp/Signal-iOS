@@ -293,7 +293,8 @@ enum _003_YDBToGRDBMigration: Migration {
             .joined(separator: "-")
         }
         
-        try threads.forEach { thread in
+        // Sort by id just so we can make the migration process more determinstic
+        try threads.sorted(by: { lhs, rhs in (lhs.uniqueId ?? "") < (rhs.uniqueId ?? "") }).forEach { thread in
             guard
                 let legacyThreadId: String = thread.uniqueId,
                 let threadId: String = legacyThreadIdToIdMap[legacyThreadId]
@@ -423,7 +424,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
                 
                 try interactions[legacyThreadId]?
-                    .sorted(by: { lhs, rhs in lhs.sortId < rhs.sortId }) // Maintain sort order
+                    .sorted(by: { lhs, rhs in lhs.timestamp < rhs.timestamp }) // Maintain sort order
                     .forEach { legacyInteraction in
                         let serverHash: String?
                         let variant: Interaction.Variant
