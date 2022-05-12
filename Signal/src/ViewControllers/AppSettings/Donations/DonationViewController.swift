@@ -398,12 +398,26 @@ class DonationViewController: OWSTableViewController2 {
             }
         ))
 
-        if DonationUtilities.isApplePayAvailable && FeatureFlags.giftBadgeSending {
+        if DonationUtilities.canSendGiftBadges {
             section.add(.disclosureItem(
                 icon: .settingsGift,
                 name: NSLocalizedString("DONATION_VIEW_GIFT", comment: "Title for the 'Gift a Badge' link in the donation view"),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "giftBadge"),
-                actionBlock: {}
+                actionBlock: { [weak self] in
+                    guard let self = self else { return }
+
+                    // It's possible (but unlikely) to lose the ability to send gifts while this button is
+                    // visible. For example, Apple Pay could be disabled in parental controls after this
+                    // screen is opened.
+                    guard DonationUtilities.canSendGiftBadges else {
+                        // We might want to show a better UI here, but making the button a no-op is
+                        // preferable to launching the view controller.
+                        return
+                    }
+
+                    let vc = BadgeGiftingChooseBadgeViewController()
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
             ))
         }
 

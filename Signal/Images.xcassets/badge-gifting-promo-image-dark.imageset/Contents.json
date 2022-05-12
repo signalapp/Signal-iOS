@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "badge-gifting-promo-image-dark.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

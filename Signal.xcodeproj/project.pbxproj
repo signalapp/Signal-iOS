@@ -1039,6 +1039,7 @@
 		F97A2EEA282578C000610669 /* BadgeExpirationSheetStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */; };
 		F9A8ACC7280A175E00AFC6A7 /* DonationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A8ACC6280A175E00AFC6A7 /* DonationViewController.swift */; };
 		F9BC0A2527FB8E730085B23D /* AppSettingsViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */; };
+		F9D83012282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */; };
 		F9DD70B92811AF82000C5960 /* DonationViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */; };
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
@@ -2425,6 +2426,7 @@
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
 		F9A8ACC6280A175E00AFC6A7 /* DonationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationViewController.swift; sourceTree = "<group>"; };
 		F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsViewsUtil.swift; sourceTree = "<group>"; };
+		F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseBadgeViewController.swift; sourceTree = "<group>"; };
 		F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationViewsUtil.swift; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -2678,22 +2680,14 @@
 		340FC87A204DAC8C007AEB0F /* AppSettings */ = {
 			isa = PBXGroup;
 			children = (
+				F9C5BC5F282E98D4001EB3BF /* Donations */,
 				F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */,
-				F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */,
-				F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */,
 				88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */,
 				887B6DCA25F6C3F500E677D4 /* Account */,
 				887B6DCB25F6C40500E677D4 /* Appearance */,
-				888017912741F33B00346E9A /* BoostViewController.swift */,
-				8880179327430DDB00346E9A /* BadgeThanksSheet.swift */,
-				881BB2892743531D00B609B8 /* BadgeDetailsSheet.swift */,
-				F02564D7274EDF4600D7B48A /* BadgeExpirationSheet.swift */,
 				887B380725F0355700685845 /* ChatsSettingsViewController.swift */,
 				3414896825C9B6490098E3ED /* CurrencyPickerViewController.swift */,
 				887B6DCC25F6C41500E677D4 /* Data Usage */,
-				F0CA67F92728A89A002B9DFE /* SubscriptionViewController.swift */,
-				F9A8ACC6280A175E00AFC6A7 /* DonationViewController.swift */,
-				F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */,
 				32ECD08624BFBF5C00EDDED0 /* Help */,
 				887B6DCE25F6C45B00E677D4 /* Internal */,
 				887B6DCD25F6C44800E677D4 /* Linked Devices */,
@@ -4775,6 +4769,23 @@
 			path = "Context Menus";
 			sourceTree = "<group>";
 		};
+		F9C5BC5F282E98D4001EB3BF /* Donations */ = {
+			isa = PBXGroup;
+			children = (
+				F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */,
+				F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */,
+				888017912741F33B00346E9A /* BoostViewController.swift */,
+				8880179327430DDB00346E9A /* BadgeThanksSheet.swift */,
+				881BB2892743531D00B609B8 /* BadgeDetailsSheet.swift */,
+				F02564D7274EDF4600D7B48A /* BadgeExpirationSheet.swift */,
+				F0CA67F92728A89A002B9DFE /* SubscriptionViewController.swift */,
+				F9A8ACC6280A175E00AFC6A7 /* DonationViewController.swift */,
+				F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */,
+				F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */,
+			);
+			path = Donations;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -6412,6 +6423,7 @@
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
 				88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */,
 				88588D26252E59CE00405414 /* CallService.swift in Sources */,
+				F9D83012282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift in Sources */,
 				8822558D26B9D1D7001A33C4 /* SignalMe.swift in Sources */,
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				34848D6325D44EBD00E5034B /* PaymentsTransferInViewController.swift in Sources */,
