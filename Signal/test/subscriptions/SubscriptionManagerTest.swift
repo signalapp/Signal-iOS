@@ -19,11 +19,10 @@ class SubscriptionTest: XCTestCase {
             "status": "active"
         ]
     }()
-    let chargeFailureDictionary: [String: Any] = ["code": "foo"]
 
     func testJsonInit() throws {
         let subscription = try Subscription(jsonDictionary: subscriptionJsonDictionary,
-                                            chargeFailureValue: nil)
+                                            hasChargeFailure: false)
 
         XCTAssertEqual(subscription.level, 123)
         XCTAssertEqual(subscription.currency, "USD")
@@ -41,25 +40,15 @@ class SubscriptionTest: XCTestCase {
         jsonDictionaryWithUnexpectedStatus["status"] = "unexpected!!"
 
         let subscription = try Subscription(jsonDictionary: jsonDictionaryWithUnexpectedStatus,
-                                            chargeFailureValue: nil)
+                                            hasChargeFailure: false)
 
         XCTAssertEqual(subscription.status, .unknown)
         XCTAssertFalse(subscription.hasChargeFailure)
     }
 
     func testChargeFailure() throws {
-        let indicatesFailure: [Any] = [chargeFailureDictionary, 0, 123, true]
-        for chargeFailureValue in indicatesFailure {
-            let subscription = try Subscription(jsonDictionary: subscriptionJsonDictionary,
-                                                chargeFailureValue: chargeFailureValue)
-            XCTAssertTrue(subscription.hasChargeFailure)
-        }
-
-        let indicatesNoFailure: [Any?] = [nil, false]
-        for chargeFailureValue in indicatesNoFailure {
-            let subscription = try Subscription(jsonDictionary: subscriptionJsonDictionary,
-                                                chargeFailureValue: chargeFailureValue)
-            XCTAssertFalse(subscription.hasChargeFailure)
-        }
+        let subscription = try Subscription(jsonDictionary: subscriptionJsonDictionary,
+                                            hasChargeFailure: true)
+        XCTAssertTrue(subscription.hasChargeFailure)
     }
 }

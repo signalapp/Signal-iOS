@@ -90,7 +90,7 @@ public struct Subscription {
     public let status: StripeSubscriptionStatus
     public let hasChargeFailure: Bool
 
-    public init(jsonDictionary: [String: Any], chargeFailureValue: Any?) throws {
+    public init(jsonDictionary: [String: Any], hasChargeFailure: Bool) throws {
         let params = ParamParser(dictionary: jsonDictionary)
         level = try params.required(key: "level")
         currency = try params.required(key: "currency")
@@ -101,12 +101,7 @@ public struct Subscription {
         active = try params.required(key: "active")
         cancelAtEndOfPeriod = try params.required(key: "cancelAtPeriodEnd")
         status = StripeSubscriptionStatus(rawValue: try params.required(key: "status")) ?? .unknown
-        hasChargeFailure = !Self.isNilOrFalse(chargeFailureValue)
-    }
-
-    private static func isNilOrFalse(_ value: Any?) -> Bool {
-        if let value = value as? Bool { return value == false }
-        return value == nil
+        self.hasChargeFailure = hasChargeFailure
     }
 }
 
@@ -255,9 +250,10 @@ public class SubscriptionManager: NSObject {
                 guard let subscriptionDict: [String: Any] = try parser.optional(key: "subscription") else {
                     return nil
                 }
+                let hasChargeFailure: Bool = (try? parser.optional(key: "chargeFailure")) ?? false
 
                 return try Subscription(jsonDictionary: subscriptionDict,
-                                        chargeFailureValue: try? parser.optional(key: "chargeFailure"))
+                                        hasChargeFailure: hasChargeFailure)
             } else {
                 return nil
             }
