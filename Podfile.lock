@@ -21,7 +21,6 @@ PODS:
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
-  - GoogleWebRTC (1.1.31999)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
@@ -52,6 +51,7 @@ PODS:
   - SQLCipher/standard (4.5.0):
     - SQLCipher/common
   - SwiftProtobuf (1.5.0)
+  - WebRTC-lib (96.0.0)
   - YapDatabase/SQLCipher (3.1.1):
     - YapDatabase/SQLCipher/Core (= 3.1.1)
     - YapDatabase/SQLCipher/Extensions (= 3.1.1)
@@ -125,7 +125,6 @@ DEPENDENCIES:
   - AFNetworking
   - CryptoSwift
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit.git`)
-  - GoogleWebRTC
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - NVActivityIndicatorView
   - PromiseKit
@@ -136,6 +135,7 @@ DEPENDENCIES:
   - SocketRocket (~> 0.5.1)
   - Sodium (~> 0.9.1)
   - SwiftProtobuf (~> 1.5.0)
+  - WebRTC-lib
   - YapDatabase/SQLCipher (from `https://github.com/oxen-io/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - ZXingObjC
@@ -145,7 +145,6 @@ SPEC REPOS:
     - AFNetworking
     - CocoaLumberjack
     - CryptoSwift
-    - GoogleWebRTC
     - NVActivityIndicatorView
     - OpenSSL-Universal
     - PromiseKit
@@ -156,6 +155,7 @@ SPEC REPOS:
     - Sodium
     - SQLCipher
     - SwiftProtobuf
+    - WebRTC-lib
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -195,7 +195,6 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
-  GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
   OpenSSL-Universal: e7311447fd2419f57420c79524b641537387eff2
@@ -208,10 +207,11 @@ SPEC CHECKSUMS:
   Sodium: 23d11554ecd556196d313cf6130d406dfe7ac6da
   SQLCipher: 98dc22f27c0b1790d39e710d440f22a466ebdb59
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
+  WebRTC-lib: 508fe02efa0c1a3a8867082a77d24c9be5d29aeb
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 610d1ebc4e559cf746dc3ae0ae7c78b011373d4c
+PODFILE CHECKSUM: a3d89a6cc8735285fd51348ca05cea71f2c28872
 
 COCOAPODS: 1.11.2

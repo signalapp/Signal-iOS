@@ -35,7 +35,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     /// Represents a WebRTC connection between the user and a remote peer. Provides methods to connect to a
     /// remote peer, maintain and monitor the connection, and close the connection once it's no longer needed.
-    internal lazy var peerConnection: RTCPeerConnection = {
+    internal lazy var peerConnection: RTCPeerConnection? = {
         let configuration = RTCConfiguration()
         if let defaultICEServer = defaultICEServer {
             configuration.iceServers = [ RTCIceServer(urlStrings: defaultICEServer.urls, username: defaultICEServer.username, credential: defaultICEServer.password) ]
@@ -67,7 +67,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     }()
     
     internal lazy var remoteVideoTrack: RTCVideoTrack? = {
-        return peerConnection.transceivers.first { $0.mediaType == .video }?.receiver.track as? RTCVideoTrack
+        return peerConnection?.transceivers.first { $0.mediaType == .video }?.receiver.track as? RTCVideoTrack
     }()
     
     // Data Channel
@@ -94,8 +94,8 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         self.uuid = uuid
         super.init()
         let mediaStreamTrackIDS = ["ARDAMS"]
-        peerConnection.add(audioTrack, streamIds: mediaStreamTrackIDS)
-        peerConnection.add(localVideoTrack, streamIds: mediaStreamTrackIDS)
+        peerConnection?.add(audioTrack, streamIds: mediaStreamTrackIDS)
+        peerConnection?.add(localVideoTrack, streamIds: mediaStreamTrackIDS)
         // Configure audio session
         configureAudioSession()
         
@@ -125,12 +125,12 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         SNLog("[Calls] Sending offer message.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
-        peerConnection.offer(for: mediaConstraints(isRestartingICEConnection)) { [weak self] sdp, error in
+        peerConnection?.offer(for: mediaConstraints(isRestartingICEConnection)) { [weak self] sdp, error in
             if let error = error {
                 seal.reject(error)
             } else {
                 guard let self = self, let sdp = self.correctSessionDescription(sdp: sdp) else { preconditionFailure() }
-                self.peerConnection.setLocalDescription(sdp) { error in
+                self.peerConnection?.setLocalDescription(sdp) { error in
                     if let error = error {
                         print("Couldn't initiate call due to error: \(error).")
                         return seal.reject(error)
@@ -157,12 +157,12 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         SNLog("[Calls] Sending answer message.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
-        peerConnection.answer(for: mediaConstraints(false)) { [weak self] sdp, error in
+        peerConnection?.answer(for: mediaConstraints(false)) { [weak self] sdp, error in
             if let error = error {
                 seal.reject(error)
             } else {
                 guard let self = self, let sdp = self.correctSessionDescription(sdp: sdp) else { preconditionFailure() }
-                self.peerConnection.setLocalDescription(sdp) { error in
+                self.peerConnection?.setLocalDescription(sdp) { error in
                     if let error = error {
                         print("Couldn't accept call due to error: \(error).")
                         return seal.reject(error)
@@ -221,7 +221,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     }
     
     public func dropConnection() {
-        peerConnection.close()
+        peerConnection?.close()
     }
     
     private func mediaConstraints(_ isRestartingICEConnection: Bool) -> RTCMediaConstraints {
@@ -263,7 +263,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         if state == .connected {
             delegate?.webRTCIsConnected()
         } else if state == .disconnected {
-            if self.peerConnection.signalingState == .stable {
+            if self.peerConnection?.signalingState == .stable {
                 delegate?.reconnectIfNeeded()
             }
         }
