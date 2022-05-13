@@ -16,9 +16,6 @@ public protocol PhotoGridItem: AnyObject {
 }
 
 public class PhotoGridViewCell: UICollectionViewCell {
-
-    static let reuseIdentifier = "PhotoGridViewCell"
-
     public let imageView: UIImageView
 
     private let contentTypeBadgeView: UIImageView
@@ -128,7 +125,9 @@ public class PhotoGridViewCell: UICollectionViewCell {
                 Logger.debug("image == nil")
             }
             
-            self?.image = image
+            DispatchQueue.main.async {
+                self?.image = image
+            }
         }
 
         switch item.type {

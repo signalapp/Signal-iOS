@@ -135,7 +135,7 @@ final class QuoteView: UIView {
             
             attachment.thumbnail(
                 size: .small,
-                success: { image in
+                success: { image, _ in
                     DispatchQueue.main.async {
                         imageView.image = image
                         imageView.contentMode = .scaleAspectFill

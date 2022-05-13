@@ -154,7 +154,7 @@ public extension LinkPreview {
         return (floor(sentTimestampMs / 1000 / LinkPreview.timstampResolution) * LinkPreview.timstampResolution)
     }
     
-    @discardableResult static func saveAttachmentIfPossible(_ db: Database, imageData: Data?, mimeType: String) throws -> String? {
+    static func saveAttachmentIfPossible(_ db: Database, imageData: Data?, mimeType: String) throws -> String? {
         guard let imageData: Data = imageData, !imageData.isEmpty else { return nil }
         guard let fileExtension: String = MIMETypeUtil.fileExtension(forMIMEType: mimeType) else { return nil }
         

@@ -8,7 +8,7 @@ public struct InteractionAttachment: Codable, FetchableRecord, PersistableRecord
     public static var databaseTableName: String { "interactionAttachment" }
     internal static let interactionForeignKey = ForeignKey([Columns.interactionId], to: [Interaction.Columns.id])
     internal static let attachmentForeignKey = ForeignKey([Columns.attachmentId], to: [Attachment.Columns.id])
-    internal static let interaction = belongsTo(Interaction.self, using: interactionForeignKey)
+    public static let interaction = belongsTo(Interaction.self, using: interactionForeignKey)
     internal static let attachment = belongsTo(Attachment.self, using: attachmentForeignKey)
     
     public typealias Columns = CodingKeys

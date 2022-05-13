@@ -71,6 +71,7 @@ public enum MessageSendJob: JobExecutor {
                                     threadId: job.threadId,
                                     interactionId: interactionId,
                                     details: AttachmentUploadJob.Details(
+                                        messageSendJobId: jobId,
                                         attachmentId: stateInfo.attachmentId
                                     )
                                 ),

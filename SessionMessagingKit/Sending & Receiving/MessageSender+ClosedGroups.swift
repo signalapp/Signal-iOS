@@ -476,15 +476,6 @@ extension MessageSender {
         return promise
     }
     
-    @objc(leaveClosedGroupWithPublicKey:)
-    public static func objc_leave(_ groupPublicKey: String) -> AnyPromise {
-        let promise = GRDBStorage.shared.write { db in
-            try leave(db, groupPublicKey: groupPublicKey)
-        }
-        
-        return AnyPromise.from(promise)
-    }
-    
     /// Leave the group with the given `groupPublicKey`. If the current user is the admin, the group is disbanded entirely. If the
     /// user is a regular member they'll be marked as a "zombie" member by the other users in the group (upon receiving the leave
     /// message). The admin can then truly remove them later.

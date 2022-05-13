@@ -11,8 +11,8 @@ extension MessageSender {
     
     public static func send(_ db: Database, interaction: Interaction, with attachments: [SignalAttachment], in thread: SessionThread) throws {
         guard let interactionId: Int64 = interaction.id else { throw GRDBStorageError.objectNotSaved }
-        // TODO: Is the 'prep' method needed anymore?
-//        prep(db, attachments, for: message)
+        
+        try prep(db, signalAttachments: attachments, for: interactionId)
         send(
             db,
             message: VisibleMessage.from(db, interaction: interaction),
@@ -173,14 +173,5 @@ extension MessageSender {
         }
         
         return promise
-    }
-}
-
-extension MessageSender {
-    @objc(forceSyncConfigurationNow)
-    public static func objc_forceSyncConfigurationNow() {
-        GRDBStorage.shared.write { db in
-            try syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
-        }
     }
 }

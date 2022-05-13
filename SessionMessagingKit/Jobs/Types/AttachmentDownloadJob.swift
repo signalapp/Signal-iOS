@@ -101,7 +101,7 @@ public enum AttachmentDownloadJob: JobExecutor {
                             state: .downloaded,
                             creationTimestamp: Date().timeIntervalSince1970,
                             localRelativeFilePath: attachment.originalFilePath?
-                                .substring(from: Attachment.attachmentsFolder.count)
+                                .substring(from: (Attachment.attachmentsFolder.count + 1))  // Leading forward slash
                         )
                         .save(db)
                 }

@@ -524,6 +524,7 @@ public final class JobRunner {
         GRDBStorage.shared.write { db in
             // Get the max failure count for the job (a value of '-1' means it will retry indefinitely)
             let maxFailureCount: Int = (executorMap.wrappedValue[job.variant]?.maxFailureCount ?? 0)
+            let nextRunTimestamp: TimeInterval = (Date().timeIntervalSince1970 + getRetryInterval(for: job))
             
             guard
                 !permanentFailure &&
@@ -537,12 +538,36 @@ public final class JobRunner {
             }
             
             SNLog("[JobRunner] \(job.variant) job failed; scheduling retry (failure count is \(job.failureCount + 1))")
+            
             _ = try job
                 .with(
                     failureCount: (job.failureCount + 1),
-                    nextRunTimestamp: (Date().timeIntervalSince1970 + getRetryInterval(for: job))
+                    nextRunTimestamp: nextRunTimestamp
                 )
                 .saved(db)
+            
+            // Update the failureCount and nextRunTimestamp on dependant jobs as well (update the
+            // 'nextRunTimestamp' value to be 1ms later so when the queue gets regenerated it'll
+            // come after the dependency)
+            try job.dependantJobs
+                .updateAll(
+                    db,
+                    Job.Columns.failureCount.set(to: job.failureCount),
+                    Job.Columns.nextRunTimestamp.set(to: (nextRunTimestamp + (1 / 1000)))
+                )
+            
+            let dependantJobIds: [Int64] = try job.dependantJobs
+                .select(.id)
+                .asRequest(of: Int64.self)
+                .fetchAll(db)
+            
+            // Remove the dependant jobs from the queue (so we don't get stuck in a loop of trying
+            // to run dependecies indefinitely
+            if !dependantJobIds.isEmpty {
+                jobQueue.mutate { queue in
+                    queue = queue.filter { !dependantJobIds.contains($0.id ?? -1) }
+                }
+            }
         }
         
         jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }

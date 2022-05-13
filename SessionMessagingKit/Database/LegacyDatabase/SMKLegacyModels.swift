@@ -1110,7 +1110,7 @@ public enum Legacy {
     internal final class _AttachmentUploadJob: NSObject, NSCoding {
         internal let attachmentID: String
         internal let threadID: String
-        internal let message: Message
+        internal let message: _Message
         internal let messageSendJobID: String
         internal var id: String?
         internal var failureCount: UInt = 0
@@ -1121,7 +1121,7 @@ public enum Legacy {
             guard
                 let attachmentID = coder.decodeObject(forKey: "attachmentID") as! String?,
                 let threadID = coder.decodeObject(forKey: "threadID") as! String?,
-                let message = coder.decodeObject(forKey: "message") as! Message?,
+                let message = coder.decodeObject(forKey: "message") as! _Message?,
                 let messageSendJobID = coder.decodeObject(forKey: "messageSendJobID") as! String?,
                 let id = coder.decodeObject(forKey: "id") as! String?
             else { return nil }

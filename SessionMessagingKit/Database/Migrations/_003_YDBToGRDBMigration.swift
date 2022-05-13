@@ -969,7 +969,7 @@ enum _003_YDBToGRDBMigration: Migration {
             }
             
             transaction.enumerateRows(inCollection: Legacy.attachmentUploadJobCollection) { _, object, _, _ in
-                guard let job = object as? Legacy.AttachmentUploadJob else { return }
+                guard let job = object as? Legacy._AttachmentUploadJob else { return }
                 attachmentUploadJobs.insert(job)
             }
             
@@ -1059,7 +1059,7 @@ enum _003_YDBToGRDBMigration: Migration {
         
         // MARK: - --messageSend
         
-        var messageSendJobIdMap: [String: Int64] = [:]
+        var messageSendJobLegacyMap: [String: Job] = [:]
 
         try autoreleasepool {
             try messageSendJobs.forEach { legacyJob in
@@ -1132,31 +1132,42 @@ enum _003_YDBToGRDBMigration: Migration {
                 )?.inserted(db)
                 
                 if let oldId: String = legacyJob.id, let newId: Int64 = job?.id {
-                    messageSendJobIdMap[oldId] = newId
+                    messageSendJobLegacyMap[oldId] = job
                 }
             }
         }
         
         // MARK: - --attachmentUpload
-        
+
         try autoreleasepool {
             try attachmentUploadJobs.forEach { legacyJob in
-                guard let sendJobId: Int64 = messageSendJobIdMap[legacyJob.messageSendJobID] else {
+                guard let sendJob: Job = messageSendJobLegacyMap[legacyJob.messageSendJobID], let sendJobId: Int64 = sendJob.id else {
                     SNLog("[Migration Error] attachmentUpload job missing associated MessageSendJob")
                     throw GRDBStorageError.migrationFailed
                 }
-                
-                _ = try Job(
+
+                let uploadJob: Job? = try Job(
                     failureCount: legacyJob.failureCount,
                     variant: .attachmentUpload,
                     behaviour: .runOnce,
-                    nextRunTimestamp: 0,
+                    threadId: legacyJob.threadID,
+                    interactionId: sendJob.interactionId,
                     details: AttachmentUploadJob.Details(
-                        threadId: legacyJob.threadID,
-                        attachmentId: legacyJob.attachmentID,
-                        messageSendJobId: sendJobId
+                        messageSendJobId: sendJobId,
+                        attachmentId: legacyJob.attachmentID
                     )
                 )?.inserted(db)
+                
+                // Add the dependency to the relevant MessageSendJob
+                guard let uploadJobId: Int64 = uploadJob?.id else {
+                    SNLog("[Migration Error] attachmentUpload job was not created")
+                    throw GRDBStorageError.migrationFailed
+                }
+                
+                try JobDependencies(
+                    jobId: sendJobId,
+                    dependantId: uploadJobId
+                ).insert(db)
             }
         }
         

@@ -106,6 +106,7 @@ public extension Quote {
             quote.id != 0,
             !quote.author.isEmpty
         else { return nil }
+        
         self.interactionId = interactionId
         self.timestampMs = Int64(quote.id)
         self.authorId = quote.author
@@ -128,27 +129,24 @@ public extension Quote {
         }
         
         // We only use the first attachment
-        if let attachment = proto.attachments.first {
-            let thumbnailAttachment: Attachment
-            
-            // We prefer deriving any thumbnail locally rather than fetching one from the network
-            if let quotedInteraction: Interaction = quotedInteraction {
-                if let attachment: Attachment = try? quotedInteraction.attachments.fetchOne(db) {
-                    thumbnailAttachment = attachment.cloneAsThumbnail()
+        if let attachment = quote.attachments.first(where: { $0.thumbnail != nil })?.thumbnail {
+            self.attachmentId = try quotedInteraction
+                .map { quotedInteraction -> Attachment? in
+                    // If the quotedInteraction has an attachment then try clone it
+                    if let attachment: Attachment = try? quotedInteraction.attachments.fetchOne(db) {
+                        return attachment.cloneAsThumbnail()
+                    }
+                    
+                    // Otherwise if the quotedInteraction has a link preview, try clone that
+                    return try? quotedInteraction.linkPreview
+                        .fetchOne(db)?
+                        .attachment
+                        .fetchOne(db)?
+                        .cloneAsThumbnail()
                 }
-                else if let linkPreviewAttachment: Attachment = try? quotedInteraction.linkPreview.fetchOne(db)?.attachment.fetchOne(db) {
-                    thumbnailAttachment = linkPreviewAttachment.cloneAsThumbnail()
-                }
-                else {
-                    thumbnailAttachment = Attachment(proto: attachment)
-                }
-            }
-            else {
-                thumbnailAttachment = Attachment(proto: attachment)
-            }
-            
-            try thumbnailAttachment.save(db)
-            self.attachmentId = thumbnailAttachment.id
+                .defaulting(to: Attachment(proto: attachment))
+                .inserted(db)
+                .id
         }
         else {
             self.attachmentId = nil
@@ -158,6 +156,5 @@ public extension Quote {
         if self.body == nil && self.attachmentId == nil {
             return nil
         }
-
     }
 }

@@ -6,63 +6,36 @@ import PromiseKit
 import SessionSnodeKit
 import SessionUtilitiesKit
 
-@objc(SNMessageSender)
-public final class MessageSender : NSObject {
-    // MARK: Initialization
-    private override init() { }
-
+public final class MessageSender {
     // MARK: - Preparation
     
     public static func prep(
         _ db: Database,
         signalAttachments: [SignalAttachment],
-        for message: VisibleMessage
-    ) {
-        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else {
-            #if DEBUG
-            preconditionFailure()
-            #else
-            return
-            #endif
+        for interactionId: Int64
+    ) throws {
+        try signalAttachments.forEach { signalAttachment in
+            let maybeAttachment: Attachment? = Attachment(
+                variant: (signalAttachment.isVoiceMessage ?
+                    .voiceMessage :
+                    .standard
+                ),
+                contentType: signalAttachment.mimeType,
+                dataSource: signalAttachment.dataSource,
+                sourceFilename: signalAttachment.sourceFilename,
+                caption: signalAttachment.captionText
+            )
+            
+            guard let attachment: Attachment = maybeAttachment else { return }
+            
+            let interactionAttachment: InteractionAttachment = InteractionAttachment(
+                interactionId: interactionId,
+                attachmentId: attachment.id
+            )
+            
+            try attachment.insert(db)
+            try interactionAttachment.insert(db)
         }
-        var attachments: [TSAttachmentStream] = []
-        signalAttachments.forEach {
-            let attachment = TSAttachmentStream(contentType: $0.mimeType, byteCount: UInt32($0.dataLength), sourceFilename: $0.sourceFilename,
-                caption: $0.captionText, albumMessageId: tsMessage.uniqueId!)
-            attachment.attachmentType = $0.isVoiceMessage ? .voiceMessage : .default
-            attachments.append(attachment)
-            attachment.write($0.dataSource)
-            attachment.save(with: transaction)
-        }
-        prep(attachments, for: message, using: transaction)
-    }
-    
-    @objc(prep:forMessage:usingTransaction:)
-    public static func prep(_ attachmentStreams: [TSAttachmentStream], for message: VisibleMessage, using transaction: YapDatabaseReadWriteTransaction) {
-        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else {
-            #if DEBUG
-            preconditionFailure()
-            #else
-            return
-            #endif
-        }
-        var attachments = attachmentStreams
-        // The line below locally generates a thumbnail for the quoted attachment. It just needs to happen at some point during the
-        // message sending process.
-        tsMessage.quotedMessage?.createThumbnailAttachmentsIfNecessary(with: transaction)
-        var linkPreviewAttachmentID: String?
-        if let id = tsMessage.linkPreview?.imageAttachmentId,
-            let attachment = TSAttachment.fetch(uniqueId: id, transaction: transaction) as? TSAttachmentStream {
-            linkPreviewAttachmentID = id
-            attachments.append(attachment)
-        }
-        // Anything added to message.attachmentIDs will be uploaded by an UploadAttachmentJob. Any attachment IDs added to tsMessage will
-        // make it render as an attachment (not what we want in the case of a link preview or quoted attachment).
-        message.attachmentIDs = attachments.map { $0.uniqueId! }
-        tsMessage.attachmentIds.removeAllObjects()
-        tsMessage.attachmentIds.addObjects(from: message.attachmentIDs)
-        if let id = linkPreviewAttachmentID { tsMessage.attachmentIds.remove(id) }
-        tsMessage.save(with: transaction)
     }
 
     // MARK: - Convenience
@@ -557,5 +530,28 @@ public final class MessageSender : NSObject {
         }
         
         return nil
+    }
+}
+
+// MARK: - Objective-C Support
+
+// FIXME: Remove when possible
+
+@objc(SMKMessageSender)
+public class SMKMessageSender: NSObject {
+    @objc(leaveClosedGroupWithPublicKey:)
+    public static func objc_leave(_ groupPublicKey: String) -> AnyPromise {
+        let promise = GRDBStorage.shared.write { db in
+            try MessageSender.leave(db, groupPublicKey: groupPublicKey)
+        }
+        
+        return AnyPromise.from(promise)
+    }
+    
+    @objc(forceSyncConfigurationNow)
+    public static func objc_forceSyncConfigurationNow() {
+        GRDBStorage.shared.write { db in
+            try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+        }
     }
 }

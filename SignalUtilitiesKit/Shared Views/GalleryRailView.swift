@@ -5,11 +5,11 @@
 import PromiseKit
 import SessionUIKit
 
-public protocol GalleryRailItemProvider: AnyObject {
+public protocol GalleryRailItemProvider {
     var railItems: [GalleryRailItem] { get }
 }
 
-public protocol GalleryRailItem: AnyObject {
+public protocol GalleryRailItem {
     func buildRailItemView() -> UIView
 }
 

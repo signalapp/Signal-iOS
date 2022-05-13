@@ -301,7 +301,6 @@ extension ConversationVC:
         let linkPreviewDraft: OWSLinkPreviewDraft? = snInputView.linkPreviewInfo?.draft
         let quoteModel: QuotedReplyModel? = snInputView.quoteDraftInfo?.model
         
-            for: self.thread,
         approveMessageRequestIfNeeded(
             for: thread,
             isNewThread: !oldThreadShouldBeVisible,
@@ -332,21 +331,14 @@ extension ConversationVC:
                         let linkPreviewDraft: OWSLinkPreviewDraft = linkPreviewDraft,
                         (try? interaction.linkPreview.isEmpty(db)) == true
                     {
-                        var attachmentId: String?
-
-                        // If the LinkPreview has image data then create an attachment first
-                        if let imageData: Data = linkPreviewDraft.jpegImageData {
-                            attachmentId = try LinkPreview.saveAttachmentIfPossible(
-                                db,
-                                imageData: imageData,
-                                mimeType: OWSMimeTypeImageJpeg
-                            )
-                        }
-
                         try LinkPreview(
                             url: linkPreviewDraft.urlString,
                             title: linkPreviewDraft.title,
-                            attachmentId: attachmentId
+                            attachmentId: LinkPreview.saveAttachmentIfPossible(
+                                db,
+                                imageData: linkPreviewDraft.jpegImageData,
+                                mimeType: OWSMimeTypeImageJpeg
+                            )
                         ).insert(db)
                     }
 
@@ -359,14 +351,13 @@ extension ConversationVC:
                             authorId: quoteModel.authorId,
                             timestampMs: quoteModel.timestampMs,
                             body: quoteModel.body,
-                            attachmentId: quoteModel.attachment?.id
+                            attachmentId: quoteModel.generateAttachmentThumbnailIfNeeded(db)
                         ).insert(db)
                     }
                     
                     try MessageSender.send(
                         db,
                         interaction: interaction,
-                        with: [],
                         in: thread
                     )
                 },
@@ -417,14 +408,14 @@ extension ConversationVC:
                         .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
                     
                     // Create the interaction
-                    let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
+                    let userPublicKey: String = getUserHexEncodedPublicKey(db)
                     let interaction: Interaction = try Interaction(
                         threadId: thread.id,
                         authorId: getUserHexEncodedPublicKey(db),
                         variant: .standardOutgoing,
                         body: text,
                         timestampMs: sentTimestampMs,
-                        hasMention: text.contains("@\(currentUserPublicKey)")
+                        hasMention: text.contains("@\(userPublicKey)")
                     ).inserted(db)
 
                     try MessageSender.send(
@@ -668,33 +659,41 @@ extension ConversationVC:
             case .audio: viewModel.playOrPauseAudio(for: item)
             
             case .mediaMessage:
-                guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
-                    let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell else { return }
-                if
-                    viewItem.interaction is TSIncomingMessage,
-                    let thread = self.thread as? TSContactThread,
-                    let contact: Contact? = GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: thread.contactSessionID()) }),
-                    contact?.isTrusted != true {
-                    confirmDownload()
-                } else {
-                    guard let albumView = cell.albumView else { return }
-                    let locationInCell = gestureRecognizer.location(in: cell)
-                    // Figure out which of the media views was tapped
-                    let locationInAlbumView = cell.convert(locationInCell, to: albumView)
-                    guard let mediaView = albumView.mediaView(forLocation: locationInAlbumView) else { return }
-                    if albumView.isMoreItemsView(mediaView: mediaView) && viewItem.mediaAlbumHasFailedAttachment() {
+                guard
+                    let index = self.viewModel.viewData.items.firstIndex(where: { $0.interactionId == item.interactionId }),
+                    let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell,
+                    let albumView: MediaAlbumView = cell.albumView
+                else { return }
+                
+                let locationInCell: CGPoint = gestureRecognizer.location(in: cell)
+                
+                // Figure out which of the media views was tapped
+                let locationInAlbumView: CGPoint = cell.convert(locationInCell, to: albumView)
+                guard let mediaView = albumView.mediaView(forLocation: locationInAlbumView) else { return }
+                
+                
+                switch mediaView.attachment.state {
+                    case .pending, .downloading, .uploading:
                         // TODO: Tapped a failed incoming attachment
-                    }
-                    let attachment = mediaView.attachment
-                    if let pointer = attachment as? TSAttachmentPointer {
-                        if pointer.state == .failed {
-                            // TODO: Tapped a failed incoming attachment
+                        break
+                        
+                    case .failed:
+                        // TODO: Tapped a failed incoming attachment
+                        break
+                        
+                    default:
+                        let viewController: UIViewController? = MediaGalleryViewModel.createDetailViewController(
+                            for: self.viewModel.viewData.thread.id,
+                            item: item,
+                            selectedAttachmentId: mediaView.attachment.id,
+                            options: [ .sliderEnabled, .showAllMediaButton ]
+                        )
+                        
+                        if let viewController: UIViewController = viewController {
+                            self.present(viewController, animated: true, completion: nil)
                         }
-                    }
-                    guard let stream = attachment as? TSAttachmentStream else { return }
-                    let gallery = MediaGallery(thread: thread, options: [ .sliderEnabled, .showAllMediaButton ])
-                    gallery.presentDetailView(fromViewController: self, mediaAttachment: stream)
                 }
+                
             case .genericAttachment:
                 guard
                     let attachment: Attachment = item.attachments?.first,
@@ -1554,9 +1553,9 @@ extension ConversationVC {
         alertVC.addAction(UIAlertAction(title: "TXT_DELETE_TITLE".localized(), style: .destructive) { _ in
             // Delete the request
             GRDBStorage.shared.writeAsync(
-                updates: { [weak self] db in
+                updates: { db in
                     // Update the contact
-                    try? Contact
+                    _ = try Contact
                         .fetchOrCreate(db, id: threadId)
                         .with(
                             isApproved: false,
@@ -1584,5 +1583,100 @@ extension ConversationVC {
         })
         alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
         self.present(alertVC, animated: true, completion: nil)
+    }
+}
+
+// MARK: - MediaPresentationContextProvider
+
+extension ConversationVC: MediaPresentationContextProvider {
+    func mediaPresentationContext(mediaItem: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        guard case let .gallery(galleryItem) = mediaItem else { return nil }
+        // Note: According to Apple's docs the 'indexPathsForVisibleRows' method returns an
+        // unsorted array which means we can't use it to determine the desired 'visibleCell'
+        // we are after, due to this we will need to iterate all of the visible cells to find
+        // the one we want
+        let maybeMessageCell: VisibleMessageCell? = tableView.visibleCells
+            .first { cell -> Bool in
+                ((cell as? VisibleMessageCell)?
+                    .albumView?
+                    .itemViews
+                    .contains(where: { mediaView in
+                        mediaView.attachment.id == galleryItem.attachment.id
+                    }))
+                    .defaulting(to: false)
+            }
+            .map { $0 as? VisibleMessageCell }
+        let maybeTargetView: MediaView? = maybeMessageCell?
+            .albumView?
+            .itemViews
+            .first(where: { $0.attachment.id == galleryItem.attachment.id })
+        
+        guard
+            let messageCell: VisibleMessageCell = maybeMessageCell,
+            let targetView: MediaView = maybeTargetView,
+            let mediaSuperview: UIView = targetView.superview
+        else { return nil }
+
+        let cornerRadius: CGFloat
+        let cornerMask: CACornerMask
+        let presentationFrame = coordinateSpace.convert(targetView.frame, from: mediaSuperview)
+
+        if messageCell.bubbleView.bounds == targetView.bounds {
+            cornerRadius = messageCell.bubbleView.layer.cornerRadius
+            cornerMask = messageCell.bubbleView.layer.maskedCorners
+        }
+        else {
+            // If the frames don't match then assume it's either multiple images or there is a caption
+            // and determine which corners need to be rounded
+            cornerRadius = messageCell.bubbleView.layer.cornerRadius
+
+            var newCornerMask = CACornerMask()
+            let cellMaskedCorners: CACornerMask = messageCell.bubbleView.layer.maskedCorners
+
+            if
+                cellMaskedCorners.contains(.layerMinXMinYCorner) &&
+                    targetView.frame.minX < CGFloat.leastNonzeroMagnitude &&
+                    targetView.frame.minY < CGFloat.leastNonzeroMagnitude
+            {
+                newCornerMask.insert(.layerMinXMinYCorner)
+            }
+
+            if
+                cellMaskedCorners.contains(.layerMaxXMinYCorner) &&
+                abs(targetView.frame.maxX - messageCell.bubbleView.bounds.width) < CGFloat.leastNonzeroMagnitude &&
+                    targetView.frame.minY < CGFloat.leastNonzeroMagnitude
+            {
+                newCornerMask.insert(.layerMaxXMinYCorner)
+            }
+
+            if
+                cellMaskedCorners.contains(.layerMinXMaxYCorner) &&
+                    targetView.frame.minX < CGFloat.leastNonzeroMagnitude &&
+                abs(targetView.frame.maxY - messageCell.bubbleView.bounds.height) < CGFloat.leastNonzeroMagnitude
+            {
+                newCornerMask.insert(.layerMinXMaxYCorner)
+            }
+
+            if
+                cellMaskedCorners.contains(.layerMaxXMaxYCorner) &&
+                abs(targetView.frame.maxX - messageCell.bubbleView.bounds.width) < CGFloat.leastNonzeroMagnitude &&
+                abs(targetView.frame.maxY - messageCell.bubbleView.bounds.height) < CGFloat.leastNonzeroMagnitude
+            {
+                newCornerMask.insert(.layerMaxXMaxYCorner)
+            }
+
+            cornerMask = newCornerMask
+        }
+
+        return MediaPresentationContext(
+            mediaView: targetView,
+            presentationFrame: presentationFrame,
+            cornerRadius: cornerRadius,
+            cornerMask: cornerMask
+        )
+    }
+
+    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
+        return self.navigationController?.navigationBar.generateSnapshot(in: coordinateSpace)
     }
 }

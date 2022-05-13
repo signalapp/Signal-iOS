@@ -54,7 +54,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
+        collectionView.register(view: PhotoGridViewCell.self)
 
         // ensure images at the end of the list can be scrolled above the bottom buttons
         let bottomButtonInset = -1 * SendMediaNavigationController.bottomButtonsCenterOffset + SendMediaNavigationController.bottomButtonWidth / 2 + 16
@@ -543,11 +543,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return UICollectionViewCell(forAutoLayout: ())
         }
 
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoGridViewCell.reuseIdentifier, for: indexPath) as? PhotoGridViewCell else {
-            owsFail("cell was unexpectedly nil")
-        }
-
+        let cell: PhotoGridViewCell = collectionView.dequeue(type: PhotoGridViewCell.self, for: indexPath)
         cell.loadingColor = UIColor(white: 0.2, alpha: 1)
+        
         let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
         cell.configure(item: assetItem)
 

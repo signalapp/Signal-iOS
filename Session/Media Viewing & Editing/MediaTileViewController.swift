@@ -1,13 +1,13 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-import Foundation
-import SessionUIKit
 import UIKit
+import GRDB
+import DifferenceKit
+import SessionUIKit
+import SignalUtilitiesKit
 
-public protocol MediaTileViewControllerDelegate: class {
-    func mediaTileViewController(_ viewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryItem)
+public protocol MediaTileViewControllerDelegate: AnyObject {
+    func mediaTileViewController(_ viewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryViewModel.Item)
 }
 
 public class MediaTileViewController: UICollectionViewController, MediaGalleryDataSourceDelegate, UICollectionViewDelegateFlowLayout {

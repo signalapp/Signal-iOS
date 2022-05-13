@@ -10,7 +10,7 @@ import AVFoundation
 
 public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "attachment" }
-    public static let interactionAttachments = hasOne(InteractionAttachment.self)
+    internal static let interactionAttachments = hasOne(InteractionAttachment.self)
     internal static let quoteForeignKey = ForeignKey([Columns.id], to: [Quote.Columns.attachmentId])
     internal static let linkPreviewForeignKey = ForeignKey([Columns.id], to: [LinkPreview.Columns.attachmentId])
     public static let interaction = hasOne(
@@ -36,6 +36,7 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
         case width
         case height
         case duration
+        case isVisualMedia
         case isValid
         case encryptionKey
         case digest
@@ -109,6 +110,9 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
     /// The number of seconds the attachment plays for (this will only be set for video and audio attachment types)
     public let duration: TimeInterval?
     
+    /// A flag indicating whether the attachment data is visual media
+    public let isVisualMedia: Bool
+    
     /// A flag indicating whether the attachment data downloaded is valid for it's content type
     public let isValid: Bool
     
@@ -137,6 +141,7 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
         width: UInt? = nil,
         height: UInt? = nil,
         duration: TimeInterval? = nil,
+        isVisualMedia: Bool? = nil,
         isValid: Bool = false,
         encryptionKey: Data? = nil,
         digest: Data? = nil,
@@ -155,6 +160,11 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
         self.width = width
         self.height = height
         self.duration = duration
+        self.isVisualMedia = (isVisualMedia ?? (
+            MIMETypeUtil.isImage(contentType) ||
+            MIMETypeUtil.isVideo(contentType) ||
+            MIMETypeUtil.isAnimated(contentType)
+        ))
         self.isValid = isValid
         self.encryptionKey = encryptionKey
         self.digest = digest
@@ -166,9 +176,11 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
         id: String = UUID().uuidString,
         variant: Variant = .standard,
         contentType: String,
-        dataSource: DataSource
+        dataSource: DataSource,
+        sourceFilename: String? = nil,
+        caption: String? = nil
     ) {
-        guard let originalFilePath: String = Attachment.originalFilePath(id: id, mimeType: contentType, sourceFilename: nil) else {
+        guard let originalFilePath: String = Attachment.originalFilePath(id: id, mimeType: contentType, sourceFilename: sourceFilename) else {
             return nil
         }
         guard dataSource.write(toPath: originalFilePath) else { return nil }
@@ -190,16 +202,21 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
         self.contentType = contentType
         self.byteCount = dataSource.dataLength()
         self.creationTimestamp = nil
-        self.sourceFilename = nil
+        self.sourceFilename = sourceFilename
         self.downloadUrl = nil
         self.localRelativeFilePath = URL(fileURLWithPath: originalFilePath).lastPathComponent
         self.width = imageSize.map { UInt(floor($0.width)) }
         self.height = imageSize.map { UInt(floor($0.height)) }
         self.duration = duration
+        self.isVisualMedia = (
+            MIMETypeUtil.isImage(contentType) ||
+            MIMETypeUtil.isVideo(contentType) ||
+            MIMETypeUtil.isAnimated(contentType)
+        )
         self.isValid = isValid
         self.encryptionKey = nil
         self.digest = nil
-        self.caption = nil
+        self.caption = caption
     }
     
     // MARK: - Custom Database Interaction
@@ -309,6 +326,7 @@ public extension Attachment {
             width: width,
             height: height,
             duration: duration,
+            isVisualMedia: isVisualMedia,
             isValid: isValid,
             encryptionKey: (encryptionKey ?? self.encryptionKey),
             digest: (digest ?? self.digest),
@@ -353,6 +371,11 @@ public extension Attachment {
         self.width = (proto.hasWidth && proto.width > 0 ? UInt(proto.width) : nil)
         self.height = (proto.hasHeight && proto.height > 0 ? UInt(proto.height) : nil)
         self.duration = nil         // Needs to be downloaded to be set
+        self.isVisualMedia = (
+            MIMETypeUtil.isImage(contentType) ||
+            MIMETypeUtil.isVideo(contentType) ||
+            MIMETypeUtil.isAnimated(contentType)
+        )
         self.isValid = false        // Needs to be downloaded to be set
         self.encryptionKey = proto.key
         self.digest = proto.digest
@@ -702,8 +725,6 @@ extension Attachment {
     public var isText: Bool { MIMETypeUtil.isText(contentType) }
     public var isMicrosoftDoc: Bool { MIMETypeUtil.isMicrosoftDoc(contentType) }
     
-    public var isVisualMedia: Bool { isImage || isVideo || isAnimated }
-    
     public func readDataFromFile() throws -> Data? {
         guard let filePath: String = self.originalFilePath else {
             return nil
@@ -716,7 +737,7 @@ extension Attachment {
         return "\(thumbnailsDirPath)/thumbnail-\(dimensions).jpg"
     }
     
-    private func loadThumbnail(with dimensions: UInt, success: @escaping (UIImage) -> (), failure: @escaping () -> ()) {
+    private func loadThumbnail(with dimensions: UInt, success: @escaping (UIImage, () throws -> Data) -> (), failure: @escaping () -> ()) {
         guard let width: UInt = self.width, let height: UInt = self.height, width > 1, height > 1 else {
             failure()
             return
@@ -730,43 +751,113 @@ extension Attachment {
                 return
             }
             
-            success(image)
+            success(
+                image,
+                {
+                    guard let originalFilePath: String = originalFilePath else { throw AttachmentError.invalidData }
+                    
+                    return try Data(contentsOf: URL(fileURLWithPath: originalFilePath))
+                }
+            )
             return
         }
         
         let thumbnailPath = thumbnailPath(for: dimensions)
         
         if FileManager.default.fileExists(atPath: thumbnailPath) {
-            guard let image: UIImage = UIImage(contentsOfFile: thumbnailPath) else {
+            guard
+                let data: Data = try? Data(contentsOf: URL(fileURLWithPath: thumbnailPath)),
+                let image: UIImage = UIImage(data: data)
+            else {
                 failure()
                 return
             }
             
-            success(image)
+            success(image, { data })
             return
         }
         
         OWSThumbnailService.shared.ensureThumbnail(
             for: self,
             dimensions: dimensions,
-            success: { loadedThumbnail in success(loadedThumbnail.image) },
+            success: { loadedThumbnail in success(loadedThumbnail.image, loadedThumbnail.dataSourceBlock) },
             failure: { _ in failure() }
         )
     }
     
-    public func thumbnail(size: ThumbnailSize, success: @escaping (UIImage) -> (), failure: @escaping () -> ()) {
+    public func thumbnail(size: ThumbnailSize, success: @escaping (UIImage, () throws -> Data) -> (), failure: @escaping () -> ()) {
         loadThumbnail(with: size.dimension, success: success, failure: failure)
     }
     
-    public func cloneAsThumbnail() -> Attachment {
-        fatalError("TODO: Add this back")
+    public func cloneAsThumbnail() -> Attachment? {
+        let cloneId: String = UUID().uuidString
+        let thumbnailName: String = "quoted-thumbnail-\(sourceFilename ?? "null")"
+        
+        guard
+            self.isValid,
+            self.isVisualMedia,
+            let thumbnailPath: String = Attachment.originalFilePath(
+                id: cloneId,
+                mimeType: OWSMimeTypeImageJpeg,
+                sourceFilename: thumbnailName
+            )
+        else { return nil }
+        
+        // Try generate the thumbnail
+        var thumbnailData: Data?
+        let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0)
+        
+        self.thumbnail(
+            size: .small,
+            success: { _, dataSourceBlock in
+                thumbnailData = try? dataSourceBlock()
+                semaphore.signal()
+            },
+            failure: { semaphore.signal() }
+        )
+        
+        // Wait up to 0.5 seconds
+        _ = semaphore.wait(timeout: .now() + .milliseconds(500))
+        
+        guard let thumbnailData: Data = thumbnailData else { return nil }
+        
+        // Write the quoted thumbnail to disk
+        do { try thumbnailData.write(to: URL(fileURLWithPath: thumbnailPath)) }
+        catch { return nil }
+        
+        // Need to retrieve the size of the thumbnail as it maintains it's aspect ratio
+        let thumbnailSize: CGSize = Attachment
+            .imageSize(
+                contentType: OWSMimeTypeImageJpeg,
+                originalFilePath: thumbnailPath
+            )
+            .defaulting(
+                to: CGSize(
+                    width: Int(ThumbnailSize.small.dimension),
+                    height: Int(ThumbnailSize.small.dimension)
+                )
+            )
+        
+        // Copy the thumbnail to a new attachment
+        return Attachment(
+            id: cloneId,
+            variant: .standard,
+            contentType: OWSMimeTypeImageJpeg,
+            byteCount: UInt(thumbnailData.count),
+            sourceFilename: thumbnailName,
+            localRelativeFilePath: thumbnailPath
+                .substring(from: (Attachment.attachmentsFolder.count + 1)), // Leading forward slash
+            width: UInt(thumbnailSize.width),
+            height: UInt(thumbnailSize.height),
+            isValid: true
+        )
     }
     
     public func write(data: Data) throws -> Bool {
         guard let originalFilePath: String = originalFilePath else { return false }
 
         try data.write(to: URL(fileURLWithPath: originalFilePath))
-        
+
         return true
     }
 }
@@ -873,6 +964,10 @@ extension Attachment {
                         .with(
                             serverId: "\(fileId)",
                             state: .uploaded,
+                            creationTimestamp: (
+                                updatedAttachment?.creationTimestamp ??
+                                Date().timeIntervalSince1970
+                            ),
                             downloadUrl: "\(FileServerAPIV2.server)/files/\(fileId)"
                         )
                         .saved(db)

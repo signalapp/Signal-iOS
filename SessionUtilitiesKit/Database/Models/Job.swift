@@ -6,7 +6,9 @@ import GRDB
 public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "job" }
     internal static let dependencyForeignKey = ForeignKey([Columns.id], to: [JobDependencies.Columns.dependantId])
+    internal static let dependantJobForeignKey = ForeignKey([Columns.id], to: [JobDependencies.Columns.jobId])
     internal static let dependencies = hasMany(Job.self, using: dependencyForeignKey)
+    internal static let dependantJobs = hasMany(Job.self, using: dependencyForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -153,6 +155,14 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         request(for: Job.dependencies)
     }
     
+    /// The other jobs which depend on this job
+    ///
+    /// **Note:** When completing a job the dependencies **MUST** be cleared before the job is
+    /// deleted or it will automatically delete any dependant jobs
+    public var dependantJobs: QueryInterfaceRequest<Job> {
+        request(for: Job.dependantJobs)
+    }
+    
     // MARK: - Initialization
     
     fileprivate init(
@@ -225,7 +235,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     
     public func delete(_ db: Database) throws -> Bool {
         // Delete any dependencies
-        try dependencies
+        try dependantJobs
             .deleteAll(db)
         
         return try performDelete(db)

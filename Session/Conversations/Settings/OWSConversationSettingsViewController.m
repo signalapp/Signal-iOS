@@ -767,7 +767,7 @@ CGFloat kIconViewLength = 24;
 - (void)leaveGroup
 {
     if (self.isClosedGroup) {
-        [[SNMessageSender leaveClosedGroupWithPublicKey:self.threadId] retainUntilComplete];
+        [[SMKMessageSender leaveClosedGroupWithPublicKey:self.threadId] retainUntilComplete];
     }
 
     [self.navigationController popViewControllerAnimated:YES];
@@ -818,7 +818,7 @@ CGFloat kIconViewLength = 24;
 
                                          // If we successfully blocked then force a config sync
                                          if (isBlocked) {
-                                             [SNMessageSender forceSyncConfigurationNow];
+                                             [SMKMessageSender forceSyncConfigurationNow];
                                          }
 
                                          [weakSelf updateTableContents];
@@ -837,7 +837,7 @@ CGFloat kIconViewLength = 24;
 
                                            // If we successfully unblocked then force a config sync
                                            if (!isBlocked) {
-                                               [SNMessageSender forceSyncConfigurationNow];
+                                               [SMKMessageSender forceSyncConfigurationNow];
                                            }
 
                                            [weakSelf updateTableContents];
@@ -900,12 +900,8 @@ CGFloat kIconViewLength = 24;
 {
     OWSLogDebug(@"");
 
-    MediaGallery *mediaGallery = [[MediaGallery alloc] initWithSliderEnabledForThreadId:self.threadId isClosedGroup: self.isClosedGroup isOpenGroup: self.isOpenGroup];
-
-    self.mediaGallery = mediaGallery;
-
     OWSAssertDebug([self.navigationController isKindOfClass:[OWSNavigationController class]]);
-    [mediaGallery pushTileViewFromNavController:(OWSNavigationController *)self.navigationController];
+    [SNMediaGallery pushTileViewWithSliderEnabledForThreadId:self.threadId isClosedGroup:self.isClosedGroup isOpenGroup:self.isOpenGroup fromNavController:(OWSNavigationController *)self.navigationController];
 }
 
 - (void)tappedConversationSearch

@@ -10,6 +10,7 @@ public enum AttachmentUploadJob: JobExecutor {
     public static var maxFailureCount: Int = 10
     public static var requiresThreadId: Bool = true
     public static let requiresInteractionId: Bool = true
+    
     public static func run(
         _ job: Job,
         success: @escaping (Job, Bool) -> (),
@@ -51,9 +52,18 @@ public enum AttachmentUploadJob: JobExecutor {
 
 extension AttachmentUploadJob {
     public struct Details: Codable {
+        /// This is the id for the messageSend job this attachmentUpload job is associated to, the value isn't used for any of
+        /// the logic but we want to mandate that the attachmentUpload job can only be used alongside a messageSend job
+        ///
+        /// **Note:** If we do decide to remove this the `_003_YDBToGRDBMigration` will need to be updated as it
+        /// fails if this connection can't be made
+        public let messageSendJobId: Int64
+        
+        /// The id of the `Attachment` to upload
         public let attachmentId: String
         
-        public init(attachmentId: String) {
+        public init(messageSendJobId: Int64, attachmentId: String) {
+            self.messageSendJobId = messageSendJobId
             self.attachmentId = attachmentId
         }
     }
