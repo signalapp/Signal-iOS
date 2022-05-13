@@ -5,6 +5,9 @@
 import Foundation
 import Lottie
 import UIKit
+import BonMot
+
+// MARK: - Profile badge lookup
 
 public class ProfileBadgeLookup {
     let boostBadge: ProfileBadge?
@@ -45,6 +48,8 @@ public class ProfileBadgeLookup {
         return Promise.when(fulfilled: promises).recover { _ in Guarantee.value(()) }
     }
 }
+
+// MARK: - Subscription "read more" sheet
 
 public class SubscriptionReadMoreSheet: InteractiveSheetViewController {
     let contentScrollView = UIScrollView()
@@ -134,7 +139,77 @@ public class SubscriptionReadMoreSheet: InteractiveSheetViewController {
     }
 }
 
+// MARK: - Currency picker view
+
+public class DonationCurrencyPickerButton: UIStackView {
+    private let currentCurrencyCode: Currency.Code
+    private let block: () -> Void
+
+    init(currentCurrencyCode: Currency.Code, block: @escaping () -> Void) {
+        self.currentCurrencyCode = currentCurrencyCode
+        self.block = block
+
+        super.init(frame: .zero)
+
+        self.axis = .horizontal
+        self.alignment = .center
+        self.spacing = 8
+
+        let label = UILabel()
+        label.font = .ows_dynamicTypeBodyClamped
+        label.textColor = Theme.primaryTextColor
+        label.text = NSLocalizedString("DONATIONS_CURRENCY_PICKER_LABEL",
+                                       comment: "Label for the currency picker button in donation views")
+        self.addArrangedSubview(label)
+
+        let picker = OWSButton(block: block)
+        picker.setAttributedTitle(NSAttributedString.composed(of: [
+            currentCurrencyCode,
+            Special.noBreakSpace,
+            NSAttributedString.with(
+                image: #imageLiteral(resourceName: "chevron-down-18").withRenderingMode(.alwaysTemplate),
+                font: .ows_regularFont(withSize: 17)
+            ).styled(
+                with: .color(DonationViewsUtil.bubbleBorderColor)
+            )
+        ]).styled(
+            with: .font(.ows_regularFont(withSize: 17)),
+            .color(Theme.primaryTextColor)
+        ), for: .normal)
+
+        picker.setBackgroundImage(UIImage(color: DonationViewsUtil.bubbleBackgroundColor), for: .normal)
+        picker.setBackgroundImage(UIImage(color: DonationViewsUtil.bubbleBackgroundColor.withAlphaComponent(0.8)), for: .highlighted)
+
+        let pillView = PillView()
+        pillView.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
+        pillView.layer.borderColor = DonationViewsUtil.bubbleBorderColor.cgColor
+        pillView.clipsToBounds = true
+        pillView.addSubview(picker)
+        picker.autoPinEdgesToSuperviewEdges()
+        picker.autoSetDimension(.width, toSize: 74, relation: .greaterThanOrEqual)
+
+        self.addArrangedSubview(pillView)
+        pillView.autoSetDimension(.height, toSize: 36, relation: .greaterThanOrEqual)
+
+        let leadingSpacer = UIView.hStretchingSpacer()
+        let trailingSpacer = UIView.hStretchingSpacer()
+        self.insertArrangedSubview(leadingSpacer, at: 0)
+        self.addArrangedSubview(trailingSpacer)
+        leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: - Misc. utilities
+
 public final class DonationViewsUtil {
+    public static let bubbleBorderWidth: CGFloat = 1.5
+    public static var bubbleBorderColor: UIColor { Theme.isDarkThemeEnabled ? UIColor.ows_gray65 : UIColor(rgbHex: 0xdedede) }
+    public static var bubbleBackgroundColor: UIColor { Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white }
+
     public static func loadSubscriptionLevels(badgeStore: BadgeStore) -> Promise<[SubscriptionLevel]> {
         firstly {
             SubscriptionManager.getSubscriptions()

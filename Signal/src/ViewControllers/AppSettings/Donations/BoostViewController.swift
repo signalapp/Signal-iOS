@@ -137,10 +137,6 @@ class BoostViewController: OWSTableViewController2 {
         self.dismiss(animated: true)
     }
 
-    static let bubbleBorderWidth: CGFloat = 1.5
-    static let bubbleBorderColor = UIColor(rgbHex: 0xdedede)
-    static var bubbleBackgroundColor: UIColor { Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white }
-
     func newCell() -> UITableViewCell {
         let cell = OWSTableItem.newCell()
         cell.selectionStyle = .none
@@ -166,7 +162,7 @@ class BoostViewController: OWSTableViewController2 {
             if case .presetSelected(amount: amount) = self.state {
                 button.layer.borderColor = Theme.accentBlueColor.cgColor
             } else {
-                button.layer.borderColor = Self.bubbleBorderColor.cgColor
+                button.layer.borderColor = DonationViewsUtil.bubbleBorderColor.cgColor
             }
         }
     }
@@ -330,23 +326,7 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
                 guard let self = self else { return UITableViewCell() }
                 let cell = self.newCell()
 
-                let stackView = UIStackView()
-                stackView.axis = .horizontal
-                stackView.alignment = .center
-                stackView.spacing = 8
-                cell.contentView.addSubview(stackView)
-                stackView.autoPinEdgesToSuperviewEdges()
-
-                let label = UILabel()
-                label.font = .ows_dynamicTypeBodyClamped
-                label.textColor = Theme.primaryTextColor
-                label.text = NSLocalizedString(
-                    "BOOST_VIEW_AMOUNT_LABEL",
-                    comment: "Donation amount label for the donate to signal view"
-                )
-                stackView.addArrangedSubview(label)
-
-                let picker = OWSButton { [weak self] in
+                let currencyPickerButton = DonationCurrencyPickerButton(currentCurrencyCode: self.currencyCode) { [weak self] in
                     guard let self = self else { return }
                     let vc = CurrencyPickerViewController(
                         dataSource: StripeCurrencyPickerDataSource(currentCurrencyCode: self.currencyCode)
@@ -355,40 +335,8 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
                     }
                     self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
                 }
-
-                picker.setAttributedTitle(NSAttributedString.composed(of: [
-                    self.currencyCode,
-                    Special.noBreakSpace,
-                    NSAttributedString.with(
-                        image: #imageLiteral(resourceName: "chevron-down-18").withRenderingMode(.alwaysTemplate),
-                        font: .ows_regularFont(withSize: 17)
-                    ).styled(
-                        with: .color(Self.bubbleBorderColor)
-                    )
-                ]).styled(
-                    with: .font(.ows_regularFont(withSize: 17)),
-                    .color(Theme.primaryTextColor)
-                ), for: .normal)
-
-                picker.setBackgroundImage(UIImage.init(color: Self.bubbleBackgroundColor), for: .normal)
-                picker.setBackgroundImage(UIImage.init(color: Self.bubbleBackgroundColor.withAlphaComponent(0.8)), for: .highlighted)
-
-                let pillView = PillView()
-                pillView.layer.borderWidth = Self.bubbleBorderWidth
-                pillView.layer.borderColor = Self.bubbleBorderColor.cgColor
-                pillView.clipsToBounds = true
-                pillView.addSubview(picker)
-                picker.autoPinEdgesToSuperviewEdges()
-                picker.autoSetDimension(.width, toSize: 74, relation: .greaterThanOrEqual)
-
-                stackView.addArrangedSubview(pillView)
-                pillView.autoSetDimension(.height, toSize: 36, relation: .greaterThanOrEqual)
-
-                let leadingSpacer = UIView.hStretchingSpacer()
-                let trailingSpacer = UIView.hStretchingSpacer()
-                stackView.insertArrangedSubview(leadingSpacer, at: 0)
-                stackView.addArrangedSubview(trailingSpacer)
-                leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+                cell.contentView.addSubview(currencyPickerButton)
+                currencyPickerButton.autoPinEdgesToSuperviewEdges()
 
                 return cell
             },
@@ -424,12 +372,12 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
                             let button = OWSFlatButton()
                             hStack.addArrangedSubview(button)
                             button.setBackgroundColors(
-                                upColor: Self.bubbleBackgroundColor,
-                                downColor: Self.bubbleBackgroundColor.withAlphaComponent(0.8)
+                                upColor: DonationViewsUtil.bubbleBackgroundColor,
+                                downColor: DonationViewsUtil.bubbleBackgroundColor.withAlphaComponent(0.8)
                             )
                             button.layer.cornerRadius = 24
                             button.clipsToBounds = true
-                            button.layer.borderWidth = Self.bubbleBorderWidth
+                            button.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
 
                             func playEmojiAnimation(parentView: UIView?) {
                                 guard let parentView = parentView else { return }
@@ -493,10 +441,10 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
                 guard let self = self else { return UITableViewCell() }
                 let cell = self.newCell()
 
-                customValueTextField.backgroundColor = Self.bubbleBackgroundColor
+                customValueTextField.backgroundColor = DonationViewsUtil.bubbleBackgroundColor
                 customValueTextField.layer.cornerRadius = 24
-                customValueTextField.layer.borderWidth = Self.bubbleBorderWidth
-                customValueTextField.layer.borderColor = Self.bubbleBorderColor.cgColor
+                customValueTextField.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
+                customValueTextField.layer.borderColor = DonationViewsUtil.bubbleBorderColor.cgColor
 
                 customValueTextField.font = .ows_dynamicTypeBodyClamped
                 customValueTextField.textColor = Theme.primaryTextColor

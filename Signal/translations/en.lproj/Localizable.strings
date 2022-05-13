@@ -496,9 +496,6 @@
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
 
-/* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
-
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
 
@@ -1659,6 +1656,9 @@
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "Donate to Signal";
+
+/* Label for the currency picker button in donation views */
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Set currency";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can enable access in the iOS Settings app.";
@@ -5946,9 +5946,6 @@
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
-
-/* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Set currency";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";

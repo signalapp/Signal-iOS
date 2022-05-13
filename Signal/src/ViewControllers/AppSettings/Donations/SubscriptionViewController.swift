@@ -124,9 +124,6 @@ class SubscriptionViewController: OWSTableViewController2 {
         return formatter
     }()
 
-    static let bubbleBorderWidth: CGFloat = 1.5
-    static var bubbleBorderColor: UIColor { Theme.isDarkThemeEnabled ? UIColor.ows_gray65 : UIColor(rgbHex: 0xdedede) }
-    static var bubbleBackgroundColor: UIColor { Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white }
     private static let subscriptionBannerAvatarSize: UInt = 88
 
     // MARK: - Callbacks
@@ -400,25 +397,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                     guard let self = self else { return UITableViewCell() }
                     let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
 
-                    let stackView = UIStackView()
-                    stackView.axis = .horizontal
-                    stackView.alignment = .center
-                    stackView.spacing = 8
-                    stackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: 20, trailing: 0)
-                    stackView.isLayoutMarginsRelativeArrangement = true
-                    cell.contentView.addSubview(stackView)
-                    stackView.autoPinEdgesToSuperviewEdges()
-
-                    let label = UILabel()
-                    label.font = .ows_dynamicTypeBodyClamped
-                    label.textColor = Theme.primaryTextColor
-                    label.text = NSLocalizedString(
-                        "SUSTAINER_VIEW_CURRENCY",
-                        comment: "Set currency label in sustainer view"
-                    )
-                    stackView.addArrangedSubview(label)
-
-                    let picker = OWSButton { [weak self] in
+                    let currencyPickerButton = DonationCurrencyPickerButton(currentCurrencyCode: selectedCurrencyCode) { [weak self] in
                         guard let self = self else { return }
                         let vc = CurrencyPickerViewController(
                             dataSource: StripeCurrencyPickerDataSource(currentCurrencyCode: selectedCurrencyCode)
@@ -429,40 +408,8 @@ class SubscriptionViewController: OWSTableViewController2 {
                         }
                         self.navigationController?.pushViewController(vc, animated: true)
                     }
-
-                    picker.setAttributedTitle(NSAttributedString.composed(of: [
-                        selectedCurrencyCode,
-                        Special.noBreakSpace,
-                        NSAttributedString.with(
-                            image: #imageLiteral(resourceName: "chevron-down-18").withRenderingMode(.alwaysTemplate),
-                            font: .ows_regularFont(withSize: 17)
-                        ).styled(
-                            with: .color(Self.bubbleBorderColor)
-                        )
-                    ]).styled(
-                        with: .font(.ows_regularFont(withSize: 17)),
-                        .color(Theme.primaryTextColor)
-                    ), for: .normal)
-
-                    picker.setBackgroundImage(UIImage(color: Self.bubbleBackgroundColor), for: .normal)
-                    picker.setBackgroundImage(UIImage(color: Self.bubbleBackgroundColor.withAlphaComponent(0.8)), for: .highlighted)
-
-                    let pillView = PillView()
-                    pillView.layer.borderWidth = Self.bubbleBorderWidth
-                    pillView.layer.borderColor = Self.bubbleBorderColor.cgColor
-                    pillView.clipsToBounds = true
-                    pillView.addSubview(picker)
-                    picker.autoPinEdgesToSuperviewEdges()
-                    picker.autoSetDimension(.width, toSize: 74, relation: .greaterThanOrEqual)
-
-                    stackView.addArrangedSubview(pillView)
-                    pillView.autoSetDimension(.height, toSize: 36, relation: .greaterThanOrEqual)
-
-                    let leadingSpacer = UIView.hStretchingSpacer()
-                    let trailingSpacer = UIView.hStretchingSpacer()
-                    stackView.insertArrangedSubview(leadingSpacer, at: 0)
-                    stackView.addArrangedSubview(trailingSpacer)
-                    leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+                    cell.contentView.addSubview(currencyPickerButton)
+                    currencyPickerButton.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(top: 0, leading: 0, bottom: 12, trailing: 0))
 
                     return cell
                 },
@@ -535,8 +482,8 @@ class SubscriptionViewController: OWSTableViewController2 {
                     // Background view
                     let background = UIView()
                     background.backgroundColor = self.cellBackgroundColor
-                    background.layer.borderWidth = Self.bubbleBorderWidth
-                    background.layer.borderColor = isSelected ? Theme.accentBlueColor.cgColor : Self.bubbleBorderColor.cgColor
+                    background.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
+                    background.layer.borderColor = isSelected ? Theme.accentBlueColor.cgColor : DonationViewsUtil.bubbleBorderColor.cgColor
                     background.layer.cornerRadius = 12
                     stackView.addSubview(background)
                     cell.cellBackgroundView = background
@@ -1043,7 +990,7 @@ private class SubscriptionLevelCell: UITableViewCell {
 
     public func toggleSelectedOutline(_ selected: Bool) {
         if let background = cellBackgroundView {
-            background.layer.borderColor = selected ? Theme.accentBlueColor.cgColor : SubscriptionViewController.bubbleBorderColor.cgColor
+            background.layer.borderColor = selected ? Theme.accentBlueColor.cgColor : DonationViewsUtil.bubbleBorderColor.cgColor
         }
     }
 }
