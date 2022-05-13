@@ -381,6 +381,14 @@ class SubscriptionViewController: OWSTableViewController2 {
         }
     }
 
+    /// Get the currency codes that are supported by all the subscription levels.
+    private static func supportedCurrencyCodes(subscriptionLevels: [SubscriptionLevel]) -> Set<Currency.Code> {
+        guard let firstLevel = subscriptionLevels.first else { return Set() }
+        return subscriptionLevels.reduce(Set(firstLevel.currency.keys)) { (result, level) in
+            result.intersection(level.currency.keys)
+        }
+    }
+
     private func buildTableForCreateOrUpdateSubscriptionState(contents: OWSTableContents,
                                                               section: OWSTableSection,
                                                               subscriptionLevels: [SubscriptionLevel],
@@ -399,8 +407,10 @@ class SubscriptionViewController: OWSTableViewController2 {
 
                     let currencyPickerButton = DonationCurrencyPickerButton(currentCurrencyCode: selectedCurrencyCode) { [weak self] in
                         guard let self = self else { return }
+
                         let vc = CurrencyPickerViewController(
-                            dataSource: StripeCurrencyPickerDataSource(currentCurrencyCode: selectedCurrencyCode)
+                            dataSource: try! StripeCurrencyPickerDataSource(currentCurrencyCode: selectedCurrencyCode,
+                                                                            supportedCurrencyCodes: Self.supportedCurrencyCodes(subscriptionLevels: subscriptionLevels))
                         ) { [weak self] currencyCode in
                             guard let self = self else { return }
                             self.state.selectCurrencyCode(currencyCode)

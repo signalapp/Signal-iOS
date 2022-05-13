@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import SignalCoreKit
 
 protocol CurrencyPickerDataSource {
     var currentCurrencyCode: Currency.Code { get }
@@ -223,13 +224,30 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
 
 struct StripeCurrencyPickerDataSource: CurrencyPickerDataSource {
     let currentCurrencyCode: Currency.Code
-    let preferredCurrencyInfos = Stripe.preferredCurrencyInfos
-    let supportedCurrencyInfos = Stripe.supportedCurrencyInfos
+    let preferredCurrencyInfos: [Currency.Info]
+    let supportedCurrencyInfos: [Currency.Info]
 
     var updateTableContents: (() -> Void)?
 
-    init(currentCurrencyCode: Currency.Code = Stripe.defaultCurrencyCode) {
+    init(currentCurrencyCode: Currency.Code) {
         self.currentCurrencyCode = currentCurrencyCode
+        self.preferredCurrencyInfos = Stripe.preferredCurrencyInfos
+        self.supportedCurrencyInfos = Stripe.supportedCurrencyInfos
+    }
+
+    init(currentCurrencyCode: Currency.Code, supportedCurrencyCodes: Set<Currency.Code>) throws {
+        if supportedCurrencyCodes.contains(currentCurrencyCode) {
+            self.currentCurrencyCode = currentCurrencyCode
+        } else if supportedCurrencyCodes.contains("USD") {
+            Logger.warn("Could not find the desired currency code. Falling back to USD")
+            self.currentCurrencyCode = "USD"
+        } else {
+            owsFail("Could not pick a currency, even USD")
+        }
+
+        func isSupported(_ info: Currency.Info) -> Bool { supportedCurrencyCodes.contains(info.code) }
+        self.preferredCurrencyInfos = Stripe.preferredCurrencyInfos.filter(isSupported)
+        self.supportedCurrencyInfos = Stripe.supportedCurrencyInfos.filter(isSupported)
     }
 }
 
