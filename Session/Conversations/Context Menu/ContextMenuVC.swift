@@ -8,6 +8,16 @@ final class ContextMenuVC : UIViewController {
 
     // MARK: UI Components
     private lazy var blurView = UIVisualEffectView(effect: nil)
+    
+    private lazy var emojiBar: UIView = {
+        let result = UIView()
+        result.layer.shadowColor = UIColor.black.cgColor
+        result.layer.shadowOffset = CGSize.zero
+        result.layer.shadowOpacity = 0.4
+        result.layer.shadowRadius = 4
+        result.set(.height, to: ContextMenuVC.actionViewHeight)
+        return result
+    }()
 
     private lazy var menuView: UIView = {
         let result = UIView()
@@ -75,6 +85,27 @@ final class ContextMenuVC : UIViewController {
         } else {
             timestampLabel.pin(.left, to: .right, of: snapshot, withInset: Values.smallSpacing)
         }
+        // Emoji reacts
+        let emojiBarBackgroundView = UIView()
+        emojiBarBackgroundView.backgroundColor = Colors.receivedMessageBackground
+        emojiBarBackgroundView.layer.cornerRadius = ContextMenuVC.actionViewHeight / 2
+        emojiBarBackgroundView.layer.masksToBounds = true
+        emojiBar.addSubview(emojiBarBackgroundView)
+        emojiBarBackgroundView.pin(to: emojiBar)
+        let emojiLabels = ["🙈", "🙉", "🙊", "😈", "🥸", "🐀", "😃"].map { emoji -> UILabel in
+            let label = UILabel()
+            label.text = emoji
+            label.font = .systemFont(ofSize: Values.veryLargeFontSize)
+            return label
+        }
+        let emojiBarStackView = UIStackView(arrangedSubviews: emojiLabels)
+        emojiBarStackView.axis = .horizontal
+        emojiBarStackView.spacing = Values.smallSpacing
+        emojiBarStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.mediumSpacing, bottom: 0, right: Values.mediumSpacing)
+        emojiBarStackView.isLayoutMarginsRelativeArrangement = true
+        emojiBar.addSubview(emojiBarStackView)
+        emojiBarStackView.pin(to: emojiBar)
+        view.addSubview(emojiBar)
         // Menu
         let menuBackgroundView = UIView()
         menuBackgroundView.backgroundColor = Colors.receivedMessageBackground
@@ -88,17 +119,24 @@ final class ContextMenuVC : UIViewController {
         menuView.addSubview(menuStackView)
         menuStackView.pin(to: menuView)
         view.addSubview(menuView)
+        // Constrains
         let menuHeight = CGFloat(actionViews.count) * ContextMenuVC.actionViewHeight
         let spacing = Values.smallSpacing
         let margin = max(UIApplication.shared.keyWindow!.safeAreaInsets.bottom, Values.mediumSpacing)
         if frame.maxY + spacing + menuHeight > UIScreen.main.bounds.height - margin {
             menuView.pin(.bottom, to: .top, of: snapshot, withInset: -spacing)
+            emojiBar.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
         } else {
             menuView.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
+            emojiBar.pin(.bottom, to: .top, of: snapshot, withInset: -spacing)
         }
         switch viewItem.interaction.interactionType() {
-        case .outgoingMessage: menuView.pin(.right, to: .right, of: snapshot)
-        case .incomingMessage: menuView.pin(.left, to: .left, of: snapshot)
+        case .outgoingMessage:
+            menuView.pin(.right, to: .right, of: snapshot)
+            emojiBar.pin(.right, to: .right, of: snapshot)
+        case .incomingMessage:
+            menuView.pin(.left, to: .left, of: snapshot)
+            emojiBar.pin(.left, to: .left, of: snapshot)
         default: break // Should never occur
         }
         // Tap gesture
@@ -118,6 +156,7 @@ final class ContextMenuVC : UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         menuView.layer.shadowPath = UIBezierPath(roundedRect: menuView.bounds, cornerRadius: ContextMenuVC.menuCornerRadius).cgPath
+        emojiBar.layer.shadowPath = UIBezierPath(roundedRect: emojiBar.bounds, cornerRadius: ContextMenuVC.actionViewHeight / 2).cgPath
     }
 
     // MARK: Interaction
