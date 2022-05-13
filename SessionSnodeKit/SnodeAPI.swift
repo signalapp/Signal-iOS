@@ -499,8 +499,7 @@ public final class SnodeAPI : NSObject {
     // MARK: Store
     
     public static func sendMessage(_ message: SnodeMessage, isClosedGroupMessage: Bool, isConfigMessage: Bool) -> Promise<Set<RawResponsePromise>> {
-        let namespace = isClosedGroupMessage ? closedGroupNamespace : defaultNamespace
-        return sendMessageUnauthenticated(message, namespace: namespace)
+        return sendMessageUnauthenticated(message, isClosedGroupMessage: isClosedGroupMessage)
     }
     
     // Not in use until we can batch delete and store config messages
@@ -534,18 +533,33 @@ public final class SnodeAPI : NSObject {
         return promise
     }
     
-    private static func sendMessageUnauthenticated(_ message: SnodeMessage, namespace: Int) -> Promise<Set<RawResponsePromise>> {
+    private static func sendMessageUnauthenticated(_ message: SnodeMessage, isClosedGroupMessage: Bool) -> Promise<Set<RawResponsePromise>> {
         let (promise, seal) = Promise<Set<RawResponsePromise>>.pending()
         let publicKey = Features.useTestnet ? message.recipient.removing05PrefixIfNeeded() : message.recipient
         Threading.workQueue.async {
             getTargetSnodes(for: publicKey).map2 { targetSnodes in
+                var rawResponsePromises: Set<RawResponsePromise> = Set()
                 var parameters = message.toJSON()
-                parameters["namespace"] = namespace
-                return Set(targetSnodes.map { targetSnode in
-                    attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                parameters["namespace"] = isClosedGroupMessage ? closedGroupNamespace : defaultNamespace
+                for targetSnode in targetSnodes {
+                    let rawResponsePromise = attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                         invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
                     }
-                })
+                    rawResponsePromises.insert(rawResponsePromise)
+                }
+                
+                // Send closed group messages to default namespace as well
+                if hardfork == 19 && softfork == 0 && isClosedGroupMessage {
+                    parameters["namespace"] = defaultNamespace
+                    for targetSnode in targetSnodes {
+                        let rawResponsePromise = attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                            invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
+                        }
+                        rawResponsePromises.insert(rawResponsePromise)
+                    }
+                }
+                
+                return rawResponsePromises
             }.done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
         }
         return promise
