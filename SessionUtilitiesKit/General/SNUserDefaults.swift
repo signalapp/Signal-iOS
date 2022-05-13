@@ -26,6 +26,8 @@ public enum SNUserDefaults {
 
     public enum Int : Swift.String {
         case appMode
+        case hardfork
+        case softfork
     }
     
     public enum String : Swift.String {

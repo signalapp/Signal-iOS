@@ -15,6 +15,8 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
 
     public var ttl: UInt64 { 14 * 24 * 60 * 60 * 1000 }
     public var isSelfSendValid: Bool { false }
+    
+    public var shouldBeRetryable: Bool { false }
 
     public override init() { }
 

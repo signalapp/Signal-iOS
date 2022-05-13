@@ -371,9 +371,15 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "สงตัวอย่างจากลินค์";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "สามารถได้ตัวอย่างจากเว็บไซต์ Imgur, Instagram, Pinterest, Reddit, และ YouTube";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for most urls.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "ตัวอย่างจากลินค์";
+/* Setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS" = "Voice and video calls";
+/* Footer for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_FOOTER" = "Allow access to accept voice and video calls from other users.";
+/* Header for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_HEADER" = "Calls";
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "ข้อมูลการแจ้งเตือน";
 /* Label for the 'read receipts' setting. */
@@ -562,6 +568,8 @@
 "modal_link_previews_title" = "เปิดใช้งานการแสดงตัวอย่างลิงค์";
 "modal_link_previews_explanation" = "การเปิดใช้งานการแสดงตัวอย่างลิงค์จะแสดงตัวอย่างสำหรับ URL ที่คุณส่งและรับ สิ่งนี้มีประโยชน์ แต่Sessionจะต้องติดต่อเว็บไซต์ที่เชื่อมโยงเพื่อสร้างตัวอย่าง คุณสามารถปิดการแสดงตัวอย่างลิงก์ได้ตลอดเวลาในการตั้งค่าของSession";
 "modal_link_previews_button_title" = "เปิดใช้งาน";
+"modal_call_title" = "Voice / video calls";
+"modal_call_explanation" = "The current implementation of voice / video calls will expose your IP address to the Oxen Foundation servers and the calling / called user.";
 "modal_share_logs_title" = "Share Logs";
 "modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
 "vc_share_title" = "เชิญมาใช้ Session";
@@ -597,15 +605,33 @@
 "accessibility_camera_button" = "Camera";
 "accessibility_main_button_collapse" = "Collapse attachment options";
 "invalid_recovery_phrase" = "Invalid Recovery Phrase";
+"invalid_recovery_phrase" = "Invalid Recovery Phrase";
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Settings";
+"call_outgoing" = "You called %@";
+"call_incoming" = "%@ called you";
+"call_missed" = "Missed Call from %@";
+"call_rejected" = "Rejected Call";
+"call_cancelled" = "Cancelled Call";
+"call_timeout" = "Unanswered Call";
 "voice_call" = "Voice Call";
 "video_call" = "Video Call";
-"APN_Message" = "You've got a new message";
+"APN_Message" = "You've got a new message.";
+"APN_Collapsed_Messages" = "You've got %@ new messages.";
 "system_mode_theme" = "System";
 "dark_mode_theme" = "Dark";
 "light_mode_theme" = "Light";
+"PIN_BUTTON_TEXT" = "Pin";
+"UNPIN_BUTTON_TEXT" = "Unpin";
+"modal_call_missed_tips_title" = "Call missed";
+"modal_call_missed_tips_explanation" = "Call missed from '%@' because you needed to enable the 'Voice and video calls' permission in the Privacy Settings.";
+"meida_saved" = "Media saved by %@.";
+"screenshot_taken" = "%@ took a screenshot.";
+"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_RECENT" = "Recent";
+"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";
 "MESSAGE_REQUESTS_TITLE" = "Message Requests";
 "MESSAGE_REQUESTS_EMPTY_TEXT" = "No pending message requests";
 "MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";
