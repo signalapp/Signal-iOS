@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -21,6 +21,7 @@ public extension OWSRequestFactory {
     static let textSecureProfileAvatarFormAPI  = "v1/profile/form/avatar"
     static let textSecure2FAAPI  = "v1/accounts/pin"
     static let textSecureRegistrationLockV2API  = "v1/accounts/registration_lock"
+    static let textSecureGiftBadgePricesAPI = "v1/subscription/boost/amounts/gift"
 
     static let textSecureHTTPTimeOut: TimeInterval = 10
 
@@ -62,5 +63,11 @@ public extension OWSRequestFactory {
         return TSRequest(url: url,
                          method: HTTPMethod.delete.methodName,
                          parameters: [:])
+    }
+
+    static func giftBadgePricesRequest() -> TSRequest {
+        TSRequest(url: URL(string: textSecureGiftBadgePricesAPI)!,
+                  method: HTTPMethod.get.methodName,
+                  parameters: [:])
     }
 }

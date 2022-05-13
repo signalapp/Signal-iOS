@@ -203,6 +203,99 @@ public class DonationCurrencyPickerButton: UIStackView {
     }
 }
 
+// MARK: - Generic badge cell view
+
+public class BadgeCellView: UIStackView {
+    init(badge: ProfileBadge?, titleText: String, secondLineText: String, thirdLineText: String) {
+        super.init(frame: .zero)
+
+        self.axis = .horizontal
+        self.spacing = 12
+        self.alignment = .center
+
+        let badgeImageView: UIView = {
+            let badgeImage = badge?.assets?.universal160
+            return UIImageView(image: badgeImage)
+        }()
+        self.addArrangedSubview(badgeImageView)
+        badgeImageView.autoSetDimensions(to: CGSize(square: 64))
+
+        let vStackView: UIView = {
+            let titleLabel = UILabel()
+            titleLabel.text = titleText
+            titleLabel.textColor = Theme.primaryTextColor
+            titleLabel.font = .ows_dynamicTypeBody.ows_semibold
+            titleLabel.numberOfLines = 0
+
+            let secondLineLabel = UILabel()
+            secondLineLabel.text = secondLineText
+            secondLineLabel.textColor = Theme.primaryTextColor
+            secondLineLabel.font = .ows_dynamicTypeBody2
+            secondLineLabel.numberOfLines = 0
+
+            let thirdLineLabel = UILabel()
+            thirdLineLabel.text = thirdLineText
+            thirdLineLabel.textColor = Theme.primaryTextColor
+            thirdLineLabel.font = .ows_dynamicTypeBody2
+            thirdLineLabel.numberOfLines = 0
+
+            let view = UIStackView(arrangedSubviews: [titleLabel, secondLineLabel, thirdLineLabel])
+            view.axis = .vertical
+            view.distribution = .equalCentering
+            view.spacing = 4
+
+            return view
+        }()
+        self.addArrangedSubview(vStackView)
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: - Gift badge cell view
+
+public class GiftBadgeCellView: BadgeCellView {
+    init(badge: ProfileBadge, price: UInt, currencyCode: Currency.Code) {
+        let formattedPrice = DonationUtilities.formatCurrency(NSDecimalNumber(value: price), currencyCode: currencyCode)
+
+        let formattedDurationText: String = {
+            guard let duration = badge.duration else {
+                owsFailDebug("Gift badge had no duration but one was expected")
+                return ""
+            }
+
+            let durationFormatter = DateComponentsFormatter()
+            durationFormatter.unitsStyle = .short
+            durationFormatter.allowedUnits = [.day]
+            guard let formattedDuration = durationFormatter.string(from: duration) else {
+                owsFailDebug("Could not format gift badge duration")
+                return ""
+            }
+
+            return String(format: NSLocalizedString("BADGE_GIFTING_ROW_DURATION",
+                                                    comment: "When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}."),
+                          formattedDuration)
+        }()
+
+        let thirdLineText = String(format: NSLocalizedString("JOINED_WITH_DOT",
+                                                             comment: "Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot"),
+                                   formattedPrice,
+                                   formattedDurationText)
+
+        super.init(badge: badge,
+                   titleText: badge.localizedName,
+                   secondLineText: NSLocalizedString("BADGE_GIFTING_GIFT_ROW_SUBTITLE",
+                                                     comment: "When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title"),
+                   thirdLineText: thirdLineText)
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 // MARK: - Misc. utilities
 
 public final class DonationViewsUtil {
@@ -273,7 +366,7 @@ public final class DonationViewsUtil {
                     titleLabel.text = subscriptionLevel?.name
                     titleLabel.textColor = Theme.primaryTextColor
                     titleLabel.font = .ows_dynamicTypeBody.ows_semibold
-                    titleLabel.numberOfLines = 3
+                    titleLabel.numberOfLines = 0
                     return titleLabel
                 }()
 
@@ -288,7 +381,7 @@ public final class DonationViewsUtil {
                     pricingLabel.text = String(format: pricingFormat, currencyString)
                     pricingLabel.textColor = Theme.primaryTextColor
                     pricingLabel.font = .ows_dynamicTypeBody2
-                    pricingLabel.numberOfLines = 3
+                    pricingLabel.numberOfLines = 0
                     return pricingLabel
                 }()
 

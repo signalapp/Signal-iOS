@@ -7,6 +7,9 @@ import PassKit
 import LibSignalClient
 import SignalServiceKit
 
+public let BOOST_BADGE_LEVEL = "1"
+public let GIFT_BADGE_LEVEL = "100"
+
 public enum SubscriptionBadgeIds: String, CaseIterable {
     case low = "R_LOW"
     case med = "R_MED"
@@ -1026,6 +1029,22 @@ extension SubscriptionManager {
         }
     }
 
+    public class func getGiftBadgePricesByCurrencyCode() -> Promise<[Currency.Code: UInt]> {
+        firstly {
+            networkManager.makePromise(request: OWSRequestFactory.giftBadgePricesRequest())
+        }.map { response in
+            guard response.responseStatusCode == 200 else {
+                throw OWSAssertionError("Got bad response code \(response.responseStatusCode).")
+            }
+
+            guard let prices = response.responseBodyJson as? [String: UInt] else {
+                throw OWSAssertionError("Got unexpected response JSON for gift badge amounts")
+            }
+
+            return prices
+        }
+    }
+
     public static func requestBoostReceiptCredentialPresentation(for intentId: String, context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) throws -> Promise<ReceiptCredentialPresentation> {
 
         let clientOperations = try clientZKReceiptOperations()
@@ -1103,6 +1122,14 @@ extension SubscriptionManager {
     }
 
     public class func getBoostBadge() -> Promise<ProfileBadge> {
+        getBadge(level: BOOST_BADGE_LEVEL)
+    }
+
+    public class func getGiftBadge() -> Promise<ProfileBadge> {
+        getBadge(level: GIFT_BADGE_LEVEL)
+    }
+
+    private class func getBadge(level: String) -> Promise<ProfileBadge> {
         let request = OWSRequestFactory.boostBadgesRequest()
 
         return firstly {
@@ -1123,9 +1150,9 @@ extension SubscriptionManager {
                 throw OWSAssertionError("Missing or invalid response.")
             }
 
-            let boostLevel: [String: Any] = try levelsParser.required(key: "1")
+            let badgeLevel: [String: Any] = try levelsParser.required(key: level)
 
-            guard let levelParser = ParamParser(responseObject: boostLevel) else {
+            guard let levelParser = ParamParser(responseObject: badgeLevel) else {
                 throw OWSAssertionError("Missing or invalid response.")
             }
 

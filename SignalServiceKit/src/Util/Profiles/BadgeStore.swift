@@ -17,13 +17,15 @@ public class ProfileBadge: NSObject, Codable {
     let badgeVariant: BadgeVariant
     let localization: String
 
+    public let duration: TimeInterval?
+
     // Nil until a badge is checked in to the BadgeStore
     @objc
     public fileprivate(set) var assets: BadgeAssets?
 
     private enum CodingKeys: String, CodingKey {
         // Skip encoding of `assets`
-        case id, rawCategory, localizedName, localizedDescriptionFormatString, resourcePath, badgeVariant, localization
+        case id, rawCategory, localizedName, localizedDescriptionFormatString, resourcePath, badgeVariant, localization, duration
     }
 
     public init(jsonDictionary: [String: Any]) throws {
@@ -44,6 +46,8 @@ public class ProfileBadge: NSObject, Codable {
         // TODO: Badges — Check with server to see if they'll return a Content-language
         // TODO: Badges — What about reordered languages? Maybe clear if any change?
         localization = Locale.preferredLanguages[0]
+
+        duration = try params.optional(key: "duration")
     }
 
     static func ==(lhs: ProfileBadge, rhs: ProfileBadge) -> Bool {

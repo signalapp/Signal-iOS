@@ -4,19 +4,107 @@
 
 import Foundation
 import UIKit
+import SignalMessaging
 
-// TODO(evanhahn): This screen is not finished.
-class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
+public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
+    // MARK: - State management
+
+    enum State {
+        case initializing
+        case loading
+        case loadFailed
+        case loaded(selectedCurrencyCode: Currency.Code,
+                    badge: ProfileBadge,
+                    pricesByCurrencyCode: [Currency.Code: UInt])
+
+        public var canContinue: Bool {
+            switch self {
+            case .initializing, .loading, .loadFailed:
+                return false
+            case let .loaded(selectedCurrencyCode, _, pricesByCurrencyCode):
+                let isValid = pricesByCurrencyCode[selectedCurrencyCode] != nil
+                owsAssertDebug(isValid, "State was loaded but it was invalid")
+                return isValid
+            }
+        }
+
+        public func selectCurrencyCode(_ newCurrencyCode: Currency.Code) -> State {
+            switch self {
+            case .initializing, .loading, .loadFailed:
+                assertionFailure("Invalid state; cannot select currency code")
+                return self
+            case let .loaded(_, badge, pricesByCurrencyCode):
+                guard pricesByCurrencyCode[newCurrencyCode] != nil else {
+                    assertionFailure("Tried to select a currency code that doesn't exist")
+                    return self
+                }
+                return .loaded(selectedCurrencyCode: newCurrencyCode,
+                               badge: badge,
+                               pricesByCurrencyCode: pricesByCurrencyCode)
+            }
+        }
+    }
+
+    private var state: State = .initializing {
+        didSet {
+            updateTableContents()
+            updateBottomFooter()
+        }
+    }
+
+    private func loadDataIfNecessary() {
+        switch state {
+        case .initializing, .loadFailed:
+            state = .loading
+            loadData().done { self.state = $0 }
+        case .loading, .loaded:
+            break
+        }
+    }
+
+    private func loadData() -> Guarantee<State> {
+        firstly {
+            Promise.when(fulfilled: SubscriptionManager.getGiftBadge(), SubscriptionManager.getGiftBadgePricesByCurrencyCode())
+        }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [String: UInt]) -> Promise<(ProfileBadge, [String: UInt])> in
+            self.profileManager.badgeStore.populateAssetsOnBadge(giftBadge).map { (giftBadge, pricesByCurrencyCode) }
+        }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [Currency.Code: UInt]) -> Guarantee<State> in
+            let selectedCurrencyCode: Currency.Code
+            if pricesByCurrencyCode[Stripe.defaultCurrencyCode] != nil {
+                selectedCurrencyCode = Stripe.defaultCurrencyCode
+            } else if pricesByCurrencyCode["USD"] != nil {
+                Logger.warn("Could not find the desired currency code. Falling back to USD")
+                selectedCurrencyCode = "USD"
+            } else {
+                owsFail("Could not pick a currency, even USD")
+            }
+
+            return Guarantee.value(.loaded(selectedCurrencyCode: selectedCurrencyCode,
+                                           badge: giftBadge,
+                                           pricesByCurrencyCode: pricesByCurrencyCode))
+        }.recover { error -> Guarantee<State> in
+            Logger.warn("\(error)")
+            return Guarantee.value(.loadFailed)
+        }
+    }
+
+    private func didTapNext() {
+        let vc = BadgeGiftingChooseRecipientViewController()
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+
     // MARK: - Callbacks
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+        loadDataIfNecessary()
         updateTableContents()
+        setUpBottomFooter()
     }
 
     public override func themeDidChange() {
         super.themeDidChange()
         updateTableContents()
+        updateBottomFooter()
     }
 
     // MARK: - Table contents
@@ -42,7 +130,7 @@ class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
                 let titleLabel = UILabel()
                 introStack.addArrangedSubview(titleLabel)
                 titleLabel.text = NSLocalizedString("BADGE_GIFTING_CHOOSE_BADGE_TITLE",
-                                               comment: "Title on the screen where you choose a gift badge")
+                                                    comment: "Title on the screen where you choose a gift badge")
                 titleLabel.textAlignment = .center
                 titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
                 titleLabel.numberOfLines = 0
@@ -52,7 +140,7 @@ class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
                 let paragraphLabel = UILabel()
                 introStack.addArrangedSubview(paragraphLabel)
                 paragraphLabel.text = NSLocalizedString("BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION",
-                                               comment: "Short paragraph on the screen where you choose a gift badge")
+                                                        comment: "Short paragraph on the screen where you choose a gift badge")
                 paragraphLabel.textAlignment = .center
                 paragraphLabel.font = UIFont.ows_dynamicTypeBody
                 paragraphLabel.numberOfLines = 0
@@ -64,10 +152,153 @@ class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             return section
         }()
 
-        let result: [OWSTableSection] = [introSection]
+        var result: [OWSTableSection] = [introSection]
 
-        // TODO(evanhahn): Add additional sections.
+        switch state {
+        case .initializing, .loading:
+            result += loadingSections()
+        case .loadFailed:
+            result += loadFailedSections()
+        case let .loaded(selectedCurrencyCode, badge, pricesByCurrencyCode):
+            result += loadedSections(selectedCurrencyCode: selectedCurrencyCode, badge: badge, pricesByCurrencyCode: pricesByCurrencyCode)
+        }
 
         return result
+    }
+
+    private func loadingSections() -> [OWSTableSection] {
+        let section = OWSTableSection()
+        section.add(AppSettingsViewsUtil.loadingTableItem(cellOuterInsets: cellOuterInsets))
+        section.hasBackground = false
+        return [section]
+    }
+
+    private func loadFailedSections() -> [OWSTableSection] {
+        let section = OWSTableSection()
+        section.add(.init(customCellBlock: { [weak self] in
+            guard let self = self else { return UITableViewCell() }
+            let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
+
+            let stackView = UIStackView()
+            stackView.axis = .vertical
+            stackView.spacing = 16
+
+            let textLabel = UILabel()
+            stackView.addArrangedSubview(textLabel)
+            textLabel.text = NSLocalizedString("DONATION_VIEW_LOAD_FAILED",
+                                               comment: "Text that's shown when the donation view fails to load data, probably due to network failure")
+            textLabel.font = .ows_dynamicTypeBody2
+            textLabel.textAlignment = .center
+            textLabel.textColor = Theme.primaryTextColor
+            textLabel.numberOfLines = 0
+
+            let retryButton = OWSButton { [weak self] in self?.loadDataIfNecessary() }
+            stackView.addArrangedSubview(retryButton)
+            retryButton.setTitle(CommonStrings.retryButton, for: .normal)
+            if Theme.isDarkThemeEnabled {
+                retryButton.setTitleColor(.ows_gray05, for: .normal)
+                retryButton.setBackgroundImage(UIImage.init(color: .ows_gray85), for: .normal)
+            } else {
+                retryButton.setTitleColor(.ows_gray90, for: .normal)
+                retryButton.setBackgroundImage(UIImage.init(color: .ows_gray05), for: .normal)
+            }
+            retryButton.contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
+            retryButton.autoPinWidthToSuperviewMargins(relation: .lessThanOrEqual)
+            retryButton.autoHCenterInSuperview()
+            retryButton.setContentHuggingHigh()
+            retryButton.layer.cornerRadius = 16
+            retryButton.clipsToBounds = true
+
+            cell.contentView.addSubview(stackView)
+            stackView.autoPinEdgesToSuperviewMargins()
+
+            return cell
+        }))
+        return [section]
+    }
+
+    private func loadedSections(selectedCurrencyCode: Currency.Code,
+                                badge: ProfileBadge,
+                                pricesByCurrencyCode: [Currency.Code: UInt]) -> [OWSTableSection] {
+        let currencyButtonSection = OWSTableSection()
+        currencyButtonSection.hasBackground = false
+        currencyButtonSection.add(.init(customCellBlock: { [weak self] in
+            guard let self = self else { return UITableViewCell() }
+            let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
+
+            let currencyPickerButton = DonationCurrencyPickerButton(currentCurrencyCode: selectedCurrencyCode) { [weak self] in
+                guard let self = self else { return }
+                let vc = CurrencyPickerViewController(
+                    dataSource: StripeCurrencyPickerDataSource(currentCurrencyCode: selectedCurrencyCode,
+                                                               supportedCurrencyCodes: Set(pricesByCurrencyCode.keys))
+                ) { [weak self] currencyCode in
+                    guard let self = self else { return }
+                    self.state = self.state.selectCurrencyCode(currencyCode)
+                }
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+
+            cell.contentView.addSubview(currencyPickerButton)
+            currencyPickerButton.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(top: 0, leading: 0, bottom: 12, trailing: 0))
+
+            return cell
+        }))
+
+        let badgeSection = OWSTableSection()
+        badgeSection.add(.init(customCellBlock: { [weak self] in
+            guard let self = self else { return UITableViewCell() }
+            let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
+
+            // We ensure that this value is set when we load.
+            let price = pricesByCurrencyCode[selectedCurrencyCode] ?? 0
+            let badgeCellView = GiftBadgeCellView(badge: badge, price: price, currencyCode: selectedCurrencyCode)
+            cell.contentView.addSubview(badgeCellView)
+            badgeCellView.autoPinEdgesToSuperviewMargins()
+
+            return cell
+        }))
+
+        return [currencyButtonSection, badgeSection]
+    }
+
+    // MARK: - Footer contents
+
+    open override var bottomFooter: UIView? {
+        get { bottomFooterStackView }
+        set {}
+    }
+    private let nextButton = OWSButton()
+    private let bottomFooterStackView = UIStackView()
+
+    private func setUpBottomFooter() {
+        bottomFooterStackView.axis = .vertical
+        bottomFooterStackView.alignment = .center
+        bottomFooterStackView.layoutMargins = UIEdgeInsets(top: 10, leading: 23, bottom: 10, trailing: 23)
+        bottomFooterStackView.spacing = 16
+        bottomFooterStackView.isLayoutMarginsRelativeArrangement = true
+
+        bottomFooterStackView.addArrangedSubview(nextButton)
+        nextButton.block = { [weak self] in
+            self?.didTapNext()
+        }
+        nextButton.setTitle(CommonStrings.nextButton, for: .normal)
+        nextButton.dimsWhenHighlighted = true
+        nextButton.layer.cornerRadius = 8
+        nextButton.backgroundColor = .ows_accentBlue
+        nextButton.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
+        nextButton.autoSetDimension(.height, toSize: 48)
+        nextButton.autoPinWidthToSuperviewMargins()
+
+        updateBottomFooter()
+    }
+
+    private func updateBottomFooter() {
+        bottomFooterStackView.layer.backgroundColor = self.tableBackgroundColor.cgColor
+
+        nextButton.isEnabled = state.canContinue
+        nextButton.backgroundColor = .ows_accentBlue
+        if !nextButton.isEnabled {
+            nextButton.backgroundColor = nextButton.backgroundColor?.withAlphaComponent(0.5)
+        }
     }
 }

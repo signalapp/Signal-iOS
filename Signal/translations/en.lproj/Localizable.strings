@@ -391,11 +391,23 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
 
+/* Indicates that a contact cannot receive badges because they need to update Signal */
+"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
+
+/* Title on the screen where you choose a gift badge's recipient */
+"BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
+
+/* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+
+/* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
+"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because we couldn’t process your payment. Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment method in Apple Pay and subscribe again.";
@@ -2973,6 +2985,9 @@
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Join";
+
+/* Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot */
+"JOINED_WITH_DOT" = "%@ · %@";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Go to All Media";

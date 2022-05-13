@@ -100,9 +100,10 @@ public class BadgeAssets: NSObject {
             self.fetchSpritesheetIfNecessary()
         }.done(on: .sharedUtility) { _ in
             try self.extractSpritesFromSpritesheetIfNecessary()
+            self.lock.withLock { self.state = .fetched }
         }.catch(on: .sharedUtility) { error in
             owsFailDebug("Failed to fetch badge assets with error: \(error)")
-            self.state = .failed
+            self.lock.withLock { self.state = .failed }
         }
     }
 
