@@ -2020,7 +2020,7 @@ public class GRDBSchemaMigrator: NSObject {
 
                 while let member = try memberCursor.next() {
                     autoreleasepool {
-                        GRDBFullTextSearchFinder.modelWasInserted(model: member, transaction: transaction)
+                        GRDBFullTextSearchFinder.modelWasInsertedOrUpdated(model: member, transaction: transaction)
                     }
                 }
             } catch {

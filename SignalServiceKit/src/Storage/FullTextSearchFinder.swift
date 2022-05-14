@@ -50,6 +50,15 @@ public class FullTextSearchFinder: NSObject {
         }
     }
 
+    public func modelWasInsertedOrUpdated(model: SDSIndexableModel, transaction: SDSAnyWriteTransaction) {
+        assert(type(of: model).ftsIndexMode != .never)
+
+        switch transaction.writeTransaction {
+        case .grdbWrite(let grdbWrite):
+            GRDBFullTextSearchFinder.modelWasInsertedOrUpdated(model: model, transaction: grdbWrite)
+        }
+    }
+
     public func modelWasRemoved(model: SDSIndexableModel, transaction: SDSAnyWriteTransaction) {
         assert(type(of: model).ftsIndexMode != .never)
 
@@ -309,6 +318,53 @@ class GRDBFullTextSearchFinder: NSObject {
             AND \(uniqueIdColumn) == ?
             """,
             arguments: [ftsContent, collection, uniqueId],
+            transaction: transaction)
+    }
+
+    public class func modelWasInsertedOrUpdated(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
+        guard shouldIndexModel(model) else {
+            Logger.verbose("Not indexing model: \(type(of: (model)))")
+            removeModelFromIndex(model, transaction: transaction)
+            return
+        }
+        let uniqueId = model.uniqueId
+        let collection = self.collection(forModel: model)
+        let ftsContent = AnySearchIndexer.indexContent(object: model, transaction: transaction.asAnyRead) ?? ""
+
+        let shouldSkipUpdate: Bool = serialQueue.sync {
+            guard !CurrentAppContext().isRunningTests else {
+                return false
+            }
+            let cacheKey = self.cacheKey(collection: collection, uniqueId: uniqueId)
+            if let cachedValue = ftsCache.object(forKey: cacheKey),
+                (cachedValue as String) == ftsContent {
+                return true
+            }
+            ftsCache.setObject(ftsContent, forKey: cacheKey)
+            return false
+        }
+        guard !shouldSkipUpdate else {
+            if !DebugFlags.reduceLogChatter {
+                Logger.verbose("Skipping FTS update")
+            }
+            return
+        }
+
+        executeUpdate(
+            // See: https://www.sqlite.org/lang_UPSERT.html
+            sql: """
+                INSERT INTO \(contentTableName) (
+                    \(collectionColumn),
+                    \(uniqueIdColumn),
+                    \(ftsContentColumn)
+                ) VALUES (?, ?, ?)
+                ON CONFLICT (
+                    \(collectionColumn),
+                    \(uniqueIdColumn)
+                ) DO UPDATE
+                SET \(ftsContentColumn) = ?
+            """,
+            arguments: [collection, uniqueId, ftsContent, ftsContent],
             transaction: transaction)
     }
 
