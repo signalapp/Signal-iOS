@@ -36,14 +36,15 @@ class AppUpdateNag: NSObject {
 
         firstly {
             self.versionService.fetchLatestVersion(lookupURL: lookupURL)
-        }.done { appStoreRecord in
+        }.then(on: .global()) { (appStoreRecord) -> Promise<Void> in
             guard appStoreRecord.version.compare(currentVersion, options: .numeric) == ComparisonResult.orderedDescending else {
                 Logger.debug("remote version: \(appStoreRecord) is not newer than currentVersion: \(currentVersion)")
-                return
+                return Promise.value(())
             }
-
-            Logger.info("new version available: \(appStoreRecord)")
-            self.showUpdateNagIfEnoughTimeHasPassed(appStoreRecord: appStoreRecord)
+            return firstly(on: .main) {
+                Logger.info("new version available: \(appStoreRecord)")
+                self.showUpdateNagIfEnoughTimeHasPassed(appStoreRecord: appStoreRecord)
+            }
         }.catch { error in
             Logger.warn("failed with error: \(error)")
         }
