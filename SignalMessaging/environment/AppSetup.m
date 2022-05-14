@@ -213,8 +213,6 @@ NS_ASSUME_NONNULL_BEGIN
                     [databaseStorage.grdbStorage syncTruncatingCheckpointAndReturnError:&error];
                     if (error != nil) {
                         OWSFailDebug(@"Failed to truncate database: %@", error);
-
-                        dispatch_async(dispatch_get_main_queue(), ^{ migrationCompletion(error); });
                     }
                 }
 
