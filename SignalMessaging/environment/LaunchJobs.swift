@@ -55,6 +55,8 @@ public class LaunchJobs: NSObject {
 
         Logger.verbose("Starting.")
 
+        var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
+
         // Getting this work done ASAP is super high priority, since we won't finish launching until
         // the completion block is fired.
         //
@@ -82,6 +84,9 @@ public class LaunchJobs: NSObject {
                 Logger.verbose("Completing.")
                 self.state = .complete
                 completion()
+
+                owsAssertDebug(backgroundTask != nil)
+                backgroundTask = nil
             }
         }
     }
