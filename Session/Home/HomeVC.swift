@@ -15,6 +15,12 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     private var dataChangeObservable: DatabaseCancellable?
     private var hasLoadedInitialData: Bool = false
     
+    // MARK: - Intialization
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     // MARK: - UI
     
     private var tableViewTopConstraint: NSLayoutConstraint!
@@ -205,10 +211,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         dataChangeObservable?.cancel()
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-        
     // MARK: - Updating
     
     private func startObservingChanges() {

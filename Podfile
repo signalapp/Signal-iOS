@@ -42,6 +42,7 @@ abstract_target 'GlobalDependencies' do
       
       target 'SessionShareExtension' do
         pod 'NVActivityIndicatorView'
+        pod 'DifferenceKit'
       end
       
       target 'SignalUtilitiesKit' do

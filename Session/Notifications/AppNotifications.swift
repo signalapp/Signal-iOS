@@ -425,7 +425,11 @@ class NotificationActionHandler {
                 trySendReadReceipt: true
             )
             
-            return MessageSender.sendNonDurably(db, interaction: interaction, in: thread)
+            return try MessageSender.sendNonDurably(
+                db,
+                interaction: interaction,
+                in: thread
+            )
         }
         
         promise.catch { [weak self] error in

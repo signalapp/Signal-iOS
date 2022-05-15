@@ -30,6 +30,16 @@ public struct InteractionAttachment: Codable, FetchableRecord, PersistableRecord
         request(for: InteractionAttachment.attachment)
     }
     
+    // MARK: - Initialization
+    
+    public init(
+        interactionId: Int64,
+        attachmentId: String
+    ) {
+        self.interactionId = interactionId
+        self.attachmentId = attachmentId
+    }
+    
     // MARK: - Custom Database Interaction
     
     public func delete(_ db: Database) throws -> Bool {

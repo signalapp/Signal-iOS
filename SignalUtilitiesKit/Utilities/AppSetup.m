@@ -46,7 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
-        id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
@@ -61,8 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
         // TODO: Refactor this file to Swift
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithPrimaryStorage:primaryStorage
                                                                 tsAccountManager:tsAccountManager
-                                                             reachabilityManager:reachabilityManager
-                                                                typingIndicators:typingIndicators]];
+                                                             reachabilityManager:reachabilityManager]];
 //        [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithPrimaryStorage:primaryStorage
 //                                                                tsAccountManager:tsAccountManager
 //                                                         disappearingMessagesJob:disappearingMessagesJob

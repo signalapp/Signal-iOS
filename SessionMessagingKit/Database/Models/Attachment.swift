@@ -563,7 +563,7 @@ public extension Attachment {
         return attachmentsFolder
     }()
     
-    internal static func originalFilePath(id: String, mimeType: String, sourceFilename: String?) -> String? {
+    public static func originalFilePath(id: String, mimeType: String, sourceFilename: String?) -> String? {
         return MIMETypeUtil.filePath(
             forAttachment: id,
             ofMIMEType: mimeType,
@@ -866,6 +866,7 @@ extension Attachment {
 
 extension Attachment {
     internal func upload(
+        _ db: Database,
         using upload: (Data) -> Promise<UInt64>,
         encrypt: Bool,
         success: (() -> Void)?,
@@ -899,11 +900,9 @@ extension Attachment {
             digest == nil
         else {
             // Save the final upload info
-            let uploadedAttachment: Attachment? = GRDBStorage.shared.write { db in
-                try self
-                    .with(state: .uploaded)
-                    .saved(db)
-            }
+            let uploadedAttachment: Attachment? = try? self
+                .with(state: .uploaded)
+                .saved(db)
             
             guard uploadedAttachment != nil else {
                 SNLog("Couldn't update attachmentUpload job.")
@@ -943,11 +942,9 @@ extension Attachment {
         }
         
         // Update the attachment to the 'uploading' state
-        let updatedAttachment: Attachment? = GRDBStorage.shared.write { db in
-            try processedAttachment
-                .with(state: .uploading)
-                .saved(db)
-        }
+        let updatedAttachment: Attachment? = try? processedAttachment
+            .with(state: .uploading)
+            .saved(db)
         
         guard updatedAttachment != nil else {
             SNLog("Couldn't update attachmentUpload job.")

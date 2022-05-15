@@ -14,6 +14,7 @@ public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
     func attachmentApproval(
         _ attachmentApproval: AttachmentApprovalViewController,
         didApproveAttachments attachments: [SignalAttachment],
+        forThreadId threadId: String,
         messageText: String?
     )
 
@@ -54,6 +55,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // MARK: - Properties
 
     private let mode: Mode
+    private let threadId: String
     private let isAddMoreVisible: Bool
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
@@ -123,10 +125,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     @objc
     required public init(
         mode: Mode,
+        threadId: String,
         attachments: [SignalAttachment]
     ) {
         assert(attachments.count > 0)
         self.mode = mode
+        self.threadId = threadId
         let attachmentItems = attachments.map { SignalAttachmentItem(attachment: $0 )}
         self.isAddMoreVisible = (mode == .sharedNavigation)
 
@@ -154,12 +158,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         NotificationCenter.default.removeObserver(self)
     }
 
-    @objc
     public class func wrappedInNavController(
+        threadId: String,
         attachments: [SignalAttachment],
         approvalDelegate: AttachmentApprovalViewControllerDelegate
     ) -> OWSNavigationController {
-        let vc = AttachmentApprovalViewController(mode: .modal, attachments: attachments)
+        let vc = AttachmentApprovalViewController(mode: .modal, threadId: threadId, attachments: attachments)
         vc.approvalDelegate = approvalDelegate
         
         let navController = OWSNavigationController(rootViewController: vc)
@@ -760,7 +764,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         attachmentTextToolbar.isUserInteractionEnabled = false
         attachmentTextToolbar.isHidden = true
 
-        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: attachmentTextToolbar.messageText)
+        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, forThreadId: threadId, messageText: attachmentTextToolbar.messageText)
     }
 
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar) {

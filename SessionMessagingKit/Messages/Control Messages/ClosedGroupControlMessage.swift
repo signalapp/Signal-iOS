@@ -15,8 +15,8 @@ public final class ClosedGroupControlMessage: ControlMessage {
 
     public override var ttl: UInt64 {
         switch kind {
-        case .encryptionKeyPair: return 14 * 24 * 60 * 60 * 1000
-        default: return 14 * 24 * 60 * 60 * 1000
+            case .encryptionKeyPair: return 14 * 24 * 60 * 60 * 1000
+            default: return 14 * 24 * 60 * 60 * 1000
         }
     }
     
@@ -184,8 +184,8 @@ public final class ClosedGroupControlMessage: ControlMessage {
 
     // MARK: - Initialization
 
-    internal init(kind: Kind) {
-        super.init()
+    internal init(kind: Kind, sentTimestampMs: UInt64? = nil) {
+        super.init(sentTimestamp: sentTimestampMs)
         
         self.kind = kind
     }

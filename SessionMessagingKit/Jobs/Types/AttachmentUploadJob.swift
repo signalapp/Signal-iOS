@@ -33,18 +33,21 @@ public enum AttachmentUploadJob: JobExecutor {
             return
         }
         
-        attachment.upload(
-            using: { data in
-                if let openGroup: OpenGroup = openGroup {
-                    return OpenGroupAPIV2.upload(data, to: openGroup.room, on: openGroup.server)
-                }
-                
-                return FileServerAPIV2.upload(data)
-            },
-            encrypt: (openGroup == nil),
-            success: { success(job, false) },
-            failure: { error in failure(job, error, false) }
-        )
+        GRDBStorage.shared.writeAsync { db in
+            attachment.upload(
+                db,
+                using: { data in
+                    if let openGroup: OpenGroup = openGroup {
+                        return OpenGroupAPIV2.upload(data, to: openGroup.room, on: openGroup.server)
+                    }
+                    
+                    return FileServerAPIV2.upload(data)
+                },
+                encrypt: (openGroup == nil),
+                success: { success(job, false) },
+                failure: { error in failure(job, error, false) }
+            )
+        }
     }
 }
 

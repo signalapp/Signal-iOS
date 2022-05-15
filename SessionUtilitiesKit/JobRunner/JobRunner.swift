@@ -503,7 +503,7 @@ public final class JobRunner {
                     runNextJob()
                 }
                 return
-                
+            
             // For "blocking once per session" jobs only rerun it immediately if it hasn't already
             // run this session
             case .recurringOnLaunchBlockingOncePerSession:
@@ -517,7 +517,7 @@ public final class JobRunner {
                     runNextJob()
                 }
                 return
-                
+            
             default: break
         }
         
@@ -531,6 +531,8 @@ public final class JobRunner {
                 maxFailureCount >= 0 &&
                 job.failureCount + 1 < maxFailureCount
             else {
+                SNLog("[JobRunner] \(job.variant) failed permanently\(maxFailureCount >= 0 ? "; too many retries" : "")")
+                
                 // If the job permanently failed or we have performed all of our retry attempts
                 // then delete the job (it'll probably never succeed)
                 _ = try job.delete(db)

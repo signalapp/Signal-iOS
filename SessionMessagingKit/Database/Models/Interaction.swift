@@ -404,6 +404,63 @@ public extension Interaction {
 // MARK: - GRDB Interactions
 
 public extension Interaction {
+    static func lastInteractionTimestamp(timestampMsKey: String) -> CommonTableExpression<Void> {
+        return CommonTableExpression(
+            named: "lastInteraction",
+            request: Interaction
+                .select(
+                    Interaction.Columns.threadId,
+                    
+                    // 'max()' to get the latest
+                    max(Interaction.Columns.timestampMs).forKey(timestampMsKey)
+                )
+                .joining(required: Interaction.thread)
+                .group(Interaction.Columns.threadId)    // One interaction per thread
+        )
+    }
+    
+    static func lastInteraction(
+        lastInteractionKey: String,
+        timestampMsKey: String,
+        threadVariantKey: String,
+        isOpenGroupInvitationKey: String,
+        recipientStatesKey: String
+    ) -> CommonTableExpression<Void> {
+        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
+        
+        return CommonTableExpression(
+            named: lastInteractionKey,
+            request: Interaction
+                .select(
+                    Interaction.Columns.id,
+                    Interaction.Columns.threadId,
+                    Interaction.Columns.variant,
+                    
+                    // 'max()' to get the latest
+                    max(Interaction.Columns.timestampMs).forKey(timestampMsKey),
+                    
+                    thread[.variant].forKey(threadVariantKey),
+                    Interaction.Columns.body,
+                    Interaction.Columns.authorId,
+                    (linkPreview[.url] != nil).forKey(isOpenGroupInvitationKey)
+                )
+                .joining(required: Interaction.thread.aliased(thread))
+                .joining(
+                    optional: Interaction.linkPreview
+                        .filter(literal: Interaction.linkPreviewFilterLiteral)
+                        .filter(LinkPreview.Columns.variant == LinkPreview.Variant.openGroupInvitation)
+                )
+                .including(all: Interaction.attachments)
+                .including(
+                    all: Interaction.recipientStates
+                        .select(RecipientState.Columns.state)
+                        .forKey(recipientStatesKey)
+                )
+                .group(Interaction.Columns.threadId)    // One interaction per thread
+        )
+    }
+    
     /// This will update the `wasRead` state the the interaction
     ///
     /// - Parameters

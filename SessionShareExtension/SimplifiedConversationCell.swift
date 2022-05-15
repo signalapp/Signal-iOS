@@ -4,9 +4,7 @@ import UIKit
 import SessionUIKit
 import SessionMessagingKit
 
-final class SimplifiedConversationCell : UITableViewCell {
-    var threadViewModel: ThreadViewModel! { didSet { update() } }
-    
+final class SimplifiedConversationCell: UITableViewCell {
     // MARK: - Initialization
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -80,45 +78,25 @@ final class SimplifiedConversationCell : UITableViewCell {
         accentLineView.set(.width, to: Values.accentLineThickness)
         accentLineView.set(.height, to: 68)
         
-        let profilePictureViewSize = Values.mediumProfilePictureSize
-        profilePictureView.set(.width, to: profilePictureViewSize)
-        profilePictureView.set(.height, to: profilePictureViewSize)
-        profilePictureView.size = profilePictureViewSize
+        profilePictureView.set(.width, to: Values.mediumProfilePictureSize)
+        profilePictureView.set(.height, to: Values.mediumProfilePictureSize)
+        profilePictureView.size = Values.mediumProfilePictureSize
         
         stackView.pin(to: self)
     }
     
-    // MARK: - Content
+    // MARK: - Updating
     
-    private func update() {
-        AssertIsOnMainThread()
-        
-        guard let thread = threadViewModel?.thread else { return }
-        
-        accentLineView.alpha = (thread.isBlocked() ? 1 : 0)
-        profilePictureView.update(for: thread)
-        displayNameLabel.text = getDisplayName()
-    }
-    
-    private func getDisplayName() -> String {
-        if threadViewModel.thread.variant == .closedGroup || threadViewModel.thread.variant == .openGroup {
-            if threadViewModel.name.isEmpty {
-                // TODO: Localization
-                return "Unknown Group"
-            }
-            
-            return threadViewModel.name
-        }
-        
-        if threadViewModel.threadRecord.isNoteToSelf() {
-            return "NOTE_TO_SELF".localized()
-        }
-        
-        guard threadViewModel.thread.variant == .contact else {
-            // TODO: Localization
-            return "Unknown"
-        }
-        
-        return Profile.displayName(id: threadViewModel.thread.id)
+    public func update(with item: ThreadPickerViewModel.Item, currentUserProfile: Profile) {
+        accentLineView.alpha = (item.isBlocked ? 1 : 0)
+        profilePictureView.update(
+            publicKey: item.id,
+            profile: item.profile(currentUserProfile: currentUserProfile),
+            additionalProfile: item.additionalProfile,
+            threadVariant: item.variant,
+            openGroupProfilePicture: item.openGroupProfilePictureData.map { UIImage(data: $0) },
+            useFallbackPicture: (item.variant == .openGroup && item.openGroupProfilePictureData == nil)
+        )
+        displayNameLabel.text = item.displayName(currentUserProfile: currentUserProfile)
     }
 }

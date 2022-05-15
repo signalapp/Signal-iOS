@@ -89,7 +89,7 @@ extension ConversationVC:
         dismiss(animated: true, completion: nil)
     }
 
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], forThreadId threadId: String, messageText: String?) {
         sendAttachments(attachments, with: messageText ?? "")
         resetMentions()
         self.snInputView.text = ""
@@ -106,7 +106,7 @@ extension ConversationVC:
 
     // MARK: - AttachmentApprovalViewControllerDelegate
     
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], forThreadId threadId: String, messageText: String?) {
         sendAttachments(attachments, with: messageText ?? "") { [weak self] in
             self?.dismiss(animated: true, completion: nil)
         }
@@ -146,9 +146,13 @@ extension ConversationVC:
     }
     
     func handleLibraryButtonTapped() {
+        let threadId: String = self.viewModel.viewData.thread.id
+        
         requestLibraryPermissionIfNeeded { [weak self] in
             DispatchQueue.main.async {
-                let sendMediaNavController = SendMediaNavigationController.showingMediaLibraryFirst()
+                let sendMediaNavController = SendMediaNavigationController.showingMediaLibraryFirst(
+                    threadId: threadId
+                )
                 sendMediaNavController.sendMediaNavDelegate = self
                 sendMediaNavController.modalPresentationStyle = .fullScreen
                 self?.present(sendMediaNavController, animated: true, completion: nil)
@@ -165,7 +169,7 @@ extension ConversationVC:
             SNLog("Proceeding without microphone access. Any recorded video will be silent.")
         }
         
-        let sendMediaNavController = SendMediaNavigationController.showingCameraFirst()
+        let sendMediaNavController = SendMediaNavigationController.showingCameraFirst(threadId: self.viewModel.viewData.thread.id)
         sendMediaNavController.sendMediaNavDelegate = self
         sendMediaNavController.modalPresentationStyle = .fullScreen
         
@@ -234,7 +238,12 @@ extension ConversationVC:
     }
 
     func showAttachmentApprovalDialog(for attachments: [SignalAttachment]) {
-        let navController = AttachmentApprovalViewController.wrappedInNavController(attachments: attachments, approvalDelegate: self)
+        let navController = AttachmentApprovalViewController.wrappedInNavController(
+            threadId: self.viewModel.viewData.thread.id,
+            attachments: attachments,
+            approvalDelegate: self
+        )
+        
         present(navController, animated: true, completion: nil)
     }
 
@@ -505,7 +514,11 @@ extension ConversationVC:
         let dataSource = DataSourceValue.dataSource(with: imageData, utiType: kUTTypeJPEG as String)
         let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String, imageQuality: .medium)
 
-        let approvalVC = AttachmentApprovalViewController.wrappedInNavController(attachments: [ attachment ], approvalDelegate: self)
+        let approvalVC = AttachmentApprovalViewController.wrappedInNavController(
+            threadId: self.viewModel.viewData.thread.id,
+            attachments: [ attachment ],
+            approvalDelegate: self
+        )
         approvalVC.modalPresentationStyle = .fullScreen
         
         self.present(approvalVC, animated: true, completion: nil)

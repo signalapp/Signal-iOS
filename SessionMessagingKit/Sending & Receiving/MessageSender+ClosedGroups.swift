@@ -73,12 +73,10 @@ extension MessageSender {
                             members: membersAsData,
                             admins: adminsAsData,
                             expirationTimer: 0
-                        )
-                    )
-                    .with(
+                        ),
                         // Note: We set this here to ensure the value matches the 'ClosedGroup'
                         // object we created
-                        sentTimestamp: UInt64(floor(formationTimestamp * 1000))
+                        sentTimestampMs: UInt64(floor(formationTimestamp * 1000))
                     ),
                     interactionId: nil,
                     in: contactThread

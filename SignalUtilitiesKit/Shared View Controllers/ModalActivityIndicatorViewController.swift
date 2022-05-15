@@ -63,8 +63,13 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     }
 
     @objc
-    public func dismiss(completion : @escaping () -> Void) {
-        AssertIsOnMainThread()
+    public func dismiss(completion: @escaping () -> Void) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { [weak self] in
+                self?.dismiss(completion: completion)
+            }
+            return
+        }
 
         if !wasDimissed {
             // Only dismiss once.
