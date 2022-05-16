@@ -1528,7 +1528,9 @@ private class CameraZoomSelectionControl: PillView {
 
         private class func cameraLabel(forZoomFactor zoomFactor: CGFloat, isSelected: Bool) -> String {
             let numberFormatter = isSelected ? numberFormatterSelected : numberFormatterNormal
-            guard var scaleString = numberFormatter.string(for: zoomFactor) else {
+            // Don't allow 0.95 to be rounded to 1.
+            let adjustedZoomFactor = floor(zoomFactor * 10) / 10
+            guard var scaleString = numberFormatter.string(for: adjustedZoomFactor) else {
                 return ""
             }
             if isSelected {
