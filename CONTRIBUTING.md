@@ -68,7 +68,6 @@ There are several other ways to get involved:
 * Help new users learn about Signal.
   * Redirect support questions to support@signal.org and the [Signal Support Center](https://support.signal.org/).
   * Redirect non-bug discussions to the [community forum](https://community.signalusers.org).
-* Improve documentation in the [wiki](https://github.com/signalapp/Signal-iOS/wiki).
 * Join the community of volunteer translators on Transifex:
   * [Android](https://www.transifex.com/projects/p/signal-android/)
   * [iOS](https://www.transifex.com/signalapp/signal-ios/)
