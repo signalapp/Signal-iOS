@@ -92,9 +92,6 @@ public class FeatureFlags: BaseFlags {
     public static let stories = build.includes(.qa)
 
     @objc
-    public static let storiesMigration5 = build.includes(.qa)
-
-    @objc
     public static let canUseNativeWebsocket = true
 
     @objc
