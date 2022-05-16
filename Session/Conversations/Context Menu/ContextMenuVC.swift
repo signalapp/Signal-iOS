@@ -18,6 +18,15 @@ final class ContextMenuVC : UIViewController {
         result.set(.height, to: ContextMenuVC.actionViewHeight)
         return result
     }()
+    
+    private lazy var emojiPlusButton: EmojiPlusButton = {
+        let result = EmojiPlusButton(dismiss: snDismiss)
+        result.set(.width, to: EmojiPlusButton.size)
+        result.set(.height, to: EmojiPlusButton.size)
+        result.layer.cornerRadius = EmojiPlusButton.size / 2
+        result.layer.masksToBounds = true
+        return result
+    }()
 
     private lazy var menuView: UIView = {
         let result = UIView()
@@ -92,19 +101,21 @@ final class ContextMenuVC : UIViewController {
         emojiBarBackgroundView.layer.masksToBounds = true
         emojiBar.addSubview(emojiBarBackgroundView)
         emojiBarBackgroundView.pin(to: emojiBar)
-        let emojiLabels = ["🙈", "🙉", "🙊", "😈", "🥸", "🐀", "😃"].map { emoji -> UILabel in
-            let label = UILabel()
-            label.text = emoji
-            label.font = .systemFont(ofSize: Values.veryLargeFontSize)
-            return label
-        }
+        
+        emojiBar.addSubview(emojiPlusButton)
+        emojiPlusButton.pin(.right, to: .right, of: emojiBar, withInset: -Values.smallSpacing)
+        emojiPlusButton.center(.vertical, in: emojiBar)
+        
+        let emojiLabels = ["🙈", "🙉", "🙊", "😈", "🥸", "🐀"].map { EmojiReactsView(for: $0, dismiss: snDismiss) }
         let emojiBarStackView = UIStackView(arrangedSubviews: emojiLabels)
         emojiBarStackView.axis = .horizontal
         emojiBarStackView.spacing = Values.smallSpacing
-        emojiBarStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.mediumSpacing, bottom: 0, right: Values.mediumSpacing)
+        emojiBarStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.smallSpacing, bottom: 0, right: Values.smallSpacing)
         emojiBarStackView.isLayoutMarginsRelativeArrangement = true
         emojiBar.addSubview(emojiBarStackView)
-        emojiBarStackView.pin(to: emojiBar)
+        emojiBarStackView.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.VerticalEdge.bottom ], to: emojiBar)
+        emojiBarStackView.pin(.right, to: .left, of: emojiPlusButton)
+        
         view.addSubview(emojiBar)
         // Menu
         let menuBackgroundView = UIView()
