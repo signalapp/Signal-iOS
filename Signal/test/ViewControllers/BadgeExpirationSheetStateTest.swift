@@ -74,7 +74,7 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                 BadgeExpirationSheetState(badge: getSubscriptionBadge(),
                                           mode: .subscriptionExpiredBecauseOfChargeFailure),
                 NSLocalizedString("BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT",
-                                  comment: "String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}."),
+                                  comment: "String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}."),
                 true
             ),
             (
@@ -88,14 +88,14 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                 BadgeExpirationSheetState(badge: getSubscriptionBadge(),
                                           mode: .boostExpired(hasCurrentSubscription: false)),
                 NSLocalizedString("BADGE_EXIPRED_BOOST_BODY_FORMAT",
-                                  comment: "String explaing to the user that their boost badge has expired on the badge expiry sheetsheet."),
+                                  comment: "String explaining to the user that their boost badge has expired on the badge expiry sheet."),
                 false
             ),
             (
                 BadgeExpirationSheetState(badge: getSubscriptionBadge(),
                                           mode: .boostExpired(hasCurrentSubscription: true)),
                 NSLocalizedString("BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT",
-                                  comment: "String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet."),
+                                  comment: "String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet."),
                 false
             )
         ]

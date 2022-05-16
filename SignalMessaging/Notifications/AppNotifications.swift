@@ -822,7 +822,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let title = OWSLocalizedString("ERROR_NOTIFICATION_TITLE",
                                       comment: "Format string for an error alert notification title.")
         let messageFormat = OWSLocalizedString("ERROR_NOTIFICATION_MESSAGE_FORMAT",
-                                              comment: "Format string for an error alert notification message. Embes {{ error string }}")
+                                              comment: "Format string for an error alert notification message. Embeds {{ error string }}")
         let message = String(format: messageFormat, errorString)
 
         notifyAsync { completion in

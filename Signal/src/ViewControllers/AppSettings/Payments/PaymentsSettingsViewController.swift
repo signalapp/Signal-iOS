@@ -925,7 +925,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     private func showPaymentsActivatedToast() {
         AssertIsOnMainThread()
         let toastText = NSLocalizedString("SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST",
-                                          comment: "Message shown when payments rae activated in the 'payments opt-in' view in the app settings.")
+                                          comment: "Message shown when payments are activated in the 'payments opt-in' view in the app settings.")
         self.presentToast(text: toastText)
     }
 

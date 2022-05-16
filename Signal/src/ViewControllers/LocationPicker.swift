@@ -172,9 +172,9 @@ public class LocationPicker: UIViewController {
             // The user previous explicitly denied access. Point them to settings to re-enable.
             let alert = ActionSheetController(
                 title: NSLocalizedString("MISSING_LOCATION_PERMISSION_TITLE",
-                                         comment: "Alert title indicating the user has denied location permissios"),
+                                         comment: "Alert title indicating the user has denied location permissions"),
                 message: NSLocalizedString("MISSING_LOCATION_PERMISSION_MESSAGE",
-                                           comment: "Alert body indicating the user has denied location permissios")
+                                           comment: "Alert body indicating the user has denied location permissions")
             )
             let openSettingsAction = ActionSheetAction(
                 title: CommonStrings.openSettingsButton,

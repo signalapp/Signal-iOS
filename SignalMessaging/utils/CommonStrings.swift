@@ -177,7 +177,7 @@ public class CommonStrings: NSObject {
 
     @objc
     static public var unpinAction: String {
-        OWSLocalizedString("UNPIN_ACTION", comment: "Pressing this button upins a thread")
+        OWSLocalizedString("UNPIN_ACTION", comment: "Pressing this button un-pins a thread")
     }
 
     @objc

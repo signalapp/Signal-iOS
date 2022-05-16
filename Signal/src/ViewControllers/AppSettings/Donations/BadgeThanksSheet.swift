@@ -120,7 +120,7 @@ class BadgeThanksSheet: InteractiveSheetViewController {
     var bodyText: String {
         let formatText = NSLocalizedString(
             "BADGE_THANKS_YOU_EARNED_FORMAT",
-            comment: "String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}."
+            comment: "String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}."
         )
         return String(format: formatText, badge.localizedName)
     }

@@ -258,7 +258,7 @@ class UsernameViewController: OWSTableViewController2 {
 
                 modalView.dismiss {
                     OWSActionSheets.showErrorAlert(message: NSLocalizedString("USERNAME_VIEW_ERROR_UPDATE_FAILED",
-                                                                        comment: "Error moessage shown when a username update fails."))
+                                                                        comment: "Error message shown when a username update fails."))
                 }
             }
         }

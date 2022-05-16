@@ -398,7 +398,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 action: #selector(archiveSelectedConversation),
                 discoverabilityTitle: NSLocalizedString(
                     "KEY_COMMAND_ARCHIVE",
-                    comment: "A keyboard command to archive the current coversation."
+                    comment: "A keyboard command to archive the current conversation."
                 )
             ),
             UIKeyCommand(
@@ -407,7 +407,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 action: #selector(unarchiveSelectedConversation),
                 discoverabilityTitle: NSLocalizedString(
                     "KEY_COMMAND_UNARCHIVE",
-                    comment: "A keyboard command to unarchive the current coversation."
+                    comment: "A keyboard command to unarchive the current conversation."
                 )
             ),
             UIKeyCommand(

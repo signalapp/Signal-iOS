@@ -72,7 +72,7 @@ public class BadgeExpirationSheetState {
         switch mode {
         case .subscriptionExpiredBecauseOfChargeFailure:
             let formatText = NSLocalizedString("BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT",
-                                               comment: "String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}.")
+                                               comment: "String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}.")
             return Body(format(formatText), hasLearnMoreLink: true)
         case .subscriptionExpiredBecauseNotRenewed:
             let formatText = NSLocalizedString("BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT",
@@ -82,10 +82,10 @@ public class BadgeExpirationSheetState {
             let formatText: String
             if hasCurrentSubscription {
                 formatText = NSLocalizedString("BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT",
-                                               comment: "String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet.")
+                                               comment: "String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet.")
             } else {
                 formatText = NSLocalizedString("BADGE_EXIPRED_BOOST_BODY_FORMAT",
-                                               comment: "String explaing to the user that their boost badge has expired on the badge expiry sheetsheet.")
+                                               comment: "String explaining to the user that their boost badge has expired on the badge expiry sheet.")
             }
             return Body(format(formatText))
         }
