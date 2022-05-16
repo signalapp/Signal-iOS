@@ -45,7 +45,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>¿Añadir 1 participante a «%2$@»?</string>
+			<string>¿Añadir participante a «%2$@»?</string>
 			<key>other</key>
 			<string>¿Añadir %d participantes a «%2$@»?</string>
 		</dict>
@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Este color personalizado se está usando en 1 chat. ¿Deseas eliminarlo?</string>
+			<string>Usas este color personalizado en un chat. ¿Deseas eliminarlo?</string>
 			<key>other</key>
-			<string>Este color personalizado se está usando en %d chats. ¿Deseas eliminarlo?</string>
+			<string>Usas este color personalizado en %d chats. ¿Deseas eliminarlo para todos los chats?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Este color personalizado se está usando en 1 chat. ¿Deseas modificarlo?</string>
+			<string>Usas este color personalizado en un chat. ¿Deseas modificarlo?</string>
 			<key>other</key>
-			<string>Este color personalizado se está usando en %d chats. ¿Deseas modificarlo en todos esos chats?</string>
+			<string>Usas este color personalizado en %d chats. ¿Deseas modificarlo para todos esos chats?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -157,9 +157,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 %2$#@total@</string>
+			<string>%2$#@total@ 1</string>
 			<key>other</key>
-			<string>%d %2$#@totales@</string>
+			<string>%2$#@total@ %d</string>
 		</dict>
 		<key>total</key>
 		<dict>
@@ -168,9 +168,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>encontrado</string>
+			<string>un resultado</string>
 			<key>other</key>
-			<string>de %d encontrados</string>
+			<string>de %d resultados</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -184,9 +184,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Participante</string>
+			<string>1 participante</string>
 			<key>other</key>
-			<string>%d Participantes</string>
+			<string>%d participantes</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -200,7 +200,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 grupo en común</string>
+			<string>un grupo en común</string>
 			<key>other</key>
 			<string>%d grupos en común</string>
 		</dict>
@@ -232,7 +232,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Hace 1 minuto</string>
+			<string>Hace un minuto</string>
 			<key>other</key>
 			<string>Hace %d minutos</string>
 		</dict>
@@ -264,9 +264,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se alcanzó el número máximo de participantes en el grupo, %d.</string>
+			<string>Se alcanzó el número máximo de participantes en el grupo (%d).</string>
 			<key>other</key>
-			<string>Se alcanzó el número máximo de participantes en el grupo, %d.</string>
+			<string>Se alcanzó el número máximo de participantes en el grupo (%d).</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -280,9 +280,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tu versión de Signal caducará en 1 día. Toca para actualizar a la versión más reciente</string>
+			<string>Tu versión de Signal caducará mañana. Toca para actualizar a la versión más reciente.</string>
 			<key>other</key>
-			<string>Tu versión de Signal caducará en %d días. Toca para actualizar a la versión más reciente</string>
+			<string>Tu versión de Signal caducará en %d días. Toca para actualizar a la versión más reciente.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -312,9 +312,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>No se puede crear este grupo porque 1 participante usa una versión antigua de Signal. Podrás crear un grupo en el nuevo sistema si esa persona actualiza Signal. También puedes crear un grupo en el nuevo sistema sin ella, y añadirla cuando haya actualizado. %2$@</string>
+			<string>No se puede crear este grupo porque 1 persona usa una versión antigua de Signal. Podrás crear un grupo en el nuevo sistema cuando actualice Signal. También puedes crear un grupo en el nuevo sistema sin ella, y añadirla cuando haya actualizado. %2$@</string>
 			<key>other</key>
-			<string>No se puede crear este grupo porque %d personas usan una versión antigua de Signal. Podrás crear un grupo en el nuevo sistema cuando actualizen Signal. También puedes crear un grupo en el nuevo sistema sin ellas, y añadirles cuando hayan actualizado. %2$@</string>
+			<string>No se puede crear este grupo porque %d personas usan una versión antigua de Signal. Podrás crear un grupo en el nuevo sistema cuando actualicen Signal. También puedes crear un grupo en el nuevo sistema sin ellas, y añadirlas cuando hayan actualizado. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -328,9 +328,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>No se puede crear este grupo porque 1 persona usa una versión antigua de Signal. Podrás crear un grupo en el nuevo sistema si esa persona actualiza Signal. También puedes crear un grupo en el nuevo sistema sin ella, y añadirla cuando haya actualizado.</string>
+			<string>No se puede crear este grupo porque 1 persona usa una versión antigua de Signal. Podrás crear un grupo en el nuevo sistema cuando actualice Signal. También puedes crear un grupo en el nuevo sistema sin ella, y añadirla cuando haya actualizado.</string>
 			<key>other</key>
-			<string>No se puede crear este grupo porque %d personas usan una versión antigua de Signal. Podrás crear un grupo en el nuevo sistema cuando actualizen Signal. También puedes crear un grupo en el nuevo sistema sin ellas, y añadirles cuando hayan actualizado.</string>
+			<string>No se puede crear este grupo porque %d personas usan una versión antigua de Signal. Podrás crear un grupo en el nuevo sistema cuando actualicen Signal. También puedes crear un grupo en el nuevo sistema sin ellas, y añadirlas cuando hayan actualizado.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_%d</key>
@@ -360,7 +360,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se creará un grupo del sistema antiguo porque 1 persona usa una versión antigua de Signal. Podrás crear un grupo en el nuevo sistema si esa persona actualiza Signal. También puedes crear un grupo en el nuevo sistema sin ella, y añadirla cuando haya actualizado.</string>
+			<string>Se creará un grupo en el sistema antiguo porque 1 persona usa una versión antigua de Signal. Podrás crear un grupo en el nuevo sistema si esa persona actualiza Signal. También puedes crear un grupo en el nuevo sistema sin ella, y añadirla cuando haya actualizado.</string>
 			<key>other</key>
 			<string>Se creará un grupo en el sistema antiguo porque %d personas usan una versión antigua de Signal. Podrás crear un grupo en el nuevo sistema si esas personas actualizan Signal. También puedes crear un grupo en el nuevo sistema sin ellas, y añadirlas cuando hayan actualizado.</string>
 		</dict>
@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>No se ha podido añadir a 1 participante al nuevo grupo. ¿Deseas hacerlo ahora?</string>
+			<string>No se ha podido reañadir a 1 participante al nuevo grupo. ¿Deseas hacerlo ahora?</string>
 			<key>other</key>
-			<string>No se ha podido añadir a %d participantes al nuevo grupo. ¿Deseas hacerlo ahora?</string>
+			<string>No se ha podido reañadir a %d participantes al nuevo grupo. ¿Deseas hacerlo ahora?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -408,7 +408,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se alcanzó el número máximo de 1 participante en esta llamada. Inténtalo más tarde.</string>
+			<string>Se alcanzó el número máximo de un participante en esta llamada. Inténtalo más tarde.</string>
 			<key>other</key>
 			<string>Se alcanzó el número máximo de %d participantes en esta llamada. Inténtalo más tarde.</string>
 		</dict>
@@ -424,7 +424,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>En esta llamada · 1 persona</string>
+			<string>En esta llamada · una persona</string>
 			<key>other</key>
 			<string>En esta llamada · %d personas</string>
 		</dict>
@@ -440,7 +440,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ y 1 más en esta llamada</string>
+			<string>%2$@, %3$@ y alguien más en esta llamada</string>
 			<key>other</key>
 			<string>%2$@, %3$@ y %d más en esta llamada</string>
 		</dict>
@@ -456,7 +456,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ y 1 más se han unido a esta llamada</string>
+			<string>%2$@, %3$@ y alguien más se han unido a esta llamada</string>
 			<key>other</key>
 			<string>%2$@, %3$@ y %d más se han unido a esta llamada</string>
 		</dict>
@@ -472,7 +472,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ y 1 más han abandonado la llamada</string>
+			<string>%2$@, %3$@ y alguien más han abandonado la llamada</string>
 			<key>other</key>
 			<string>%2$@, %3$@ y %d más han abandonado la llamada</string>
 		</dict>
@@ -504,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 participante usa el mismo nombre.</string>
+			<string>1 participante usa un alias similar.</string>
 			<key>other</key>
-			<string>%d participantes usan el mismo nombre.</string>
+			<string>%d participantes usan alias similares.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -520,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 participante usa el mismo nombre, revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
+			<string>1 participante usa un alias similar, revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
 			<key>other</key>
-			<string>%d participantes usan el mismo nombre, revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
+			<string>%d participantes usan alias similares, revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -536,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 participante usa el mismo nombre, revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
+			<string>1 participante usa el mismo alias, revisa la lista de participantes debajo y selecciona la opción correcta.</string>
 			<key>other</key>
-			<string>%d participantes usan el mismo nombre, revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
+			<string>%d participantes usan el mismo alias, revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -568,9 +568,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 participante</string>
+			<string>1 Participante</string>
 			<key>other</key>
-			<string>%d participantes</string>
+			<string>%d Participantes</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -616,7 +616,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se ha retirado la invitación al grupo a 1 persona.</string>
+			<string>Se ha retirado la invitación al grupo para 1 persona.</string>
 			<key>other</key>
 			<string>Se han retirado las invitaciones al grupo para %d personas.</string>
 		</dict>
@@ -808,7 +808,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>PIN incorrecto. Te quedan 1 intento.</string>
+			<string>PIN incorrecto. Te queda 1 intento.</string>
 			<key>other</key>
 			<string>PIN incorrecto. Te quedan %d intentos.</string>
 		</dict>
@@ -904,7 +904,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Te lo recordaremos mañana. Crear tu PIN será obligatorio en 1 día.</string>
+			<string>Te lo recordaremos mañana. Crear tu PIN será obligatorio a partir de mañana.</string>
 			<key>other</key>
 			<string>Te lo recordaremos más tarde. Crear tu PIN será obligatorio en %d días.</string>
 		</dict>
@@ -984,7 +984,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1d</string>
+			<string>1 d</string>
 			<key>other</key>
 			<string>%dd</string>
 		</dict>
@@ -1016,7 +1016,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1h</string>
+			<string>1 h</string>
 			<key>other</key>
 			<string>%dh</string>
 		</dict>
@@ -1048,7 +1048,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1m</string>
+			<string>1 m</string>
 			<key>other</key>
 			<string>%dm</string>
 		</dict>
@@ -1080,7 +1080,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1s</string>
+			<string>1 s</string>
 			<key>other</key>
 			<string>%ds</string>
 		</dict>
@@ -1112,7 +1112,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1sem</string>
+			<string>1 sem</string>
 			<key>other</key>
 			<string>%dsem</string>
 		</dict>
