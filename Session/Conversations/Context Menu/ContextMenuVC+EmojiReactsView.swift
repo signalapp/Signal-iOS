@@ -4,14 +4,16 @@ extension ContextMenuVC {
     final class EmojiReactsView: UIView {
         private let emoji: String
         private let dismiss: () -> Void
+        private let work: () -> Void
 
         // MARK: Settings
         private static let size: CGFloat = 40
         
         // MARK: Lifecycle
-        init(for emoji: String, dismiss: @escaping () -> Void) {
+        init(for emoji: String, dismiss: @escaping () -> Void, work: @escaping () -> Void) {
             self.emoji = emoji
             self.dismiss = dismiss
+            self.work = work
             super.init(frame: CGRect.zero)
             setUpViewHierarchy()
         }
@@ -38,20 +40,23 @@ extension ContextMenuVC {
         
         // MARK: Interaction
         @objc private func handleTap() {
+            work()
             dismiss()
         }
     }
     
     final class EmojiPlusButton: UIView {
         private let dismiss: () -> Void
+        private let work: () -> Void
 
         // MARK: Settings
         public static let size: CGFloat = 28
         private let iconSize: CGFloat = 14
         
         // MARK: Lifecycle
-        init(dismiss: @escaping () -> Void) {
+        init(dismiss: @escaping () -> Void, work: @escaping () -> Void) {
             self.dismiss = dismiss
+            self.work = work
             super.init(frame: CGRect.zero)
             setUpViewHierarchy()
         }
@@ -84,6 +89,7 @@ extension ContextMenuVC {
         // MARK: Interaction
         @objc private func handleTap() {
             dismiss()
+            work()
         }
     }
     

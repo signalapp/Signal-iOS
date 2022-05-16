@@ -819,6 +819,16 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         presentAlert(alert)
     }
     
+    func react(_ viewItem: ConversationViewItem, with emoji: String) {
+        print("Ryan Test: \(emoji)")
+        // TODO: send emoji react message
+        UserDefaults.standard.addNewRecentlyUsedEmoji(emoji)
+    }
+    
+    func showFullEmojiKeyboard(_ viewItem: ConversationViewItem) {
+        // TODO: to be implemented
+    }
+    
     func contextMenuDismissed() {
         recoverInputView()
     }

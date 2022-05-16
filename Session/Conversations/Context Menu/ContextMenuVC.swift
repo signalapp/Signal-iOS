@@ -20,7 +20,7 @@ final class ContextMenuVC : UIViewController {
     }()
     
     private lazy var emojiPlusButton: EmojiPlusButton = {
-        let result = EmojiPlusButton(dismiss: snDismiss)
+        let result = EmojiPlusButton(dismiss: snDismiss) { self.delegate?.showFullEmojiKeyboard(self.viewItem) }
         result.set(.width, to: EmojiPlusButton.size)
         result.set(.height, to: EmojiPlusButton.size)
         result.layer.cornerRadius = EmojiPlusButton.size / 2
@@ -106,7 +106,11 @@ final class ContextMenuVC : UIViewController {
         emojiPlusButton.pin(.right, to: .right, of: emojiBar, withInset: -Values.smallSpacing)
         emojiPlusButton.center(.vertical, in: emojiBar)
         
-        let emojiLabels = ["🙈", "🙉", "🙊", "😈", "🥸", "🐀"].map { EmojiReactsView(for: $0, dismiss: snDismiss) }
+        let emojiLabels = UserDefaults.standard.getRecentlyUsedEmojis().map { emoji -> EmojiReactsView in
+            EmojiReactsView(for: emoji, dismiss: snDismiss) {
+                self.delegate?.react(self.viewItem, with: emoji)
+            }
+        }
         let emojiBarStackView = UIStackView(arrangedSubviews: emojiLabels)
         emojiBarStackView.axis = .horizontal
         emojiBarStackView.spacing = Values.smallSpacing

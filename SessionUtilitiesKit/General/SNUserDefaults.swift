@@ -33,6 +33,10 @@ public enum SNUserDefaults {
     public enum String : Swift.String {
         case deviceToken
     }
+    
+    public enum Array : Swift.String {
+        case recentlyUsedEmojis
+    }
 }
 
 public extension UserDefaults {
@@ -60,5 +64,30 @@ public extension UserDefaults {
     subscript(string: SNUserDefaults.String) -> String? {
         get { return self.string(forKey: string.rawValue) }
         set { set(newValue, forKey: string.rawValue) }
+    }
+    
+    subscript(array: SNUserDefaults.Array) -> [String] {
+        get { return self.stringArray(forKey: array.rawValue) ?? []}
+        set { set(newValue, forKey: array.rawValue) }
+    }
+    
+    func getRecentlyUsedEmojis() -> [String] {
+        let result = self[.recentlyUsedEmojis]
+        if result.isEmpty {
+            return ["🙈", "🙉", "🙊", "😈", "🥸", "🐀"]
+        }
+        return result
+    }
+    
+    func addNewRecentlyUsedEmoji(_ emoji: String) {
+        var recentlyUsedEmojis = getRecentlyUsedEmojis()
+        if let index = recentlyUsedEmojis.firstIndex(of: emoji) {
+            recentlyUsedEmojis.remove(at: index)
+        }
+        if recentlyUsedEmojis.count >= 6 {
+            recentlyUsedEmojis.remove(at: 5)
+        }
+        recentlyUsedEmojis.insert(emoji, at: 0)
+        self[.recentlyUsedEmojis] = recentlyUsedEmojis
     }
 }
