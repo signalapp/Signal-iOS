@@ -4819,6 +4819,15 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Return to Camera";
 
+/* In-app camera: confirmation button in the prompt to turn off multi-mode. */
+"SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Turn Off";
+
+/* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+
+/* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Invite a friend via insecure SMS?";
 

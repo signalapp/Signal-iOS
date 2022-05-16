@@ -16,7 +16,9 @@ protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewControllerViewWillAppear(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerCanCaptureMoreItems(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool
     func photoCaptureViewControllerDidRequestPresentPhotoLibrary(_ photoCaptureViewController: PhotoCaptureViewController)
-    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didRequestSwitchBatchMode batchMode: Bool) -> Bool
+    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController,
+                                    didRequestSwitchCaptureModeTo captureMode: PhotoCaptureViewController.CaptureMode,
+                                    completion: @escaping (Bool) -> Void)
 }
 
 protocol PhotoCaptureViewControllerDataSource: AnyObject {
@@ -123,7 +125,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         resumePhotoCapture()
 
         if let dataSource = dataSource, dataSource.numberOfMediaItems > 0 {
-            isInBatchMode = true
+            captureMode = .multi
         }
         updateDoneButtonAppearance()
     }
@@ -231,13 +233,24 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         }
     }
 
-    func switchToBatchMode() {
-        isInBatchMode = true
+    func switchToMultiCaptureMode() {
+        self.captureMode = .multi
     }
 
-    private(set) var isInBatchMode: Bool = false {
+    enum CaptureMode {
+        case single
+        case multi
+    }
+    private(set) var captureMode: CaptureMode = .single {
         didSet {
-            let buttonImage = isInBatchMode ? ButtonImages.batchModeOn : ButtonImages.batchModeOff
+            let buttonImage: UIImage? = {
+                switch captureMode {
+                case .single:
+                    return ButtonImages.batchModeOff
+                case .multi:
+                    return ButtonImages.batchModeOn
+                }
+            }()
             topBar.batchModeButton.setImage(buttonImage, for: .normal)
             if let sideBar = sideBar {
                 sideBar.batchModeButton.setImage(buttonImage, for: .normal)
@@ -394,7 +407,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         sideBar.cameraCaptureControl.shutterButtonLayoutGuide.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         self.sideBar = sideBar
 
-        sideBar.batchModeButton.setImage(isInBatchMode ? ButtonImages.batchModeOn : ButtonImages.batchModeOff, for: .normal)
+        sideBar.batchModeButton.setImage(topBar.batchModeButton.image(for: .normal), for: .normal)
         updateFlashModeControl()
 
         doneButtonIPadConstraints = [ doneButton.centerXAnchor.constraint(equalTo: sideBar.centerXAnchor),
@@ -481,7 +494,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
 
     func updateDoneButtonAppearance() {
-        if isInBatchMode, let badgeNumber = dataSource?.numberOfMediaItems, badgeNumber > 0 {
+        if captureMode == .multi, let badgeNumber = dataSource?.numberOfMediaItems, badgeNumber > 0 {
             doneButton.badgeNumber = badgeNumber
             doneButton.isHidden = false
         } else {
@@ -594,7 +607,18 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         guard let delegate = delegate else {
             return
         }
-        isInBatchMode = delegate.photoCaptureViewController(self, didRequestSwitchBatchMode: !isInBatchMode)
+        let targetMode: CaptureMode = {
+            switch captureMode {
+            case .single: return .multi
+            case .multi: return .single
+            }
+        }()
+        delegate.photoCaptureViewController(self, didRequestSwitchCaptureModeTo: targetMode) { approved in
+            if approved {
+                self.captureMode = targetMode
+                self.updateDoneButtonAppearance()
+            }
+        }
     }
 
     @objc
@@ -1033,7 +1057,7 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
         updateDoneButtonAppearance()
 
-        if isInBatchMode {
+        if captureMode == .multi {
             resumePhotoCapture()
         } else {
             delegate?.photoCaptureViewControllerDidFinish(self)

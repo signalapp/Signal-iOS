@@ -282,7 +282,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     }
 
     func photoCaptureViewControllerViewWillAppear(_ photoCaptureViewController: PhotoCaptureViewController) {
-        if !photoCaptureViewController.isInBatchMode, attachmentCount == 1, case .camera = attachmentDraftCollection.attachmentDrafts.last {
+        if photoCaptureViewController.captureMode == .single, attachmentCount == 1, case .camera = attachmentDraftCollection.attachmentDrafts.last {
             // User is navigating back to the camera screen, indicating they want to discard the previously captured item.
             discardDraft()
         }
@@ -318,13 +318,35 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         }
     }
 
-    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didRequestSwitchBatchMode batchMode: Bool) -> Bool {
-        if batchMode {
-            // Always can be enabled
-            return true
+    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController,
+                                    didRequestSwitchCaptureModeTo captureMode: PhotoCaptureViewController.CaptureMode,
+                                    completion: @escaping (Bool) -> Void) {
+        // .multi always can be enabled.
+        guard captureMode == .single else {
+            completion(true)
+            return
         }
-        // Can only be disabled if there's no media attachments yet.
-        return attachmentCount > 0
+        // Disable immediately if there's no media attachments yet.
+        guard attachmentCount > 0 else {
+            completion(true)
+            return
+        }
+        // Ask to delete all existing media attachments.
+        let title = NSLocalizedString("SEND_MEDIA_TURN_OFF_MM_TITLE",
+                                      comment: "In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded.")
+        let message = NSLocalizedString("SEND_MEDIA_TURN_OFF_MM_MESSAGE",
+                                        comment: "In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded.")
+        let buttonTitle = NSLocalizedString("SEND_MEDIA_TURN_OFF_MM_BUTTON",
+                                            comment: "In-app camera: confirmation button in the prompt to turn off multi-mode.")
+        let actionSheet = ActionSheetController(title: title, message: message)
+        actionSheet.addAction(ActionSheetAction(title: buttonTitle, style: .destructive) { _ in
+            self.attachmentDraftCollection.removeAll()
+            completion(true)
+        })
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
+            completion(false)
+        })
+        presentActionSheet(actionSheet)
     }
 }
 
@@ -469,7 +491,7 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
         owsAssertDebug(viewControllers.count == 2)
 
         if let cameraViewController = viewControllers.first as? PhotoCaptureViewController {
-            cameraViewController.switchToBatchMode()
+            cameraViewController.switchToMultiCaptureMode()
         }
 
         popViewController(animated: true)
@@ -555,6 +577,10 @@ private struct AttachmentDraftCollection {
 
     mutating func remove(_ element: AttachmentDraft) {
         attachmentDrafts.removeAll { $0 == element }
+    }
+
+    mutating func removeAll() {
+        attachmentDrafts.removeAll()
     }
 
     func attachmentDraft(forAttachment: SignalAttachment) -> AttachmentDraft? {
