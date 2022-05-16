@@ -530,6 +530,9 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         window.rootViewController = contextMenuVC
         window.makeKeyAndVisible()
         window.backgroundColor = .clear
+        if #available(iOS 13.0, *) {
+            window.overrideUserInterfaceStyle = isDarkMode ? .dark : .light
+        }
     }
 
     func handleViewItemTapped(_ viewItem: ConversationViewItem, gestureRecognizer: UITapGestureRecognizer) {

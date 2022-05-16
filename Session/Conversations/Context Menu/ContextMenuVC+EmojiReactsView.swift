@@ -66,7 +66,8 @@ extension ContextMenuVC {
 
         private func setUpViewHierarchy() {
             // Icon image
-            let iconImageView = UIImageView(image: #imageLiteral(resourceName: "ic_plus_24").withTint(Colors.text))
+            let iconImageView = UIImageView(image: #imageLiteral(resourceName: "ic_plus_24").withRenderingMode(.alwaysTemplate))
+            iconImageView.tintColor = Colors.text
             iconImageView.set(.width, to: iconSize)
             iconImageView.set(.height, to: iconSize)
             iconImageView.contentMode = .scaleAspectFit

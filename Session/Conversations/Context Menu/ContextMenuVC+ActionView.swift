@@ -28,7 +28,8 @@ extension ContextMenuVC {
         private func setUpViewHierarchy() {
             // Icon
             let iconSize = ActionView.iconSize
-            let iconImageView = UIImageView(image: action.icon.resizedImage(to: CGSize(width: iconSize, height: iconSize))!.withTint(Colors.text))
+            let iconImageView = UIImageView(image: action.icon.resizedImage(to: CGSize(width: iconSize, height: iconSize))!.withRenderingMode(.alwaysTemplate))
+            iconImageView.tintColor = Colors.text
             let iconImageViewSize = ActionView.iconImageViewSize
             iconImageView.set(.width, to: iconImageViewSize)
             iconImageView.set(.height, to: iconImageViewSize)
