@@ -238,7 +238,7 @@ extension ConversationViewController {
             })
             // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/FacetimeLinks/FacetimeLinks.html
             actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO",
-                                                                             comment: "Label for button to make a Facetime video call to a phone number."),
+                                                                             comment: "Label for button to make a FaceTime video call to a phone number."),
                                                     accessibilityIdentifier: "phone_number_facetime_video",
                                                     style: .default) { _ in
                 guard let url = URL(string: "facetime:" + e164) else {
@@ -248,7 +248,7 @@ extension ConversationViewController {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             })
             actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO",
-                                                                             comment: "Label for button to make a Facetime audio call to a phone number."),
+                                                                             comment: "Label for button to make a FaceTime audio call to a phone number."),
                                                     accessibilityIdentifier: "phone_number_facetime_audio",
                                                     style: .default) { _ in
                 guard let url = URL(string: "facetime-audio:" + e164) else {

@@ -3160,11 +3160,11 @@
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Call";
 
-/* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+/* Label for button to make a FaceTime audio call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
 
-/* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+/* Label for button to make a FaceTime video call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
