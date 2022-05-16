@@ -1463,7 +1463,7 @@ public class GRDBSchemaMigrator: NSObject {
                 // placing quotes around the column name in the WHERE clause will trick the SQLite query planner
                 // into thinking these indices can't be applied to the queries we're optimizing for.
                 try db.execute(sql: """
-                    DROP INDEX index_model_TSInteraction_on_nonPlaceholders_uniqueThreadId_id;
+                    DROP INDEX IF EXISTS index_model_TSInteraction_on_nonPlaceholders_uniqueThreadId_id;
 
                     CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionCount
                     ON model_TSInteraction(uniqueThreadId, recordType)
