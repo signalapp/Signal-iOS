@@ -409,8 +409,8 @@ class SubscriptionViewController: OWSTableViewController2 {
                         guard let self = self else { return }
 
                         let vc = CurrencyPickerViewController(
-                            dataSource: try! StripeCurrencyPickerDataSource(currentCurrencyCode: selectedCurrencyCode,
-                                                                            supportedCurrencyCodes: Self.supportedCurrencyCodes(subscriptionLevels: subscriptionLevels))
+                            dataSource: StripeCurrencyPickerDataSource(currentCurrencyCode: selectedCurrencyCode,
+                                                                       supportedCurrencyCodes: Self.supportedCurrencyCodes(subscriptionLevels: subscriptionLevels))
                         ) { [weak self] currencyCode in
                             guard let self = self else { return }
                             self.state.selectCurrencyCode(currencyCode)

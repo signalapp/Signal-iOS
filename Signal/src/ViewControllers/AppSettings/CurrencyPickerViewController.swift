@@ -235,7 +235,7 @@ struct StripeCurrencyPickerDataSource: CurrencyPickerDataSource {
         self.supportedCurrencyInfos = Stripe.supportedCurrencyInfos
     }
 
-    init(currentCurrencyCode: Currency.Code, supportedCurrencyCodes: Set<Currency.Code>) throws {
+    init(currentCurrencyCode: Currency.Code, supportedCurrencyCodes: Set<Currency.Code>) {
         if supportedCurrencyCodes.contains(currentCurrencyCode) {
             self.currentCurrencyCode = currentCurrencyCode
         } else if supportedCurrencyCodes.contains("USD") {
