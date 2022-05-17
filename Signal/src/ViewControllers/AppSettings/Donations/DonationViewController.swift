@@ -44,6 +44,17 @@ class DonationViewController: OWSTableViewController2 {
         loadAndUpdateState()
     }
 
+    @objc
+    private func didLongPressAvatar(sender: UIGestureRecognizer) {
+        let subscriberID = databaseStorage.read { SubscriptionManager.getSubscriberID(transaction: $0) }
+        guard let subscriberID = subscriberID else { return }
+
+        UIPasteboard.general.string = subscriberID.asBase64Url
+
+        presentToast(text: NSLocalizedString("SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD",
+                                             comment: "Toast indicating that the user has copied their subscriber ID."))
+    }
+
     // MARK: - Data loading
 
     private func loadAndUpdateState() {
@@ -122,6 +133,9 @@ class DonationViewController: OWSTableViewController2 {
                 }
             }
         }
+
+        avatarView.isUserInteractionEnabled = true
+        avatarView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(didLongPressAvatar)))
     }
 
     // MARK: - Table contents

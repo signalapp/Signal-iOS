@@ -5857,6 +5857,9 @@
 /* Title for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
 
+/* Toast indicating that the user has copied their subscriber ID. */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
 
