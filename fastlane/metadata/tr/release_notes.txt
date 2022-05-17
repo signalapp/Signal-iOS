@@ -1,2 +1,1 @@
-• Bağışçıysanız, aboneliğinizi, rozetlerinizi ve makbuzlarınızı yönetmeyi kolaylaştırmak için bazı ekranları yeniden düzenledik. Signal'i desteklediğiniz için teşekkürler!
 • Uygulamanızın sorunsuz çalışmasını sağlamak için bazı hatalar düzeltildi.

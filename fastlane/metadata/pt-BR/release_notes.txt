@@ -1,2 +1,1 @@
-• Se você é um doador, nós reorganizamos algumas das telas para facilitar a gestão da sua assinatura, selos e comprovantes. Obrigado por apoiar o Signal!
-• Fixed some crashes to keep your app running smoothly.
+• Corrigimos algumas falhas para manter seu aplicativo funcionando impecavelmente.

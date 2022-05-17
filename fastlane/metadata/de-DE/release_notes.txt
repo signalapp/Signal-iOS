@@ -1,2 +1,1 @@
-• Wir haben einige der Anzeigen für Spender umgestaltet, um das Verwalten deiner regelmäßigen Spenden, Abzeichen und Bescheinigungen zu vereinfachen. Danke für das Unterstützen von Signal!
-• Fixed some crashes to keep your app running smoothly.
+• Behebung einiger Absturzursachen, damit die App weiterhin reibungslos läuft.

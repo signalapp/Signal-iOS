@@ -1,2 +1,1 @@
-• Si sou donant, hem reorganitzat algunes de les pantalles per facilitar la gestió de la subscripció, d'insígnies i de rebuts. Gràcies per donar suport al Signal!
-• Fixed some crashes to keep your app running smoothly.
+• S'han corregit alguns errors perquè l'aplicació funcioni sense problemes.

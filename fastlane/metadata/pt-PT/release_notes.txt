@@ -1,2 +1,1 @@
-• Se você é um doador, nós reorganizamos alguns dos carimbos para facilitar a gestão da sua assinatura, selos e comprovantes. Obrigado por apoiar o Signal!
-• Fixed some crashes to keep your app running smoothly.
+• Corrigidos alguns erros para manter a sua aplicação a correr suavemente.

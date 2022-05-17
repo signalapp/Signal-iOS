@@ -1,2 +1,1 @@
-• Támogatóink számára egyszerűsítettük az egyszeri és rendszeres támogatások, kitűzők és nyugták kezelését. Köszönet minden Signalt támogató embernek!
-• Fixed some crashes to keep your app running smoothly.
+• Javítottunk pár összeomlást okozó hibát.

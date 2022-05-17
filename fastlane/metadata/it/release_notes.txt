@@ -1,2 +1,1 @@
-• Se sei un donatore, abbiamo riorganizzato alcune delle schermate per rendere più facile la gestione del tuo contributo, dei badge e delle ricevute. Grazie per sostenere Signal!
-• Fixed some crashes to keep your app running smoothly.
+• Sono stati risolti alcuni arresti anomali per garantire il corretto funzionamento dell'app.

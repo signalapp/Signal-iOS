@@ -1,2 +1,1 @@
-• Pokud jste dárcem, přeorganizovali jsme některé obrazovky, abychom vám usnadnili správu předplatného, odznaků a účtenek. Děkujeme za podporu společnosti Signal!
-• Fixed some crashes to keep your app running smoothly.
+• Opraveny některé pády, aby aplikace fungovala bez problémů.

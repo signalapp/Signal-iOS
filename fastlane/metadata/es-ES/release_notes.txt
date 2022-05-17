@@ -1,2 +1,1 @@
-• Si haces donaciones a Signal, hemos reorganizado algunas de las pantallas del proceso para gestionar tu suscripción más fácilmente, ver los distintivos y los justificantes. ¡Gracias por apoyar Signal!
 • Fixed some crashes to keep your app running smoothly.

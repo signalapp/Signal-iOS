@@ -1,2 +1,1 @@
-• Oletko lahjoittaja? Olemme järjestelleet uudelleen joitain ruutuja, jotta tilauksia, kunniamerkkejä ja kuitteja on helpompi hallita. Kiitos kun tuet Signalia!
-• Fixed some crashes to keep your app running smoothly.
+• Korjattu muutama kaatumisen aiheuttava vika – nyt ohjelma pyörii taas sujuvasti.

@@ -1,2 +1,1 @@
-• Hvis du er donor, har vi omorganiseret nogle af skærmene, så det er nemmere at administrere dit abonnement, dine emblemer og kvitteringer. Tak fordi du støtter Signal!
 • Vi har rettet nogle nedbrud for at sikre, at din app kører problemfrit.

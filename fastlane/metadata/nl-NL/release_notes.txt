@@ -1,2 +1,1 @@
-• We hebben de schermen voor donateurs wat overzichtelijker gemaakt zodat het makkelijker is om je maandelijkse donaties, badges en afschriften te beheren. Dank voor je steun!
-• Fixed some crashes to keep your app running smoothly.
+• Er zijn wat situaties waarbij een crash kon voorkomen verholpen zodat de app voor meer personen goed blijft werken.
