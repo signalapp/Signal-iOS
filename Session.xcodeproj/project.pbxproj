@@ -145,6 +145,7 @@
 		7B7CB18E270D066F0079FF93 /* IncomingCallBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7CB18D270D066F0079FF93 /* IncomingCallBanner.swift */; };
 		7B7CB190270FB2150079FF93 /* MiniCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7CB18F270FB2150079FF93 /* MiniCallView.swift */; };
 		7B7CB192271508AD0079FF93 /* CallRingTonePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7CB191271508AD0079FF93 /* CallRingTonePlayer.swift */; };
+		7B8D5FC428332600008324D9 /* VisibleMessage+Reaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8D5FC328332600008324D9 /* VisibleMessage+Reaction.swift */; };
 		7B93D06A27CF173D00811CB6 /* MessageRequestsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B93D06927CF173D00811CB6 /* MessageRequestsViewController.swift */; };
 		7B93D06D27CF175800811CB6 /* MessageRequestsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B93D06C27CF175800811CB6 /* MessageRequestsCell.swift */; };
 		7B93D07027CF194000811CB6 /* ConfigurationMessage+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B93D06E27CF194000811CB6 /* ConfigurationMessage+Convenience.swift */; };
@@ -1135,6 +1136,7 @@
 		7B7CB18D270D066F0079FF93 /* IncomingCallBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallBanner.swift; sourceTree = "<group>"; };
 		7B7CB18F270FB2150079FF93 /* MiniCallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniCallView.swift; sourceTree = "<group>"; };
 		7B7CB191271508AD0079FF93 /* CallRingTonePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRingTonePlayer.swift; sourceTree = "<group>"; };
+		7B8D5FC328332600008324D9 /* VisibleMessage+Reaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisibleMessage+Reaction.swift"; sourceTree = "<group>"; };
 		7B93D06927CF173D00811CB6 /* MessageRequestsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRequestsViewController.swift; sourceTree = "<group>"; };
 		7B93D06C27CF175800811CB6 /* MessageRequestsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRequestsCell.swift; sourceTree = "<group>"; };
 		7B93D06E27CF194000811CB6 /* ConfigurationMessage+Convenience.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConfigurationMessage+Convenience.swift"; sourceTree = "<group>"; };
@@ -2525,6 +2527,7 @@
 			isa = PBXGroup;
 			children = (
 				C3C2A74C2553A39700C340D1 /* VisibleMessage.swift */,
+				7B8D5FC328332600008324D9 /* VisibleMessage+Reaction.swift */,
 				C379DCF3256735770002D4EB /* VisibleMessage+Attachment.swift */,
 				C3C2A7552553A3AB00C340D1 /* VisibleMessage+Quote.swift */,
 				C3C2A75E2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift */,
@@ -4728,6 +4731,7 @@
 				C300A5FC2554B0A000555489 /* MessageReceiver.swift in Sources */,
 				7B1581E2271E743B00848B49 /* OWSSounds.swift in Sources */,
 				C32C5A76256DBBCF003C73A2 /* SignalAttachment.swift in Sources */,
+				7B8D5FC428332600008324D9 /* VisibleMessage+Reaction.swift in Sources */,
 				C32C5CA4256DD1DC003C73A2 /* TSAccountManager.m in Sources */,
 				C352A3892557876500338F3E /* JobQueue.swift in Sources */,
 				C3BBE0B52554F0E10050F1E3 /* ProofOfWork.swift in Sources */,
