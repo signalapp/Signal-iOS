@@ -821,6 +821,86 @@ struct SessionProtos_DataMessage {
     fileprivate var _image: SessionProtos_AttachmentPointer? = nil
   }
 
+  struct Reaction {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    var id: UInt64 {
+      get {return _id ?? 0}
+      set {_id = newValue}
+    }
+    /// Returns true if `id` has been explicitly set.
+    var hasID: Bool {return self._id != nil}
+    /// Clears the value of `id`. Subsequent reads from it will return its default value.
+    mutating func clearID() {self._id = nil}
+
+    /// @required
+    var author: String {
+      get {return _author ?? String()}
+      set {_author = newValue}
+    }
+    /// Returns true if `author` has been explicitly set.
+    var hasAuthor: Bool {return self._author != nil}
+    /// Clears the value of `author`. Subsequent reads from it will return its default value.
+    mutating func clearAuthor() {self._author = nil}
+
+    var emoji: String {
+      get {return _emoji ?? String()}
+      set {_emoji = newValue}
+    }
+    /// Returns true if `emoji` has been explicitly set.
+    var hasEmoji: Bool {return self._emoji != nil}
+    /// Clears the value of `emoji`. Subsequent reads from it will return its default value.
+    mutating func clearEmoji() {self._emoji = nil}
+
+    /// @required
+    var action: SessionProtos_DataMessage.Reaction.Action {
+      get {return _action ?? .react}
+      set {_action = newValue}
+    }
+    /// Returns true if `action` has been explicitly set.
+    var hasAction: Bool {return self._action != nil}
+    /// Clears the value of `action`. Subsequent reads from it will return its default value.
+    mutating func clearAction() {self._action = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum Action: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case react // = 0
+      case remove // = 1
+
+      init() {
+        self = .react
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .react
+        case 1: self = .remove
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .react: return 0
+        case .remove: return 1
+        }
+      }
+
+    }
+
+    init() {}
+
+    fileprivate var _id: UInt64? = nil
+    fileprivate var _author: String? = nil
+    fileprivate var _emoji: String? = nil
+    fileprivate var _action: SessionProtos_DataMessage.Reaction.Action? = nil
+  }
+
   struct LokiProfile {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1049,6 +1129,10 @@ extension SessionProtos_DataMessage.Flags: CaseIterable {
 }
 
 extension SessionProtos_DataMessage.Quote.QuotedAttachment.Flags: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SessionProtos_DataMessage.Reaction.Action: CaseIterable {
   // Support synthesized by the compiler.
 }
 
@@ -2426,6 +2510,70 @@ extension SessionProtos_DataMessage.Preview: SwiftProtobuf.Message, SwiftProtobu
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SessionProtos_DataMessage.Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SessionProtos_DataMessage.protoMessageName + ".Reaction"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "id"),
+    2: .same(proto: "author"),
+    3: .same(proto: "emoji"),
+    4: .same(proto: "action"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._id == nil {return false}
+    if self._author == nil {return false}
+    if self._action == nil {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self._id) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._author) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._emoji) }()
+      case 4: try { try decoder.decodeSingularEnumField(value: &self._action) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._id {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
+    }
+    if let v = self._author {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }
+    if let v = self._emoji {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    }
+    if let v = self._action {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_DataMessage.Reaction, rhs: SessionProtos_DataMessage.Reaction) -> Bool {
+    if lhs._id != rhs._id {return false}
+    if lhs._author != rhs._author {return false}
+    if lhs._emoji != rhs._emoji {return false}
+    if lhs._action != rhs._action {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SessionProtos_DataMessage.Reaction.Action: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "REACT"),
+    1: .same(proto: "REMOVE"),
+  ]
 }
 
 extension SessionProtos_DataMessage.LokiProfile: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
