@@ -902,10 +902,10 @@
 "CONTACT_SUPPORT" = "Contatta l'assistenza";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donazioni e badge";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donazioni e badge";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Vorrei richiedere una nuova funzionalità";
@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Dona";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal è sostenuto da persone come te. Dona mensilmente e ricevi un badge.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Non ora";

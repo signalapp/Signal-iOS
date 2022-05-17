@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "സംഭാവനചെയ്യുക";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "നിങ്ങളെ പോലുള്ള ആളുകളിലൂടെയാണ് Signal പ്രവർത്തിക്കുന്നത്. പ്രതിമാസ ഡൊണേഷനിലൂടെ ഒരു ബാഡ്‌ജ് സ്വന്തമാക്കൂ.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "ഇപ്പോൾ വേണ്ട";

@@ -98,7 +98,7 @@
 "ALERT_DELIVERY_ISSUE_TITLE" = "Afleveringsprobleem";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Een bericht, media, sticker, emoji-reactie, of een bevestiging dat een bericht gelezen is van %@ kan niet aan jou worden afgeleverd. Het kan zijn dat hij of zij iets probeerde naar je te verzenden in een één-op-één gesprek of in een groepsgesprek.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Een bericht, media, sticker, emoji-reactie, of een bevestiging dat een bericht gelezen is van %@ kan niet aan jou worden afgeleverd. Het kan zijn dat hij of zij iets probeerde naar je te verzenden in een één-op-één-gesprek of in een groepsgesprek.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Verwerpen";
@@ -902,10 +902,10 @@
 "CONTACT_SUPPORT" = "Neem contact op met ondersteuning";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Doneren & badges";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Doneren & badges";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Ik wil graag een nieuwe functionaliteit aanvragen";
@@ -1226,7 +1226,7 @@
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "Video";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Deze persoon staat ook in je systeemcontactenlijst";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "In systeemcontactenlijst weergeven";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Profiel zichtbaar maken";
@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Doneren";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal wordt gefinancierd door donaties van gebruikers. Overweeg om maandelijks te doneren.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Niet nu";
@@ -3299,10 +3299,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blokkeren";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %@ ontvangen, en sta je toe dat hij of zij je profielnaam, -foto en -omschrijving kan zien? Je zult geen berichten ontvangen en je profiel zal voor hem of haar niet meer worden bijgewerkt totdat je hem of haar hebt gedeblokkeerd.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %@ ontvangen, en sta je toe dat hij of zij je profielnaam, -foto en -omschrijving kan zien? Totdat je hem of haar hebt gedeblokkeerd zul je geen berichten of oproepen ontvangen en kan hij of zij veranderingen van je profiel niet zien.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Wil je berichten van deze groep ontvangen, en sta je toe dat alle leden van de groep je profielnaam, -foto en -omschrijving kunnen zien? Je zult geen berichten ontvangen en je profiel zal voor de leden van deze groep niet meer worden bijgewerkt totdat je de groep hebt gedeblokkeerd.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Wil je berichten van deze groep ontvangen, en sta je toe dat alle leden van de groep je profielnaam, -foto en -omschrijving kunnen zien? Totdat je de groep hebt gedeblokkeerd zul je geen berichten of oproepen ontvangen en kunnen leden van deze groep veranderingen van je profiel niet zien.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Deze groep deblokkeren? Als je leesbevestigingen hebt ingeschakeld kunnen de leden van deze groep die nog niet zien totdat je de groep hebt gedeblokkeerd.";
@@ -3647,7 +3647,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Geef toestemmingen";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Door meldingen toe te staan kan Signal je laten weten wanneer je een bericht hebt ontvangen. Door het lezen van je adresboek toe te staan kan Signal je contactpersonen weergeven als je een gesprek met ze wil starten. Alle informatie over je contactpersonen blijft altijd versleuteld, zelf Signals ontwikkelaars kunnen de telefoonnummers en andere informatie over je contactpersonen nooit lezen.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Door meldingen toe te staan kan Signal je laten weten wanneer je een bericht hebt ontvangen. Door het lezen van je systeemcontactenlijst toe te staan kan Signal je contactpersonen weergeven als je een gesprek met ze wil starten. Alle informatie over je contactpersonen blijft altijd versleuteld, zelf Signals ontwikkelaars kunnen de telefoonnummers en andere informatie over je contactpersonen nooit lezen.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Geef toestemmingen";
@@ -4880,10 +4880,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Foutlogs";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Foto's uit systeemcontactenlijst weergeven als die beschikbaar zijn.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Geef indien beschikbaar de profielfoto uit je eigen systeemcontactenlijst weer, in plaats van de profielfoto welke anderen voor henzelf hebben ingesteld.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Foto's uit systeemcontactenlijst gebruiken";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Profielfoto uit systeemcontactenlijst gebruiken";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Thema";
@@ -5099,7 +5099,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Meldingsinhoud";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Een contactpersoon uit mijn systeemcontactenlijst sinds kort via Signal bereikbaar is";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Een contactpersoon die in mijn systeemcontactenlijst staat sinds kort via Signal bereikbaar is";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Geef me een melding wanneer …";

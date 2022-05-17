@@ -440,7 +440,7 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "שחרר חסימה";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "תוכל להתכתב ולהתקשר אחד לשני.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "תוכל להתכתב ולהתקשר זה עם זה.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "חברי קבוצה קיימים יוכלו להוסיף אותך שוב אל הקבוצה.";
@@ -1460,7 +1460,7 @@
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "לא היה ניתן לוודא את המכשיר החדש שלך, אנא נסה שוב";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "ההעברה לא יכלה להתבצע, אנא וודא שהמכשירים שלך קרובים אחד לשני ונסה שוב";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "ההעברה לא יכלה להתבצע, אנא וודא שהמכשירים שלך קרובים זה לזה ונסה שוב";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "כדי להגדיר iPad זה כמכשיר מקושר, אתה חייב לסרוק עם ה־iPad הישן שלך";
@@ -1493,7 +1493,7 @@
 "DEVICE_TRANSFER_QRCODE_TITLE" = "ממתין אל מכשיר אחר…";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "השאר את שני המכשירים קרובים אחד לשני. אל תכבה אף מכשיר והשאר את Signal פתוח. העברות מוצפנות מקצה־אל־קצה.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "השאר את שני המכשירים קרובים זה לזה. אל תכבה אף מכשיר והשאר את Signal פתוח. העברות מוצפנות מקצה־אל־קצה.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "מקבל נתונים";
@@ -1508,7 +1508,7 @@
 "DEVICE_TRANSFER_SCANNING_TITLE" = "החזק את המכשיר החדש שלך בפני המצלמה";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "השאר את שני המכשירים קרובים אחד לשני. אל תכבה אף מכשיר והשאר את Signal פתוח.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "השאר את שני המכשירים קרובים זה לזה. אל תכבה אף מכשיר והשאר את Signal פתוח.";
 
 /* The title on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "מעביר נתונים";
@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "תרום";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal ממונע על ידי אנשים כמוך. תרום מדי חודש וקבל תג.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "לא עכשיו";
@@ -2954,7 +2954,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "הזמן חברים";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "הַזְמָנָת משתמשים רבים באותו הזמן תתחיל הודעת קבוצה והמקבלים יוכלו לראות אחד את השני.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "הַזְמָנָת משתמשים רבים באותו הזמן תתחיל הודעת קבוצה והמקבלים יוכלו לראות זה את זה.";
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "הצטרף";

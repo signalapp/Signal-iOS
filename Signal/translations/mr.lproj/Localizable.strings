@@ -137,7 +137,7 @@
 "APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "Open Signal Instead";
+"APP_LAUNCH_FAILURE_CONTINUE" = "त्याऐवजी Signal उघडा";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "डेटाबेस लोड करू शकले नाही";
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal had a problem while trying to open. Please send a debug log to support@signal.org to help troubleshoot this issue.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Signal उघडता आले नाही";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "आपल्या जुन्या डिव्हाईस वरून स्थानांतरित केलेला डेटा पुनर्स्थित केला जाऊ शकला नाही. कृपया support@signal.org वर डीबग लॉग पाठवा जेणेकरून आम्ही समस्येचे निराकरण करू शकू. जर आपण Signal पुनः-स्थापना केली तर आपला संदेश इतिहास गहाळ होऊ शकतो.";
@@ -368,13 +368,13 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signal ला बूस्ट करा";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer visible on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "आपला बूस्ट बॅज कालबाह्य झाला आहे, आणि तो यापुढे आपल्या प्रोफाइलवर दिसणार नाही.\n\nआपन Signal वापरणे सुरू ठेवू शकता परंतु आपल्यासाठी तयार केलेल्या तंत्रज्ञानाचे समर्थन करण्यासाठी, कृपया मासिक सस्टेनर बनण्याचा विचार करा.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "आपला बूस्ट बॅज कालबाह्य झाला आहे, आणि तो यापुढे आपल्या प्रोफाइलवर दिसणार नाही.\n\nआपन आपला बूस्ट बॅज आणखी ३० दिवसांसाठी एक-वेळच्या योगदानासह पुन्हा सक्रिय करू शकता.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "आपले आवर्ती मासिक देणगी आपोआप रद्द झाले कारण आपण खूप काळ निष्क्रिय होता. आपला %@ बॅज यापुढे आपल्या प्रोफाईलवर दिसणार नाही.\n\nआपण Signal वापरणे सुरू ठेवू शकता परंतु अॅपला सपोर्ट करण्यासाठी आणि आपला बॅज पुन्हा सक्रिय करण्यासाठी, आता नूतनीकरण करा.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "सस्टेनर बना";
@@ -407,7 +407,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "जेव्हा तुमच्याकडे एकापेक्षा जास्त बॅज असतील, तेव्हा तुम्ही तुमच्या प्रोफाईलवर इतरांना पाहण्यासाठी एक निवडू शकता.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "आपण %@ बॅज मिळवला आहे! Signal ला देणगी देण्याची जागरूकता निर्माण करण्यासाठी हा बॅज आपल्या प्रोफाइलवर प्रदर्शित करा.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "बॅनर बंद करा";
@@ -488,7 +488,7 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "चलन सेट करा";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "एकदाच देणगी द्या आणि ३० दिवसांसाठी बूस्ट बॅज मिळवा.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "आपला बूस्ट बॅज कालबाह्य होईल. %@";
@@ -902,10 +902,10 @@
 "CONTACT_SUPPORT" = "समर्थन सोबत संपर्क साधा";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "देणग्या आणि बॅज";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "देणग्या आणि बॅज";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "मला एक नवीन वैशिष्ट्याची विनंती करायला आवडेल";
@@ -1289,7 +1289,7 @@
 "DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
 
 /* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
+"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "डीबग लॉगमध्ये जोडा";
 
 /* Title for alert after running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Integrity check results";
@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "दान करा";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal तुमच्यासारख्या लोकांच्या मदतीने चालते. दर महिन्याला दान करा आणि एक बॅज मिळवा.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "आता नाही";
@@ -1583,10 +1583,10 @@
 "DONATION_RECEIPT_DETAILS" = "तपशील";
 
 /* Text on the button that exports the receipt */
-"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Share Receipt";
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "पावती शेअर करा";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Signal ला समर्थन दिल्याबद्दल धन्यवाद. आपले योगदान मुक्त अभिव्यक्तीचे संरक्षण करणारे आणि जगभरातील लाखो लोकांसाठी सुरक्षित जागतिक संचार सक्षम करणारे ओपन सोर्स गोपनीयता तंत्रज्ञान विकसित करण्याच्या मिशनला चालना देण्यास मदत करते. आपण जर युनायटेड स्टेट्सचे रहिवासी असल्यास, कृपया आपल्या कर रेकॉर्डसाठी ही पावती जपून ठेवा. Signal Technology Foundation ही युनायटेड स्टेट्समधील अंतर्गत महसूल संहितेच्या कलम 501c3 अंतर्गत करमुक्त विना-नफा संस्था आहे. आमचा फेडरल टॅक्स आयडी 82-4506840 आहे.";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "एक-वेळ ";
@@ -1598,7 +1598,7 @@
 "DONATION_RECEIPT_TITLE" = "देणगीची पावती";
 
 /* Section title for donation type on receipts */
-"DONATION_RECEIPT_TYPE" = "Type";
+"DONATION_RECEIPT_TYPE" = "प्रकार";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
 "DONATION_RECEIPTS" = "देणगी पावत्या ";
@@ -1616,7 +1616,7 @@
 "DONATION_VIEW_LOAD_FAILED" = "नेटवर्क त्रुटी. आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Text of the 'make a monthly donation' button on the donation screen */
-"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "मासिक देणगी द्या";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "बॅजेस्";
@@ -1634,7 +1634,7 @@
 "DONATION_VIEW_ONE_TIME_DONATION" = " एक-वेळ देणगी";
 
 /* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "देणगी देण्याचे इतर मार्ग";
 
 /* Title for the 'receipts' section on the donation screen */
 "DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "पावत्या";
@@ -4436,7 +4436,7 @@
 "QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Story";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ . स्टोरी";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "संलग्न";
@@ -5780,7 +5780,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "फॉर्वर्ड करा";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
+"STORIES_GO_TO_CHAT_ACTION" = "चॅटवर जा";
 
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "Hide Story";
@@ -5789,7 +5789,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "आत्ता दर्शविण्यासाठी कोणतीही अलीकडील अपडेट्स नाहीत.";
 
 /* Indicates that this story has no replies yet */
-"STORIES_NO_REPLIES_YET" = "No replies yet";
+"STORIES_NO_REPLIES_YET" = "अद्याप कोणतीही प्रत्युत्तरे नाहीत";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "सामायिक करा";
@@ -5804,10 +5804,10 @@
 "STORY_NO_LONGER_AVAILABLE" = "आता उपलब्ध नाही";
 
 /* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";
+"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>१</bold>उत्तर द्या";
 
 /* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> replies";
+"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold>उत्तर द्या";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "प्रत्युत्तर द्या";
@@ -5894,10 +5894,10 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal ही एक विना - नफा संस्था आहे ज्यामध्ये कोणतेही जाहिरातदार किंवा गुंतवणूकदार नसतात, केवळ ते वापरणाऱ्या आणि मूल्यवान लोकांद्वारे टिकून राहते. आवर्ती मासिक देणगी द्या आणि तुमचे समर्थन सामायिक करण्यासाठी प्रोफाइल बॅज मिळवा.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "मुक्त अभिव्यक्तीचे संरक्षण करणारे आणि सुरक्षित जागतिक संचार सक्षम करणारे मुक्त स्रोत गोपनीयता तंत्रज्ञान विकसित करण्यासाठी Signal वचनबद्ध आहे.\n\nआपली देणगी या कारणाला चालना देते आणि खाजगी संचारासाठी लाखो लोक वापरत असलेल्या अॅपच्या विकासासाठी आणि कार्यासाठी पैसे देतात. जाहिराती नाहीत. ट्रॅकर्स नाहीत. चेष्टा नाही.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "या तंत्रज्ञानाचे समर्थन करा जे तुमच्या साठी बनवले आहे — तुमच्या डेटासाठी नाही — ते टिकवून ठेवणाऱ्या लोकांच्या समुदायात सामील होऊन.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "देणगी का द्यायची?";
@@ -5957,7 +5957,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "ट्रांझ्याक्शन प्रक्रिया करत आहे…";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read more.";
+"SUSTAINER_VIEW_READ_MORE" = "अधिक वाचा.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "नूतनीकरण %@";

@@ -13,41 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Messaggio vocale 1 secondo</string>
+			<string>Sesli mesaj 1 saniye</string>
 			<key>other</key>
-			<string>Messaggio vocale %d secondi</string>
-		</dict>
-	</dict>
-	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Aggiungere membro a “%2$@”?</string>
-			<key>other</key>
-			<string>Aggiungere %d membri a “%2$@”?</string>
-		</dict>
-	</dict>
-	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Aggiungi nuovo membro</string>
-			<key>other</key>
-			<string>Aggiungi nuovi membri</string>
+			<string>Sesli mesaj %d saniye</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -61,9 +29,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aggiungi membro</string>
+			<string>Üye Ekle</string>
 			<key>other</key>
-			<string>Aggiungi membri</string>
+			<string>Üye Ekle</string>
+		</dict>
+	</dict>
+	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>"%2$@" grubuna üye ekle?</string>
+			<key>other</key>
+			<string>"%2$@" grubuna %d üye ekle?</string>
+		</dict>
+	</dict>
+	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Yeni Üye Ekle</string>
+			<key>other</key>
+			<string>Yeni Üye Ekle</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Questo colore personalizzato è usato in 1 chat. Vuoi eliminarlo?</string>
+			<string>Bu özel renk 1 konuşmada kullanılıyor. Tüm konuşmalar için silmek istiyor musunuz?</string>
 			<key>other</key>
-			<string>Questo colore personalizzato è usato in %d chat. Vuoi eliminarlo per tutte le chat?</string>
+			<string>Bu özel renk %d konuşmada kullanılıyor. Tüm konuşmalar için silmek istiyor musunuz?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Questo colore è usato in 1 chat. Vuoi salvare le modifiche per tutte le chat?</string>
+			<string>Bu renk 1 konuşmalarda kullanılıyor. Tüm konuşmalar için değişiklikleri kaydetmek istiyor musunuz?</string>
 			<key>other</key>
-			<string>Questo colore è usato in %d chat. Vuoi salvare le modifiche per tutte le chat?</string>
+			<string>Bu renk%d konuşmalarda kullanılıyor. Tüm konuşmalar için değişiklikleri kaydetmek istiyor musunuz?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Eliminare chat?</string>
+			<string>Sohbeti Sil?</string>
 			<key>other</key>
-			<string>Eliminare %d chat?</string>
+			<string>%d Sohbeti Sil?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Questa chat verrà eliminata da questo dispositivo.</string>
+			<string>Bu sohbet bu cihazdan silinecek.</string>
 			<key>other</key>
-			<string>Queste chat verranno eliminate da questo dispositivo.</string>
+			<string>Bu sohbetler bu cihazdan silinecek.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Non puoi selezionare più di 1 chat.</string>
+			<string>1 konuşmadan daha fazlasını 't seçebilirsiniz.</string>
 			<key>other</key>
-			<string>Non puoi selezionare più di %d chat.</string>
+			<string>%d konuşmadan daha fazlasını 't seçebilirsiniz.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -168,9 +168,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>risultato</string>
+			<string>eşleşme</string>
 			<key>other</key>
-			<string>di %d risultati</string>
+			<string>%d eşleşme</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -184,9 +184,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membro</string>
+			<string>1 Üye</string>
 			<key>other</key>
-			<string>%d membri</string>
+			<string>%d Üye</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -200,9 +200,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 gruppo in comune</string>
+			<string>1 Ortak Grup</string>
 			<key>other</key>
-			<string>%d gruppi in comune</string>
+			<string>%d Ortak Grup</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -216,9 +216,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%dmin</string>
+			<string>%dd</string>
 			<key>other</key>
-			<string>%dmin</string>
+			<string>%dd</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -232,9 +232,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 minuto fa</string>
+			<string>1 dakika önce</string>
 			<key>other</key>
-			<string>%d minuti fa</string>
+			<string>%d dakika önce</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -248,9 +248,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Eliminare il messaggio?</string>
+			<string>İleti Silinsin mi?</string>
 			<key>other</key>
-			<string>Eliminare %d messaggi?</string>
+			<string>%d İleti Silinsin mi?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -264,9 +264,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Massima dimensione del gruppo di %d membro raggiunta.</string>
+			<string>%düyelik maksimum grup sayısına ulaşıldı.</string>
 			<key>other</key>
-			<string>Massima dimensione del gruppo di %d membri raggiunta.</string>
+			<string>%d üyelik maksimum grup sayısına ulaşıldı.</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -280,9 +280,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>La tua versione di Signal scadrà in 1 giorno. Tocca per aggiornare alla versione più recente.</string>
+			<string>Signal sürümünüz 1 gün içinde kullanım dışı kalacak. En yeni sürüme güncellemek için dokunun.</string>
 			<key>other</key>
-			<string>La tua versione di Signal scadrà in %d giorni. Tocca per aggiornare alla versione più recente.</string>
+			<string>Signal sürümünüz %d gün içinde kullanım dışı kalacak. En yeni sürüme güncellemek için dokunun.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -296,281 +296,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invia messaggio</string>
+			<string>Send message</string>
 			<key>other</key>
-			<string>Invia %d messaggi</string>
-		</dict>
-	</dict>
-	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>È stato raggiunto il numero massimo di 1 partecipante per questa chiamata. Riprova più tardi.</string>
-			<key>other</key>
-			<string>È stato raggiunto il numero massimo di %d partecipanti per questa chiamata. Riprova più tardi.</string>
-		</dict>
-	</dict>
-	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>In questa chiamata · 1 persona</string>
-			<key>other</key>
-			<string>In questa chiamata · %d persone</string>
-		</dict>
-	</dict>
-	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%2$@, %3$@, e 1 altro sono in questa chiamata</string>
-			<key>other</key>
-			<string>%2$@, %3$@, e altri %d sono in questa chiamata</string>
-		</dict>
-	</dict>
-	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%2$@, %3$@, e 1 altro si sono uniti alla chiamata</string>
-			<key>other</key>
-			<string>%2$@, %3$@, e altri %d si sono uniti alla chiamata</string>
-		</dict>
-	</dict>
-	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%2$@, %3$@, e 1 altro hanno lasciato la chiamata</string>
-			<key>other</key>
-			<string>%2$@, %3$@, e altri %d hanno lasciato la chiamata</string>
-		</dict>
-	</dict>
-	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Invito inviato</string>
-			<key>other</key>
-			<string>%d inviti inviati</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 membro</string>
-			<key>other</key>
-			<string>%d membri</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 membro</string>
-			<key>other</key>
-			<string>%d membri</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 membro del gruppo ha nome simile.</string>
-			<key>other</key>
-			<string>%d membri del gruppo hanno nomi simili.</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 membro del gruppo ha nome simile, controlla il membro di seguito o scegli di agire.</string>
-			<key>other</key>
-			<string>%d membri del gruppo hanno nomi simili, controlla i membri di seguito o scegli di agire.</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 membro del gruppo ha lo stesso nome, controlla il membro di seguito o scegli di agire.</string>
-			<key>other</key>
-			<string>%d membri del gruppo hanno lo stesso nome, controlla i membri di seguito o scegli di agire.</string>
-		</dict>
-	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>L'invito al gruppo è stato revocato per 1 persona.</string>
-			<key>other</key>
-			<string>Gli inviti al gruppo sono stati revocati per %d persone.</string>
-		</dict>
-	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%2$@ ha revocato un invito al gruppo per 1 persona.</string>
-			<key>other</key>
-			<string>%2$@ ha revocato un invito al gruppo per %d persone.</string>
-		</dict>
-	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 persona è stata invitata al gruppo.</string>
-			<key>other</key>
-			<string>%d persone sono state invitate al gruppo.</string>
-		</dict>
-	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%2$@ ha invitato 1 persona al gruppo.</string>
-			<key>other</key>
-			<string>%2$@ ha invitato %d persone al gruppo.</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Un membro non può essere aggiunto al Nuovo Gruppo ed è stato rimosso dal gruppo.</string>
-			<key>other</key>
-			<string>%d membri non possono essere aggiunti al Nuovo Gruppo e sono stati rimossi dal gruppo.</string>
-		</dict>
-	</dict>
-	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Un membro non può essere aggiunto al Nuovo Gruppo ed è stato invitato a unirsi.</string>
-			<key>other</key>
-			<string>%d membri non possono essere aggiunti al Nuovo Gruppo e sono stati invitati a unirsi.</string>
+			<string>Send %d messages</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
@@ -584,25 +312,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Questo gruppo non può essere creato perché 1 membro utilizza una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo. %2$@</string>
+			<string>1 üye Signal'in eski bir sürümünü kullandığı için bu grup oluşturulamaz. Signal'i güncelledikten sonra üye ile yeni bir grup oluşturabilir veya grubu oluşturmadan önce üyeyi kaldırabilirsiniz. %2$@</string>
 			<key>other</key>
-			<string>Questo gruppo non può essere creato perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo. %2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 membro non supporta i Nuovi Gruppi, quindi questo sarà un Gruppo Legacy. %2$@</string>
-			<key>other</key>
-			<string>%d membri non supportano i Nuovi Gruppi, quindi questo sarà un Gruppo Legacy. %2$@</string>
+			<string>%d üye Signal'in eski bir sürümünü kullandığı için bu grup oluşturulamaz. Signal'i güncelledikten sonra üye ile yeni bir grup oluşturabilir veya grubu oluşturmadan önce üyeyi kaldırabilirsiniz. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -616,9 +328,25 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Questo gruppo non può essere creato perché 1 membro utilizza una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo.</string>
+			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
 			<key>other</key>
-			<string>Questo gruppo non può essere creato perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo.</string>
+			<string>This group cannot be created because %d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 üye Yeni Grupları desteklemiyor, bu yüzden grup Eski Grup olacaktır. %2$@</string>
+			<key>other</key>
+			<string>%d üye Yeni Grupları desteklemiyor, bu yüzden grup Eski Grup olacaktır.  %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_%d</key>
@@ -632,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Verrà creato un Gruppo Legacy perché 1 membro utilizza una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo aver aggiornato Signal o puoi rimuoverli prima di creare il Gruppo.</string>
+			<string>A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
 			<key>other</key>
-			<string>Verrà creato un Gruppo Legacy perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo aver aggiornato Signal o puoi rimuoverli prima di creare il Gruppo.</string>
+			<string>A Legacy Group will be created because %d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -648,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Non è stato possibile aggiungere di nuovo 1 membro al Nuovo Gruppo. Vuoi aggiungerlo adesso?</string>
+			<string>1 member couldn’t be re-added to the New Group. Do you want to add them now?</string>
 			<key>other</key>
-			<string>Non è stato possibile aggiungere di nuovo %d membri al Nuovo Gruppo. Vuoi aggiungerli adesso?</string>
+			<string>%d members couldn’t be re-added to the New Group. Do you want to add them now?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -664,9 +392,281 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>I gruppi di Signal funzionano meglio con 1 membro o meno. Aggiungere più membri causerà ritardi nell'invio e nella ricezione dei messaggi.</string>
+			<string>Signal groups perform best with 1 member or less. Adding more members will cause delays sending and receiving messages.</string>
 			<key>other</key>
-			<string>I gruppi di Signal funzionano meglio con %d membri o meno. Aggiungere più membri causerà ritardi nell'invio e nella ricezione dei messaggi.</string>
+			<string>Signal groups perform best with %d members or less. Adding more members will cause delays sending and receiving messages.</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Bu çağrı için maksimum 1 katılımcı sayısına ulaşıldı. Daha sonra tekrar deneyin.</string>
+			<key>other</key>
+			<string>Bu çağrı için maksimum %d katılımcı sayısına ulaşıldı. Daha sonra tekrar deneyin.</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Bu aramada · 1 kişi</string>
+			<key>other</key>
+			<string>Bu aramada · %d kişi</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@, %3$@ ve 1 diğer kişi bu aramada</string>
+			<key>other</key>
+			<string>%2$@, %3$@ ve %d diğer kişi bu aramada</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@, %3$@ ve 1 diğer kişi bu aramaya katıldı</string>
+			<key>other</key>
+			<string>%2$@, %3$@ ve %d diğer kişi bu aramaya katıldı</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@, %3$@ ve 1 diğer kişi bu aramadan ayrıldı</string>
+			<key>other</key>
+			<string>%2$@, %3$@ ve %d diğer kişi bu aramadan ayrıldı</string>
+		</dict>
+	</dict>
+	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Davetiye Gönderildi</string>
+			<key>other</key>
+			<string>%d Davetiye Gönderildi</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 grup üyesi benzer isimlere sahip</string>
+			<key>other</key>
+			<string>%d grup üyesi benzer isimlere sahip</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 grup üyesi benzer ada sahip, aşağıdaki üyeleri gözden geçirin veya bir işlem seçin.</string>
+			<key>other</key>
+			<string>%d grup üyesi benzer ada sahip, aşağıdaki üyeleri gözden geçirin veya bir işlem seçin.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 grup üyesi benzer ada sahip, aşağıdaki üyeleri gözden geçirin veya bir işlem seçin.</string>
+			<key>other</key>
+			<string>%d grup üyesi benzer ada sahip, aşağıdaki üyeleri gözden geçirin veya bir işlem seçin.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 üye</string>
+			<key>other</key>
+			<string>%d üye</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Üye</string>
+			<key>other</key>
+			<string>%d Üye</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 kişi gruba davet edildi.</string>
+			<key>other</key>
+			<string>%d kişi gruba davet edildi.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@, 1 kişiyi gruba davet etti.</string>
+			<key>other</key>
+			<string>%2$@, %d kişiyi gruba davet etti.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 kişinin grup davetiyesi iptal edildi.</string>
+			<key>other</key>
+			<string>%d kişinin grup davetiyesi iptal edildi.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@, 1 kişinin grup davetiyesini iptal etti.</string>
+			<key>other</key>
+			<string>%2$@, %d kişinin grup davetiyesini iptal etti.</string>
+		</dict>
+	</dict>
+	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Bir üye Yeni Gruba eklenemedi ve gruptan çıkarıldı.</string>
+			<key>other</key>
+			<string>%d üye Yeni Gruba eklenemedi ve gruptan çıkarıldı.</string>
+		</dict>
+	</dict>
+	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Bir üye Yeni Gruba eklenemedi ve gruba katılmaya davet edildi.</string>
+			<key>other</key>
+			<string>%d üye Yeni Gruba eklenemedi ve gruba katılmaya davet edildi.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Non puoi condividere più di 1 elemento.</string>
+			<string>You can't share more than 1 item.</string>
 			<key>other</key>
-			<string>Non puoi condividere più di %d elementi.</string>
+			<string>You can't share more than %d items.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -696,9 +696,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 gruppo in comune</string>
+			<string>1 ortak grup</string>
 			<key>other</key>
-			<string>%d gruppi in comune</string>
+			<string>%d ortak grup</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -712,9 +712,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Elimina 1 messaggio</string>
+			<string>1 İletiyi Sil</string>
 			<key>other</key>
-			<string>Elimina %d messaggi</string>
+			<string>%d İletiyi Sil</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -728,9 +728,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Foto</string>
+			<string>1 Fotoğraf</string>
 			<key>other</key>
-			<string>%d Foto</string>
+			<string>%d Fotoğraf</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -744,25 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 elemento</string>
+			<string>1 Öge</string>
 			<key>other</key>
-			<string>%d elementi</string>
-		</dict>
-	</dict>
-	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 selezionato</string>
-			<key>other</key>
-			<string>%d selezionati</string>
+			<string>%d Öge</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -776,9 +760,25 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Hai bloccato 1 membro di questo gruppo</string>
+			<string>You Blocked 1 Member of This Group</string>
 			<key>other</key>
-			<string>Hai bloccato %d membri di questo gruppo</string>
+			<string>You Blocked %d Members of This Group</string>
+		</dict>
+	</dict>
+	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Seçili</string>
+			<key>other</key>
+			<string>%d Seçili</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membro</string>
+			<string>1 Üye</string>
 			<key>other</key>
-			<string>%d membri</string>
+			<string>%d Üye</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -808,9 +808,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>PIN errato. 1 tentativo rimanente.</string>
+			<string>Yanlış PIN. 1 deneme hakkınız kaldı.</string>
 			<key>other</key>
-			<string>PIN errato. %d tentativi rimanenti.</string>
+			<string>Yanlış PIN. %d deneme hakkınız kaldı.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -824,9 +824,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ ha invitato 1 persona</string>
+			<string>%2$@ invited 1 person</string>
 			<key>other</key>
-			<string>%2$@ ha invitato %d persone</string>
+			<string>%2$@ invited %d people</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -840,9 +840,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 richiesta di diventare membro in attesa.</string>
+			<string>1 üye isteği beklemede.</string>
 			<key>other</key>
-			<string>%d richieste di diventare membro in attesa.</string>
+			<string>%d üye isteği beklemede.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -856,25 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoca invito non valido</string>
+			<string>Revoke invalid invite</string>
 			<key>other</key>
-			<string>Revoca %d inviti non validi</string>
-		</dict>
-	</dict>
-	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Revocare l'invito al gruppo inviato da &quot;%2$@&quot;?</string>
-			<key>other</key>
-			<string>Revocare %d inviti inviati da &quot;%2$@&quot;?</string>
+			<string>Revoke %d invalid invites</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -888,9 +872,25 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoca invito</string>
+			<string>Daveti İptal Et</string>
 			<key>other</key>
-			<string>Revoca inviti</string>
+			<string>Davetleri İptal Et</string>
+		</dict>
+	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Revoke group invite sent by "%2$@"?</string>
+			<key>other</key>
+			<string>Revoke %d invites sent by "%2$@"?</string>
 		</dict>
 	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
@@ -904,9 +904,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Te lo ricorderemo più tardi. Creare un PIN diventerà obbligatorio tra 1 giorno.</string>
+			<string>Size daha sonra hatırlatacağız. 1 gün sonra PIN oluşturmanız zorunlu olacaktır.</string>
 			<key>other</key>
-			<string>Te lo ricorderemo più tardi. Creare un PIN diventerà obbligatorio tra %d giorni.</string>
+			<string>Size daha sonra hatırlatacağız. %d gün sonra PIN oluşturmanız zorunlu olacaktır.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -920,9 +920,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Hai 1 tentativo rimanente. Se esaurisci i tentativi, puoi creare un nuovo PIN. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.</string>
+			<string>You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
 			<key>other</key>
-			<string>Hai %d tentativi rimanenti. Se esaurisci i tentativi, puoi creare un nuovo PIN. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.</string>
+			<string>You have %d attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -936,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Hai 1 tentativo rimanente. Se esaurisci i tentativi il tuo account verrà bloccato. Dopo 7 giorni di inattività, potrai registrarti nuovamente senza il tuo PIN. Il tuo account sarà cancellato e tutti i contenuti eliminati.</string>
+			<string>You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
 			<key>other</key>
-			<string>Hai %d tentativi rimanenti. Se esaurisci i tentativi il tuo account verrà bloccato. Dopo 7 giorni di inattività, potrai registrarti nuovamente senza il tuo PIN. Il tuo account sarà cancellato e tutti i contenuti eliminati.</string>
+			<string>You have %d attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -952,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Membro di %2$@, %3$@, e 1 altro gruppo</string>
+			<string>Member of %2$@, %3$@, and 1 additional group</string>
 			<key>other</key>
-			<string>Membro di %2$@, %3$@, e altri %d gruppi</string>
+			<string>Member of %2$@, %3$@, and %d additional groups</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -968,12 +968,76 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 giorno</string>
+			<string>1 gün</string>
 			<key>other</key>
-			<string>%d giorni</string>
+			<string>%d gün</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1g</string>
+			<key>other</key>
+			<string>%dg</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_HOURS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 saat</string>
+			<key>other</key>
+			<string>%d saat</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1s</string>
+			<key>other</key>
+			<string>%ds</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_MINUTES_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 dakika</string>
+			<key>other</key>
+			<string>%d dakika</string>
+		</dict>
+	</dict>
+	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -989,70 +1053,6 @@
 			<string>%dd</string>
 		</dict>
 	</dict>
-	<key>TIME_AMOUNT_HOURS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 ora</string>
-			<key>other</key>
-			<string>%d ore</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1h</string>
-			<key>other</key>
-			<string>%dh</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_MINUTES_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 minuto</string>
-			<key>other</key>
-			<string>%d minuti</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1min</string>
-			<key>other</key>
-			<string>%dmin</string>
-		</dict>
-	</dict>
 	<key>TIME_AMOUNT_SECONDS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1064,9 +1064,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 secondo</string>
+			<string>1 saniye</string>
 			<key>other</key>
-			<string>%d secondi</string>
+			<string>%d saniye</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
@@ -1096,9 +1096,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 settimana</string>
+			<string>1 hafta</string>
 			<key>other</key>
-			<string>%d settimane</string>
+			<string>%d hafta</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
@@ -1112,9 +1112,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1set</string>
+			<string>1h</string>
 			<key>other</key>
-			<string>%dset</string>
+			<string>%dh</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_YEARS_%d</key>
@@ -1128,9 +1128,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 anno</string>
+			<string>1 yıl</string>
 			<key>other</key>
-			<string>%d anni</string>
+			<string>%d yıl</string>
 		</dict>
 	</dict>
 </dict>

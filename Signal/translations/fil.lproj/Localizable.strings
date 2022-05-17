@@ -1565,13 +1565,13 @@
 "DONATE_MEGAPHONE_ACTION" = "Mag-ambag";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Tumatakbo ang Signal sa tulong ng mga taong katulad mo. Mag-donate buwan-buwan at makatanggap ng badge.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Hindi Ngayon";
 
 /* Title for donate megaphone */
-"DONATE_MEGAPHONE_TITLE" = "Donate to Signal";
+"DONATE_MEGAPHONE_TITLE" = "Mag-donate sa Signal";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Amount";
@@ -1607,7 +1607,7 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
 
 /* Text of the 'donate to signal' button on the donation screen */
-"DONATION_VIEW_DONATE_TO_SIGNAL" = "Donate to Signal";
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "Mag-donate sa Signal";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
@@ -1643,7 +1643,7 @@
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "Subscription FAQ";
 
 /* Title on the 'Donate to Signal' screen */
-"DONATION_VIEW_TITLE" = "Donate to Signal";
+"DONATION_VIEW_TITLE" = "Mag-donate sa Signal";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Mapapagana mo ang access sa Settings app ng iOS.";
@@ -5033,7 +5033,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Mag-donate sa Signal";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "Tulong";

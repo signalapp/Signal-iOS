@@ -902,10 +902,10 @@
 "CONTACT_SUPPORT" = "Kontaktovat podporu";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Příspěvky & odznaky";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Příspěvky & odznaky";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Chtěl bych pořádat o novou funkcionalitu";
@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Sponzorujte";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal je aplikace, za kterou stojí lidé jako vy. Prokažte jim dnes svoji podporu!";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Nyní ne";

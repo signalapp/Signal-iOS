@@ -902,10 +902,10 @@
 "CONTACT_SUPPORT" = "Support kontaktieren";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Spenden & Abzeichen";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Spenden & Abzeichen";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Ich möchte eine neue Funktion anfragen";
@@ -1604,7 +1604,7 @@
 "DONATION_RECEIPTS" = "Spendenbescheinigungen";
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
-"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Falls du Signal erneut installierst hast, sind Bescheinigungen früherer Spenden nicht verfügbar.";
+"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Falls du Signal erneut installiert hast, sind Bescheinigungen früherer Spenden nicht verfügbar.";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "An Signal spenden";
@@ -1616,7 +1616,7 @@
 "DONATION_VIEW_LOAD_FAILED" = "Netzfehler. Überprüfe deine Internetverbindung und versuche es erneut.";
 
 /* Text of the 'make a monthly donation' button on the donation screen */
-"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Eine monatliche Spende tätigen";
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Monatlich spenden";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "Abzeichen";
@@ -5984,7 +5984,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Aktualisieren";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Mit einer monatlichen Spende an Signal unterstützt du eine Technologie, die für dich und nicht für deine Daten entwickelt wurde.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Mit einer wiederkehrenden monatlichen Spende an Signal unterstützt du eine Technologie, die für dich und nicht für deine Daten entwickelt wurde.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Aus";

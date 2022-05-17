@@ -584,10 +584,10 @@
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Llamada perdida";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Llamada perdida hace %@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Llamada perdida el %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Llamada perdida en %@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Llamada perdida el %@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Necesitas activar el acceso al micrófono para realizar llamadas y grabar notas de voz en Signal.";
@@ -626,10 +626,10 @@
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Videollamada perdida";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Videollamada perdida hace %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Videollamada perdida el %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Videollamada perdida en %@";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Videollamada perdida el %@";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Atender sin vídeo";
@@ -776,7 +776,7 @@
 "CONFIRM_DELETE_DATA_TITLE" = "¿Estás segur@ de querer eliminar todos los datos?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Esta acción reinicia la aplicación y elimina todos los mensajes en este dispositivo. Siempre puedes volver a enlazar tu teléfono pero no recuperarás los mensajes eliminados. Signal se cerrará después de completar el proceso.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Esta acción reinicia la aplicación y elimina todos los mensajes en este dispositivo. Siempre puedes volver a enlazar tu iPhone/iPad pero no recuperarás los mensajes eliminados. Signal se cerrará después de completar el proceso.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "¿Estás segur@ de querer eliminar todos los datos?";
@@ -902,10 +902,10 @@
 "CONTACT_SUPPORT" = "Contactar soporte técnico";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donaciones y distintivos";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donaciones y distintivos";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Me gustaría solicitar una nueva característica";
@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Donar";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal se mantiene gracias a gente como tú. Dona mensualmente y recibe tu distintivo.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Ahora no";
@@ -2549,7 +2549,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Solicitudes e invitaciones";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
-"GROUP_STORY_NAME_FORMAT" = "%1$@ de %2$@";
+"GROUP_STORY_NAME_FORMAT" = "%1$@ a «%2$@»";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Grupo actualizado.";
@@ -2918,7 +2918,7 @@
 "INCOMING_CALL_FORMAT" = "%@ te ha llamado";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Ahora puedes enviar y recibir mensajes desde tu teléfono o iPad y éstos estarán sincronizados.\nPor tu seguridad, no se transfieren los mensajes antiguos a los nuevos dispositivos enlazados.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Ahora puedes enviar y recibir mensajes desde tu iPhone o iPad y éstos estarán sincronizados.\nPor tu seguridad, no se transfieren los mensajes antiguos a los nuevos dispositivos enlazados.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ ha cambiado su número de teléfono.";
@@ -3629,13 +3629,13 @@
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Seleccionar «Registrar iPad» te permitirá crear una cuenta de Signal o mover una cuenta existente a este iPad. Esto desactivará Signal en todos los dispositivos que estén registrados bajo el mismo número.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Seleccionar «Enlazar iPhone» te permitirá conectar tu cuenta existente con este iPad. Enlazar tu teléfono no es la opción recomendada ya que limitará funcionalidades como las llamadas. ";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Seleccionar «Enlazar iPhone» te permitirá conectar tu cuenta existente. Enlazar tu iPhone no es la opción recomendada ya que limitará funcionalidades como las llamadas. ";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registrar este iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Enlazar iPad";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Enlazar iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registrar este iPad desactivará Signal en todos los otros dispositivos que están registrados bajo el mismo número de teléfono.";
@@ -4727,7 +4727,7 @@
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "La cuenta no coincide";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Actualiza Signal en este dispositivo para enlazarlo con tu teléfono.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Actualiza Signal en este dispositivo para enlazarlo con tu celular/móvil.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Versión no compatible";
@@ -4754,25 +4754,25 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Completar enlace";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Ve a Signal en tu teléfono para enlazar este iPad con tu cuenta";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Ve a Signal en tu celular/móvil para enlazar este iPad con tu cuenta";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "No tengo Signal en mi teléfono …";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "No tengo Signal en mi celular/móvil …";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Ve a la App/Play Store en tu teléfono, instala Signal y completa el proceso de registro para poder enlazar este iPad con tu cuenta.";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Instala Signal en tu teléfono";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Instala Signal en tu celular/móvil";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Toca en la foto de tu perfil para abrir los ajustes de Signal. Ve a «Dispositivos enlazados» y «Enlazar nuevo dispositivo» para escanear este código con tu teléfono:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Toca en la foto de tu perfil para abrir los ajustes de Signal. Ve a «Dispositivos enlazados» y «Enlazar nuevo dispositivo» para escanear este código con tu celular/móvil:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Consigue ayuda para enlazar tu iPad aquí";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Escanea el código QR con tu teléfono";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Escanea el código QR con tu celular/móvil";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Abre Signal en tu iPad antiguo para transferir tu cuenta.";
@@ -5093,7 +5093,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Globo de notificaciones";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Las notificaciones de llamadas y mensajes se muestran con el teléfono bloqueado.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Las notificaciones de llamadas y mensajes se muestran con el iPhone/iPad bloqueado.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Contenido de notificaciones";
@@ -6131,7 +6131,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "¿Desenlazar «%@»?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Este dispositivo ya no está enlazado. Vuelve a enlazar Signal con tu teléfono para poder seguir recibiendo y enviando mensajes.";
+"UNLINKED_WARNING" = "Este dispositivo ya no está enlazado. Vuelve a enlazar Signal con tu celular/móvil para poder seguir recibiendo y enviando mensajes.";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal no ha podido desenlazar tu dispositivo.";

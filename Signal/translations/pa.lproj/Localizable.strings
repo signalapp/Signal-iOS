@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "خیرات کرو";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal ਨੂੰ ਤੁਹਾਡੇ ਵਰਗੇ ਲੋਕਾਂ ਦੇ ਸਹਿਯੋਗ ਨਾਲ ਚਲਾਇਆ ਜਾਂਦਾ ਹੈ। ਮਹੀਨਾਵਾਰ ਦਾਨ ਕਰੋ ਅਤੇ ਬੈਜ ਪ੍ਰਾਪਤ ਕਰੋ। ";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "ਹਾਲੇ ਨਹੀਂ";

@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Dohaintza egin";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal zure moduko jendeari esker da posible. Egin dohaintzak hilero eta jaso bereizgarri bat.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Orain ez";

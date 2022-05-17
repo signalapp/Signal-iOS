@@ -2030,6 +2030,8 @@
 		503614D4282C5765008128B4 /* lt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = lt; path = translations/lt.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D5282C578C008128B4 /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = sq; path = translations/sq.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D6282C7B76008128B4 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = zh_CN; path = translations/zh_CN.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		50BBC42E28345ECD001C6652 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = tr; path = translations/tr.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		50BBC42F28345ED6001C6652 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ja; path = translations/ja.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		55D83291ED67EE1A7FC96E60 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
 		63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6781,6 +6783,8 @@
 				503614D4282C5765008128B4 /* lt */,
 				503614D5282C578C008128B4 /* sq */,
 				503614D6282C7B76008128B4 /* zh_CN */,
+				50BBC42E28345ECD001C6652 /* tr */,
+				50BBC42F28345ED6001C6652 /* ja */,
 			);
 			name = PluralAware.stringsdict;
 			sourceTree = "<group>";

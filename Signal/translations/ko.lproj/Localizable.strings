@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "기부";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal은 여러분의 지지를 통해 힘을 얻습니다. 매월 기부하고 배지를 받으세요.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "나중에";
@@ -2255,7 +2255,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ 님은 관리자만 메시지를 전송할 수 있도록 그룹 설정을 변경했습니다.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "관리자가 당신을 차단했기 때문에 그룹 링크를 통해 그룹에 참가할 수 없습니다.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "그룹 링크가 더 이상 유효하지 않습니다.";
@@ -5606,7 +5606,7 @@
 "SETTINGS_SECURITY_TITLE" = "애플리케이션 보안";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "고품질 미디어는 더 많은 모바일 데이터를 사용할 수 있습니다.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
@@ -5768,7 +5768,7 @@
 "STICKERS_UNINSTALL_BUTTON" = "제거";
 
 /* Text indication a story caption can be tapped to read more. */
-"STORIES_CAPTION_READ_MORE" = "Read more";
+"STORIES_CAPTION_READ_MORE" = "더 읽기";
 
 /* Context menu action to copy the selected story reply */
 "STORIES_COPY_REPLY_ACTION" = "복사";

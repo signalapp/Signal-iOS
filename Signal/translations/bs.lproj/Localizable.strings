@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Doniraj";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal postoji zahvaljujući osobama poput Vas. Donirajte mjesečno i primite značku.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Ne sada";

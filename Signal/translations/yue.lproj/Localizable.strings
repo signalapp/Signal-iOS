@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "課金";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal 應援靠團伙。誠意召集課金師每月捐款，並贈送一枚個人資料襟章致謝。";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "遲啲先啦";

@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Donasi";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal didukung oleh orang baik seperti Anda. Donasi setiap bulan dan terima lencana.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Jangan Sekarang";
@@ -5789,7 +5789,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "No recent updates to show right now.";
 
 /* Indicates that this story has no replies yet */
-"STORIES_NO_REPLIES_YET" = "No replies yet";
+"STORIES_NO_REPLIES_YET" = "Belum ada balasan";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Bagikan";
@@ -5813,7 +5813,7 @@
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Balas";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reacted to the story";
+"STORY_REPLY_REACTION" = "Bereaksi terhadap cerita";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Balas";

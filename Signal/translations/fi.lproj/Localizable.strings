@@ -902,10 +902,10 @@
 "CONTACT_SUPPORT" = "Ota yhteyttä tukeen";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Lahjoitukset ja kunniamerkit";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Lahjoitukset ja kunniamerkit";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Kehitysidea";
@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Lahjoita";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal pysyy käynnissä kaltaistesi ihmisten ansiosta. Ryhdy kuukausilahjoittajaksi ja saa kunniamerkki profiiliisi.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Ei nyt";

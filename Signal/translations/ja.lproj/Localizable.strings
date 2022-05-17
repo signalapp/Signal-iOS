@@ -902,10 +902,10 @@
 "CONTACT_SUPPORT" = "お問い合わせ";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "寄付とバッジ";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "寄付とバッジ";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "新機能をリクエストします";
@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "寄付する";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signalはみなさんの寄付に支えられています。毎月寄付してくださる方にバッジを差し上げます。";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "今はしない";
@@ -1637,7 +1637,7 @@
 "DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "別の方法";
 
 /* Title for the 'receipts' section on the donation screen */
-"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Receipts";
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "受領書";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "サブスクリプションのよくある質問";

@@ -134,10 +134,10 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Erreur";
 
 /* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
+"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Lancer un contrôle d’intégrité de la base de données";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "Open Signal Instead";
+"APP_LAUNCH_FAILURE_CONTINUE" = "Ouvrir Signal à la place";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Impossible de charger la base de données";
@@ -149,10 +149,10 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Version de base de données inconnue.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal had a problem while trying to open. Please send a debug log to support@signal.org to help troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal a eu un problème en essayant de s’ouvrir. Veuillez envoyer un journal de débogage à support@signal.org pour aider à résoudre ce problème.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Impossible d’ouvrir Signal";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Les données transférées de votre ancien appareil n’ont pas pu être restaurées. Veuillez envoyer un journal de débogage à support@signal.org afin que nous puissions examiner ce problème. Si vous réinstallez Signal, l’historique de vos messages pourrait être perdu.";
@@ -368,13 +368,13 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Donnez un Coup de pouce à Signal";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer visible on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Votre macaron Coup de pouce est expiré et n’est plus visible sur votre profil.\n\nVous pouvez continuer à utiliser Signal, mais pour soutenir une technologie conçue pour vous, envisagez de devenir donateur mensuel.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Votre macaron Coup de pouce est expiré et n’est plus visible sur votre profil.\n\nVous pouvez réactiver votre macaron Coup de pouce pour 30 jours en versant une somme unique.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Votre don mensuel a automatiquement été résilié car vous êtes resté inactif trop longtemps. Votre macaron %@ n’est plus visible sur votre profil.\n\nVous pouvez continuer à utiliser Signal, mais pour soutenir l’appli et réactiver votre macaron, renouvelez votre don maintenant.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Devenir donateur mensuel";
@@ -407,7 +407,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "Si vous avez plus d’un macaron, vous pouvez en choisir un que les autres pourront voir sur votre profil.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Vous avez obtenu le macaron %@. Affichez ce badge sur votre profil pour faire connaître votre don à Signal.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Fermer la bannière";
@@ -488,7 +488,7 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Définir la devise";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Faites un don ponctuel et obtenez un macaron Coup de pouce pour 30 jours.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Votre macaron Coup de pouce expirera le %@.";
@@ -902,10 +902,10 @@
 "CONTACT_SUPPORT" = "Contacter l’assistance";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Dons et macarons";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Dons et macarons";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "J’aimerais proposer une nouvelle fonction";
@@ -1283,19 +1283,19 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Faites glisser pour modifier la direction du dégradé";
 
 /* Button to run the database integrity check */
-"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Run";
+"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Lancer";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Cela peut prendre un certain temps (plusieurs minutes voire plus) en fonction de l’utilisation que vous avez faite de Signal. Vous pouvez fermer Signal sans risque si cela prend trop de temps.";
 
 /* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
+"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Ajouter au journal de débogage";
 
 /* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Integrity check results";
+"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Résultats du contrôle d’intégrité";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database integrity check?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Lancer le contrôle d’intégrité de la base de données ?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Cela peut prendre quelques minutes.";
@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Faire un don";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal est propulsé par des gens comme vous. Faites un don mensuel et recevez un macaron.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Pas maintenant";
@@ -1583,7 +1583,7 @@
 "DONATION_RECEIPT_DETAILS" = "Détails";
 
 /* Text on the button that exports the receipt */
-"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Share Receipt";
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Partager le reçu";
 
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
@@ -1616,7 +1616,7 @@
 "DONATION_VIEW_LOAD_FAILED" = "Erreur réseau. Vérifiez votre connexion et réessayez.";
 
 /* Text of the 'make a monthly donation' button on the donation screen */
-"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Faire un don mensuel";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "Macarons";
@@ -1631,10 +1631,10 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "Mon soutien";
 
 /* Title for the 'one-time donation' link in the donation view */
-"DONATION_VIEW_ONE_TIME_DONATION" = "One-time donation";
+"DONATION_VIEW_ONE_TIME_DONATION" = "Don ponctuel";
 
 /* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Autres moyens de donner";
 
 /* Title for the 'receipts' section on the donation screen */
 "DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Reçus";
@@ -4433,10 +4433,10 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "A réagi à votre histoire";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "A réagi à l’histoire de %@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Story";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Histoire";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Fichier joint";
@@ -5897,7 +5897,7 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Soutenez une technologie conçue pour vous – pas pour vos données – en rejoignant la communauté qui porte Signal.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Pourquoi faire un don ?";
@@ -5957,7 +5957,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Traitement de la transaction…";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read more.";
+"SUSTAINER_VIEW_READ_MORE" = "Lire la suite.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Renouvellement %@";

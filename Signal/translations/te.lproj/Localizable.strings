@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "విరాళమిచ్చు";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal మీలాంటి వ్యక్తుల సహాయంతో పని చేస్తుంది. నెలవారీగా విరాళం ఇవ్వండి మరియు ఒక బ్యాడ్జిని పొందండి.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "ఇప్పుడు కాదు";

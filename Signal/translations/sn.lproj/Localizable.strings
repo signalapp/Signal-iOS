@@ -362,7 +362,7 @@
 "BADGE_CONFIGURATION_TITLE" = "Badges";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Iva muraramisi";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
@@ -377,7 +377,7 @@
 "BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Become a Sustainer";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Iva muraramisi";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Add a Boost";
@@ -578,16 +578,16 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "Nhare yezwi iri kupinda...";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call at %@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "Wapotsa runhare rwe izwi pa %@";
 
 /* notification body for a call that was just missed */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "Nhare yezwi yapotswa";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "Wapotsa runhare rwe izwi pa %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "Wapotsa runhare rwe izwi pa %@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Unogona kubatidza chitauriso mu app ye iOS Seting kuti uchaye nhare uye kurekodha tsamba dzemazwi mu Signal.";
@@ -620,16 +620,16 @@
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "Nhare ye vhidhiyo iri kupinda...";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call at %@";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "Wapotsa runhare rwe vhidhiyo pa %@";
 
 /* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "Vapotsa nhare ye vhidhiyo";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "Wapotsa runhare rwe vhidhiyo pa %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "Wapotsa runhare rwe vhidhiyo pa %@";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Pindura pasina vhidhiyo";
@@ -686,7 +686,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Sarudza nyika";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Shandura Mufananidzo";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
 "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
@@ -5831,7 +5831,7 @@
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Kwete izvezvi";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Iva muraramisi";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Nhamba yako yekuchengetedza ina %@ iri kuenderana.Unokwanisa kuratidza kontakt iyi kuti yaongororwa.";

@@ -149,7 +149,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Nežinoma duomenų bazės versija.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal had a problem while trying to open. Please send a debug log to support@signal.org to help troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Bandant paleisti Signal, atsirado problemų. Išsiųskite derinimo žurnalą el. paštu support@signal.org, kad padėtumėte pašalinti šį nesklandumą. ";
 
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Nepavyko atverti Signal";
@@ -389,7 +389,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Atnaujinti prenumeratą";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Mėnesinis paaukojimas nutrauktas";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Dėkojame už paskatinimą!";
@@ -407,7 +407,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "Kai turite daugiau kaip vieną ženkliuką, galite paversti kurį nors vieną iš jų pagrindiniu, Toks ženkliukas jūsų profilyje bus matomas kitiems žmonėms.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Jūs pelnėte %@ ženkliuką! Padėkite ugdyti supratimą aukoti Signal programėlei, atvaizduodami šį ženkliuką savo profilyje.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Užverti plakatą";
@@ -488,7 +488,7 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Nustatyti valiutą";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Atlikite vienkartinį paaukojimą ir 30-čiai dienų pelnykite paskatinimo ženkliuką.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Jūsų paskatinimo ženkliukas nustos galioti %@.";
@@ -635,7 +635,7 @@
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Atsiliepti be vaizdo";
 
 /* label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Atsakyti";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Atsiliepti";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Garsas";
@@ -902,10 +902,10 @@
 "CONTACT_SUPPORT" = "Susisiekti su palaikymu";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Paaukojimai ir ženkliukai";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Paaukojimai ir ženkliukai";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Aš noriu paprašyti pridėti naują ypatybę";
@@ -1286,7 +1286,7 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Paleisti";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Tai, priklausomai nuo to, kiek naudojatės Signal, gali šiek tiek užtrukti (kelias minutes ar daugiau). Jei tai užtrunka pernelyg ilgai, galite saugiai užverti Signal.";
 
 /* Button to save database integrity check results to the debug log */
 "DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Pridėti į derinimo žurnalą";
@@ -1565,7 +1565,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Paaukokite";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "„Signal“ varomoji jėga – tai tokie žmonės kaip ir jūs. Aukokite kas mėnesį ir gaukite ženklelį.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Ne dabar";
@@ -1616,7 +1616,7 @@
 "DONATION_VIEW_LOAD_FAILED" = "Tinklo klaida. Patikrinkite interneto ryšį ir bandykite dar kartą.";
 
 /* Text of the 'make a monthly donation' button on the donation screen */
-"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Atlikti mėnesinį paaukojimą";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "Ženkliukai";
@@ -1631,10 +1631,10 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "Mano palaikymas";
 
 /* Title for the 'one-time donation' link in the donation view */
-"DONATION_VIEW_ONE_TIME_DONATION" = "One-time donation";
+"DONATION_VIEW_ONE_TIME_DONATION" = "Vienkartinis paaukojimas";
 
 /* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Kiti aukojimo būdai";
 
 /* Title for the 'receipts' section on the donation screen */
 "DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Kvitai";
@@ -4433,7 +4433,7 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Sureagavo į jūsų istoriją";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Sureagavo į istoriją, kurią paskelbė %@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Istorija";
@@ -5786,7 +5786,7 @@
 "STORIES_HIDE_STORY_ACTION" = "Slėpti istoriją";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No recent updates to show right now.";
+"STORIES_NO_RECENT_MESSAGES" = "Šiuo metu nėra paskiausių atnaujinimų, kuriuos rodyti.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Atsakymų kol kas nėra";
@@ -5891,7 +5891,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Įkeliama";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal yra pelno nesiekianti organizacija, kuri neturi reklamuotojų ar investuotojų ir, kurią remia tik Signal programėle besinaudojantys ir ją vertinantys žmonės. Atlikite mėnesinį paaukojimą ir gaukite profilio ženkliuką, kad dalintumėtės savo palaikymu.";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal yra pasišventusi kurti atvirojo kodo privatumo technologiją, kuri apsaugo žodžio laisvę ir įgalina saugų bendravimą visame pasaulyje.\n\nJūsų paaukojimas paremia šį tikslą ir apmoka visame pasaulyje milijonų žmonių privačiam bendravimui naudojamos programėlės plėtojimą ir veiklą. Jokių reklamų. Jokių stebėjimo priemonių. Jokių trukdžių.";
@@ -5957,7 +5957,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Apdorojama operacija...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read more.";
+"SUSTAINER_VIEW_READ_MORE" = "Skaityti daugiau.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Atsinaujina %@";
@@ -5984,7 +5984,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Atnaujinti";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Atlikite mėnesinį paaukojimą Signal programėlei, kad palaikytumėte technologiją, kuri sukurta jums, o ne jūsų duomenims.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Išjungta";
