@@ -173,7 +173,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         )
     }
     
-    private func handleUpdates(_ updatedViewData: [HomeViewModel.ThreadInfo]) {
+    private func handleUpdates(_ updatedViewData: [ConversationCell.ViewModel]) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
         guard hasLoadedInitialData else {
@@ -221,7 +221,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        guard let conversationVC: ConversationVC = ConversationVC(threadId: viewModel.viewData[indexPath.row].id) else {
+        guard let conversationVC: ConversationVC = ConversationVC(threadId: viewModel.viewData[indexPath.row].threadId) else {
             return
         }
         
@@ -233,7 +233,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     }
 
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let threadId: String = viewModel.viewData[indexPath.row].id
+        let threadId: String = viewModel.viewData[indexPath.row].threadId
         let delete = UITableViewRowAction(
             style: .destructive,
             title: "TXT_DELETE_TITLE".localized()
@@ -250,7 +250,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     @objc private func clearAllTapped() {
         guard !viewModel.viewData.isEmpty else { return }
         
-        let threadIds: [String] = viewModel.viewData.map { $0.id }
+        let threadIds: [String] = viewModel.viewData.map { $0.threadId }
         let alertVC: UIAlertController = UIAlertController(
             title: "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE".localized(),
             message: nil,

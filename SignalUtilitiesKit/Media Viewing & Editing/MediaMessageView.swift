@@ -344,7 +344,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
     private func setupViews() {
         // Plain text will just be put in the 'message' input so do nothing
-        guard !attachment.isText && !attachment.isOversizeText else { return }
+        guard !attachment.isText else { return }
         
         // Setup the view hierarchy
         addSubview(stackView)
@@ -411,7 +411,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     
     private func setupLayout() {
         // Plain text will just be put in the 'message' input so do nothing
-        guard !attachment.isText && !attachment.isOversizeText else { return }
+        guard !attachment.isText else { return }
         
         // Sizing calculations
         let clampedRatio: CGFloat = {

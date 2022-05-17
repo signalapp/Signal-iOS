@@ -13,10 +13,12 @@ public struct InteractionAttachment: Codable, FetchableRecord, PersistableRecord
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
+        case albumIndex
         case interactionId
         case attachmentId
     }
     
+    public let albumIndex: Int
     public let interactionId: Int64
     public let attachmentId: String
     
@@ -33,9 +35,11 @@ public struct InteractionAttachment: Codable, FetchableRecord, PersistableRecord
     // MARK: - Initialization
     
     public init(
+        albumIndex: Int,
         interactionId: Int64,
         attachmentId: String
     ) {
+        self.albumIndex = albumIndex
         self.interactionId = interactionId
         self.attachmentId = attachmentId
     }

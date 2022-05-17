@@ -14,7 +14,7 @@ public final class MessageSender {
         signalAttachments: [SignalAttachment],
         for interactionId: Int64
     ) throws {
-        try signalAttachments.forEach { signalAttachment in
+        try signalAttachments.enumerated().forEach { index, signalAttachment in
             let maybeAttachment: Attachment? = Attachment(
                 variant: (signalAttachment.isVoiceMessage ?
                     .voiceMessage :
@@ -29,6 +29,7 @@ public final class MessageSender {
             guard let attachment: Attachment = maybeAttachment else { return }
             
             let interactionAttachment: InteractionAttachment = InteractionAttachment(
+                albumIndex: index,
                 interactionId: interactionId,
                 attachmentId: attachment.id
             )

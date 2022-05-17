@@ -8,6 +8,10 @@ enum _001_InitialSetupMigration: Migration {
     static let identifier: String = "initialSetup"
     
     static func migrate(_ db: Database) throws {
+        // Define the tokenizer to be used in all the FTS tables
+        // https://github.com/groue/GRDB.swift/blob/master/Documentation/FullTextSearch.md#fts5-tokenizers
+        let fullTextSearchTokenizer: FTS5TokenizerDescriptor = .porter(wrapping: .unicode61())
+        
         try db.create(table: Contact.self) { t in
             t.column(.id, .text)
                 .notNull()
@@ -38,6 +42,15 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.profilePictureUrl, .text)
             t.column(.profilePictureFileName, .text)
             t.column(.profileEncryptionKey, .blob)
+        }
+        
+        /// Create a full-text search table synchronized with the Profile table
+        try db.create(virtualTable: Profile.fullTextSearchTableName, using: FTS5()) { t in
+            t.synchronize(withTable: Profile.databaseTableName)
+            t.tokenizer = fullTextSearchTokenizer
+            
+            t.column(Profile.Columns.nickname.name)
+            t.column(Profile.Columns.name.name)
         }
         
         try db.create(table: SessionThread.self) { t in
@@ -78,6 +91,14 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.formationTimestamp, .double).notNull()
         }
         
+        /// Create a full-text search table synchronized with the ClosedGroup table
+        try db.create(virtualTable: ClosedGroup.fullTextSearchTableName, using: FTS5()) { t in
+            t.synchronize(withTable: ClosedGroup.databaseTableName)
+            t.tokenizer = fullTextSearchTokenizer
+            
+            t.column(ClosedGroup.Columns.name.name)
+        }
+        
         try db.create(table: ClosedGroupKeyPair.self) { t in
             t.column(.threadId, .text)
                 .notNull()
@@ -106,6 +127,14 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.imageData, .blob)
             t.column(.userCount, .integer).notNull()
             t.column(.infoUpdates, .integer).notNull()
+        }
+        
+        /// Create a full-text search table synchronized with the OpenGroup table
+        try db.create(virtualTable: OpenGroup.fullTextSearchTableName, using: FTS5()) { t in
+            t.synchronize(withTable: OpenGroup.databaseTableName)
+            t.tokenizer = fullTextSearchTokenizer
+            
+            t.column(OpenGroup.Columns.name.name)
         }
         
         try db.create(table: Capability.self) { t in
@@ -190,6 +219,14 @@ enum _001_InitialSetupMigration: Migration {
             t.uniqueKey([.threadId, .openGroupServerMessageId])
         }
         
+        /// Create a full-text search table synchronized with the Interaction table
+        try db.create(virtualTable: Interaction.fullTextSearchTableName, using: FTS5()) { t in
+            t.synchronize(withTable: Interaction.databaseTableName)
+            t.tokenizer = fullTextSearchTokenizer
+            
+            t.column(Interaction.Columns.body.name)
+        }
+        
         try db.create(table: RecipientState.self) { t in
             t.column(.interactionId, .integer)
                 .notNull()
@@ -241,6 +278,7 @@ enum _001_InitialSetupMigration: Migration {
         }
         
         try db.create(table: InteractionAttachment.self) { t in
+            t.column(.albumIndex, .integer).notNull()
             t.column(.interactionId, .integer)
                 .notNull()
                 .indexed()                                            // Quicker querying

@@ -210,6 +210,8 @@ enum _003_YDBToGRDBMigration: Migration {
         
         // Insert the data into GRDB
         
+        let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
+        
         // MARK: - Insert Contacts
         
         try autoreleasepool {
@@ -374,28 +376,33 @@ enum _003_YDBToGRDBMigration: Migration {
                         ).insert(db)
                     }
                     
-                    try groupModel.groupMemberIds.forEach { memberId in
-                        try GroupMember(
-                            groupId: threadId,
-                            profileId: memberId,
-                            role: .standard
-                        ).insert(db)
-                    }
-                    
-                    try groupModel.groupAdminIds.forEach { adminId in
-                        try GroupMember(
-                            groupId: threadId,
-                            profileId: adminId,
-                            role: .admin
-                        ).insert(db)
-                    }
-                    
-                    try (closedGroupZombieMemberIds[legacyThreadId] ?? []).forEach { zombieId in
-                        try GroupMember(
-                            groupId: threadId,
-                            profileId: zombieId,
-                            role: .zombie
-                        ).insert(db)
+                    // Only create the 'GroupMember' models if the current user is actually a member
+                    // of the group (if the user has left the group or been removed from it we now
+                    // delete all of these records so want this to behave the same way)
+                    if groupModel.groupMemberIds.contains(currentUserPublicKey) {
+                        try groupModel.groupMemberIds.forEach { memberId in
+                            try GroupMember(
+                                groupId: threadId,
+                                profileId: memberId,
+                                role: .standard
+                            ).insert(db)
+                        }
+                        
+                        try groupModel.groupAdminIds.forEach { adminId in
+                            try GroupMember(
+                                groupId: threadId,
+                                profileId: adminId,
+                                role: .admin
+                            ).insert(db)
+                        }
+                        
+                        try (closedGroupZombieMemberIds[legacyThreadId] ?? []).forEach { zombieId in
+                            try GroupMember(
+                                groupId: threadId,
+                                profileId: zombieId,
+                                role: .zombie
+                            ).insert(db)
+                        }
                     }
                 }
                 
@@ -421,8 +428,6 @@ enum _003_YDBToGRDBMigration: Migration {
             }
             
             try autoreleasepool {
-                let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
-                
                 try interactions[legacyThreadId]?
                     .sorted(by: { lhs, rhs in lhs.timestamp < rhs.timestamp }) // Maintain sort order
                     .forEach { legacyInteraction in
@@ -785,7 +790,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         
                         // Handle any attachments
                         
-                        try attachmentIds.forEach { legacyAttachmentId in
+                        try attachmentIds.enumerated().forEach { index, legacyAttachmentId in
                             guard let attachmentId: String = try attachmentId(
                                 db,
                                 for: legacyAttachmentId,
@@ -799,6 +804,7 @@ enum _003_YDBToGRDBMigration: Migration {
                             
                             // Link the attachment to the interaction and add to the id lookup
                             try InteractionAttachment(
+                                albumIndex: index,
                                 interactionId: interactionId,
                                 attachmentId: attachmentId
                             ).insert(db)

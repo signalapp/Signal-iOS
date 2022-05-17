@@ -631,57 +631,19 @@ public extension Interaction {
                     let sourceFilename: String?
                 }
 
-                var targetBody: String? = self.body
-
-                if self.body == nil || self.body?.isEmpty == true {
-                    let maybeTextInfo: AttachmentDescriptionInfo? = try? AttachmentDescriptionInfo
-                        .fetchOne(
-                            db,
-                            attachments
-                                .select(.id, .state, .variant, .contentType, .sourceFilename)
-                                .filter(Attachment.Columns.contentType == OWSMimeTypeOversizeTextMessage)
-                                .filter(Attachment.Columns.state == Attachment.State.downloaded)
-                        )
-
-                    if
-                        let textInfo: AttachmentDescriptionInfo = maybeTextInfo,
-                        let filePath: String = Attachment.originalFilePath(
-                            id: textInfo.id,
-                            mimeType: textInfo.contentType,
-                            sourceFilename: textInfo.sourceFilename
-                        ),
-                        let data: Data = try? Data(contentsOf: URL(fileURLWithPath: filePath)),
-                        let dataString: String = String(data: data, encoding: .utf8)
-                    {
-                        targetBody = dataString.filterForDisplay
-                    }
-                }
-
-                let attachmentDescription: String? = try? AttachmentDescriptionInfo
-                    .fetchOne(
-                        db,
-                        attachments
-                            .select(.id, .variant, .contentType, .sourceFilename)
-                            .filter(Attachment.Columns.contentType != OWSMimeTypeOversizeTextMessage)
-                    )
-                    .map { info -> String in
-                        Attachment.description(
-                            for: info.variant,
-                            contentType: info.contentType,
-                            sourceFilename: info.sourceFilename
-                        )
-                    }
-                let isOpenGroupInvitation: Bool = (try? linkPreview
-                    .filter(LinkPreview.Columns.variant == LinkPreview.Variant.openGroupInvitation)
-                    .isNotEmpty(db))
-                    .defaulting(to: false)
                 
                 return Interaction.previewText(
                     variant: self.variant,
-                    body: targetBody,
-                    attachments: [],
-                    customAttachmentDescription: attachmentDescription,
-                    isOpenGroupInvitation: isOpenGroupInvitation
+                    body: self.body,
+                    attachmentDescriptionInfo: try? attachments
+                        .select(.variant, .contentType, .sourceFilename)
+                        .asRequest(of: Attachment.DescriptionInfo.self)
+                        .fetchOne(db),
+                    attachmentCount: try? attachments.fetchCount(db),
+                    isOpenGroupInvitation: (try? linkPreview
+                        .filter(LinkPreview.Columns.variant == LinkPreview.Variant.openGroupInvitation)
+                        .isNotEmpty(db))
+                        .defaulting(to: false)
                 )
 
             case .infoMediaSavedNotification, .infoScreenshotNotification:
@@ -690,14 +652,12 @@ public extension Interaction {
                 return Interaction.previewText(
                     variant: self.variant,
                     body: self.body,
-                    authorDisplayName: Profile.displayName(db, id: threadId),
-                    attachments: []
+                    authorDisplayName: Profile.displayName(db, id: threadId)
                 )
 
             default: return Interaction.previewText(
                 variant: self.variant,
-                body: self.body,
-                attachments: []
+                body: self.body
             )
         }
     }
@@ -707,50 +667,34 @@ public extension Interaction {
         variant: Variant,
         body: String?,
         authorDisplayName: String = "",
-        attachments: [Attachment],
-        customAttachmentDescription: String? = nil,
+        attachmentDescriptionInfo: Attachment.DescriptionInfo? = nil,
+        attachmentCount: Int? = nil,
         isOpenGroupInvitation: Bool = false
     ) -> String {
         switch variant {
             case .standardIncomingDeleted: return ""
                 
             case .standardIncoming, .standardOutgoing:
-                var bodyDescription: String?
-                let attachmentDescription: String? = (customAttachmentDescription ?? attachments
-                    .first(where: { $0.contentType != OWSMimeTypeOversizeTextMessage })?
-                    .description
+                let attachmentDescription: String? = Attachment.description(
+                    for: attachmentDescriptionInfo,
+                    count: attachmentCount
                 )
-                
-                if let body: String = body, !body.isEmpty {
-                    bodyDescription = body
-                }
-                else if
-                    let textAttachment: Attachment = attachments.first(where: { attachment in
-                        attachment.state == .downloaded &&
-                        attachment.contentType == OWSMimeTypeOversizeTextMessage
-                    }),
-                    let filePath: String = textAttachment.originalFilePath,
-                    let data: Data = try? Data(contentsOf: URL(fileURLWithPath: filePath)),
-                    let dataString: String = String(data: data, encoding: .utf8)
-                {
-                    bodyDescription = dataString.filterForDisplay
-                }
                 
                 if
                     let attachmentDescription: String = attachmentDescription,
-                    let bodyDescription: String = bodyDescription,
+                    let body: String = body,
                     !attachmentDescription.isEmpty,
-                    !bodyDescription.isEmpty
+                    !body.isEmpty
                 {
                     if CurrentAppContext().isRTL {
-                        return "\(bodyDescription): \(attachmentDescription)"
+                        return "\(body): \(attachmentDescription)"
                     }
                     
-                    return "\(attachmentDescription): \(bodyDescription)"
+                    return "\(attachmentDescription): \(body)"
                 }
                 
-                if let bodyDescription: String = bodyDescription, !bodyDescription.isEmpty {
-                    return bodyDescription
+                if let body: String = body, !body.isEmpty {
+                    return body
                 }
                 
                 if let attachmentDescription: String = attachmentDescription, !attachmentDescription.isEmpty {

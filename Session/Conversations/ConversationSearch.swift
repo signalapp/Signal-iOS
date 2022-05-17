@@ -1,67 +1,32 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-import Foundation
+import UIKit
+import SignalUtilitiesKit
 
-@objc
-public protocol ConversationSearchControllerDelegate: UISearchControllerDelegate {
-
-    @objc
-    func conversationSearchController(_ conversationSearchController: ConversationSearchController,
-                                      didUpdateSearchResults resultSet: ConversationScreenSearchResultSet?)
-
-    @objc
-    func conversationSearchController(_ conversationSearchController: ConversationSearchController,
-                                      didSelectMessageId: String)
-}
-
-@objc
-public class ConversationSearchController : NSObject {
-
-    @objc
+public class ConversationSearchController: NSObject {
     public static let kMinimumSearchTextLength: UInt = 2
 
-    @objc
-    public let uiSearchController =  UISearchController(searchResultsController: nil)
-
-    @objc
     public weak var delegate: ConversationSearchControllerDelegate?
-
-    let thread: TSThread
-
-    @objc
+    public let uiSearchController: UISearchController = UISearchController(searchResultsController: nil)
     public let resultsBar: SearchResultsBar = SearchResultsBar()
 
     // MARK: Initializer
 
-    @objc
-    required public init(thread: TSThread) {
-        self.thread = thread
+    override public init() {
         super.init()
-
+        
         resultsBar.resultsBarDelegate = self
         uiSearchController.delegate = self
         uiSearchController.searchResultsUpdater = self
 
         uiSearchController.hidesNavigationBarDuringPresentation = false
-        if #available(iOS 13, *) {
-            // Do nothing
-        } else {
-            uiSearchController.dimsBackgroundDuringPresentation = false
-        }
         uiSearchController.searchBar.inputAccessoryView = resultsBar
-    }
-
-    // MARK: Dependencies
-
-    var dbReadConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadConnection
     }
 }
 
-extension ConversationSearchController : UISearchControllerDelegate {
-    
+// MARK: - UISearchControllerDelegate
+
+extension ConversationSearchController: UISearchControllerDelegate {
     public func didPresentSearchController(_ searchController: UISearchController) {
         Logger.verbose("")
         delegate?.didPresentSearchController?(searchController)
@@ -73,8 +38,9 @@ extension ConversationSearchController : UISearchControllerDelegate {
     }
 }
 
-extension ConversationSearchController : UISearchResultsUpdating {
-    
+// MARK: - UISearchResultsUpdating
+
+extension ConversationSearchController: UISearchResultsUpdating {
     var dbSearcher: FullTextSearcher {
         return FullTextSearcher.shared
     }
@@ -111,29 +77,33 @@ extension ConversationSearchController : UISearchResultsUpdating {
     }
 }
 
-extension ConversationSearchController : SearchResultsBarDelegate {
-    
-    func searchResultsBar(_ searchResultsBar: SearchResultsBar,
-                          setCurrentIndex currentIndex: Int,
-                          resultSet: ConversationScreenSearchResultSet) {
+// MARK: - SearchResultsBarDelegate
+
+extension ConversationSearchController: SearchResultsBarDelegate {
+    func searchResultsBar(
+        _ searchResultsBar: SearchResultsBar,
+        setCurrentIndex currentIndex: Int,
+        resultSet: ConversationScreenSearchResultSet
+    ) {
         guard let searchResult = resultSet.messages[safe: currentIndex] else {
             owsFailDebug("messageId was unexpectedly nil")
             return
         }
 
         BenchEventStart(title: "Conversation Search Nav", eventId: "Conversation Search Nav: \(searchResult.messageId)")
-        self.delegate?.conversationSearchController(self, didSelectMessageId: searchResult.messageId)
+        self.delegate?.conversationSearchController(self, didSelectInteractionId: searchResult.messageId)
     }
 }
 
-protocol SearchResultsBarDelegate : AnyObject {
-    
-    func searchResultsBar(_ searchResultsBar: SearchResultsBar,
-                          setCurrentIndex currentIndex: Int,
-                          resultSet: ConversationScreenSearchResultSet)
+protocol SearchResultsBarDelegate: AnyObject {
+    func searchResultsBar(
+        _ searchResultsBar: SearchResultsBar,
+        setCurrentIndex currentIndex: Int,
+        resultSet: ConversationScreenSearchResultSet
+    )
 }
 
-public final class SearchResultsBar : UIView {
+public final class SearchResultsBar: UIView {
     private var resultSet: ConversationScreenSearchResultSet?
     var currentIndex: Int?
     weak var resultsBarDelegate: SearchResultsBarDelegate?
@@ -312,4 +282,11 @@ public final class SearchResultsBar : UIView {
             upButton.isEnabled = false
         }
     }
+}
+
+// MARK: - ConversationSearchControllerDelegate
+
+public protocol ConversationSearchControllerDelegate: UISearchControllerDelegate {
+    func conversationSearchController(_ conversationSearchController: ConversationSearchController, didUpdateSearchResults resultSet: ConversationScreenSearchResultSet?)
+    func conversationSearchController(_ conversationSearchController: ConversationSearchController, didSelectInteractionId: Int64)
 }

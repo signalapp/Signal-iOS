@@ -12,7 +12,6 @@ extern NSString *const OWSMimeTypeImageTiff1;
 extern NSString *const OWSMimeTypeImageTiff2;
 extern NSString *const OWSMimeTypeImageBmp1;
 extern NSString *const OWSMimeTypeImageBmp2;
-extern NSString *const OWSMimeTypeOversizeTextMessage;
 extern NSString *const OWSMimeTypeUnknownForTests;
 
 extern NSString *const kOversizeTextAttachmentUTI;

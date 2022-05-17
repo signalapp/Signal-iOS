@@ -9,7 +9,7 @@ import SignalUtilitiesKit
 
 final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
     typealias Section = HomeViewModel.Section
-    typealias Item = HomeViewModel.Item
+    typealias Item = ConversationCell.ViewModel
     
     private let viewModel: HomeViewModel = HomeViewModel()
     private var dataChangeObservable: DatabaseCancellable?
@@ -346,12 +346,12 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         switch section.model {
             case .messageRequests:
                 let cell: MessageRequestsCell = tableView.dequeue(type: MessageRequestsCell.self, for: indexPath)
-                cell.update(with: section.elements[indexPath.row].unreadCount)
+                cell.update(with: Int(section.elements[indexPath.row].threadUnreadCount ?? 0))
                 return cell
                 
             case .threads:
                 let cell: ConversationCell = tableView.dequeue(type: ConversationCell.self, for: indexPath)
-                cell.update(with: section.elements[indexPath.row].threadInfo)
+                cell.update(with: section.elements[indexPath.row])
                 return cell
         }
     }
@@ -369,7 +369,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 self.navigationController?.pushViewController(viewController, animated: true)
                 
             case .threads:
-                let threadId: String = section.elements[indexPath.row].threadInfo.id
+                let threadId: String = section.elements[indexPath.row].threadId
                 show(threadId, with: .none, highlightedInteractionId: nil, animated: true)
         }
     }
@@ -396,12 +396,12 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 return [hide]
                 
             case .threads:
-                let threadInfo: HomeViewModel.ThreadInfo = section.elements[indexPath.row].threadInfo
+                let cellViewModel: ConversationCell.ViewModel = section.elements[indexPath.row]
                 let delete: UITableViewRowAction = UITableViewRowAction(
                     style: .destructive,
                     title: "TXT_DELETE_TITLE".localized()
                 ) { [weak self] _, _ in
-                    let message = (threadInfo.isGroupAdmin ?
+                    let message = (cellViewModel.currentUserIsClosedGroupAdmin == true ?
                         "admin_group_leave_warning".localized() :
                         "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE".localized()
                     )
@@ -416,20 +416,20 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                         style: .destructive
                     ) { _ in
                         GRDBStorage.shared.write { db in
-                            switch threadInfo.variant {
+                            switch cellViewModel.threadVariant {
                                 case .closedGroup:
                                     try MessageSender
-                                        .leave(db, groupPublicKey: threadInfo.id)
+                                        .leave(db, groupPublicKey: cellViewModel.threadId)
                                         .retainUntilComplete()
                                     
                                 case .openGroup:
-                                    OpenGroupManagerV2.shared.delete(db, openGroupId: threadInfo.id)
+                                    OpenGroupManagerV2.shared.delete(db, openGroupId: cellViewModel.threadId)
                                     
                                 default: break
                             }
                             
                             _ = try SessionThread
-                                .filter(id: threadInfo.id)
+                                .filter(id: cellViewModel.threadId)
                                 .deleteAll(db)
                         }
                     })
@@ -444,33 +444,41 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
 
                 let pin: UITableViewRowAction = UITableViewRowAction(
                     style: .normal,
-                    title: (threadInfo.isPinned ?
-                        "PIN_BUTTON_TEXT".localized() :
-                        "UNPIN_BUTTON_TEXT".localized()
+                    title: (cellViewModel.threadIsPinned ?
+                        "UNPIN_BUTTON_TEXT".localized() :
+                        "PIN_BUTTON_TEXT".localized()
                     )
                 ) { _, _ in
                     GRDBStorage.shared.write { db in
                         try SessionThread
-                            .filter(id: threadInfo.id)
-                            .updateAll(db, SessionThread.Columns.isPinned.set(to: !threadInfo.isPinned))
+                            .filter(id: cellViewModel.threadId)
+                            .updateAll(db, SessionThread.Columns.isPinned.set(to: !cellViewModel.threadIsPinned))
                     }
                 }
                 
-                guard threadInfo.variant == .contact && !threadInfo.isNoteToSelf else {
+                guard cellViewModel.threadVariant == .contact && !cellViewModel.threadIsNoteToSelf else {
                     return [ delete, pin ]
                 }
 
                 let block: UITableViewRowAction = UITableViewRowAction(
                     style: .normal,
-                    title: (threadInfo.isBlocked ?
+                    title: (cellViewModel.threadIsBlocked == true ?
                         "BLOCK_LIST_UNBLOCK_BUTTON".localized() :
                         "BLOCK_LIST_BLOCK_BUTTON".localized()
                     )
                 ) { _, _ in
                     GRDBStorage.shared.write { db in
                         try Contact
-                            .filter(id: threadInfo.id)
-                            .updateAll(db, Contact.Columns.isBlocked.set(to: !threadInfo.isBlocked))
+                            .filter(id: cellViewModel.threadId)
+                            .updateAll(
+                                db,
+                                Contact.Columns.isBlocked.set(
+                                    to: (cellViewModel.threadIsBlocked == false ?
+                                        true:
+                                        false
+                                    )
+                                )
+                            )
                         try MessageSender.syncConfiguration(db, forceSyncNow: true)
                             .retainUntilComplete()
                     }

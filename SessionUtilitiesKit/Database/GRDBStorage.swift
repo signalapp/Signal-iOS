@@ -14,6 +14,8 @@ public enum GRDBStorageError: Error {  // TODO: Rename to `StorageError`
     case failedToSave
     case objectNotFound
     case objectNotSaved
+    
+    case invalidSearchPattern
 }
 
 // TODO: Protocol for storage (just need to have 'read' and 'write' methods and mock 'Database'?

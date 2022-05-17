@@ -134,16 +134,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [self dataSourceWithData:data fileExtension:fileExtension];
 }
 
-+ (nullable DataSource *)dataSourceWithOversizeText:(NSString *_Nullable)text
-{
-    if (!text) {
-        return nil;
-    }
-
-    NSData *data = [text.filterStringForDisplay dataUsingEncoding:NSUTF8StringEncoding];
-    return [self dataSourceWithData:data fileExtension:kOversizeTextAttachmentFileExtension];
-}
-
 + (DataSource *)dataSourceWithSyncMessageData:(NSData *)data
 {
     return [self dataSourceWithData:data fileExtension:kSyncMessageFileExtension];

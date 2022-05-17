@@ -331,9 +331,6 @@ public class SignalAttachment: NSObject {
                 }
             }
         }
-        if isOversizeText {
-            return OWSMimeTypeOversizeTextMessage
-        }
         if dataUTI == kUnknownTestAttachmentUTI {
             return OWSMimeTypeUnknownForTests
         }
@@ -374,9 +371,6 @@ public class SignalAttachment: NSObject {
             if fileExtension.count > 0 {
                 return fileExtension.filterFilename()
             }
-        }
-        if isOversizeText {
-            return kOversizeTextAttachmentFileExtension
         }
         if dataUTI == kUnknownTestAttachmentUTI {
             return "unknown"
@@ -456,17 +450,10 @@ public class SignalAttachment: NSObject {
     }
 
     @objc
-    public var isOversizeText: Bool {
-        return dataUTI == kOversizeTextAttachmentUTI
-    }
-
-    @objc
     public var isText: Bool {
         return (
-            isConvertibleToTextMessage && (
-                UTTypeConformsTo(dataUTI as CFString, kUTTypeText) ||
-                isOversizeText
-            )
+            isConvertibleToTextMessage &&
+            UTTypeConformsTo(dataUTI as CFString, kUTTypeText)
         )
     }
 
@@ -1054,20 +1041,6 @@ public class SignalAttachment: NSObject {
                              dataUTI: dataUTI,
                              validUTISet: audioUTISet,
                              maxFileSize: kMaxFileSizeAudio)
-    }
-
-    // MARK: Oversize Text Attachments
-
-    // Factory method for oversize text attachments.
-    //
-    // NOTE: The attachment returned by this method may not be valid.
-    //       Check the attachment's error property.
-    private class func oversizeTextAttachment(text: String?) -> SignalAttachment {
-        let dataSource = DataSourceValue.dataSource(withOversizeText: text)
-        return newAttachment(dataSource: dataSource,
-                             dataUTI: kOversizeTextAttachmentUTI,
-                             validUTISet: nil,
-                             maxFileSize: kMaxFileSizeGeneric)
     }
 
     // MARK: Generic Attachments

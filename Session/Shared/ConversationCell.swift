@@ -4,7 +4,7 @@ import UIKit
 import SessionUIKit
 import SignalUtilitiesKit
 
-final class ConversationCell: UITableViewCell {
+public final class ConversationCell: UITableViewCell {
     // MARK: - UI
     
     private let accentLineView: UIView = UIView()
@@ -231,155 +231,125 @@ final class ConversationCell: UITableViewCell {
     
     // MARK: - Content
     
-    public func update(with threadInfo: HomeViewModel.ThreadInfo, isGlobalSearchResult: Bool = false) {
-        guard !isGlobalSearchResult else {
-            updateForSearchResult(threadInfo)
-            return
-        }
-        
-        update(threadInfo)
-    }
-
-    // MARK: - Updating for search results
+    // MARK: --Search Results
     
-    private func updateForSearchResult(_ threadInfo: HomeViewModel.ThreadInfo) {
+    public func updateForMessageSearchResult(with cellViewModel: ViewModel, searchText: String) {
         profilePictureView.update(
-            publicKey: threadInfo.id,
-            profile: threadInfo.profile,
-            additionalProfile: threadInfo.additionalProfile,
-            threadVariant: threadInfo.variant,
-            openGroupProfilePicture: threadInfo.openGroupProfilePictureData.map { UIImage(data: $0) },
-            useFallbackPicture: (threadInfo.variant == .openGroup && threadInfo.openGroupProfilePictureData == nil)
+            publicKey: cellViewModel.threadId,
+            profile: cellViewModel.profile,
+            additionalProfile: cellViewModel.additionalProfile,
+            threadVariant: cellViewModel.threadVariant,
+            openGroupProfilePicture: cellViewModel.openGroupProfilePictureData.map { UIImage(data: $0) },
+            useFallbackPicture: (cellViewModel.threadVariant == .openGroup && cellViewModel.openGroupProfilePictureData == nil)
         )
         
         isPinnedIcon.isHidden = true
         unreadCountView.isHidden = true
         hasMentionView.isHidden = true
-    }
-
-    public func configureForRecent(_ threadInfo: HomeViewModel.ThreadInfo) {
         displayNameLabel.attributedText = NSMutableAttributedString(
-            string: threadInfo.displayName,
-            attributes: [ .foregroundColor: Colors.text ]
+            string: cellViewModel.displayName,
+            attributes: [ .foregroundColor: Colors.text]
         )
+        timestampLabel.isHidden = false
+        timestampLabel.text = DateUtil.formatDate(forDisplay: cellViewModel.lastInteractionDate)
         bottomLabelStackView.isHidden = false
-        
-        let snippet = String(
-            format: "RECENT_SEARCH_LAST_MESSAGE_DATETIME".localized(),
-            DateUtil.formatDate(forDisplay: threadInfo.lastInteractionDate)
+        snippetLabel.attributedText = getHighlightedSnippet(
+            content: (cellViewModel.interactionBody ?? ""),
+            authorName: (cellViewModel.authorId != cellViewModel.currentUserPublicKey ?
+                cellViewModel.authorName(for: .contact) :
+                nil
+            ),
+            searchText: searchText.lowercased(),
+            fontSize: Values.smallFontSize
         )
-        snippetLabel.attributedText = NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text.withAlphaComponent(Values.lowOpacity)])
-        timestampLabel.isHidden = true
     }
-
-    public func configure(snippet: String?, searchText: String, message: TSMessage? = nil) {
-        let normalizedSearchText = searchText.lowercased()
-        if let messageTimestamp = message?.timestamp, let snippet = snippet {
-            // Message
-            let messageDate = NSDate.ows_date(withMillisecondsSince1970: messageTimestamp)
-            displayNameLabel.attributedText = NSMutableAttributedString(string: getDisplayName(), attributes: [.foregroundColor:Colors.text])
-            timestampLabel.isHidden = false
-            timestampLabel.text = DateUtil.formatDate(forDisplay: messageDate)
-            bottomLabelStackView.isHidden = false
-            var rawSnippet = snippet
-            if let message = message, let name = getMessageAuthorName(message: message) {
-                rawSnippet = "\(name): \(snippet)"
-            }
-            snippetLabel.attributedText = getHighlightedSnippet(snippet: rawSnippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
-        } else {
-            // Contact
-            if threadViewModel.isGroupThread, let thread = threadViewModel.threadRecord as? TSGroupThread {
-                displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayName(), searchText: normalizedSearchText, fontSize: Values.mediumFontSize)
-                var rawSnippet: String = ""
-                thread.groupModel.groupMemberIds.forEach { id in
-                    if let displayName = Profile.displayNameNoFallback(for: id, thread: thread) {
-                        if !rawSnippet.isEmpty {
-                            rawSnippet += ", \(displayName)"
-                        }
-                        if displayName.lowercased().contains(normalizedSearchText) {
-                            rawSnippet = displayName
-                        }
-                    }
-                }
-                if rawSnippet.isEmpty {
-                    bottomLabelStackView.isHidden = true
-                } else {
-                    bottomLabelStackView.isHidden = false
-                    snippetLabel.attributedText = getHighlightedSnippet(snippet: rawSnippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
-                }
-            } else {
-                displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayNameForSearch(threadViewModel.contactSessionID!), searchText: normalizedSearchText, fontSize: Values.mediumFontSize)
-                bottomLabelStackView.isHidden = true
-            }
-            timestampLabel.isHidden = true
-        }
-    }
-
-    private func getHighlightedSnippet(snippet: String, searchText: String, fontSize: CGFloat) -> NSMutableAttributedString {
-        guard snippet != "NOTE_TO_SELF".localized() else {
-            return NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text])
-        }
-
-        let result = NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text.withAlphaComponent(Values.lowOpacity)])
-        let normalizedSnippet = snippet.lowercased() as NSString
-
-        guard normalizedSnippet.contains(searchText) else { return result }
-
-        let range = normalizedSnippet.range(of: searchText)
-        result.addAttribute(.foregroundColor, value: Colors.text, range: range)
-        result.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: fontSize), range: range)
-        return result
-    }
-
-    // MARK: - Updating
     
-    private func update(_ threadInfo: HomeViewModel.ThreadInfo) {
-        backgroundColor = (threadInfo.isPinned ? Colors.cellPinned : Colors.cellBackground)
+    public func updateForContactAndGroupSearchResult(with cellViewModel: ViewModel, searchText: String) {
+        profilePictureView.update(
+            publicKey: cellViewModel.threadId,
+            profile: cellViewModel.profile,
+            additionalProfile: cellViewModel.additionalProfile,
+            threadVariant: cellViewModel.threadVariant,
+            openGroupProfilePicture: cellViewModel.openGroupProfilePictureData.map { UIImage(data: $0) },
+            useFallbackPicture: (cellViewModel.threadVariant == .openGroup && cellViewModel.openGroupProfilePictureData == nil)
+        )
         
-        if threadInfo.isBlocked {
+        isPinnedIcon.isHidden = true
+        unreadCountView.isHidden = true
+        hasMentionView.isHidden = true
+        timestampLabel.isHidden = true
+        displayNameLabel.attributedText = getHighlightedSnippet(
+            content: cellViewModel.displayName,
+            searchText: searchText.lowercased(),
+            fontSize: Values.mediumFontSize
+        )
+        
+        switch cellViewModel.threadVariant {
+            case .contact, .openGroup: bottomLabelStackView.isHidden = true
+                
+            case .closedGroup:
+                bottomLabelStackView.isHidden = (cellViewModel.threadMemberNames ?? "").isEmpty
+                snippetLabel.attributedText = getHighlightedSnippet(
+                    content: (cellViewModel.threadMemberNames ?? ""),
+                    searchText: searchText.lowercased(),
+                    fontSize: Values.smallFontSize
+                )
+        }
+    }
+
+    // MARK: --Standard
+    
+    public func update(with cellViewModel: ViewModel) {
+        let unreadCount: UInt = (cellViewModel.threadUnreadCount ?? 0)
+        backgroundColor = (cellViewModel.threadIsPinned ? Colors.cellPinned : Colors.cellBackground)
+        
+        if cellViewModel.threadIsBlocked == true {
             accentLineView.backgroundColor = Colors.destructive
             accentLineView.alpha = 1
         }
         else {
             accentLineView.backgroundColor = Colors.accent
-            accentLineView.alpha = (threadInfo.unreadCount > 0 ? 1 : 0.0001) // Setting the alpha to exactly 0 causes an issue on iOS 12
+            accentLineView.alpha = (unreadCount > 0 ? 1 : 0.0001) // Setting the alpha to exactly 0 causes an issue on iOS 12
         }
         
-        isPinnedIcon.isHidden = !threadInfo.isPinned
-        unreadCountView.isHidden = (threadInfo.unreadCount <= 0)
-        unreadCountLabel.text = (threadInfo.unreadCount < 10000 ? "\(threadInfo.unreadCount)" : "9999+")
+        isPinnedIcon.isHidden = !cellViewModel.threadIsPinned
+        unreadCountView.isHidden = (unreadCount <= 0)
+        unreadCountLabel.text = (unreadCount < 10000 ? "\(unreadCount)" : "9999+")
         unreadCountLabel.font = .boldSystemFont(
-            ofSize: (threadInfo.unreadCount < 10000 ? Values.verySmallFontSize : 8)
+            ofSize: (unreadCount < 10000 ? Values.verySmallFontSize : 8)
         )
         hasMentionView.isHidden = !(
-            (threadInfo.unreadMentionCount > 0) &&
-            (threadInfo.variant == .closedGroup || threadInfo.variant == .openGroup)
+            ((cellViewModel.threadUnreadMentionCount ?? 0) > 0) &&
+            (cellViewModel.threadVariant == .closedGroup || cellViewModel.threadVariant == .openGroup)
         )
         profilePictureView.update(
-            publicKey: threadInfo.id,
-            profile: threadInfo.profile,
-            additionalProfile: threadInfo.additionalProfile,
-            threadVariant: threadInfo.variant,
-            openGroupProfilePicture: threadInfo.openGroupProfilePictureData.map { UIImage(data: $0) },
-            useFallbackPicture: (threadInfo.variant == .openGroup && threadInfo.openGroupProfilePictureData == nil)
+            publicKey: cellViewModel.threadId,
+            profile: cellViewModel.profile,
+            additionalProfile: cellViewModel.additionalProfile,
+            threadVariant: cellViewModel.threadVariant,
+            openGroupProfilePicture: cellViewModel.openGroupProfilePictureData.map { UIImage(data: $0) },
+            useFallbackPicture: (
+                cellViewModel.threadVariant == .openGroup &&
+                cellViewModel.openGroupProfilePictureData == nil
+            )
         )
-        displayNameLabel.text = threadInfo.displayName
-        timestampLabel.text = DateUtil.formatDate(forDisplay: threadInfo.lastInteractionDate)
+        displayNameLabel.text = cellViewModel.displayName
+        timestampLabel.text = DateUtil.formatDate(forDisplay: cellViewModel.lastInteractionDate)
         
-        if threadInfo.contactIsTyping {
+        if cellViewModel.threadContactIsTyping == true {
             snippetLabel.text = ""
             typingIndicatorView.isHidden = false
             typingIndicatorView.startAnimation()
         }
         else {
-            snippetLabel.attributedText = getSnippet(threadInfo: threadInfo)
+            snippetLabel.attributedText = getSnippet(cellViewModel: cellViewModel)
             typingIndicatorView.isHidden = true
             typingIndicatorView.stopAnimation()
         }
         
         statusIndicatorView.backgroundColor = nil
         
-        switch (threadInfo.lastInteractionInfo?.variant, threadInfo.lastInteractionInfo?.state) {
+        switch (cellViewModel.interactionVariant, cellViewModel.interactionState) {
             case (.standardOutgoing, .sending):
                 statusIndicatorView.image = #imageLiteral(resourceName: "CircleDotDotDot").withRenderingMode(.alwaysTemplate)
                 statusIndicatorView.tintColor = Colors.text
@@ -399,40 +369,13 @@ final class ConversationCell: UITableViewCell {
                 statusIndicatorView.isHidden = false
         }
     }
+    
+    // MARK: - Snippet generation
 
-    private func getDisplayNameForSearch(_ sessionID: String) -> String {
-        if threadViewModel.threadRecord.isNoteToSelf() {
-            return NSLocalizedString("NOTE_TO_SELF", comment: "")
-        }
-        
-        return [
-            Profile.displayName(id: sessionID),
-            Profile.fetchOrCreate(id: sessionID).nickname.map { "(\($0)" }
-        ]
-        .compactMap { $0 }
-        .joined(separator: " ")
-    }
-
-    private func getDisplayName(for thread: SessionThread) -> String {
-        if thread.variant == .closedGroup || thread.variant == .openGroup {
-            return GRDBStorage.shared.read({ db in thread.name(db) })
-                .defaulting(to: "Unknown Group")
-        }
-        
-        if GRDBStorage.shared.read({ db in thread.isNoteToSelf(db) }) == true {
-            return "NOTE_TO_SELF".localized()
-        }
-        
-        let hexEncodedPublicKey: String = thread.id
-        let middleTruncatedHexKey: String = "\(hexEncodedPublicKey.prefix(4))...\(hexEncodedPublicKey.suffix(4))"
-
-        return Profile.displayName(id: hexEncodedPublicKey, customFallback: middleTruncatedHexKey)
-    }
-
-    private func getSnippet(threadInfo: HomeViewModel.ThreadInfo) -> NSMutableAttributedString {
+    private func getSnippet(cellViewModel: ViewModel) -> NSMutableAttributedString {
         let result = NSMutableAttributedString()
         
-        if Date().timeIntervalSince1970 < (threadInfo.mutedUntilTimestamp ?? 0) {
+        if Date().timeIntervalSince1970 < (cellViewModel.threadMutedUntilTimestamp ?? 0) {
             result.append(NSAttributedString(
                 string: "\u{e067}  ",
                 attributes: [
@@ -441,7 +384,7 @@ final class ConversationCell: UITableViewCell {
                 ]
             ))
         }
-        else if threadInfo.onlyNotifyForMentions {
+        else if cellViewModel.threadOnlyNotifyForMentions == true {
             let imageAttachment = NSTextAttachment()
             imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: Colors.unimportant)
             imageAttachment.bounds = CGRect(x: 0, y: -2, width: Values.smallFontSize, height: Values.smallFontSize)
@@ -457,15 +400,14 @@ final class ConversationCell: UITableViewCell {
             ))
         }
         
-        let font: UIFont = (threadInfo.unreadCount > 0 ?
+        let font: UIFont = ((cellViewModel.threadUnreadCount ?? 0) > 0 ?
             .boldSystemFont(ofSize: Values.smallFontSize) :
             .systemFont(ofSize: Values.smallFontSize)
         )
         
-        if
-            (threadInfo.variant == .closedGroup || threadInfo.variant == .openGroup),
-            let authorName: String = threadInfo.lastInteractionInfo?.authorName
-        {
+        if cellViewModel.threadVariant == .closedGroup || cellViewModel.threadVariant == .openGroup {
+            let authorName: String = cellViewModel.authorName(for: cellViewModel.threadVariant)
+            
             result.append(NSAttributedString(
                 string: "\(authorName): ",
                 attributes: [
@@ -474,20 +416,138 @@ final class ConversationCell: UITableViewCell {
                 ]
             ))
         }
-            
-        if let rawSnippet: String = threadInfo.lastInteractionInfo?.text {
-            result.append(NSAttributedString(
-                string: MentionUtilities.highlightMentions(
-                    in: rawSnippet,
-                    threadVariant: threadInfo.variant
+        
+        result.append(NSAttributedString(
+            string: MentionUtilities.highlightMentions(
+                in: Interaction.previewText(
+                    variant: (cellViewModel.interactionVariant ?? .standardIncoming),
+                    body: cellViewModel.interactionBody,
+                    authorDisplayName: cellViewModel.authorName(for: cellViewModel.threadVariant),
+                    attachmentDescriptionInfo: cellViewModel.interactionAttachmentDescriptionInfo,
+                    attachmentCount: cellViewModel.interactionAttachmentCount,
+                    isOpenGroupInvitation: (cellViewModel.interactionIsOpenGroupInvitation == true)
                 ),
-                attributes: [
-                    .font: font,
-                    .foregroundColor: Colors.text
-                ]
-            ))
-        }
+                threadVariant: cellViewModel.threadVariant
+            ),
+            attributes: [
+                .font: font,
+                .foregroundColor: Colors.text
+            ]
+        ))
             
         return result
+    }
+    
+    private func getHighlightedSnippet(
+        content: String,
+        authorName: String? = nil,
+        searchText: String,
+        fontSize: CGFloat
+    ) -> NSAttributedString {
+        guard !content.isEmpty, content != "NOTE_TO_SELF".localized() else {
+            return NSMutableAttributedString(
+                string: (authorName != nil && authorName?.isEmpty != true ?
+                    "\(authorName ?? ""): \(content)" :
+                    content
+                ),
+                attributes: [ .foregroundColor: Colors.text ]
+            )
+        }
+        
+        // Replace mentions in the content
+        //
+        // Note: The 'threadVariant' is used for profile context but in the search results
+        // we don't want to include the truncated id as part of the name so we exclude it
+        let mentionReplacedContent: String = MentionUtilities.highlightMentions(
+            in: content,
+            threadVariant: .contact
+        )
+        let result: NSMutableAttributedString = NSMutableAttributedString(
+            string: mentionReplacedContent,
+            attributes: [
+                .foregroundColor: Colors.text
+                    .withAlphaComponent(Values.lowOpacity)
+            ]
+        )
+        
+        // Bold each part of the searh term which matched
+        let normalizedSnippet: String = mentionReplacedContent.lowercased()
+        var firstMatchRange: Range<String.Index>?
+        
+        ConversationCell.ViewModel.searchTermParts(searchText)
+            .map { part -> String in
+                guard part.hasPrefix("\"") && part.hasSuffix("\"") else { return part }
+                
+                return String(part[part.index(after: part.startIndex)..<part.endIndex])
+            }
+            .forEach { part in
+                guard
+                    normalizedSnippet.contains(part.lowercased()),
+                    let range: Range<String.Index> = normalizedSnippet.range(of: part.lowercased())
+                else { return }
+                
+                // Store the range of the first match so we can focus it in the content displayed
+                if firstMatchRange == nil {
+                    firstMatchRange = range
+                }
+                
+                let legacyRange: NSRange = NSRange(range, in: normalizedSnippet)
+                result.addAttribute(.foregroundColor, value: Colors.text, range: legacyRange)
+                result.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: fontSize), range: legacyRange)
+            }
+        
+        // We then want to truncate the content so the first metching term is visible
+        let startOfSnippet: String.Index = (
+            firstMatchRange.map {
+                max(
+                    mentionReplacedContent.startIndex,
+                    mentionReplacedContent
+                        .index(
+                            $0.lowerBound,
+                            offsetBy: -10,
+                            limitedBy: mentionReplacedContent.startIndex
+                        )
+                        .defaulting(to: mentionReplacedContent.startIndex)
+                )
+            } ??
+            mentionReplacedContent.startIndex
+        )
+        
+        // This method determines if the content is probably too long and returns the truncated or untruncated
+        // content accordingly
+        func truncatingIfNeeded(approxWidth: CGFloat, content: NSAttributedString) -> NSAttributedString {
+            let approxFullWidth: CGFloat = (approxWidth + profilePictureView.size + (Values.mediumSpacing * 3))
+            
+            guard ((bounds.width - approxFullWidth) < 0) else { return content }
+            
+            return content.attributedSubstring(
+                from: NSRange(startOfSnippet..<normalizedSnippet.endIndex, in: normalizedSnippet)
+            )
+        }
+        
+        // Now that we have generated the focused snippet add the author name as a prefix (if provided)
+        return authorName
+            .map { authorName -> NSAttributedString? in
+                guard !authorName.isEmpty else { return nil }
+                
+                let authorPrefix: NSAttributedString = NSAttributedString(
+                    string: "\(authorName): ...",
+                    attributes: [ .foregroundColor: Colors.text ]
+                )
+                
+                return authorPrefix
+                    .appending(
+                        truncatingIfNeeded(
+                            approxWidth: (authorPrefix.size().width + result.size().width),
+                            content: result
+                        )
+                    )
+            }
+            .defaulting(
+                to: truncatingIfNeeded(
+                    approxWidth: result.size().width,
+                    content: result
+                )
+            )
     }
 }

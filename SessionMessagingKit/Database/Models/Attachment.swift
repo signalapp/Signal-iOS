@@ -245,16 +245,55 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
 // MARK: - CustomStringConvertible
 
 extension Attachment: CustomStringConvertible {
-    public static func description(for variant: Variant, contentType: String, sourceFilename: String?) -> String {
-        if MIMETypeUtil.isAudio(contentType) {
+    public struct DescriptionInfo: FetchableRecord, Decodable, Equatable, ColumnExpressible {
+        public typealias Columns = CodingKeys
+        public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+            case variant
+            case contentType
+            case sourceFilename
+        }
+        
+        let variant: Attachment.Variant
+        let contentType: String
+        let sourceFilename: String?
+        
+        public init(
+            variant: Attachment.Variant,
+            contentType: String,
+            sourceFilename: String?
+        ) {
+            self.variant = variant
+            self.contentType = contentType
+            self.sourceFilename = sourceFilename
+        }
+    }
+    
+    public static func description(for descriptionInfo: DescriptionInfo?, count: Int?) -> String? {
+        guard let descriptionInfo: DescriptionInfo = descriptionInfo else {
+            return nil
+        }
+        
+        return description(for: descriptionInfo, count: (count ?? 1))
+    }
+    
+    public static func description(for descriptionInfo: DescriptionInfo, count: Int) -> String {
+        // We only support multi-attachment sending of images so we can just default to the image attachment
+        // if there were multiple attachments
+        guard count == 1 else { return "\("ATTACHMENT".localized()) \(emoji(for: OWSMimeTypeImageJpeg))" }
+        
+        if MIMETypeUtil.isAudio(descriptionInfo.contentType) {
             // a missing filename is the legacy way to determine if an audio attachment is
             // a voice note vs. other arbitrary audio attachments.
-            if variant == .voiceMessage || sourceFilename == nil || (sourceFilename?.count ?? 0) == 0 {
+            if
+                descriptionInfo.variant == .voiceMessage ||
+                descriptionInfo.sourceFilename == nil ||
+                (descriptionInfo.sourceFilename?.count ?? 0) == 0
+            {
                 return "🎙️ \("ATTACHMENT_TYPE_VOICE_MESSAGE".localized())"
             }
         }
         
-        return "\("ATTACHMENT".localized()) \(emoji(for: contentType))"
+        return "\("ATTACHMENT".localized()) \(emoji(for: descriptionInfo.contentType))"
     }
     
     public static func emoji(for contentType: String) -> String {
@@ -276,17 +315,20 @@ extension Attachment: CustomStringConvertible {
     
     public var description: String {
         return Attachment.description(
-            for: variant,
-            contentType: contentType,
-            sourceFilename: sourceFilename
+            for: DescriptionInfo(
+                variant: variant,
+                contentType: contentType,
+                sourceFilename: sourceFilename
+            ),
+            count: 1
         )
     }
 }
 
 // MARK: - Mutation
 
-public extension Attachment {
-    func with(
+extension Attachment {
+    public func with(
         serverId: String? = nil,
         state: State? = nil,
         creationTimestamp: TimeInterval? = nil,
@@ -337,8 +379,8 @@ public extension Attachment {
 
 // MARK: - Protobuf
 
-public extension Attachment {
-    init(proto: SNProtoAttachmentPointer) {
+extension Attachment {
+    public init(proto: SNProtoAttachmentPointer) {
         func inferContentType(from filename: String?) -> String {
             guard
                 let fileName: String = filename,
@@ -382,7 +424,7 @@ public extension Attachment {
         self.caption = (proto.hasCaption ? proto.caption : nil)
     }
     
-    func buildProto() -> SNProtoAttachmentPointer? {
+    public func buildProto() -> SNProtoAttachmentPointer? {
         guard let serverId: UInt64 = UInt64(self.serverId ?? "") else { return nil }
         
         let builder = SNProtoAttachmentPointer.builder(id: serverId)
@@ -435,14 +477,14 @@ public extension Attachment {
 
 // MARK: - GRDB Interactions
 
-public extension Attachment {
-    struct StateInfo: FetchableRecord, Decodable {
+extension Attachment {
+    public struct StateInfo: FetchableRecord, Decodable {
         public let attachmentId: String
         public let interactionId: Int64
         public let state: Attachment.State
     }
     
-    static func stateInfo(authorId: String, state: State? = nil) -> SQLRequest<Attachment.StateInfo> {
+    public static func stateInfo(authorId: String, state: State? = nil) -> SQLRequest<Attachment.StateInfo> {
         let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         let quote: TypedTableAlias<Quote> = TypedTableAlias()
@@ -487,7 +529,7 @@ public extension Attachment {
         """
     }
 
-    static func stateInfo(interactionId: Int64, state: State? = nil) -> SQLRequest<Attachment.StateInfo> {
+    public static func stateInfo(interactionId: Int64, state: State? = nil) -> SQLRequest<Attachment.StateInfo> {
         let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         let quote: TypedTableAlias<Quote> = TypedTableAlias()
@@ -533,7 +575,7 @@ public extension Attachment {
 
 // MARK: - Convenience - Static
 
-public extension Attachment {
+extension Attachment {
     private static let thumbnailDimensionSmall: UInt = 200
     private static let thumbnailDimensionMedium: UInt = 450
     
@@ -588,7 +630,7 @@ public extension Attachment {
         return NSData.imageSize(forFilePath: originalFilePath, mimeType: contentType)
     }
     
-    static func videoStillImage(filePath: String) -> UIImage? {
+    public static func videoStillImage(filePath: String) -> UIImage? {
         return try? OWSMediaUtils.thumbnail(
             forVideoAtPath: filePath,
             maxDimension: CGFloat(Attachment.thumbnailDimensionLarge)

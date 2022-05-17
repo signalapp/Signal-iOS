@@ -755,6 +755,7 @@
 		FD3AABE928306BBD00E5099A /* ThreadPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3AABE828306BBD00E5099A /* ThreadPickerViewModel.swift */; };
 		FD3C907327E8387300CD579F /* OpenGroupServerIdLookupMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C907227E8387300CD579F /* OpenGroupServerIdLookupMigration.swift */; };
 		FD3C907527E83AC200CD579F /* OpenGroupServerIdLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C907427E83AC200CD579F /* OpenGroupServerIdLookup.swift */; };
+		FD4B200C283367410034334B /* ConversationCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD4B200B283367410034334B /* ConversationCellViewModel.swift */; };
 		FD5D200F27AA2B6000FEA984 /* MessageRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */; };
 		FD5D201127AA331F00FEA984 /* ConfigurationMessage+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D201027AA331F00FEA984 /* ConfigurationMessage+Convenience.swift */; };
 		FD659AC027A7649600F12C02 /* MessageRequestsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD659ABF27A7649600F12C02 /* MessageRequestsViewController.swift */; };
@@ -1810,6 +1811,7 @@
 		FD3AABE828306BBD00E5099A /* ThreadPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadPickerViewModel.swift; sourceTree = "<group>"; };
 		FD3C907227E8387300CD579F /* OpenGroupServerIdLookupMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupServerIdLookupMigration.swift; sourceTree = "<group>"; };
 		FD3C907427E83AC200CD579F /* OpenGroupServerIdLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupServerIdLookup.swift; sourceTree = "<group>"; };
+		FD4B200B283367410034334B /* ConversationCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationCellViewModel.swift; sourceTree = "<group>"; };
 		FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestResponse.swift; sourceTree = "<group>"; };
 		FD5D201027AA331F00FEA984 /* ConfigurationMessage+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConfigurationMessage+Convenience.swift"; sourceTree = "<group>"; };
 		FD659ABF27A7649600F12C02 /* MessageRequestsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsViewController.swift; sourceTree = "<group>"; };
@@ -2431,6 +2433,7 @@
 		B8CCF63B239757C10091D419 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				FD4B200A283367350034334B /* Models */,
 				4CA46F4B219CCC630038ABDE /* CaptionView.swift */,
 				4C4AEC4420EC343B0020E72B /* DismissableTextField.swift */,
 				45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */,
@@ -3714,6 +3717,14 @@
 				FD17D7E927F6A1C600122BE0 /* SUKLegacyModels.swift */,
 			);
 			path = LegacyDatabase;
+			sourceTree = "<group>";
+		};
+		FD4B200A283367350034334B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FD4B200B283367410034334B /* ConversationCellViewModel.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		FD659ABE27A7648200F12C02 /* Message Requests */ = {
@@ -5036,6 +5047,7 @@
 				B82B408A2399EC0600A248E7 /* FakeChatView.swift in Sources */,
 				B82B40882399EB0E00A248E7 /* LandingVC.swift in Sources */,
 				EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */,
+				FD4B200C283367410034334B /* ConversationCellViewModel.swift in Sources */,
 				45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */,
 				B83524A525C3BA4B0089A44F /* InfoMessageCell.swift in Sources */,
 				B84A89BC25DE328A0040017D /* ProfilePictureVC.swift in Sources */,

@@ -511,11 +511,13 @@ extension MessageReceiver {
                 // they are invalid and we can ignore them
                 return (attachment.downloadUrl != nil ? attachment : nil)
             }
-            .map { attachment in
+            .enumerated()
+            .map { index, attachment in
                 let savedAttachment: Attachment = try attachment.saved(db)
                 
                 // Link the attachment to the interaction and add to the id lookup
                 try InteractionAttachment(
+                    albumIndex: index,
                     interactionId: interactionId,
                     attachmentId: savedAttachment.id
                 ).insert(db)
@@ -1057,6 +1059,10 @@ extension MessageReceiver {
             if wasCurrentUserRemoved {
                 ClosedGroupPoller.shared.stopPolling(for: id)
                 
+                try closedGroup
+                    .allMembers
+                    .deleteAll(db)
+                
                 _ = try closedGroup
                     .keyPairs
                     .deleteAll(db)
@@ -1067,14 +1073,15 @@ extension MessageReceiver {
                     publicKey: userPublicKey
                 )
             }
-            
-            // Remove the member from the group and it's zombies
-            try closedGroup.members
-                .filter(removedMembers.contains(GroupMember.Columns.profileId))
-                .deleteAll(db)
-            try closedGroup.zombies
-                .filter(removedMembers.contains(GroupMember.Columns.profileId))
-                .deleteAll(db)
+            else {
+                // Remove the member from the group and it's zombies
+                try closedGroup.members
+                    .filter(removedMembers.contains(GroupMember.Columns.profileId))
+                    .deleteAll(db)
+                try closedGroup.zombies
+                    .filter(removedMembers.contains(GroupMember.Columns.profileId))
+                    .deleteAll(db)
+            }
             
             // Notify the user if needed
             guard members != Set(groupMembers.map { $0.profileId }) else { return }
