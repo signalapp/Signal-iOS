@@ -40,9 +40,28 @@ do
     mv $translation.utf8 $translation
   done
 
-  # messing translations in stringsdict files are not filled with the source language automatically
-  swift $BIN_DIR/MergeStringsDictFiles.swift ../en.lproj/PluralAware.stringsdict PluralAware.stringsdict
-  
+  # missing translations in stringsdict files are not filled with the source language automatically
+  if [[ "$dir" == ??"_"* ]]; then
+    echo "skipping $dir/PluralAware.stringsdict right now"
+  else
+    swift $BIN_DIR/MergeStringsDictFiles.swift ../en.lproj/PluralAware.stringsdict PluralAware.stringsdict
+  fi
+  popd
+
+done
+
+for dir in ??_*.lproj
+do
+  pushd $dir
+  lang=${dir:0:2}
+
+  # merge with "main" (country independent) version of the language
+  if [ -e ../$lang.lproj/PluralAware.stringsdict ]; then
+    swift $BIN_DIR/MergeStringsDictFiles.swift ../$lang.lproj/PluralAware.stringsdict PluralAware.stringsdict
+  else
+    swift $BIN_DIR/MergeStringsDictFiles.swift ../en.lproj/PluralAware.stringsdict PluralAware.stringsdict
+  fi
+
   popd
 
 done
