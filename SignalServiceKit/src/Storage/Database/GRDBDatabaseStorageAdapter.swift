@@ -754,15 +754,15 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
             return
         }
 
-        // Set isCheckpointing flag.
-        owsAssertDebug(!GRDBStorage.isCheckpointing)
-        GRDBStorage.isCheckpointing = true
-        owsAssertDebug(GRDBStorage.isCheckpointing)
+        // Set checkpointTimeout flag.
+        owsAssertDebug(GRDBStorage.checkpointTimeout == nil)
+        GRDBStorage.checkpointTimeout = GRDBStorage.maxBusyTimeoutMs
+        owsAssertDebug(GRDBStorage.checkpointTimeout != nil)
         defer {
-            // Clear isCheckpointing flag.
-            owsAssertDebug(GRDBStorage.isCheckpointing)
-            GRDBStorage.isCheckpointing = false
-            owsAssertDebug(!GRDBStorage.isCheckpointing)
+            // Clear checkpointTimeout flag.
+            owsAssertDebug(GRDBStorage.checkpointTimeout != nil)
+            GRDBStorage.checkpointTimeout = nil
+            owsAssertDebug(GRDBStorage.checkpointTimeout == nil)
         }
 
         pool.writeWithoutTransaction { database in
@@ -877,16 +877,16 @@ private struct GRDBStorage {
         return pool
     }
 
-    // The isCheckpointing flag is backed by a thread local.
+    // The checkpointTimeout flag is backed by a thread local.
     // We don't want to affect the behavior of the busy-handler (aka busyMode callback)
     // in other threads while checkpointing.
-    fileprivate static var isCheckpointingKey: String { "GRDBStorage.isCheckpointingKey" }
-    fileprivate static var isCheckpointing: Bool {
+    fileprivate static var checkpointTimeoutKey: String { "GRDBStorage.checkpointTimeoutKey" }
+    fileprivate static var checkpointTimeout: Int? {
         get {
-            Thread.current.threadDictionary[Self.isCheckpointingKey] as? Bool == true
+            Thread.current.threadDictionary[Self.checkpointTimeoutKey] as? Int
         }
         set {
-            Thread.current.threadDictionary[Self.isCheckpointingKey] = newValue
+            Thread.current.threadDictionary[Self.checkpointTimeoutKey] = newValue
         }
     }
 
@@ -923,8 +923,8 @@ private struct GRDBStorage {
             }
 
             // Only time out during checkpoints, not writes.
-            if isCheckpointing {
-                if accumulatedWaitMs > GRDBStorage.maxBusyTimeoutMs {
+            if let checkpointTimeout = self.checkpointTimeout {
+                if accumulatedWaitMs > checkpointTimeout {
                     Logger.warn("Aborting busy retry.")
                     return false
                 }
@@ -1133,6 +1133,18 @@ extension GRDBDatabaseStorageAdapter {
         var walSizePages: Int32 = 0
         var pagesCheckpointed: Int32 = 0
         try Bench(title: "Slow checkpoint: \(mode)", logIfLongerThan: 0.01, logInProduction: true) {
+            // Set checkpointTimeout flag.
+            // If we hit the timeout, we get back SQLITE_BUSY, which is ignored below.
+            owsAssertDebug(GRDBStorage.checkpointTimeout == nil)
+            GRDBStorage.checkpointTimeout = 3000  // 3s
+            owsAssertDebug(GRDBStorage.checkpointTimeout != nil)
+            defer {
+                // Clear checkpointTimeout flag.
+                owsAssertDebug(GRDBStorage.checkpointTimeout != nil)
+                GRDBStorage.checkpointTimeout = nil
+                owsAssertDebug(GRDBStorage.checkpointTimeout == nil)
+            }
+
             #if TESTABLE_BUILD
             let startTime = CACurrentMediaTime()
             #endif
