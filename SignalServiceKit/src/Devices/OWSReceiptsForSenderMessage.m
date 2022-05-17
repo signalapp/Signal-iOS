@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReceiptsForSenderMessage.h"
@@ -69,7 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
+- (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
+                                                  transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoReceiptMessage *_Nullable receiptMessage = [self buildReceiptMessageWithTransaction:transaction];
     if (!receiptMessage) {
@@ -79,14 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
     [contentBuilder setReceiptMessage:receiptMessage];
-
-    NSError *error;
-    NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
-    if (error || !contentData) {
-        OWSFailDebug(@"could not serialize protobuf: %@", error);
-        return nil;
-    }
-    return contentData;
+    return contentBuilder;
 }
 
 - (nullable SSKProtoReceiptMessage *)buildReceiptMessageWithTransaction:(SDSAnyReadTransaction *)transaction

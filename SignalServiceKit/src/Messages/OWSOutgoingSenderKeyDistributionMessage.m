@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingSenderKeyDistributionMessage.h"
@@ -35,18 +35,12 @@
     return NO;
 }
 
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
+- (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
+                                                  transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
     [builder setSenderKeyDistributionMessage:self.serializedSKDM];
-
-    NSError *_Nullable error = nil;
-    NSData *_Nullable data = [builder buildSerializedDataAndReturnError:&error];
-    if (error || !data) {
-        OWSFailDebug(@"could not serialize protobuf: %@", error);
-        return nil;
-    }
-    return data;
+    return builder;
 }
 
 - (void)configureAsSentOnBehalfOf:(TSOutgoingMessage *)message

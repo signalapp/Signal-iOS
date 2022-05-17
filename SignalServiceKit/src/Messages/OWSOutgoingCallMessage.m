@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingCallMessage.h"
@@ -133,18 +133,12 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
+- (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
+                                                  transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
     builder.callMessage = [self buildCallMessage:thread transaction:transaction];
-
-    NSError *error;
-    NSData *_Nullable data = [builder buildSerializedDataAndReturnError:&error];
-    if (error || !data) {
-        OWSFailDebug(@"could not serialize protobuf: %@", error);
-        return nil;
-    }
-    return data;
+    return builder;
 }
 
 - (nullable SSKProtoCallMessage *)buildCallMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingNullMessage.h"
@@ -45,7 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - override TSOutgoingMessage
 
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
+- (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
+                                                  transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessage builder];
 
@@ -75,13 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
     contentBuilder.nullMessage = nullMessage;
-
-    NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
-    if (error || !contentData) {
-        OWSFailDebug(@"could not serialize protobuf: %@", error);
-        return nil;
-    }
-    return contentData;
+    return contentBuilder;
 }
 
 - (BOOL)shouldSyncTranscript

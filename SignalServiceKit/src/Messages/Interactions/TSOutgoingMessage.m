@@ -1500,17 +1500,29 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return dataProto;
 }
 
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
+- (nullable id<SSKProtoContentBuilderProtocol>)contentBuilderWithThread:(TSThread *)thread
+                                                            transaction:(SDSAnyReadTransaction *)transaction
 {
-    NSError *error;
     SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:thread transaction:transaction];
-    if (error || !dataMessage) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
+    if (!dataMessage) {
         return nil;
     }
 
     SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
     [contentBuilder setDataMessage:dataMessage];
+    return contentBuilder;
+}
+
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
+{
+    SSKProtoContentBuilder *_Nullable contentBuilder
+        = (SSKProtoContentBuilder *)[self contentBuilderWithThread:thread transaction:transaction];
+    if (!contentBuilder) {
+        OWSFailDebug(@"could not build protobuf.");
+        return nil;
+    }
+
+    NSError *error;
     NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
     if (error || !contentData) {
         OWSFailDebug(@"could not serialize protobuf: %@", error);

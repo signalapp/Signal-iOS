@@ -65,6 +65,10 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @class SignalServiceAddress;
 @class TSOutgoingMessageBuilder;
 
+// Work around a limitation with Swift and nested @objc classes.
+@protocol SSKProtoContentBuilderProtocol
+@end
+
 @interface TSOutgoingMessageRecipientState : MTLModel
 
 @property (atomic, readonly) OWSOutgoingMessageRecipientState state;
@@ -218,6 +222,14 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
  * The data representation of this message, to be encrypted, before being sent.
  */
 - (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction;
+
+/**
+ * Intermediate protobuf representation
+ * Subclasses can augment if they want to manipulate the Content message before building.
+ */
+- (nullable id<SSKProtoContentBuilderProtocol>)contentBuilderWithThread:(TSThread *)thread
+                                                            transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(contentBuilder(thread:transaction:));
 
 /**
  * Intermediate protobuf representation

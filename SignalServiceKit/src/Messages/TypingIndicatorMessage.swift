@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -56,10 +56,8 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
         }
     }
 
-    @objc
-    public override func buildPlainTextData(_ thread: TSThread,
-                                            transaction: SDSAnyReadTransaction) -> Data? {
-
+    public override func contentBuilder(thread: TSThread,
+                                        transaction: SDSAnyReadTransaction) -> SSKProtoContentBuilderProtocol? {
         let typingBuilder = SSKProtoTypingMessage.builder(timestamp: self.timestamp)
         typingBuilder.setAction(protoAction(forAction: action))
 
@@ -71,11 +69,9 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
 
         do {
             contentBuilder.setTypingMessage(try typingBuilder.build())
-
-            let data = try contentBuilder.buildSerializedData()
-            return data
+            return contentBuilder
         } catch let error {
-            owsFailDebug("failed to build content: \(error)")
+            owsFailDebug("failed to build protobuf: \(error)")
             return nil
         }
     }

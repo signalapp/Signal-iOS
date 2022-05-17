@@ -82,7 +82,8 @@ NS_ASSUME_NONNULL_BEGIN
     return [SSKProtoSyncMessage builder];
 }
 
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
+- (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
+                                                  transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoSyncMessage *_Nullable syncMessage = [self buildSyncMessageWithTransaction:transaction];
     if (!syncMessage) {
@@ -91,15 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
     [contentBuilder setSyncMessage:syncMessage];
-
-    NSError *error;
-    NSData *_Nullable data = [contentBuilder buildSerializedDataAndReturnError:&error];
-    if (error || !data) {
-        OWSFailDebug(@"could not serialize protobuf: %@", error);
-        return nil;
-    }
-
-    return data;
+    return contentBuilder;
 }
 
 @end

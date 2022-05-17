@@ -18,4 +18,5 @@ public extension SSKProtoGroupContext {
     }
 }
 
+extension SSKProtoContent.SSKProtoContentBuilder: SSKProtoContentBuilderProtocol {}
 extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder: SSKProtoSyncMessageBuilderProtocol {}
