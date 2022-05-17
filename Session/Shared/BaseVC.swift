@@ -62,10 +62,7 @@ class BaseVC : UIViewController {
             navigationBar.barTintColor = Colors.navigationBarBackground
         }
         
-        // Back button (to appear on pushed screen)
-        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        backButton.tintColor = Colors.text
-        navigationItem.backBarButtonItem = backButton
+        navigationItem.backButtonTitle = ""
     }
 
     internal func setNavBarTitle(_ title: String, customFontSize: CGFloat? = nil) {

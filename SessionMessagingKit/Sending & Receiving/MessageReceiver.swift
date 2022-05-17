@@ -168,14 +168,14 @@ public enum MessageReceiver {
             // If the message failed to process the first time around we retry it later (if the error is retryable). In this case the timestamp
             // will already be in the database but we don't want to treat the message as a duplicate. The isRetry flag is a simple workaround
             // for this issue.
-            if let message = message as? ClosedGroupControlMessage, case .new = message.kind {
-                // Allow duplicates in this case to avoid the following situation:
+            if message.shouldBeRetryable {
+                // Allow duplicates for new closed group & encryption key pair update:
                 // • The app performed a background poll or received a push notification
                 // • This method was invoked and the received message timestamps table was updated
                 // • Processing wasn't finished
                 // • The user doesn't see the new closed group
-            } else if message.isKind(of: CallMessage.self) {
-                // Allow duplicates for all call messages
+                
+                // Allow duplicates for all call messages,
                 // The double checking will be done on message handling to make sure the messages are for the same ongoing call
             } else {
                 guard !Set(storage.getReceivedMessageTimestamps(using: transaction)).contains(envelope.timestamp) || isRetry else { throw Error.duplicateMessage }

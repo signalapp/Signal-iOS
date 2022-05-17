@@ -80,8 +80,8 @@ extension Storage {
 
     private static let lastMessageHashCollection = "LokiLastMessageHashCollection"
 
-    public func getLastMessageHashInfo(for snode: Snode, associatedWith publicKey: String) -> JSON? {
-        let key = "\(snode.address):\(snode.port).\(publicKey)"
+    public func getLastMessageHashInfo(for snode: Snode, namespace: Int, associatedWith publicKey: String) -> JSON? {
+        let key = namespace == SnodeAPI.defaultNamespace ? "\(snode.address):\(snode.port).\(publicKey)" : "\(snode.address):\(snode.port).\(publicKey).\(namespace)"
         var result: JSON?
         Storage.read { transaction in
             result = transaction.object(forKey: key, inCollection: Storage.lastMessageHashCollection) as? JSON
@@ -93,29 +93,30 @@ extension Storage {
         return result
     }
 
-    public func getLastMessageHash(for snode: Snode, associatedWith publicKey: String) -> String? {
-        return getLastMessageHashInfo(for: snode, associatedWith: publicKey)?["hash"] as? String
+    public func getLastMessageHash(for snode: Snode, namespace: Int, associatedWith publicKey: String) -> String? {
+        return getLastMessageHashInfo(for: snode, namespace: namespace, associatedWith: publicKey)?["hash"] as? String
     }
 
-    public func setLastMessageHashInfo(for snode: Snode, associatedWith publicKey: String, to lastMessageHashInfo: JSON, using transaction: Any) {
-        let key = "\(snode.address):\(snode.port).\(publicKey)"
+    public func setLastMessageHashInfo(for snode: Snode, namespace: Int, associatedWith publicKey: String, to lastMessageHashInfo: JSON, using transaction: Any) {
+        let key = namespace == SnodeAPI.defaultNamespace ? "\(snode.address):\(snode.port).\(publicKey)" : "\(snode.address):\(snode.port).\(publicKey).\(namespace)"
         guard lastMessageHashInfo.count == 2 && lastMessageHashInfo["hash"] as? String != nil && lastMessageHashInfo["expirationDate"] as? NSNumber != nil else { return }
         (transaction as! YapDatabaseReadWriteTransaction).setObject(lastMessageHashInfo, forKey: key, inCollection: Storage.lastMessageHashCollection)
     }
 
-    public func pruneLastMessageHashInfoIfExpired(for snode: Snode, associatedWith publicKey: String) {
-        guard let lastMessageHashInfo = getLastMessageHashInfo(for: snode, associatedWith: publicKey),
+    public func pruneLastMessageHashInfoIfExpired(for snode: Snode, namespace: Int, associatedWith publicKey: String) {
+        guard let lastMessageHashInfo = getLastMessageHashInfo(for: snode, namespace: namespace, associatedWith: publicKey),
             (lastMessageHashInfo["hash"] as? String) != nil, let expirationDate = (lastMessageHashInfo["expirationDate"] as? NSNumber)?.uint64Value else { return }
         let now = NSDate.millisecondTimestamp()
         if now >= expirationDate {
             Storage.writeSync { transaction in
-                self.removeLastMessageHashInfo(for: snode, associatedWith: publicKey, using: transaction)
+                self.removeLastMessageHashInfo(for: snode, namespace: namespace, associatedWith: publicKey, using: transaction)
+                self.setReceivedMessages(to: Set(), for: publicKey, using: transaction)
             }
         }
     }
 
-    public func removeLastMessageHashInfo(for snode: Snode, associatedWith publicKey: String, using transaction: Any) {
-        let key = "\(snode.address):\(snode.port).\(publicKey)"
+    public func removeLastMessageHashInfo(for snode: Snode, namespace: Int, associatedWith publicKey: String, using transaction: Any) {
+        let key = namespace == SnodeAPI.defaultNamespace ? "\(snode.address):\(snode.port).\(publicKey)" : "\(snode.address):\(snode.port).\(publicKey).\(namespace)"
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: key, inCollection: Storage.lastMessageHashCollection)
     }
 

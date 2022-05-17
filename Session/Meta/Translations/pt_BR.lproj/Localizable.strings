@@ -27,13 +27,13 @@
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Erro ao Enviar Anexo";
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Impossível converter imagem.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Não foi possível capturar a imagem.";
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Não foi possível processar o vídeo.";
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Não foi possível analisar a imagem.";
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Não foi possível suprimir os metadados da imagem.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Não é possível remover os metadados da imagem.";
 /* Attachment error message for image attachments which could not be resized */
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Impossível redimensionar imagem.";
 /* Attachment error message for attachments whose data exceed file size limits */
@@ -307,9 +307,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Álbum sem nome";
 /* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+"PUSH_MANAGER_MARKREAD" = "Marcar como Lido";
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Reply";
+"PUSH_MANAGER_REPLY" = "Responder";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Não podemos ativar sua conta até que você verifique o código que enviamos.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
@@ -371,9 +371,15 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Enviar pré-visualizações de links";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Pré-visualizações de links suportadas para Imgur, Instagram, Pinterest, Reddit e YouTube.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Pré-visualizações são suportadas para a maioria do urls.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Pré-visualizações de links";
+/* Setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS" = "Chamadas de voz e vídeo";
+/* Footer for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_FOOTER" = "Permitir acesso para aceitar ligações de voz e vídeo de outros usuários.";
+/* Header for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_HEADER" = "Chamadas";
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Conteúdo de Notificação";
 /* Label for the 'read receipts' setting. */
@@ -518,11 +524,11 @@
 "modal_seed_explanation" = "Esta é sua frase de recuperação. Com ela, você pode restaurar ou migrar seu ID Session para um novo dispositivo.";
 "modal_clear_all_data_title" = "Limpar todos os dados";
 "modal_clear_all_data_explanation" = "Isso excluirá permanentemente suas mensagens, sessões e contatos.";
-"modal_clear_all_data_explanation_2" = "Would you like to clear only this device, or delete your entire account?";
-"dialog_clear_all_data_deletion_failed_1" = "Data not deleted by 1 Service Node. Service Node ID: %@.";
-"dialog_clear_all_data_deletion_failed_2" = "Data not deleted by %@ Service Nodes. Service Node IDs: %@.";
-"modal_clear_all_data_device_only_button_title" = "Device Only";
-"modal_clear_all_data_entire_account_button_title" = "Entire Account";
+"modal_clear_all_data_explanation_2" = "Você gostaria de limpar apenas esse dispositivo, ou deletar sua conta?";
+"dialog_clear_all_data_deletion_failed_1" = "Dados não excluídos por 1 Service Node. ID do Service Node: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Dados não excluídos por %@ Service Nodes. IDs dos Service Nodes: %@.";
+"modal_clear_all_data_device_only_button_title" = "Somente esse dispositivo";
+"modal_clear_all_data_entire_account_button_title" = "Conta inteira";
 "vc_qr_code_title" = "Código QR";
 "vc_qr_code_view_my_qr_code_tab_title" = "Ver meu código QR";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Escanear código QR";
@@ -555,15 +561,17 @@
 "modal_open_url_title" = "Abrir URL?";
 "modal_open_url_explanation" = "Você tem certeza que deseja abrir %@/?";
 "modal_open_url_button_title" = "Abrir";
-"modal_copy_url_button_title" = "Copy Link";
+"modal_copy_url_button_title" = "Copiar link";
 "modal_blocked_title" = "Desbloquear %@?";
 "modal_blocked_explanation" = "Você tem certeza que deseja desbloquear %@?";
 "modal_blocked_button_title" = "Desbloquear";
 "modal_link_previews_title" = "Ativar pré-visualizações de link?";
 "modal_link_previews_explanation" = "Ativar a pré-visualização de links irá mostrar as URLs que você receber e enviar. Isto pode ser útil, o Session precisa se conectar aos sites vinculados gerar as prévias. Você poderá desabiliatar esta opção nas configurações do Session.";
 "modal_link_previews_button_title" = "Ativar";
-"modal_share_logs_title" = "Share Logs";
-"modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
+"modal_call_title" = "Chamadas de voz / vídeo";
+"modal_call_explanation" = "A implementação atual das chamadas de voz / vídeo irá expor seu endereço IP aos servidores da Oxen Foundation e ao usuário chamado chamador.";
+"modal_share_logs_title" = "Compartilhar logs";
+"modal_share_logs_explanation" = "Você deseja exportar os logs do aplicativo para nos ajudar a resolver esse problema?";
 "vc_share_title" = "Compartilhar no Session";
 "vc_share_loading_message" = "Preparando anexos...";
 "vc_share_sending_message" = "Enviando...";
@@ -573,39 +581,57 @@
 "vc_share_link_previews_disabled_explanation" = "Enabling link previews will show previews for URLs you share. This can be useful, but Session will need to contact linked websites to generate previews.\n\nYou can enable link previews in Session's settings.";
 "view_open_group_invitation_description" = "Convite para grupo aberto";
 "vc_conversation_settings_invite_button_title" = "Adicionar Membros";
-"vc_settings_faq_button_title" = "FAQ";
-"vc_settings_survey_button_title" = "Feedback / Survey";
-"vc_settings_support_button_title" = "Debug Log";
-"modal_send_seed_title" = "Warning";
-"modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
-"modal_send_seed_send_button_title" = "Send";
-"vc_conversation_settings_notify_for_mentions_only_title" = "Notify for Mentions Only";
-"vc_conversation_settings_notify_for_mentions_only_explanation" = "When enabled, you'll only be notified for messages mentioning you.";
-"view_conversation_title_notify_for_mentions_only" = "Notifying for Mentions Only";
-"message_deleted" = "This message has been deleted";
-"delete_message_for_me" = "Delete just for me";
-"delete_message_for_everyone" = "Delete for everyone";
-"delete_message_for_me_and_recipient" = "Delete for me and %@";
-"context_menu_reply" = "Reply";
-"context_menu_save" = "Save";
-"context_menu_ban_user" = "Ban User";
-"context_menu_ban_and_delete_all" = "Ban and Delete All";
-"accessibility_expanding_attachments_button" = "Add attachments";
+"vc_settings_faq_button_title" = "Perguntas Frequentes";
+"vc_settings_survey_button_title" = "Feedback / Pesquisa";
+"vc_settings_support_button_title" = "Logs de depuração";
+"modal_send_seed_title" = "Aviso";
+"modal_send_seed_explanation" = "Essa é sua frase de recuperação. Se você mandá-la para alguem, essa pessoa terá acesso completo a sua conta.";
+"modal_send_seed_send_button_title" = "Enviar";
+"vc_conversation_settings_notify_for_mentions_only_title" = "Notificar apenas menções";
+"vc_conversation_settings_notify_for_mentions_only_explanation" = "Quando ativo, você só receberá notificações quando alguém mencionar você.";
+"view_conversation_title_notify_for_mentions_only" = "Apenas notifcar quando mencionado";
+"message_deleted" = "Essa mensagem foi deletada";
+"delete_message_for_me" = "Apagar para mim";
+"delete_message_for_everyone" = "Apagar para todos";
+"delete_message_for_me_and_recipient" = "Apagar para mim e para %@";
+"context_menu_reply" = "Responder";
+"context_menu_save" = "Salvar";
+"context_menu_ban_user" = "Banir Usuário";
+"context_menu_ban_and_delete_all" = "Banir e Apagar Tudo";
+"accessibility_expanding_attachments_button" = "Adicionar anexos";
 "accessibility_gif_button" = "Gif";
-"accessibility_document_button" = "Document";
-"accessibility_library_button" = "Photo library";
-"accessibility_camera_button" = "Camera";
-"accessibility_main_button_collapse" = "Collapse attachment options";
-"invalid_recovery_phrase" = "Invalid Recovery Phrase";
-"DISMISS_BUTTON_TEXT" = "Dismiss";
+"accessibility_document_button" = "Documento";
+"accessibility_library_button" = "Biblioteca de Fotos";
+"accessibility_camera_button" = "Câmera";
+"accessibility_main_button_collapse" = "Recolher opções de anexo";
+"invalid_recovery_phrase" = "Frase de Recuperação inválida";
+"invalid_recovery_phrase" = "Frase de Recuperação inválida";
+"DISMISS_BUTTON_TEXT" = "Ignorar";
 /* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Settings";
-"voice_call" = "Voice Call";
-"video_call" = "Video Call";
-"APN_Message" = "You've got a new message";
-"system_mode_theme" = "System";
-"dark_mode_theme" = "Dark";
-"light_mode_theme" = "Light";
+"OPEN_SETTINGS_BUTTON" = "Configurações";
+"call_outgoing" = "Você ligou para %@";
+"call_incoming" = "%@ Ligou para você";
+"call_missed" = "Ligação perdida de %@";
+"call_rejected" = "Ligação rejeitada";
+"call_cancelled" = "Ligação cancelada";
+"call_timeout" = "Ligação não atendida";
+"voice_call" = "Chamada de voz";
+"video_call" = "Chamada de vídeo";
+"APN_Message" = "Você recebem uma nova mensagem.";
+"APN_Collapsed_Messages" = "Você tem %@ novas mensagens.";
+"system_mode_theme" = "Sistema";
+"dark_mode_theme" = "Escuro";
+"light_mode_theme" = "Claro";
+"PIN_BUTTON_TEXT" = "Fixar";
+"UNPIN_BUTTON_TEXT" = "Desfixar";
+"modal_call_missed_tips_title" = "Chamada perdida";
+"modal_call_missed_tips_explanation" = "Chamada perdida de '%@', você precisa habilitar a permissão de 'Voz e Video' nas configurações de Privacidade.";
+"meida_saved" = "Mídia salva por %@.";
+"screenshot_taken" = "%@ fez uma captura de tela.";
+"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_RECENT" = "Recent";
+"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";
 "MESSAGE_REQUESTS_TITLE" = "Message Requests";
 "MESSAGE_REQUESTS_EMPTY_TEXT" = "No pending message requests";
 "MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";

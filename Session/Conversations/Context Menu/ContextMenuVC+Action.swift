@@ -95,4 +95,5 @@ protocol ContextMenuActionDelegate : AnyObject {
     func save(_ viewItem: ConversationViewItem)
     func ban(_ viewItem: ConversationViewItem)
     func banAndDeleteAllMessages(_ viewItem: ConversationViewItem)
+    func contextMenuDismissed()
 }
