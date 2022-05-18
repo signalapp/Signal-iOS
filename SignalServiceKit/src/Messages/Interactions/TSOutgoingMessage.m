@@ -1522,6 +1522,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         return nil;
     }
 
+    [contentBuilder setPniSignatureMessage:[self buildPniSignatureMessageIfNeededWithTransaction:transaction]];
+
     NSError *error;
     NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
     if (error || !contentData) {

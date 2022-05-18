@@ -302,6 +302,94 @@ class OWSUDManagerTest: SSKBaseTestSwift {
                            self.defaultSenderCert.serialize())
         }.expect(timeout: 1.0)
     }
+
+    func test_certificateChoiceWithPhoneNumberShared() {
+        XCTAssert(udManagerImpl.hasSenderCertificates())
+
+        XCTAssert(tsAccountManager.isRegistered)
+        guard let localAddress = tsAccountManager.localAddress else {
+            XCTFail("localAddress was unexpectedly nil")
+            return
+        }
+        XCTAssert(localAddress.isValid)
+
+        // Ensure UD is enabled by setting our own access level to enabled.
+        udManagerImpl.setUnidentifiedAccessMode(.enabled, address: localAddress)
+
+        let bobRecipientAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+13213214322")
+        XCTAssertFalse(bobRecipientAddress.isLocalAddress)
+        write { transaction in
+            self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
+                                                  for: bobRecipientAddress,
+                                                  userProfileWriter: .tests,
+                                                  transaction: transaction)
+            identityManager.setShouldSharePhoneNumber(with: bobRecipientAddress, transaction: transaction)
+        }
+
+        firstly {
+            udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
+        }.done { senderCertificates in
+            let sendingAccess = self.udManagerImpl.udSendingAccess(forAddress: bobRecipientAddress,
+                                                                   requireSyncAccess: false,
+                                                                   senderCertificates: senderCertificates)!
+            XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
+                           self.defaultSenderCert.serialize())
+        }.expect(timeout: 1.0)
+
+        // Turn off phone number sharing.
+        write { transaction in
+            udManagerImpl.setPhoneNumberSharingMode(.nobody,
+                                                    updateStorageService: false,
+                                                    transaction: transaction.unwrapGrdbWrite)
+        }
+
+        firstly {
+            udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
+        }.done { senderCertificates in
+            let sendingAccess = self.udManagerImpl.udSendingAccess(forAddress: bobRecipientAddress,
+                                                                   requireSyncAccess: false,
+                                                                   senderCertificates: senderCertificates)!
+            XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
+                           self.defaultSenderCert.serialize())
+        }.expect(timeout: 1.0)
+
+        // Contacts-only sharing?
+        write { transaction in
+            udManagerImpl.setPhoneNumberSharingMode(.contactsOnly,
+                                                    updateStorageService: false,
+                                                    transaction: transaction.unwrapGrdbWrite)
+        }
+
+        firstly {
+            udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
+        }.done { senderCertificates in
+            let sendingAccess = self.udManagerImpl.udSendingAccess(forAddress: bobRecipientAddress,
+                                                                   requireSyncAccess: false,
+                                                                   senderCertificates: senderCertificates)!
+            XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
+                           self.defaultSenderCert.serialize())
+        }.expect(timeout: 1.0)
+
+        // Make sure it resets on clear.
+        write { transaction in
+            self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
+                                                  for: bobRecipientAddress,
+                                                  userProfileWriter: .tests,
+                                                  transaction: transaction)
+            identityManager.clearShouldSharePhoneNumber(with: bobRecipientAddress, transaction: transaction)
+        }
+
+        firstly {
+            udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
+        }.done { senderCertificates in
+            let sendingAccess = self.udManagerImpl.udSendingAccess(forAddress: bobRecipientAddress,
+                                                                   requireSyncAccess: false,
+                                                                   senderCertificates: senderCertificates)!
+            XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
+                           self.uuidOnlySenderCert.serialize())
+        }.expect(timeout: 1.0)
+    }
+
     // MARK: - Util
 
     func buildSenderCertificate(uuidOnly: Bool) -> SenderCertificate {

@@ -178,4 +178,37 @@ extension OWSIdentityManager {
             Logger.warn("failed to check PNI identity key: \(error)")
         }
     }
+
+    // MARK: - Phone number sharing
+
+    private var shareMyPhoneNumberStore: SDSKeyValueStore {
+        return SDSKeyValueStore(collection: "OWSIdentityManager.shareMyPhoneNumberStore")
+    }
+
+    func shouldSharePhoneNumber(with recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
+        guard let recipientUuid = recipient.uuidString else {
+            return false
+        }
+        return shareMyPhoneNumberStore.getBool(recipientUuid, defaultValue: false, transaction: transaction)
+    }
+
+    func setShouldSharePhoneNumber(with recipient: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+        guard let recipientUuid = recipient.uuidString else {
+            owsFailDebug("recipient has no UUID, should not be trying to share phone number with them")
+            return
+        }
+        shareMyPhoneNumberStore.setBool(true, key: recipientUuid, transaction: transaction)
+    }
+
+    func clearShouldSharePhoneNumber(with recipient: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+        guard let recipientUuid = recipient.uuidString else {
+            return
+        }
+        shareMyPhoneNumberStore.removeValue(forKey: recipientUuid, transaction: transaction)
+    }
+
+    @objc(clearShouldSharePhoneNumberForEveryoneWithTransaction:)
+    public func clearShouldSharePhoneNumberForEveryone(transaction: SDSAnyWriteTransaction) {
+        shareMyPhoneNumberStore.removeAll(transaction: transaction)
+    }
 }

@@ -155,6 +155,45 @@ public extension TSOutgoingMessage {
             .compactMap { $0.value.errorCode?.intValue }
             .allSatisfy { $0 != SenderKeyUnavailableError.errorCode }
     }
+
+    @objc(buildPniSignatureMessageIfNeededWithTransaction:)
+    func buildPniSignatureMessageIfNeeded(transaction: SDSAnyReadTransaction) -> SSKProtoPniSignatureMessage? {
+        guard recipientAddressStates?.count == 1 else {
+            // This is probably a group message, nothing to be alarmed about.
+            return nil
+        }
+        guard identityManager.shouldSharePhoneNumber(with: recipientAddressStates!.keys.first!,
+                                                     transaction: transaction) else {
+            // No PNI signature needed.
+            return nil
+        }
+        guard let pni = tsAccountManager.localPni else {
+            owsFailDebug("missing PNI")
+            return nil
+        }
+        guard let pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, transaction: transaction) else {
+            owsFailDebug("missing PNI identity key")
+            return nil
+        }
+        guard let aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, transaction: transaction) else {
+            owsFailDebug("missing ACI identity key")
+            return nil
+        }
+
+        let signature = pniIdentityKeyPair.identityKeyPair.signAlternateIdentity(
+            aciIdentityKeyPair.identityKeyPair.identityKey)
+
+        let builder = SSKProtoPniSignatureMessage.builder()
+        builder.setPni(pni.data)
+        builder.setSignature(Data(signature))
+
+        do {
+            return try builder.build()
+        } catch {
+            owsFailDebug("failed to build protobuf: \(error)")
+            return nil
+        }
+    }
 }
 
 // MARK: Sender Key + Message Send Log

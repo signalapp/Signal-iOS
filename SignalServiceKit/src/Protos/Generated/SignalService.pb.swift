@@ -655,6 +655,15 @@ struct SignalServiceProtos_Content {
   /// Clears the value of `storyMessage`. Subsequent reads from it will return its default value.
   mutating func clearStoryMessage() {self._storyMessage = nil}
 
+  var pniSignatureMessage: SignalServiceProtos_PniSignatureMessage {
+    get {return _pniSignatureMessage ?? SignalServiceProtos_PniSignatureMessage()}
+    set {_pniSignatureMessage = newValue}
+  }
+  /// Returns true if `pniSignatureMessage` has been explicitly set.
+  var hasPniSignatureMessage: Bool {return self._pniSignatureMessage != nil}
+  /// Clears the value of `pniSignatureMessage`. Subsequent reads from it will return its default value.
+  mutating func clearPniSignatureMessage() {self._pniSignatureMessage = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -668,6 +677,7 @@ struct SignalServiceProtos_Content {
   fileprivate var _senderKeyDistributionMessage: Data? = nil
   fileprivate var _decryptionErrorMessage: Data? = nil
   fileprivate var _storyMessage: SignalServiceProtos_StoryMessage? = nil
+  fileprivate var _pniSignatureMessage: SignalServiceProtos_PniSignatureMessage? = nil
 }
 
 struct SignalServiceProtos_CallMessage {
@@ -4486,6 +4496,38 @@ struct SignalServiceProtos_DecryptionErrorMessage {
   fileprivate var _deviceID: UInt32? = nil
 }
 
+struct SignalServiceProtos_PniSignatureMessage {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var pni: Data {
+    get {return _pni ?? Data()}
+    set {_pni = newValue}
+  }
+  /// Returns true if `pni` has been explicitly set.
+  var hasPni: Bool {return self._pni != nil}
+  /// Clears the value of `pni`. Subsequent reads from it will return its default value.
+  mutating func clearPni() {self._pni = nil}
+
+  /// Signature *by* the PNI identity key *of* the ACI identity key
+  var signature: Data {
+    get {return _signature ?? Data()}
+    set {_signature = newValue}
+  }
+  /// Returns true if `signature` has been explicitly set.
+  var hasSignature: Bool {return self._signature != nil}
+  /// Clears the value of `signature`. Subsequent reads from it will return its default value.
+  mutating func clearSignature() {self._signature = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _pni: Data? = nil
+  fileprivate var _signature: Data? = nil
+}
+
 #if swift(>=5.5) && canImport(_Concurrency)
 extension SignalServiceProtos_Envelope: @unchecked Sendable {}
 extension SignalServiceProtos_Envelope.TypeEnum: @unchecked Sendable {}
@@ -4579,6 +4621,7 @@ extension SignalServiceProtos_Pack.Sticker: @unchecked Sendable {}
 extension SignalServiceProtos_PaymentAddress: @unchecked Sendable {}
 extension SignalServiceProtos_PaymentAddress.MobileCoin: @unchecked Sendable {}
 extension SignalServiceProtos_DecryptionErrorMessage: @unchecked Sendable {}
+extension SignalServiceProtos_PniSignatureMessage: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -5092,6 +5135,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     7: .same(proto: "senderKeyDistributionMessage"),
     8: .same(proto: "decryptionErrorMessage"),
     9: .same(proto: "storyMessage"),
+    10: .same(proto: "pniSignatureMessage"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5109,6 +5153,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
       case 7: try { try decoder.decodeSingularBytesField(value: &self._senderKeyDistributionMessage) }()
       case 8: try { try decoder.decodeSingularBytesField(value: &self._decryptionErrorMessage) }()
       case 9: try { try decoder.decodeSingularMessageField(value: &self._storyMessage) }()
+      case 10: try { try decoder.decodeSingularMessageField(value: &self._pniSignatureMessage) }()
       default: break
       }
     }
@@ -5146,6 +5191,9 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     try { if let v = self._storyMessage {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
     } }()
+    try { if let v = self._pniSignatureMessage {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -5159,6 +5207,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     if lhs._senderKeyDistributionMessage != rhs._senderKeyDistributionMessage {return false}
     if lhs._decryptionErrorMessage != rhs._decryptionErrorMessage {return false}
     if lhs._storyMessage != rhs._storyMessage {return false}
+    if lhs._pniSignatureMessage != rhs._pniSignatureMessage {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -9166,6 +9215,48 @@ extension SignalServiceProtos_DecryptionErrorMessage: SwiftProtobuf.Message, Swi
     if lhs._ratchetKey != rhs._ratchetKey {return false}
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs._deviceID != rhs._deviceID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_PniSignatureMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PniSignatureMessage"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "pni"),
+    2: .same(proto: "signature"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._pni) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._signature) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._pni {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._signature {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_PniSignatureMessage, rhs: SignalServiceProtos_PniSignatureMessage) -> Bool {
+    if lhs._pni != rhs._pni {return false}
+    if lhs._signature != rhs._signature {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

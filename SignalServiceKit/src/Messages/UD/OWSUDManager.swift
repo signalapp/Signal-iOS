@@ -517,24 +517,27 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return nil
         }
 
-        let senderCertificate: SenderCertificate
-        switch phoneNumberSharingMode {
-        case .everybody:
-            senderCertificate = senderCertificates.defaultCert
-        case .contactsOnly:
-            let isSystemContact = databaseStorage.read { transaction in
-                Self.contactsManager.isSystemContact(address: address, transaction: transaction)
-            }
-            if isSystemContact {
+        return databaseStorage.read { transaction in
+            let senderCertificate: SenderCertificate
+            switch phoneNumberSharingMode {
+            case .everybody:
                 senderCertificate = senderCertificates.defaultCert
-            } else {
+            case .contactsOnly:
+                if Self.contactsManager.isSystemContact(address: address, transaction: transaction) {
+                    senderCertificate = senderCertificates.defaultCert
+                    break
+                }
+                fallthrough
+            case .nobody:
+                if identityManager.shouldSharePhoneNumber(with: address, transaction: transaction) {
+                    senderCertificate = senderCertificates.defaultCert
+                    break
+                }
                 senderCertificate = senderCertificates.uuidOnlyCert
             }
-        case .nobody:
-            senderCertificate = senderCertificates.uuidOnlyCert
-        }
 
-        return OWSUDSendingAccess(udAccess: udAccess, senderCertificate: senderCertificate)
+            return OWSUDSendingAccess(udAccess: udAccess, senderCertificate: senderCertificate)
+        }
     }
 
     // MARK: - Sender Certificate

@@ -1784,6 +1784,9 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
         if let _value = storyMessage {
             builder.setStoryMessage(_value)
         }
+        if let _value = pniSignatureMessage {
+            builder.setPniSignatureMessage(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1897,6 +1900,17 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
             proto.storyMessage = valueParam.proto
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPniSignatureMessage(_ valueParam: SSKProtoPniSignatureMessage?) {
+            guard let valueParam = valueParam else { return }
+            proto.pniSignatureMessage = valueParam.proto
+        }
+
+        public func setPniSignatureMessage(_ valueParam: SSKProtoPniSignatureMessage) {
+            proto.pniSignatureMessage = valueParam.proto
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -1934,6 +1948,9 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
 
     @objc
     public let storyMessage: SSKProtoStoryMessage?
+
+    @objc
+    public let pniSignatureMessage: SSKProtoPniSignatureMessage?
 
     @objc
     public var senderKeyDistributionMessage: Data? {
@@ -1974,7 +1991,8 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
                  nullMessage: SSKProtoNullMessage?,
                  receiptMessage: SSKProtoReceiptMessage?,
                  typingMessage: SSKProtoTypingMessage?,
-                 storyMessage: SSKProtoStoryMessage?) {
+                 storyMessage: SSKProtoStoryMessage?,
+                 pniSignatureMessage: SSKProtoPniSignatureMessage?) {
         self.proto = proto
         self.dataMessage = dataMessage
         self.syncMessage = syncMessage
@@ -1983,6 +2001,7 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
         self.receiptMessage = receiptMessage
         self.typingMessage = typingMessage
         self.storyMessage = storyMessage
+        self.pniSignatureMessage = pniSignatureMessage
     }
 
     @objc
@@ -2032,6 +2051,11 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
             storyMessage = try SSKProtoStoryMessage(proto.storyMessage)
         }
 
+        var pniSignatureMessage: SSKProtoPniSignatureMessage?
+        if proto.hasPniSignatureMessage {
+            pniSignatureMessage = try SSKProtoPniSignatureMessage(proto.pniSignatureMessage)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoContent -
 
         // MARK: - End Validation Logic for SSKProtoContent -
@@ -2043,7 +2067,8 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
                   nullMessage: nullMessage,
                   receiptMessage: receiptMessage,
                   typingMessage: typingMessage,
-                  storyMessage: storyMessage)
+                  storyMessage: storyMessage,
+                  pniSignatureMessage: pniSignatureMessage)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -17741,6 +17766,190 @@ extension SSKProtoDecryptionErrorMessage {
 extension SSKProtoDecryptionErrorMessage.SSKProtoDecryptionErrorMessageBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoDecryptionErrorMessage? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoPniSignatureMessage
+
+@objc
+public class SSKProtoPniSignatureMessage: NSObject, Codable, NSSecureCoding {
+
+    // MARK: - SSKProtoPniSignatureMessageBuilder
+
+    @objc
+    public static func builder() -> SSKProtoPniSignatureMessageBuilder {
+        return SSKProtoPniSignatureMessageBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoPniSignatureMessageBuilder {
+        let builder = SSKProtoPniSignatureMessageBuilder()
+        if let _value = pni {
+            builder.setPni(_value)
+        }
+        if let _value = signature {
+            builder.setSignature(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoPniSignatureMessageBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_PniSignatureMessage()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPni(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.pni = valueParam
+        }
+
+        public func setPni(_ valueParam: Data) {
+            proto.pni = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSignature(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.signature = valueParam
+        }
+
+        public func setSignature(_ valueParam: Data) {
+            proto.signature = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoPniSignatureMessage {
+            return try SSKProtoPniSignatureMessage(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoPniSignatureMessage(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_PniSignatureMessage
+
+    @objc
+    public var pni: Data? {
+        guard hasPni else {
+            return nil
+        }
+        return proto.pni
+    }
+    @objc
+    public var hasPni: Bool {
+        return proto.hasPni
+    }
+
+    @objc
+    public var signature: Data? {
+        guard hasSignature else {
+            return nil
+        }
+        return proto.signature
+    }
+    @objc
+    public var hasSignature: Bool {
+        return proto.hasSignature
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_PniSignatureMessage) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_PniSignatureMessage(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_PniSignatureMessage) throws {
+        // MARK: - Begin Validation Logic for SSKProtoPniSignatureMessage -
+
+        // MARK: - End Validation Logic for SSKProtoPniSignatureMessage -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoPniSignatureMessage {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoPniSignatureMessage.SSKProtoPniSignatureMessageBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoPniSignatureMessage? {
         return try! self.build()
     }
 }

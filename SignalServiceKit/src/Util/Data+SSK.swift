@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -49,5 +49,11 @@ public extension Data {
 public extension Array where Element == UInt8 {
     var asData: Data {
         return Data(self)
+    }
+}
+
+public extension UUID {
+    var data: Data {
+        return withUnsafeBytes(of: self.uuid) { Data($0) }
     }
 }

@@ -6,14 +6,6 @@ import Foundation
 import SignalServiceKit
 import LibSignalClient
 
-public extension UUID {
-    var data: Data {
-        return withUnsafeBytes(of: self.uuid, { Data($0) })
-    }
-}
-
-// MARK: -
-
 public extension ProfileKeyVersion {
     // GroupsV2 TODO: We might move this to the wrappers.
     func asHexadecimalString() throws -> String {

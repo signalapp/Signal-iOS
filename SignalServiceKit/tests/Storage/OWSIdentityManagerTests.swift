@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import SignalServiceKit
+@testable import SignalServiceKit
 import XCTest
 
 class OWSIdentityManagerTests: SSKBaseTestSwift {
@@ -86,4 +86,46 @@ class OWSIdentityManagerTests: SSKBaseTestSwift {
         XCTAssertEqual(pniKey.privateKey, fetchedPniKey.privateKey)
     }
 
+    func testShouldSharePhoneNumber() {
+        let aliceAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+12223334444")
+        let bobAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "+17775556666")
+
+        write { transaction in
+            // {}
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: aliceAddress, transaction: transaction))
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobAddress, transaction: transaction))
+
+            // {Alice}
+            identityManager.setShouldSharePhoneNumber(with: aliceAddress, transaction: transaction)
+            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: aliceAddress, transaction: transaction))
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobAddress, transaction: transaction))
+
+            // {Alice}; redundant set shouldn't change anything.
+            identityManager.setShouldSharePhoneNumber(with: aliceAddress, transaction: transaction)
+            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: aliceAddress, transaction: transaction))
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobAddress, transaction: transaction))
+
+            // {Alice, Bob}
+            identityManager.setShouldSharePhoneNumber(with: bobAddress, transaction: transaction)
+            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: aliceAddress, transaction: transaction))
+            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: bobAddress, transaction: transaction))
+
+            // {Bob}
+            identityManager.clearShouldSharePhoneNumber(with: aliceAddress, transaction: transaction)
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: aliceAddress, transaction: transaction))
+            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: bobAddress, transaction: transaction))
+
+            // {Bob}; redundant clear shouldn't change anything.
+            identityManager.clearShouldSharePhoneNumber(with: aliceAddress, transaction: transaction)
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: aliceAddress, transaction: transaction))
+            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: bobAddress, transaction: transaction))
+
+            // {Alice, Bob}
+            identityManager.setShouldSharePhoneNumber(with: aliceAddress, transaction: transaction)
+            // {}
+            identityManager.clearShouldSharePhoneNumberForEveryone(transaction: transaction)
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: aliceAddress, transaction: transaction))
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobAddress, transaction: transaction))
+        }
+    }
 }
