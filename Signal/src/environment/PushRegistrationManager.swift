@@ -172,7 +172,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         }
 
         if isUnexpectedPush.get() {
-            Self.handleUnexpectedVoidPush()
+            Self.handleUnexpectedVoipPush()
         }
 
         if let callRelayPayload = callRelayPayload {
@@ -230,7 +230,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         }
     }
 
-    private static func handleUnexpectedVoidPush() {
+    private static func handleUnexpectedVoipPush() {
         assertOnQueue(calloutQueue)
 
         Logger.info("")
