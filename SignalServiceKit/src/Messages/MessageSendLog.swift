@@ -302,13 +302,12 @@ public class MessageSendLog: NSObject {
         }
         do {
             let payloadAlias = TableAlias()
-            let targets: [Recipient] = try Recipient
+            try Recipient
                 .joining(required: Recipient.payload.aliased(payloadAlias))
                 .filter(payloadAlias[Column("sentTimestamp")] == timestamp)
                 .filter(Column("recipientUuid") == recipientUuid.uuidString)
                 .filter(Column("recipientDeviceId") == recipientDeviceId)
-                .fetchAll(writeTx.unwrapGrdbWrite.database)
-            try targets.forEach { try $0.delete(writeTx.unwrapGrdbWrite.database) }
+                .deleteAll(writeTx.unwrapGrdbWrite.database)
 
         } catch {
             owsFailDebug("Failed to record successful delivery \(error)")
