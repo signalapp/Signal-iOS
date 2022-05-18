@@ -29,6 +29,7 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
 @property (nonatomic, nullable) NSString *body;
 @property (nonatomic) uint32_t expiresInSeconds;
 @property (nonatomic) uint64_t expireStartedAt;
+@property (nonatomic) NSMutableArray<SNReactMessage *> *reactions;
 
 /**
  * The version of the model class's schema last used to serialize this model. Use this to manage data migrations during
@@ -88,6 +89,7 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
     _serverHash = serverHash;
     _isDeleted = false;
     _isCallMessage = false;
+    _reactions = [NSMutableArray new];
 
     return self;
 }
@@ -136,6 +138,10 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
 
     if (!_attachmentIds) {
         _attachmentIds = [NSMutableArray new];
+    }
+    
+    if (!_reactions) {
+        _reactions = [NSMutableArray new];
     }
 
     _schemaVersion = OWSMessageSchemaVersion;
@@ -449,6 +455,18 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
                              changeBlock:^(TSMessage *message) {
                                 [message setBody:newBody];
                              }];
+}
+
+- (void)updateWithReaction:(SNReactMessage *)reaction transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    if ([self isKindOfClass:[TSIncomingMessage class]] || [self isKindOfClass:[TSOutgoingMessage class]]) {
+        [self applyChangeToSelfAndLatestCopy:transaction
+                                 changeBlock:^(TSMessage *message) {
+                                    if (![message.reactions containsObject:reaction]) {
+                                        [message.reactions addObject:reaction];
+                                    }
+                                 }];
+    }
 }
 
 @end

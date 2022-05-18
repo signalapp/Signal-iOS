@@ -9,11 +9,16 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     private lazy var authorLabelHeightConstraint = authorLabel.set(.height, to: 0)
     private lazy var profilePictureViewLeftConstraint = profilePictureView.pin(.left, to: .left, of: self, withInset: VisibleMessageCell.groupThreadHSpacing)
     private lazy var profilePictureViewWidthConstraint = profilePictureView.set(.width, to: Values.verySmallProfilePictureSize)
+    
     private lazy var bubbleViewLeftConstraint1 = bubbleView.pin(.left, to: .right, of: profilePictureView, withInset: VisibleMessageCell.groupThreadHSpacing)
     private lazy var bubbleViewLeftConstraint2 = bubbleView.leftAnchor.constraint(greaterThanOrEqualTo: leftAnchor, constant: VisibleMessageCell.gutterSize)
     private lazy var bubbleViewTopConstraint = bubbleView.pin(.top, to: .bottom, of: authorLabel, withInset: VisibleMessageCell.authorLabelBottomSpacing)
     private lazy var bubbleViewRightConstraint1 = bubbleView.pin(.right, to: .right, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
     private lazy var bubbleViewRightConstraint2 = bubbleView.rightAnchor.constraint(lessThanOrEqualTo: rightAnchor, constant: -VisibleMessageCell.gutterSize)
+    
+    private lazy var reactionContainerViewLeftConstraint = reactionContainerView.pin(.left, to: .left, of: bubbleView)
+    private lazy var reactionContainerViewRightConstraint = reactionContainerView.pin(.right, to: .right, of: bubbleView)
+    
     private lazy var messageStatusImageViewTopConstraint = messageStatusImageView.pin(.top, to: .bottom, of: bubbleView, withInset: 0)
     private lazy var messageStatusImageViewWidthConstraint = messageStatusImageView.set(.width, to: VisibleMessageCell.messageStatusImageViewSize)
     private lazy var messageStatusImageViewHeightConstraint = messageStatusImageView.set(.height, to: VisibleMessageCell.messageStatusImageViewSize)
@@ -80,6 +85,8 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     }()
     
     private lazy var snContentView = UIView()
+    
+    private lazy var reactionContainerView = ReactionContainerView()
     
     internal lazy var messageStatusImageView: UIImageView = {
         let result = UIImageView()
@@ -163,7 +170,6 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         addSubview(profilePictureView)
         profilePictureViewLeftConstraint.isActive = true
         profilePictureViewWidthConstraint.isActive = true
-        profilePictureView.pin(.bottom, to: .bottom, of: self, withInset: -1)
         // Moderator icon image view
         moderatorIconImageView.set(.width, to: 20)
         moderatorIconImageView.set(.height, to: 20)
@@ -182,6 +188,10 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         // Content view
         bubbleView.addSubview(snContentView)
         snContentView.pin(to: bubbleView)
+        // Reaction view
+        addSubview(reactionContainerView)
+        reactionContainerView.pin(.top, to: .bottom, of: bubbleView, withInset: Values.smallSpacing)
+        reactionContainerViewLeftConstraint.isActive = true
         // Message status image view
         addSubview(messageStatusImageView)
         messageStatusImageViewTopConstraint.isActive = true
@@ -244,6 +254,10 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         updateBubbleViewCorners()
         // Content view
         populateContentView(for: viewItem, message: message)
+        // Reaction view
+        reactionContainerViewLeftConstraint.isActive = (direction == .incoming)
+        reactionContainerViewRightConstraint.isActive = (direction == .outgoing)
+        populateReaction(for: viewItem, message: message)
         // Date break
         headerViewTopConstraint.constant = shouldInsetHeader ? Values.mediumSpacing : 1
         headerView.subviews.forEach { $0.removeFromSuperview() }
@@ -436,6 +450,21 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             deletedMessageView.pin(to: snContentView)
         default: return
         }
+    }
+    
+    private func populateReaction(for viewItem: ConversationViewItem, message: TSMessage) {
+        let reactions: OrderedDictionary<String, Int> = OrderedDictionary()
+        for reaction in message.reactions {
+            if let reactMessage = reaction as? ReactMessage, let emoji = reactMessage.emoji {
+                if let number = reactions.value(forKey: emoji) {
+                    reactions.replace(key: emoji, value: number + 1)
+                } else {
+                    reactions.append(key: emoji, value: 1)
+                }
+            }
+        }
+        print("Ryan Test: \(reactions.orderedKeys)")
+        reactionContainerView.update(reactions.orderedItems)
     }
     
     override func layoutSubviews() {

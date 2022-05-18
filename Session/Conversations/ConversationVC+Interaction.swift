@@ -821,8 +821,23 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     func react(_ viewItem: ConversationViewItem, with emoji: String) {
         print("Ryan Test: \(emoji)")
-        // TODO: send emoji react message
         UserDefaults.standard.addNewRecentlyUsedEmoji(emoji)
+        guard let message = viewItem.interaction as? TSMessage else { return }
+        var authorId = getUserHexEncodedPublicKey()
+        if let incomingMessage = message as? TSIncomingMessage { authorId = incomingMessage.authorId }
+        let reactMessage = ReactMessage(timestamp: message.timestamp, authorId: authorId, emoji: emoji)
+        reactMessage.sender = getUserHexEncodedPublicKey()
+        let thread = self.thread
+        let sentTimestamp: UInt64 = NSDate.millisecondTimestamp()
+        let visibleMessage = VisibleMessage()
+        visibleMessage.sentTimestamp = sentTimestamp
+        visibleMessage.reaction = .from(reactMessage)
+        visibleMessage.reaction?.kind = .react
+        Storage.write { transaction in
+            message.update(withReaction: reactMessage, transaction: transaction)
+            // TODO: send emoji react message
+//            MessageSender.send(<#T##message: Message##Message#>, in: thread, using: <#T##YapDatabaseReadWriteTransaction#>)
+        }
     }
     
     func showFullEmojiKeyboard(_ viewItem: ConversationViewItem) {

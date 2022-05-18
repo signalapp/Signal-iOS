@@ -20,6 +20,7 @@ typedef NS_ENUM(NSUInteger, TSMessageDirection) {
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
+@class SNReactMessage;
 @class YapDatabaseReadWriteTransaction;
 
 extern const NSUInteger kOversizeTextMessageSizeThreshold;
@@ -41,6 +42,7 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 @property (nonatomic, nullable) NSString *serverHash;
 @property (nonatomic) BOOL isDeleted;
 @property (nonatomic) BOOL isCallMessage;
+@property (nonatomic, readonly) NSMutableArray<SNReactMessage *> *reactions;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
@@ -87,6 +89,8 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 - (void)updateForDeletionWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (void)updateCallMessageWithNewBody:(NSString *)newBody transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+- (void)updateWithReaction:(SNReactMessage *)reaction transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

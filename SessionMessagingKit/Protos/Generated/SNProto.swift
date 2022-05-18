@@ -2434,6 +2434,9 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
             builder.setQuote(_value)
         }
         builder.setPreview(preview)
+        if let _value = reaction {
+            builder.setReaction(_value)
+        }
         if let _value = profile {
             builder.setProfile(_value)
         }
@@ -2503,6 +2506,10 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
             proto.preview = wrappedItems.map { $0.proto }
         }
 
+        @objc public func setReaction(_ valueParam: SNProtoDataMessageReaction) {
+            proto.reaction = valueParam.proto
+        }
+
         @objc public func setProfile(_ valueParam: SNProtoDataMessageLokiProfile) {
             proto.profile = valueParam.proto
         }
@@ -2537,6 +2544,8 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
     @objc public let quote: SNProtoDataMessageQuote?
 
     @objc public let preview: [SNProtoDataMessagePreview]
+
+    @objc public let reaction: SNProtoDataMessageReaction?
 
     @objc public let profile: SNProtoDataMessageLokiProfile?
 
@@ -2600,6 +2609,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
                  group: SNProtoGroupContext?,
                  quote: SNProtoDataMessageQuote?,
                  preview: [SNProtoDataMessagePreview],
+                 reaction: SNProtoDataMessageReaction?,
                  profile: SNProtoDataMessageLokiProfile?,
                  openGroupInvitation: SNProtoDataMessageOpenGroupInvitation?,
                  closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage?) {
@@ -2608,6 +2618,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
         self.group = group
         self.quote = quote
         self.preview = preview
+        self.reaction = reaction
         self.profile = profile
         self.openGroupInvitation = openGroupInvitation
         self.closedGroupControlMessage = closedGroupControlMessage
@@ -2640,6 +2651,11 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
         var preview: [SNProtoDataMessagePreview] = []
         preview = try proto.preview.map { try SNProtoDataMessagePreview.parseProto($0) }
 
+        var reaction: SNProtoDataMessageReaction? = nil
+        if proto.hasReaction {
+            reaction = try SNProtoDataMessageReaction.parseProto(proto.reaction)
+        }
+
         var profile: SNProtoDataMessageLokiProfile? = nil
         if proto.hasProfile {
             profile = try SNProtoDataMessageLokiProfile.parseProto(proto.profile)
@@ -2664,6 +2680,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
                                         group: group,
                                         quote: quote,
                                         preview: preview,
+                                        reaction: reaction,
                                         profile: profile,
                                         openGroupInvitation: openGroupInvitation,
                                         closedGroupControlMessage: closedGroupControlMessage)

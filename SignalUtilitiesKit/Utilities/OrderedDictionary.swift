@@ -102,4 +102,16 @@ public class OrderedDictionary<KeyType: Hashable, ValueType> {
         }
         return values
     }
+    
+    public var orderedItems: [(KeyType, ValueType)] {
+        var items = [(KeyType, ValueType)]()
+        for key in orderedKeys {
+            guard let value = self.keyValueMap[key] else {
+                owsFailDebug("Missing value")
+                continue
+            }
+            items.append((key, value))
+        }
+        return items
+    }
 }

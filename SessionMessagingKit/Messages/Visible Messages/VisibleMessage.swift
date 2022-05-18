@@ -13,6 +13,7 @@ public final class VisibleMessage : Message {
     @objc public var contact: Contact?
     @objc public var profile: Profile?
     @objc public var openGroupInvitation: OpenGroupInvitation?
+    @objc public var reaction: Reaction?
 
     public override var isSelfSendValid: Bool { true }
     
@@ -24,6 +25,7 @@ public final class VisibleMessage : Message {
         guard super.isValid else { return false }
         if !attachmentIDs.isEmpty { return true }
         if openGroupInvitation != nil { return true }
+        if reaction != nil { return true }
         if let text = text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty { return true }
         return false
     }
@@ -39,6 +41,7 @@ public final class VisibleMessage : Message {
         // TODO: Contact
         if let profile = coder.decodeObject(forKey: "profile") as! Profile? { self.profile = profile }
         if let openGroupInvitation = coder.decodeObject(forKey: "openGroupInvitation") as! OpenGroupInvitation? { self.openGroupInvitation = openGroupInvitation }
+        if let reaction = coder.decodeObject(forKey: "reaction") as! Reaction? { self.reaction = reaction }
     }
 
     public override func encode(with coder: NSCoder) {
@@ -51,6 +54,7 @@ public final class VisibleMessage : Message {
         // TODO: Contact
         coder.encode(profile, forKey: "profile")
         coder.encode(openGroupInvitation, forKey: "openGroupInvitation")
+        coder.encode(reaction, forKey: "reaction")
     }
 
     // MARK: Proto Conversion
@@ -65,6 +69,8 @@ public final class VisibleMessage : Message {
         if let profile = Profile.fromProto(dataMessage) { result.profile = profile }
         if let openGroupInvitationProto = dataMessage.openGroupInvitation,
             let openGroupInvitation = OpenGroupInvitation.fromProto(openGroupInvitationProto) { result.openGroupInvitation = openGroupInvitation }
+        if let reactionProto = dataMessage.reaction,
+           let reaction = Reaction.fromProto(reactionProto) { result.reaction = reaction }
         result.syncTarget = dataMessage.syncTarget
         return result
     }
@@ -103,6 +109,10 @@ public final class VisibleMessage : Message {
         // TODO: Contact
         // Open group invitation
         if let openGroupInvitation = openGroupInvitation, let openGroupInvitationProto = openGroupInvitation.toProto() { dataMessage.setOpenGroupInvitation(openGroupInvitationProto) }
+        // Emoji react
+        if let reaction = reaction, let reactionProto = reaction.toProto() {
+            dataMessage.setReaction(reactionProto)
+        }
         // Group context
         do {
             try setGroupContextIfNeeded(on: dataMessage, using: transaction)
@@ -133,8 +143,9 @@ public final class VisibleMessage : Message {
             quote: \(quote?.description ?? "null"),
             linkPreview: \(linkPreview?.description ?? "null"),
             contact: \(contact?.description ?? "null"),
-            profile: \(profile?.description ?? "null")
-            "openGroupInvitation": \(openGroupInvitation?.description ?? "null")
+            profile: \(profile?.description ?? "null"),
+            reaction: \(reaction?.description ?? "null"),
+            openGroupInvitation: \(openGroupInvitation?.description ?? "null")
         )
         """
     }

@@ -599,6 +599,15 @@ struct SessionProtos_DataMessage {
     set {_uniqueStorage()._preview = newValue}
   }
 
+  var reaction: SessionProtos_DataMessage.Reaction {
+    get {return _storage._reaction ?? SessionProtos_DataMessage.Reaction()}
+    set {_uniqueStorage()._reaction = newValue}
+  }
+  /// Returns true if `reaction` has been explicitly set.
+  var hasReaction: Bool {return _storage._reaction != nil}
+  /// Clears the value of `reaction`. Subsequent reads from it will return its default value.
+  mutating func clearReaction() {_uniqueStorage()._reaction = nil}
+
   var profile: SessionProtos_DataMessage.LokiProfile {
     get {return _storage._profile ?? SessionProtos_DataMessage.LokiProfile()}
     set {_uniqueStorage()._profile = newValue}
@@ -2178,6 +2187,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     7: .same(proto: "timestamp"),
     8: .same(proto: "quote"),
     10: .same(proto: "preview"),
+    11: .same(proto: "reaction"),
     101: .same(proto: "profile"),
     102: .same(proto: "openGroupInvitation"),
     104: .same(proto: "closedGroupControlMessage"),
@@ -2194,6 +2204,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     var _timestamp: UInt64? = nil
     var _quote: SessionProtos_DataMessage.Quote? = nil
     var _preview: [SessionProtos_DataMessage.Preview] = []
+    var _reaction: SessionProtos_DataMessage.Reaction? = nil
     var _profile: SessionProtos_DataMessage.LokiProfile? = nil
     var _openGroupInvitation: SessionProtos_DataMessage.OpenGroupInvitation? = nil
     var _closedGroupControlMessage: SessionProtos_DataMessage.ClosedGroupControlMessage? = nil
@@ -2213,6 +2224,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
       _timestamp = source._timestamp
       _quote = source._quote
       _preview = source._preview
+      _reaction = source._reaction
       _profile = source._profile
       _openGroupInvitation = source._openGroupInvitation
       _closedGroupControlMessage = source._closedGroupControlMessage
@@ -2233,6 +2245,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
       if let v = _storage._group, !v.isInitialized {return false}
       if let v = _storage._quote, !v.isInitialized {return false}
       if !SwiftProtobuf.Internal.areAllInitialized(_storage._preview) {return false}
+      if let v = _storage._reaction, !v.isInitialized {return false}
       if let v = _storage._openGroupInvitation, !v.isInitialized {return false}
       if let v = _storage._closedGroupControlMessage, !v.isInitialized {return false}
       return true
@@ -2256,6 +2269,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
         case 7: try { try decoder.decodeSingularUInt64Field(value: &_storage._timestamp) }()
         case 8: try { try decoder.decodeSingularMessageField(value: &_storage._quote) }()
         case 10: try { try decoder.decodeRepeatedMessageField(value: &_storage._preview) }()
+        case 11: try { try decoder.decodeSingularMessageField(value: &_storage._reaction) }()
         case 101: try { try decoder.decodeSingularMessageField(value: &_storage._profile) }()
         case 102: try { try decoder.decodeSingularMessageField(value: &_storage._openGroupInvitation) }()
         case 104: try { try decoder.decodeSingularMessageField(value: &_storage._closedGroupControlMessage) }()
@@ -2295,6 +2309,9 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
       if !_storage._preview.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._preview, fieldNumber: 10)
       }
+      if let v = _storage._reaction {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
+      }
       if let v = _storage._profile {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 101)
       }
@@ -2325,6 +2342,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
         if _storage._timestamp != rhs_storage._timestamp {return false}
         if _storage._quote != rhs_storage._quote {return false}
         if _storage._preview != rhs_storage._preview {return false}
+        if _storage._reaction != rhs_storage._reaction {return false}
         if _storage._profile != rhs_storage._profile {return false}
         if _storage._openGroupInvitation != rhs_storage._openGroupInvitation {return false}
         if _storage._closedGroupControlMessage != rhs_storage._closedGroupControlMessage {return false}
