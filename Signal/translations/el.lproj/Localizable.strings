@@ -367,14 +367,11 @@
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Δώσε Ενίσχυση στο Signal";
 
-/* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
+/* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer visible on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
 
-/* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
+/* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
-
-/* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Γίνε υποστηρικτής/τρια";
@@ -383,13 +380,28 @@
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Προσθήκη Ενίσχυσης";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "Το έμβλημα έληξε";
 
-/* Button title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+/* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "Μάθε περισσότερα.";
+
+/* Button text when a badge expires, asking you to renew your subscription */
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Ανανέωση συνδρομής";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Η μηνιαία δωρεά ακυρώθηκε";
+
+/* Short paragraph on the screen where you choose a gift badge */
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+
+/* Title on the screen where you choose a gift badge */
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Κάνε δώρο ένα έμβλημα";
+
+/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}. */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because we couldn’t process your payment. Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment method in Apple Pay and subscribe again.";
+
+/* Body of the sheet shown when your subscription is canceled due to inactivity */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Ευχαριστούμε για την ενίσχυση!";
@@ -406,7 +418,7 @@
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Όταν έχεις πάνω από ένα έμβλημα, μπορείς να επιλέξεις ποιο μπορούν να δουν τα άλλα άτομα στο προφίλ σου.";
 
-/* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
+/* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
 "BADGE_THANKS_YOU_EARNED_FORMAT" = "Κέρδισες ένα έμβλημα %@! Δείξε το έμβλημα στο προφίλ σου για να διαδώσεις τις δωρεές στο Signal.";
 
 /* Accessibility label for banner close button */
@@ -483,9 +495,6 @@
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Νέο: Θόλωσε τα πρόσωπα ή ζωγράφισε οπουδήποτε για να θολώσεις.";
-
-/* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Ορισμός νομίσματος";
 
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Κάνε μια μοναδική δωρεά και κέρδισε το έμβλημα Eνίσχυσης για 30 ημέρες.";
@@ -578,13 +587,13 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "Εισερχόμενη ηχητική κλήση...";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call at %@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Αναπάντητη κλήση φωνής στις %@";
 
 /* notification body for a call that was just missed */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "Αναπάντητη ηχητική κλήση";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Αναπάντητη κλήση φωνής στις %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
 "CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
@@ -620,13 +629,13 @@
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "Εισερχόμενη βιντεοκλήση...";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call at %@";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Αναπάντητη βιντεοκλήση στις %@";
 
 /* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "Αναπάντητη βιντεοκλήση";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Αναπάντητη βιντεοκλήση στις %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
 "CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
@@ -902,10 +911,10 @@
 "CONTACT_SUPPORT" = "Επικοινωνία με την υποστήριξη";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Δωρεές και εμβλήματα";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Δωρεές και εμβλήματα";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Θέλω να ζητήσω νέο χαρακτηριστικό ή δυνατότητα";
@@ -1004,7 +1013,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Διαγραφή συνομιλίας;";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Σίγαση συνομιλίας για...";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 ημέρα";
@@ -1283,7 +1292,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Σύρε για να αλλάξεις τη φορά της διαβάθμισης";
 
 /* Button to run the database integrity check */
-"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Run";
+"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Εκτέλεση";
 
 /* Message for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
@@ -1334,7 +1343,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email στην υποστήριξη";
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
-"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Εξαγωγή αρχείων καταγραφής";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Αποστολή σε εμένα";
@@ -1565,7 +1574,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Δωρεά";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "H Signal υποστηρίζεται από ανθρώπους σαν κι εσένα. Κάνε μηνιαίες δωρεές για να λάβεις το badge";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Όχι τώρα";
@@ -1583,7 +1592,7 @@
 "DONATION_RECEIPT_DETAILS" = "Λεπτομέρειες";
 
 /* Text on the button that exports the receipt */
-"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Share Receipt";
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Διαμοιρασμός απόδειξης";
 
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
@@ -1598,7 +1607,7 @@
 "DONATION_RECEIPT_TITLE" = "Απόδειξη δωρεάς";
 
 /* Section title for donation type on receipts */
-"DONATION_RECEIPT_TYPE" = "Type";
+"DONATION_RECEIPT_TYPE" = "Τύπος";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
 "DONATION_RECEIPTS" = "Αποδείξεις δωρεών";
@@ -1612,11 +1621,14 @@
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Δωρεά στο Signal";
 
+/* Title for the 'Gift a Badge' link in the donation view */
+"DONATION_VIEW_GIFT" = "Κάνε δώρο ένα έμβλημα";
+
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "Σφάλμα δικτύου. Έλεγξε τη σύνδεσή σου και ξαναπροσπάθησε.";
 
 /* Text of the 'make a monthly donation' button on the donation screen */
-"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Κάνε μηνιαία δωρεά";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "Εμβλήματα";
@@ -1634,7 +1646,7 @@
 "DONATION_VIEW_ONE_TIME_DONATION" = "Δωρεά μια φορά";
 
 /* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Άλλοι τρόποι δωρεάς";
 
 /* Title for the 'receipts' section on the donation screen */
 "DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Αποδείξεις";
@@ -1644,6 +1656,9 @@
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "Κάνε μια δωρεά στο Signal";
+
+/* Label for the currency picker button in donation views */
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Ορισμός νομίσματος";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Μπορείς να δώσεις πρόσβαση στην εφαρμογή \"Ρυθμίσεις\" του iOS.";
@@ -1828,7 +1843,7 @@
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "Σφάλμα δικτύου";
 
-/* Format string for an error alert notification message. Embes {{ error string }} */
+/* Format string for an error alert notification message. Embeds {{ error string }} */
 "ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Παρακαλούμε βοήθησέ μας να βελτιώσουμε το Signal αναφέροντας αυτό το σφάλμα μαζί με τα αρχεία καταγραφής αποσφαλμάτωσης της συσκευής σου στο support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
@@ -2549,7 +2564,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Αιτήματα & Προσκλήσεις";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
-"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
+"GROUP_STORY_NAME_FORMAT" = "%1$@ προς %2$@";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Η ομάδα ενημερώθηκε.";
@@ -2849,10 +2864,10 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Αρχείο";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Επιλογή συνομιλιών";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
-"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Ανάγνωση όλων";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Ζωγράφισε οπουδήποτε για να θολώσεις";
@@ -2921,7 +2936,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Μπορείς να στέλνεις και να λαμβάνεις συγχρονισμένα μηνύματα απο το κινητό ή το iPad σου.\nΓια την ασφάλειά σου, το ιστορικό συνομιλίας δεν μεταφέρεται στις νέες συνδεμένες συσκευές.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "Ο/Η %@ άλλαξε τον αριθμό τηλεφώνου του/της.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "Ο/Η %@ ήρθε στο Signal!";
@@ -2962,7 +2977,7 @@
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Μετάβαση σε όλα τα μέσα";
 
-/* A keyboard command to archive the current coversation. */
+/* A keyboard command to archive the current conversation. */
 "KEY_COMMAND_ARCHIVE" = "Αρχειοθέτηση συνομιλίας";
 
 /* A keyboard command to open the current conversation's attachment picker. */
@@ -2998,7 +3013,7 @@
 /* A keyboard command to open the current conversation's sticker picker. */
 "KEY_COMMAND_STICKERS" = "Εμφάνιση αυτοκόλλητων";
 
-/* A keyboard command to unarchive the current coversation. */
+/* A keyboard command to unarchive the current conversation. */
 "KEY_COMMAND_UNARCHIVE" = "Απο-αρχειοθέτηση συνομιλίας";
 
 /* Label for the 'learn more' button. */
@@ -3145,11 +3160,11 @@
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Κλήση";
 
-/* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime φωνή";
+/* Label for button to make a FaceTime audio call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
 
-/* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime βίντεο";
+/* Label for button to make a FaceTime video call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Αποστολή μηνύματος κειμένου";
@@ -3406,10 +3421,10 @@
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Το Signal χρειάζεται πρόσβαση στη κάμερα.";
 
-/* Alert body indicating the user has denied location permissios */
+/* Alert body indicating the user has denied location permissions */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Μπορείς να δώσεις αυτή την πρόσβαση από την εφαρμογή Ρυθμίσεις του iOS.";
 
-/* Alert title indicating the user has denied location permissios */
+/* Alert title indicating the user has denied location permissions */
 "MISSING_LOCATION_PERMISSION_TITLE" = "Το Signal χρειάζεται πρόσβαση στην τοποθεσία σου για αυτήν τη λειτουργία.";
 
 /* Alert body when user has previously denied media library access */
@@ -4121,7 +4136,7 @@
 "PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "Αποτυχία αλλαγής PIN";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "Το PIN πρέπει να έχει τουλάχιστον 4 χαρακτήρες";
@@ -4166,10 +4181,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "Τα PIN δεν ταιριάζουν. Ξαναδοκίμασε.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Έλεγξε τη σύνδεσή σου και ξαναπροσπάθησε.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Δεν υπάρχει σύνδεση στο δίκτυο";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "Το PIN πρέπει να έχει τουλάχιστον 4 ψηφία";
@@ -4211,13 +4226,13 @@
 "PIN_DISABLE_ERROR_MESSAGE" = "Δεν ήταν δυνατή η απενεργοποίηση του PIN σου. Θα σου το ζητήσουμε ξανά αργότερα.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "Απέτυχε η απενεργοποίηση PIN";
+"PIN_DISABLE_ERROR_TITLE" = "Αποτυχία απενεργοποίησης PIN";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
-"PIN_RECREATION_ERROR_TITLE" = "Απέτυχε η δημιουργία PIN";
+"PIN_RECREATION_ERROR_TITLE" = "Αποτυχία δημιουργίας PIN";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Δεν μπορέσαμε να δημιουργήσουμε το PIN σου. Έλεγξε τη σύνδεσή σου και ξαναπροσπάθησε.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Για να σε βοηθήσουμε να θυμάσαι το PIN, θα σε προτρέπουμε να το γράφεις κάθε τόσο. Θα σε ρωτάμε ολοένα και πιο σπάνια.";
@@ -4433,10 +4448,10 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Αντέδρασε στην ιστορία σου";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Αντέδρασε στην ιστορία του/της %@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Story";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Ιστορία";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Συνημμένο";
@@ -4804,6 +4819,15 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Επιστροφή στην κάμερα";
 
+/* In-app camera: confirmation button in the prompt to turn off multi-mode. */
+"SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Απενεργοποίηση";
+
+/* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+
+/* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Πρόσκληση φίλου μέσω μη-ασφαλούς SMS;";
 
@@ -4913,19 +4937,19 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Αναμετάδοση όλων των κλήσεων μέσω ενός διακομιστή Signal για να μην αποκαλύπτεται η διεύθυνση IP σου στην επαφή σου. Η ενεργοποίηση θα μειώσει την ποιότητα των κλήσεων.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Επεξεργασία αριθμού";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Αλλαγή αριθμού τηλεφώνου";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Ο αριθμός τηλεφώνου σου άλλαξε σε %@";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Αλλαγή αριθμού";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Πρόκειται να αλλάξεις τον αριθμό σου από τον %1$@ στον %2$@.\n\nΠριν συνεχίσεις, παρακαλώ επιβεβαίωσε πως ο παρακάτω αριθμός είναι σωστός.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Κωδικός χώρας";
@@ -4937,22 +4961,22 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "Παράδειγμα: %@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Ο νέος σου αριθμός";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Ο παλιός σου αριθμός";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Αριθμός τηλεφώνου";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Επαλήθευση %@";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Αλλαγή αριθμού τηλεφώνου";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Αλλαγή αριθμού";
@@ -5251,7 +5275,7 @@
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Ενεργοποίηση πληρωμών";
 
-/* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
+/* Message shown when payments are activated in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Οι πληρωμές ενεργοποιήθηκαν.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
@@ -5780,10 +5804,10 @@
 "STORIES_FORWARD_STORY_ACTION" = "Προώθηση";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
+"STORIES_GO_TO_CHAT_ACTION" = "Μετάβαση στη συνομιλία";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Hide Story";
+"STORIES_HIDE_STORY_ACTION" = "Απόκρυψη ιστορίας";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "Δεν υπάρχουν πρόσφατες ιστορίες αυτή τη στιγμή.";
@@ -5804,10 +5828,10 @@
 "STORY_NO_LONGER_AVAILABLE" = "Δεν είναι πλέον διαθέσιμη";
 
 /* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";
+"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> απάντηση";
 
 /* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> replies";
+"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> απαντήσεις";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Απάντηση";
@@ -5832,6 +5856,9 @@
 
 /* Title for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "Γίνε υποστηρικτής/τρια";
+
+/* Toast indicating that the user has copied their subscriber ID. */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Το id συνδρομητή αντιγράφτηκε στο πρόχειρο";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ο αριθμός ασφαλείας με τον/την %@ ταιριάζει. Μπορείς να σημειώσεις αυτή την επαφή ως επιβεβαιωμένη.";
@@ -5931,9 +5958,6 @@
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "Παρακαλώ επικοινώνησε με την υποστήριξη.";
-
-/* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Ορισμός νομίσματος";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Σφάλμα κατά την επεξεργασία της πληρωμής";
@@ -6139,7 +6163,7 @@
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Ανώνυμη συσκευή";
 
-/* Pressing this button upins a thread */
+/* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "Ξεκαρφίτσωμα";
 
 /* The title for unpinned conversation section on the conversation list */
@@ -6202,7 +6226,7 @@
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
 "USERNAME_UNAVAIALBE_ERROR_FORMAT" = "Το %@ χρησιμοποιείται ήδη.";
 
-/* Error moessage shown when a username update fails. */
+/* Error message shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Η ενημέρωση ονόματος χρήστη απέτυχε.";
 
 /* error label near a field */

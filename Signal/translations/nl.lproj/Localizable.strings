@@ -98,7 +98,7 @@
 "ALERT_DELIVERY_ISSUE_TITLE" = "Afleveringsprobleem";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Een bericht, media, sticker, emoji-reactie, of een bevestiging dat een bericht gelezen is van %@ kan niet aan jou worden afgeleverd. Het kan zijn dat hij of zij iets probeerde naar je te verzenden in een één-op-één gesprek of in een groepsgesprek.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Een bericht, media, sticker, emoji-reactie, of een bevestiging dat een bericht gelezen is van %@ kan niet aan jou worden afgeleverd. Het kan zijn dat hij of zij iets probeerde naar je te verzenden in een één-op-één-gesprek of in een groepsgesprek.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Verwerpen";
@@ -367,14 +367,11 @@
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Help Signal met een eenmalige bijdrage";
 
-/* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
+/* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Je ‘eenmalige donateur’-bagde is verlopen en is daarom niet langer voor anderen zichtbaar op je profiel.\n\nJe kunt Signal gewoon blijven gebruiken, maar als je Signal ook wilt helpen mogelijk maken overweeg dan om maandelijkse donaties in te stellen.";
 
-/* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
+/* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Je ‘eenmalige donateur’-badge is verlopen en is daarom niet langer voor anderen zichtbaar op je profiel.\n\nJe kunt je ‘eenmalige donateur’-badge opniew voor 30 dagen krijgen als je opnieuw een eenmalige donatie doet.";
-
-/* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Je maandelijkse donaties zijn automatisch stopgezet omdat je te lang inactief bent geweest. Je ‘%@’-badge is niet langer voor anderen te zien op je profiel.\n\nJe kunt Signal gewoon blijven gebruiken, maar als je Signal ook wilt helpen mogelijk maken of als je graag je badge wilt houden dan is dit het moment om je maandelijkse donaties te vernieuwen.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Vanaf nu maandelijks doneren";
@@ -385,11 +382,26 @@
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Badge verlopen";
 
-/* Button title for subscription on the badge expiration sheet. */
+/* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "Meer leren hierover.";
+
+/* Button text when a badge expires, asking you to renew your subscription */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Maandelijkse donaties vernieuwen";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Je maandelijkse donatie is geannuleerd";
+
+/* Short paragraph on the screen where you choose a gift badge */
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+
+/* Title on the screen where you choose a gift badge */
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Geef een badge cadeau";
+
+/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}. */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because we couldn’t process your payment. Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment method in Apple Pay and subscribe again.";
+
+/* Body of the sheet shown when your subscription is canceled due to inactivity */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Je maandelijkse donaties zijn automatisch stopgezet omdat je te lang inactief bent geweest. Je ‘%@’-badge is niet langer voor anderen te zien op je profiel.\n\nJe kunt Signal gewoon blijven gebruiken, maar als je Signal ook wilt helpen mogelijk maken of als je graag je badge wilt houden dan is dit het moment om je maandelijkse donaties te vernieuwen.";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Bedankt voor je bijdrage!";
@@ -406,7 +418,7 @@
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Als je meerdere badges hebt dan kun je er één kiezen om voor anderen op je profiel weer te geven.";
 
-/* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
+/* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
 "BADGE_THANKS_YOU_EARNED_FORMAT" = "Je hebt een ‘%@’-badge verdiend. Als je deze laat zien op je profiel dan leren via jou andere mensen dat Signal afhankelijk is van donaties.";
 
 /* Accessibility label for banner close button */
@@ -483,9 +495,6 @@
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Nieuw: Vervaag gezichten of teken om andere dingen te vervagen.";
-
-/* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Valuta instellen";
 
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Doneer eenmalig en verdien de ‘Eenmalige donateur’-badge voor 30 dagen.";
@@ -902,10 +911,10 @@
 "CONTACT_SUPPORT" = "Neem contact op met ondersteuning";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Doneren & badges";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Doneren & badges";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Ik wil graag een nieuwe functionaliteit aanvragen";
@@ -1226,7 +1235,7 @@
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "Video";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Deze persoon staat ook in je systeemcontactenlijst";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "In systeemcontactenlijst weergeven";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Profiel zichtbaar maken";
@@ -1565,7 +1574,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Doneren";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal wordt gefinancierd door donaties van gebruikers. Overweeg om maandelijks te doneren.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Niet nu";
@@ -1612,6 +1621,9 @@
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donatie aan Signal";
 
+/* Title for the 'Gift a Badge' link in the donation view */
+"DONATION_VIEW_GIFT" = "Geef een badge cadeau";
+
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "Netwerkfout. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
@@ -1644,6 +1656,9 @@
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "Aan Signal doneren";
+
+/* Label for the currency picker button in donation views */
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Valuta instellen";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Je kunt toegang inschakelen via de iOS-instellingenapp.";
@@ -1828,7 +1843,7 @@
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "Netwerkfout";
 
-/* Format string for an error alert notification message. Embes {{ error string }} */
+/* Format string for an error alert notification message. Embeds {{ error string }} */
 "ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Help ons alsjeblieft om Signal te verbeteren door deze fout te melden via support@signal.org en door je foutopsporingslog mee te sturen; %@";
 
 /* Format string for an error alert notification title. */
@@ -2962,7 +2977,7 @@
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Ga naar ‘Alle media’";
 
-/* A keyboard command to archive the current coversation. */
+/* A keyboard command to archive the current conversation. */
 "KEY_COMMAND_ARCHIVE" = "Archiveer gesprek";
 
 /* A keyboard command to open the current conversation's attachment picker. */
@@ -2998,7 +3013,7 @@
 /* A keyboard command to open the current conversation's sticker picker. */
 "KEY_COMMAND_STICKERS" = "Stickers weergeven";
 
-/* A keyboard command to unarchive the current coversation. */
+/* A keyboard command to unarchive the current conversation. */
 "KEY_COMMAND_UNARCHIVE" = "Gesprek dearchiveren";
 
 /* Label for the 'learn more' button. */
@@ -3145,11 +3160,11 @@
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Bellen";
 
-/* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime-audio-oproep";
+/* Label for button to make a FaceTime audio call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
 
-/* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime-video-oproep";
+/* Label for button to make a FaceTime video call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Tekstbericht verzenden";
@@ -3299,10 +3314,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blokkeren";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %@ ontvangen, en sta je toe dat hij of zij je profielnaam, -foto en -omschrijving kan zien? Je zult geen berichten ontvangen en je profiel zal voor hem of haar niet meer worden bijgewerkt totdat je hem of haar hebt gedeblokkeerd.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %@ ontvangen, en sta je toe dat hij of zij je profielnaam, -foto en -omschrijving kan zien? Totdat je hem of haar hebt gedeblokkeerd zul je geen berichten of oproepen ontvangen en kan hij of zij veranderingen van je profiel niet zien.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Wil je berichten van deze groep ontvangen, en sta je toe dat alle leden van de groep je profielnaam, -foto en -omschrijving kunnen zien? Je zult geen berichten ontvangen en je profiel zal voor de leden van deze groep niet meer worden bijgewerkt totdat je de groep hebt gedeblokkeerd.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Wil je berichten van deze groep ontvangen, en sta je toe dat alle leden van de groep je profielnaam, -foto en -omschrijving kunnen zien? Totdat je de groep hebt gedeblokkeerd zul je geen berichten of oproepen ontvangen en kunnen leden van deze groep veranderingen van je profiel niet zien.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Deze groep deblokkeren? Als je leesbevestigingen hebt ingeschakeld kunnen de leden van deze groep die nog niet zien totdat je de groep hebt gedeblokkeerd.";
@@ -3406,10 +3421,10 @@
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal heeft toegang tot je camera nodig.";
 
-/* Alert body indicating the user has denied location permissios */
+/* Alert body indicating the user has denied location permissions */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Je kunt deze toestemming verlenen in de iOS-instellingenapp.";
 
-/* Alert title indicating the user has denied location permissios */
+/* Alert title indicating the user has denied location permissions */
 "MISSING_LOCATION_PERMISSION_TITLE" = "Signal heeft voor deze functionaliteit toestemming nodig om je locatie te zien.";
 
 /* Alert body when user has previously denied media library access */
@@ -3647,7 +3662,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Geef toestemmingen";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Door meldingen toe te staan kan Signal je laten weten wanneer je een bericht hebt ontvangen. Door het lezen van je adresboek toe te staan kan Signal je contactpersonen weergeven als je een gesprek met ze wil starten. Alle informatie over je contactpersonen blijft altijd versleuteld, zelf Signals ontwikkelaars kunnen de telefoonnummers en andere informatie over je contactpersonen nooit lezen.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Door meldingen toe te staan kan Signal je laten weten wanneer je een bericht hebt ontvangen. Door het lezen van je systeemcontactenlijst toe te staan kan Signal je contactpersonen weergeven als je een gesprek met ze wil starten. Alle informatie over je contactpersonen blijft altijd versleuteld, zelf Signals ontwikkelaars kunnen de telefoonnummers en andere informatie over je contactpersonen nooit lezen.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Geef toestemmingen";
@@ -4804,6 +4819,15 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Terug naar camera";
 
+/* In-app camera: confirmation button in the prompt to turn off multi-mode. */
+"SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Uitschakelen";
+
+/* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+
+/* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Kennis uitnodigen via onbeveiligde sms?";
 
@@ -4880,10 +4904,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Foutlogs";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Foto's uit systeemcontactenlijst weergeven als die beschikbaar zijn.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Geef indien beschikbaar de profielfoto uit je eigen systeemcontactenlijst weer, in plaats van de profielfoto welke anderen voor henzelf hebben ingesteld.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Foto's uit systeemcontactenlijst gebruiken";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Profielfoto uit systeemcontactenlijst gebruiken";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Thema";
@@ -5099,7 +5123,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Meldingsinhoud";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Een contactpersoon uit mijn systeemcontactenlijst sinds kort via Signal bereikbaar is";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Een contactpersoon die in mijn systeemcontactenlijst staat sinds kort via Signal bereikbaar is";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Geef me een melding wanneer …";
@@ -5251,7 +5275,7 @@
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Overschrijvingen inschakelen";
 
-/* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
+/* Message shown when payments are activated in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Overschrijvingen zijn ingeschakeld.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
@@ -5833,6 +5857,9 @@
 /* Title for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "Help Signal mogelijk maken";
 
+/* Toast indicating that the user has copied their subscriber ID. */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "AbonnementsID naar klembord gekopieerd";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Je veiligheidsnummer met %@ komt overeen. Je kunt deze contactpersoon markeren als geverifieerd.";
 
@@ -5931,9 +5958,6 @@
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "Neem contact op met de ondersteuning.";
-
-/* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Valuta instellen";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Fout bij het verwerken van een overschrijving";
@@ -6139,7 +6163,7 @@
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Naamloos apparaat";
 
-/* Pressing this button upins a thread */
+/* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "Maak los";
 
 /* The title for unpinned conversation section on the conversation list */
@@ -6202,7 +6226,7 @@
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
 "USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ is al in gebruik.";
 
-/* Error moessage shown when a username update fails. */
+/* Error message shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Bijwerken van gebruikersnaam is mislukt.";
 
 /* error label near a field */

@@ -367,14 +367,11 @@
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "單次贊助 Signal";
 
-/* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
+/* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXIPRED_BOOST_BODY_FORMAT" = "你的單次贊助徽章已過期，不會再顯示在你的個人資料中。\n\n你可以繼續使用 Signal，但要支持為你構建的技術，請考慮透過每月捐款成為長期贊助者。";
 
-/* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
+/* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "你的\"加油支持\"徽章已過期，不會再顯示於你的個人資料中。\n\n你可以透過一次性捐款將你的\"加油支持\"徽章再展示 30 天。";
-
-/* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "你的每月定期捐款被自動取消，因為你太久沒有活動。你的個人資料上不會再顯示你的%@徽章。\n\n你可以繼續使用 Signal，若要支持該app並重新啟動你的徽章，請立即續訂。";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "成為長期贊助人";
@@ -385,11 +382,26 @@
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "徽章已過期";
 
-/* Button title for subscription on the badge expiration sheet. */
+/* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "學習更多。";
+
+/* Button text when a badge expires, asking you to renew your subscription */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "更新定期贊助";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "每月定期捐贈已取消";
+
+/* Short paragraph on the screen where you choose a gift badge */
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+
+/* Title on the screen where you choose a gift badge */
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "贈送徽章";
+
+/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}. */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because we couldn’t process your payment. Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment method in Apple Pay and subscribe again.";
+
+/* Body of the sheet shown when your subscription is canceled due to inactivity */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "你的每月定期捐款被自動取消，因為你太久沒有活動。你的個人資料上不會再顯示你的%@徽章。\n\n你可以繼續使用 Signal，若要支持該app並重新啟動你的徽章，請立即續訂。";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "謝謝你的加油與支持!";
@@ -406,7 +418,7 @@
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "當你擁有多個徽章時，你可以選擇一個讓其他人在你的個人資料中看到。";
 
-/* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
+/* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
 "BADGE_THANKS_YOU_EARNED_FORMAT" = "你已獲得%@徽章。 在你的個人資料上顯示此徽章，以彰顯擬向 Signal 捐款的貢獻。";
 
 /* Accessibility label for banner close button */
@@ -483,9 +495,6 @@
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "新功能：模糊臉部或在任何地方使之模糊。";
-
-/* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "設定貨幣";
 
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "一次性捐款並獲得 30 天的單次捐款徽章。";
@@ -1565,7 +1574,7 @@
 "DONATE_MEGAPHONE_ACTION" = "贊助";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "各位都是 Signal 的強大支柱。每月捐款，即可獲得徽章。";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "現在不要";
@@ -1612,6 +1621,9 @@
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "捐款給Signal";
 
+/* Title for the 'Gift a Badge' link in the donation view */
+"DONATION_VIEW_GIFT" = "贈送徽章";
+
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "網路錯誤。 檢查你的網路連接並重試。";
 
@@ -1644,6 +1656,9 @@
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "贊助 Signal";
+
+/* Label for the currency picker button in donation views */
+"DONATIONS_CURRENCY_PICKER_LABEL" = "設定貨幣";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "你可以在 iOS 設定中允許取用。";
@@ -1828,7 +1843,7 @@
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "網路錯誤";
 
-/* Format string for an error alert notification message. Embes {{ error string }} */
+/* Format string for an error alert notification message. Embeds {{ error string }} */
 "ERROR_NOTIFICATION_MESSAGE_FORMAT" = "請透過你裝置中的偵錯日誌將此錯誤通報至 support@signal.org以協助我們改進 Signal；%@";
 
 /* Format string for an error alert notification title. */
@@ -2962,7 +2977,7 @@
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "前往所有的媒體";
 
-/* A keyboard command to archive the current coversation. */
+/* A keyboard command to archive the current conversation. */
 "KEY_COMMAND_ARCHIVE" = "封存聊天";
 
 /* A keyboard command to open the current conversation's attachment picker. */
@@ -2998,7 +3013,7 @@
 /* A keyboard command to open the current conversation's sticker picker. */
 "KEY_COMMAND_STICKERS" = "顯示貼圖";
 
-/* A keyboard command to unarchive the current coversation. */
+/* A keyboard command to unarchive the current conversation. */
 "KEY_COMMAND_UNARCHIVE" = "不封存聊天";
 
 /* Label for the 'learn more' button. */
@@ -3145,11 +3160,11 @@
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "通話";
 
-/* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime 聲音";
+/* Label for button to make a FaceTime audio call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
 
-/* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime 影像";
+/* Label for button to make a FaceTime video call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "傳送文字訊息";
@@ -3406,10 +3421,10 @@
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal 需要存取相機";
 
-/* Alert body indicating the user has denied location permissios */
+/* Alert body indicating the user has denied location permissions */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "你可以在 iOS 設定中允許此權限。";
 
-/* Alert title indicating the user has denied location permissios */
+/* Alert title indicating the user has denied location permissions */
 "MISSING_LOCATION_PERMISSION_TITLE" = "Signal 在此功能上要求存取你的位置。";
 
 /* Alert body when user has previously denied media library access */
@@ -4804,6 +4819,15 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "回到照相機功能";
 
+/* In-app camera: confirmation button in the prompt to turn off multi-mode. */
+"SEND_MEDIA_TURN_OFF_MM_BUTTON" = "關閉";
+
+/* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+
+/* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "透過未加密的簡訊邀請朋友？";
 
@@ -5251,7 +5275,7 @@
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "啟用付款功能";
 
-/* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
+/* Message shown when payments are activated in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "付款功能已啟用。";
 
 /* Message for the 'payments opt-in' view in the app settings. */
@@ -5833,6 +5857,9 @@
 /* Title for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "成為長期贊助人";
 
+/* Toast indicating that the user has copied their subscriber ID. */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "複製訂閱者ID到剪貼簿";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "你與 %@的安全碼相符合。你可以將此聯絡人標記為已驗證。";
 
@@ -5931,9 +5958,6 @@
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "請聯絡支援部門。";
-
-/* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "設定貨幣";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "處理付款發生錯誤";
@@ -6139,7 +6163,7 @@
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "未命名的裝置";
 
-/* Pressing this button upins a thread */
+/* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "取消釘選";
 
 /* The title for unpinned conversation section on the conversation list */
@@ -6202,7 +6226,7 @@
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
 "USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@已經被使用。";
 
-/* Error moessage shown when a username update fails. */
+/* Error message shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "使用者名稱更新失敗。";
 
 /* error label near a field */

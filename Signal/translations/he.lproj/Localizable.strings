@@ -367,14 +367,11 @@
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "תן אל Signal תמריץ";
 
-/* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
+/* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXIPRED_BOOST_BODY_FORMAT" = "תג התמריץ שלך פג, והוא אינו גלוי יותר בפרופיל שלך.\n\nאתה יכול להמשיך להשתמש ב־Signal אבל כדי לתמוך בטכנולוגיה שנבנתה עבורך, שקול להפוך אל מחזיק חודשי ע״י ביצוע תרומה חודשית.";
 
-/* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
+/* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "תג התמריץ שלך פג, והוא אינו גלוי יותר בפרופיל שלך.\n\nאתה יכול להפעיל מחדש את תג התמריץ שלך למשך 30 ימים נוספים עם תרומה חד־פעמית.";
-
-/* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "התרומה החודשית המחזורית שלך בוטלה באופן אוטומטי מאחר שהיית בלתי פעיל למשך זמן רב. תג ה%@ שלך אינו גלוי יותר בפרופיל שלך.\n\nאתה יכול להמשיך להשתמש ב־Signal אבל כדי לתמוך ביישום ולהפעיל מחדש את התג שלך, חַדֵשׁ עכשיו.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "הפוך אל מחזיק";
@@ -385,11 +382,26 @@
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "תג פג";
 
-/* Button title for subscription on the badge expiration sheet. */
+/* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "למד עוד.";
+
+/* Button text when a badge expires, asking you to renew your subscription */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "חדש מינוי";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "תרומה חודשית בוטלה";
+
+/* Short paragraph on the screen where you choose a gift badge */
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+
+/* Title on the screen where you choose a gift badge */
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "תן תג כשי";
+
+/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}. */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because we couldn’t process your payment. Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment method in Apple Pay and subscribe again.";
+
+/* Body of the sheet shown when your subscription is canceled due to inactivity */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "התרומה החודשית המחזורית שלך בוטלה באופן אוטומטי מאחר שהיית בלתי פעיל למשך זמן רב. תג ה%@ שלך אינו גלוי יותר בפרופיל שלך.\n\nאתה יכול להמשיך להשתמש ב־Signal אבל כדי לתמוך ביישום ולהפעיל מחדש את התג שלך, חַדֵשׁ עכשיו.";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "תודה על התמריץ!";
@@ -406,7 +418,7 @@
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "כשיהיו לך יותר מתג אחד, תוכל לבחור אחד להבליט כדי שאחרים יראו בפרופיל שלך.";
 
-/* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
+/* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
 "BADGE_THANKS_YOU_EARNED_FORMAT" = "הרווחת תג %@. הצג את התג הזה בפרופיל שלך כדי לעלות מודעות לגבי תרומה אל Signal.";
 
 /* Accessibility label for banner close button */
@@ -440,7 +452,7 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "שחרר חסימה";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "תוכל להתכתב ולהתקשר אחד לשני.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "תוכל להתכתב ולהתקשר זה עם זה.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "חברי קבוצה קיימים יוכלו להוסיף אותך שוב אל הקבוצה.";
@@ -483,9 +495,6 @@
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "חדש: טשטש פרצופים או צייר בכל מקום כדי לטשטש.";
-
-/* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "הגדר מטבע";
 
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "בצע תרומה חד־פעמית והרווח תג תמריץ למשך 30 ימים.";
@@ -1460,7 +1469,7 @@
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "לא היה ניתן לוודא את המכשיר החדש שלך, אנא נסה שוב";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "ההעברה לא יכלה להתבצע, אנא וודא שהמכשירים שלך קרובים אחד לשני ונסה שוב";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "ההעברה לא יכלה להתבצע, אנא וודא שהמכשירים שלך קרובים זה לזה ונסה שוב";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "כדי להגדיר iPad זה כמכשיר מקושר, אתה חייב לסרוק עם ה־iPad הישן שלך";
@@ -1493,7 +1502,7 @@
 "DEVICE_TRANSFER_QRCODE_TITLE" = "ממתין אל מכשיר אחר…";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "השאר את שני המכשירים קרובים אחד לשני. אל תכבה אף מכשיר והשאר את Signal פתוח. העברות מוצפנות מקצה־אל־קצה.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "השאר את שני המכשירים קרובים זה לזה. אל תכבה אף מכשיר והשאר את Signal פתוח. העברות מוצפנות מקצה־אל־קצה.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "מקבל נתונים";
@@ -1508,7 +1517,7 @@
 "DEVICE_TRANSFER_SCANNING_TITLE" = "החזק את המכשיר החדש שלך בפני המצלמה";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "השאר את שני המכשירים קרובים אחד לשני. אל תכבה אף מכשיר והשאר את Signal פתוח.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "השאר את שני המכשירים קרובים זה לזה. אל תכבה אף מכשיר והשאר את Signal פתוח.";
 
 /* The title on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "מעביר נתונים";
@@ -1565,7 +1574,7 @@
 "DONATE_MEGAPHONE_ACTION" = "תרום";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal ממונע על ידי אנשים כמוך. תרום מדי חודש וקבל תג.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "לא עכשיו";
@@ -1612,6 +1621,9 @@
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "תרומה אל Signal";
 
+/* Title for the 'Gift a Badge' link in the donation view */
+"DONATION_VIEW_GIFT" = "תן תג כשי";
+
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "שגיאת רשת. בדוק את החיבור שלך ונסה שוב.";
 
@@ -1644,6 +1656,9 @@
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "תרום אל Signal";
+
+/* Label for the currency picker button in donation views */
+"DONATIONS_CURRENCY_PICKER_LABEL" = "הגדר מטבע";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "אתה יכול לאפשר גישה ביישום הגדרות של iOS.";
@@ -1828,7 +1843,7 @@
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "שגיאת רשת";
 
-/* Format string for an error alert notification message. Embes {{ error string }} */
+/* Format string for an error alert notification message. Embeds {{ error string }} */
 "ERROR_NOTIFICATION_MESSAGE_FORMAT" = "עזור לנו לשפר את Signal ע״י דיווח על שגיאה זו ביחד עם יומני ניפוי תקלים מהמכשיר שלך אל support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
@@ -2954,7 +2969,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "הזמן חברים";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "הַזְמָנָת משתמשים רבים באותו הזמן תתחיל הודעת קבוצה והמקבלים יוכלו לראות אחד את השני.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "הַזְמָנָת משתמשים רבים באותו הזמן תתחיל הודעת קבוצה והמקבלים יוכלו לראות זה את זה.";
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "הצטרף";
@@ -2962,7 +2977,7 @@
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "לך אל כל המדיה";
 
-/* A keyboard command to archive the current coversation. */
+/* A keyboard command to archive the current conversation. */
 "KEY_COMMAND_ARCHIVE" = "אחסן התכתבות בארכיון";
 
 /* A keyboard command to open the current conversation's attachment picker. */
@@ -2998,7 +3013,7 @@
 /* A keyboard command to open the current conversation's sticker picker. */
 "KEY_COMMAND_STICKERS" = "הראה מדבקות";
 
-/* A keyboard command to unarchive the current coversation. */
+/* A keyboard command to unarchive the current conversation. */
 "KEY_COMMAND_UNARCHIVE" = "הוצא התכתבות מארכיון";
 
 /* Label for the 'learn more' button. */
@@ -3145,11 +3160,11 @@
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "התקשר";
 
-/* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime שמע";
+/* Label for button to make a FaceTime audio call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
 
-/* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime וידאו";
+/* Label for button to make a FaceTime video call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "שלח הודעת טקסט";
@@ -3406,10 +3421,10 @@
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal צריך לקבל גישה אל מצלמה שלך.";
 
-/* Alert body indicating the user has denied location permissios */
+/* Alert body indicating the user has denied location permissions */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "אתה יכול לאפשר הרשאה זו ביישום הגדרות של iOS.";
 
-/* Alert title indicating the user has denied location permissios */
+/* Alert title indicating the user has denied location permissions */
 "MISSING_LOCATION_PERMISSION_TITLE" = "Signal דורש גישה אל המיקום שלך עבור מאפיין זה.";
 
 /* Alert body when user has previously denied media library access */
@@ -4804,6 +4819,15 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "חזור אל המצלמה";
 
+/* In-app camera: confirmation button in the prompt to turn off multi-mode. */
+"SEND_MEDIA_TURN_OFF_MM_BUTTON" = "כבה";
+
+/* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+
+/* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "להזמין חבר דרך מסרון בלתי־מאובטח?";
 
@@ -5251,7 +5275,7 @@
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "הפעל תשלומים";
 
-/* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
+/* Message shown when payments are activated in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "תשלומים הופעלו.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
@@ -5833,6 +5857,9 @@
 /* Title for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "הפוך אל מחזיק";
 
+/* Toast indicating that the user has copied their subscriber ID. */
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "זהות מינוי הועתקה ללוח.";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "מספר הביטחון שלך עם %@ תואם. אתה יכול לסמן איש קשר זה כמוודא.";
 
@@ -5931,9 +5958,6 @@
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "אנא צור קשר עם התמיכה.";
-
-/* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "הגדר מטבע";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "שגיאה בעיבוד תשלום";
@@ -6139,7 +6163,7 @@
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "מכשיר ללא שם";
 
-/* Pressing this button upins a thread */
+/* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "בטל הצמדה";
 
 /* The title for unpinned conversation section on the conversation list */
@@ -6202,7 +6226,7 @@
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
 "USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ תפוס.";
 
-/* Error moessage shown when a username update fails. */
+/* Error message shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "עדכון שם משתמש נכשל.";
 
 /* error label near a field */
