@@ -1,2 +1,3 @@
-• Zmodyfikowaliśmy kilka ekranów, aby ułatwić Ci zarządzanie Twoją subskrypcją, odznakami i fakturami. Dzięki, że wspierasz Signal!
-• Naprawiliśmy kilka błędów powodujących zawieszanie się aplikacji.
+• Fixed some bugs in the in-app camera, so your photos can shine.
+• Fixed a bug where we'd ask you to upgrade after you upgraded. If you're reading these release notes, you're probably upgrading—this one's for you.
+• Fixed a bug where we'd give you the wrong error if your monthly subscription failed to renew. Thanks for supporting Signal!

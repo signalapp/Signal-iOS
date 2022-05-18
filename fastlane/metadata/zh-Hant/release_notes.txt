@@ -1,2 +1,3 @@
-• 如果你是贊助者，我們已經重新設計了一些螢幕畫面，以便更輕鬆地管理你的訂閱、徽章和收據。 感謝你對Signal的支持！
-• 修正了一些當掉問題，以使你的app穩定運作。
+• Fixed some bugs in the in-app camera, so your photos can shine.
+• Fixed a bug where we'd ask you to upgrade after you upgraded. If you're reading these release notes, you're probably upgrading—this one's for you.
+• Fixed a bug where we'd give you the wrong error if your monthly subscription failed to renew. Thanks for supporting Signal!

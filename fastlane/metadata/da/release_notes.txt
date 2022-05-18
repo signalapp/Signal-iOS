@@ -1,2 +1,3 @@
-• Hvis du er donor, har vi omorganiseret nogle af skærmene, så det er nemmere at administrere dit abonnement, dine emblemer og kvitteringer. Tak fordi du støtter Signal!
-• Vi har rettet nogle nedbrud for at sikre, at din app kører problemfrit.
+• Fixed some bugs in the in-app camera, so your photos can shine.
+• Fixed a bug where we'd ask you to upgrade after you upgraded. If you're reading these release notes, you're probably upgrading—this one's for you.
+• Fixed a bug where we'd give you the wrong error if your monthly subscription failed to renew. Thanks for supporting Signal!

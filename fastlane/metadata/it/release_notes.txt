@@ -1,2 +1,3 @@
-• Se sei un donatore, abbiamo riorganizzato alcune delle schermate per rendere più facile la gestione del tuo contributo, dei badge e delle ricevute. Grazie per sostenere Signal!
-• Fixed some crashes to keep your app running smoothly.
+• Fixed some bugs in the in-app camera, so your photos can shine.
+• Fixed a bug where we'd ask you to upgrade after you upgraded. If you're reading these release notes, you're probably upgrading—this one's for you.
+• Fixed a bug where we'd give you the wrong error if your monthly subscription failed to renew. Thanks for supporting Signal!
