@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -62,44 +62,40 @@ extension UIImage {
         return newImage
     }
 
-    public func withGausianBlurPromise(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) -> Promise<UIImage> {
+    public func withGaussianBlurPromise(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) -> Promise<UIImage> {
         return firstly {
-            cgImageWithGausianBlurPromise(radius: radius,
-                                          resizeToMaxPixelDimension: resizeToMaxPixelDimension)
+            cgImageWithGaussianBlurPromise(radius: radius, resizeToMaxPixelDimension: resizeToMaxPixelDimension)
         }.map(on: .sharedUserInteractive) {
             UIImage(cgImage: $0)
         }
     }
 
-    public func cgImageWithGausianBlurPromise(radius: CGFloat,
-                                              resizeToMaxPixelDimension: CGFloat) -> Promise<CGImage> {
+    public func cgImageWithGaussianBlurPromise(radius: CGFloat,
+                                               resizeToMaxPixelDimension: CGFloat) -> Promise<CGImage> {
         return firstly(on: .sharedUserInteractive) {
-            try self.cgImageWithGausianBlur(radius: radius,
-                                            resizeToMaxPixelDimension: resizeToMaxPixelDimension)
+            try self.cgImageWithGaussianBlur(radius: radius,
+                                             resizeToMaxPixelDimension: resizeToMaxPixelDimension)
         }
     }
 
-    public func withGausianBlur(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) throws -> UIImage {
-        UIImage(cgImage: try cgImageWithGausianBlur(radius: radius,
-                                                    resizeToMaxPixelDimension: resizeToMaxPixelDimension))
+    public func withGaussianBlur(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) throws -> UIImage {
+        UIImage(cgImage: try cgImageWithGaussianBlur(radius: radius,
+                                                     resizeToMaxPixelDimension: resizeToMaxPixelDimension))
     }
 
-    public func cgImageWithGausianBlur(radius: CGFloat,
-                                       resizeToMaxPixelDimension: CGFloat) throws -> CGImage {
+    public func cgImageWithGaussianBlur(radius: CGFloat,
+                                        resizeToMaxPixelDimension: CGFloat) throws -> CGImage {
         guard let resizedImage = self.resized(withMaxDimensionPixels: resizeToMaxPixelDimension) else {
             throw OWSAssertionError("Failed to downsize image for blur")
         }
-        return try resizedImage.cgImageWithGausianBlur(radius: radius)
+        return try resizedImage.cgImageWithGaussianBlur(radius: radius)
     }
 
-    public func withGausianBlur(radius: CGFloat,
-                                tintColor: UIColor? = nil) throws -> UIImage {
-        UIImage(cgImage: try cgImageWithGausianBlur(radius: radius,
-                                                    tintColor: tintColor))
+    public func withGaussianBlur(radius: CGFloat, tintColor: UIColor? = nil) throws -> UIImage {
+        UIImage(cgImage: try cgImageWithGaussianBlur(radius: radius, tintColor: tintColor))
     }
 
-    public func cgImageWithGausianBlur(radius: CGFloat,
-                                       tintColor: UIColor? = nil) throws -> CGImage {
+    public func cgImageWithGaussianBlur(radius: CGFloat, tintColor: UIColor? = nil) throws -> CGImage {
         guard let clampFilter = CIFilter(name: "CIAffineClamp") else {
             throw OWSAssertionError("Failed to create blur filter")
         }

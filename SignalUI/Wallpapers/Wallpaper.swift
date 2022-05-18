@@ -538,8 +538,7 @@ public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
                 return nil
             }
             let blurRadius: CGFloat = 32 / Self.contentDownscalingFactor
-            let blurredImage = try scaledImage.withGausianBlur(radius: blurRadius,
-                                                               tintColor: tintColor)
+            let blurredImage = try scaledImage.withGaussianBlur(radius: blurRadius, tintColor: tintColor)
             let state = WallpaperBlurState(image: blurredImage,
                                            referenceView: contentView,
                                            token: newToken)

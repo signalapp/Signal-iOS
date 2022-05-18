@@ -336,8 +336,7 @@ public extension OWSContactsManager {
     @nonobjc
     func blurAvatar(_ image: UIImage) -> UIImage? {
         do {
-            return try image.withGausianBlur(radius: 16,
-                                             resizeToMaxPixelDimension: 100)
+            return try image.withGaussianBlur(radius: 16, resizeToMaxPixelDimension: 100)
         } catch {
             owsFailDebug("Error: \(error)")
             return nil
