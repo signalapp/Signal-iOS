@@ -28,6 +28,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         super.setUp()
 
         tsAccountManager.registerForTests(withLocalNumber: aliceE164, uuid: aliceUuid)
+        (MockSSKEnvironment.shared as! MockSSKEnvironment).setContactsManagerForMock(FakeContactsManager())
 
         // Configure UDManager
         self.write { transaction in
@@ -236,23 +237,70 @@ class OWSUDManagerTest: SSKBaseTestSwift {
                                                   transaction: transaction)
         }
 
-        let completed = self.expectation(description: "completed")
         firstly {
             udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
         }.done { senderCertificates in
-            do {
-                let sendingAccess = self.udManagerImpl.udSendingAccess(forAddress: bobRecipientAddress,
-                                                                       requireSyncAccess: false,
-                                                                       senderCertificates: senderCertificates)!
-                XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
-                XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
-                XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
-                               self.defaultSenderCert.serialize())
-            }
-        }.done {
-            completed.fulfill()
+            let sendingAccess = self.udManagerImpl.udSendingAccess(forAddress: bobRecipientAddress,
+                                                                   requireSyncAccess: false,
+                                                                   senderCertificates: senderCertificates)!
+            XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
+            XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
+            XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
+                           self.defaultSenderCert.serialize())
+        }.expect(timeout: 1.0)
+
+        // Turn off phone number sharing.
+        write { transaction in
+            udManagerImpl.setPhoneNumberSharingMode(.nobody,
+                                                    updateStorageService: false,
+                                                    transaction: transaction.unwrapGrdbWrite)
         }
-        self.wait(for: [completed], timeout: 1.0)
+
+        firstly {
+            udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
+        }.done { senderCertificates in
+            let sendingAccess = self.udManagerImpl.udSendingAccess(forAddress: bobRecipientAddress,
+                                                                   requireSyncAccess: false,
+                                                                   senderCertificates: senderCertificates)!
+            XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
+            XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
+            XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
+                           self.uuidOnlySenderCert.serialize())
+        }.expect(timeout: 1.0)
+
+        // Contacts-only sharing?
+        write { transaction in
+            udManagerImpl.setPhoneNumberSharingMode(.contactsOnly,
+                                                    updateStorageService: false,
+                                                    transaction: transaction.unwrapGrdbWrite)
+        }
+
+        firstly {
+            udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
+        }.done { senderCertificates in
+            let sendingAccess = self.udManagerImpl.udSendingAccess(forAddress: bobRecipientAddress,
+                                                                   requireSyncAccess: false,
+                                                                   senderCertificates: senderCertificates)!
+            XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
+            XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
+            XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
+                           self.uuidOnlySenderCert.serialize())
+        }.expect(timeout: 1.0)
+
+        // Add Bob to our contacts.
+        (contactsManager as! FakeContactsManager).systemContacts.append(bobRecipientAddress)
+
+        firstly {
+            udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
+        }.done { senderCertificates in
+            let sendingAccess = self.udManagerImpl.udSendingAccess(forAddress: bobRecipientAddress,
+                                                                   requireSyncAccess: false,
+                                                                   senderCertificates: senderCertificates)!
+            XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
+            XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
+            XCTAssertEqual(sendingAccess.senderCertificate.serialize(),
+                           self.defaultSenderCert.serialize())
+        }.expect(timeout: 1.0)
     }
     // MARK: - Util
 

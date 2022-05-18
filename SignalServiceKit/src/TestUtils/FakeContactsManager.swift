@@ -42,28 +42,30 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return []
     }
 
+    public var systemContacts: [SignalServiceAddress] = []
+
     public func isSystemContactWithSneakyTransaction(phoneNumber: String) -> Bool {
-        return true
+        return systemContacts.contains { $0.phoneNumber == phoneNumber }
     }
 
     public func isSystemContact(phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
-        return true
+        return isSystemContactWithSneakyTransaction(phoneNumber: phoneNumber)
     }
 
     public func isSystemContactWithSneakyTransaction(address: SignalServiceAddress) -> Bool {
-        return true
+        return systemContacts.contains(address)
     }
 
     public func isSystemContact(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        return true
+        return isSystemContactWithSneakyTransaction(address: address)
     }
 
     public func isSystemContact(withSignalAccount phoneNumber: String) -> Bool {
-        return true
+        return isSystemContactWithSneakyTransaction(phoneNumber: phoneNumber)
     }
 
     public func isSystemContact(withSignalAccount phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
-        return true
+        return isSystemContact(withSignalAccount: phoneNumber)
     }
 
     public func hasNameInSystemContacts(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
@@ -71,12 +73,12 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
     }
 
     public func isSystemContactWithSignalAccount(_ address: SignalServiceAddress) -> Bool {
-        return true
+        return isSystemContactWithSneakyTransaction(address: address)
     }
 
     public func isSystemContactWithSignalAccount(_ address: SignalServiceAddress,
                                                  transaction: SDSAnyReadTransaction) -> Bool {
-        return true
+        return isSystemContactWithSignalAccount(address)
     }
 
     public func sortSignalServiceAddresses(_ addresses: [SignalServiceAddress],

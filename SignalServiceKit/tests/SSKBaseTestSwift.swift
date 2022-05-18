@@ -6,6 +6,21 @@ import XCTest
 @testable import SignalServiceKit
 import CocoaLumberjack
 
+extension Thenable {
+    func expect(timeout: TimeInterval, file: StaticString = #file, line: UInt = #line) -> Value {
+        let expectation = XCTestExpectation(description: "\(file):\(line)")
+        var result: Value?
+        self.done {
+            result = $0
+            expectation.fulfill()
+        }.catch {
+            XCTFail("\($0)", file: file, line: line)
+        }
+        _ = XCTWaiter.wait(for: [expectation], timeout: timeout)
+        return try! XCTUnwrap(result, file: file, line: line)
+    }
+}
+
 @objc
 public class SSKBaseTestSwift: XCTestCase {
 
