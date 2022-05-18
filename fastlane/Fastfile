@@ -68,7 +68,8 @@ lane :release do |options|
     configuration: configuration,
     clean: true,
     derived_data_path: './build',
-    xcargs: "WARNING_CFLAGS='$(inherited) -Wno-everything'"
+    xcargs: "WARNING_CFLAGS='$(inherited) -Wno-everything'",
+    export_options: { manageAppVersionAndBuildNumber: false }
   )
 
   # Transporter only allows uploading one instance of
