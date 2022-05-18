@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>你可以&a 發佈; 選擇 不只 %d 則聊天。</string>
+			<string>你最多只能選擇 %d 個聊天。</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -596,7 +596,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>你可以&a 發佈; 選擇 不只 %d 個項目。</string>
+			<string>你不能分享超過 %d 個項目。</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
