@@ -163,6 +163,20 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
 
     // MARK: UITableViewDelegate
 
+    public override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        guard let searchSection = SearchSection(rawValue: indexPath.section) else {
+            owsFailDebug("unknown section selected.")
+            return nil
+        }
+
+        switch searchSection {
+        case .noResults:
+            return nil
+        case .contactThreads, .groupThreads, .contacts, .messages:
+            return indexPath
+        }
+    }
+
     public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
 
@@ -607,6 +621,8 @@ class EmptySearchResultCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         self.messageLabel = UILabel()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        self.selectionStyle = .none
 
         messageLabel.textAlignment = .center
         messageLabel.numberOfLines = 3
