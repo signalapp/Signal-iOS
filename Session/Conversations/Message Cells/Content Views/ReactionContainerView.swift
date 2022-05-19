@@ -32,6 +32,7 @@ final class ReactionContainerView : UIView {
     public func update(_ reactions: [(String, (Int, Bool))]) {
         for subview in containerView.arrangedSubviews {
             containerView.removeArrangedSubview(subview)
+            subview.removeFromSuperview()
         }
         let stackView = UIStackView()
         stackView.axis = .horizontal
