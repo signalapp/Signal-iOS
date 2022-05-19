@@ -81,7 +81,7 @@ if [ "${#lang_errors[@]}" -gt 0 ]; then
   exit 1
 fi
 
-# Get and build iStringsCheck from https://github.com/FredericJacobs/iStringsCheck
+# Get and build iStringsCheck from https://github.com/signalapp/l10n_lint
 # This does some checks to make sure all strings are present and that interpolated strings have the right number of arguments
 LINT_CMD=$(command -v l10n_lint)
 LINT_CMD=${LINT_CMD:-$REPO_ROOT/../l10n_lint/target/debug/l10n_lint}
@@ -91,7 +91,7 @@ then
   $LINT_CMD en.lproj/Localizable.strings .
   $LINT_CMD en.lproj/InfoPlist.strings .
 else
-  echo "Missing string linter. See: https://github.com:WhisperSystems/l10n_lint"
+  echo "Missing string linter. See: https://github.com/signalapp/l10n_lint"
   exit 1
 fi
 
