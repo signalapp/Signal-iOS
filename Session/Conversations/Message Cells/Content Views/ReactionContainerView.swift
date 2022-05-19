@@ -37,9 +37,25 @@ final class ReactionContainerView : UIView {
         stackView.axis = .horizontal
         stackView.spacing = Values.smallSpacing
         stackView.alignment = .center
-        for reaction in reactions {
+        
+        var displayedReactions: [(String, (Int, Bool))]
+        var expandButtonReactions: [String]
+        
+        if reactions.count >= 6 {
+            displayedReactions = Array(reactions[0...2])
+            expandButtonReactions = Array(reactions[3...5]).map{ $0.0 }
+        } else {
+            displayedReactions = reactions
+            expandButtonReactions = []
+        }
+        
+        for reaction in displayedReactions {
             let reactionView = ReactionView(emoji: reaction.0, value: reaction.1)
             stackView.addArrangedSubview(reactionView)
+        }
+        if expandButtonReactions.count > 0 {
+            let expandButton = ExpandingReactionButton(emojis: expandButtonReactions)
+            stackView.addArrangedSubview(expandButton)
         }
         containerView.addArrangedSubview(stackView)
     }
