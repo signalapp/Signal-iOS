@@ -66,6 +66,21 @@ do
 
 done
 
+# Parse the PluralAware.stringsdict files to ensure they're not malformed.
+lang_errors=()
+for dir in *.lproj
+do
+  pushd "$dir"
+  if [ -e PluralAware.stringsdict ]; then
+    plutil PluralAware.stringsdict || lang_errors+=("$dir")
+  fi
+  popd
+done
+if [ "${#lang_errors[@]}" -gt 0 ]; then
+  1>&2 echo "Some languages have malformed .stringsdict files: ${lang_errors[*]}"
+  exit 1
+fi
+
 # Get and build iStringsCheck from https://github.com/FredericJacobs/iStringsCheck
 # This does some checks to make sure all strings are present and that interpolated strings have the right number of arguments
 LINT_CMD=$(command -v l10n_lint)
