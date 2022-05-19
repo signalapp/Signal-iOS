@@ -11,6 +11,7 @@ final class ReactionContainerView : UIView {
     private var showingAllReactions = false
     
     var reactionViews: [ReactionView] = []
+    var expandButton: ExpandingReactionButton?
     
     // MARK: Lifecycle
     init() {
@@ -56,8 +57,10 @@ final class ReactionContainerView : UIView {
             reactionViews.append(reactionView)
         }
         if expandButtonReactions.count > 0 {
-            let expandButton = ExpandingReactionButton(emojis: expandButtonReactions)
+            expandButton = ExpandingReactionButton(emojis: expandButtonReactions)
             stackView.addArrangedSubview(expandButton)
+        } else {
+            expandButton = nil
         }
         containerView.addArrangedSubview(stackView)
     }

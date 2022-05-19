@@ -557,8 +557,11 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                     } else {
                         delegate?.quickReact(viewItem, with: reactionView.emoji)
                     }
-                    break
+                    return
                 }
+            }
+            if let expandButton = reactionContainerView.expandButton, expandButton.frame.contains(convertedLocation) {
+                // TODO: show all emojis
             }
         } else {
             delegate?.handleViewItemTapped(viewItem, gestureRecognizer: gestureRecognizer)
