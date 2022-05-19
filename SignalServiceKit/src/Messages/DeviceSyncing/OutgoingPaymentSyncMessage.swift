@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -9,7 +9,7 @@ public extension OutgoingPaymentSyncMessage {
 
     @objc(syncMessageBuilderWithMobileCoin:transaction:)
     func syncMessageBuilder(mobileCoin: OutgoingPaymentMobileCoin,
-                            transaction: SDSAnyReadTransaction) -> SSKProtoSyncMessage.SSKProtoSyncMessageBuilder? {
+                            transaction: SDSAnyReadTransaction) -> SSKProtoSyncMessageBuilder? {
         // TODO: Support requests.
 
         do {

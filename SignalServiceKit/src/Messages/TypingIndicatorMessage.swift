@@ -57,7 +57,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     }
 
     public override func contentBuilder(thread: TSThread,
-                                        transaction: SDSAnyReadTransaction) -> SSKProtoContentBuilderProtocol? {
+                                        transaction: SDSAnyReadTransaction) -> SSKProtoContentBuilder? {
         let typingBuilder = SSKProtoTypingMessage.builder(timestamp: self.timestamp)
         typingBuilder.setAction(protoAction(forAction: action))
 

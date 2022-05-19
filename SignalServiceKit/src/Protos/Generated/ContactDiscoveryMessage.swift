@@ -16,112 +16,6 @@ public enum ContactDiscoveryMessageError: Error {
 
 public struct ContactDiscoveryMessageClientRequest: Codable, CustomDebugStringConvertible {
 
-    // MARK: - ContactDiscoveryMessageClientRequestBuilder
-
-    public static func builder() -> ContactDiscoveryMessageClientRequestBuilder {
-        return ContactDiscoveryMessageClientRequestBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> ContactDiscoveryMessageClientRequestBuilder {
-        var builder = ContactDiscoveryMessageClientRequestBuilder()
-        if let _value = aciUakPairs {
-            builder.setAciUakPairs(_value)
-        }
-        if let _value = prevE164List {
-            builder.setPrevE164List(_value)
-        }
-        if let _value = newE164List {
-            builder.setNewE164List(_value)
-        }
-        if let _value = discardE164List {
-            builder.setDiscardE164List(_value)
-        }
-        if hasMoreComing {
-            builder.setMoreComing(moreComing)
-        }
-        if let _value = token {
-            builder.setToken(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct ContactDiscoveryMessageClientRequestBuilder {
-
-        private var proto = ContactDiscoveryMessages_ClientRequest()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setAciUakPairs(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.aciUakPairs = valueParam
-        }
-
-        public mutating func setAciUakPairs(_ valueParam: Data) {
-            proto.aciUakPairs = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setPrevE164List(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.prevE164List = valueParam
-        }
-
-        public mutating func setPrevE164List(_ valueParam: Data) {
-            proto.prevE164List = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setNewE164List(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.newE164List = valueParam
-        }
-
-        public mutating func setNewE164List(_ valueParam: Data) {
-            proto.newE164List = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setDiscardE164List(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.discardE164List = valueParam
-        }
-
-        public mutating func setDiscardE164List(_ valueParam: Data) {
-            proto.discardE164List = valueParam
-        }
-
-        public mutating func setMoreComing(_ valueParam: Bool) {
-            proto.moreComing = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setToken(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.token = valueParam
-        }
-
-        public mutating func setToken(_ valueParam: Data) {
-            proto.token = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> ContactDiscoveryMessageClientRequest {
-            return try ContactDiscoveryMessageClientRequest(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try ContactDiscoveryMessageClientRequest(proto).serializedData()
-        }
-    }
-
     fileprivate let proto: ContactDiscoveryMessages_ClientRequest
 
     public var aciUakPairs: Data? {
@@ -225,6 +119,112 @@ public struct ContactDiscoveryMessageClientRequest: Codable, CustomDebugStringCo
     }
 }
 
+extension ContactDiscoveryMessageClientRequest {
+    public static func builder() -> ContactDiscoveryMessageClientRequestBuilder {
+        return ContactDiscoveryMessageClientRequestBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> ContactDiscoveryMessageClientRequestBuilder {
+        var builder = ContactDiscoveryMessageClientRequestBuilder()
+        if let _value = aciUakPairs {
+            builder.setAciUakPairs(_value)
+        }
+        if let _value = prevE164List {
+            builder.setPrevE164List(_value)
+        }
+        if let _value = newE164List {
+            builder.setNewE164List(_value)
+        }
+        if let _value = discardE164List {
+            builder.setDiscardE164List(_value)
+        }
+        if hasMoreComing {
+            builder.setMoreComing(moreComing)
+        }
+        if let _value = token {
+            builder.setToken(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct ContactDiscoveryMessageClientRequestBuilder {
+
+    private var proto = ContactDiscoveryMessages_ClientRequest()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAciUakPairs(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.aciUakPairs = valueParam
+    }
+
+    public mutating func setAciUakPairs(_ valueParam: Data) {
+        proto.aciUakPairs = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPrevE164List(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.prevE164List = valueParam
+    }
+
+    public mutating func setPrevE164List(_ valueParam: Data) {
+        proto.prevE164List = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setNewE164List(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.newE164List = valueParam
+    }
+
+    public mutating func setNewE164List(_ valueParam: Data) {
+        proto.newE164List = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setDiscardE164List(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.discardE164List = valueParam
+    }
+
+    public mutating func setDiscardE164List(_ valueParam: Data) {
+        proto.discardE164List = valueParam
+    }
+
+    public mutating func setMoreComing(_ valueParam: Bool) {
+        proto.moreComing = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setToken(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.token = valueParam
+    }
+
+    public mutating func setToken(_ valueParam: Data) {
+        proto.token = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> ContactDiscoveryMessageClientRequest {
+        return try ContactDiscoveryMessageClientRequest(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try ContactDiscoveryMessageClientRequest(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension ContactDiscoveryMessageClientRequest {
@@ -233,7 +233,7 @@ extension ContactDiscoveryMessageClientRequest {
     }
 }
 
-extension ContactDiscoveryMessageClientRequest.ContactDiscoveryMessageClientRequestBuilder {
+extension ContactDiscoveryMessageClientRequestBuilder {
     public func buildIgnoringErrors() -> ContactDiscoveryMessageClientRequest? {
         return try! self.build()
     }
@@ -244,79 +244,6 @@ extension ContactDiscoveryMessageClientRequest.ContactDiscoveryMessageClientRequ
 // MARK: - ContactDiscoveryMessageClientResponse
 
 public struct ContactDiscoveryMessageClientResponse: Codable, CustomDebugStringConvertible {
-
-    // MARK: - ContactDiscoveryMessageClientResponseBuilder
-
-    public static func builder() -> ContactDiscoveryMessageClientResponseBuilder {
-        return ContactDiscoveryMessageClientResponseBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> ContactDiscoveryMessageClientResponseBuilder {
-        var builder = ContactDiscoveryMessageClientResponseBuilder()
-        if let _value = e164PniAciTriples {
-            builder.setE164PniAciTriples(_value)
-        }
-        if let _value = retryAfterSecs {
-            builder.setRetryAfterSecs(_value)
-        }
-        if let _value = token {
-            builder.setToken(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct ContactDiscoveryMessageClientResponseBuilder {
-
-        private var proto = ContactDiscoveryMessages_ClientResponse()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setE164PniAciTriples(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.e164PniAciTriples = valueParam
-        }
-
-        public mutating func setE164PniAciTriples(_ valueParam: Data) {
-            proto.e164PniAciTriples = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setRetryAfterSecs(_ valueParam: Int32?) {
-            guard let valueParam = valueParam else { return }
-            proto.retryAfterSecs = valueParam
-        }
-
-        public mutating func setRetryAfterSecs(_ valueParam: Int32) {
-            proto.retryAfterSecs = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setToken(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.token = valueParam
-        }
-
-        public mutating func setToken(_ valueParam: Data) {
-            proto.token = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> ContactDiscoveryMessageClientResponse {
-            return try ContactDiscoveryMessageClientResponse(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try ContactDiscoveryMessageClientResponse(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: ContactDiscoveryMessages_ClientResponse
 
@@ -394,6 +321,79 @@ public struct ContactDiscoveryMessageClientResponse: Codable, CustomDebugStringC
     }
 }
 
+extension ContactDiscoveryMessageClientResponse {
+    public static func builder() -> ContactDiscoveryMessageClientResponseBuilder {
+        return ContactDiscoveryMessageClientResponseBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> ContactDiscoveryMessageClientResponseBuilder {
+        var builder = ContactDiscoveryMessageClientResponseBuilder()
+        if let _value = e164PniAciTriples {
+            builder.setE164PniAciTriples(_value)
+        }
+        if let _value = retryAfterSecs {
+            builder.setRetryAfterSecs(_value)
+        }
+        if let _value = token {
+            builder.setToken(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct ContactDiscoveryMessageClientResponseBuilder {
+
+    private var proto = ContactDiscoveryMessages_ClientResponse()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setE164PniAciTriples(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.e164PniAciTriples = valueParam
+    }
+
+    public mutating func setE164PniAciTriples(_ valueParam: Data) {
+        proto.e164PniAciTriples = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setRetryAfterSecs(_ valueParam: Int32?) {
+        guard let valueParam = valueParam else { return }
+        proto.retryAfterSecs = valueParam
+    }
+
+    public mutating func setRetryAfterSecs(_ valueParam: Int32) {
+        proto.retryAfterSecs = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setToken(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.token = valueParam
+    }
+
+    public mutating func setToken(_ valueParam: Data) {
+        proto.token = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> ContactDiscoveryMessageClientResponse {
+        return try ContactDiscoveryMessageClientResponse(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try ContactDiscoveryMessageClientResponse(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension ContactDiscoveryMessageClientResponse {
@@ -402,7 +402,7 @@ extension ContactDiscoveryMessageClientResponse {
     }
 }
 
-extension ContactDiscoveryMessageClientResponse.ContactDiscoveryMessageClientResponseBuilder {
+extension ContactDiscoveryMessageClientResponseBuilder {
     public func buildIgnoringErrors() -> ContactDiscoveryMessageClientResponse? {
         return try! self.build()
     }

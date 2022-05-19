@@ -1317,7 +1317,7 @@ public class KeyBackupService: NSObject {
 private protocol KBSRequestOption {
     associatedtype ResponseOptionType
     static func responseOption(from response: KeyBackupProtoResponse) -> ResponseOptionType?
-    func set(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder)
+    func set(on builder: KeyBackupProtoRequestBuilder)
 
     static var stringRepresentation: String { get }
 }
@@ -1327,7 +1327,7 @@ extension KeyBackupProtoBackupRequest: KBSRequestOption {
     static func responseOption(from response: KeyBackupProtoResponse) -> ResponseOptionType? {
         return response.backup
     }
-    func set(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder) {
+    func set(on builder: KeyBackupProtoRequestBuilder) {
         builder.setBackup(self)
     }
     static var stringRepresentation: String { "backup" }
@@ -1337,7 +1337,7 @@ extension KeyBackupProtoRestoreRequest: KBSRequestOption {
     static func responseOption(from response: KeyBackupProtoResponse) -> ResponseOptionType? {
         return response.restore
     }
-    func set(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder) {
+    func set(on builder: KeyBackupProtoRequestBuilder) {
         builder.setRestore(self)
     }
     static var stringRepresentation: String { "restore" }
@@ -1347,7 +1347,7 @@ extension KeyBackupProtoDeleteRequest: KBSRequestOption {
     static func responseOption(from response: KeyBackupProtoResponse) -> ResponseOptionType? {
         return response.delete
     }
-    func set(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder) {
+    func set(on builder: KeyBackupProtoRequestBuilder) {
         builder.setDelete(self)
     }
     static var stringRepresentation: String { "delete" }

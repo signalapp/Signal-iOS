@@ -255,7 +255,7 @@ public struct FakeService: Dependencies {
         self.runner = runner
     }
 
-    public func envelopeBuilder(fromSenderClient senderClient: TestSignalClient, bodyText: String? = nil) throws -> SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
+    public func envelopeBuilder(fromSenderClient senderClient: TestSignalClient, bodyText: String? = nil) throws -> SSKProtoEnvelopeBuilder {
         envelopeId += 1
         let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
         builder.setType(.ciphertext)

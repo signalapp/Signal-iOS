@@ -533,8 +533,6 @@ class MessageContext(BaseContext):
             if proto_syntax == 'proto2' and self.is_field_an_enum(field) and field.is_required:
                 raise Exception('Enum fields cannot be required: %s.%s' % ( self.proto_name, field.name, ))
 
-        self.generate_builder(writer)
-
         writer.add('fileprivate let proto: %s' % wrapped_swift_name )
         writer.newline()
 
@@ -963,6 +961,7 @@ public func serializedData() throws -> Data {
         writer.rstrip()
         writer.add('}')
         writer.newline()
+        self.generate_builder(writer)
         self.generate_debug_extension(writer)
 
     def generate_debug_extension(self, writer):
@@ -975,7 +974,7 @@ public func serializedData() throws -> Data {
 
         writer.newline()
 
-        with writer.braced('extension %s.%s' % ( self.swift_name, self.swift_builder_name )) as writer:
+        with writer.braced('extension %s' % self.swift_builder_name ) as writer:
             writer.add_objc()
             with writer.braced('public func buildIgnoringErrors() -> %s?' % self.swift_name) as writer:
                 writer.add('return try! self.build()')
@@ -987,9 +986,6 @@ public func serializedData() throws -> Data {
     def generate_builder(self, writer):
 
         wrapped_swift_name = self.derive_wrapped_swift_name()
-
-        writer.add('// MARK: - %s' % self.swift_builder_name)
-        writer.newline()
 
         # Required Fields
         required_fields = [field for field in self.fields() if field.is_required]
@@ -1004,56 +1000,57 @@ public func serializedData() throws -> Data {
                 required_init_params.append('%s: %s' % ( field.name_swift, param_type) )
                 required_init_args.append('%s: %s' % ( field.name_swift, field.name_swift) )
 
-        # Convenience accessor.
-        writer.add_objc()
-        with writer.braced('public static func builder(%s) -> %s' % (
-                ', '.join(required_init_params),
-                self.swift_builder_name,
-                )) as writer:
-            writer.add('return %s(%s)' % (self.swift_builder_name, ', '.join(required_init_args), ))
-        writer.newline()
+        with writer.braced('extension %s' % self.swift_name) as writer:
+            # Convenience accessor.
+            writer.add_objc()
+            with writer.braced('public static func builder(%s) -> %s' % (
+                    ', '.join(required_init_params),
+                    self.swift_builder_name,
+                    )) as writer:
+                writer.add('return %s(%s)' % (self.swift_builder_name, ', '.join(required_init_args), ))
+            writer.newline()
 
-        # asBuilder()
-        writer.add('// asBuilder() constructs a builder that reflects the proto\'s contents.')
-        writer.add_objc()
-        with writer.braced('public func asBuilder() -> %s' % (
-                self.swift_builder_name,
-                )) as writer:
-            if writer.needs_objc():
-                writer.add('let builder = %s(%s)' % (self.swift_builder_name, ', '.join(required_init_args), ))
-            else:
-                writer.add('var builder = %s(%s)' % (self.swift_builder_name, ', '.join(required_init_args), ))
-
-            for field in self.fields():
-                if field.is_required:
-                    continue
-
-                accessor_name = field.name_swift
-                accessor_name = 'set' + accessor_name[0].upper() + accessor_name[1:]
-
-                can_be_optional = not self.is_field_primitive(field)
-                if field.rules == 'repeated':
-                    writer.add('builder.%s(%s)' % ( accessor_name, field.name_swift, ))
-                elif can_be_optional:
-                    writer.add('if let _value = %s {' % field.name_swift )
-                    writer.push_indent()
-                    writer.add('builder.%s(_value)' % ( accessor_name, ))
-                    writer.pop_indent()
-                    writer.add('}')
+            # asBuilder()
+            writer.add('// asBuilder() constructs a builder that reflects the proto\'s contents.')
+            writer.add_objc()
+            with writer.braced('public func asBuilder() -> %s' % (
+                    self.swift_builder_name,
+                    )) as writer:
+                if writer.needs_objc():
+                    writer.add('let builder = %s(%s)' % (self.swift_builder_name, ', '.join(required_init_args), ))
                 else:
-                    writer.add('if %s {' % field.has_accessor_name() )
-                    writer.push_indent()
-                    writer.add('builder.%s(%s)' % ( accessor_name, field.name_swift, ))
-                    writer.pop_indent()
-                    writer.add('}')
+                    writer.add('var builder = %s(%s)' % (self.swift_builder_name, ', '.join(required_init_args), ))
 
-            writer.add('if let _value = unknownFields {')
-            writer.push_indent()
-            writer.add('builder.setUnknownFields(_value)')
-            writer.pop_indent()
-            writer.add('}')
+                for field in self.fields():
+                    if field.is_required:
+                        continue
 
-            writer.add('return builder')
+                    accessor_name = field.name_swift
+                    accessor_name = 'set' + accessor_name[0].upper() + accessor_name[1:]
+
+                    can_be_optional = not self.is_field_primitive(field)
+                    if field.rules == 'repeated':
+                        writer.add('builder.%s(%s)' % ( accessor_name, field.name_swift, ))
+                    elif can_be_optional:
+                        writer.add('if let _value = %s {' % field.name_swift )
+                        writer.push_indent()
+                        writer.add('builder.%s(_value)' % ( accessor_name, ))
+                        writer.pop_indent()
+                        writer.add('}')
+                    else:
+                        writer.add('if %s {' % field.has_accessor_name() )
+                        writer.push_indent()
+                        writer.add('builder.%s(%s)' % ( accessor_name, field.name_swift, ))
+                        writer.pop_indent()
+                        writer.add('}')
+
+                writer.add('if let _value = unknownFields {')
+                writer.push_indent()
+                writer.add('builder.setUnknownFields(_value)')
+                writer.pop_indent()
+                writer.add('}')
+
+                writer.add('return builder')
         writer.newline()
 
         if writer.needs_objc():

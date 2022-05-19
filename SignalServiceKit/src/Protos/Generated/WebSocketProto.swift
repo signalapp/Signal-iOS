@@ -17,107 +17,6 @@ public enum WebSocketProtoError: Error {
 @objc
 public class WebSocketProtoWebSocketRequestMessage: NSObject, Codable, NSSecureCoding {
 
-    // MARK: - WebSocketProtoWebSocketRequestMessageBuilder
-
-    @objc
-    public static func builder(verb: String, path: String, requestID: UInt64) -> WebSocketProtoWebSocketRequestMessageBuilder {
-        return WebSocketProtoWebSocketRequestMessageBuilder(verb: verb, path: path, requestID: requestID)
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> WebSocketProtoWebSocketRequestMessageBuilder {
-        let builder = WebSocketProtoWebSocketRequestMessageBuilder(verb: verb, path: path, requestID: requestID)
-        if let _value = body {
-            builder.setBody(_value)
-        }
-        builder.setHeaders(headers)
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    @objc
-    public class WebSocketProtoWebSocketRequestMessageBuilder: NSObject {
-
-        private var proto = WebSocketProtos_WebSocketRequestMessage()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        fileprivate init(verb: String, path: String, requestID: UInt64) {
-            super.init()
-
-            setVerb(verb)
-            setPath(path)
-            setRequestID(requestID)
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setVerb(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.verb = valueParam
-        }
-
-        public func setVerb(_ valueParam: String) {
-            proto.verb = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setPath(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.path = valueParam
-        }
-
-        public func setPath(_ valueParam: String) {
-            proto.path = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setBody(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.body = valueParam
-        }
-
-        public func setBody(_ valueParam: Data) {
-            proto.body = valueParam
-        }
-
-        @objc
-        public func addHeaders(_ valueParam: String) {
-            proto.headers.append(valueParam)
-        }
-
-        @objc
-        public func setHeaders(_ wrappedItems: [String]) {
-            proto.headers = wrappedItems
-        }
-
-        @objc
-        public func setRequestID(_ valueParam: UInt64) {
-            proto.requestID = valueParam
-        }
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> WebSocketProtoWebSocketRequestMessage {
-            return try WebSocketProtoWebSocketRequestMessage(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try WebSocketProtoWebSocketRequestMessage(proto).serializedData()
-        }
-    }
-
     fileprivate let proto: WebSocketProtos_WebSocketRequestMessage
 
     @objc
@@ -237,6 +136,107 @@ public class WebSocketProtoWebSocketRequestMessage: NSObject, Codable, NSSecureC
     }
 }
 
+extension WebSocketProtoWebSocketRequestMessage {
+    @objc
+    public static func builder(verb: String, path: String, requestID: UInt64) -> WebSocketProtoWebSocketRequestMessageBuilder {
+        return WebSocketProtoWebSocketRequestMessageBuilder(verb: verb, path: path, requestID: requestID)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> WebSocketProtoWebSocketRequestMessageBuilder {
+        let builder = WebSocketProtoWebSocketRequestMessageBuilder(verb: verb, path: path, requestID: requestID)
+        if let _value = body {
+            builder.setBody(_value)
+        }
+        builder.setHeaders(headers)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class WebSocketProtoWebSocketRequestMessageBuilder: NSObject {
+
+    private var proto = WebSocketProtos_WebSocketRequestMessage()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(verb: String, path: String, requestID: UInt64) {
+        super.init()
+
+        setVerb(verb)
+        setPath(path)
+        setRequestID(requestID)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setVerb(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.verb = valueParam
+    }
+
+    public func setVerb(_ valueParam: String) {
+        proto.verb = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPath(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.path = valueParam
+    }
+
+    public func setPath(_ valueParam: String) {
+        proto.path = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setBody(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.body = valueParam
+    }
+
+    public func setBody(_ valueParam: Data) {
+        proto.body = valueParam
+    }
+
+    @objc
+    public func addHeaders(_ valueParam: String) {
+        proto.headers.append(valueParam)
+    }
+
+    @objc
+    public func setHeaders(_ wrappedItems: [String]) {
+        proto.headers = wrappedItems
+    }
+
+    @objc
+    public func setRequestID(_ valueParam: UInt64) {
+        proto.requestID = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> WebSocketProtoWebSocketRequestMessage {
+        return try WebSocketProtoWebSocketRequestMessage(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try WebSocketProtoWebSocketRequestMessage(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension WebSocketProtoWebSocketRequestMessage {
@@ -246,7 +246,7 @@ extension WebSocketProtoWebSocketRequestMessage {
     }
 }
 
-extension WebSocketProtoWebSocketRequestMessage.WebSocketProtoWebSocketRequestMessageBuilder {
+extension WebSocketProtoWebSocketRequestMessageBuilder {
     @objc
     public func buildIgnoringErrors() -> WebSocketProtoWebSocketRequestMessage? {
         return try! self.build()
@@ -259,103 +259,6 @@ extension WebSocketProtoWebSocketRequestMessage.WebSocketProtoWebSocketRequestMe
 
 @objc
 public class WebSocketProtoWebSocketResponseMessage: NSObject, Codable, NSSecureCoding {
-
-    // MARK: - WebSocketProtoWebSocketResponseMessageBuilder
-
-    @objc
-    public static func builder(requestID: UInt64, status: UInt32) -> WebSocketProtoWebSocketResponseMessageBuilder {
-        return WebSocketProtoWebSocketResponseMessageBuilder(requestID: requestID, status: status)
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> WebSocketProtoWebSocketResponseMessageBuilder {
-        let builder = WebSocketProtoWebSocketResponseMessageBuilder(requestID: requestID, status: status)
-        if let _value = message {
-            builder.setMessage(_value)
-        }
-        builder.setHeaders(headers)
-        if let _value = body {
-            builder.setBody(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    @objc
-    public class WebSocketProtoWebSocketResponseMessageBuilder: NSObject {
-
-        private var proto = WebSocketProtos_WebSocketResponseMessage()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        fileprivate init(requestID: UInt64, status: UInt32) {
-            super.init()
-
-            setRequestID(requestID)
-            setStatus(status)
-        }
-
-        @objc
-        public func setRequestID(_ valueParam: UInt64) {
-            proto.requestID = valueParam
-        }
-
-        @objc
-        public func setStatus(_ valueParam: UInt32) {
-            proto.status = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setMessage(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.message = valueParam
-        }
-
-        public func setMessage(_ valueParam: String) {
-            proto.message = valueParam
-        }
-
-        @objc
-        public func addHeaders(_ valueParam: String) {
-            proto.headers.append(valueParam)
-        }
-
-        @objc
-        public func setHeaders(_ wrappedItems: [String]) {
-            proto.headers = wrappedItems
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setBody(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.body = valueParam
-        }
-
-        public func setBody(_ valueParam: Data) {
-            proto.body = valueParam
-        }
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> WebSocketProtoWebSocketResponseMessage {
-            return try WebSocketProtoWebSocketResponseMessage(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try WebSocketProtoWebSocketResponseMessage(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: WebSocketProtos_WebSocketResponseMessage
 
@@ -477,6 +380,103 @@ public class WebSocketProtoWebSocketResponseMessage: NSObject, Codable, NSSecure
     }
 }
 
+extension WebSocketProtoWebSocketResponseMessage {
+    @objc
+    public static func builder(requestID: UInt64, status: UInt32) -> WebSocketProtoWebSocketResponseMessageBuilder {
+        return WebSocketProtoWebSocketResponseMessageBuilder(requestID: requestID, status: status)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> WebSocketProtoWebSocketResponseMessageBuilder {
+        let builder = WebSocketProtoWebSocketResponseMessageBuilder(requestID: requestID, status: status)
+        if let _value = message {
+            builder.setMessage(_value)
+        }
+        builder.setHeaders(headers)
+        if let _value = body {
+            builder.setBody(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class WebSocketProtoWebSocketResponseMessageBuilder: NSObject {
+
+    private var proto = WebSocketProtos_WebSocketResponseMessage()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(requestID: UInt64, status: UInt32) {
+        super.init()
+
+        setRequestID(requestID)
+        setStatus(status)
+    }
+
+    @objc
+    public func setRequestID(_ valueParam: UInt64) {
+        proto.requestID = valueParam
+    }
+
+    @objc
+    public func setStatus(_ valueParam: UInt32) {
+        proto.status = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setMessage(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.message = valueParam
+    }
+
+    public func setMessage(_ valueParam: String) {
+        proto.message = valueParam
+    }
+
+    @objc
+    public func addHeaders(_ valueParam: String) {
+        proto.headers.append(valueParam)
+    }
+
+    @objc
+    public func setHeaders(_ wrappedItems: [String]) {
+        proto.headers = wrappedItems
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setBody(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.body = valueParam
+    }
+
+    public func setBody(_ valueParam: Data) {
+        proto.body = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> WebSocketProtoWebSocketResponseMessage {
+        return try WebSocketProtoWebSocketResponseMessage(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try WebSocketProtoWebSocketResponseMessage(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension WebSocketProtoWebSocketResponseMessage {
@@ -486,7 +486,7 @@ extension WebSocketProtoWebSocketResponseMessage {
     }
 }
 
-extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponseMessageBuilder {
+extension WebSocketProtoWebSocketResponseMessageBuilder {
     @objc
     public func buildIgnoringErrors() -> WebSocketProtoWebSocketResponseMessage? {
         return try! self.build()
@@ -524,82 +524,6 @@ private func WebSocketProtoWebSocketMessageTypeUnwrap(_ value: WebSocketProtoWeb
 
 @objc
 public class WebSocketProtoWebSocketMessage: NSObject, Codable, NSSecureCoding {
-
-    // MARK: - WebSocketProtoWebSocketMessageBuilder
-
-    @objc
-    public static func builder() -> WebSocketProtoWebSocketMessageBuilder {
-        return WebSocketProtoWebSocketMessageBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> WebSocketProtoWebSocketMessageBuilder {
-        let builder = WebSocketProtoWebSocketMessageBuilder()
-        if let _value = type {
-            builder.setType(_value)
-        }
-        if let _value = request {
-            builder.setRequest(_value)
-        }
-        if let _value = response {
-            builder.setResponse(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    @objc
-    public class WebSocketProtoWebSocketMessageBuilder: NSObject {
-
-        private var proto = WebSocketProtos_WebSocketMessage()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        public func setType(_ valueParam: WebSocketProtoWebSocketMessageType) {
-            proto.type = WebSocketProtoWebSocketMessageTypeUnwrap(valueParam)
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setRequest(_ valueParam: WebSocketProtoWebSocketRequestMessage?) {
-            guard let valueParam = valueParam else { return }
-            proto.request = valueParam.proto
-        }
-
-        public func setRequest(_ valueParam: WebSocketProtoWebSocketRequestMessage) {
-            proto.request = valueParam.proto
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setResponse(_ valueParam: WebSocketProtoWebSocketResponseMessage?) {
-            guard let valueParam = valueParam else { return }
-            proto.response = valueParam.proto
-        }
-
-        public func setResponse(_ valueParam: WebSocketProtoWebSocketResponseMessage) {
-            proto.response = valueParam.proto
-        }
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> WebSocketProtoWebSocketMessage {
-            return try WebSocketProtoWebSocketMessage(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try WebSocketProtoWebSocketMessage(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: WebSocketProtos_WebSocketMessage
 
@@ -712,6 +636,82 @@ public class WebSocketProtoWebSocketMessage: NSObject, Codable, NSSecureCoding {
     }
 }
 
+extension WebSocketProtoWebSocketMessage {
+    @objc
+    public static func builder() -> WebSocketProtoWebSocketMessageBuilder {
+        return WebSocketProtoWebSocketMessageBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> WebSocketProtoWebSocketMessageBuilder {
+        let builder = WebSocketProtoWebSocketMessageBuilder()
+        if let _value = type {
+            builder.setType(_value)
+        }
+        if let _value = request {
+            builder.setRequest(_value)
+        }
+        if let _value = response {
+            builder.setResponse(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class WebSocketProtoWebSocketMessageBuilder: NSObject {
+
+    private var proto = WebSocketProtos_WebSocketMessage()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    public func setType(_ valueParam: WebSocketProtoWebSocketMessageType) {
+        proto.type = WebSocketProtoWebSocketMessageTypeUnwrap(valueParam)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setRequest(_ valueParam: WebSocketProtoWebSocketRequestMessage?) {
+        guard let valueParam = valueParam else { return }
+        proto.request = valueParam.proto
+    }
+
+    public func setRequest(_ valueParam: WebSocketProtoWebSocketRequestMessage) {
+        proto.request = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setResponse(_ valueParam: WebSocketProtoWebSocketResponseMessage?) {
+        guard let valueParam = valueParam else { return }
+        proto.response = valueParam.proto
+    }
+
+    public func setResponse(_ valueParam: WebSocketProtoWebSocketResponseMessage) {
+        proto.response = valueParam.proto
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> WebSocketProtoWebSocketMessage {
+        return try WebSocketProtoWebSocketMessage(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try WebSocketProtoWebSocketMessage(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension WebSocketProtoWebSocketMessage {
@@ -721,7 +721,7 @@ extension WebSocketProtoWebSocketMessage {
     }
 }
 
-extension WebSocketProtoWebSocketMessage.WebSocketProtoWebSocketMessageBuilder {
+extension WebSocketProtoWebSocketMessageBuilder {
     @objc
     public func buildIgnoringErrors() -> WebSocketProtoWebSocketMessage? {
         return try! self.build()

@@ -16,131 +16,6 @@ public enum GroupsProtoError: Error {
 
 public struct GroupsProtoAvatarUploadAttributes: Codable, CustomDebugStringConvertible {
 
-    // MARK: - GroupsProtoAvatarUploadAttributesBuilder
-
-    public static func builder() -> GroupsProtoAvatarUploadAttributesBuilder {
-        return GroupsProtoAvatarUploadAttributesBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoAvatarUploadAttributesBuilder {
-        var builder = GroupsProtoAvatarUploadAttributesBuilder()
-        if let _value = key {
-            builder.setKey(_value)
-        }
-        if let _value = credential {
-            builder.setCredential(_value)
-        }
-        if let _value = acl {
-            builder.setAcl(_value)
-        }
-        if let _value = algorithm {
-            builder.setAlgorithm(_value)
-        }
-        if let _value = date {
-            builder.setDate(_value)
-        }
-        if let _value = policy {
-            builder.setPolicy(_value)
-        }
-        if let _value = signature {
-            builder.setSignature(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoAvatarUploadAttributesBuilder {
-
-        private var proto = GroupsProtos_AvatarUploadAttributes()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setKey(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.key = valueParam
-        }
-
-        public mutating func setKey(_ valueParam: String) {
-            proto.key = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setCredential(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.credential = valueParam
-        }
-
-        public mutating func setCredential(_ valueParam: String) {
-            proto.credential = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setAcl(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.acl = valueParam
-        }
-
-        public mutating func setAcl(_ valueParam: String) {
-            proto.acl = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setAlgorithm(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.algorithm = valueParam
-        }
-
-        public mutating func setAlgorithm(_ valueParam: String) {
-            proto.algorithm = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setDate(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.date = valueParam
-        }
-
-        public mutating func setDate(_ valueParam: String) {
-            proto.date = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setPolicy(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.policy = valueParam
-        }
-
-        public mutating func setPolicy(_ valueParam: String) {
-            proto.policy = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setSignature(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.signature = valueParam
-        }
-
-        public mutating func setSignature(_ valueParam: String) {
-            proto.signature = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoAvatarUploadAttributes {
-            return try GroupsProtoAvatarUploadAttributes(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoAvatarUploadAttributes(proto).serializedData()
-        }
-    }
-
     fileprivate let proto: GroupsProtos_AvatarUploadAttributes
 
     public var key: String? {
@@ -257,6 +132,131 @@ public struct GroupsProtoAvatarUploadAttributes: Codable, CustomDebugStringConve
     }
 }
 
+extension GroupsProtoAvatarUploadAttributes {
+    public static func builder() -> GroupsProtoAvatarUploadAttributesBuilder {
+        return GroupsProtoAvatarUploadAttributesBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoAvatarUploadAttributesBuilder {
+        var builder = GroupsProtoAvatarUploadAttributesBuilder()
+        if let _value = key {
+            builder.setKey(_value)
+        }
+        if let _value = credential {
+            builder.setCredential(_value)
+        }
+        if let _value = acl {
+            builder.setAcl(_value)
+        }
+        if let _value = algorithm {
+            builder.setAlgorithm(_value)
+        }
+        if let _value = date {
+            builder.setDate(_value)
+        }
+        if let _value = policy {
+            builder.setPolicy(_value)
+        }
+        if let _value = signature {
+            builder.setSignature(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoAvatarUploadAttributesBuilder {
+
+    private var proto = GroupsProtos_AvatarUploadAttributes()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setKey(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.key = valueParam
+    }
+
+    public mutating func setKey(_ valueParam: String) {
+        proto.key = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setCredential(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.credential = valueParam
+    }
+
+    public mutating func setCredential(_ valueParam: String) {
+        proto.credential = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAcl(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.acl = valueParam
+    }
+
+    public mutating func setAcl(_ valueParam: String) {
+        proto.acl = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAlgorithm(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.algorithm = valueParam
+    }
+
+    public mutating func setAlgorithm(_ valueParam: String) {
+        proto.algorithm = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setDate(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.date = valueParam
+    }
+
+    public mutating func setDate(_ valueParam: String) {
+        proto.date = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPolicy(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.policy = valueParam
+    }
+
+    public mutating func setPolicy(_ valueParam: String) {
+        proto.policy = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setSignature(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.signature = valueParam
+    }
+
+    public mutating func setSignature(_ valueParam: String) {
+        proto.signature = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoAvatarUploadAttributes {
+        return try GroupsProtoAvatarUploadAttributes(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoAvatarUploadAttributes(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoAvatarUploadAttributes {
@@ -265,7 +265,7 @@ extension GroupsProtoAvatarUploadAttributes {
     }
 }
 
-extension GroupsProtoAvatarUploadAttributes.GroupsProtoAvatarUploadAttributesBuilder {
+extension GroupsProtoAvatarUploadAttributesBuilder {
     public func buildIgnoringErrors() -> GroupsProtoAvatarUploadAttributes? {
         return try! self.build()
     }
@@ -326,93 +326,6 @@ private func GroupsProtoMemberRoleUnwrap(_ value: GroupsProtoMemberRole) -> Grou
 // MARK: - GroupsProtoMember
 
 public struct GroupsProtoMember: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoMemberBuilder
-
-    public static func builder() -> GroupsProtoMemberBuilder {
-        return GroupsProtoMemberBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoMemberBuilder {
-        var builder = GroupsProtoMemberBuilder()
-        if let _value = userID {
-            builder.setUserID(_value)
-        }
-        if let _value = role {
-            builder.setRole(_value)
-        }
-        if let _value = profileKey {
-            builder.setProfileKey(_value)
-        }
-        if let _value = presentation {
-            builder.setPresentation(_value)
-        }
-        if hasJoinedAtRevision {
-            builder.setJoinedAtRevision(joinedAtRevision)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoMemberBuilder {
-
-        private var proto = GroupsProtos_Member()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setUserID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.userID = valueParam
-        }
-
-        public mutating func setUserID(_ valueParam: Data) {
-            proto.userID = valueParam
-        }
-
-        public mutating func setRole(_ valueParam: GroupsProtoMemberRole) {
-            proto.role = GroupsProtoMemberRoleUnwrap(valueParam)
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setProfileKey(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.profileKey = valueParam
-        }
-
-        public mutating func setProfileKey(_ valueParam: Data) {
-            proto.profileKey = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setPresentation(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.presentation = valueParam
-        }
-
-        public mutating func setPresentation(_ valueParam: Data) {
-            proto.presentation = valueParam
-        }
-
-        public mutating func setJoinedAtRevision(_ valueParam: UInt32) {
-            proto.joinedAtRevision = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoMember {
-            return try GroupsProtoMember(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoMember(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_Member
 
@@ -515,6 +428,93 @@ public struct GroupsProtoMember: Codable, CustomDebugStringConvertible {
     }
 }
 
+extension GroupsProtoMember {
+    public static func builder() -> GroupsProtoMemberBuilder {
+        return GroupsProtoMemberBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoMemberBuilder {
+        var builder = GroupsProtoMemberBuilder()
+        if let _value = userID {
+            builder.setUserID(_value)
+        }
+        if let _value = role {
+            builder.setRole(_value)
+        }
+        if let _value = profileKey {
+            builder.setProfileKey(_value)
+        }
+        if let _value = presentation {
+            builder.setPresentation(_value)
+        }
+        if hasJoinedAtRevision {
+            builder.setJoinedAtRevision(joinedAtRevision)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoMemberBuilder {
+
+    private var proto = GroupsProtos_Member()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setUserID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.userID = valueParam
+    }
+
+    public mutating func setUserID(_ valueParam: Data) {
+        proto.userID = valueParam
+    }
+
+    public mutating func setRole(_ valueParam: GroupsProtoMemberRole) {
+        proto.role = GroupsProtoMemberRoleUnwrap(valueParam)
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setProfileKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.profileKey = valueParam
+    }
+
+    public mutating func setProfileKey(_ valueParam: Data) {
+        proto.profileKey = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPresentation(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.presentation = valueParam
+    }
+
+    public mutating func setPresentation(_ valueParam: Data) {
+        proto.presentation = valueParam
+    }
+
+    public mutating func setJoinedAtRevision(_ valueParam: UInt32) {
+        proto.joinedAtRevision = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoMember {
+        return try GroupsProtoMember(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoMember(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoMember {
@@ -523,7 +523,7 @@ extension GroupsProtoMember {
     }
 }
 
-extension GroupsProtoMember.GroupsProtoMemberBuilder {
+extension GroupsProtoMemberBuilder {
     public func buildIgnoringErrors() -> GroupsProtoMember? {
         return try! self.build()
     }
@@ -534,73 +534,6 @@ extension GroupsProtoMember.GroupsProtoMemberBuilder {
 // MARK: - GroupsProtoPendingMember
 
 public struct GroupsProtoPendingMember: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoPendingMemberBuilder
-
-    public static func builder() -> GroupsProtoPendingMemberBuilder {
-        return GroupsProtoPendingMemberBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoPendingMemberBuilder {
-        var builder = GroupsProtoPendingMemberBuilder()
-        if let _value = member {
-            builder.setMember(_value)
-        }
-        if let _value = addedByUserID {
-            builder.setAddedByUserID(_value)
-        }
-        if hasTimestamp {
-            builder.setTimestamp(timestamp)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoPendingMemberBuilder {
-
-        private var proto = GroupsProtos_PendingMember()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setMember(_ valueParam: GroupsProtoMember?) {
-            guard let valueParam = valueParam else { return }
-            proto.member = valueParam.proto
-        }
-
-        public mutating func setMember(_ valueParam: GroupsProtoMember) {
-            proto.member = valueParam.proto
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setAddedByUserID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.addedByUserID = valueParam
-        }
-
-        public mutating func setAddedByUserID(_ valueParam: Data) {
-            proto.addedByUserID = valueParam
-        }
-
-        public mutating func setTimestamp(_ valueParam: UInt64) {
-            proto.timestamp = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoPendingMember {
-            return try GroupsProtoPendingMember(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoPendingMember(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_PendingMember
 
@@ -675,6 +608,73 @@ public struct GroupsProtoPendingMember: Codable, CustomDebugStringConvertible {
     }
 }
 
+extension GroupsProtoPendingMember {
+    public static func builder() -> GroupsProtoPendingMemberBuilder {
+        return GroupsProtoPendingMemberBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoPendingMemberBuilder {
+        var builder = GroupsProtoPendingMemberBuilder()
+        if let _value = member {
+            builder.setMember(_value)
+        }
+        if let _value = addedByUserID {
+            builder.setAddedByUserID(_value)
+        }
+        if hasTimestamp {
+            builder.setTimestamp(timestamp)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoPendingMemberBuilder {
+
+    private var proto = GroupsProtos_PendingMember()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setMember(_ valueParam: GroupsProtoMember?) {
+        guard let valueParam = valueParam else { return }
+        proto.member = valueParam.proto
+    }
+
+    public mutating func setMember(_ valueParam: GroupsProtoMember) {
+        proto.member = valueParam.proto
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAddedByUserID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.addedByUserID = valueParam
+    }
+
+    public mutating func setAddedByUserID(_ valueParam: Data) {
+        proto.addedByUserID = valueParam
+    }
+
+    public mutating func setTimestamp(_ valueParam: UInt64) {
+        proto.timestamp = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoPendingMember {
+        return try GroupsProtoPendingMember(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoPendingMember(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoPendingMember {
@@ -683,7 +683,7 @@ extension GroupsProtoPendingMember {
     }
 }
 
-extension GroupsProtoPendingMember.GroupsProtoPendingMemberBuilder {
+extension GroupsProtoPendingMemberBuilder {
     public func buildIgnoringErrors() -> GroupsProtoPendingMember? {
         return try! self.build()
     }
@@ -694,86 +694,6 @@ extension GroupsProtoPendingMember.GroupsProtoPendingMemberBuilder {
 // MARK: - GroupsProtoRequestingMember
 
 public struct GroupsProtoRequestingMember: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoRequestingMemberBuilder
-
-    public static func builder() -> GroupsProtoRequestingMemberBuilder {
-        return GroupsProtoRequestingMemberBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoRequestingMemberBuilder {
-        var builder = GroupsProtoRequestingMemberBuilder()
-        if let _value = userID {
-            builder.setUserID(_value)
-        }
-        if let _value = profileKey {
-            builder.setProfileKey(_value)
-        }
-        if let _value = presentation {
-            builder.setPresentation(_value)
-        }
-        if hasTimestamp {
-            builder.setTimestamp(timestamp)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoRequestingMemberBuilder {
-
-        private var proto = GroupsProtos_RequestingMember()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setUserID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.userID = valueParam
-        }
-
-        public mutating func setUserID(_ valueParam: Data) {
-            proto.userID = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setProfileKey(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.profileKey = valueParam
-        }
-
-        public mutating func setProfileKey(_ valueParam: Data) {
-            proto.profileKey = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setPresentation(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.presentation = valueParam
-        }
-
-        public mutating func setPresentation(_ valueParam: Data) {
-            proto.presentation = valueParam
-        }
-
-        public mutating func setTimestamp(_ valueParam: UInt64) {
-            proto.timestamp = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoRequestingMember {
-            return try GroupsProtoRequestingMember(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoRequestingMember(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_RequestingMember
 
@@ -858,6 +778,86 @@ public struct GroupsProtoRequestingMember: Codable, CustomDebugStringConvertible
     }
 }
 
+extension GroupsProtoRequestingMember {
+    public static func builder() -> GroupsProtoRequestingMemberBuilder {
+        return GroupsProtoRequestingMemberBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoRequestingMemberBuilder {
+        var builder = GroupsProtoRequestingMemberBuilder()
+        if let _value = userID {
+            builder.setUserID(_value)
+        }
+        if let _value = profileKey {
+            builder.setProfileKey(_value)
+        }
+        if let _value = presentation {
+            builder.setPresentation(_value)
+        }
+        if hasTimestamp {
+            builder.setTimestamp(timestamp)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoRequestingMemberBuilder {
+
+    private var proto = GroupsProtos_RequestingMember()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setUserID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.userID = valueParam
+    }
+
+    public mutating func setUserID(_ valueParam: Data) {
+        proto.userID = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setProfileKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.profileKey = valueParam
+    }
+
+    public mutating func setProfileKey(_ valueParam: Data) {
+        proto.profileKey = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPresentation(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.presentation = valueParam
+    }
+
+    public mutating func setPresentation(_ valueParam: Data) {
+        proto.presentation = valueParam
+    }
+
+    public mutating func setTimestamp(_ valueParam: UInt64) {
+        proto.timestamp = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoRequestingMember {
+        return try GroupsProtoRequestingMember(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoRequestingMember(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoRequestingMember {
@@ -866,7 +866,7 @@ extension GroupsProtoRequestingMember {
     }
 }
 
-extension GroupsProtoRequestingMember.GroupsProtoRequestingMemberBuilder {
+extension GroupsProtoRequestingMemberBuilder {
     public func buildIgnoringErrors() -> GroupsProtoRequestingMember? {
         return try! self.build()
     }
@@ -937,61 +937,6 @@ private func GroupsProtoAccessControlAccessRequiredUnwrap(_ value: GroupsProtoAc
 // MARK: - GroupsProtoAccessControl
 
 public struct GroupsProtoAccessControl: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoAccessControlBuilder
-
-    public static func builder() -> GroupsProtoAccessControlBuilder {
-        return GroupsProtoAccessControlBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoAccessControlBuilder {
-        var builder = GroupsProtoAccessControlBuilder()
-        if let _value = attributes {
-            builder.setAttributes(_value)
-        }
-        if let _value = members {
-            builder.setMembers(_value)
-        }
-        if let _value = addFromInviteLink {
-            builder.setAddFromInviteLink(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoAccessControlBuilder {
-
-        private var proto = GroupsProtos_AccessControl()
-
-        fileprivate init() {}
-
-        public mutating func setAttributes(_ valueParam: GroupsProtoAccessControlAccessRequired) {
-            proto.attributes = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
-        }
-
-        public mutating func setMembers(_ valueParam: GroupsProtoAccessControlAccessRequired) {
-            proto.members = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
-        }
-
-        public mutating func setAddFromInviteLink(_ valueParam: GroupsProtoAccessControlAccessRequired) {
-            proto.addFromInviteLink = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoAccessControl {
-            return try GroupsProtoAccessControl(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoAccessControl(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_AccessControl
 
@@ -1093,6 +1038,61 @@ public struct GroupsProtoAccessControl: Codable, CustomDebugStringConvertible {
     }
 }
 
+extension GroupsProtoAccessControl {
+    public static func builder() -> GroupsProtoAccessControlBuilder {
+        return GroupsProtoAccessControlBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoAccessControlBuilder {
+        var builder = GroupsProtoAccessControlBuilder()
+        if let _value = attributes {
+            builder.setAttributes(_value)
+        }
+        if let _value = members {
+            builder.setMembers(_value)
+        }
+        if let _value = addFromInviteLink {
+            builder.setAddFromInviteLink(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoAccessControlBuilder {
+
+    private var proto = GroupsProtos_AccessControl()
+
+    fileprivate init() {}
+
+    public mutating func setAttributes(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+        proto.attributes = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+    }
+
+    public mutating func setMembers(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+        proto.members = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+    }
+
+    public mutating func setAddFromInviteLink(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+        proto.addFromInviteLink = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoAccessControl {
+        return try GroupsProtoAccessControl(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoAccessControl(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoAccessControl {
@@ -1101,7 +1101,7 @@ extension GroupsProtoAccessControl {
     }
 }
 
-extension GroupsProtoAccessControl.GroupsProtoAccessControlBuilder {
+extension GroupsProtoAccessControlBuilder {
     public func buildIgnoringErrors() -> GroupsProtoAccessControl? {
         return try! self.build()
     }
@@ -1112,172 +1112,6 @@ extension GroupsProtoAccessControl.GroupsProtoAccessControlBuilder {
 // MARK: - GroupsProtoGroup
 
 public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupBuilder
-
-    public static func builder() -> GroupsProtoGroupBuilder {
-        return GroupsProtoGroupBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupBuilder {
-        var builder = GroupsProtoGroupBuilder()
-        if let _value = publicKey {
-            builder.setPublicKey(_value)
-        }
-        if let _value = title {
-            builder.setTitle(_value)
-        }
-        if let _value = avatar {
-            builder.setAvatar(_value)
-        }
-        if let _value = disappearingMessagesTimer {
-            builder.setDisappearingMessagesTimer(_value)
-        }
-        if let _value = accessControl {
-            builder.setAccessControl(_value)
-        }
-        if hasRevision {
-            builder.setRevision(revision)
-        }
-        builder.setMembers(members)
-        builder.setPendingMembers(pendingMembers)
-        builder.setRequestingMembers(requestingMembers)
-        if let _value = inviteLinkPassword {
-            builder.setInviteLinkPassword(_value)
-        }
-        if let _value = descriptionBytes {
-            builder.setDescriptionBytes(_value)
-        }
-        if hasAnnouncementsOnly {
-            builder.setAnnouncementsOnly(announcementsOnly)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupBuilder {
-
-        private var proto = GroupsProtos_Group()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setPublicKey(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.publicKey = valueParam
-        }
-
-        public mutating func setPublicKey(_ valueParam: Data) {
-            proto.publicKey = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setTitle(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.title = valueParam
-        }
-
-        public mutating func setTitle(_ valueParam: Data) {
-            proto.title = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setAvatar(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.avatar = valueParam
-        }
-
-        public mutating func setAvatar(_ valueParam: String) {
-            proto.avatar = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setDisappearingMessagesTimer(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.disappearingMessagesTimer = valueParam
-        }
-
-        public mutating func setDisappearingMessagesTimer(_ valueParam: Data) {
-            proto.disappearingMessagesTimer = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setAccessControl(_ valueParam: GroupsProtoAccessControl?) {
-            guard let valueParam = valueParam else { return }
-            proto.accessControl = valueParam.proto
-        }
-
-        public mutating func setAccessControl(_ valueParam: GroupsProtoAccessControl) {
-            proto.accessControl = valueParam.proto
-        }
-
-        public mutating func setRevision(_ valueParam: UInt32) {
-            proto.revision = valueParam
-        }
-
-        public mutating func addMembers(_ valueParam: GroupsProtoMember) {
-            proto.members.append(valueParam.proto)
-        }
-
-        public mutating func setMembers(_ wrappedItems: [GroupsProtoMember]) {
-            proto.members = wrappedItems.map { $0.proto }
-        }
-
-        public mutating func addPendingMembers(_ valueParam: GroupsProtoPendingMember) {
-            proto.pendingMembers.append(valueParam.proto)
-        }
-
-        public mutating func setPendingMembers(_ wrappedItems: [GroupsProtoPendingMember]) {
-            proto.pendingMembers = wrappedItems.map { $0.proto }
-        }
-
-        public mutating func addRequestingMembers(_ valueParam: GroupsProtoRequestingMember) {
-            proto.requestingMembers.append(valueParam.proto)
-        }
-
-        public mutating func setRequestingMembers(_ wrappedItems: [GroupsProtoRequestingMember]) {
-            proto.requestingMembers = wrappedItems.map { $0.proto }
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setInviteLinkPassword(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.inviteLinkPassword = valueParam
-        }
-
-        public mutating func setInviteLinkPassword(_ valueParam: Data) {
-            proto.inviteLinkPassword = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setDescriptionBytes(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.descriptionBytes = valueParam
-        }
-
-        public mutating func setDescriptionBytes(_ valueParam: Data) {
-            proto.descriptionBytes = valueParam
-        }
-
-        public mutating func setAnnouncementsOnly(_ valueParam: Bool) {
-            proto.announcementsOnly = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroup {
-            return try GroupsProtoGroup(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroup(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_Group
 
@@ -1433,6 +1267,172 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
     }
 }
 
+extension GroupsProtoGroup {
+    public static func builder() -> GroupsProtoGroupBuilder {
+        return GroupsProtoGroupBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupBuilder {
+        var builder = GroupsProtoGroupBuilder()
+        if let _value = publicKey {
+            builder.setPublicKey(_value)
+        }
+        if let _value = title {
+            builder.setTitle(_value)
+        }
+        if let _value = avatar {
+            builder.setAvatar(_value)
+        }
+        if let _value = disappearingMessagesTimer {
+            builder.setDisappearingMessagesTimer(_value)
+        }
+        if let _value = accessControl {
+            builder.setAccessControl(_value)
+        }
+        if hasRevision {
+            builder.setRevision(revision)
+        }
+        builder.setMembers(members)
+        builder.setPendingMembers(pendingMembers)
+        builder.setRequestingMembers(requestingMembers)
+        if let _value = inviteLinkPassword {
+            builder.setInviteLinkPassword(_value)
+        }
+        if let _value = descriptionBytes {
+            builder.setDescriptionBytes(_value)
+        }
+        if hasAnnouncementsOnly {
+            builder.setAnnouncementsOnly(announcementsOnly)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupBuilder {
+
+    private var proto = GroupsProtos_Group()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPublicKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.publicKey = valueParam
+    }
+
+    public mutating func setPublicKey(_ valueParam: Data) {
+        proto.publicKey = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setTitle(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.title = valueParam
+    }
+
+    public mutating func setTitle(_ valueParam: Data) {
+        proto.title = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAvatar(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.avatar = valueParam
+    }
+
+    public mutating func setAvatar(_ valueParam: String) {
+        proto.avatar = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setDisappearingMessagesTimer(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.disappearingMessagesTimer = valueParam
+    }
+
+    public mutating func setDisappearingMessagesTimer(_ valueParam: Data) {
+        proto.disappearingMessagesTimer = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAccessControl(_ valueParam: GroupsProtoAccessControl?) {
+        guard let valueParam = valueParam else { return }
+        proto.accessControl = valueParam.proto
+    }
+
+    public mutating func setAccessControl(_ valueParam: GroupsProtoAccessControl) {
+        proto.accessControl = valueParam.proto
+    }
+
+    public mutating func setRevision(_ valueParam: UInt32) {
+        proto.revision = valueParam
+    }
+
+    public mutating func addMembers(_ valueParam: GroupsProtoMember) {
+        proto.members.append(valueParam.proto)
+    }
+
+    public mutating func setMembers(_ wrappedItems: [GroupsProtoMember]) {
+        proto.members = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func addPendingMembers(_ valueParam: GroupsProtoPendingMember) {
+        proto.pendingMembers.append(valueParam.proto)
+    }
+
+    public mutating func setPendingMembers(_ wrappedItems: [GroupsProtoPendingMember]) {
+        proto.pendingMembers = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func addRequestingMembers(_ valueParam: GroupsProtoRequestingMember) {
+        proto.requestingMembers.append(valueParam.proto)
+    }
+
+    public mutating func setRequestingMembers(_ wrappedItems: [GroupsProtoRequestingMember]) {
+        proto.requestingMembers = wrappedItems.map { $0.proto }
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setInviteLinkPassword(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.inviteLinkPassword = valueParam
+    }
+
+    public mutating func setInviteLinkPassword(_ valueParam: Data) {
+        proto.inviteLinkPassword = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setDescriptionBytes(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.descriptionBytes = valueParam
+    }
+
+    public mutating func setDescriptionBytes(_ valueParam: Data) {
+        proto.descriptionBytes = valueParam
+    }
+
+    public mutating func setAnnouncementsOnly(_ valueParam: Bool) {
+        proto.announcementsOnly = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroup {
+        return try GroupsProtoGroup(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroup(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroup {
@@ -1441,7 +1441,7 @@ extension GroupsProtoGroup {
     }
 }
 
-extension GroupsProtoGroup.GroupsProtoGroupBuilder {
+extension GroupsProtoGroupBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroup? {
         return try! self.build()
     }
@@ -1452,60 +1452,6 @@ extension GroupsProtoGroup.GroupsProtoGroupBuilder {
 // MARK: - GroupsProtoGroupChangeActionsAddMemberAction
 
 public struct GroupsProtoGroupChangeActionsAddMemberAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsAddMemberActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsAddMemberActionBuilder {
-        return GroupsProtoGroupChangeActionsAddMemberActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsAddMemberActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsAddMemberActionBuilder()
-        if let _value = added {
-            builder.setAdded(_value)
-        }
-        if hasJoinFromInviteLink {
-            builder.setJoinFromInviteLink(joinFromInviteLink)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsAddMemberActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.AddMemberAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setAdded(_ valueParam: GroupsProtoMember?) {
-            guard let valueParam = valueParam else { return }
-            proto.added = valueParam.proto
-        }
-
-        public mutating func setAdded(_ valueParam: GroupsProtoMember) {
-            proto.added = valueParam.proto
-        }
-
-        public mutating func setJoinFromInviteLink(_ valueParam: Bool) {
-            proto.joinFromInviteLink = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsAddMemberAction {
-            return try GroupsProtoGroupChangeActionsAddMemberAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsAddMemberAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.AddMemberAction
 
@@ -1570,6 +1516,60 @@ public struct GroupsProtoGroupChangeActionsAddMemberAction: Codable, CustomDebug
     }
 }
 
+extension GroupsProtoGroupChangeActionsAddMemberAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsAddMemberActionBuilder {
+        return GroupsProtoGroupChangeActionsAddMemberActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsAddMemberActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsAddMemberActionBuilder()
+        if let _value = added {
+            builder.setAdded(_value)
+        }
+        if hasJoinFromInviteLink {
+            builder.setJoinFromInviteLink(joinFromInviteLink)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsAddMemberActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.AddMemberAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAdded(_ valueParam: GroupsProtoMember?) {
+        guard let valueParam = valueParam else { return }
+        proto.added = valueParam.proto
+    }
+
+    public mutating func setAdded(_ valueParam: GroupsProtoMember) {
+        proto.added = valueParam.proto
+    }
+
+    public mutating func setJoinFromInviteLink(_ valueParam: Bool) {
+        proto.joinFromInviteLink = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsAddMemberAction {
+        return try GroupsProtoGroupChangeActionsAddMemberAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsAddMemberAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsAddMemberAction {
@@ -1578,7 +1578,7 @@ extension GroupsProtoGroupChangeActionsAddMemberAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsAddMemberAction.GroupsProtoGroupChangeActionsAddMemberActionBuilder {
+extension GroupsProtoGroupChangeActionsAddMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsAddMemberAction? {
         return try! self.build()
     }
@@ -1589,53 +1589,6 @@ extension GroupsProtoGroupChangeActionsAddMemberAction.GroupsProtoGroupChangeAct
 // MARK: - GroupsProtoGroupChangeActionsDeleteMemberAction
 
 public struct GroupsProtoGroupChangeActionsDeleteMemberAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsDeleteMemberActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
-        return GroupsProtoGroupChangeActionsDeleteMemberActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsDeleteMemberActionBuilder()
-        if let _value = deletedUserID {
-            builder.setDeletedUserID(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.DeleteMemberAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setDeletedUserID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.deletedUserID = valueParam
-        }
-
-        public mutating func setDeletedUserID(_ valueParam: Data) {
-            proto.deletedUserID = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
-            return try GroupsProtoGroupChangeActionsDeleteMemberAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsDeleteMemberAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction
 
@@ -1693,6 +1646,53 @@ public struct GroupsProtoGroupChangeActionsDeleteMemberAction: Codable, CustomDe
     }
 }
 
+extension GroupsProtoGroupChangeActionsDeleteMemberAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
+        return GroupsProtoGroupChangeActionsDeleteMemberActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsDeleteMemberActionBuilder()
+        if let _value = deletedUserID {
+            builder.setDeletedUserID(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.DeleteMemberAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setDeletedUserID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.deletedUserID = valueParam
+    }
+
+    public mutating func setDeletedUserID(_ valueParam: Data) {
+        proto.deletedUserID = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
+        return try GroupsProtoGroupChangeActionsDeleteMemberAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsDeleteMemberAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsDeleteMemberAction {
@@ -1701,7 +1701,7 @@ extension GroupsProtoGroupChangeActionsDeleteMemberAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsDeleteMemberAction.GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
+extension GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsDeleteMemberAction? {
         return try! self.build()
     }
@@ -1712,60 +1712,6 @@ extension GroupsProtoGroupChangeActionsDeleteMemberAction.GroupsProtoGroupChange
 // MARK: - GroupsProtoGroupChangeActionsModifyMemberRoleAction
 
 public struct GroupsProtoGroupChangeActionsModifyMemberRoleAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
-        return GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder()
-        if let _value = userID {
-            builder.setUserID(_value)
-        }
-        if let _value = role {
-            builder.setRole(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setUserID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.userID = valueParam
-        }
-
-        public mutating func setUserID(_ valueParam: Data) {
-            proto.userID = valueParam
-        }
-
-        public mutating func setRole(_ valueParam: GroupsProtoMemberRole) {
-            proto.role = GroupsProtoMemberRoleUnwrap(valueParam)
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
-            return try GroupsProtoGroupChangeActionsModifyMemberRoleAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyMemberRoleAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction
 
@@ -1841,6 +1787,60 @@ public struct GroupsProtoGroupChangeActionsModifyMemberRoleAction: Codable, Cust
     }
 }
 
+extension GroupsProtoGroupChangeActionsModifyMemberRoleAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder()
+        if let _value = userID {
+            builder.setUserID(_value)
+        }
+        if let _value = role {
+            builder.setRole(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setUserID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.userID = valueParam
+    }
+
+    public mutating func setUserID(_ valueParam: Data) {
+        proto.userID = valueParam
+    }
+
+    public mutating func setRole(_ valueParam: GroupsProtoMemberRole) {
+        proto.role = GroupsProtoMemberRoleUnwrap(valueParam)
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
+        return try GroupsProtoGroupChangeActionsModifyMemberRoleAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsModifyMemberRoleAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyMemberRoleAction {
@@ -1849,7 +1849,7 @@ extension GroupsProtoGroupChangeActionsModifyMemberRoleAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsModifyMemberRoleAction.GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
+extension GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyMemberRoleAction? {
         return try! self.build()
     }
@@ -1860,53 +1860,6 @@ extension GroupsProtoGroupChangeActionsModifyMemberRoleAction.GroupsProtoGroupCh
 // MARK: - GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction
 
 public struct GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
-        return GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder()
-        if let _value = presentation {
-            builder.setPresentation(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setPresentation(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.presentation = valueParam
-        }
-
-        public mutating func setPresentation(_ valueParam: Data) {
-            proto.presentation = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
-            return try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction
 
@@ -1964,6 +1917,53 @@ public struct GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: Codable
     }
 }
 
+extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder()
+        if let _value = presentation {
+            builder.setPresentation(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPresentation(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.presentation = valueParam
+    }
+
+    public mutating func setPresentation(_ valueParam: Data) {
+        proto.presentation = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
+        return try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
@@ -1972,7 +1972,7 @@ extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
+extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction? {
         return try! self.build()
     }
@@ -1983,53 +1983,6 @@ extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.GroupsProtoG
 // MARK: - GroupsProtoGroupChangeActionsAddPendingMemberAction
 
 public struct GroupsProtoGroupChangeActionsAddPendingMemberAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
-        return GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder()
-        if let _value = added {
-            builder.setAdded(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.AddPendingMemberAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setAdded(_ valueParam: GroupsProtoPendingMember?) {
-            guard let valueParam = valueParam else { return }
-            proto.added = valueParam.proto
-        }
-
-        public mutating func setAdded(_ valueParam: GroupsProtoPendingMember) {
-            proto.added = valueParam.proto
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsAddPendingMemberAction {
-            return try GroupsProtoGroupChangeActionsAddPendingMemberAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsAddPendingMemberAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.AddPendingMemberAction
 
@@ -2087,6 +2040,53 @@ public struct GroupsProtoGroupChangeActionsAddPendingMemberAction: Codable, Cust
     }
 }
 
+extension GroupsProtoGroupChangeActionsAddPendingMemberAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
+        return GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder()
+        if let _value = added {
+            builder.setAdded(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.AddPendingMemberAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAdded(_ valueParam: GroupsProtoPendingMember?) {
+        guard let valueParam = valueParam else { return }
+        proto.added = valueParam.proto
+    }
+
+    public mutating func setAdded(_ valueParam: GroupsProtoPendingMember) {
+        proto.added = valueParam.proto
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsAddPendingMemberAction {
+        return try GroupsProtoGroupChangeActionsAddPendingMemberAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsAddPendingMemberAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsAddPendingMemberAction {
@@ -2095,7 +2095,7 @@ extension GroupsProtoGroupChangeActionsAddPendingMemberAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsAddPendingMemberAction.GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
+extension GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsAddPendingMemberAction? {
         return try! self.build()
     }
@@ -2106,53 +2106,6 @@ extension GroupsProtoGroupChangeActionsAddPendingMemberAction.GroupsProtoGroupCh
 // MARK: - GroupsProtoGroupChangeActionsDeletePendingMemberAction
 
 public struct GroupsProtoGroupChangeActionsDeletePendingMemberAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
-        return GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder()
-        if let _value = deletedUserID {
-            builder.setDeletedUserID(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.DeletePendingMemberAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setDeletedUserID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.deletedUserID = valueParam
-        }
-
-        public mutating func setDeletedUserID(_ valueParam: Data) {
-            proto.deletedUserID = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsDeletePendingMemberAction {
-            return try GroupsProtoGroupChangeActionsDeletePendingMemberAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsDeletePendingMemberAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.DeletePendingMemberAction
 
@@ -2210,6 +2163,53 @@ public struct GroupsProtoGroupChangeActionsDeletePendingMemberAction: Codable, C
     }
 }
 
+extension GroupsProtoGroupChangeActionsDeletePendingMemberAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
+        return GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder()
+        if let _value = deletedUserID {
+            builder.setDeletedUserID(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.DeletePendingMemberAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setDeletedUserID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.deletedUserID = valueParam
+    }
+
+    public mutating func setDeletedUserID(_ valueParam: Data) {
+        proto.deletedUserID = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsDeletePendingMemberAction {
+        return try GroupsProtoGroupChangeActionsDeletePendingMemberAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsDeletePendingMemberAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsDeletePendingMemberAction {
@@ -2218,7 +2218,7 @@ extension GroupsProtoGroupChangeActionsDeletePendingMemberAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsDeletePendingMemberAction.GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
+extension GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsDeletePendingMemberAction? {
         return try! self.build()
     }
@@ -2229,53 +2229,6 @@ extension GroupsProtoGroupChangeActionsDeletePendingMemberAction.GroupsProtoGrou
 // MARK: - GroupsProtoGroupChangeActionsPromotePendingMemberAction
 
 public struct GroupsProtoGroupChangeActionsPromotePendingMemberAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
-        return GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder()
-        if let _value = presentation {
-            builder.setPresentation(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.PromotePendingMemberAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setPresentation(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.presentation = valueParam
-        }
-
-        public mutating func setPresentation(_ valueParam: Data) {
-            proto.presentation = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsPromotePendingMemberAction {
-            return try GroupsProtoGroupChangeActionsPromotePendingMemberAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsPromotePendingMemberAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction
 
@@ -2333,6 +2286,53 @@ public struct GroupsProtoGroupChangeActionsPromotePendingMemberAction: Codable, 
     }
 }
 
+extension GroupsProtoGroupChangeActionsPromotePendingMemberAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
+        return GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder()
+        if let _value = presentation {
+            builder.setPresentation(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.PromotePendingMemberAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPresentation(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.presentation = valueParam
+    }
+
+    public mutating func setPresentation(_ valueParam: Data) {
+        proto.presentation = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsPromotePendingMemberAction {
+        return try GroupsProtoGroupChangeActionsPromotePendingMemberAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsPromotePendingMemberAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsPromotePendingMemberAction {
@@ -2341,7 +2341,7 @@ extension GroupsProtoGroupChangeActionsPromotePendingMemberAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsPromotePendingMemberAction.GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
+extension GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsPromotePendingMemberAction? {
         return try! self.build()
     }
@@ -2352,53 +2352,6 @@ extension GroupsProtoGroupChangeActionsPromotePendingMemberAction.GroupsProtoGro
 // MARK: - GroupsProtoGroupChangeActionsAddRequestingMemberAction
 
 public struct GroupsProtoGroupChangeActionsAddRequestingMemberAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder {
-        return GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder()
-        if let _value = added {
-            builder.setAdded(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.AddRequestingMemberAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setAdded(_ valueParam: GroupsProtoRequestingMember?) {
-            guard let valueParam = valueParam else { return }
-            proto.added = valueParam.proto
-        }
-
-        public mutating func setAdded(_ valueParam: GroupsProtoRequestingMember) {
-            proto.added = valueParam.proto
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsAddRequestingMemberAction {
-            return try GroupsProtoGroupChangeActionsAddRequestingMemberAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsAddRequestingMemberAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.AddRequestingMemberAction
 
@@ -2456,6 +2409,53 @@ public struct GroupsProtoGroupChangeActionsAddRequestingMemberAction: Codable, C
     }
 }
 
+extension GroupsProtoGroupChangeActionsAddRequestingMemberAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder {
+        return GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder()
+        if let _value = added {
+            builder.setAdded(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.AddRequestingMemberAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAdded(_ valueParam: GroupsProtoRequestingMember?) {
+        guard let valueParam = valueParam else { return }
+        proto.added = valueParam.proto
+    }
+
+    public mutating func setAdded(_ valueParam: GroupsProtoRequestingMember) {
+        proto.added = valueParam.proto
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsAddRequestingMemberAction {
+        return try GroupsProtoGroupChangeActionsAddRequestingMemberAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsAddRequestingMemberAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsAddRequestingMemberAction {
@@ -2464,7 +2464,7 @@ extension GroupsProtoGroupChangeActionsAddRequestingMemberAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsAddRequestingMemberAction.GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder {
+extension GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsAddRequestingMemberAction? {
         return try! self.build()
     }
@@ -2475,53 +2475,6 @@ extension GroupsProtoGroupChangeActionsAddRequestingMemberAction.GroupsProtoGrou
 // MARK: - GroupsProtoGroupChangeActionsDeleteRequestingMemberAction
 
 public struct GroupsProtoGroupChangeActionsDeleteRequestingMemberAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder {
-        return GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder()
-        if let _value = deletedUserID {
-            builder.setDeletedUserID(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setDeletedUserID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.deletedUserID = valueParam
-        }
-
-        public mutating func setDeletedUserID(_ valueParam: Data) {
-            proto.deletedUserID = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsDeleteRequestingMemberAction {
-            return try GroupsProtoGroupChangeActionsDeleteRequestingMemberAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsDeleteRequestingMemberAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction
 
@@ -2579,6 +2532,53 @@ public struct GroupsProtoGroupChangeActionsDeleteRequestingMemberAction: Codable
     }
 }
 
+extension GroupsProtoGroupChangeActionsDeleteRequestingMemberAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder {
+        return GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder()
+        if let _value = deletedUserID {
+            builder.setDeletedUserID(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setDeletedUserID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.deletedUserID = valueParam
+    }
+
+    public mutating func setDeletedUserID(_ valueParam: Data) {
+        proto.deletedUserID = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsDeleteRequestingMemberAction {
+        return try GroupsProtoGroupChangeActionsDeleteRequestingMemberAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsDeleteRequestingMemberAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsDeleteRequestingMemberAction {
@@ -2587,7 +2587,7 @@ extension GroupsProtoGroupChangeActionsDeleteRequestingMemberAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsDeleteRequestingMemberAction.GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder {
+extension GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsDeleteRequestingMemberAction? {
         return try! self.build()
     }
@@ -2598,60 +2598,6 @@ extension GroupsProtoGroupChangeActionsDeleteRequestingMemberAction.GroupsProtoG
 // MARK: - GroupsProtoGroupChangeActionsPromoteRequestingMemberAction
 
 public struct GroupsProtoGroupChangeActionsPromoteRequestingMemberAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder {
-        return GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder()
-        if let _value = userID {
-            builder.setUserID(_value)
-        }
-        if let _value = role {
-            builder.setRole(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setUserID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.userID = valueParam
-        }
-
-        public mutating func setUserID(_ valueParam: Data) {
-            proto.userID = valueParam
-        }
-
-        public mutating func setRole(_ valueParam: GroupsProtoMemberRole) {
-            proto.role = GroupsProtoMemberRoleUnwrap(valueParam)
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsPromoteRequestingMemberAction {
-            return try GroupsProtoGroupChangeActionsPromoteRequestingMemberAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsPromoteRequestingMemberAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction
 
@@ -2727,6 +2673,60 @@ public struct GroupsProtoGroupChangeActionsPromoteRequestingMemberAction: Codabl
     }
 }
 
+extension GroupsProtoGroupChangeActionsPromoteRequestingMemberAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder {
+        return GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder()
+        if let _value = userID {
+            builder.setUserID(_value)
+        }
+        if let _value = role {
+            builder.setRole(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setUserID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.userID = valueParam
+    }
+
+    public mutating func setUserID(_ valueParam: Data) {
+        proto.userID = valueParam
+    }
+
+    public mutating func setRole(_ valueParam: GroupsProtoMemberRole) {
+        proto.role = GroupsProtoMemberRoleUnwrap(valueParam)
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsPromoteRequestingMemberAction {
+        return try GroupsProtoGroupChangeActionsPromoteRequestingMemberAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsPromoteRequestingMemberAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsPromoteRequestingMemberAction {
@@ -2735,7 +2735,7 @@ extension GroupsProtoGroupChangeActionsPromoteRequestingMemberAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsPromoteRequestingMemberAction.GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder {
+extension GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsPromoteRequestingMemberAction? {
         return try! self.build()
     }
@@ -2746,53 +2746,6 @@ extension GroupsProtoGroupChangeActionsPromoteRequestingMemberAction.GroupsProto
 // MARK: - GroupsProtoGroupChangeActionsModifyTitleAction
 
 public struct GroupsProtoGroupChangeActionsModifyTitleAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsModifyTitleActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
-        return GroupsProtoGroupChangeActionsModifyTitleActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsModifyTitleActionBuilder()
-        if let _value = title {
-            builder.setTitle(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.ModifyTitleAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setTitle(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.title = valueParam
-        }
-
-        public mutating func setTitle(_ valueParam: Data) {
-            proto.title = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsModifyTitleAction {
-            return try GroupsProtoGroupChangeActionsModifyTitleAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyTitleAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyTitleAction
 
@@ -2850,6 +2803,53 @@ public struct GroupsProtoGroupChangeActionsModifyTitleAction: Codable, CustomDeb
     }
 }
 
+extension GroupsProtoGroupChangeActionsModifyTitleAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyTitleActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsModifyTitleActionBuilder()
+        if let _value = title {
+            builder.setTitle(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.ModifyTitleAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setTitle(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.title = valueParam
+    }
+
+    public mutating func setTitle(_ valueParam: Data) {
+        proto.title = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsModifyTitleAction {
+        return try GroupsProtoGroupChangeActionsModifyTitleAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsModifyTitleAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyTitleAction {
@@ -2858,7 +2858,7 @@ extension GroupsProtoGroupChangeActionsModifyTitleAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsModifyTitleAction.GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
+extension GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyTitleAction? {
         return try! self.build()
     }
@@ -2869,53 +2869,6 @@ extension GroupsProtoGroupChangeActionsModifyTitleAction.GroupsProtoGroupChangeA
 // MARK: - GroupsProtoGroupChangeActionsModifyAvatarAction
 
 public struct GroupsProtoGroupChangeActionsModifyAvatarAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsModifyAvatarActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
-        return GroupsProtoGroupChangeActionsModifyAvatarActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsModifyAvatarActionBuilder()
-        if let _value = avatar {
-            builder.setAvatar(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.ModifyAvatarAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setAvatar(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.avatar = valueParam
-        }
-
-        public mutating func setAvatar(_ valueParam: String) {
-            proto.avatar = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAction {
-            return try GroupsProtoGroupChangeActionsModifyAvatarAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyAvatarAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAction
 
@@ -2973,6 +2926,53 @@ public struct GroupsProtoGroupChangeActionsModifyAvatarAction: Codable, CustomDe
     }
 }
 
+extension GroupsProtoGroupChangeActionsModifyAvatarAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyAvatarActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsModifyAvatarActionBuilder()
+        if let _value = avatar {
+            builder.setAvatar(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.ModifyAvatarAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAvatar(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.avatar = valueParam
+    }
+
+    public mutating func setAvatar(_ valueParam: String) {
+        proto.avatar = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAction {
+        return try GroupsProtoGroupChangeActionsModifyAvatarAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsModifyAvatarAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyAvatarAction {
@@ -2981,7 +2981,7 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsModifyAvatarAction.GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
+extension GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAvatarAction? {
         return try! self.build()
     }
@@ -2992,53 +2992,6 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAction.GroupsProtoGroupChange
 // MARK: - GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction
 
 public struct GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder {
-        return GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder()
-        if let _value = timer {
-            builder.setTimer(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setTimer(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.timer = valueParam
-        }
-
-        public mutating func setTimer(_ valueParam: Data) {
-            proto.timer = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
-            return try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction
 
@@ -3096,6 +3049,53 @@ public struct GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction
     }
 }
 
+extension GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder()
+        if let _value = timer {
+            builder.setTimer(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setTimer(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.timer = valueParam
+    }
+
+    public mutating func setTimer(_ valueParam: Data) {
+        proto.timer = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
+        return try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
@@ -3104,7 +3104,7 @@ extension GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder {
+extension GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction? {
         return try! self.build()
     }
@@ -3115,47 +3115,6 @@ extension GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.Gro
 // MARK: - GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction
 
 public struct GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder {
-        return GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder()
-        if let _value = attributesAccess {
-            builder.setAttributesAccess(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction()
-
-        fileprivate init() {}
-
-        public mutating func setAttributesAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
-            proto.attributesAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
-            return try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction
 
@@ -3221,6 +3180,47 @@ public struct GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: 
     }
 }
 
+extension GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder()
+        if let _value = attributesAccess {
+            builder.setAttributesAccess(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction()
+
+    fileprivate init() {}
+
+    public mutating func setAttributesAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+        proto.attributesAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
+        return try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
@@ -3229,7 +3229,7 @@ extension GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder {
+extension GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction? {
         return try! self.build()
     }
@@ -3240,47 +3240,6 @@ extension GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.Group
 // MARK: - GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction
 
 public struct GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
-        return GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder()
-        if let _value = avatarAccess {
-            builder.setAvatarAccess(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction()
-
-        fileprivate init() {}
-
-        public mutating func setAvatarAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
-            proto.avatarAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
-            return try GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction
 
@@ -3346,6 +3305,47 @@ public struct GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: Coda
     }
 }
 
+extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder()
+        if let _value = avatarAccess {
+            builder.setAvatarAccess(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction()
+
+    fileprivate init() {}
+
+    public mutating func setAvatarAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+        proto.avatarAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
+        return try GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
@@ -3354,7 +3354,7 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
+extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction? {
         return try! self.build()
     }
@@ -3365,47 +3365,6 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.GroupsPro
 // MARK: - GroupsProtoGroupChangeActionsModifyMembersAccessControlAction
 
 public struct GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
-        return GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder()
-        if let _value = membersAccess {
-            builder.setMembersAccess(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction()
-
-        fileprivate init() {}
-
-        public mutating func setMembersAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
-            proto.membersAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
-            return try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction
 
@@ -3471,6 +3430,47 @@ public struct GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: Cod
     }
 }
 
+extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder()
+        if let _value = membersAccess {
+            builder.setMembersAccess(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction()
+
+    fileprivate init() {}
+
+    public mutating func setMembersAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+        proto.membersAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
+        return try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
@@ -3479,7 +3479,7 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
+extension GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction? {
         return try! self.build()
     }
@@ -3490,47 +3490,6 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsPr
 // MARK: - GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction
 
 public struct GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder {
-        return GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder()
-        if let _value = addFromInviteLinkAccess {
-            builder.setAddFromInviteLinkAccess(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction()
-
-        fileprivate init() {}
-
-        public mutating func setAddFromInviteLinkAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
-            proto.addFromInviteLinkAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction {
-            return try GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction
 
@@ -3596,6 +3555,47 @@ public struct GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlA
     }
 }
 
+extension GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder()
+        if let _value = addFromInviteLinkAccess {
+            builder.setAddFromInviteLinkAccess(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction()
+
+    fileprivate init() {}
+
+    public mutating func setAddFromInviteLinkAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+        proto.addFromInviteLinkAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction {
+        return try GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction {
@@ -3604,7 +3604,7 @@ extension GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActio
     }
 }
 
-extension GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction.GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder {
+extension GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction? {
         return try! self.build()
     }
@@ -3615,53 +3615,6 @@ extension GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActio
 // MARK: - GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction
 
 public struct GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder {
-        return GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder()
-        if let _value = inviteLinkPassword {
-            builder.setInviteLinkPassword(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setInviteLinkPassword(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.inviteLinkPassword = valueParam
-        }
-
-        public mutating func setInviteLinkPassword(_ valueParam: Data) {
-            proto.inviteLinkPassword = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction {
-            return try GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction
 
@@ -3719,6 +3672,53 @@ public struct GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction: Codab
     }
 }
 
+extension GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder()
+        if let _value = inviteLinkPassword {
+            builder.setInviteLinkPassword(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setInviteLinkPassword(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.inviteLinkPassword = valueParam
+    }
+
+    public mutating func setInviteLinkPassword(_ valueParam: Data) {
+        proto.inviteLinkPassword = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction {
+        return try GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction {
@@ -3727,7 +3727,7 @@ extension GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction.GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder {
+extension GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction? {
         return try! self.build()
     }
@@ -3738,53 +3738,6 @@ extension GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction.GroupsProt
 // MARK: - GroupsProtoGroupChangeActionsModifyDescriptionAction
 
 public struct GroupsProtoGroupChangeActionsModifyDescriptionAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
-        return GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder()
-        if let _value = descriptionBytes {
-            builder.setDescriptionBytes(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.ModifyDescriptionAction()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setDescriptionBytes(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.descriptionBytes = valueParam
-        }
-
-        public mutating func setDescriptionBytes(_ valueParam: Data) {
-            proto.descriptionBytes = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsModifyDescriptionAction {
-            return try GroupsProtoGroupChangeActionsModifyDescriptionAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyDescriptionAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction
 
@@ -3842,6 +3795,53 @@ public struct GroupsProtoGroupChangeActionsModifyDescriptionAction: Codable, Cus
     }
 }
 
+extension GroupsProtoGroupChangeActionsModifyDescriptionAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder()
+        if let _value = descriptionBytes {
+            builder.setDescriptionBytes(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.ModifyDescriptionAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setDescriptionBytes(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.descriptionBytes = valueParam
+    }
+
+    public mutating func setDescriptionBytes(_ valueParam: Data) {
+        proto.descriptionBytes = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsModifyDescriptionAction {
+        return try GroupsProtoGroupChangeActionsModifyDescriptionAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsModifyDescriptionAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyDescriptionAction {
@@ -3850,7 +3850,7 @@ extension GroupsProtoGroupChangeActionsModifyDescriptionAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsModifyDescriptionAction.GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
+extension GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyDescriptionAction? {
         return try! self.build()
     }
@@ -3861,47 +3861,6 @@ extension GroupsProtoGroupChangeActionsModifyDescriptionAction.GroupsProtoGroupC
 // MARK: - GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction
 
 public struct GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder {
-        return GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder {
-        var builder = GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder()
-        if hasAnnouncementsOnly {
-            builder.setAnnouncementsOnly(announcementsOnly)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction()
-
-        fileprivate init() {}
-
-        public mutating func setAnnouncementsOnly(_ valueParam: Bool) {
-            proto.announcementsOnly = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction {
-            return try GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction
 
@@ -3956,6 +3915,47 @@ public struct GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction: Codabl
     }
 }
 
+extension GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder()
+        if hasAnnouncementsOnly {
+            builder.setAnnouncementsOnly(announcementsOnly)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction()
+
+    fileprivate init() {}
+
+    public mutating func setAnnouncementsOnly(_ valueParam: Bool) {
+        proto.announcementsOnly = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction {
+        return try GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction {
@@ -3964,7 +3964,7 @@ extension GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction {
     }
 }
 
-extension GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction.GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder {
+extension GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction? {
         return try! self.build()
     }
@@ -3975,267 +3975,6 @@ extension GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction.GroupsProto
 // MARK: - GroupsProtoGroupChangeActions
 
 public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeActionsBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeActionsBuilder {
-        return GroupsProtoGroupChangeActionsBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeActionsBuilder {
-        var builder = GroupsProtoGroupChangeActionsBuilder()
-        if let _value = sourceUuid {
-            builder.setSourceUuid(_value)
-        }
-        if hasRevision {
-            builder.setRevision(revision)
-        }
-        builder.setAddMembers(addMembers)
-        builder.setDeleteMembers(deleteMembers)
-        builder.setModifyMemberRoles(modifyMemberRoles)
-        builder.setModifyMemberProfileKeys(modifyMemberProfileKeys)
-        builder.setAddPendingMembers(addPendingMembers)
-        builder.setDeletePendingMembers(deletePendingMembers)
-        builder.setPromotePendingMembers(promotePendingMembers)
-        if let _value = modifyTitle {
-            builder.setModifyTitle(_value)
-        }
-        if let _value = modifyAvatar {
-            builder.setModifyAvatar(_value)
-        }
-        if let _value = modifyDisappearingMessagesTimer {
-            builder.setModifyDisappearingMessagesTimer(_value)
-        }
-        if let _value = modifyAttributesAccess {
-            builder.setModifyAttributesAccess(_value)
-        }
-        if let _value = modifyMemberAccess {
-            builder.setModifyMemberAccess(_value)
-        }
-        if let _value = modifyAddFromInviteLinkAccess {
-            builder.setModifyAddFromInviteLinkAccess(_value)
-        }
-        builder.setAddRequestingMembers(addRequestingMembers)
-        builder.setDeleteRequestingMembers(deleteRequestingMembers)
-        builder.setPromoteRequestingMembers(promoteRequestingMembers)
-        if let _value = modifyInviteLinkPassword {
-            builder.setModifyInviteLinkPassword(_value)
-        }
-        if let _value = modifyDescription {
-            builder.setModifyDescription(_value)
-        }
-        if let _value = modifyAnnouncementsOnly {
-            builder.setModifyAnnouncementsOnly(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeActionsBuilder {
-
-        private var proto = GroupsProtos_GroupChange.Actions()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setSourceUuid(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.sourceUuid = valueParam
-        }
-
-        public mutating func setSourceUuid(_ valueParam: Data) {
-            proto.sourceUuid = valueParam
-        }
-
-        public mutating func setRevision(_ valueParam: UInt32) {
-            proto.revision = valueParam
-        }
-
-        public mutating func addAddMembers(_ valueParam: GroupsProtoGroupChangeActionsAddMemberAction) {
-            proto.addMembers.append(valueParam.proto)
-        }
-
-        public mutating func setAddMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsAddMemberAction]) {
-            proto.addMembers = wrappedItems.map { $0.proto }
-        }
-
-        public mutating func addDeleteMembers(_ valueParam: GroupsProtoGroupChangeActionsDeleteMemberAction) {
-            proto.deleteMembers.append(valueParam.proto)
-        }
-
-        public mutating func setDeleteMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsDeleteMemberAction]) {
-            proto.deleteMembers = wrappedItems.map { $0.proto }
-        }
-
-        public mutating func addModifyMemberRoles(_ valueParam: GroupsProtoGroupChangeActionsModifyMemberRoleAction) {
-            proto.modifyMemberRoles.append(valueParam.proto)
-        }
-
-        public mutating func setModifyMemberRoles(_ wrappedItems: [GroupsProtoGroupChangeActionsModifyMemberRoleAction]) {
-            proto.modifyMemberRoles = wrappedItems.map { $0.proto }
-        }
-
-        public mutating func addModifyMemberProfileKeys(_ valueParam: GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction) {
-            proto.modifyMemberProfileKeys.append(valueParam.proto)
-        }
-
-        public mutating func setModifyMemberProfileKeys(_ wrappedItems: [GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction]) {
-            proto.modifyMemberProfileKeys = wrappedItems.map { $0.proto }
-        }
-
-        public mutating func addAddPendingMembers(_ valueParam: GroupsProtoGroupChangeActionsAddPendingMemberAction) {
-            proto.addPendingMembers.append(valueParam.proto)
-        }
-
-        public mutating func setAddPendingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsAddPendingMemberAction]) {
-            proto.addPendingMembers = wrappedItems.map { $0.proto }
-        }
-
-        public mutating func addDeletePendingMembers(_ valueParam: GroupsProtoGroupChangeActionsDeletePendingMemberAction) {
-            proto.deletePendingMembers.append(valueParam.proto)
-        }
-
-        public mutating func setDeletePendingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsDeletePendingMemberAction]) {
-            proto.deletePendingMembers = wrappedItems.map { $0.proto }
-        }
-
-        public mutating func addPromotePendingMembers(_ valueParam: GroupsProtoGroupChangeActionsPromotePendingMemberAction) {
-            proto.promotePendingMembers.append(valueParam.proto)
-        }
-
-        public mutating func setPromotePendingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsPromotePendingMemberAction]) {
-            proto.promotePendingMembers = wrappedItems.map { $0.proto }
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setModifyTitle(_ valueParam: GroupsProtoGroupChangeActionsModifyTitleAction?) {
-            guard let valueParam = valueParam else { return }
-            proto.modifyTitle = valueParam.proto
-        }
-
-        public mutating func setModifyTitle(_ valueParam: GroupsProtoGroupChangeActionsModifyTitleAction) {
-            proto.modifyTitle = valueParam.proto
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setModifyAvatar(_ valueParam: GroupsProtoGroupChangeActionsModifyAvatarAction?) {
-            guard let valueParam = valueParam else { return }
-            proto.modifyAvatar = valueParam.proto
-        }
-
-        public mutating func setModifyAvatar(_ valueParam: GroupsProtoGroupChangeActionsModifyAvatarAction) {
-            proto.modifyAvatar = valueParam.proto
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setModifyDisappearingMessagesTimer(_ valueParam: GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction?) {
-            guard let valueParam = valueParam else { return }
-            proto.modifyDisappearingMessagesTimer = valueParam.proto
-        }
-
-        public mutating func setModifyDisappearingMessagesTimer(_ valueParam: GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction) {
-            proto.modifyDisappearingMessagesTimer = valueParam.proto
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setModifyAttributesAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction?) {
-            guard let valueParam = valueParam else { return }
-            proto.modifyAttributesAccess = valueParam.proto
-        }
-
-        public mutating func setModifyAttributesAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction) {
-            proto.modifyAttributesAccess = valueParam.proto
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setModifyMemberAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyMembersAccessControlAction?) {
-            guard let valueParam = valueParam else { return }
-            proto.modifyMemberAccess = valueParam.proto
-        }
-
-        public mutating func setModifyMemberAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyMembersAccessControlAction) {
-            proto.modifyMemberAccess = valueParam.proto
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setModifyAddFromInviteLinkAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction?) {
-            guard let valueParam = valueParam else { return }
-            proto.modifyAddFromInviteLinkAccess = valueParam.proto
-        }
-
-        public mutating func setModifyAddFromInviteLinkAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction) {
-            proto.modifyAddFromInviteLinkAccess = valueParam.proto
-        }
-
-        public mutating func addAddRequestingMembers(_ valueParam: GroupsProtoGroupChangeActionsAddRequestingMemberAction) {
-            proto.addRequestingMembers.append(valueParam.proto)
-        }
-
-        public mutating func setAddRequestingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsAddRequestingMemberAction]) {
-            proto.addRequestingMembers = wrappedItems.map { $0.proto }
-        }
-
-        public mutating func addDeleteRequestingMembers(_ valueParam: GroupsProtoGroupChangeActionsDeleteRequestingMemberAction) {
-            proto.deleteRequestingMembers.append(valueParam.proto)
-        }
-
-        public mutating func setDeleteRequestingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsDeleteRequestingMemberAction]) {
-            proto.deleteRequestingMembers = wrappedItems.map { $0.proto }
-        }
-
-        public mutating func addPromoteRequestingMembers(_ valueParam: GroupsProtoGroupChangeActionsPromoteRequestingMemberAction) {
-            proto.promoteRequestingMembers.append(valueParam.proto)
-        }
-
-        public mutating func setPromoteRequestingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsPromoteRequestingMemberAction]) {
-            proto.promoteRequestingMembers = wrappedItems.map { $0.proto }
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setModifyInviteLinkPassword(_ valueParam: GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction?) {
-            guard let valueParam = valueParam else { return }
-            proto.modifyInviteLinkPassword = valueParam.proto
-        }
-
-        public mutating func setModifyInviteLinkPassword(_ valueParam: GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction) {
-            proto.modifyInviteLinkPassword = valueParam.proto
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setModifyDescription(_ valueParam: GroupsProtoGroupChangeActionsModifyDescriptionAction?) {
-            guard let valueParam = valueParam else { return }
-            proto.modifyDescription = valueParam.proto
-        }
-
-        public mutating func setModifyDescription(_ valueParam: GroupsProtoGroupChangeActionsModifyDescriptionAction) {
-            proto.modifyDescription = valueParam.proto
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setModifyAnnouncementsOnly(_ valueParam: GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction?) {
-            guard let valueParam = valueParam else { return }
-            proto.modifyAnnouncementsOnly = valueParam.proto
-        }
-
-        public mutating func setModifyAnnouncementsOnly(_ valueParam: GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction) {
-            proto.modifyAnnouncementsOnly = valueParam.proto
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangeActions {
-            return try GroupsProtoGroupChangeActions(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActions(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions
 
@@ -4470,6 +4209,267 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
     }
 }
 
+extension GroupsProtoGroupChangeActions {
+    public static func builder() -> GroupsProtoGroupChangeActionsBuilder {
+        return GroupsProtoGroupChangeActionsBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsBuilder {
+        var builder = GroupsProtoGroupChangeActionsBuilder()
+        if let _value = sourceUuid {
+            builder.setSourceUuid(_value)
+        }
+        if hasRevision {
+            builder.setRevision(revision)
+        }
+        builder.setAddMembers(addMembers)
+        builder.setDeleteMembers(deleteMembers)
+        builder.setModifyMemberRoles(modifyMemberRoles)
+        builder.setModifyMemberProfileKeys(modifyMemberProfileKeys)
+        builder.setAddPendingMembers(addPendingMembers)
+        builder.setDeletePendingMembers(deletePendingMembers)
+        builder.setPromotePendingMembers(promotePendingMembers)
+        if let _value = modifyTitle {
+            builder.setModifyTitle(_value)
+        }
+        if let _value = modifyAvatar {
+            builder.setModifyAvatar(_value)
+        }
+        if let _value = modifyDisappearingMessagesTimer {
+            builder.setModifyDisappearingMessagesTimer(_value)
+        }
+        if let _value = modifyAttributesAccess {
+            builder.setModifyAttributesAccess(_value)
+        }
+        if let _value = modifyMemberAccess {
+            builder.setModifyMemberAccess(_value)
+        }
+        if let _value = modifyAddFromInviteLinkAccess {
+            builder.setModifyAddFromInviteLinkAccess(_value)
+        }
+        builder.setAddRequestingMembers(addRequestingMembers)
+        builder.setDeleteRequestingMembers(deleteRequestingMembers)
+        builder.setPromoteRequestingMembers(promoteRequestingMembers)
+        if let _value = modifyInviteLinkPassword {
+            builder.setModifyInviteLinkPassword(_value)
+        }
+        if let _value = modifyDescription {
+            builder.setModifyDescription(_value)
+        }
+        if let _value = modifyAnnouncementsOnly {
+            builder.setModifyAnnouncementsOnly(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setSourceUuid(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.sourceUuid = valueParam
+    }
+
+    public mutating func setSourceUuid(_ valueParam: Data) {
+        proto.sourceUuid = valueParam
+    }
+
+    public mutating func setRevision(_ valueParam: UInt32) {
+        proto.revision = valueParam
+    }
+
+    public mutating func addAddMembers(_ valueParam: GroupsProtoGroupChangeActionsAddMemberAction) {
+        proto.addMembers.append(valueParam.proto)
+    }
+
+    public mutating func setAddMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsAddMemberAction]) {
+        proto.addMembers = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func addDeleteMembers(_ valueParam: GroupsProtoGroupChangeActionsDeleteMemberAction) {
+        proto.deleteMembers.append(valueParam.proto)
+    }
+
+    public mutating func setDeleteMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsDeleteMemberAction]) {
+        proto.deleteMembers = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func addModifyMemberRoles(_ valueParam: GroupsProtoGroupChangeActionsModifyMemberRoleAction) {
+        proto.modifyMemberRoles.append(valueParam.proto)
+    }
+
+    public mutating func setModifyMemberRoles(_ wrappedItems: [GroupsProtoGroupChangeActionsModifyMemberRoleAction]) {
+        proto.modifyMemberRoles = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func addModifyMemberProfileKeys(_ valueParam: GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction) {
+        proto.modifyMemberProfileKeys.append(valueParam.proto)
+    }
+
+    public mutating func setModifyMemberProfileKeys(_ wrappedItems: [GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction]) {
+        proto.modifyMemberProfileKeys = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func addAddPendingMembers(_ valueParam: GroupsProtoGroupChangeActionsAddPendingMemberAction) {
+        proto.addPendingMembers.append(valueParam.proto)
+    }
+
+    public mutating func setAddPendingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsAddPendingMemberAction]) {
+        proto.addPendingMembers = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func addDeletePendingMembers(_ valueParam: GroupsProtoGroupChangeActionsDeletePendingMemberAction) {
+        proto.deletePendingMembers.append(valueParam.proto)
+    }
+
+    public mutating func setDeletePendingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsDeletePendingMemberAction]) {
+        proto.deletePendingMembers = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func addPromotePendingMembers(_ valueParam: GroupsProtoGroupChangeActionsPromotePendingMemberAction) {
+        proto.promotePendingMembers.append(valueParam.proto)
+    }
+
+    public mutating func setPromotePendingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsPromotePendingMemberAction]) {
+        proto.promotePendingMembers = wrappedItems.map { $0.proto }
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setModifyTitle(_ valueParam: GroupsProtoGroupChangeActionsModifyTitleAction?) {
+        guard let valueParam = valueParam else { return }
+        proto.modifyTitle = valueParam.proto
+    }
+
+    public mutating func setModifyTitle(_ valueParam: GroupsProtoGroupChangeActionsModifyTitleAction) {
+        proto.modifyTitle = valueParam.proto
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setModifyAvatar(_ valueParam: GroupsProtoGroupChangeActionsModifyAvatarAction?) {
+        guard let valueParam = valueParam else { return }
+        proto.modifyAvatar = valueParam.proto
+    }
+
+    public mutating func setModifyAvatar(_ valueParam: GroupsProtoGroupChangeActionsModifyAvatarAction) {
+        proto.modifyAvatar = valueParam.proto
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setModifyDisappearingMessagesTimer(_ valueParam: GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction?) {
+        guard let valueParam = valueParam else { return }
+        proto.modifyDisappearingMessagesTimer = valueParam.proto
+    }
+
+    public mutating func setModifyDisappearingMessagesTimer(_ valueParam: GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction) {
+        proto.modifyDisappearingMessagesTimer = valueParam.proto
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setModifyAttributesAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction?) {
+        guard let valueParam = valueParam else { return }
+        proto.modifyAttributesAccess = valueParam.proto
+    }
+
+    public mutating func setModifyAttributesAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction) {
+        proto.modifyAttributesAccess = valueParam.proto
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setModifyMemberAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyMembersAccessControlAction?) {
+        guard let valueParam = valueParam else { return }
+        proto.modifyMemberAccess = valueParam.proto
+    }
+
+    public mutating func setModifyMemberAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyMembersAccessControlAction) {
+        proto.modifyMemberAccess = valueParam.proto
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setModifyAddFromInviteLinkAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction?) {
+        guard let valueParam = valueParam else { return }
+        proto.modifyAddFromInviteLinkAccess = valueParam.proto
+    }
+
+    public mutating func setModifyAddFromInviteLinkAccess(_ valueParam: GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction) {
+        proto.modifyAddFromInviteLinkAccess = valueParam.proto
+    }
+
+    public mutating func addAddRequestingMembers(_ valueParam: GroupsProtoGroupChangeActionsAddRequestingMemberAction) {
+        proto.addRequestingMembers.append(valueParam.proto)
+    }
+
+    public mutating func setAddRequestingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsAddRequestingMemberAction]) {
+        proto.addRequestingMembers = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func addDeleteRequestingMembers(_ valueParam: GroupsProtoGroupChangeActionsDeleteRequestingMemberAction) {
+        proto.deleteRequestingMembers.append(valueParam.proto)
+    }
+
+    public mutating func setDeleteRequestingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsDeleteRequestingMemberAction]) {
+        proto.deleteRequestingMembers = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func addPromoteRequestingMembers(_ valueParam: GroupsProtoGroupChangeActionsPromoteRequestingMemberAction) {
+        proto.promoteRequestingMembers.append(valueParam.proto)
+    }
+
+    public mutating func setPromoteRequestingMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsPromoteRequestingMemberAction]) {
+        proto.promoteRequestingMembers = wrappedItems.map { $0.proto }
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setModifyInviteLinkPassword(_ valueParam: GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction?) {
+        guard let valueParam = valueParam else { return }
+        proto.modifyInviteLinkPassword = valueParam.proto
+    }
+
+    public mutating func setModifyInviteLinkPassword(_ valueParam: GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction) {
+        proto.modifyInviteLinkPassword = valueParam.proto
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setModifyDescription(_ valueParam: GroupsProtoGroupChangeActionsModifyDescriptionAction?) {
+        guard let valueParam = valueParam else { return }
+        proto.modifyDescription = valueParam.proto
+    }
+
+    public mutating func setModifyDescription(_ valueParam: GroupsProtoGroupChangeActionsModifyDescriptionAction) {
+        proto.modifyDescription = valueParam.proto
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setModifyAnnouncementsOnly(_ valueParam: GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction?) {
+        guard let valueParam = valueParam else { return }
+        proto.modifyAnnouncementsOnly = valueParam.proto
+    }
+
+    public mutating func setModifyAnnouncementsOnly(_ valueParam: GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction) {
+        proto.modifyAnnouncementsOnly = valueParam.proto
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActions {
+        return try GroupsProtoGroupChangeActions(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActions(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActions {
@@ -4478,7 +4478,7 @@ extension GroupsProtoGroupChangeActions {
     }
 }
 
-extension GroupsProtoGroupChangeActions.GroupsProtoGroupChangeActionsBuilder {
+extension GroupsProtoGroupChangeActionsBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActions? {
         return try! self.build()
     }
@@ -4489,73 +4489,6 @@ extension GroupsProtoGroupChangeActions.GroupsProtoGroupChangeActionsBuilder {
 // MARK: - GroupsProtoGroupChange
 
 public struct GroupsProtoGroupChange: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangeBuilder
-
-    public static func builder() -> GroupsProtoGroupChangeBuilder {
-        return GroupsProtoGroupChangeBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangeBuilder {
-        var builder = GroupsProtoGroupChangeBuilder()
-        if let _value = actions {
-            builder.setActions(_value)
-        }
-        if let _value = serverSignature {
-            builder.setServerSignature(_value)
-        }
-        if hasChangeEpoch {
-            builder.setChangeEpoch(changeEpoch)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangeBuilder {
-
-        private var proto = GroupsProtos_GroupChange()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setActions(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.actions = valueParam
-        }
-
-        public mutating func setActions(_ valueParam: Data) {
-            proto.actions = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setServerSignature(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.serverSignature = valueParam
-        }
-
-        public mutating func setServerSignature(_ valueParam: Data) {
-            proto.serverSignature = valueParam
-        }
-
-        public mutating func setChangeEpoch(_ valueParam: UInt32) {
-            proto.changeEpoch = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChange {
-            return try GroupsProtoGroupChange(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChange(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChange
 
@@ -4630,6 +4563,73 @@ public struct GroupsProtoGroupChange: Codable, CustomDebugStringConvertible {
     }
 }
 
+extension GroupsProtoGroupChange {
+    public static func builder() -> GroupsProtoGroupChangeBuilder {
+        return GroupsProtoGroupChangeBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeBuilder {
+        var builder = GroupsProtoGroupChangeBuilder()
+        if let _value = actions {
+            builder.setActions(_value)
+        }
+        if let _value = serverSignature {
+            builder.setServerSignature(_value)
+        }
+        if hasChangeEpoch {
+            builder.setChangeEpoch(changeEpoch)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeBuilder {
+
+    private var proto = GroupsProtos_GroupChange()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setActions(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.actions = valueParam
+    }
+
+    public mutating func setActions(_ valueParam: Data) {
+        proto.actions = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setServerSignature(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.serverSignature = valueParam
+    }
+
+    public mutating func setServerSignature(_ valueParam: Data) {
+        proto.serverSignature = valueParam
+    }
+
+    public mutating func setChangeEpoch(_ valueParam: UInt32) {
+        proto.changeEpoch = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChange {
+        return try GroupsProtoGroupChange(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChange(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChange {
@@ -4638,7 +4638,7 @@ extension GroupsProtoGroupChange {
     }
 }
 
-extension GroupsProtoGroupChange.GroupsProtoGroupChangeBuilder {
+extension GroupsProtoGroupChangeBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChange? {
         return try! self.build()
     }
@@ -4649,66 +4649,6 @@ extension GroupsProtoGroupChange.GroupsProtoGroupChangeBuilder {
 // MARK: - GroupsProtoGroupChangesGroupChangeState
 
 public struct GroupsProtoGroupChangesGroupChangeState: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangesGroupChangeStateBuilder
-
-    public static func builder() -> GroupsProtoGroupChangesGroupChangeStateBuilder {
-        return GroupsProtoGroupChangesGroupChangeStateBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangesGroupChangeStateBuilder {
-        var builder = GroupsProtoGroupChangesGroupChangeStateBuilder()
-        if let _value = groupChange {
-            builder.setGroupChange(_value)
-        }
-        if let _value = groupState {
-            builder.setGroupState(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangesGroupChangeStateBuilder {
-
-        private var proto = GroupsProtos_GroupChanges.GroupChangeState()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setGroupChange(_ valueParam: GroupsProtoGroupChange?) {
-            guard let valueParam = valueParam else { return }
-            proto.groupChange = valueParam.proto
-        }
-
-        public mutating func setGroupChange(_ valueParam: GroupsProtoGroupChange) {
-            proto.groupChange = valueParam.proto
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setGroupState(_ valueParam: GroupsProtoGroup?) {
-            guard let valueParam = valueParam else { return }
-            proto.groupState = valueParam.proto
-        }
-
-        public mutating func setGroupState(_ valueParam: GroupsProtoGroup) {
-            proto.groupState = valueParam.proto
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChangesGroupChangeState {
-            return try GroupsProtoGroupChangesGroupChangeState(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangesGroupChangeState(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChanges.GroupChangeState
 
@@ -4776,6 +4716,66 @@ public struct GroupsProtoGroupChangesGroupChangeState: Codable, CustomDebugStrin
     }
 }
 
+extension GroupsProtoGroupChangesGroupChangeState {
+    public static func builder() -> GroupsProtoGroupChangesGroupChangeStateBuilder {
+        return GroupsProtoGroupChangesGroupChangeStateBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangesGroupChangeStateBuilder {
+        var builder = GroupsProtoGroupChangesGroupChangeStateBuilder()
+        if let _value = groupChange {
+            builder.setGroupChange(_value)
+        }
+        if let _value = groupState {
+            builder.setGroupState(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangesGroupChangeStateBuilder {
+
+    private var proto = GroupsProtos_GroupChanges.GroupChangeState()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setGroupChange(_ valueParam: GroupsProtoGroupChange?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupChange = valueParam.proto
+    }
+
+    public mutating func setGroupChange(_ valueParam: GroupsProtoGroupChange) {
+        proto.groupChange = valueParam.proto
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setGroupState(_ valueParam: GroupsProtoGroup?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupState = valueParam.proto
+    }
+
+    public mutating func setGroupState(_ valueParam: GroupsProtoGroup) {
+        proto.groupState = valueParam.proto
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangesGroupChangeState {
+        return try GroupsProtoGroupChangesGroupChangeState(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangesGroupChangeState(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangesGroupChangeState {
@@ -4784,7 +4784,7 @@ extension GroupsProtoGroupChangesGroupChangeState {
     }
 }
 
-extension GroupsProtoGroupChangesGroupChangeState.GroupsProtoGroupChangesGroupChangeStateBuilder {
+extension GroupsProtoGroupChangesGroupChangeStateBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangesGroupChangeState? {
         return try! self.build()
     }
@@ -4795,49 +4795,6 @@ extension GroupsProtoGroupChangesGroupChangeState.GroupsProtoGroupChangesGroupCh
 // MARK: - GroupsProtoGroupChanges
 
 public struct GroupsProtoGroupChanges: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupChangesBuilder
-
-    public static func builder() -> GroupsProtoGroupChangesBuilder {
-        return GroupsProtoGroupChangesBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupChangesBuilder {
-        var builder = GroupsProtoGroupChangesBuilder()
-        builder.setGroupChanges(groupChanges)
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupChangesBuilder {
-
-        private var proto = GroupsProtos_GroupChanges()
-
-        fileprivate init() {}
-
-        public mutating func addGroupChanges(_ valueParam: Data) {
-            proto.groupChanges.append(valueParam)
-        }
-
-        public mutating func setGroupChanges(_ wrappedItems: [Data]) {
-            proto.groupChanges = wrappedItems
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupChanges {
-            return try GroupsProtoGroupChanges(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChanges(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupChanges
 
@@ -4889,6 +4846,49 @@ public struct GroupsProtoGroupChanges: Codable, CustomDebugStringConvertible {
     }
 }
 
+extension GroupsProtoGroupChanges {
+    public static func builder() -> GroupsProtoGroupChangesBuilder {
+        return GroupsProtoGroupChangesBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangesBuilder {
+        var builder = GroupsProtoGroupChangesBuilder()
+        builder.setGroupChanges(groupChanges)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangesBuilder {
+
+    private var proto = GroupsProtos_GroupChanges()
+
+    fileprivate init() {}
+
+    public mutating func addGroupChanges(_ valueParam: Data) {
+        proto.groupChanges.append(valueParam)
+    }
+
+    public mutating func setGroupChanges(_ wrappedItems: [Data]) {
+        proto.groupChanges = wrappedItems
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChanges {
+        return try GroupsProtoGroupChanges(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChanges(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupChanges {
@@ -4897,7 +4897,7 @@ extension GroupsProtoGroupChanges {
     }
 }
 
-extension GroupsProtoGroupChanges.GroupsProtoGroupChangesBuilder {
+extension GroupsProtoGroupChangesBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChanges? {
         return try! self.build()
     }
@@ -4935,53 +4935,6 @@ private func GroupsProtoGroupAttributeBlobOneOfContentUnwrap(_ value: GroupsProt
 // MARK: - GroupsProtoGroupAttributeBlob
 
 public struct GroupsProtoGroupAttributeBlob: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupAttributeBlobBuilder
-
-    public static func builder() -> GroupsProtoGroupAttributeBlobBuilder {
-        return GroupsProtoGroupAttributeBlobBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupAttributeBlobBuilder {
-        var builder = GroupsProtoGroupAttributeBlobBuilder()
-        if let _value = content {
-            builder.setContent(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupAttributeBlobBuilder {
-
-        private var proto = GroupsProtos_GroupAttributeBlob()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setContent(_ valueParam: GroupsProtoGroupAttributeBlobOneOfContent?) {
-            guard let valueParam = valueParam else { return }
-            proto.content = GroupsProtoGroupAttributeBlobOneOfContentUnwrap(valueParam)
-        }
-
-        public mutating func setContent(_ valueParam: GroupsProtoGroupAttributeBlobOneOfContent) {
-            proto.content = GroupsProtoGroupAttributeBlobOneOfContentUnwrap(valueParam)
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupAttributeBlob {
-            return try GroupsProtoGroupAttributeBlob(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupAttributeBlob(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupAttributeBlob
 
@@ -5047,6 +5000,53 @@ public struct GroupsProtoGroupAttributeBlob: Codable, CustomDebugStringConvertib
     }
 }
 
+extension GroupsProtoGroupAttributeBlob {
+    public static func builder() -> GroupsProtoGroupAttributeBlobBuilder {
+        return GroupsProtoGroupAttributeBlobBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupAttributeBlobBuilder {
+        var builder = GroupsProtoGroupAttributeBlobBuilder()
+        if let _value = content {
+            builder.setContent(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupAttributeBlobBuilder {
+
+    private var proto = GroupsProtos_GroupAttributeBlob()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setContent(_ valueParam: GroupsProtoGroupAttributeBlobOneOfContent?) {
+        guard let valueParam = valueParam else { return }
+        proto.content = GroupsProtoGroupAttributeBlobOneOfContentUnwrap(valueParam)
+    }
+
+    public mutating func setContent(_ valueParam: GroupsProtoGroupAttributeBlobOneOfContent) {
+        proto.content = GroupsProtoGroupAttributeBlobOneOfContentUnwrap(valueParam)
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupAttributeBlob {
+        return try GroupsProtoGroupAttributeBlob(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupAttributeBlob(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupAttributeBlob {
@@ -5055,7 +5055,7 @@ extension GroupsProtoGroupAttributeBlob {
     }
 }
 
-extension GroupsProtoGroupAttributeBlob.GroupsProtoGroupAttributeBlobBuilder {
+extension GroupsProtoGroupAttributeBlobBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupAttributeBlob? {
         return try! self.build()
     }
@@ -5066,66 +5066,6 @@ extension GroupsProtoGroupAttributeBlob.GroupsProtoGroupAttributeBlobBuilder {
 // MARK: - GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1
 
 public struct GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder
-
-    public static func builder() -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
-        return GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
-        var builder = GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder()
-        if let _value = groupMasterKey {
-            builder.setGroupMasterKey(_value)
-        }
-        if let _value = inviteLinkPassword {
-            builder.setInviteLinkPassword(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
-
-        private var proto = GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setGroupMasterKey(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.groupMasterKey = valueParam
-        }
-
-        public mutating func setGroupMasterKey(_ valueParam: Data) {
-            proto.groupMasterKey = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setInviteLinkPassword(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.inviteLinkPassword = valueParam
-        }
-
-        public mutating func setInviteLinkPassword(_ valueParam: Data) {
-            proto.inviteLinkPassword = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 {
-            return try GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1
 
@@ -5193,6 +5133,66 @@ public struct GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1: Codable, Cust
     }
 }
 
+extension GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 {
+    public static func builder() -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
+        return GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
+        var builder = GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder()
+        if let _value = groupMasterKey {
+            builder.setGroupMasterKey(_value)
+        }
+        if let _value = inviteLinkPassword {
+            builder.setInviteLinkPassword(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
+
+    private var proto = GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setGroupMasterKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupMasterKey = valueParam
+    }
+
+    public mutating func setGroupMasterKey(_ valueParam: Data) {
+        proto.groupMasterKey = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setInviteLinkPassword(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.inviteLinkPassword = valueParam
+    }
+
+    public mutating func setInviteLinkPassword(_ valueParam: Data) {
+        proto.inviteLinkPassword = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 {
+        return try GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 {
@@ -5201,7 +5201,7 @@ extension GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 {
     }
 }
 
-extension GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1.GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
+extension GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
     public func buildIgnoringErrors() -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1? {
         return try! self.build()
     }
@@ -5230,53 +5230,6 @@ private func GroupsProtoGroupInviteLinkOneOfContentsUnwrap(_ value: GroupsProtoG
 // MARK: - GroupsProtoGroupInviteLink
 
 public struct GroupsProtoGroupInviteLink: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupInviteLinkBuilder
-
-    public static func builder() -> GroupsProtoGroupInviteLinkBuilder {
-        return GroupsProtoGroupInviteLinkBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupInviteLinkBuilder {
-        var builder = GroupsProtoGroupInviteLinkBuilder()
-        if let _value = contents {
-            builder.setContents(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupInviteLinkBuilder {
-
-        private var proto = GroupsProtos_GroupInviteLink()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setContents(_ valueParam: GroupsProtoGroupInviteLinkOneOfContents?) {
-            guard let valueParam = valueParam else { return }
-            proto.contents = GroupsProtoGroupInviteLinkOneOfContentsUnwrap(valueParam)
-        }
-
-        public mutating func setContents(_ valueParam: GroupsProtoGroupInviteLinkOneOfContents) {
-            proto.contents = GroupsProtoGroupInviteLinkOneOfContentsUnwrap(valueParam)
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupInviteLink {
-            return try GroupsProtoGroupInviteLink(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupInviteLink(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupInviteLink
 
@@ -5342,6 +5295,53 @@ public struct GroupsProtoGroupInviteLink: Codable, CustomDebugStringConvertible 
     }
 }
 
+extension GroupsProtoGroupInviteLink {
+    public static func builder() -> GroupsProtoGroupInviteLinkBuilder {
+        return GroupsProtoGroupInviteLinkBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupInviteLinkBuilder {
+        var builder = GroupsProtoGroupInviteLinkBuilder()
+        if let _value = contents {
+            builder.setContents(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupInviteLinkBuilder {
+
+    private var proto = GroupsProtos_GroupInviteLink()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setContents(_ valueParam: GroupsProtoGroupInviteLinkOneOfContents?) {
+        guard let valueParam = valueParam else { return }
+        proto.contents = GroupsProtoGroupInviteLinkOneOfContentsUnwrap(valueParam)
+    }
+
+    public mutating func setContents(_ valueParam: GroupsProtoGroupInviteLinkOneOfContents) {
+        proto.contents = GroupsProtoGroupInviteLinkOneOfContentsUnwrap(valueParam)
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupInviteLink {
+        return try GroupsProtoGroupInviteLink(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupInviteLink(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupInviteLink {
@@ -5350,7 +5350,7 @@ extension GroupsProtoGroupInviteLink {
     }
 }
 
-extension GroupsProtoGroupInviteLink.GroupsProtoGroupInviteLinkBuilder {
+extension GroupsProtoGroupInviteLinkBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupInviteLink? {
         return try! self.build()
     }
@@ -5361,120 +5361,6 @@ extension GroupsProtoGroupInviteLink.GroupsProtoGroupInviteLinkBuilder {
 // MARK: - GroupsProtoGroupJoinInfo
 
 public struct GroupsProtoGroupJoinInfo: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupJoinInfoBuilder
-
-    public static func builder() -> GroupsProtoGroupJoinInfoBuilder {
-        return GroupsProtoGroupJoinInfoBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupJoinInfoBuilder {
-        var builder = GroupsProtoGroupJoinInfoBuilder()
-        if let _value = publicKey {
-            builder.setPublicKey(_value)
-        }
-        if let _value = title {
-            builder.setTitle(_value)
-        }
-        if let _value = avatar {
-            builder.setAvatar(_value)
-        }
-        if hasMemberCount {
-            builder.setMemberCount(memberCount)
-        }
-        if let _value = addFromInviteLink {
-            builder.setAddFromInviteLink(_value)
-        }
-        if hasRevision {
-            builder.setRevision(revision)
-        }
-        if hasPendingAdminApproval {
-            builder.setPendingAdminApproval(pendingAdminApproval)
-        }
-        if let _value = descriptionBytes {
-            builder.setDescriptionBytes(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupJoinInfoBuilder {
-
-        private var proto = GroupsProtos_GroupJoinInfo()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setPublicKey(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.publicKey = valueParam
-        }
-
-        public mutating func setPublicKey(_ valueParam: Data) {
-            proto.publicKey = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setTitle(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.title = valueParam
-        }
-
-        public mutating func setTitle(_ valueParam: Data) {
-            proto.title = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setAvatar(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.avatar = valueParam
-        }
-
-        public mutating func setAvatar(_ valueParam: String) {
-            proto.avatar = valueParam
-        }
-
-        public mutating func setMemberCount(_ valueParam: UInt32) {
-            proto.memberCount = valueParam
-        }
-
-        public mutating func setAddFromInviteLink(_ valueParam: GroupsProtoAccessControlAccessRequired) {
-            proto.addFromInviteLink = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
-        }
-
-        public mutating func setRevision(_ valueParam: UInt32) {
-            proto.revision = valueParam
-        }
-
-        public mutating func setPendingAdminApproval(_ valueParam: Bool) {
-            proto.pendingAdminApproval = valueParam
-        }
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setDescriptionBytes(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.descriptionBytes = valueParam
-        }
-
-        public mutating func setDescriptionBytes(_ valueParam: Data) {
-            proto.descriptionBytes = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupJoinInfo {
-            return try GroupsProtoGroupJoinInfo(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupJoinInfo(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupJoinInfo
 
@@ -5601,6 +5487,120 @@ public struct GroupsProtoGroupJoinInfo: Codable, CustomDebugStringConvertible {
     }
 }
 
+extension GroupsProtoGroupJoinInfo {
+    public static func builder() -> GroupsProtoGroupJoinInfoBuilder {
+        return GroupsProtoGroupJoinInfoBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupJoinInfoBuilder {
+        var builder = GroupsProtoGroupJoinInfoBuilder()
+        if let _value = publicKey {
+            builder.setPublicKey(_value)
+        }
+        if let _value = title {
+            builder.setTitle(_value)
+        }
+        if let _value = avatar {
+            builder.setAvatar(_value)
+        }
+        if hasMemberCount {
+            builder.setMemberCount(memberCount)
+        }
+        if let _value = addFromInviteLink {
+            builder.setAddFromInviteLink(_value)
+        }
+        if hasRevision {
+            builder.setRevision(revision)
+        }
+        if hasPendingAdminApproval {
+            builder.setPendingAdminApproval(pendingAdminApproval)
+        }
+        if let _value = descriptionBytes {
+            builder.setDescriptionBytes(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupJoinInfoBuilder {
+
+    private var proto = GroupsProtos_GroupJoinInfo()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setPublicKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.publicKey = valueParam
+    }
+
+    public mutating func setPublicKey(_ valueParam: Data) {
+        proto.publicKey = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setTitle(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.title = valueParam
+    }
+
+    public mutating func setTitle(_ valueParam: Data) {
+        proto.title = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAvatar(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.avatar = valueParam
+    }
+
+    public mutating func setAvatar(_ valueParam: String) {
+        proto.avatar = valueParam
+    }
+
+    public mutating func setMemberCount(_ valueParam: UInt32) {
+        proto.memberCount = valueParam
+    }
+
+    public mutating func setAddFromInviteLink(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+        proto.addFromInviteLink = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+    }
+
+    public mutating func setRevision(_ valueParam: UInt32) {
+        proto.revision = valueParam
+    }
+
+    public mutating func setPendingAdminApproval(_ valueParam: Bool) {
+        proto.pendingAdminApproval = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setDescriptionBytes(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.descriptionBytes = valueParam
+    }
+
+    public mutating func setDescriptionBytes(_ valueParam: Data) {
+        proto.descriptionBytes = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupJoinInfo {
+        return try GroupsProtoGroupJoinInfo(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupJoinInfo(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupJoinInfo {
@@ -5609,7 +5609,7 @@ extension GroupsProtoGroupJoinInfo {
     }
 }
 
-extension GroupsProtoGroupJoinInfo.GroupsProtoGroupJoinInfoBuilder {
+extension GroupsProtoGroupJoinInfoBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupJoinInfo? {
         return try! self.build()
     }
@@ -5620,53 +5620,6 @@ extension GroupsProtoGroupJoinInfo.GroupsProtoGroupJoinInfoBuilder {
 // MARK: - GroupsProtoGroupExternalCredential
 
 public struct GroupsProtoGroupExternalCredential: Codable, CustomDebugStringConvertible {
-
-    // MARK: - GroupsProtoGroupExternalCredentialBuilder
-
-    public static func builder() -> GroupsProtoGroupExternalCredentialBuilder {
-        return GroupsProtoGroupExternalCredentialBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoGroupExternalCredentialBuilder {
-        var builder = GroupsProtoGroupExternalCredentialBuilder()
-        if let _value = token {
-            builder.setToken(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    public struct GroupsProtoGroupExternalCredentialBuilder {
-
-        private var proto = GroupsProtos_GroupExternalCredential()
-
-        fileprivate init() {}
-
-        @available(swift, obsoleted: 1.0)
-        public mutating func setToken(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.token = valueParam
-        }
-
-        public mutating func setToken(_ valueParam: String) {
-            proto.token = valueParam
-        }
-
-        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        public func build() throws -> GroupsProtoGroupExternalCredential {
-            return try GroupsProtoGroupExternalCredential(proto)
-        }
-
-        public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupExternalCredential(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: GroupsProtos_GroupExternalCredential
 
@@ -5724,6 +5677,53 @@ public struct GroupsProtoGroupExternalCredential: Codable, CustomDebugStringConv
     }
 }
 
+extension GroupsProtoGroupExternalCredential {
+    public static func builder() -> GroupsProtoGroupExternalCredentialBuilder {
+        return GroupsProtoGroupExternalCredentialBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupExternalCredentialBuilder {
+        var builder = GroupsProtoGroupExternalCredentialBuilder()
+        if let _value = token {
+            builder.setToken(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupExternalCredentialBuilder {
+
+    private var proto = GroupsProtos_GroupExternalCredential()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setToken(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.token = valueParam
+    }
+
+    public mutating func setToken(_ valueParam: String) {
+        proto.token = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupExternalCredential {
+        return try GroupsProtoGroupExternalCredential(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupExternalCredential(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension GroupsProtoGroupExternalCredential {
@@ -5732,7 +5732,7 @@ extension GroupsProtoGroupExternalCredential {
     }
 }
 
-extension GroupsProtoGroupExternalCredential.GroupsProtoGroupExternalCredentialBuilder {
+extension GroupsProtoGroupExternalCredentialBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupExternalCredential? {
         return try! self.build()
     }

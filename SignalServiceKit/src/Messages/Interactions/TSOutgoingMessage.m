@@ -1500,8 +1500,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return dataProto;
 }
 
-- (nullable id<SSKProtoContentBuilderProtocol>)contentBuilderWithThread:(TSThread *)thread
-                                                            transaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
+                                                  transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:thread transaction:transaction];
     if (!dataMessage) {
@@ -1515,8 +1515,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 - (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
-    SSKProtoContentBuilder *_Nullable contentBuilder
-        = (SSKProtoContentBuilder *)[self contentBuilderWithThread:thread transaction:transaction];
+    SSKProtoContentBuilder *_Nullable contentBuilder = [self contentBuilderWithThread:thread transaction:transaction];
     if (!contentBuilder) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;

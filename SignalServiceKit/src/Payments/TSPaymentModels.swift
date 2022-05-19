@@ -173,7 +173,7 @@ extension TSPaymentRequest: TSPaymentBaseModel {
     }
 
     @objc(addToDataBuilder:error:)
-    public func add(toDataBuilder dataBuilder: SSKProtoDataMessage.SSKProtoDataMessageBuilder) throws {
+    public func add(toDataBuilder dataBuilder: SSKProtoDataMessageBuilder) throws {
         let paymentBuilder = SSKProtoDataMessagePayment.builder()
         paymentBuilder.setRequest(try buildProto())
         dataBuilder.setPayment(try paymentBuilder.build())
@@ -240,7 +240,7 @@ extension TSPaymentNotification: TSPaymentBaseModel {
     }
 
     @objc(addToDataBuilder:error:)
-    public func add(toDataBuilder dataBuilder: SSKProtoDataMessage.SSKProtoDataMessageBuilder) throws {
+    public func add(toDataBuilder dataBuilder: SSKProtoDataMessageBuilder) throws {
         let paymentBuilder = SSKProtoDataMessagePayment.builder()
         paymentBuilder.setNotification(try buildProto())
         dataBuilder.setPayment(try paymentBuilder.build())
@@ -283,7 +283,7 @@ extension TSPaymentCancellation: TSPaymentBaseModel {
     }
 
     @objc(addToDataBuilder:error:)
-    public func add(toDataBuilder dataBuilder: SSKProtoDataMessage.SSKProtoDataMessageBuilder) throws {
+    public func add(toDataBuilder dataBuilder: SSKProtoDataMessageBuilder) throws {
         let paymentBuilder = SSKProtoDataMessagePayment.builder()
         paymentBuilder.setCancellation(try buildProto())
         dataBuilder.setPayment(try paymentBuilder.build())

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -912,7 +912,7 @@ class DebugUIGroupsV2: DebugUIPage {
         }
     }
 
-    class func contentProtoData(forDataBuilder dataBuilder: SSKProtoDataMessage.SSKProtoDataMessageBuilder) -> Data {
+    class func contentProtoData(forDataBuilder dataBuilder: SSKProtoDataMessageBuilder) -> Data {
         let dataProto = try! dataBuilder.build()
         let contentBuilder = SSKProtoContent.builder()
         contentBuilder.setDataMessage(dataProto)

@@ -17,64 +17,6 @@ public enum ProvisioningProtoError: Error {
 @objc
 public class ProvisioningProtoProvisioningUuid: NSObject, Codable, NSSecureCoding {
 
-    // MARK: - ProvisioningProtoProvisioningUuidBuilder
-
-    @objc
-    public static func builder(uuid: String) -> ProvisioningProtoProvisioningUuidBuilder {
-        return ProvisioningProtoProvisioningUuidBuilder(uuid: uuid)
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> ProvisioningProtoProvisioningUuidBuilder {
-        let builder = ProvisioningProtoProvisioningUuidBuilder(uuid: uuid)
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    @objc
-    public class ProvisioningProtoProvisioningUuidBuilder: NSObject {
-
-        private var proto = ProvisioningProtos_ProvisioningUuid()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        fileprivate init(uuid: String) {
-            super.init()
-
-            setUuid(uuid)
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setUuid(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.uuid = valueParam
-        }
-
-        public func setUuid(_ valueParam: String) {
-            proto.uuid = valueParam
-        }
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> ProvisioningProtoProvisioningUuid {
-            return try ProvisioningProtoProvisioningUuid(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try ProvisioningProtoProvisioningUuid(proto).serializedData()
-        }
-    }
-
     fileprivate let proto: ProvisioningProtos_ProvisioningUuid
 
     @objc
@@ -155,6 +97,64 @@ public class ProvisioningProtoProvisioningUuid: NSObject, Codable, NSSecureCodin
     }
 }
 
+extension ProvisioningProtoProvisioningUuid {
+    @objc
+    public static func builder(uuid: String) -> ProvisioningProtoProvisioningUuidBuilder {
+        return ProvisioningProtoProvisioningUuidBuilder(uuid: uuid)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> ProvisioningProtoProvisioningUuidBuilder {
+        let builder = ProvisioningProtoProvisioningUuidBuilder(uuid: uuid)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class ProvisioningProtoProvisioningUuidBuilder: NSObject {
+
+    private var proto = ProvisioningProtos_ProvisioningUuid()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(uuid: String) {
+        super.init()
+
+        setUuid(uuid)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUuid(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.uuid = valueParam
+    }
+
+    public func setUuid(_ valueParam: String) {
+        proto.uuid = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> ProvisioningProtoProvisioningUuid {
+        return try ProvisioningProtoProvisioningUuid(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try ProvisioningProtoProvisioningUuid(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension ProvisioningProtoProvisioningUuid {
@@ -164,7 +164,7 @@ extension ProvisioningProtoProvisioningUuid {
     }
 }
 
-extension ProvisioningProtoProvisioningUuid.ProvisioningProtoProvisioningUuidBuilder {
+extension ProvisioningProtoProvisioningUuidBuilder {
     @objc
     public func buildIgnoringErrors() -> ProvisioningProtoProvisioningUuid? {
         return try! self.build()
@@ -177,76 +177,6 @@ extension ProvisioningProtoProvisioningUuid.ProvisioningProtoProvisioningUuidBui
 
 @objc
 public class ProvisioningProtoProvisionEnvelope: NSObject, Codable, NSSecureCoding {
-
-    // MARK: - ProvisioningProtoProvisionEnvelopeBuilder
-
-    @objc
-    public static func builder(publicKey: Data, body: Data) -> ProvisioningProtoProvisionEnvelopeBuilder {
-        return ProvisioningProtoProvisionEnvelopeBuilder(publicKey: publicKey, body: body)
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> ProvisioningProtoProvisionEnvelopeBuilder {
-        let builder = ProvisioningProtoProvisionEnvelopeBuilder(publicKey: publicKey, body: body)
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    @objc
-    public class ProvisioningProtoProvisionEnvelopeBuilder: NSObject {
-
-        private var proto = ProvisioningProtos_ProvisionEnvelope()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        fileprivate init(publicKey: Data, body: Data) {
-            super.init()
-
-            setPublicKey(publicKey)
-            setBody(body)
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setPublicKey(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.publicKey = valueParam
-        }
-
-        public func setPublicKey(_ valueParam: Data) {
-            proto.publicKey = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setBody(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.body = valueParam
-        }
-
-        public func setBody(_ valueParam: Data) {
-            proto.body = valueParam
-        }
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> ProvisioningProtoProvisionEnvelope {
-            return try ProvisioningProtoProvisionEnvelope(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try ProvisioningProtoProvisionEnvelope(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: ProvisioningProtos_ProvisionEnvelope
 
@@ -339,6 +269,76 @@ public class ProvisioningProtoProvisionEnvelope: NSObject, Codable, NSSecureCodi
     }
 }
 
+extension ProvisioningProtoProvisionEnvelope {
+    @objc
+    public static func builder(publicKey: Data, body: Data) -> ProvisioningProtoProvisionEnvelopeBuilder {
+        return ProvisioningProtoProvisionEnvelopeBuilder(publicKey: publicKey, body: body)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> ProvisioningProtoProvisionEnvelopeBuilder {
+        let builder = ProvisioningProtoProvisionEnvelopeBuilder(publicKey: publicKey, body: body)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class ProvisioningProtoProvisionEnvelopeBuilder: NSObject {
+
+    private var proto = ProvisioningProtos_ProvisionEnvelope()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(publicKey: Data, body: Data) {
+        super.init()
+
+        setPublicKey(publicKey)
+        setBody(body)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPublicKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.publicKey = valueParam
+    }
+
+    public func setPublicKey(_ valueParam: Data) {
+        proto.publicKey = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setBody(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.body = valueParam
+    }
+
+    public func setBody(_ valueParam: Data) {
+        proto.body = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> ProvisioningProtoProvisionEnvelope {
+        return try ProvisioningProtoProvisionEnvelope(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try ProvisioningProtoProvisionEnvelope(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension ProvisioningProtoProvisionEnvelope {
@@ -348,7 +348,7 @@ extension ProvisioningProtoProvisionEnvelope {
     }
 }
 
-extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeBuilder {
+extension ProvisioningProtoProvisionEnvelopeBuilder {
     @objc
     public func buildIgnoringErrors() -> ProvisioningProtoProvisionEnvelope? {
         return try! self.build()
@@ -361,200 +361,6 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
 
 @objc
 public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCoding {
-
-    // MARK: - ProvisioningProtoProvisionMessageBuilder
-
-    @objc
-    public static func builder(aciIdentityKeyPublic: Data, aciIdentityKeyPrivate: Data, provisioningCode: String, profileKey: Data) -> ProvisioningProtoProvisionMessageBuilder {
-        return ProvisioningProtoProvisionMessageBuilder(aciIdentityKeyPublic: aciIdentityKeyPublic, aciIdentityKeyPrivate: aciIdentityKeyPrivate, provisioningCode: provisioningCode, profileKey: profileKey)
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> ProvisioningProtoProvisionMessageBuilder {
-        let builder = ProvisioningProtoProvisionMessageBuilder(aciIdentityKeyPublic: aciIdentityKeyPublic, aciIdentityKeyPrivate: aciIdentityKeyPrivate, provisioningCode: provisioningCode, profileKey: profileKey)
-        if let _value = pniIdentityKeyPublic {
-            builder.setPniIdentityKeyPublic(_value)
-        }
-        if let _value = pniIdentityKeyPrivate {
-            builder.setPniIdentityKeyPrivate(_value)
-        }
-        if let _value = aci {
-            builder.setAci(_value)
-        }
-        if let _value = pni {
-            builder.setPni(_value)
-        }
-        if let _value = number {
-            builder.setNumber(_value)
-        }
-        if let _value = userAgent {
-            builder.setUserAgent(_value)
-        }
-        if hasReadReceipts {
-            builder.setReadReceipts(readReceipts)
-        }
-        if hasProvisioningVersion {
-            builder.setProvisioningVersion(provisioningVersion)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    @objc
-    public class ProvisioningProtoProvisionMessageBuilder: NSObject {
-
-        private var proto = ProvisioningProtos_ProvisionMessage()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        fileprivate init(aciIdentityKeyPublic: Data, aciIdentityKeyPrivate: Data, provisioningCode: String, profileKey: Data) {
-            super.init()
-
-            setAciIdentityKeyPublic(aciIdentityKeyPublic)
-            setAciIdentityKeyPrivate(aciIdentityKeyPrivate)
-            setProvisioningCode(provisioningCode)
-            setProfileKey(profileKey)
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setAciIdentityKeyPublic(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.aciIdentityKeyPublic = valueParam
-        }
-
-        public func setAciIdentityKeyPublic(_ valueParam: Data) {
-            proto.aciIdentityKeyPublic = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setAciIdentityKeyPrivate(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.aciIdentityKeyPrivate = valueParam
-        }
-
-        public func setAciIdentityKeyPrivate(_ valueParam: Data) {
-            proto.aciIdentityKeyPrivate = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setPniIdentityKeyPublic(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.pniIdentityKeyPublic = valueParam
-        }
-
-        public func setPniIdentityKeyPublic(_ valueParam: Data) {
-            proto.pniIdentityKeyPublic = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setPniIdentityKeyPrivate(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.pniIdentityKeyPrivate = valueParam
-        }
-
-        public func setPniIdentityKeyPrivate(_ valueParam: Data) {
-            proto.pniIdentityKeyPrivate = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setAci(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.aci = valueParam
-        }
-
-        public func setAci(_ valueParam: String) {
-            proto.aci = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setPni(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.pni = valueParam
-        }
-
-        public func setPni(_ valueParam: String) {
-            proto.pni = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setNumber(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.number = valueParam
-        }
-
-        public func setNumber(_ valueParam: String) {
-            proto.number = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setProvisioningCode(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.provisioningCode = valueParam
-        }
-
-        public func setProvisioningCode(_ valueParam: String) {
-            proto.provisioningCode = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setUserAgent(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.userAgent = valueParam
-        }
-
-        public func setUserAgent(_ valueParam: String) {
-            proto.userAgent = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setProfileKey(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.profileKey = valueParam
-        }
-
-        public func setProfileKey(_ valueParam: Data) {
-            proto.profileKey = valueParam
-        }
-
-        @objc
-        public func setReadReceipts(_ valueParam: Bool) {
-            proto.readReceipts = valueParam
-        }
-
-        @objc
-        public func setProvisioningVersion(_ valueParam: UInt32) {
-            proto.provisioningVersion = valueParam
-        }
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> ProvisioningProtoProvisionMessage {
-            return try ProvisioningProtoProvisionMessage(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try ProvisioningProtoProvisionMessage(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: ProvisioningProtos_ProvisionMessage
 
@@ -759,6 +565,200 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCodin
     }
 }
 
+extension ProvisioningProtoProvisionMessage {
+    @objc
+    public static func builder(aciIdentityKeyPublic: Data, aciIdentityKeyPrivate: Data, provisioningCode: String, profileKey: Data) -> ProvisioningProtoProvisionMessageBuilder {
+        return ProvisioningProtoProvisionMessageBuilder(aciIdentityKeyPublic: aciIdentityKeyPublic, aciIdentityKeyPrivate: aciIdentityKeyPrivate, provisioningCode: provisioningCode, profileKey: profileKey)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> ProvisioningProtoProvisionMessageBuilder {
+        let builder = ProvisioningProtoProvisionMessageBuilder(aciIdentityKeyPublic: aciIdentityKeyPublic, aciIdentityKeyPrivate: aciIdentityKeyPrivate, provisioningCode: provisioningCode, profileKey: profileKey)
+        if let _value = pniIdentityKeyPublic {
+            builder.setPniIdentityKeyPublic(_value)
+        }
+        if let _value = pniIdentityKeyPrivate {
+            builder.setPniIdentityKeyPrivate(_value)
+        }
+        if let _value = aci {
+            builder.setAci(_value)
+        }
+        if let _value = pni {
+            builder.setPni(_value)
+        }
+        if let _value = number {
+            builder.setNumber(_value)
+        }
+        if let _value = userAgent {
+            builder.setUserAgent(_value)
+        }
+        if hasReadReceipts {
+            builder.setReadReceipts(readReceipts)
+        }
+        if hasProvisioningVersion {
+            builder.setProvisioningVersion(provisioningVersion)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class ProvisioningProtoProvisionMessageBuilder: NSObject {
+
+    private var proto = ProvisioningProtos_ProvisionMessage()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    fileprivate init(aciIdentityKeyPublic: Data, aciIdentityKeyPrivate: Data, provisioningCode: String, profileKey: Data) {
+        super.init()
+
+        setAciIdentityKeyPublic(aciIdentityKeyPublic)
+        setAciIdentityKeyPrivate(aciIdentityKeyPrivate)
+        setProvisioningCode(provisioningCode)
+        setProfileKey(profileKey)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAciIdentityKeyPublic(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.aciIdentityKeyPublic = valueParam
+    }
+
+    public func setAciIdentityKeyPublic(_ valueParam: Data) {
+        proto.aciIdentityKeyPublic = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAciIdentityKeyPrivate(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.aciIdentityKeyPrivate = valueParam
+    }
+
+    public func setAciIdentityKeyPrivate(_ valueParam: Data) {
+        proto.aciIdentityKeyPrivate = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPniIdentityKeyPublic(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.pniIdentityKeyPublic = valueParam
+    }
+
+    public func setPniIdentityKeyPublic(_ valueParam: Data) {
+        proto.pniIdentityKeyPublic = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPniIdentityKeyPrivate(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.pniIdentityKeyPrivate = valueParam
+    }
+
+    public func setPniIdentityKeyPrivate(_ valueParam: Data) {
+        proto.pniIdentityKeyPrivate = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAci(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.aci = valueParam
+    }
+
+    public func setAci(_ valueParam: String) {
+        proto.aci = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPni(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.pni = valueParam
+    }
+
+    public func setPni(_ valueParam: String) {
+        proto.pni = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setNumber(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.number = valueParam
+    }
+
+    public func setNumber(_ valueParam: String) {
+        proto.number = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setProvisioningCode(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.provisioningCode = valueParam
+    }
+
+    public func setProvisioningCode(_ valueParam: String) {
+        proto.provisioningCode = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setUserAgent(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.userAgent = valueParam
+    }
+
+    public func setUserAgent(_ valueParam: String) {
+        proto.userAgent = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setProfileKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.profileKey = valueParam
+    }
+
+    public func setProfileKey(_ valueParam: Data) {
+        proto.profileKey = valueParam
+    }
+
+    @objc
+    public func setReadReceipts(_ valueParam: Bool) {
+        proto.readReceipts = valueParam
+    }
+
+    @objc
+    public func setProvisioningVersion(_ valueParam: UInt32) {
+        proto.provisioningVersion = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> ProvisioningProtoProvisionMessage {
+        return try ProvisioningProtoProvisionMessage(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try ProvisioningProtoProvisionMessage(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension ProvisioningProtoProvisionMessage {
@@ -768,7 +768,7 @@ extension ProvisioningProtoProvisionMessage {
     }
 }
 
-extension ProvisioningProtoProvisionMessage.ProvisioningProtoProvisionMessageBuilder {
+extension ProvisioningProtoProvisionMessageBuilder {
     @objc
     public func buildIgnoringErrors() -> ProvisioningProtoProvisionMessage? {
         return try! self.build()

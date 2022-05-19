@@ -17,88 +17,6 @@ public enum KeyBackupProtoError: Error {
 @objc
 public class KeyBackupProtoRequest: NSObject, Codable, NSSecureCoding {
 
-    // MARK: - KeyBackupProtoRequestBuilder
-
-    @objc
-    public static func builder() -> KeyBackupProtoRequestBuilder {
-        return KeyBackupProtoRequestBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> KeyBackupProtoRequestBuilder {
-        let builder = KeyBackupProtoRequestBuilder()
-        if let _value = backup {
-            builder.setBackup(_value)
-        }
-        if let _value = restore {
-            builder.setRestore(_value)
-        }
-        if let _value = delete {
-            builder.setDelete(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    @objc
-    public class KeyBackupProtoRequestBuilder: NSObject {
-
-        private var proto = KeyBackupProtos_Request()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setBackup(_ valueParam: KeyBackupProtoBackupRequest?) {
-            guard let valueParam = valueParam else { return }
-            proto.backup = valueParam.proto
-        }
-
-        public func setBackup(_ valueParam: KeyBackupProtoBackupRequest) {
-            proto.backup = valueParam.proto
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setRestore(_ valueParam: KeyBackupProtoRestoreRequest?) {
-            guard let valueParam = valueParam else { return }
-            proto.restore = valueParam.proto
-        }
-
-        public func setRestore(_ valueParam: KeyBackupProtoRestoreRequest) {
-            proto.restore = valueParam.proto
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setDelete(_ valueParam: KeyBackupProtoDeleteRequest?) {
-            guard let valueParam = valueParam else { return }
-            proto.delete = valueParam.proto
-        }
-
-        public func setDelete(_ valueParam: KeyBackupProtoDeleteRequest) {
-            proto.delete = valueParam.proto
-        }
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> KeyBackupProtoRequest {
-            return try KeyBackupProtoRequest(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoRequest(proto).serializedData()
-        }
-    }
-
     fileprivate let proto: KeyBackupProtos_Request
 
     @objc
@@ -201,40 +119,16 @@ public class KeyBackupProtoRequest: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if TESTABLE_BUILD
-
 extension KeyBackupProtoRequest {
     @objc
-    public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
-    @objc
-    public func buildIgnoringErrors() -> KeyBackupProtoRequest? {
-        return try! self.build()
-    }
-}
-
-#endif
-
-// MARK: - KeyBackupProtoResponse
-
-@objc
-public class KeyBackupProtoResponse: NSObject, Codable, NSSecureCoding {
-
-    // MARK: - KeyBackupProtoResponseBuilder
-
-    @objc
-    public static func builder() -> KeyBackupProtoResponseBuilder {
-        return KeyBackupProtoResponseBuilder()
+    public static func builder() -> KeyBackupProtoRequestBuilder {
+        return KeyBackupProtoRequestBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
-    public func asBuilder() -> KeyBackupProtoResponseBuilder {
-        let builder = KeyBackupProtoResponseBuilder()
+    public func asBuilder() -> KeyBackupProtoRequestBuilder {
+        let builder = KeyBackupProtoRequestBuilder()
         if let _value = backup {
             builder.setBackup(_value)
         }
@@ -249,62 +143,86 @@ public class KeyBackupProtoResponse: NSObject, Codable, NSSecureCoding {
         }
         return builder
     }
+}
+
+@objc
+public class KeyBackupProtoRequestBuilder: NSObject {
+
+    private var proto = KeyBackupProtos_Request()
 
     @objc
-    public class KeyBackupProtoResponseBuilder: NSObject {
+    fileprivate override init() {}
 
-        private var proto = KeyBackupProtos_Response()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setBackup(_ valueParam: KeyBackupProtoBackupResponse?) {
-            guard let valueParam = valueParam else { return }
-            proto.backup = valueParam.proto
-        }
-
-        public func setBackup(_ valueParam: KeyBackupProtoBackupResponse) {
-            proto.backup = valueParam.proto
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setRestore(_ valueParam: KeyBackupProtoRestoreResponse?) {
-            guard let valueParam = valueParam else { return }
-            proto.restore = valueParam.proto
-        }
-
-        public func setRestore(_ valueParam: KeyBackupProtoRestoreResponse) {
-            proto.restore = valueParam.proto
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setDelete(_ valueParam: KeyBackupProtoDeleteResponse?) {
-            guard let valueParam = valueParam else { return }
-            proto.delete = valueParam.proto
-        }
-
-        public func setDelete(_ valueParam: KeyBackupProtoDeleteResponse) {
-            proto.delete = valueParam.proto
-        }
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> KeyBackupProtoResponse {
-            return try KeyBackupProtoResponse(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoResponse(proto).serializedData()
-        }
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setBackup(_ valueParam: KeyBackupProtoBackupRequest?) {
+        guard let valueParam = valueParam else { return }
+        proto.backup = valueParam.proto
     }
+
+    public func setBackup(_ valueParam: KeyBackupProtoBackupRequest) {
+        proto.backup = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setRestore(_ valueParam: KeyBackupProtoRestoreRequest?) {
+        guard let valueParam = valueParam else { return }
+        proto.restore = valueParam.proto
+    }
+
+    public func setRestore(_ valueParam: KeyBackupProtoRestoreRequest) {
+        proto.restore = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setDelete(_ valueParam: KeyBackupProtoDeleteRequest?) {
+        guard let valueParam = valueParam else { return }
+        proto.delete = valueParam.proto
+    }
+
+    public func setDelete(_ valueParam: KeyBackupProtoDeleteRequest) {
+        proto.delete = valueParam.proto
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> KeyBackupProtoRequest {
+        return try KeyBackupProtoRequest(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try KeyBackupProtoRequest(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension KeyBackupProtoRequest {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension KeyBackupProtoRequestBuilder {
+    @objc
+    public func buildIgnoringErrors() -> KeyBackupProtoRequest? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - KeyBackupProtoResponse
+
+@objc
+public class KeyBackupProtoResponse: NSObject, Codable, NSSecureCoding {
 
     fileprivate let proto: KeyBackupProtos_Response
 
@@ -408,6 +326,88 @@ public class KeyBackupProtoResponse: NSObject, Codable, NSSecureCoding {
     }
 }
 
+extension KeyBackupProtoResponse {
+    @objc
+    public static func builder() -> KeyBackupProtoResponseBuilder {
+        return KeyBackupProtoResponseBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> KeyBackupProtoResponseBuilder {
+        let builder = KeyBackupProtoResponseBuilder()
+        if let _value = backup {
+            builder.setBackup(_value)
+        }
+        if let _value = restore {
+            builder.setRestore(_value)
+        }
+        if let _value = delete {
+            builder.setDelete(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class KeyBackupProtoResponseBuilder: NSObject {
+
+    private var proto = KeyBackupProtos_Response()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setBackup(_ valueParam: KeyBackupProtoBackupResponse?) {
+        guard let valueParam = valueParam else { return }
+        proto.backup = valueParam.proto
+    }
+
+    public func setBackup(_ valueParam: KeyBackupProtoBackupResponse) {
+        proto.backup = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setRestore(_ valueParam: KeyBackupProtoRestoreResponse?) {
+        guard let valueParam = valueParam else { return }
+        proto.restore = valueParam.proto
+    }
+
+    public func setRestore(_ valueParam: KeyBackupProtoRestoreResponse) {
+        proto.restore = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setDelete(_ valueParam: KeyBackupProtoDeleteResponse?) {
+        guard let valueParam = valueParam else { return }
+        proto.delete = valueParam.proto
+    }
+
+    public func setDelete(_ valueParam: KeyBackupProtoDeleteResponse) {
+        proto.delete = valueParam.proto
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> KeyBackupProtoResponse {
+        return try KeyBackupProtoResponse(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try KeyBackupProtoResponse(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension KeyBackupProtoResponse {
@@ -417,7 +417,7 @@ extension KeyBackupProtoResponse {
     }
 }
 
-extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
+extension KeyBackupProtoResponseBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoResponse? {
         return try! self.build()
@@ -430,132 +430,6 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
 
 @objc
 public class KeyBackupProtoBackupRequest: NSObject, Codable, NSSecureCoding {
-
-    // MARK: - KeyBackupProtoBackupRequestBuilder
-
-    @objc
-    public static func builder() -> KeyBackupProtoBackupRequestBuilder {
-        return KeyBackupProtoBackupRequestBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> KeyBackupProtoBackupRequestBuilder {
-        let builder = KeyBackupProtoBackupRequestBuilder()
-        if let _value = serviceID {
-            builder.setServiceID(_value)
-        }
-        if let _value = backupID {
-            builder.setBackupID(_value)
-        }
-        if let _value = token {
-            builder.setToken(_value)
-        }
-        if hasValidFrom {
-            builder.setValidFrom(validFrom)
-        }
-        if let _value = data {
-            builder.setData(_value)
-        }
-        if let _value = pin {
-            builder.setPin(_value)
-        }
-        if hasTries {
-            builder.setTries(tries)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    @objc
-    public class KeyBackupProtoBackupRequestBuilder: NSObject {
-
-        private var proto = KeyBackupProtos_BackupRequest()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setServiceID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.serviceID = valueParam
-        }
-
-        public func setServiceID(_ valueParam: Data) {
-            proto.serviceID = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setBackupID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.backupID = valueParam
-        }
-
-        public func setBackupID(_ valueParam: Data) {
-            proto.backupID = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setToken(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.token = valueParam
-        }
-
-        public func setToken(_ valueParam: Data) {
-            proto.token = valueParam
-        }
-
-        @objc
-        public func setValidFrom(_ valueParam: UInt64) {
-            proto.validFrom = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setData(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.data = valueParam
-        }
-
-        public func setData(_ valueParam: Data) {
-            proto.data = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setPin(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.pin = valueParam
-        }
-
-        public func setPin(_ valueParam: Data) {
-            proto.pin = valueParam
-        }
-
-        @objc
-        public func setTries(_ valueParam: UInt32) {
-            proto.tries = valueParam
-        }
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> KeyBackupProtoBackupRequest {
-            return try KeyBackupProtoBackupRequest(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoBackupRequest(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: KeyBackupProtos_BackupRequest
 
@@ -704,6 +578,132 @@ public class KeyBackupProtoBackupRequest: NSObject, Codable, NSSecureCoding {
     }
 }
 
+extension KeyBackupProtoBackupRequest {
+    @objc
+    public static func builder() -> KeyBackupProtoBackupRequestBuilder {
+        return KeyBackupProtoBackupRequestBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> KeyBackupProtoBackupRequestBuilder {
+        let builder = KeyBackupProtoBackupRequestBuilder()
+        if let _value = serviceID {
+            builder.setServiceID(_value)
+        }
+        if let _value = backupID {
+            builder.setBackupID(_value)
+        }
+        if let _value = token {
+            builder.setToken(_value)
+        }
+        if hasValidFrom {
+            builder.setValidFrom(validFrom)
+        }
+        if let _value = data {
+            builder.setData(_value)
+        }
+        if let _value = pin {
+            builder.setPin(_value)
+        }
+        if hasTries {
+            builder.setTries(tries)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class KeyBackupProtoBackupRequestBuilder: NSObject {
+
+    private var proto = KeyBackupProtos_BackupRequest()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setServiceID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.serviceID = valueParam
+    }
+
+    public func setServiceID(_ valueParam: Data) {
+        proto.serviceID = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setBackupID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.backupID = valueParam
+    }
+
+    public func setBackupID(_ valueParam: Data) {
+        proto.backupID = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setToken(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.token = valueParam
+    }
+
+    public func setToken(_ valueParam: Data) {
+        proto.token = valueParam
+    }
+
+    @objc
+    public func setValidFrom(_ valueParam: UInt64) {
+        proto.validFrom = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setData(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.data = valueParam
+    }
+
+    public func setData(_ valueParam: Data) {
+        proto.data = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPin(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.pin = valueParam
+    }
+
+    public func setPin(_ valueParam: Data) {
+        proto.pin = valueParam
+    }
+
+    @objc
+    public func setTries(_ valueParam: UInt32) {
+        proto.tries = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> KeyBackupProtoBackupRequest {
+        return try KeyBackupProtoBackupRequest(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try KeyBackupProtoBackupRequest(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension KeyBackupProtoBackupRequest {
@@ -713,7 +713,7 @@ extension KeyBackupProtoBackupRequest {
     }
 }
 
-extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
+extension KeyBackupProtoBackupRequestBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoBackupRequest? {
         return try! self.build()
@@ -751,68 +751,6 @@ private func KeyBackupProtoBackupResponseStatusUnwrap(_ value: KeyBackupProtoBac
 
 @objc
 public class KeyBackupProtoBackupResponse: NSObject, Codable, NSSecureCoding {
-
-    // MARK: - KeyBackupProtoBackupResponseBuilder
-
-    @objc
-    public static func builder() -> KeyBackupProtoBackupResponseBuilder {
-        return KeyBackupProtoBackupResponseBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> KeyBackupProtoBackupResponseBuilder {
-        let builder = KeyBackupProtoBackupResponseBuilder()
-        if let _value = status {
-            builder.setStatus(_value)
-        }
-        if let _value = token {
-            builder.setToken(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    @objc
-    public class KeyBackupProtoBackupResponseBuilder: NSObject {
-
-        private var proto = KeyBackupProtos_BackupResponse()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        public func setStatus(_ valueParam: KeyBackupProtoBackupResponseStatus) {
-            proto.status = KeyBackupProtoBackupResponseStatusUnwrap(valueParam)
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setToken(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.token = valueParam
-        }
-
-        public func setToken(_ valueParam: Data) {
-            proto.token = valueParam
-        }
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> KeyBackupProtoBackupResponse {
-            return try KeyBackupProtoBackupResponse(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoBackupResponse(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: KeyBackupProtos_BackupResponse
 
@@ -915,6 +853,68 @@ public class KeyBackupProtoBackupResponse: NSObject, Codable, NSSecureCoding {
     }
 }
 
+extension KeyBackupProtoBackupResponse {
+    @objc
+    public static func builder() -> KeyBackupProtoBackupResponseBuilder {
+        return KeyBackupProtoBackupResponseBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> KeyBackupProtoBackupResponseBuilder {
+        let builder = KeyBackupProtoBackupResponseBuilder()
+        if let _value = status {
+            builder.setStatus(_value)
+        }
+        if let _value = token {
+            builder.setToken(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class KeyBackupProtoBackupResponseBuilder: NSObject {
+
+    private var proto = KeyBackupProtos_BackupResponse()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    public func setStatus(_ valueParam: KeyBackupProtoBackupResponseStatus) {
+        proto.status = KeyBackupProtoBackupResponseStatusUnwrap(valueParam)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setToken(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.token = valueParam
+    }
+
+    public func setToken(_ valueParam: Data) {
+        proto.token = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> KeyBackupProtoBackupResponse {
+        return try KeyBackupProtoBackupResponse(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try KeyBackupProtoBackupResponse(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension KeyBackupProtoBackupResponse {
@@ -924,7 +924,7 @@ extension KeyBackupProtoBackupResponse {
     }
 }
 
-extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
+extension KeyBackupProtoBackupResponseBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoBackupResponse? {
         return try! self.build()
@@ -937,110 +937,6 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
 
 @objc
 public class KeyBackupProtoRestoreRequest: NSObject, Codable, NSSecureCoding {
-
-    // MARK: - KeyBackupProtoRestoreRequestBuilder
-
-    @objc
-    public static func builder() -> KeyBackupProtoRestoreRequestBuilder {
-        return KeyBackupProtoRestoreRequestBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> KeyBackupProtoRestoreRequestBuilder {
-        let builder = KeyBackupProtoRestoreRequestBuilder()
-        if let _value = serviceID {
-            builder.setServiceID(_value)
-        }
-        if let _value = backupID {
-            builder.setBackupID(_value)
-        }
-        if let _value = token {
-            builder.setToken(_value)
-        }
-        if hasValidFrom {
-            builder.setValidFrom(validFrom)
-        }
-        if let _value = pin {
-            builder.setPin(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    @objc
-    public class KeyBackupProtoRestoreRequestBuilder: NSObject {
-
-        private var proto = KeyBackupProtos_RestoreRequest()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setServiceID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.serviceID = valueParam
-        }
-
-        public func setServiceID(_ valueParam: Data) {
-            proto.serviceID = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setBackupID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.backupID = valueParam
-        }
-
-        public func setBackupID(_ valueParam: Data) {
-            proto.backupID = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setToken(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.token = valueParam
-        }
-
-        public func setToken(_ valueParam: Data) {
-            proto.token = valueParam
-        }
-
-        @objc
-        public func setValidFrom(_ valueParam: UInt64) {
-            proto.validFrom = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setPin(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.pin = valueParam
-        }
-
-        public func setPin(_ valueParam: Data) {
-            proto.pin = valueParam
-        }
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> KeyBackupProtoRestoreRequest {
-            return try KeyBackupProtoRestoreRequest(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoRestoreRequest(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: KeyBackupProtos_RestoreRequest
 
@@ -1168,6 +1064,110 @@ public class KeyBackupProtoRestoreRequest: NSObject, Codable, NSSecureCoding {
     }
 }
 
+extension KeyBackupProtoRestoreRequest {
+    @objc
+    public static func builder() -> KeyBackupProtoRestoreRequestBuilder {
+        return KeyBackupProtoRestoreRequestBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> KeyBackupProtoRestoreRequestBuilder {
+        let builder = KeyBackupProtoRestoreRequestBuilder()
+        if let _value = serviceID {
+            builder.setServiceID(_value)
+        }
+        if let _value = backupID {
+            builder.setBackupID(_value)
+        }
+        if let _value = token {
+            builder.setToken(_value)
+        }
+        if hasValidFrom {
+            builder.setValidFrom(validFrom)
+        }
+        if let _value = pin {
+            builder.setPin(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class KeyBackupProtoRestoreRequestBuilder: NSObject {
+
+    private var proto = KeyBackupProtos_RestoreRequest()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setServiceID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.serviceID = valueParam
+    }
+
+    public func setServiceID(_ valueParam: Data) {
+        proto.serviceID = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setBackupID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.backupID = valueParam
+    }
+
+    public func setBackupID(_ valueParam: Data) {
+        proto.backupID = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setToken(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.token = valueParam
+    }
+
+    public func setToken(_ valueParam: Data) {
+        proto.token = valueParam
+    }
+
+    @objc
+    public func setValidFrom(_ valueParam: UInt64) {
+        proto.validFrom = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPin(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.pin = valueParam
+    }
+
+    public func setPin(_ valueParam: Data) {
+        proto.pin = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> KeyBackupProtoRestoreRequest {
+        return try KeyBackupProtoRestoreRequest(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try KeyBackupProtoRestoreRequest(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension KeyBackupProtoRestoreRequest {
@@ -1177,7 +1177,7 @@ extension KeyBackupProtoRestoreRequest {
     }
 }
 
-extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
+extension KeyBackupProtoRestoreRequestBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoRestoreRequest? {
         return try! self.build()
@@ -1221,90 +1221,6 @@ private func KeyBackupProtoRestoreResponseStatusUnwrap(_ value: KeyBackupProtoRe
 
 @objc
 public class KeyBackupProtoRestoreResponse: NSObject, Codable, NSSecureCoding {
-
-    // MARK: - KeyBackupProtoRestoreResponseBuilder
-
-    @objc
-    public static func builder() -> KeyBackupProtoRestoreResponseBuilder {
-        return KeyBackupProtoRestoreResponseBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> KeyBackupProtoRestoreResponseBuilder {
-        let builder = KeyBackupProtoRestoreResponseBuilder()
-        if let _value = status {
-            builder.setStatus(_value)
-        }
-        if let _value = token {
-            builder.setToken(_value)
-        }
-        if let _value = data {
-            builder.setData(_value)
-        }
-        if hasTries {
-            builder.setTries(tries)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    @objc
-    public class KeyBackupProtoRestoreResponseBuilder: NSObject {
-
-        private var proto = KeyBackupProtos_RestoreResponse()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        public func setStatus(_ valueParam: KeyBackupProtoRestoreResponseStatus) {
-            proto.status = KeyBackupProtoRestoreResponseStatusUnwrap(valueParam)
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setToken(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.token = valueParam
-        }
-
-        public func setToken(_ valueParam: Data) {
-            proto.token = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setData(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.data = valueParam
-        }
-
-        public func setData(_ valueParam: Data) {
-            proto.data = valueParam
-        }
-
-        @objc
-        public func setTries(_ valueParam: UInt32) {
-            proto.tries = valueParam
-        }
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> KeyBackupProtoRestoreResponse {
-            return try KeyBackupProtoRestoreResponse(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoRestoreResponse(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: KeyBackupProtos_RestoreResponse
 
@@ -1428,6 +1344,90 @@ public class KeyBackupProtoRestoreResponse: NSObject, Codable, NSSecureCoding {
     }
 }
 
+extension KeyBackupProtoRestoreResponse {
+    @objc
+    public static func builder() -> KeyBackupProtoRestoreResponseBuilder {
+        return KeyBackupProtoRestoreResponseBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> KeyBackupProtoRestoreResponseBuilder {
+        let builder = KeyBackupProtoRestoreResponseBuilder()
+        if let _value = status {
+            builder.setStatus(_value)
+        }
+        if let _value = token {
+            builder.setToken(_value)
+        }
+        if let _value = data {
+            builder.setData(_value)
+        }
+        if hasTries {
+            builder.setTries(tries)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class KeyBackupProtoRestoreResponseBuilder: NSObject {
+
+    private var proto = KeyBackupProtos_RestoreResponse()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    public func setStatus(_ valueParam: KeyBackupProtoRestoreResponseStatus) {
+        proto.status = KeyBackupProtoRestoreResponseStatusUnwrap(valueParam)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setToken(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.token = valueParam
+    }
+
+    public func setToken(_ valueParam: Data) {
+        proto.token = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setData(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.data = valueParam
+    }
+
+    public func setData(_ valueParam: Data) {
+        proto.data = valueParam
+    }
+
+    @objc
+    public func setTries(_ valueParam: UInt32) {
+        proto.tries = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> KeyBackupProtoRestoreResponse {
+        return try KeyBackupProtoRestoreResponse(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try KeyBackupProtoRestoreResponse(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension KeyBackupProtoRestoreResponse {
@@ -1437,7 +1437,7 @@ extension KeyBackupProtoRestoreResponse {
     }
 }
 
-extension KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseBuilder {
+extension KeyBackupProtoRestoreResponseBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoRestoreResponse? {
         return try! self.build()
@@ -1450,74 +1450,6 @@ extension KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseBuilder {
 
 @objc
 public class KeyBackupProtoDeleteRequest: NSObject, Codable, NSSecureCoding {
-
-    // MARK: - KeyBackupProtoDeleteRequestBuilder
-
-    @objc
-    public static func builder() -> KeyBackupProtoDeleteRequestBuilder {
-        return KeyBackupProtoDeleteRequestBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> KeyBackupProtoDeleteRequestBuilder {
-        let builder = KeyBackupProtoDeleteRequestBuilder()
-        if let _value = serviceID {
-            builder.setServiceID(_value)
-        }
-        if let _value = backupID {
-            builder.setBackupID(_value)
-        }
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    @objc
-    public class KeyBackupProtoDeleteRequestBuilder: NSObject {
-
-        private var proto = KeyBackupProtos_DeleteRequest()
-
-        @objc
-        fileprivate override init() {}
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setServiceID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.serviceID = valueParam
-        }
-
-        public func setServiceID(_ valueParam: Data) {
-            proto.serviceID = valueParam
-        }
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setBackupID(_ valueParam: Data?) {
-            guard let valueParam = valueParam else { return }
-            proto.backupID = valueParam
-        }
-
-        public func setBackupID(_ valueParam: Data) {
-            proto.backupID = valueParam
-        }
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> KeyBackupProtoDeleteRequest {
-            return try KeyBackupProtoDeleteRequest(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoDeleteRequest(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: KeyBackupProtos_DeleteRequest
 
@@ -1612,6 +1544,74 @@ public class KeyBackupProtoDeleteRequest: NSObject, Codable, NSSecureCoding {
     }
 }
 
+extension KeyBackupProtoDeleteRequest {
+    @objc
+    public static func builder() -> KeyBackupProtoDeleteRequestBuilder {
+        return KeyBackupProtoDeleteRequestBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> KeyBackupProtoDeleteRequestBuilder {
+        let builder = KeyBackupProtoDeleteRequestBuilder()
+        if let _value = serviceID {
+            builder.setServiceID(_value)
+        }
+        if let _value = backupID {
+            builder.setBackupID(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class KeyBackupProtoDeleteRequestBuilder: NSObject {
+
+    private var proto = KeyBackupProtos_DeleteRequest()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setServiceID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.serviceID = valueParam
+    }
+
+    public func setServiceID(_ valueParam: Data) {
+        proto.serviceID = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setBackupID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.backupID = valueParam
+    }
+
+    public func setBackupID(_ valueParam: Data) {
+        proto.backupID = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> KeyBackupProtoDeleteRequest {
+        return try KeyBackupProtoDeleteRequest(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try KeyBackupProtoDeleteRequest(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension KeyBackupProtoDeleteRequest {
@@ -1621,7 +1621,7 @@ extension KeyBackupProtoDeleteRequest {
     }
 }
 
-extension KeyBackupProtoDeleteRequest.KeyBackupProtoDeleteRequestBuilder {
+extension KeyBackupProtoDeleteRequestBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoDeleteRequest? {
         return try! self.build()
@@ -1634,46 +1634,6 @@ extension KeyBackupProtoDeleteRequest.KeyBackupProtoDeleteRequestBuilder {
 
 @objc
 public class KeyBackupProtoDeleteResponse: NSObject, Codable, NSSecureCoding {
-
-    // MARK: - KeyBackupProtoDeleteResponseBuilder
-
-    @objc
-    public static func builder() -> KeyBackupProtoDeleteResponseBuilder {
-        return KeyBackupProtoDeleteResponseBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc
-    public func asBuilder() -> KeyBackupProtoDeleteResponseBuilder {
-        let builder = KeyBackupProtoDeleteResponseBuilder()
-        if let _value = unknownFields {
-            builder.setUnknownFields(_value)
-        }
-        return builder
-    }
-
-    @objc
-    public class KeyBackupProtoDeleteResponseBuilder: NSObject {
-
-        private var proto = KeyBackupProtos_DeleteResponse()
-
-        @objc
-        fileprivate override init() {}
-
-        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
-            proto.unknownFields = unknownFields
-        }
-
-        @objc
-        public func build() throws -> KeyBackupProtoDeleteResponse {
-            return try KeyBackupProtoDeleteResponse(proto)
-        }
-
-        @objc
-        public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoDeleteResponse(proto).serializedData()
-        }
-    }
 
     fileprivate let proto: KeyBackupProtos_DeleteResponse
 
@@ -1744,6 +1704,46 @@ public class KeyBackupProtoDeleteResponse: NSObject, Codable, NSSecureCoding {
     }
 }
 
+extension KeyBackupProtoDeleteResponse {
+    @objc
+    public static func builder() -> KeyBackupProtoDeleteResponseBuilder {
+        return KeyBackupProtoDeleteResponseBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> KeyBackupProtoDeleteResponseBuilder {
+        let builder = KeyBackupProtoDeleteResponseBuilder()
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class KeyBackupProtoDeleteResponseBuilder: NSObject {
+
+    private var proto = KeyBackupProtos_DeleteResponse()
+
+    @objc
+    fileprivate override init() {}
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> KeyBackupProtoDeleteResponse {
+        return try KeyBackupProtoDeleteResponse(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try KeyBackupProtoDeleteResponse(proto).serializedData()
+    }
+}
+
 #if TESTABLE_BUILD
 
 extension KeyBackupProtoDeleteResponse {
@@ -1753,7 +1753,7 @@ extension KeyBackupProtoDeleteResponse {
     }
 }
 
-extension KeyBackupProtoDeleteResponse.KeyBackupProtoDeleteResponseBuilder {
+extension KeyBackupProtoDeleteResponseBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoDeleteResponse? {
         return try! self.build()

@@ -7,10 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyReadTransaction;
-
-// Work around a limitation with Swift and nested @objc classes.
-@protocol SSKProtoSyncMessageBuilderProtocol
-@end
+@class SSKProtoSyncMessageBuilder;
 
 /**
  * Abstract base class used for the family of sync messages which take care
@@ -55,8 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (nullable id<SSKProtoSyncMessageBuilderProtocol>)syncMessageBuilderWithTransaction:
-    (SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(syncMessageBuilder(transaction:));
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(syncMessageBuilder(transaction:));
 
 @end
 

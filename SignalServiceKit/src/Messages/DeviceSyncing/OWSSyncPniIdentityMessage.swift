@@ -14,7 +14,7 @@ public class OWSSyncPniIdentityMessage: OWSOutgoingSyncMessage {
         super.init(thread: thread)
     }
 
-    public override func syncMessageBuilder(transaction: SDSAnyReadTransaction) -> SSKProtoSyncMessageBuilderProtocol? {
+    public override func syncMessageBuilder(transaction: SDSAnyReadTransaction) -> SSKProtoSyncMessageBuilder? {
         do {
             let pniIdentityBuilder = SSKProtoSyncMessagePniIdentity.builder()
             pniIdentityBuilder.setPublicKey(Data(keyPair.identityKeyPair.publicKey.serialize()))
