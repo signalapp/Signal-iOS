@@ -4,8 +4,33 @@
 
 import XCTest
 
+class SubscriptionChargeFailureTest: XCTestCase {
+    typealias ChargeFailure = Subscription.ChargeFailure
+
+    func testNilInit() {
+        let chargeFailure = ChargeFailure()
+        XCTAssertNil(chargeFailure.code)
+    }
+
+    func testStringInit() {
+        let chargeFailure = ChargeFailure(code: "foo bar")
+        XCTAssertEqual(chargeFailure.code, "foo bar")
+    }
+
+    func testJsonInit() {
+        let chargeFailure = ChargeFailure(jsonDictionary: ["code": "foo"])
+        XCTAssertEqual(chargeFailure.code, "foo")
+
+        let strangeInputs: [[String: Any]] = [[:], ["no code": "missing"], ["code": 123]]
+        for jsonDictionary in strangeInputs {
+            let chargeFailure = ChargeFailure(jsonDictionary: jsonDictionary)
+            XCTAssertNil(chargeFailure.code)
+        }
+    }
+}
+
 class SubscriptionTest: XCTestCase {
-    let subscriptionJsonDictionary: [String: Any] = {
+    let subscriptionDict: [String: Any] = {
         let endOfCurrentPeriodRawValue: Double = 1618881836
         let billingCycleAnchorRawValue: Double = 1587345836
         return [
@@ -21,8 +46,8 @@ class SubscriptionTest: XCTestCase {
     }()
 
     func testJsonInit() throws {
-        let subscription = try Subscription(jsonDictionary: subscriptionJsonDictionary,
-                                            hasChargeFailure: false)
+        let subscription = try Subscription(subscriptionDict: subscriptionDict,
+                                            chargeFailureDict: nil)
 
         XCTAssertEqual(subscription.level, 123)
         XCTAssertEqual(subscription.currency, "USD")
@@ -32,23 +57,31 @@ class SubscriptionTest: XCTestCase {
         XCTAssertTrue(subscription.active)
         XCTAssertFalse(subscription.cancelAtEndOfPeriod)
         XCTAssertEqual(subscription.status, .active)
-        XCTAssertFalse(subscription.hasChargeFailure)
+        XCTAssertNil(subscription.chargeFailure)
     }
 
     func testJsonInitWithUnexpectedStatus() throws {
-        var jsonDictionaryWithUnexpectedStatus = subscriptionJsonDictionary
-        jsonDictionaryWithUnexpectedStatus["status"] = "unexpected!!"
+        var subscriptionDictWithUnexpectedStatus = subscriptionDict
+        subscriptionDictWithUnexpectedStatus["status"] = "unexpected!!"
 
-        let subscription = try Subscription(jsonDictionary: jsonDictionaryWithUnexpectedStatus,
-                                            hasChargeFailure: false)
+        let subscription = try Subscription(subscriptionDict: subscriptionDictWithUnexpectedStatus,
+                                            chargeFailureDict: nil)
 
         XCTAssertEqual(subscription.status, .unknown)
-        XCTAssertFalse(subscription.hasChargeFailure)
+        XCTAssertNil(subscription.chargeFailure)
     }
 
     func testChargeFailure() throws {
-        let subscription = try Subscription(jsonDictionary: subscriptionJsonDictionary,
-                                            hasChargeFailure: true)
-        XCTAssertTrue(subscription.hasChargeFailure)
+        let subscription = try Subscription(subscriptionDict: subscriptionDict,
+                                            chargeFailureDict: ["code": "foo bar"])
+        XCTAssertEqual(subscription.chargeFailure?.code, "foo bar")
+
+        let strangeChargeFailures: [[String: Any]] = [[:], ["no code": "missing"], ["code": 123]]
+        for chargeFailureDict in strangeChargeFailures {
+            let subscription = try Subscription(subscriptionDict: subscriptionDict,
+                                                chargeFailureDict: chargeFailureDict)
+            XCTAssertNotNil(subscription.chargeFailure)
+            XCTAssertNil(subscription.chargeFailure?.code)
+        }
     }
 }

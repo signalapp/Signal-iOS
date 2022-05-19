@@ -10,6 +10,8 @@ import SignalServiceKit
 public let BOOST_BADGE_LEVEL = "1"
 public let GIFT_BADGE_LEVEL = "100"
 
+private let SUBSCRIPTION_CHARGE_FAILURE_FALLBACK_CODE = "__signal_charge_failure_fallback_code__"
+
 public enum SubscriptionBadgeIds: String, CaseIterable {
     case low = "R_LOW"
     case med = "R_MED"
@@ -71,6 +73,25 @@ public class SubscriptionLevel: Comparable {
 }
 
 public struct Subscription {
+    public struct ChargeFailure {
+        /// The error code reported by the server.
+        ///
+        /// If nil, we know there was a charge failure but don't know the code. This is unusual,
+        /// but can happen if the server sends an invalid response.
+        public let code: String?
+
+        public init() {
+            code = nil
+        }
+
+        public init(code: String) {
+            self.code = code
+        }
+
+        public init(jsonDictionary: [String: Any]) {
+            code = try? ParamParser(dictionary: jsonDictionary).optional(key: "code")
+        }
+    }
 
     public enum StripeSubscriptionStatus: String {
         case unknown
@@ -91,10 +112,10 @@ public struct Subscription {
     public let active: Bool
     public let cancelAtEndOfPeriod: Bool
     public let status: StripeSubscriptionStatus
-    public let hasChargeFailure: Bool
+    public let chargeFailure: ChargeFailure?
 
-    public init(jsonDictionary: [String: Any], hasChargeFailure: Bool) throws {
-        let params = ParamParser(dictionary: jsonDictionary)
+    public init(subscriptionDict: [String: Any], chargeFailureDict: [String: Any]?) throws {
+        let params = ParamParser(dictionary: subscriptionDict)
         level = try params.required(key: "level")
         currency = try params.required(key: "currency")
         let amountValue: Int64 = try params.required(key: "amount")
@@ -104,7 +125,11 @@ public struct Subscription {
         active = try params.required(key: "active")
         cancelAtEndOfPeriod = try params.required(key: "cancelAtPeriodEnd")
         status = StripeSubscriptionStatus(rawValue: try params.required(key: "status")) ?? .unknown
-        self.hasChargeFailure = hasChargeFailure
+        if let chargeFailureDict = chargeFailureDict {
+            chargeFailure = ChargeFailure(jsonDictionary: chargeFailureDict)
+        } else {
+            chargeFailure = nil
+        }
     }
 }
 
@@ -172,7 +197,7 @@ public class SubscriptionManager: NSObject {
     fileprivate static let knownUserBoostBadgeIDsKey = "knownUserBoostBadgeIDsKey"
     fileprivate static let mostRecentlyExpiredBadgeIDKey = "mostRecentlyExpiredBadgeIDKey"
     fileprivate static let showExpirySheetOnHomeScreenKey = "showExpirySheetOnHomeScreenKey"
-    fileprivate static let doesMostRecentSubscriptionBadgeHaveChargeFailureKey = "doesMostRecentSubscriptionBadgeHaveChargeFailure"
+    fileprivate static let mostRecentSubscriptionBadgeChargeFailureCodeKey = "mostRecentSubscriptionBadgeChargeFailureCode"
     fileprivate static let hasMigratedToStorageServiceKey = "hasMigratedToStorageServiceKey"
 
     public static var terminateTransactionIfPossible = false
@@ -253,10 +278,10 @@ public class SubscriptionManager: NSObject {
                 guard let subscriptionDict: [String: Any] = try parser.optional(key: "subscription") else {
                     return nil
                 }
-                let hasChargeFailure: Bool = (try? parser.optional(key: "chargeFailure")) ?? false
+                let chargeFailureDict: [String: Any]? = try? parser.optional(key: "chargeFailure")
 
-                return try Subscription(jsonDictionary: subscriptionDict,
-                                        hasChargeFailure: hasChargeFailure)
+                return try Subscription(subscriptionDict: subscriptionDict,
+                                        chargeFailureDict: chargeFailureDict)
             } else {
                 return nil
             }
@@ -354,7 +379,7 @@ public class SubscriptionManager: NSObject {
             }
 
             databaseStorage.write {
-                Self.setMostRecentSubscriptionBadgeHasChargeFailure(hasChargeFailure: false, transaction: $0)
+                Self.clearMostRecentSubscriptionBadgeChargeFailure(transaction: $0)
             }
 
             return setSubscription(for: generatedSubscriberID, subscription: subscription, currency: currencyCode)
@@ -738,14 +763,19 @@ public class SubscriptionManager: NSObject {
                 return
             }
 
-            if subscription.hasChargeFailure {
-                Logger.info("[Subscriptions] There was a charge failure. Setting status to failed")
-            } else {
-                Logger.info("[Subscriptions] There no charge failure. Clearing failed status, if it existed")
-            }
-            databaseStorage.write {
-                self.setMostRecentSubscriptionBadgeHasChargeFailure(hasChargeFailure: subscription.hasChargeFailure,
-                                                                    transaction: $0)
+            databaseStorage.write { transaction in
+                if let chargeFailure = subscription.chargeFailure {
+                    Logger.info("[Subscriptions] There was a charge failure. Saving the error code")
+
+                    let code: String = chargeFailure.code ?? {
+                        Logger.warn("[Subscriptions] There was a charge failure with no code. Did the server return bad data? Continuing with fallback...")
+                        return SUBSCRIPTION_CHARGE_FAILURE_FALLBACK_CODE
+                    }()
+                    self.setMostRecentSubscriptionBadgeChargeFailureCode(code: code, transaction: transaction)
+                } else {
+                    Logger.info("[Subscriptions] There no charge failure. Clearing error code, if it existed")
+                    self.clearMostRecentSubscriptionBadgeChargeFailure(transaction: transaction)
+                }
             }
 
             if let lastSubscriptionExpiration = lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 < subscription.endOfCurrentPeriod {
@@ -962,12 +992,19 @@ extension SubscriptionManager {
         return subscriptionKVS.getBool(showExpirySheetOnHomeScreenKey, transaction: transaction) ?? false
     }
 
-    public static func doesMostRecentSubscriptionBadgeHaveChargeFailure(transaction: SDSAnyReadTransaction) -> Bool {
-        subscriptionKVS.getBool(doesMostRecentSubscriptionBadgeHaveChargeFailureKey, transaction: transaction) ?? false
+    public static func getMostRecentSubscriptionBadgeChargeFailure(transaction: SDSAnyReadTransaction) -> Subscription.ChargeFailure? {
+        guard let code = subscriptionKVS.getString(mostRecentSubscriptionBadgeChargeFailureCodeKey, transaction: transaction) else {
+            return nil
+        }
+        return code == SUBSCRIPTION_CHARGE_FAILURE_FALLBACK_CODE ? Subscription.ChargeFailure() : Subscription.ChargeFailure(code: code)
     }
 
-    public static func setMostRecentSubscriptionBadgeHasChargeFailure(hasChargeFailure: Bool, transaction: SDSAnyWriteTransaction) {
-        subscriptionKVS.setBool(hasChargeFailure, key: doesMostRecentSubscriptionBadgeHaveChargeFailureKey, transaction: transaction)
+    private static func setMostRecentSubscriptionBadgeChargeFailureCode(code: String, transaction: SDSAnyWriteTransaction) {
+        subscriptionKVS.setString(code, key: mostRecentSubscriptionBadgeChargeFailureCodeKey, transaction: transaction)
+    }
+
+    private static func clearMostRecentSubscriptionBadgeChargeFailure(transaction: SDSAnyWriteTransaction) {
+        subscriptionKVS.removeValue(forKey: mostRecentSubscriptionBadgeChargeFailureCodeKey, transaction: transaction)
     }
 }
 

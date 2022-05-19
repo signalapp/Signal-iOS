@@ -90,12 +90,12 @@ public extension ChatListViewController {
         let (
             expiredBadgeID,
             shouldShowExpirySheet,
-            doesMostRecentSubscriptionBadgeHaveChargeFailure,
+            mostRecentSubscriptionBadgeChargeFailure,
             hasCurrentSubscription
         ) = databaseStorage.read { transaction in (
             SubscriptionManager.mostRecentlyExpiredBadgeID(transaction: transaction),
             SubscriptionManager.showExpirySheetOnHomeScreenKey(transaction: transaction),
-            SubscriptionManager.doesMostRecentSubscriptionBadgeHaveChargeFailure(transaction: transaction),
+            SubscriptionManager.getMostRecentSubscriptionBadgeChargeFailure(transaction: transaction),
             subscriptionManager.hasCurrentSubscription(transaction: transaction)
         )}
 
@@ -154,8 +154,13 @@ public extension ChatListViewController {
                     guard UIApplication.shared.frontmostViewController == self.conversationSplitViewController,
                           self.conversationSplitViewController?.selectedThread == nil else { return }
 
-                    let badgeSheet = BadgeExpirationSheet(badge: subscriptionLevel.badge,
-                                                          mode: doesMostRecentSubscriptionBadgeHaveChargeFailure ? .subscriptionExpiredBecauseOfChargeFailure : .subscriptionExpiredBecauseNotRenewed)
+                    let mode: BadgeExpirationSheetState.Mode
+                    if let mostRecentSubscriptionBadgeChargeFailure = mostRecentSubscriptionBadgeChargeFailure {
+                        mode = .subscriptionExpiredBecauseOfChargeFailure(chargeFailure: mostRecentSubscriptionBadgeChargeFailure)
+                    } else {
+                        mode = .subscriptionExpiredBecauseNotRenewed
+                    }
+                    let badgeSheet = BadgeExpirationSheet(badge: subscriptionLevel.badge, mode: mode)
                     badgeSheet.delegate = self
                     self.present(badgeSheet, animated: true)
                     self.hasShownBadgeExpiration = true
