@@ -19,9 +19,10 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     private lazy var reactionContainerViewLeftConstraint = reactionContainerView.pin(.left, to: .left, of: bubbleView)
     private lazy var reactionContainerViewRightConstraint = reactionContainerView.pin(.right, to: .right, of: bubbleView)
     
-    private lazy var messageStatusImageViewTopConstraint = messageStatusImageView.pin(.top, to: .bottom, of: bubbleView, withInset: 0)
+    private lazy var messageStatusImageViewTopConstraint = messageStatusImageView.pin(.top, to: .bottom, of: reactionContainerView, withInset: 0)
     private lazy var messageStatusImageViewWidthConstraint = messageStatusImageView.set(.width, to: VisibleMessageCell.messageStatusImageViewSize)
     private lazy var messageStatusImageViewHeightConstraint = messageStatusImageView.set(.height, to: VisibleMessageCell.messageStatusImageViewSize)
+    
     private lazy var timerViewOutgoingMessageConstraint = timerView.pin(.left, to: .left, of: self, withInset: VisibleMessageCell.contactThreadHSpacing)
     private lazy var timerViewIncomingMessageConstraint = timerView.pin(.right, to: .right, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
 
@@ -181,6 +182,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         bubbleViewLeftConstraint1.isActive = true
         bubbleViewTopConstraint.isActive = true
         bubbleViewRightConstraint1.isActive = true
+        bubbleView.pin(.bottom, to: .bottom, of: profilePictureView, withInset: -1)
         // Timer view
         addSubview(timerView)
         timerView.center(.vertical, in: bubbleView)
@@ -190,8 +192,9 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         snContentView.pin(to: bubbleView)
         // Reaction view
         addSubview(reactionContainerView)
-        reactionContainerView.pin(.top, to: .bottom, of: bubbleView, withInset: Values.smallSpacing)
+        reactionContainerView.pin(.top, to: .bottom, of: bubbleView, withInset: Values.verySmallSpacing)
         reactionContainerViewLeftConstraint.isActive = true
+//        reactionContainerView.pin(.bottom, to: .bottom, of: self)
         // Message status image view
         addSubview(messageStatusImageView)
         messageStatusImageViewTopConstraint.isActive = true
@@ -255,6 +258,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         // Content view
         populateContentView(for: viewItem, message: message)
         // Reaction view
+        reactionContainerView.isHidden = (message.reactions.count == 0)
         reactionContainerViewLeftConstraint.isActive = (direction == .incoming)
         reactionContainerViewRightConstraint.isActive = (direction == .outgoing)
         populateReaction(for: viewItem, message: message)
@@ -484,7 +488,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     override func prepareForReuse() {
         super.prepareForReuse()
         unloadContent?()
-        let viewsToMove = [ bubbleView, profilePictureView, replyButton, timerView, messageStatusImageView ]
+        let viewsToMove = [ bubbleView, profilePictureView, replyButton, timerView, messageStatusImageView, reactionContainerView ]
         viewsToMove.forEach { $0.transform = .identity }
         replyButton.alpha = 0
         timerView.prepareForReuse()
