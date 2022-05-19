@@ -820,8 +820,21 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func react(_ viewItem: ConversationViewItem, with emoji: String) {
-        print("Ryan Test: \(emoji)")
         UserDefaults.standard.addNewRecentlyUsedEmoji(emoji)
+        react(viewItem, with: emoji, cancel: false)
+    }
+    
+    func quickReact(_ viewItem: ConversationViewItem, with emoji: String) {
+        print("Ryan Test: Quick react with \(emoji)")
+        react(viewItem, with: emoji)
+    }
+    
+    func cancelReact(_ viewItem: ConversationViewItem, for emoji: String) {
+        print("Ryan Test: Cancel react for \(emoji)")
+        react(viewItem, with: emoji, cancel: true)
+    }
+    
+    private func react(_ viewItem: ConversationViewItem, with emoji: String, cancel: Bool) {
         guard let message = viewItem.interaction as? TSMessage else { return }
         var authorId = getUserHexEncodedPublicKey()
         if let incomingMessage = message as? TSIncomingMessage { authorId = incomingMessage.authorId }
@@ -832,11 +845,14 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let visibleMessage = VisibleMessage()
         visibleMessage.sentTimestamp = sentTimestamp
         visibleMessage.reaction = .from(reactMessage)
-        visibleMessage.reaction?.kind = .react
+        visibleMessage.reaction?.kind = cancel ? .remove : .react
         Storage.write { transaction in
-            message.update(withReaction: reactMessage, transaction: transaction)
-            // TODO: send emoji react message
-//            MessageSender.send(<#T##message: Message##Message#>, in: thread, using: <#T##YapDatabaseReadWriteTransaction#>)
+            if cancel {
+                message.removeReaction(reactMessage, transaction: transaction) }
+            else {
+                message.addReaction(reactMessage, transaction: transaction)
+            }
+            // MessageSender.send(visibleMessage, in: thread, using: transaction)
         }
     }
     

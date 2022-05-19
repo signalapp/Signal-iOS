@@ -80,4 +80,6 @@ protocol MessageCellDelegate : AnyObject {
     func openURL(_ url: URL)
     func handleReplyButtonTapped(for viewItem: ConversationViewItem)
     func showUserDetails(for sessionID: String)
+    func quickReact(_ viewItem: ConversationViewItem, with emoji: String)
+    func cancelReact(_ viewItem: ConversationViewItem, for emoji: String)
 }

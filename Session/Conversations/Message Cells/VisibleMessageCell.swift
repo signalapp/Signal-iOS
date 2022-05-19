@@ -548,6 +548,18 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         } else if replyButton.frame.contains(location) {
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
             reply()
+        } else if reactionContainerView.frame.contains(location) {
+            let convertedLocation = reactionContainerView.convert(location, from: self)
+            for reactionView in reactionContainerView.reactionViews {
+                if reactionView.frame.contains(convertedLocation) {
+                    if reactionView.hasCurrentUser {
+                        delegate?.cancelReact(viewItem, for: reactionView.emoji)
+                    } else {
+                        delegate?.quickReact(viewItem, with: reactionView.emoji)
+                    }
+                    break
+                }
+            }
         } else {
             delegate?.handleViewItemTapped(viewItem, gestureRecognizer: gestureRecognizer)
         }

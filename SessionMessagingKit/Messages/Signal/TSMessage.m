@@ -457,7 +457,7 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
                              }];
 }
 
-- (void)updateWithReaction:(SNReactMessage *)reaction transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)addReaction:(SNReactMessage *)reaction transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if ([self isKindOfClass:[TSIncomingMessage class]] || [self isKindOfClass:[TSOutgoingMessage class]]) {
         [self applyChangeToSelfAndLatestCopy:transaction
@@ -465,6 +465,16 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
                                     if (![message.reactions containsObject:reaction]) {
                                         [message.reactions addObject:reaction];
                                     }
+                                 }];
+    }
+}
+
+- (void)removeReaction:(SNReactMessage *)reaction transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    if ([self isKindOfClass:[TSIncomingMessage class]] || [self isKindOfClass:[TSOutgoingMessage class]]) {
+        [self applyChangeToSelfAndLatestCopy:transaction
+                                 changeBlock:^(TSMessage *message) {
+                                    [message.reactions removeObject:reaction];
                                  }];
     }
 }

@@ -1,9 +1,9 @@
 import UIKit
 
 final class ReactionView : UIView {
-    private let emoji: String
-    private let number: Int
-    private let hasCurrentUser: Bool
+    let emoji: String
+    let number: Int
+    let hasCurrentUser: Bool
     
     // MARK: Settings
     private static let height: CGFloat = 22

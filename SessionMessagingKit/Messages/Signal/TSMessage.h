@@ -90,7 +90,8 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
 - (void)updateCallMessageWithNewBody:(NSString *)newBody transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (void)updateWithReaction:(SNReactMessage *)reaction transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)addReaction:(SNReactMessage *)reaction transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)removeReaction:(SNReactMessage *)reaction transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

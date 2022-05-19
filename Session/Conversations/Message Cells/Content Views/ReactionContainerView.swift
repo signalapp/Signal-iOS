@@ -10,6 +10,8 @@ final class ReactionContainerView : UIView {
     
     private var showingAllReactions = false
     
+    var reactionViews: [ReactionView] = []
+    
     // MARK: Lifecycle
     init() {
         super.init(frame: CGRect.zero)
@@ -30,10 +32,8 @@ final class ReactionContainerView : UIView {
     }
     
     public func update(_ reactions: [(String, (Int, Bool))]) {
-        for subview in containerView.arrangedSubviews {
-            containerView.removeArrangedSubview(subview)
-            subview.removeFromSuperview()
-        }
+        prepareForUpdate()
+        
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = Values.smallSpacing
@@ -53,12 +53,21 @@ final class ReactionContainerView : UIView {
         for reaction in displayedReactions {
             let reactionView = ReactionView(emoji: reaction.0, value: reaction.1)
             stackView.addArrangedSubview(reactionView)
+            reactionViews.append(reactionView)
         }
         if expandButtonReactions.count > 0 {
             let expandButton = ExpandingReactionButton(emojis: expandButtonReactions)
             stackView.addArrangedSubview(expandButton)
         }
         containerView.addArrangedSubview(stackView)
+    }
+    
+    private func prepareForUpdate() {
+        for subview in containerView.arrangedSubviews {
+            containerView.removeArrangedSubview(subview)
+            subview.removeFromSuperview()
+        }
+        reactionViews = []
     }
 }
 
