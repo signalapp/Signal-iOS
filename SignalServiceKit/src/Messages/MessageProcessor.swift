@@ -100,6 +100,7 @@ public class MessageProcessor: NSObject {
                                                       plaintextData: jobRecord.plaintextData,
                                                       serverDeliveryTimestamp: jobRecord.serverDeliveryTimestamp,
                                                       wasReceivedByUD: jobRecord.wasReceivedByUD,
+                                                      identity: .aci,
                                                       completion: completion)
                     } catch {
                         completion(error)
@@ -197,6 +198,7 @@ public class MessageProcessor: NSObject {
         plaintextData: Data?,
         serverDeliveryTimestamp: UInt64,
         wasReceivedByUD: Bool,
+        identity: OWSIdentity,
         completion: @escaping (Error?) -> Void
     ) {
         let decryptedEnvelope = DecryptedEnvelope(
@@ -205,6 +207,7 @@ public class MessageProcessor: NSObject {
             plaintextData: plaintextData,
             serverDeliveryTimestamp: serverDeliveryTimestamp,
             wasReceivedByUD: wasReceivedByUD,
+            identity: identity,
             completion: completion
         )
         pendingEnvelopes.enqueue(decryptedEnvelope: decryptedEnvelope)
@@ -318,6 +321,10 @@ public class MessageProcessor: NSObject {
                     pendingEnvelope.completion(error)
                 }
                 return
+            }
+
+            if result.identity == .pni {
+                identityManager.setShouldSharePhoneNumber(with: sourceAddress, transaction: transaction)
             }
 
             enum ProcessingStep {
@@ -500,13 +507,6 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     }
 
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error> {
-        // PNI TODO: actually handle destinationUuid, don't just use it as a filter.
-        if let destinationUuidString = encryptedEnvelope.destinationUuid,
-           let localAci = self.tsAccountManager.localUuid,
-           localAci != UUID(uuidString: destinationUuidString) {
-            return .failure(MessageProcessingError.wrongDestinationUuid)
-        }
-
         let result = Self.messageDecrypter.decryptEnvelope(
             encryptedEnvelope,
             envelopeData: encryptedEnvelopeData,
@@ -520,6 +520,7 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
                 plaintextData: result.plaintextData,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 wasReceivedByUD: wasReceivedByUD,
+                identity: result.identity,
                 completion: completion
             ))
         case .failure(let error):
@@ -551,6 +552,7 @@ private struct DecryptedEnvelope: PendingEnvelope {
     let plaintextData: Data?
     let serverDeliveryTimestamp: UInt64
     let wasReceivedByUD: Bool
+    let identity: OWSIdentity
     let completion: (Error?) -> Void
 
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error> {

@@ -34,7 +34,8 @@ public extension DebugUIMessages {
         messageProcessor.processDecryptedEnvelope(envelope,
                                                   plaintextData: plaintextData,
                                                   serverDeliveryTimestamp: 0,
-                                                  wasReceivedByUD: false) { error in
+                                                  wasReceivedByUD: false,
+                                                  identity: .aci) { error in
             switch error {
             case MessageProcessingError.duplicatePendingEnvelope?:
                 Logger.warn("duplicatePendingEnvelope.")

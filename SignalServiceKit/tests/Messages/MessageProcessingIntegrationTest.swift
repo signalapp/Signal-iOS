@@ -32,7 +32,8 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
         // ensure local client has necessary "registered" state
         identityManager.generateNewIdentityKey(for: .aci)
-        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
+        identityManager.generateNewIdentityKey(for: .pni)
+        tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID, pni: UUID())
 
         bobClient = FakeSignalClient.generate(e164Identifier: bobE164Identifier)
         aliceClient = FakeSignalClient.generate(e164Identifier: aliceE164Identifier)
@@ -225,6 +226,59 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                 XCTFail("unexpected error \(error)")
             case nil:
                 XCTFail("should have failed")
+            }
+        }
+        waitForExpectations(timeout: 1.0)
+    }
+
+    func testPniMessage() {
+        let localPniClient = LocalSignalClient(identity: .pni)
+        write { transaction in
+            try! self.runner.initializePreKeys(senderClient: self.bobClient,
+                                               recipientClient: localPniClient,
+                                               transaction: transaction)
+        }
+
+        // Wait until message processing has completed, otherwise future
+        // tests may break as we try and drain the processing queue.
+        _ = expectation(forNotification: MessageProcessor.messageProcessorDidFlushQueue, object: nil)
+
+        read { transaction in
+            XCTAssertEqual(0, TSMessage.anyCount(transaction: transaction))
+            XCTAssertEqual(0, TSThread.anyCount(transaction: transaction))
+            XCTAssertFalse(self.identityManager.shouldSharePhoneNumber(with: bobClient.address,
+                                                                       transaction: transaction))
+        }
+
+        let content = try! fakeService.buildContentData(bodyText: "Those who stands for nothing will fall for anything")
+        let ciphertext = databaseStorage.write { transaction in
+            try! runner.encrypt(content,
+                                senderClient: bobClient,
+                                recipient: localPniClient.protocolAddress,
+                                context: transaction)
+        }
+
+        let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: 100)
+        envelopeBuilder.setContent(Data(ciphertext.serialize()))
+        envelopeBuilder.setType(.prekeyBundle)
+        envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
+        envelopeBuilder.setSourceDevice(1)
+        envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
+        envelopeBuilder.setServerGuid(UUID().uuidString)
+        envelopeBuilder.setDestinationUuid(tsAccountManager.localPni!.uuidString)
+        let envelopeData = try! envelopeBuilder.buildSerializedData()
+        messageProcessor.processEncryptedEnvelopeData(envelopeData,
+                                                      serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                                      envelopeSource: .tests) { error in
+            switch error {
+            case let error?:
+                XCTFail("failure \(error)")
+            case nil:
+                break
+            }
+            self.read { transaction in
+                XCTAssert(self.identityManager.shouldSharePhoneNumber(with: self.bobClient.address,
+                                                                      transaction: transaction))
             }
         }
         waitForExpectations(timeout: 1.0)
