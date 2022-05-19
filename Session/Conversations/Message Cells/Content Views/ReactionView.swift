@@ -3,14 +3,16 @@ import UIKit
 final class ReactionView : UIView {
     private let emoji: String
     private let number: Int
+    private let hasCurrentUser: Bool
     
     // MARK: Settings
     private static let height: CGFloat = 22
     
     // MARK: Lifecycle
-    init(emoji: String, number: Int) {
+    init(emoji: String, value: (Int, Bool)) {
         self.emoji = emoji
-        self.number = number
+        self.number = value.0
+        self.hasCurrentUser = value.1
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
@@ -29,7 +31,7 @@ final class ReactionView : UIView {
         emojiLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
         
         let numberLabel = UILabel()
-        numberLabel.text = self.number < 1000 ? "\(number)" : String(format: "%.2f", Float(number) / 1000) + "k"
+        numberLabel.text = self.number < 1000 ? "\(number)" : String(format: "%.1f", Float(number) / 1000) + "k"
         numberLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
         numberLabel.textColor = Colors.text
         
@@ -45,5 +47,10 @@ final class ReactionView : UIView {
         set(.height, to: ReactionView.height)
         backgroundColor = Colors.receivedMessageBackground
         layer.cornerRadius = ReactionView.height / 2
+        
+        if hasCurrentUser {
+            layer.borderWidth = 1
+            layer.borderColor = Colors.accent.cgColor
+        }
     }
 }

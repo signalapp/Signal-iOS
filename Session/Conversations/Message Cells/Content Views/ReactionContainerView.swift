@@ -4,6 +4,7 @@ final class ReactionContainerView : UIView {
         let result = UIStackView()
         result.axis = .vertical
         result.spacing = Values.smallSpacing
+        result.alignment = .center
         return result
     }()
     
@@ -28,15 +29,16 @@ final class ReactionContainerView : UIView {
         containerView.pin(to: self)
     }
     
-    public func update(_ reactions: [(String, Int)]) {
+    public func update(_ reactions: [(String, (Int, Bool))]) {
         for subview in containerView.arrangedSubviews {
             containerView.removeArrangedSubview(subview)
         }
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = Values.smallSpacing
+        stackView.alignment = .center
         for reaction in reactions {
-            let reactionView = ReactionView(emoji: reaction.0, number: reaction.1)
+            let reactionView = ReactionView(emoji: reaction.0, value: reaction.1)
             stackView.addArrangedSubview(reactionView)
         }
         containerView.addArrangedSubview(stackView)
