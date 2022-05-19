@@ -194,6 +194,53 @@ public extension TSOutgoingMessage {
             return nil
         }
     }
+
+    @objc(maybeClearShouldSharePhoneNumberForRecipient:recipientDeviceId:transaction:)
+    func maybeClearShouldSharePhoneNumber(for recipientAddress: SignalServiceAddress,
+                                          recipientDeviceId deviceId: UInt32,
+                                          transaction: SDSAnyWriteTransaction) {
+        guard recipientAddressStates?[recipientAddress]?.wasSentByUD == true else {
+            // Can't be sure the message was actually decrypted by the recipient,
+            // because the server sends delivery receipts for non-sealed-sender messages.
+            return
+        }
+        guard identityManager.shouldSharePhoneNumber(with: recipientAddress, transaction: transaction) else {
+            // Not currently sharing anyway!
+            return
+        }
+
+        guard let messagePayload = MessageSendLog.fetchPayload(address: recipientAddress,
+                                                               deviceId: Int64(deviceId),
+                                                               timestamp: timestamp,
+                                                               transaction: transaction),
+              let payloadId = messagePayload.payloadId else {
+            // Can't check whether this message included a PNI signature.
+            return
+        }
+
+        guard let devicesPendingDelivery = MessageSendLog.devicesPendingDelivery(forPayloadId: payloadId,
+                                                                                 address: recipientAddress,
+                                                                                 transaction: transaction),
+              devicesPendingDelivery == [Int64(deviceId)] else {
+            // Other devices still need the PniSignature.
+            return
+        }
+
+        guard let content = try? SSKProtoContent(serializedData: messagePayload.plaintextContent),
+              let messagePniData = content.pniSignatureMessage?.pni else {
+            // No PNI signature in the message.
+            return
+        }
+
+        guard let currentPni = tsAccountManager.localPni else {
+            owsFailDebug("missing local PNI")
+            return
+        }
+
+        if messagePniData == currentPni.data {
+            identityManager.clearShouldSharePhoneNumber(with: recipientAddress, transaction: transaction)
+        }
+    }
 }
 
 // MARK: Sender Key + Message Send Log

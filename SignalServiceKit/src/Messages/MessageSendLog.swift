@@ -256,6 +256,21 @@ public class MessageSendLog: NSObject {
         }
     }
 
+    static func devicesPendingDelivery(forPayloadId payloadId: Int64,
+                                       address: SignalServiceAddress,
+                                       transaction: SDSAnyReadTransaction) -> [Int64]? {
+        do {
+            return try Recipient
+                .filter(Column("payloadId") == payloadId)
+                .filter(Column("recipientUuid") == address.uuidString)
+                .select(Column("recipientDeviceId"), as: Int64.self)
+                .fetchAll(transaction.unwrapGrdbRead.database)
+        } catch {
+            owsFailDebug("\(error)")
+            return nil
+        }
+    }
+
     public static func recordPendingDelivery(
         payloadId: Int64,
         recipientUuid: UUID,

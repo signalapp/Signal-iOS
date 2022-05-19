@@ -770,6 +770,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         deliveryTimestamp = @([NSDate ows_millisecondTimeStamp]);
     }
 
+    // Note that this relies on the Message Send Log, so we have to execute it first.
+    [self maybeClearShouldSharePhoneNumberForRecipient:recipientAddress
+                                     recipientDeviceId:deviceId
+                                           transaction:transaction];
+
     [self clearMessageSendLogEntryForRecipient:recipientAddress
                                       deviceId:deviceId
                                    transaction:transaction];

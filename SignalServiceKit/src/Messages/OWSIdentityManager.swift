@@ -185,6 +185,7 @@ extension OWSIdentityManager {
         return SDSKeyValueStore(collection: "OWSIdentityManager.shareMyPhoneNumberStore")
     }
 
+    @objc(shouldSharePhoneNumberWithAddress:transaction:)
     func shouldSharePhoneNumber(with recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
         guard let recipientUuid = recipient.uuidString else {
             return false
@@ -200,6 +201,7 @@ extension OWSIdentityManager {
         shareMyPhoneNumberStore.setBool(true, key: recipientUuid, transaction: transaction)
     }
 
+    @objc(clearShouldSharePhoneNumberWithAddress:transaction:)
     func clearShouldSharePhoneNumber(with recipient: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
         guard let recipientUuid = recipient.uuidString else {
             return

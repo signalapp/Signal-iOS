@@ -622,6 +622,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
         // Discard sender certificates whenever local phone number changes.
         [self.udManager removeSenderCertificatesWithTransaction:transaction];
+        [self.identityManager clearShouldSharePhoneNumberForEveryoneWithTransaction:transaction];
 
         [self.versionedProfiles clearProfileKeyCredentialsWithTransaction:transaction];
 
