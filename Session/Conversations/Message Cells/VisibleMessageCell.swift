@@ -562,6 +562,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             }
             if let expandButton = reactionContainerView.expandButton, expandButton.frame.contains(convertedLocation) {
                 // TODO: show all emojis
+                reactionContainerView.
             }
         } else {
             delegate?.handleViewItemTapped(viewItem, gestureRecognizer: gestureRecognizer)

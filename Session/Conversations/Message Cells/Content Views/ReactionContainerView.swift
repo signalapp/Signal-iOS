@@ -10,6 +10,7 @@ final class ReactionContainerView : UIView {
     
     private var showingAllReactions = false
     
+    var reactions: [(String, (Int, Bool))] = []
     var reactionViews: [ReactionView] = []
     var expandButton: ExpandingReactionButton?
     
@@ -33,6 +34,7 @@ final class ReactionContainerView : UIView {
     }
     
     public func update(_ reactions: [(String, (Int, Bool))]) {
+        self.reactions = reactions
         prepareForUpdate()
         
         let stackView = UIStackView()
@@ -58,7 +60,7 @@ final class ReactionContainerView : UIView {
         }
         if expandButtonReactions.count > 0 {
             expandButton = ExpandingReactionButton(emojis: expandButtonReactions)
-            stackView.addArrangedSubview(expandButton)
+            stackView.addArrangedSubview(expandButton!)
         } else {
             expandButton = nil
         }
@@ -71,6 +73,12 @@ final class ReactionContainerView : UIView {
             subview.removeFromSuperview()
         }
         reactionViews = []
+    }
+    
+    public func showAllEmojis() {
+        guard !showingAllReactions else { return }
+        showingAllReactions = true
+        update(reactions)
     }
 }
 
