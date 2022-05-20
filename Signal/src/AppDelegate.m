@@ -481,11 +481,12 @@ static void uncaughtExceptionHandler(NSException *exception)
                             }]];
 
     if (launchFailure == LaunchFailure_LastAppLaunchCrashed) {
+        // Use a cancel-style button to draw attention.
         [actionSheet
             addAction:[[ActionSheetAction alloc]
                           initWithTitle:NSLocalizedString(@"APP_LAUNCH_FAILURE_CONTINUE",
                                             @"Button to try launching the app even though the last launch failed")
-                                  style:ActionSheetActionStyleDefault
+                                  style:ActionSheetActionStyleCancel
                                 handler:^(ActionSheetAction *_Nonnull action) {
                                     // Pretend we didn't fail!
                                     self.didAppLaunchFail = NO;
