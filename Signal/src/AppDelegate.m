@@ -227,8 +227,9 @@ static void uncaughtExceptionHandler(NSException *exception)
         launchFailure = LaunchFailure_UnknownDatabaseVersion;
     } else if ([SSKPreferences hasGrdbDatabaseCorruption]) {
         launchFailure = LaunchFailure_DatabaseUnrecoverablyCorrupted;
-    } else if ([[CurrentAppContext() appUserDefaults] integerForKey:kAppLaunchesAttemptedKey]
-        >= launchAttemptFailureThreshold) {
+    } else if ([AppVersion.shared.lastAppVersion isEqual:AppVersion.shared.currentAppReleaseVersion] &&
+        [[CurrentAppContext() appUserDefaults] integerForKey:kAppLaunchesAttemptedKey]
+            >= launchAttemptFailureThreshold) {
         launchFailure = LaunchFailure_LastAppLaunchCrashed;
     }
     if (launchFailure != LaunchFailure_None) {
