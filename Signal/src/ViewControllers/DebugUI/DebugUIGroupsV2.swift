@@ -62,14 +62,6 @@ class DebugUIGroupsV2: DebugUIPage {
                 Self.migrate(groupThread: groupThread,
                              migrationMode: .isAlreadyMigratedOnService)
             })
-            sectionItems.append(OWSTableItem(title: "Try to migrate group (only if already migrated on service).") {
-                Self.migrate(groupThread: groupThread,
-                             migrationMode: .possiblyAlreadyMigratedOnService)
-            })
-            sectionItems.append(OWSTableItem(title: "Try to migrate group (polite manual migration).") {
-                Self.migrate(groupThread: groupThread,
-                             migrationMode: .manualMigrationPolite)
-            })
             sectionItems.append(OWSTableItem(title: "Try to migrate group (aggressive manual migration).") {
                 Self.migrate(groupThread: groupThread,
                              migrationMode: .manualMigrationAggressive)
@@ -77,10 +69,6 @@ class DebugUIGroupsV2: DebugUIPage {
             sectionItems.append(OWSTableItem(title: "Try to migrate group (polite auto migration).") {
                 Self.migrate(groupThread: groupThread,
                              migrationMode: .autoMigrationPolite)
-            })
-            sectionItems.append(OWSTableItem(title: "Try to migrate group (aggressive auto migration).") {
-                Self.migrate(groupThread: groupThread,
-                             migrationMode: .autoMigrationAggressive)
             })
         }
 

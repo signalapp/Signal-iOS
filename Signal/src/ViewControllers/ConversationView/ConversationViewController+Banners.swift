@@ -65,58 +65,6 @@ public extension ConversationViewController {
                                  accessibilityIdentifier: "pending_group_request_banner")
     }
 
-    // MARK: - Manual Migration Banner
-
-    var manualMigrationInfoForGroup: GroupsV2MigrationInfo? {
-        guard GroupManager.canManuallyMigrate else {
-            return nil
-        }
-        guard let groupThread = thread as? TSGroupThread,
-              groupThread.isGroupV1Thread else {
-            return nil
-        }
-        guard groupThread.isLocalUserFullMember else {
-            return nil
-        }
-
-        // migrationInfoForManualMigrationWithGroupThread uses
-        // a transaction, so we try to avoid calling it.
-        return GroupsV2Migration.migrationInfoForManualMigration(groupThread: groupThread)
-    }
-
-    func createMigrateGroupBanner(viewState: CVViewState,
-                                  migrationInfo: GroupsV2MigrationInfo) -> UIView {
-
-        let title = NSLocalizedString("GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER",
-                                      comment: "Title for the 'migrate group' banner.")
-
-        let notNowButton = OWSButton(title: CommonStrings.notNowButton) { [weak self] in
-            AssertIsOnMainThread()
-            viewState.isMigrateGroupBannerHidden = true
-            self?.ensureBannerState()
-        }
-        notNowButton.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
-
-        let migrateButtonText = NSLocalizedString("GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON",
-                                                  comment: "Label for the 'migrate' button in the 'migrate group' banner.")
-        let migrateButton = OWSButton(title: migrateButtonText) { [weak self] in
-            self?.migrateGroupPressed(migrationInfo: migrationInfo)
-        }
-        migrateButton.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
-
-        return Self.createBanner(title: title,
-                                 buttons: [notNowButton, migrateButton],
-                                 accessibilityIdentifier: "migrate_group_banner")
-    }
-
-    private func migrateGroupPressed(migrationInfo: GroupsV2MigrationInfo) {
-        guard let groupThread = thread as? TSGroupThread else {
-            owsFailDebug("Invalid thread.")
-            return
-        }
-        showManualMigrationAlert(groupThread: groupThread, migrationInfo: migrationInfo)
-    }
-
     // MARK: - Dropped Group Members Banner
 
     func createDroppedGroupMembersBannerIfNecessary(viewState: CVViewState) -> UIView? {
@@ -590,14 +538,6 @@ extension ConversationViewController {
                                                                  count: pendingMemberRequestCount) { [weak self] in
                     self?.showConversationSettingsAndShowMemberRequests()
                 }
-                banners.append(banner)
-            }
-
-            if let migrationInfo = self.manualMigrationInfoForGroup,
-               migrationInfo.canGroupBeMigrated,
-               !viewState.isMigrateGroupBannerHidden,
-               !GroupManager.areMigrationsBlocking {
-                let banner = createMigrateGroupBanner(viewState: viewState, migrationInfo: migrationInfo)
                 banners.append(banner)
             }
 

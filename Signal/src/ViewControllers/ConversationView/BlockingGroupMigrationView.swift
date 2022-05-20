@@ -91,9 +91,6 @@ class BlockingGroupMigrationView: UIStackView {
     }
 
     private func blockingMigrationInfo(groupThread: TSGroupThread) -> GroupsV2MigrationInfo? {
-        guard GroupManager.canManuallyMigrate else {
-            return nil
-        }
         guard let groupThread = thread as? TSGroupThread,
               groupThread.isGroupV1Thread else {
             return nil

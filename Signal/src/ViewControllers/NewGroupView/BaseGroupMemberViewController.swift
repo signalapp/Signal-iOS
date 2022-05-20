@@ -585,39 +585,19 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Recipient missing address.")
             return nil
         }
-        var items = [String]()
-        if address.uuid == nil {
-            // This is internal-only; we don't need to localize.
-            items.append("No UUID")
-        }
-
-        func defaultSubtitle() -> NSAttributedString? {
-            guard !address.isLocalAddress else {
-                return nil
-            }
-            guard let bioForDisplay = Self.profileManagerImpl.profileBioForDisplay(for: address,
-                                                                                   transaction: transaction) else {
-                return nil
-            }
-            return NSAttributedString(string: bioForDisplay)
-        }
-
-        guard !items.isEmpty else {
-            return defaultSubtitle()
-        }
-        if GroupManager.areMigrationsBlocking {
+        guard address.uuid != nil else {
             let warning = NSLocalizedString("NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS",
                                             comment: "Indicates that a group member does not support New Groups.")
             return warning.attributedString()
-       }
-        guard DebugFlags.groupsV2memberStatusIndicators else {
-            return defaultSubtitle()
         }
-        return NSAttributedString(string: items.joined(separator: ", "),
-                                  attributes: [
-                                    .font: UIFont.ows_dynamicTypeSubheadline.ows_semibold,
-                                    .foregroundColor: Theme.secondaryTextAndIconColor
-        ])
+        guard !address.isLocalAddress else {
+            return nil
+        }
+        guard let bioForDisplay = Self.profileManagerImpl.profileBioForDisplay(for: address,
+                                                                               transaction: transaction) else {
+            return nil
+        }
+        return NSAttributedString(string: bioForDisplay)
     }
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}

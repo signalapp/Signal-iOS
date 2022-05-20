@@ -31,9 +31,6 @@ public extension GroupsV2Migration {
 
     static func tryManualMigration(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
         Logger.info("request groupId: \(groupThread.groupId.hexadecimalString)")
-        guard GroupManager.canManuallyMigrate else {
-            return Promise(error: OWSAssertionError("Manual migration not enabled."))
-        }
         return firstly {
             self.tryToMigrate(groupThread: groupThread, migrationMode: manualMigrationMode)
         }.timeout(seconds: Self.groupMigrationTimeoutDuration,
@@ -49,8 +46,7 @@ public extension GroupsV2Migration {
     static func tryToMigrate(groupThread: TSGroupThread,
                              migrationMode: GroupsV2MigrationMode) -> Promise<TSGroupThread> {
         firstly(on: .global()) { () -> Bool in
-            if migrationMode == .isAlreadyMigratedOnService ||
-                migrationMode == .possiblyAlreadyMigratedOnService {
+            if migrationMode == .isAlreadyMigratedOnService {
                 return true
             }
 
@@ -103,28 +99,17 @@ public extension GroupsV2Migration {
     static func migrationInfoForManualMigration(groupThread: TSGroupThread,
                                                 transaction: SDSAnyReadTransaction) -> GroupsV2MigrationInfo {
 
-        guard GroupManager.canManuallyMigrate else {
-            return .buildCannotBeMigrated(state: .cantBeMigrated_FeatureNotEnabled)
-        }
         return migrationInfo(groupThread: groupThread,
                              migrationMode: manualMigrationMode,
                              transaction: transaction)
     }
 
     private static var manualMigrationMode: GroupsV2MigrationMode {
-        owsAssertDebug(GroupManager.canManuallyMigrate)
-
-        return (GroupManager.areManualMigrationsAggressive
-            ? .manualMigrationAggressive
-            : .manualMigrationPolite)
+        return .manualMigrationAggressive
     }
 
     private static var autoMigrationMode: GroupsV2MigrationMode {
-        owsAssertDebug(GroupManager.canAutoMigrate)
-
-        return (GroupManager.areAutoMigrationsAggressive
-            ? .autoMigrationAggressive
-            : .autoMigrationPolite)
+        return .autoMigrationPolite
     }
 
     static func tryToAutoMigrateAllGroups(shouldLimitBatchSize: Bool) {
@@ -175,9 +160,7 @@ public extension GroupsV2Migration {
                 }
             }
 
-            let migrationMode: GroupsV2MigrationMode = (GroupManager.canAutoMigrate
-                                                            ? self.autoMigrationMode
-                                                            : .possiblyAlreadyMigratedOnService)
+            let migrationMode: GroupsV2MigrationMode = self.autoMigrationMode
 
             // Check up to N groups on every launch.
             let maxCheckCount: Int = 50
@@ -210,17 +193,11 @@ public extension GroupsV2Migration {
                         Logger.verbose("")
                     }.catch(on: .global()) { error in
                         if case GroupsV2Error.groupDoesNotExistOnService = error {
-                            if migrationMode != .possiblyAlreadyMigratedOnService {
-                                Logger.warn("Error: \(error)")
-                            }
+                            Logger.warn("Error: \(error)")
                         } else if case GroupsV2Error.localUserNotInGroup = error {
-                            if !migrationMode.isAutoMigration {
-                                Logger.warn("Error: \(error)")
-                            }
+                            // no-op
                         } else if case GroupsV2Error.groupCannotBeMigrated = error {
-                            if !migrationMode.isAutoMigration {
-                                Logger.warn("Error: \(error)")
-                            }
+                            // no-op
                         } else if case GroupsV2Error.timeout = error {
                             Logger.warn("Error: \(error)")
                         } else {
@@ -245,9 +222,7 @@ public extension GroupsV2Migration {
             return
         }
 
-        let migrationMode = (GroupManager.canAutoMigrate
-                                ? self.autoMigrationMode
-                                : .possiblyAlreadyMigratedOnService)
+        let migrationMode = self.autoMigrationMode
         firstly {
             return tryToMigrate(groupThread: groupThread, migrationMode: migrationMode)
         }.done(on: .global()) { (_: TSGroupThread) in
@@ -300,11 +275,6 @@ fileprivate extension GroupsV2Migration {
 
         guard tsAccountManager.isRegisteredAndReady else {
             return Promise(error: OWSAssertionError("Not registered."))
-        }
-        if migrationMode.isAutoMigration {
-            guard GroupManager.canAutoMigrate else {
-                return Promise(error: OWSAssertionError("Auto migrations not enabled."))
-            }
         }
 
         return firstly(on: .global()) { () -> Promise<Void> in
@@ -867,7 +837,6 @@ fileprivate extension GroupsV2Migration {
 
 public enum GroupsV2MigrationState {
     case canBeMigrated
-    case cantBeMigrated_FeatureNotEnabled
     case cantBeMigrated_NotAV1Group
     case cantBeMigrated_NotRegistered
     case cantBeMigrated_LocalUserIsNotAMember
@@ -921,54 +890,40 @@ public class GroupsV2MigrationInfo: NSObject {
 
 public enum GroupsV2MigrationMode: String {
     // Manual migration; only available if all users can be
-    // added (but not invited).
-    case manualMigrationPolite
-    // Manual migration; only available if all users can be
     // migrated.
     case manualMigrationAggressive
     // Auto migration; only available if all users can be
     // added.
     case autoMigrationPolite
-    // Auto migration; only available if all users can be
-    // migrated.
-    case autoMigrationAggressive
     // When an incoming message (including sync messages)
     // or storage service update indicates that a group
     // has been migrated to the service, we should update
     // the local DB immediately to reflect the group state
     // on the service.
     case isAlreadyMigratedOnService
-    // We need to check periodically if the group has
-    // already been migrated to the service by another client.
-    // If so, we should update the local DB immediately to
-    // reflect the group state on the service.
-    case possiblyAlreadyMigratedOnService
 
     fileprivate var isManualMigration: Bool {
-        self == .manualMigrationPolite || self == .manualMigrationAggressive
+        self == .manualMigrationAggressive
     }
 
     fileprivate var isAutoMigration: Bool {
-        self == .autoMigrationPolite || self == .autoMigrationAggressive
+        self == .autoMigrationPolite
     }
 
     fileprivate var isPolite: Bool {
-        self == .manualMigrationPolite || self == .autoMigrationPolite
+        self == .autoMigrationPolite
     }
 
     fileprivate var isAggressive: Bool {
-        self == .manualMigrationAggressive || self == .autoMigrationAggressive
+        self == .manualMigrationAggressive
     }
 
     fileprivate var isOnlyUpdatingIfAlreadyMigrated: Bool {
         switch self {
-        case .isAlreadyMigratedOnService,
-             .possiblyAlreadyMigratedOnService:
+        case .isAlreadyMigratedOnService:
             return true
-        case .manualMigrationPolite,
-             .manualMigrationAggressive,
-             .autoMigrationPolite,
-             .autoMigrationAggressive:
+        case .manualMigrationAggressive,
+             .autoMigrationPolite:
             return false
         }
     }
@@ -1006,16 +961,10 @@ public enum GroupsV2MigrationMode: String {
         case .isAlreadyMigratedOnService:
             // These migrations block message processing and have high priority.
             return .high
-        case .possiblyAlreadyMigratedOnService:
-            // These migrations reflect view state and have higher priority than
-            // auto-migrations.
-            return .normal
-        case .manualMigrationPolite,
-             .manualMigrationAggressive:
+        case .manualMigrationAggressive:
             // Manual migrations block the UI and have the highest priority.
             return .veryHigh
-        case .autoMigrationPolite,
-             .autoMigrationAggressive:
+        case .autoMigrationPolite:
             return .low
         }
     }

@@ -355,7 +355,6 @@ public extension CVViewState {
     }
 
     private static let isPendingMemberRequestsBannerHiding = BannerHiding()
-    private static let isMigrateGroupBannerHiding = BannerHiding()
     private static let isDroppedGroupMembersBannerHiding = BannerHiding()
     private static let isMessageRequestNameCollisionBannerHiding = BannerHiding()
 
@@ -364,11 +363,6 @@ public extension CVViewState {
     var isPendingMemberRequestsBannerHidden: Bool {
         get { Self.isPendingMemberRequestsBannerHiding.isHidden(threadUniqueId) }
         set { Self.isPendingMemberRequestsBannerHiding.setIsHidden(threadUniqueId) }
-    }
-
-    var isMigrateGroupBannerHidden: Bool {
-        get { Self.isMigrateGroupBannerHiding.isHidden(threadUniqueId) }
-        set { Self.isMigrateGroupBannerHiding.setIsHidden(threadUniqueId) }
     }
 
     var isDroppedGroupMembersBannerHidden: Bool {

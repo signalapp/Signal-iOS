@@ -50,31 +50,6 @@ public class GroupManager: NSObject {
         return RemoteConfig.groupsV2MaxGroupSizeHardLimit
     }
 
-    @objc
-    public static var canManuallyMigrate: Bool {
-        true
-    }
-
-    @objc
-    public static var canAutoMigrate: Bool {
-        true
-    }
-
-    @objc
-    public static var areManualMigrationsAggressive: Bool {
-        true
-    }
-
-    @objc
-    public static var areAutoMigrationsAggressive: Bool {
-        false
-    }
-
-    @objc
-    public static var areMigrationsBlocking: Bool {
-        true
-    }
-
     public static let maxGroupNameEncryptedByteCount: Int = 1024
     public static let maxGroupNameGlyphCount: Int = 32
 

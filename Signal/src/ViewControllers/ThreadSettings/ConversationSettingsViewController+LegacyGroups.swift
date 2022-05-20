@@ -83,8 +83,6 @@ class LegacyGroupView: UIView {
             isUserInteractionEnabled = true
             addGestureRecognizer(UITapGestureRecognizer(target: self,
                                                         action: #selector(didTapUpgrade)))
-        case .cantBeMigrated_FeatureNotEnabled:
-            configureDefaultLabelContents()
         case .cantBeMigrated_NotAV1Group:
             owsFailDebug("Unexpected group.")
             configureDefaultLabelContents()

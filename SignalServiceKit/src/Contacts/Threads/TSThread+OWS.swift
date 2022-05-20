@@ -33,7 +33,7 @@ public extension TSThread {
     }
 
     var isBlockedByMigration: Bool {
-        isGroupV1Thread && GroupManager.areMigrationsBlocking
+        isGroupV1Thread
     }
 
     var canSendReactionToThread: Bool {

@@ -130,14 +130,8 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         } else if membersDoNotSupportGroupsV2.count > 0 {
             let legacyGroupText: String
             let learnMoreText = CommonStrings.learnMore
-            let legacyGroupFormat: String
-            if GroupManager.areMigrationsBlocking {
-                legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_%d", tableName: "PluralAware",
+            let legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_%d", tableName: "PluralAware",
                                                       comment: "Indicates that a new group cannot be created because on ore more members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}.")
-            } else {
-                legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_%d", tableName: "PluralAware",
-                                                      comment: "Indicates that a new group will be a legacy group because one or more members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}.")
-            }
             legacyGroupText = String.localizedStringWithFormat(legacyGroupFormat, membersDoNotSupportGroupsV2.count, learnMoreText)
 
             let attributedString = NSMutableAttributedString(string: legacyGroupText)
@@ -243,8 +237,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
 
                         Self.databaseStorage.read { transaction in
                             let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
-                            if GroupManager.areMigrationsBlocking,
-                               membersDoNotSupportGroupsV2.contains(address) {
+                            if membersDoNotSupportGroupsV2.contains(address) {
                                 let warning = NSLocalizedString("NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS",
                                                                 comment: "Indicates that a group member does not support New Groups.")
                                 configuration.attributedSubtitle = warning.attributedString()
@@ -277,9 +270,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                 Self.showMissingGroupNameAlert()
              return
         }
-        let membersDoNotSupportGroupsV2 = self.membersDoNotSupportGroupsV2
-        if GroupManager.areMigrationsBlocking,
-           !membersDoNotSupportGroupsV2.isEmpty {
+        guard self.membersDoNotSupportGroupsV2.isEmpty else {
             showLegacyGroupAlert()
             return
         }
@@ -464,14 +455,8 @@ class NewLegacyGroupView: UIView {
         headerLabel.numberOfLines = 0
         headerLabel.lineBreakMode = .byWordWrapping
         headerLabel.font = UIFont.ows_dynamicTypeBody
-        let format: String
-        if GroupManager.areMigrationsBlocking {
-            format = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d", tableName: "PluralAware",
+        let format = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d", tableName: "PluralAware",
                                        comment: "Title for alert that explains that a new group cannot be created one ore more members does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }}")
-        } else {
-            format = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_%d", tableName: "PluralAware",
-                                       comment: "Title for alert that explains that a new group will be a legacy group because one or more members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }}")
-        }
         headerLabel.text = String.localizedStringWithFormat(format, v1Members.count)
         headerLabel.textAlignment = .center
 

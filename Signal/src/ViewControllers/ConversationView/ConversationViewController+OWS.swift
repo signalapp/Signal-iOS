@@ -381,13 +381,6 @@ extension ConversationViewController: MediaPresentationContextProvider {
 // MARK: -
 
 public extension ConversationViewController {
-    func showManualMigrationAlert(groupThread: TSGroupThread,
-                                  migrationInfo: GroupsV2MigrationInfo) {
-        let mode = GroupMigrationActionSheet.Mode.upgradeGroup(migrationInfo: migrationInfo)
-        let view = GroupMigrationActionSheet(groupThread: groupThread, mode: mode)
-        view.present(fromViewController: self)
-    }
-
     func showGroupLinkPromotionActionSheet() {
         guard let groupThread = thread as? TSGroupThread else {
             owsFailDebug("Invalid thread.")
