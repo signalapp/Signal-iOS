@@ -6,9 +6,13 @@ import os
 import subprocess
 import sys
 
+ENV_NAME = "SIGNAL_IOS_DSYMS"
+
 
 def run(args):
-    return subprocess.run(args, capture_output=True, encoding="utf8").stdout.rstrip()
+    return subprocess.run(
+        args, capture_output=True, check=True, encoding="utf8"
+    ).stdout.rstrip()
 
 
 def parse_args():
@@ -16,7 +20,7 @@ def parse_args():
         description=(
             "Symbolicates .ips files passed as arguments. "
             "The symbolicated file is written to *.symbolicated.ips. "
-            "The script assumes you’ve saved the dSYM files in ~/Symbols."
+            f"The script assumes you’ve saved the dSYM files in ${ENV_NAME}."
         )
     )
     parser.add_argument(
@@ -38,7 +42,7 @@ def get_version(path):
     with open(path, "r") as file:
         content = file.read()
 
-    first_line, _, remainder = content.partition("\n")
+    _, _, remainder = content.partition("\n")
     try:
         # The new format has a second JSON payload.
         json.loads(remainder)
@@ -54,7 +58,7 @@ def symbolicate_v1(xcode_path, path, output_path):
     script_path = os.path.join(xcode_path, SCRIPT_PATH_V1)
     args = [script_path, path]
     env = {**os.environ, "DEVELOPER_DIR": xcode_path}
-    with open(output_path, "w") as file:
+    with open(output_path, "wb") as file:
         subprocess.run(args, check=True, stdout=file, env=env)
 
 
@@ -65,7 +69,6 @@ def symbolicate_v2(xcode_path, path, output_path):
     script_path = os.path.join(xcode_path, SCRIPT_PATH_V2)
     # Don’t put this on the Desktop or in Documents -- the script can’t find it there.
     # This directory is searched recursively for .dSYM files.
-    ENV_NAME = "SIGNAL_IOS_DSYMS"
     symbols_path = os.getenv(ENV_NAME)
     if symbols_path is None or not os.path.exists(symbols_path):
         print(
@@ -92,7 +95,7 @@ def main():
         else:
             symbolicate_v1(xcode_path, path, output_path)
         if ns.open:
-            subprocess.run(["open", output_path])
+            subprocess.run(["open", output_path], check=True)
 
 
 if __name__ == "__main__":
