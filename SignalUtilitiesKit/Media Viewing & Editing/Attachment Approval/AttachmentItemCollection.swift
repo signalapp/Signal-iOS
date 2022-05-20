@@ -19,6 +19,10 @@ class AddMoreRailItem: GalleryRailItem {
 
         return view
     }
+    
+    func isEqual(to other: GalleryRailItem?) -> Bool {
+        return (other is AddMoreRailItem)
+    }
 }
 
 class SignalAttachmentItem: Hashable {

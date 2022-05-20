@@ -1255,12 +1255,25 @@ enum _003_YDBToGRDBMigration: Migration {
                 inCollection: Legacy.typingIndicatorsCollection,
                 defaultValue: false
             )
+            
+            legacyPreferences[Legacy.screenLockIsScreenLockEnabledKey] = transaction.bool(
+                forKey: Legacy.screenLockIsScreenLockEnabledKey,
+                inCollection: Legacy.screenLockCollection,
+                defaultValue: false
+            )
+            
+            legacyPreferences[Legacy.screenLockScreenLockTimeoutSecondsKey] = transaction.double(
+                forKey: Legacy.screenLockScreenLockTimeoutSecondsKey,
+                inCollection: Legacy.screenLockCollection,
+                defaultValue: (15 * 60)
+            )
         }
         
-        db[.preferencesNotificationPreviewType] = Preferences.NotificationPreviewType(rawValue: legacyPreferences[Legacy.preferencesKeyNotificationPreviewType] as? Int ?? -1)
-            .defaulting(to: .nameAndPreview)
         db[.defaultNotificationSound] = Preferences.Sound(rawValue: legacyPreferences[Legacy.soundsGlobalNotificationKey] as? Int ?? -1)
             .defaulting(to: Preferences.Sound.defaultNotificationSound)
+        db[.playNotificationSoundInForeground] = (legacyPreferences[Legacy.preferencesKeyNotificationSoundInForeground] as? Bool == true)
+        db[.preferencesNotificationPreviewType] = Preferences.NotificationPreviewType(rawValue: legacyPreferences[Legacy.preferencesKeyNotificationPreviewType] as? Int ?? -1)
+            .defaulting(to: .nameAndPreview)
         
         if let lastPushToken: String = legacyPreferences[Legacy.preferencesKeyLastRecordedPushToken] as? String {
             db[.lastRecordedPushToken] = lastPushToken
@@ -1270,15 +1283,19 @@ enum _003_YDBToGRDBMigration: Migration {
             db[.lastRecordedVoipToken] = lastVoipToken
         }
         
-        // Note: The 'preferencesKeyScreenSecurityDisabled' value previously controlled whether the setting
-        // was disabled, this has been inverted to 'preferencesAppSwitcherPreviewEnabled' so it can default
+        // Note: The 'preferencesKeyScreenSecurityDisabled' value previously controlled whether the
+        // setting was disabled, this has been inverted to 'appSwitcherPreviewEnabled' so it can default
         // to 'false' (as most Bool values do)
-        db[.preferencesAppSwitcherPreviewEnabled] = (legacyPreferences[Legacy.preferencesKeyScreenSecurityDisabled] as? Bool == false)
         db[.areReadReceiptsEnabled] = (legacyPreferences[Legacy.readReceiptManagerAreReadReceiptsEnabled] as? Bool == true)
         db[.typingIndicatorsEnabled] = (legacyPreferences[Legacy.typingIndicatorsEnabledKey] as? Bool == true)
-        
+        db[.isScreenLockEnabled] = (legacyPreferences[Legacy.screenLockIsScreenLockEnabledKey] as? Bool == true)
+        db[.screenLockTimeoutSeconds] = (legacyPreferences[Legacy.screenLockScreenLockTimeoutSecondsKey] as? Double)
+            .defaulting(to: (15 * 60))
+        db[.appSwitcherPreviewEnabled] = (legacyPreferences[Legacy.preferencesKeyScreenSecurityDisabled] as? Bool == false)
+        db[.areLinkPreviewsEnabled] = (legacyPreferences[Legacy.preferencesKeyAreLinkPreviewsEnabled] as? Bool == true)
         db[.hasHiddenMessageRequests] = CurrentAppContext().appUserDefaults()
             .bool(forKey: Legacy.userDefaultsHasHiddenMessageRequests)
+        db[.hasSavedThreadKey] = (legacyPreferences[Legacy.preferencesKeyHasSavedThreadKey] as? Bool == true)
         
         print("RAWR [\(Date().timeIntervalSince1970)] - Process preferences inserts - End")
         
@@ -1381,24 +1398,23 @@ enum _003_YDBToGRDBMigration: Migration {
                     return (true, cachedDuration)
                 }
                 
-                let (isValid, duration): (Bool, TimeInterval?) = Attachment.determineValidityAndDuration(
+                let attachmentVailidityInfo = Attachment.determineValidityAndDuration(
                     contentType: stream.contentType,
                     localRelativeFilePath: processedLocalRelativeFilePath,
                     originalFilePath: originalFilePath
                 )
                 
-                return (isValid, duration)
+                return (attachmentVailidityInfo.isValid, attachmentVailidityInfo.duration)
             }
             
             if stream.isVideo {
-                let videoPlayer: AVPlayer = AVPlayer(url: URL(fileURLWithPath: originalFilePath))
-                let duration: TimeInterval? = videoPlayer.currentItem
-                    .map { item -> TimeInterval in
-                        // Accorting to the CMTime docs "value/timescale = seconds"
-                        (TimeInterval(item.duration.value) / TimeInterval(item.duration.timescale))
-                    }
+                let attachmentVailidityInfo = Attachment.determineValidityAndDuration(
+                    contentType: stream.contentType,
+                    localRelativeFilePath: processedLocalRelativeFilePath,
+                    originalFilePath: originalFilePath
+                )
                 
-                return ((duration ?? 0) > 0, duration)
+                return (attachmentVailidityInfo.isValid, attachmentVailidityInfo.duration)
             }
             
             if stream.isVisualMedia {

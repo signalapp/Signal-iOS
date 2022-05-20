@@ -46,7 +46,7 @@ typedef NS_ENUM(NSUInteger, OWSAudioBehavior) {
 @property (nonatomic) NSTimeInterval duration;
 
 - (instancetype)initWithMediaUrl:(NSURL *)mediaUrl audioBehavior:(OWSAudioBehavior)audioBehavior;
-- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl audioBehavior:(OWSAudioBehavior)audioBehavior delegate:(id<OWSAudioPlayerDelegate>)delegate;
+- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl audioBehavior:(OWSAudioBehavior)audioBehavior delegate:(nullable id<OWSAudioPlayerDelegate>)delegate;
 - (void)play;
 - (void)setCurrentTime:(NSTimeInterval)currentTime;
 - (void)pause;

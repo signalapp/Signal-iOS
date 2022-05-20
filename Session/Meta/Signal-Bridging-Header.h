@@ -9,12 +9,9 @@
 // Separate iOS Frameworks from other imports.
 #import "AvatarViewHelper.h"
 #import "AVAudioSession+OWS.h"
-#import "ContactCellView.h"
-#import "ContactTableViewCell.h"
 #import "ConversationViewItem.h"
 #import "ConversationViewModel.h"
 #import "DateUtil.h"
-#import "MediaDetailViewController.h"
 #import "NotificationSettingsViewController.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioPlayer.h"
@@ -39,12 +36,10 @@
 #import <SignalCoreKit/OWSLogs.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalUtilitiesKit/AttachmentSharing.h>
-#import <SignalUtilitiesKit/ContactTableViewCell.h>
 #import <SessionMessagingKit/Environment.h>
 #import <SessionMessagingKit/OWSAudioPlayer.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SessionMessagingKit/OWSPreferences.h>
-#import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SessionMessagingKit/OWSQuotedReplyModel.h>
 #import <SignalUtilitiesKit/OWSViewController.h>
 #import <SignalUtilitiesKit/UIColor+OWS.h>
@@ -62,10 +57,7 @@
 #import <SignalUtilitiesKit/OWSDispatch.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
-#import <SessionMessagingKit/OWSMediaGalleryFinder.h>
 #import <SessionMessagingKit/OWSRecipientIdentity.h>
-#import <SignalUtilitiesKit/SignalAccount.h>
-#import <SessionMessagingKit/SignalRecipient.h>
 #import <SessionMessagingKit/TSAccountManager.h>
 #import <SessionMessagingKit/TSAttachment.h>
 #import <SessionMessagingKit/TSAttachmentPointer.h>

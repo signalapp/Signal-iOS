@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithMediaUrl:(NSURL *)mediaUrl
                         audioBehavior:(OWSAudioBehavior)audioBehavior
-                        delegate:(id<OWSAudioPlayerDelegate>)delegate
+                        delegate:(nullable id<OWSAudioPlayerDelegate>)delegate
 {
     self = [super init];
     if (!self) {

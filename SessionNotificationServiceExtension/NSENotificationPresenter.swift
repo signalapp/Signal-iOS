@@ -43,7 +43,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
         
-        let senderName = Profile.displayName(db, id: senderPublicKey, thread: thread)
+        let senderName = Profile.displayName(db, id: senderPublicKey, threadVariant: thread.variant)
         
         var notificationTitle = senderName
         

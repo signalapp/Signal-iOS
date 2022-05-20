@@ -55,7 +55,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @class SNProtoContentBuilder;
 @class SNProtoDataMessage;
 @class SNProtoDataMessageBuilder;
-@class SignalRecipient;
 
 @interface TSOutgoingMessageRecipientState : MTLModel
 

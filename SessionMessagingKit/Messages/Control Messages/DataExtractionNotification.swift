@@ -4,7 +4,7 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-public final class DataExtractionNotification : ControlMessage {
+public final class DataExtractionNotification: ControlMessage {
     private enum CodingKeys: String, CodingKey {
         case kind
     }
@@ -15,7 +15,7 @@ public final class DataExtractionNotification : ControlMessage {
     
     public enum Kind: CustomStringConvertible, Codable {
         case screenshot
-        case mediaSaved(timestamp: UInt64)
+        case mediaSaved(timestamp: UInt64)  // Note: The 'timestamp' should the original message timestamp
 
         public var description: String {
             switch self {

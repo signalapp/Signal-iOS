@@ -462,7 +462,7 @@ extension ConversationVC:
         
         resetMentions()
 
-        if Environment.shared.preferences.soundInForeground() {
+        if GRDBStorage.shared[.playNotificationSoundInForeground] {
             let soundID = Preferences.Sound.systemSoundId(for: .messageSent, quiet: true)
             AudioServicesPlaySystemSound(soundID)
         }
@@ -697,13 +697,31 @@ extension ConversationVC:
                     default:
                         let viewController: UIViewController? = MediaGalleryViewModel.createDetailViewController(
                             for: self.viewModel.viewData.thread.id,
-                            item: item,
+                            threadVariant: self.viewModel.viewData.thread.variant,
+                            interactionId: item.interactionId,
                             selectedAttachmentId: mediaView.attachment.id,
                             options: [ .sliderEnabled, .showAllMediaButton ]
                         )
                         
                         if let viewController: UIViewController = viewController {
-                            self.present(viewController, animated: true, completion: nil)
+                            /// Delay becoming the first responder to make the return transition a little nicer (allows
+                            /// for the footer on the detail view to slide out rather than instantly vanish)
+                            self.delayFirstResponder = true
+                            
+                            /// Dismiss the input before starting the presentation to make everything look smoother
+                            self.resignFirstResponder()
+                            
+                            /// Delay the actual presentation to give the 'resignFirstResponder' call the chance to complete
+                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) { [weak self] in
+                                /// Lock the contentOffset of the tableView so the transition doesn't look buggy
+                                self?.tableView.lockContentOffset = true
+                                
+                                self?.present(viewController, animated: true) { [weak self] in
+                                    // Unlock the contentOffset so everything will be in the right
+                                    // place when we return
+                                    self?.tableView.lockContentOffset = false
+                                }
+                            }
                         }
                 }
                 
@@ -1527,7 +1545,7 @@ extension ConversationVC {
                             {
                                 var newViewControllers = viewControllers
                                 newViewControllers.remove(at: messageRequestsIndex)
-                                self?.navigationController?.setViewControllers(newViewControllers, animated: false)
+                                self?.navigationController?.viewControllers = newViewControllers
                             }
                         }
                     }
@@ -1604,6 +1622,7 @@ extension ConversationVC {
 extension ConversationVC: MediaPresentationContextProvider {
     func mediaPresentationContext(mediaItem: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
         guard case let .gallery(galleryItem) = mediaItem else { return nil }
+        
         // Note: According to Apple's docs the 'indexPathsForVisibleRows' method returns an
         // unsorted array which means we can't use it to determine the desired 'visibleCell'
         // we are after, due to this we will need to iterate all of the visible cells to find
@@ -1632,7 +1651,8 @@ extension ConversationVC: MediaPresentationContextProvider {
 
         let cornerRadius: CGFloat
         let cornerMask: CACornerMask
-        let presentationFrame = coordinateSpace.convert(targetView.frame, from: mediaSuperview)
+        let presentationFrame: CGRect = coordinateSpace.convert(targetView.frame, from: mediaSuperview)
+        let frameInBubble: CGRect = messageCell.bubbleView.convert(targetView.frame, from: mediaSuperview)
 
         if messageCell.bubbleView.bounds == targetView.bounds {
             cornerRadius = messageCell.bubbleView.layer.cornerRadius
@@ -1648,39 +1668,39 @@ extension ConversationVC: MediaPresentationContextProvider {
 
             if
                 cellMaskedCorners.contains(.layerMinXMinYCorner) &&
-                    targetView.frame.minX < CGFloat.leastNonzeroMagnitude &&
-                    targetView.frame.minY < CGFloat.leastNonzeroMagnitude
+                    frameInBubble.minX < CGFloat.leastNonzeroMagnitude &&
+                    frameInBubble.minY < CGFloat.leastNonzeroMagnitude
             {
                 newCornerMask.insert(.layerMinXMinYCorner)
             }
 
             if
                 cellMaskedCorners.contains(.layerMaxXMinYCorner) &&
-                abs(targetView.frame.maxX - messageCell.bubbleView.bounds.width) < CGFloat.leastNonzeroMagnitude &&
-                    targetView.frame.minY < CGFloat.leastNonzeroMagnitude
+                abs(frameInBubble.maxX - messageCell.bubbleView.bounds.width) < CGFloat.leastNonzeroMagnitude &&
+                    frameInBubble.minY < CGFloat.leastNonzeroMagnitude
             {
                 newCornerMask.insert(.layerMaxXMinYCorner)
             }
 
             if
                 cellMaskedCorners.contains(.layerMinXMaxYCorner) &&
-                    targetView.frame.minX < CGFloat.leastNonzeroMagnitude &&
-                abs(targetView.frame.maxY - messageCell.bubbleView.bounds.height) < CGFloat.leastNonzeroMagnitude
+                    frameInBubble.minX < CGFloat.leastNonzeroMagnitude &&
+                abs(frameInBubble.maxY - messageCell.bubbleView.bounds.height) < CGFloat.leastNonzeroMagnitude
             {
                 newCornerMask.insert(.layerMinXMaxYCorner)
             }
 
             if
                 cellMaskedCorners.contains(.layerMaxXMaxYCorner) &&
-                abs(targetView.frame.maxX - messageCell.bubbleView.bounds.width) < CGFloat.leastNonzeroMagnitude &&
-                abs(targetView.frame.maxY - messageCell.bubbleView.bounds.height) < CGFloat.leastNonzeroMagnitude
+                abs(frameInBubble.maxX - messageCell.bubbleView.bounds.width) < CGFloat.leastNonzeroMagnitude &&
+                abs(frameInBubble.maxY - messageCell.bubbleView.bounds.height) < CGFloat.leastNonzeroMagnitude
             {
                 newCornerMask.insert(.layerMaxXMaxYCorner)
             }
 
             cornerMask = newCornerMask
         }
-
+        
         return MediaPresentationContext(
             mediaView: targetView,
             presentationFrame: presentationFrame,

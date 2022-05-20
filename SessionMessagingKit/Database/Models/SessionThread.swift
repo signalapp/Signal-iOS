@@ -124,6 +124,12 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
     
     // MARK: - Custom Database Interaction
     
+    public func insert(_ db: Database) throws {
+        try performInsert(db)
+        
+        db[.hasSavedThreadKey] = true
+    }
+    
     public func delete(_ db: Database) throws -> Bool {
         // Delete any jobs associated to this thread
         try Job

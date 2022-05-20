@@ -1,3 +1,4 @@
+import UIKit
 
 public extension Array where Element : CustomStringConvertible {
 
@@ -44,6 +45,11 @@ public extension Array {
     }
 }
 
+public extension Array {
+    func grouped<Key: Hashable>(by keyForValue: (Element) throws -> Key) -> [Key: [Element]] {
+        return ((try? Dictionary(grouping: self, by: keyForValue)) ?? [:])
+    }
+}
 
 public extension Array where Element: Hashable {
     func asSet() -> Set<Element> {

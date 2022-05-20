@@ -1,20 +1,21 @@
-//
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import LocalAuthentication
+import SessionMessagingKit
 
+// FIXME: Refactor this once the 'PrivacySettingsTableViewController' and 'OWSScreenLockUI' have been refactored
 @objc public class OWSScreenLock: NSObject {
 
     public enum OWSScreenLockOutcome {
         case success
         case cancel
-        case failure(error:String)
-        case unexpectedFailure(error:String)
+        case failure(error: String)
+        case unexpectedFailure(error: String)
     }
 
-    @objc public let screenLockTimeoutDefault = 15 * kMinuteInterval
+    @objc public let screenLockTimeoutDefault = (15 * kMinuteInterval)
     @objc public let screenLockTimeouts = [
         1 * kMinuteInterval,
         5 * kMinuteInterval,
@@ -26,22 +27,12 @@ import LocalAuthentication
 
     @objc public static let ScreenLockDidChange = Notification.Name("ScreenLockDidChange")
 
-    let primaryStorage: OWSPrimaryStorage
-    let dbConnection: YapDatabaseConnection
-
-    private let OWSScreenLock_Collection = "OWSScreenLock_Collection"
-    private let OWSScreenLock_Key_IsScreenLockEnabled = "OWSScreenLock_Key_IsScreenLockEnabled"
-    private let OWSScreenLock_Key_ScreenLockTimeoutSeconds = "OWSScreenLock_Key_ScreenLockTimeoutSeconds"
-
     // MARK: - Singleton class
 
     @objc(sharedManager)
     public static let shared = OWSScreenLock()
 
     private override init() {
-        self.primaryStorage = OWSPrimaryStorage.shared()
-        self.dbConnection = self.primaryStorage.newDatabaseConnection()
-
         super.init()
 
         SwiftSingletons.register(self)
@@ -50,44 +41,31 @@ import LocalAuthentication
     // MARK: - Properties
 
     @objc public func isScreenLockEnabled() -> Bool {
-        AssertIsOnMainThread()
-
-        if !OWSStorage.isStorageReady() {
-            owsFailDebug("accessed screen lock state before storage is ready.")
-            return false
-        }
-
-        return self.dbConnection.bool(forKey: OWSScreenLock_Key_IsScreenLockEnabled, inCollection: OWSScreenLock_Collection, defaultValue: false)
+        return GRDBStorage.shared[.isScreenLockEnabled]
     }
 
     @objc
     public func setIsScreenLockEnabled(_ value: Bool) {
-        AssertIsOnMainThread()
-        assert(OWSStorage.isStorageReady())
-
-        self.dbConnection.setBool(value, forKey: OWSScreenLock_Key_IsScreenLockEnabled, inCollection: OWSScreenLock_Collection)
-
-        NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
+        GRDBStorage.shared.writeAsync(
+            updates: { db in db[.isScreenLockEnabled] = value },
+            completion: { _, _ in
+                NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
+            }
+        )
     }
 
     @objc public func screenLockTimeout() -> TimeInterval {
-        AssertIsOnMainThread()
-
-        if !OWSStorage.isStorageReady() {
-            owsFailDebug("accessed screen lock state before storage is ready.")
-            return 0
-        }
-
-        return self.dbConnection.double(forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection, defaultValue: screenLockTimeoutDefault)
+        return GRDBStorage.shared[.screenLockTimeoutSeconds]
+            .defaulting(to: screenLockTimeoutDefault)
     }
 
     @objc public func setScreenLockTimeout(_ value: TimeInterval) {
-        AssertIsOnMainThread()
-        assert(OWSStorage.isStorageReady())
-
-        self.dbConnection.setDouble(value, forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection)
-
-        NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
+        GRDBStorage.shared.writeAsync(
+            updates: { db in db[.screenLockTimeoutSeconds] = value },
+            completion: { _, _ in
+                NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
+            }
+        )
     }
 
     // MARK: - Methods

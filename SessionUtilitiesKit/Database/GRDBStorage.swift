@@ -269,6 +269,10 @@ public final class GRDBStorage {
             onChange: onChange
         )
     }
+    
+    public func addObserver(_ observer: TransactionObserver) {
+        dbPool.add(transactionObserver: observer)
+    }
 }
 
 // MARK: - Promise Extensions

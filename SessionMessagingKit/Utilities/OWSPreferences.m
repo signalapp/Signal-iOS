@@ -8,13 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSPreferencesSignalDatabaseCollection = @"SignalPreferences";
 NSString *const OWSPreferencesCallLoggingDidChangeNotification = @"OWSPreferencesCallLoggingDidChangeNotification";
-NSString *const OWSPreferencesKeyScreenSecurity = @"Screen Security Key";
-NSString *const OWSPreferencesKeyEnableDebugLog = @"Debugging Log Enabled Key";
-NSString *const OWSPreferencesKeyNotificationPreviewType = @"Notification Preview Type Key";
 NSString *const OWSPreferencesKeyHasSentAMessage = @"User has sent a message";
-NSString *const OWSPreferencesKeyPlaySoundInForeground = @"NotificationSoundInForeground";
-NSString *const OWSPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
-NSString *const OWSPreferencesKeyLastRecordedVoipToken = @"LastRecordedVoipToken";
 NSString *const OWSPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 NSString *const OWSPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled";
 NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
@@ -92,17 +86,6 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     [NSUserDefaults.appUserDefaults synchronize];
 }
 
-- (BOOL)screenSecurityIsEnabled
-{
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyScreenSecurity];
-    return preference ? [preference boolValue] : YES;
-}
-
-- (void)setScreenSecurity:(BOOL)flag
-{
-    [self setValueForKey:OWSPreferencesKeyScreenSecurity toValue:@(flag)];
-}
-
 - (BOOL)hasSentAMessage
 {
     NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyHasSentAMessage];
@@ -111,26 +94,6 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     } else {
         return NO;
     }
-}
-
-+ (BOOL)isLoggingEnabled
-{
-    NSNumber *preference = [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKeyEnableDebugLog];
-
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return YES;
-    }
-}
-
-+ (void)setIsLoggingEnabled:(BOOL)flag
-{
-    // Logging preferences are stored in UserDefaults instead of the database, so that we can (optionally) start
-    // logging before the database is initialized. This is important because sometimes there are problems *with* the
-    // database initialization, and without logging it would be hard to track down.
-    [NSUserDefaults.appUserDefaults setObject:@(flag) forKey:OWSPreferencesKeyEnableDebugLog];
-    [NSUserDefaults.appUserDefaults synchronize];
 }
 
 - (void)setHasSentAMessage:(BOOL)enabled
@@ -333,92 +296,6 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (void)setDoCallsHideIPAddress:(BOOL)flag
 {
     [self setValueForKey:OWSPreferencesKeyCallsHideIPAddress toValue:@(flag)];
-}
-
-#pragma mark Notification Preferences
-
-- (BOOL)soundInForeground
-{
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyPlaySoundInForeground];
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return YES;
-    }
-}
-
-- (void)setSoundInForeground:(BOOL)enabled
-{
-    [self setValueForKey:OWSPreferencesKeyPlaySoundInForeground toValue:@(enabled)];
-}
-
-- (void)setNotificationPreviewType:(NotificationType)type
-{
-    [self setValueForKey:OWSPreferencesKeyNotificationPreviewType toValue:@(type)];
-}
-
-- (NotificationType)notificationPreviewType
-{
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyNotificationPreviewType];
-
-    if (preference) {
-        return [preference unsignedIntegerValue];
-    } else {
-        return NotificationNamePreview;
-    }
-}
-
-- (NotificationType)notificationPreviewTypeWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyNotificationPreviewType transaction:transaction];
-
-    if (preference) {
-        return [preference unsignedIntegerValue];
-    } else {
-        return NotificationNamePreview;
-    }
-}
-
-- (NSString *)nameForNotificationPreviewType:(NotificationType)notificationType
-{
-    switch (notificationType) {
-        case NotificationNamePreview:
-            return NSLocalizedString(@"NOTIFICATIONS_SENDER_AND_MESSAGE", nil);
-        case NotificationNameNoPreview:
-            return NSLocalizedString(@"NOTIFICATIONS_SENDER_ONLY", nil);
-        case NotificationNoNameNoPreview:
-            return NSLocalizedString(@"NOTIFICATIONS_NONE", nil);
-        default:
-            return @"";
-    }
-}
-
-#pragma mark - Push Tokens
-
-- (void)setPushToken:(NSString *)value
-{
-    [self setValueForKey:OWSPreferencesKeyLastRecordedPushToken toValue:value];
-}
-
-- (nullable NSString *)getPushToken
-{
-    return [self tryGetValueForKey:OWSPreferencesKeyLastRecordedPushToken];
-}
-
-- (void)setVoipToken:(NSString *)value
-{
-    [self setValueForKey:OWSPreferencesKeyLastRecordedVoipToken toValue:value];
-}
-
-- (nullable NSString *)getVoipToken
-{
-    return [self tryGetValueForKey:OWSPreferencesKeyLastRecordedVoipToken];
-}
-
-- (void)unsetRecordedAPNSTokens
-{
-    [self setValueForKey:OWSPreferencesKeyLastRecordedPushToken toValue:nil];
-    [self setValueForKey:OWSPreferencesKeyLastRecordedVoipToken toValue:nil];
 }
 
 @end

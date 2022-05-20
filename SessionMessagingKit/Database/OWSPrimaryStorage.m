@@ -7,7 +7,6 @@
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSFileSystem.h"
 #import "OWSIncomingMessageFinder.h"
-#import "OWSMediaGalleryFinder.h"
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 #import "OWSStorage.h"
 #import "OWSStorage+Subclass.h"
@@ -177,7 +176,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     [FullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
     [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:self];
     [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
-    [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
     [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
 
     [self.database

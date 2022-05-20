@@ -35,6 +35,7 @@ public enum SNMessagingKit { // Just to make the external API nice
         JobRunner.add(executor: FailedAttachmentDownloadsJob.self, for: .failedAttachmentDownloads)
         JobRunner.add(executor: UpdateProfilePictureJob.self, for: .updateProfilePicture)
         JobRunner.add(executor: RetrieveDefaultOpenGroupRoomsJob.self, for: .retrieveDefaultOpenGroupRooms)
+        JobRunner.add(executor: GarbageCollectionJob.self, for: .garbageCollection)
         JobRunner.add(executor: MessageSendJob.self, for: .messageSend)
         JobRunner.add(executor: MessageReceiveJob.self, for: .messageReceive)
         JobRunner.add(executor: NotifyPushServerJob.self, for: .notifyPushServer)

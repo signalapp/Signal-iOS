@@ -217,6 +217,7 @@ public extension ConversationCell.ViewModel {
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
         let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
+        let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
         let recipientState: TypedTableAlias<RecipientState> = TypedTableAlias()
         
         let unreadCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadUnreadCountString)_table")
@@ -227,8 +228,9 @@ public extension ConversationCell.ViewModel {
         let profileNameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.name.name)
         let authorProfileLiteral: SQL = SQL(stringLiteral: "authorProfile")
         let attachmentIdColumnLiteral: SQL = SQL(stringLiteral: Attachment.Columns.id.name)
-        let firstInteractionAttachmentLiteral: SQL = SQL(stringLiteral: "firstInteractionAttachmentLiteral")
+        let firstInteractionAttachmentLiteral: SQL = SQL(stringLiteral: "firstInteractionAttachment")
         let interactionAttachmentAttachmentIdColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.attachmentId.name)
+        let interactionAttachmentInteractionIdColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.interactionId.name)
         let interactionAttachmentAlbumIndexColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.albumIndex.name)
         let interactionStateTableLiteral: SQL = SQL(stringLiteral: "interactionState")
         let interactionStateInteractionIdColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.interactionId.name)
@@ -355,21 +357,31 @@ public extension ConversationCell.ViewModel {
             LEFT JOIN \(InteractionAttachment.self) ON \(interactionAttachment[.interactionId]) = \(interaction[.id])
             LEFT JOIN \(InteractionAttachment.self) AS \(firstInteractionAttachmentLiteral) ON (
                 \(firstInteractionAttachmentLiteral).\(interactionAttachmentAlbumIndexColumnLiteral) = 0 AND
-                \(firstInteractionAttachmentLiteral).\(interactionAttachmentAttachmentIdColumnLiteral) = \(interaction[.id])
+                \(firstInteractionAttachmentLiteral).\(interactionAttachmentInteractionIdColumnLiteral) = \(interaction[.id])
             )
-            LEFT JOIN \(Attachment.self) AS \(ViewModel.interactionAttachmentDescriptionInfoKey) ON \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentIdColumnLiteral) = \(firstInteractionAttachmentLiteral).\(interactionAttachmentAttachmentIdColumnLiteral)
             LEFT JOIN (
                 SELECT
-                    \(recipientState[.interactionId]),
-                    \(recipientState[.state])
-                FROM \(RecipientState.self)
-                JOIN \(Interaction.self) ON \(interaction[.id]) = \(recipientState[.interactionId])
-                WHERE \(SQL("\(recipientState[.state]) != \(RecipientState.State.skipped)"))  -- Ignore 'skipped'
-                ORDER BY
-                    -- If there is a single 'sending' then should be 'sending', otherwise if there is a single
-                    -- 'failed' and there is no 'sending' then it should be 'failed'
-                    \(SQL("\(recipientState[.state]) = \(RecipientState.State.sending)")) DESC,
-                    \(SQL("\(recipientState[.state]) = \(RecipientState.State.failed)")) DESC
+                    \(attachment[.id]),
+                    \(attachment[.variant]),
+                    \(attachment[.contentType]),
+                    \(attachment[.sourceFilename])
+                FROM \(Attachment.self)
+            ) AS \(ViewModel.interactionAttachmentDescriptionInfoKey) ON \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentIdColumnLiteral) = \(firstInteractionAttachmentLiteral).\(interactionAttachmentAttachmentIdColumnLiteral)
+            LEFT JOIN (
+                SELECT * FROM (
+                    SELECT
+                        \(recipientState[.interactionId]),
+                        \(recipientState[.state])
+                    FROM \(RecipientState.self)
+                    JOIN \(Interaction.self) ON \(interaction[.id]) = \(recipientState[.interactionId])
+                    WHERE \(SQL("\(recipientState[.state]) != \(RecipientState.State.skipped)"))  -- Ignore 'skipped'
+                    ORDER BY
+                        -- If there is a single 'sending' then should be 'sending', otherwise if there is a single
+                        -- 'failed' and there is no 'sending' then it should be 'failed'
+                        \(SQL("\(recipientState[.state]) = \(RecipientState.State.sending)")) DESC,
+                        \(SQL("\(recipientState[.state]) = \(RecipientState.State.failed)")) DESC
+                ) AS \(interactionStateTableLiteral)
+                GROUP BY \(interactionStateTableLiteral).\(interactionStateInteractionIdColumnLiteral)
             ) AS \(interactionStateTableLiteral) ON \(interactionStateTableLiteral).\(interactionStateInteractionIdColumnLiteral) = \(interaction[.id])
             
             WHERE (
@@ -578,7 +590,7 @@ public extension ConversationCell.ViewModel {
                 \(ViewModel.closedGroupProfileBackFallbackKey).\(profileIdColumnLiteral) = \(userPublicKey)
             )
         
-            ORDER BY rank
+            ORDER BY \(Column.rank)
         """
         
         return request.adapted { db in
@@ -644,7 +656,7 @@ public extension ConversationCell.ViewModel {
         var sqlQuery: SQL = ""
         let selectQuery: SQL = """
             SELECT
-                IFNULL(rank, 100) AS rank,
+                IFNULL(\(Column.rank), 100) AS \(Column.rank),
                 
                 \(thread[.id]) AS \(ViewModel.threadIdKey),
                 \(thread[.variant]) AS \(ViewModel.threadVariantKey),
@@ -1037,7 +1049,7 @@ public extension ConversationCell.ViewModel {
         
             GROUP BY \(ViewModel.threadIdKey)
             ORDER BY
-                rank,
+                \(Column.rank),
                 \(ViewModel.threadIsNoteToSelfKey),
                 \(ViewModel.closedGroupNameKey),
                 \(ViewModel.openGroupNameKey),

@@ -10,7 +10,6 @@
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SessionMessagingKit/Environment.h>
-#import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SessionMessagingKit/OWSPrimaryStorage.h>
@@ -41,7 +40,6 @@ CGFloat kIconViewLength = 24;
 @property (nonatomic) BOOL isDisappearingMessagesEnabled;
 @property (nonatomic) NSInteger disappearingMessagesDurationIndex;
 
-@property (nullable, nonatomic) MediaGallery *mediaGallery;
 @property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
 @property (nonatomic) UILabel *displayNameLabel;

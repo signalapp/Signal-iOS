@@ -44,17 +44,26 @@ public enum Legacy {
     internal static let attachmentUploadJobCollection = "AttachmentUploadJobCollection"
     internal static let attachmentDownloadJobCollection = "AttachmentDownloadJobCollection"
     
+    // Preferences
+    
     internal static let preferencesCollection = "SignalPreferences"
-    internal static let preferencesKeyNotificationPreviewType = "preferencesKeyNotificationPreviewType"
     internal static let preferencesKeyScreenSecurityDisabled = "Screen Security Key"
     internal static let preferencesKeyLastRecordedPushToken = "LastRecordedPushToken"
     internal static let preferencesKeyLastRecordedVoipToken = "LastRecordedVoipToken"
+    internal static let preferencesKeyAreLinkPreviewsEnabled = "areLinkPreviewsEnabled"
+    internal static let preferencesKeyNotificationPreviewType = "preferencesKeyNotificationPreviewType"
+    internal static let preferencesKeyNotificationSoundInForeground = "NotificationSoundInForeground"
+    internal static let preferencesKeyHasSavedThreadKey = "hasSavedThread"
     
     internal static let readReceiptManagerCollection = "OWSReadReceiptManagerCollection"
     internal static let readReceiptManagerAreReadReceiptsEnabled = "areReadReceiptsEnabled"
     
     internal static let typingIndicatorsCollection = "TypingIndicators"
     internal static let typingIndicatorsEnabledKey = "kDatabaseKey_TypingIndicatorsEnabled"
+    
+    internal static let screenLockCollection = "OWSScreenLock_Collection"
+    internal static let screenLockIsScreenLockEnabledKey = "OWSScreenLock_Key_IsScreenLockEnabled"
+    internal static let screenLockScreenLockTimeoutSecondsKey = "OWSScreenLock_Key_ScreenLockTimeoutSeconds"
     
     internal static let soundsStorageNotificationCollection = "kOWSSoundsStorageNotificationCollection"
     internal static let soundsGlobalNotificationKey = "kOWSSoundsStorageGlobalNotificationKey"

@@ -205,7 +205,7 @@ final class QuoteView: UIView {
             authorLabel.lineBreakMode = .byTruncatingTail
             authorLabel.text = Profile.displayName(
                 id: authorId,
-                context: (threadVariant == .openGroup ? .openGroup : .regular)
+                threadVariant: threadVariant
             )
             authorLabel.textColor = textColor
             authorLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)

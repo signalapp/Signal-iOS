@@ -18,7 +18,7 @@ public extension Setting.BoolKey {
     ///
     /// **Note:** In the legacy setting this flag controlled whether the preview was "disabled" (and defaulted to
     /// true), by inverting this flag we can default it to false as is standard for Bool values
-    static let preferencesAppSwitcherPreviewEnabled: Setting.BoolKey = "preferencesAppSwitcherPreviewEnabled"
+    static let appSwitcherPreviewEnabled: Setting.BoolKey = "appSwitcherPreviewEnabled"
     
     /// Controls whether typing indicators are enabled
     ///
@@ -30,8 +30,22 @@ public extension Setting.BoolKey {
     /// **Note:** Only works if both participants in a "contact" thread have this setting enabled
     static let typingIndicatorsEnabled: Setting.BoolKey = "typingIndicatorsEnabled"
     
+    /// Controls whether the device will automatically lock the screen
+    static let isScreenLockEnabled: Setting.BoolKey = "isScreenLockEnabled"
+    
+    /// Controls whether Link Previews (image & title URL metadata) will be downloaded when the user enters a URL
+    ///
+    /// **Note:** Link Previews are only enabled for HTTPS urls
+    static let areLinkPreviewsEnabled: Setting.BoolKey = "areLinkPreviewsEnabled"
+    
     /// Controls whether the message requests item has been hidden on the home screen
     static let hasHiddenMessageRequests: Setting.BoolKey = "hasHiddenMessageRequests"
+    
+    /// Controls whether the notification sound should play while the app is in the foreground
+    static let playNotificationSoundInForeground: Setting.BoolKey = "playNotificationSoundInForeground"
+    
+    /// A flag indicating whether the user has ever saved a thread
+    static let hasSavedThreadKey: Setting.BoolKey = "hasSavedThread"
 }
 
 public extension Setting.StringKey {
@@ -40,6 +54,11 @@ public extension Setting.StringKey {
     
     /// This is the most recently recorded Voip token
     static let lastRecordedVoipToken: Setting.StringKey = "lastRecordedVoipToken"
+}
+
+public extension Setting.DoubleKey {
+    /// The duration of the timeout for screen lock in seconds
+    static let screenLockTimeoutSeconds: Setting.DoubleKey = "screenLockTimeoutSeconds"
 }
 
 public enum Preferences {
@@ -297,6 +316,56 @@ public class SMKPreferences: NSObject {
             case .nameNoPreview: return "NotificationNameNoPreview"
             case .noNameNoPreview: return "NotificationNoNameNoPreview"
         }
+    }
+    
+    @objc(setPlayNotificationSoundInForeground:)
+    static func objc_setPlayNotificationSoundInForeground(_ enabled: Bool) {
+        GRDBStorage.shared.write { db in db[.playNotificationSoundInForeground] = enabled }
+    }
+    
+    @objc(playNotificationSoundInForeground)
+    static func objc_playNotificationSoundInForeground() -> Bool {
+        return GRDBStorage.shared[.playNotificationSoundInForeground]
+    }
+    
+    @objc(setScreenSecurity:)
+    static func objc_setScreenSecurity(_ enabled: Bool) {
+        GRDBStorage.shared.write { db in db[.appSwitcherPreviewEnabled] = enabled }
+    }
+    
+    @objc(isScreenSecurityEnabled)
+    static func objc_isScreenSecurityEnabled() -> Bool {
+        return GRDBStorage.shared[.appSwitcherPreviewEnabled]
+    }
+    
+    @objc(setAreReadReceiptsEnabled:)
+    static func objc_setAreReadReceiptsEnabled(_ enabled: Bool) {
+        GRDBStorage.shared.write { db in db[.areReadReceiptsEnabled] = enabled }
+    }
+    
+    @objc(areReadReceiptsEnabled)
+    static func objc_areReadReceiptsEnabled() -> Bool {
+        return GRDBStorage.shared[.areReadReceiptsEnabled]
+    }
+    
+    @objc(setTypingIndicatorsEnabled:)
+    static func objc_setTypingIndicatorsEnabled(_ enabled: Bool) {
+        GRDBStorage.shared.write { db in db[.typingIndicatorsEnabled] = enabled }
+    }
+    
+    @objc(areTypingIndicatorsEnabled)
+    static func objc_areTypingIndicatorsEnabled() -> Bool {
+        return GRDBStorage.shared[.typingIndicatorsEnabled]
+    }
+    
+    @objc(setLinkPreviewsEnabled:)
+    static func objc_setLinkPreviewsEnabled(_ enabled: Bool) {
+        GRDBStorage.shared.write { db in db[.areLinkPreviewsEnabled] = enabled }
+    }
+    
+    @objc(areLinkPreviewsEnabled)
+    static func objc_areLinkPreviewsEnabled() -> Bool {
+        return GRDBStorage.shared[.areLinkPreviewsEnabled]
     }
 }
 

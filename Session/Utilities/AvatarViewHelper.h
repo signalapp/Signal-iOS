@@ -8,7 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class AvatarViewHelper;
 @class OWSContactsManager;
-@class SignalAccount;
 @class TSThread;
 
 @protocol AvatarViewHelperDelegate <NSObject>

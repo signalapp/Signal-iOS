@@ -7,58 +7,43 @@ import SessionUtilitiesKit
 extension ConfigurationMessage {
 
     public static func getCurrent(_ db: Database) throws -> ConfigurationMessage {
-        let profile: Profile = Profile.fetchOrCreateCurrentUser(db)
-        
-        let displayName: String = profile.name
-        let profilePictureUrl: String? = profile.profilePictureUrl
-        let profileKey: Data? = profile.profileEncryptionKey?.keyData
-        var closedGroups: Set<CMClosedGroup> = []
-        var openGroups: Set<String> = []
-        
-        Storage.read { transaction in
-            TSGroupThread.enumerateCollectionObjects(with: transaction) { object, _ in
-                guard let thread = object as? TSGroupThread else { return }
-                
-                switch thread.groupModel.groupType {
-                    case .closedGroup:
-                        guard thread.isCurrentUserMemberInGroup() else { return }
-                        
-                        let groupID = thread.groupModel.groupId
-                        let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
-                        
-                        guard
-                            Storage.shared.isClosedGroup(groupPublicKey, using: transaction),
-                            let encryptionKeyPair = Storage.shared.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey, using: transaction)
-                        else {
-                            return
-                        }
-                        
-                        let closedGroup = ClosedGroup(
-                            publicKey: groupPublicKey,
-                            name: (thread.groupModel.groupName ?? ""),
-                            encryptionKeyPair: encryptionKeyPair,
-                            members: Set(thread.groupModel.groupMemberIds),
-                            admins: Set(thread.groupModel.groupAdminIds),
-                            expirationTimer: thread.disappearingMessagesDuration(with: transaction)
-                        )
-                        closedGroups.insert(closedGroup)
-                        
-                    case .openGroup:
-                        if let threadId: String = thread.uniqueId, let v2OpenGroup = Storage.shared.getV2OpenGroup(for: threadId) {
-                            openGroups.insert("\(v2OpenGroup.server)/\(v2OpenGroup.room)?public_key=\(v2OpenGroup.publicKey)")
-                        }
-
-                    default: break
+        let currentUserProfile: Profile = Profile.fetchOrCreateCurrentUser(db)
+        let displayName: String = currentUserProfile.name
+        let profilePictureUrl: String? = currentUserProfile.profilePictureUrl
+        let profileKey: Data? = currentUserProfile.profileEncryptionKey?.keyData
+        let closedGroups: Set<CMClosedGroup> = try ClosedGroup.fetchAll(db)
+            .compactMap { closedGroup -> CMClosedGroup? in
+                guard let latestKeyPair: ClosedGroupKeyPair = try closedGroup.fetchLatestKeyPair(db) else {
+                    return nil
                 }
-            }
-        }
-        
-        let currentUserPublicKey: String = getUserHexEncodedPublicKey()
-        
-        let contacts: Set<CMContact> = try Contact.fetchAll(db)
-            .compactMap { contact -> CMContact? in
-                guard contact.id != currentUserPublicKey else { return nil }
                 
+                return CMClosedGroup(
+                    publicKey: closedGroup.publicKey,
+                    name: closedGroup.name,
+                    encryptionKeyPublicKey: latestKeyPair.publicKey,
+                    encryptionKeySecretKey: latestKeyPair.secretKey,
+                    members: try closedGroup.members
+                        .select(GroupMember.Columns.profileId)
+                        .asRequest(of: String.self)
+                        .fetchSet(db),
+                    admins: try closedGroup.admins
+                        .select(GroupMember.Columns.profileId)
+                        .asRequest(of: String.self)
+                        .fetchSet(db),
+                    expirationTimer: (try? DisappearingMessagesConfiguration
+                        .fetchOne(db, id: closedGroup.threadId)
+                        .map { ($0.isEnabled ? UInt32($0.durationSeconds) : 0) })
+                        .defaulting(to: 0)
+                )
+            }
+            .asSet()
+        let openGroups: Set<String> = try OpenGroup.fetchAll(db)
+            .map { "\($0.server)/\($0.room)?public_key=\($0.publicKey)" }
+            .asSet()
+        let contacts: Set<CMContact> = try Contact
+            .filter(Contact.Columns.id != currentUserProfile.id)
+            .fetchAll(db)
+            .map { contact -> CMContact in
                 // Can just default the 'hasX' values to true as they will be set to this
                 // when converting to proto anyway
                 let profile: Profile? = try? Profile.fetchOne(db, id: contact.id)

@@ -1,9 +1,11 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import AFNetworking
+import GRDB
 import Foundation
 import PromiseKit
 import SignalCoreKit
+import SessionUtilitiesKit
 
 @objc
 public enum LinkPreviewError: Int, Error {
@@ -329,7 +331,7 @@ public class OWSLinkPreview: MTLModel {
             return nil
         }
 
-        guard SSKPreferences.areLinkPreviewsEnabled else {
+        guard GRDBStorage.shared[.areLinkPreviewsEnabled] else {
             return nil
         }
 
@@ -425,28 +427,19 @@ public class OWSLinkPreview: MTLModel {
 
         // Exit early if link previews are not enabled in order to avoid
         // tainting the cache.
-        guard OWSLinkPreview.featureEnabled else {
-            return
-        }
-        guard SSKPreferences.areLinkPreviewsEnabled else {
-            return
-        }
+        guard OWSLinkPreview.featureEnabled else { return }
+        guard GRDBStorage.shared[.areLinkPreviewsEnabled] else { return }
 
         serialQueue.sync {
             linkPreviewDraftCache = linkPreviewDraft
         }
     }
 
-    @objc
-    public class func tryToBuildPreviewInfoObjc(previewUrl: String?) -> AnyPromise {
-        return AnyPromise(tryToBuildPreviewInfo(previewUrl: previewUrl))
-    }
-
     public class func tryToBuildPreviewInfo(previewUrl: String?) -> Promise<OWSLinkPreviewDraft> {
         guard OWSLinkPreview.featureEnabled else {
             return Promise(error: LinkPreviewError.featureDisabled)
         }
-        guard SSKPreferences.areLinkPreviewsEnabled else {
+        guard GRDBStorage.shared[.areLinkPreviewsEnabled] else {
             return Promise(error: LinkPreviewError.featureDisabled)
         }
         guard let previewUrl = previewUrl else {

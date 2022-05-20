@@ -5,7 +5,7 @@ import GRDB
 import SignalCoreKit
 import SessionUtilitiesKit
 
-public struct Profile: Codable, Identifiable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible, CustomStringConvertible {
+public struct Profile: Codable, Identifiable, Equatable, Hashable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible, CustomStringConvertible {
     public static var databaseTableName: String { "profile" }
     internal static let interactionForeignKey = ForeignKey([Columns.id], to: [Interaction.Columns.authorId])
     internal static let contactForeignKey = ForeignKey([Columns.id], to: [Contact.Columns.id])
@@ -244,43 +244,26 @@ public extension Profile {
             .defaulting(to: [])
     }
     
-    static func displayName(_ db: Database? = nil, id: ID, thread: SessionThread, customFallback: String? = nil) -> String {
-        return displayName(
-            db,
-            id: id,
-            context: (thread.variant == .openGroup ? .openGroup : .regular),
-            customFallback: customFallback
-        )
-    }
-    
-    static func displayName(_ db: Database? = nil, id: ID, context: Context = .regular, customFallback: String? = nil) -> String {
+    static func displayName(_ db: Database? = nil, id: ID, threadVariant: SessionThread.Variant = .contact, customFallback: String? = nil) -> String {
         guard let db: Database = db else {
             return GRDBStorage.shared
-                .read { db in displayName(db, id: id, context: context, customFallback: customFallback) }
+                .read { db in displayName(db, id: id, threadVariant: threadVariant, customFallback: customFallback) }
                 .defaulting(to: (customFallback ?? id))
         }
         
         let existingDisplayName: String? = (try? Profile.fetchOne(db, id: id))?
-            .displayName(for: context)
+            .displayName(for: threadVariant)
         
         return (existingDisplayName ?? (customFallback ?? id))
     }
     
-    static func displayNameNoFallback(_ db: Database? = nil, id: ID, thread: SessionThread) -> String? {
-        return displayName(
-            db,
-            id: id,
-            context: (thread.variant == .openGroup ? .openGroup : .regular)
-        )
-    }
-    
-    static func displayNameNoFallback(_ db: Database? = nil, id: ID, context: Context = .regular) -> String? {
+    static func displayNameNoFallback(_ db: Database? = nil, id: ID, threadVariant: SessionThread.Variant = .contact) -> String? {
         guard let db: Database = db else {
-            return GRDBStorage.shared.read { db in displayNameNoFallback(db, id: id, context: context) }
+            return GRDBStorage.shared.read { db in displayNameNoFallback(db, id: id, threadVariant: threadVariant) }
         }
         
         return (try? Profile.fetchOne(db, id: id))?
-            .displayName(for: context)
+            .displayName(for: threadVariant)
     }
     
     // MARK: - Fetch or Create
@@ -352,13 +335,6 @@ public extension Profile {
 // MARK: - Convenience
 
 public extension Profile {
-    // MARK: - Context
-    
-    @objc enum Context: Int {
-        case regular
-        case openGroup
-    }
-    
     // MARK: - Truncation
     
     enum Truncation {
@@ -387,35 +363,12 @@ public extension Profile {
     }
     
     /// The name to display in the UI for a given thread variant
-    func displayName(for threadVariant: SessionThread.Variant) -> String {
-        return displayName(
-            for: (threadVariant == .openGroup ? .openGroup : .regular)
-        )
-    }
-
-    /// The name to display in the UI
-    func displayName(for context: Context = .regular) -> String {
-        return Profile.displayName(for: context, id: id, name: name, nickname: nickname)
+    func displayName(for threadVariant: SessionThread.Variant = .contact) -> String {
+        return Profile.displayName(for: threadVariant, id: id, name: name, nickname: nickname)
     }
     
     static func displayName(
         for threadVariant: SessionThread.Variant,
-        id: String,
-        name: String?,
-        nickname: String?,
-        customFallback: String? = nil
-    ) -> String {
-        return Profile.displayName(
-            for: (threadVariant == .openGroup ? .openGroup : .regular),
-            id: id,
-            name: name,
-            nickname: nickname,
-            customFallback: customFallback
-        )
-    }
-    
-    static func displayName(
-        for context: Context,
         id: String,
         name: String?,
         nickname: String?,
@@ -427,8 +380,8 @@ public extension Profile {
             return (customFallback ?? Profile.truncated(id: id, truncating: .middle))
         }
         
-        switch context {
-            case .regular: return name
+        switch threadVariant {
+            case .contact, .closedGroup: return name
                 
             case .openGroup:
                 // In open groups, where it's more likely that multiple users have the same name,
@@ -444,65 +397,12 @@ public extension Profile {
 
 @objc(SMKProfile)
 public class SMKProfile: NSObject {
-    var id: String
-    @objc var name: String
-    @objc var nickname: String?
-    
-    init(id: String, name: String, nickname: String?) {
-        self.id = id
-        self.name = name
-        self.nickname = nickname
-    }
-    
-    @objc public static func fetchCurrentUserName() -> String {
-        let existingProfile: Profile? = GRDBStorage.shared.read { db in
-            Profile.fetchOrCreateCurrentUser(db)
-        }
-        
-        return (existingProfile?.name ?? "")
-    }
-    
-    @objc public static func fetchOrCreate(id: String) -> SMKProfile {
-        let profile: Profile = Profile.fetchOrCreate(id: id)
-        
-        return SMKProfile(
-            id: id,
-            name: profile.name,
-            nickname: profile.nickname
-        )
-    }
-    
-    @objc public static func saveProfile(_ profile: SMKProfile) {
-        GRDBStorage.shared.write { db in
-            try? Profile
-                .fetchOrCreate(db, id: profile.id)
-                .with(nickname: .updateTo(profile.nickname))
-                .save(db)
-        }
-    }
-    
     @objc public static func displayName(id: String) -> String {
         return Profile.displayName(id: id)
     }
     
     @objc public static func displayName(id: String, customFallback: String) -> String {
         return Profile.displayName(id: id, customFallback: customFallback)
-    }
-    
-    @objc public static func displayName(id: String, context: Profile.Context = .regular) -> String {
-        let existingProfile: Profile? = GRDBStorage.shared.read { db in
-            Profile.fetchOrCreateCurrentUser(db)
-        }
-        
-        return (existingProfile?.name ?? id)
-    }
-    
-    public static func displayName(id: String, thread: SessionThread) -> String {
-        return Profile.displayName(id: id, thread: thread)
-    }
-    
-    @objc public static var localProfileKey: OWSAES256Key? {
-        Profile.fetchOrCreateCurrentUser().profileEncryptionKey
     }
     
     @objc(displayNameAfterSavingNickname:forProfileId:)

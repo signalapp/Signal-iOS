@@ -10,7 +10,21 @@ class SendMediaNavigationController: OWSNavigationController {
     // This is a sensitive constant, if you change it make sure to check
     // on iPhone5, 6, 6+, X, layouts.
     static let bottomButtonsCenterOffset: CGFloat = -50
-
+    
+    private let threadId: String
+    
+    // MARK: - Initialization
+    
+    init(threadId: String) {
+        self.threadId = threadId
+        
+        super.init()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Overrides
 
     override var prefersStatusBarHidden: Bool { return true }
@@ -48,17 +62,17 @@ class SendMediaNavigationController: OWSNavigationController {
     public weak var sendMediaNavDelegate: SendMediaNavDelegate?
 
     @objc
-    public class func showingCameraFirst() -> SendMediaNavigationController {
-        let navController = SendMediaNavigationController()
-        navController.setViewControllers([navController.captureViewController], animated: false)
+    public class func showingCameraFirst(threadId: String) -> SendMediaNavigationController {
+        let navController = SendMediaNavigationController(threadId: threadId)
+        navController.viewControllers = [navController.captureViewController]
 
         return navController
     }
 
     @objc
-    public class func showingMediaLibraryFirst() -> SendMediaNavigationController {
-        let navController = SendMediaNavigationController()
-        navController.setViewControllers([navController.mediaLibraryViewController], animated: false)
+    public class func showingMediaLibraryFirst(threadId: String) -> SendMediaNavigationController {
+        let navController = SendMediaNavigationController(threadId: threadId)
+        navController.viewControllers = [navController.mediaLibraryViewController]
 
         return navController
     }
@@ -218,7 +232,11 @@ class SendMediaNavigationController: OWSNavigationController {
             return
         }
 
-        let approvalViewController = AttachmentApprovalViewController(mode: .sharedNavigation, attachments: self.attachments)
+        let approvalViewController = AttachmentApprovalViewController(
+            mode: .sharedNavigation,
+            threadId: self.threadId,
+            attachments: self.attachments
+        )
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
@@ -429,8 +447,8 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
         attachmentDraftCollection.remove(attachment: attachment)
     }
 
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
-        sendMediaNavDelegate?.sendMediaNav(self, didApproveAttachments: attachments, messageText: messageText)
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], forThreadId threadId: String, messageText: String?) {
+        sendMediaNavDelegate?.sendMediaNav(self, didApproveAttachments: attachments, forThreadId: threadId, messageText: messageText)
     }
 
     func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
@@ -673,7 +691,7 @@ private class DoneButton: UIView {
 
 protocol SendMediaNavDelegate: AnyObject {
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController)
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?)
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], forThreadId threadId: String, messageText: String?)
 
     func sendMediaNavInitialMessageText(_ sendMediaNavigationController: SendMediaNavigationController) -> String?
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?)

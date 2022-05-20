@@ -10,9 +10,9 @@ import AVFoundation
 
 public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "attachment" }
-    internal static let interactionAttachments = hasOne(InteractionAttachment.self)
     internal static let quoteForeignKey = ForeignKey([Columns.id], to: [Quote.Columns.attachmentId])
     internal static let linkPreviewForeignKey = ForeignKey([Columns.id], to: [LinkPreview.Columns.attachmentId])
+    public static let interactionAttachments = hasOne(InteractionAttachment.self)
     public static let interaction = hasOne(
         Interaction.self,
         through: interactionAttachments,
@@ -245,23 +245,27 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
 // MARK: - CustomStringConvertible
 
 extension Attachment: CustomStringConvertible {
-    public struct DescriptionInfo: FetchableRecord, Decodable, Equatable, ColumnExpressible {
+    public struct DescriptionInfo: FetchableRecord, Decodable, Equatable, Hashable, ColumnExpressible {
         public typealias Columns = CodingKeys
         public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+            case id
             case variant
             case contentType
             case sourceFilename
         }
         
+        let id: String
         let variant: Attachment.Variant
         let contentType: String
         let sourceFilename: String?
         
         public init(
+            id: String,
             variant: Attachment.Variant,
             contentType: String,
             sourceFilename: String?
         ) {
+            self.id = id
             self.variant = variant
             self.contentType = contentType
             self.sourceFilename = sourceFilename
@@ -279,8 +283,7 @@ extension Attachment: CustomStringConvertible {
     public static func description(for descriptionInfo: DescriptionInfo, count: Int) -> String {
         // We only support multi-attachment sending of images so we can just default to the image attachment
         // if there were multiple attachments
-        guard count == 1 else { return "\("ATTACHMENT".localized()) \(emoji(for: OWSMimeTypeImageJpeg))" }
-        
+        guard count == 1 else { return "\(emoji(for: OWSMimeTypeImageJpeg)) \("ATTACHMENT".localized())" }
         if MIMETypeUtil.isAudio(descriptionInfo.contentType) {
             // a missing filename is the legacy way to determine if an audio attachment is
             // a voice note vs. other arbitrary audio attachments.
@@ -293,7 +296,7 @@ extension Attachment: CustomStringConvertible {
             }
         }
         
-        return "\("ATTACHMENT".localized()) \(emoji(for: descriptionInfo.contentType))"
+        return "\(emoji(for: descriptionInfo.contentType)) \("ATTACHMENT".localized())"
     }
     
     public static func emoji(for contentType: String) -> String {
@@ -316,6 +319,7 @@ extension Attachment: CustomStringConvertible {
     public var description: String {
         return Attachment.description(
             for: DescriptionInfo(
+                id: id,
                 variant: variant,
                 contentType: contentType,
                 sourceFilename: sourceFilename
@@ -679,12 +683,11 @@ extension Attachment {
         
         // Process video attachments
         if MIMETypeUtil.isVideo(contentType) {
-            let videoPlayer: AVPlayer = AVPlayer(url: URL(fileURLWithPath: targetPath))
-            let durationSeconds: TimeInterval? = videoPlayer.currentItem
-                .map { item -> TimeInterval in
-                    // Accorting to the CMTime docs "value/timescale = seconds"
-                    (TimeInterval(item.duration.value) / TimeInterval(item.duration.timescale))
-                }
+            let asset: AVURLAsset = AVURLAsset(url: URL(fileURLWithPath: targetPath), options: nil)
+            let durationSeconds: TimeInterval = (
+                // According to the CMTime docs "value/timescale = seconds"
+                TimeInterval(asset.duration.value) / TimeInterval(asset.duration.timescale)
+            )
             
             return (
                 OWSMediaUtils.isValidVideo(path: targetPath),
@@ -829,6 +832,27 @@ extension Attachment {
     
     public func thumbnail(size: ThumbnailSize, success: @escaping (UIImage, () throws -> Data) -> (), failure: @escaping () -> ()) {
         loadThumbnail(with: size.dimension, success: success, failure: failure)
+    }
+    
+    public func existingThumbnail(size: ThumbnailSize) -> UIImage? {
+        var existingImage: UIImage?
+        
+        let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0)
+        loadThumbnail(
+            with: size.dimension,
+            success: { image, _ in
+                existingImage = image
+                semaphore.signal()
+            },
+            failure: { semaphore.signal() }
+        )
+        
+        // We don't really want to wait at all so having a tiny timeout here will give the
+        // 'loadThumbnail' call the change to return a result for an existing thumbnail but
+        // not a new one
+        _ = semaphore.wait(timeout: .now() + .milliseconds(10))
+        
+        return existingImage
     }
     
     public func cloneAsThumbnail() -> Attachment? {

@@ -26,7 +26,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSNavigationController.h>
 #import <SignalUtilitiesKit/OWSOperation.h>
 #import <SignalUtilitiesKit/OWSPrimaryStorage+keyFromIntLong.h>
-#import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SignalUtilitiesKit/OWSQueues.h>
 #import <SignalUtilitiesKit/OWSResaveCollectionDBMigration.h>
 #import <SignalUtilitiesKit/OWSTableViewController.h>
@@ -35,7 +34,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
 #import <SignalUtilitiesKit/OWSViewController.h>
 #import <SignalUtilitiesKit/ScreenLockViewController.h>
-#import <SignalUtilitiesKit/SignalAccount.h>
 #import <SignalUtilitiesKit/SSKAsserts.h>
 #import <SignalUtilitiesKit/ThreadUtil.h>
 #import <SignalUtilitiesKit/TSConstants.h>

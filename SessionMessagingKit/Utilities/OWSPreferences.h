@@ -44,20 +44,6 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (BOOL)hasSentAMessage;
 - (void)setHasSentAMessage:(BOOL)enabled;
 
-+ (BOOL)isLoggingEnabled;
-+ (void)setIsLoggingEnabled:(BOOL)flag;
-
-- (BOOL)screenSecurityIsEnabled;
-- (void)setScreenSecurity:(BOOL)flag;
-
-- (NotificationType)notificationPreviewType;
-- (NotificationType)notificationPreviewTypeWithTransaction:(YapDatabaseReadTransaction *)transaction;
-- (void)setNotificationPreviewType:(NotificationType)type;
-- (NSString *)nameForNotificationPreviewType:(NotificationType)notificationType;
-
-- (BOOL)soundInForeground;
-- (void)setSoundInForeground:(BOOL)enabled;
-
 - (BOOL)hasDeclinedNoContactsView;
 - (void)setHasDeclinedNoContactsView:(BOOL)value;
 
@@ -94,16 +80,6 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 
 - (BOOL)doCallsHideIPAddress;
 - (void)setDoCallsHideIPAddress:(BOOL)flag;
-
-#pragma mark - Push Tokens
-
-- (void)setPushToken:(NSString *)value;
-- (nullable NSString *)getPushToken;
-
-- (void)setVoipToken:(NSString *)value;
-- (nullable NSString *)getVoipToken;
-
-- (void)unsetRecordedAPNSTokens;
 
 @end
 

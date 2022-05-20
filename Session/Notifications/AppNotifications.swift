@@ -195,7 +195,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let notificationTitle: String?
         var notificationBody: String?
         
-        let senderName = Profile.displayName(db, id: interaction.authorId, thread: thread)
+        let senderName = Profile.displayName(db, id: interaction.authorId, threadVariant: thread.variant)
         let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
             .defaulting(to: .nameAndPreview)
         
@@ -347,13 +347,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     private func checkIfShouldPlaySound() -> Bool {
         AssertIsOnMainThread()
 
-        guard UIApplication.shared.applicationState == .active else {
-            return true
-        }
-
-        guard preferences.soundInForeground() else {
-            return false
-        }
+        guard UIApplication.shared.applicationState == .active else { return true }
+        guard GRDBStorage.shared[.playNotificationSoundInForeground] else { return false }
 
         let nowMs: UInt64 = UInt64(floor(Date().timeIntervalSince1970 * 1000))
         let recentThreshold = nowMs - UInt64(kAudioNotificationsThrottleInterval * Double(kSecondInMs))

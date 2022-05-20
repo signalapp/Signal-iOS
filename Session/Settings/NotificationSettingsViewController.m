@@ -7,8 +7,6 @@
 #import "NotificationSettingsViewController.h"
 #import "NotificationSettingsOptionsViewController.h"
 #import "OWSSoundSettingsViewController.h"
-#import <SessionMessagingKit/Environment.h>
-#import <SessionMessagingKit/OWSPreferences.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import "Session-Swift.h"
@@ -39,8 +37,6 @@
     OWSTableContents *contents = [OWSTableContents new];
 
     __weak NotificationSettingsViewController *weakSelf = self;
-
-    OWSPreferences *prefs = Environment.shared.preferences;
 
     OWSTableSection *strategySection = [OWSTableSection new];
     strategySection.headerTitle = NSLocalizedString(@"preferences_notifications_strategy_category_title", @"");
@@ -79,7 +75,7 @@
     [soundsSection addItem:[OWSTableItem switchItemWithText:inAppSoundsLabelText
                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"in_app_sounds")
                                isOnBlock:^{
-                                   return [prefs soundInForeground];
+                                   return [SMKPreferences playNotificationSoundInForeground];
                                }
                                isEnabledBlock:^{
                                    return YES;
@@ -111,7 +107,7 @@
 
 - (void)didToggleSoundNotificationsSwitch:(UISwitch *)sender
 {
-    [Environment.shared.preferences setSoundInForeground:sender.on];
+    [SMKPreferences setPlayNotificationSoundInForeground:sender.on];
 }
 
 - (void)didToggleAPNsSwitch:(UISwitch *)sender

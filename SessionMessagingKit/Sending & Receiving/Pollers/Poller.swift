@@ -186,7 +186,7 @@ public final class Poller : NSObject {
                         }
                     }
                     
-                    SNLog("Received \(messageCount) message(s).")
+                    SNLog("Received \(messageCount) new message\(messageCount == 1 ? "" : "s") (\(messages.count - messageCount) duplicates)")
                 }
                 
                 self?.pollCount += 1
@@ -196,7 +196,9 @@ public final class Poller : NSObject {
                 }
                 
                 return withDelay(Poller.pollInterval, completionQueue: Threading.pollerQueue) {
-                    guard let strongSelf = self, strongSelf.isPolling.wrappedValue else { return Promise { $0.fulfill(()) } }
+                    guard let strongSelf = self, strongSelf.isPolling.wrappedValue else {
+                        return Promise { $0.fulfill(()) }
+                    }
                     
                     return strongSelf.poll(snode, seal: longTermSeal)
                 }

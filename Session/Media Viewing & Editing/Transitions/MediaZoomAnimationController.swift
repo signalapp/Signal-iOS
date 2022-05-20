@@ -4,13 +4,11 @@ import UIKit
 
 class MediaZoomAnimationController: NSObject {
     private let mediaItem: Media
+    private let shouldBounce: Bool
 
-    init(image: UIImage) {
-        mediaItem = .image(image)
-    }
-
-    init(galleryItem: MediaGalleryViewModel.Item) {
-        mediaItem = .gallery(galleryItem)
+    init(galleryItem: MediaGalleryViewModel.Item, shouldBounce: Bool = true) {
+        self.mediaItem = .gallery(galleryItem)
+        self.shouldBounce = shouldBounce
     }
 }
 
@@ -75,50 +73,70 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
         // as the 'toContextProvider.mediaPresentationContext' is dependant on it having the correct
         // positioning (and the navBar sizing isn't correct until after layout)
         let toView: UIView = (transitionContext.view(forKey: .to) ?? toVC.view)
+        let duration: CGFloat = transitionDuration(using: transitionContext)
         let oldToViewSuperview: UIView? = toView.superview
         toView.layoutIfNeeded()
+        
+        // If we can't retrieve the contextual info we need to perform the proper zoom animation then
+        // just fade the destination in (otherwise the user would get stuck on a blank screen)
+        guard
+            let fromMediaContext: MediaPresentationContext = fromContextProvider.mediaPresentationContext(mediaItem: mediaItem, in: containerView),
+            let toMediaContext: MediaPresentationContext = toContextProvider.mediaPresentationContext(mediaItem: mediaItem, in: containerView),
+            let presentationImage: UIImage = mediaItem.image
+        else {
+            
+            toView.frame = containerView.bounds
+            toView.alpha = 0
+            containerView.addSubview(toView)
+            
+            UIView.animate(
+                withDuration: (duration / 2),
+                delay: 0,
+                options: .curveEaseInOut,
+                animations: {
+                    toView.alpha = 1
+                },
+                completion: { _ in
+                    // Need to ensure we add the 'toView' back to it's old superview if it had one
+                    oldToViewSuperview?.addSubview(toView)
 
-        guard let fromMediaContext: MediaPresentationContext = fromContextProvider.mediaPresentationContext(mediaItem: mediaItem, in: containerView) else {
-            transitionContext.completeTransition(false)
+                    transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+                }
+            )
             return
         }
-
-        guard let toMediaContext: MediaPresentationContext = toContextProvider.mediaPresentationContext(mediaItem: mediaItem, in: containerView) else {
-            transitionContext.completeTransition(false)
-            return
-        }
-
-        guard let presentationImage: UIImage = mediaItem.image else {
-            transitionContext.completeTransition(true)
-            return
-        }
-
-        let duration: CGFloat = transitionDuration(using: transitionContext)
 
         fromMediaContext.mediaView.alpha = 0
         toMediaContext.mediaView.alpha = 0
 
-        let fromSnapshotView: UIView = (fromVC.view.snapshotView(afterScreenUpdates: false) ?? UIView())
-        containerView.addSubview(fromSnapshotView)
-
         toView.frame = containerView.bounds
         toView.alpha = 0
         containerView.addSubview(toView)
-
-        let transitionView = UIImageView(image: presentationImage)
+        
+        let transitionView: UIImageView = UIImageView(image: presentationImage)
         transitionView.frame = fromMediaContext.presentationFrame
         transitionView.contentMode = MediaView.contentMode
         transitionView.layer.masksToBounds = true
         transitionView.layer.cornerRadius = fromMediaContext.cornerRadius
         transitionView.layer.maskedCorners = fromMediaContext.cornerMask
         containerView.addSubview(transitionView)
+        
+        // Note: We need to do this after adding the 'transitionView' and insert it at the back
+        // otherwise the screen can flicker since we have 'afterScreenUpdates: true' (if we use
+        // 'afterScreenUpdates: false' then the 'fromMediaContext.mediaView' won't be hidden
+        // during the transition)
+        let fromSnapshotView: UIView = (fromVC.view.snapshotView(afterScreenUpdates: true) ?? UIView())
+        containerView.insertSubview(fromSnapshotView, at: 0)
 
         let overshootPercentage: CGFloat = 0.15
-        let overshootFrame: CGRect = CGRect(
-            x: (toMediaContext.presentationFrame.minX + ((toMediaContext.presentationFrame.minX - fromMediaContext.presentationFrame.minX) * overshootPercentage)),
-            y: (toMediaContext.presentationFrame.minY + ((toMediaContext.presentationFrame.minY - fromMediaContext.presentationFrame.minY) * overshootPercentage)),
-            width: (toMediaContext.presentationFrame.width + ((toMediaContext.presentationFrame.width - fromMediaContext.presentationFrame.width) * overshootPercentage)),
-            height: (toMediaContext.presentationFrame.height + ((toMediaContext.presentationFrame.height - fromMediaContext.presentationFrame.height) * overshootPercentage))
+        let overshootFrame: CGRect = (self.shouldBounce ?
+            CGRect(
+                x: (toMediaContext.presentationFrame.minX + ((toMediaContext.presentationFrame.minX - fromMediaContext.presentationFrame.minX) * overshootPercentage)),
+                y: (toMediaContext.presentationFrame.minY + ((toMediaContext.presentationFrame.minY - fromMediaContext.presentationFrame.minY) * overshootPercentage)),
+                width: (toMediaContext.presentationFrame.width + ((toMediaContext.presentationFrame.width - fromMediaContext.presentationFrame.width) * overshootPercentage)),
+                height: (toMediaContext.presentationFrame.height + ((toMediaContext.presentationFrame.height - fromMediaContext.presentationFrame.height) * overshootPercentage))
+            ) :
+            toMediaContext.presentationFrame
         )
 
         // Add any UI elements which should appear above the media view

@@ -6,7 +6,6 @@
 #import "AppContext.h"
 #import "AppReadiness.h"
 #import "NSNotificationCenter+OWS.h"
-#import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"

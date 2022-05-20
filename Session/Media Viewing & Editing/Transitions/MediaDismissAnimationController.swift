@@ -63,6 +63,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
         switch toVC {
             case let contextProvider as MediaPresentationContextProvider:
+                toVC.view.layoutIfNeeded()
                 toContextProvider = contextProvider
 
             case let navController as UINavigationController:
@@ -71,6 +72,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                     return
                 }
 
+                toVC.view.layoutIfNeeded()
                 toContextProvider = contextProvider
 
             default:
@@ -104,8 +106,8 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
         let toMediaContext: MediaPresentationContext? = toContextProvider.mediaPresentationContext(mediaItem: mediaItem, in: containerView)
         let duration: CGFloat = transitionDuration(using: transitionContext)
 
-        fromMediaContext.mediaView.alpha = 0.0
-        toMediaContext?.mediaView.alpha = 0.0
+        fromMediaContext.mediaView.alpha = 0
+        toMediaContext?.mediaView.alpha = 0
 
         let transitionView = UIImageView(image: presentationImage)
         transitionView.frame = fromMediaContext.presentationFrame
@@ -197,12 +199,20 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                     self?.toTransitionalOverlayView?.removeFromSuperview()
 
                     if transitionContext.transitionWasCancelled {
-                        // the "to" view will be nil if we're doing a modal dismiss, in which case
+                        // The "to" view will be nil if we're doing a modal dismiss, in which case
                         // we wouldn't want to remove the toView.
                         transitionContext.view(forKey: .to)?.removeFromSuperview()
+                        
+                        // Note: We shouldn't need to do this but for some reason it's not
+                        // automatically getting re-enabled so we manually enable it
+                        transitionContext.view(forKey: .from)?.isUserInteractionEnabled = true
                     }
                     else {
                         transitionContext.view(forKey: .from)?.removeFromSuperview()
+                        
+                        // Note: We shouldn't need to do this but for some reason it's not
+                        // automatically getting re-enabled so we manually enable it
+                        transitionContext.view(forKey: .to)?.isUserInteractionEnabled = true
                     }
 
                     transitionContext.completeTransition(!transitionContext.transitionWasCancelled)

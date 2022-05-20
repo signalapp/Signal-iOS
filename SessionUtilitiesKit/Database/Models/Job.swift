@@ -40,6 +40,10 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         /// This is a recurring job that ensures the app fetches the default open group rooms on launch
         case retrieveDefaultOpenGroupRooms
         
+        /// This is a recurring job that removes expired and orphaned data, it runs on launch and can also be triggered
+        /// as 'runOnce' to avoid waiting until the next launch to clear data
+        case garbageCollection
+        
         /// This is a recurring job that runs on launch and flags any messages marked as 'sending' to
         /// be in their 'failed' state
         ///

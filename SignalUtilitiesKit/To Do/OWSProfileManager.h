@@ -2,8 +2,6 @@
 ////  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 ////
 //
-//#import <SessionMessagingKit/ProfileManagerProtocol.h>
-//
 //NS_ASSUME_NONNULL_BEGIN
 //
 //extern const NSUInteger kOWSProfileManager_NameDataLength;
@@ -17,7 +15,7 @@
 //@class YapDatabaseReadWriteTransaction;
 //
 //// This class can be safely accessed and used from any thread.
-//@interface OWSProfileManager : NSObject <ProfileManagerProtocol>
+//@interface OWSProfileManager : NSObject
 //
 //- (instancetype)init NS_UNAVAILABLE;
 //

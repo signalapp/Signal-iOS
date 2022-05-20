@@ -125,7 +125,6 @@ NS_ASSUME_NONNULL_BEGIN
             [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 [transaction removeAllObjectsInCollection:@"TSRecipient"];
             }];
-            OWSLogInfo(@"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
         } else {
             OWSLogError(@"Failed to remove bloom filter cache with error: %@", deleteError.localizedDescription);
         }

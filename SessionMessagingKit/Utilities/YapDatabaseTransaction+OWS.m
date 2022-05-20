@@ -30,6 +30,12 @@ NS_ASSUME_NONNULL_BEGIN
     return value ? [value boolValue] : defaultValue;
 }
 
+- (double)doubleForKey:(NSString *)key inCollection:(NSString *)collection defaultValue:(double)defaultValue
+{
+    NSNumber *_Nullable value = [self objectForKey:key inCollection:collection ofExpectedType:[NSNumber class]];
+    return value ? [value doubleValue] : defaultValue;
+}
+
 - (nullable NSData *)dataForKey:(NSString *)key inCollection:(NSString *)collection
 {
     return [self objectForKey:key inCollection:collection ofExpectedType:[NSData class]];

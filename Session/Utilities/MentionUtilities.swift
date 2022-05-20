@@ -30,7 +30,6 @@ public enum MentionUtilities {
         var string = string
         var lastMatchEnd: Int = 0
         var mentions: [(range: NSRange, publicKey: String)] = []
-        let context: Profile.Context = (threadVariant == .openGroup ? .openGroup : .regular)
         
         while let match: NSTextCheckingResult = regex.firstMatch(
             in: string,
@@ -41,7 +40,7 @@ public enum MentionUtilities {
             
             let publicKey: String = String(string[range].dropFirst()) // Drop the @
             
-            guard let displayName: String = Profile.displayNameNoFallback(id: publicKey, context: context) else {
+            guard let displayName: String = Profile.displayNameNoFallback(id: publicKey, threadVariant: threadVariant) else {
                 lastMatchEnd = (match.range.location + match.range.length)
                 continue
             }

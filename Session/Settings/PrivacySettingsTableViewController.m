@@ -72,7 +72,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                      @"Label for the 'read receipts' setting.")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"read_receipts"]
                     isOnBlock:^{
-                        return [SSKPreferences areReadReceiptsEnabled];
+                        return [SMKPreferences areReadReceiptsEnabled];
                     }
                     isEnabledBlock:^{
                         return YES;
@@ -90,7 +90,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                      @"Label for the 'typing indicators' setting.")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"typing_indicators"]
                     isOnBlock:^{
-                        return [SSKPreferences areTypingIndicatorsEnabled];
+                        return [SMKPreferences areTypingIndicatorsEnabled];
                     }
                     isEnabledBlock:^{
                         return YES;
@@ -143,7 +143,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"Disable Preview in App Switcher", @"")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"screen_security"]
                     isOnBlock:^{
-                        return [Environment.shared.preferences screenSecurityIsEnabled];
+                        return [SMKPreferences isScreenSecurityEnabled];
                     }
                     isEnabledBlock:^{
                         return YES;
@@ -168,7 +168,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                      @"Setting for enabling & disabling link previews.")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"link_previews"]
                     isOnBlock:^{
-                        return [SSKPreferences areLinkPreviewsEnabled];
+                        return [SMKPreferences areLinkPreviewsEnabled];
                     }
                     isEnabledBlock:^{
                         return YES;
@@ -219,28 +219,28 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled screen security: %@", enabled ? @"ON" : @"OFF");
-    [SSKPreferences setScreenSecurity:enabled];
+    [SMKPreferences setScreenSecurity:enabled];
 }
 
 - (void)didToggleReadReceiptsSwitch:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled areReadReceiptsEnabled: %@", enabled ? @"ON" : @"OFF");
-    [SSKPreferences setAreReadReceiptsEnabled:enabled];
+    [SMKPreferences setAreReadReceiptsEnabled:enabled];
 }
 
 - (void)didToggleTypingIndicatorsSwitch:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled areTypingIndicatorsEnabled: %@", enabled ? @"ON" : @"OFF");
-    [SSKPreferences setTypingIndicatorsEnabled:enabled];
+    [SMKPreferences setTypingIndicatorsEnabled:enabled];
 }
 
 - (void)didToggleLinkPreviewsEnabled:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled to: %@", (enabled ? @"ON" : @"OFF"));
-    SSKPreferences.areLinkPreviewsEnabled = enabled;
+    [SMKPreferences setLinkPreviewsEnabled:enabled];
 }
 
 - (void)isScreenLockEnabledDidChange:(UISwitch *)sender

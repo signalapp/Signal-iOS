@@ -11,7 +11,6 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/OWSBackupFragment.h>
 #import <SessionMessagingKit/OWSDisappearingMessagesFinder.h>
 #import <SessionMessagingKit/OWSIncomingMessageFinder.h>
-#import <SessionMessagingKit/OWSMediaGalleryFinder.h>
 #import <SessionMessagingKit/OWSPreferences.h>
 #import <SessionMessagingKit/OWSPrimaryStorage.h>
 #import <SessionMessagingKit/OWSQuotedReplyModel.h>
@@ -20,8 +19,6 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/OWSStorage+Subclass.h>
 #import <SessionMessagingKit/OWSUserProfile.h>
 #import <SessionMessagingKit/OWSWindowManager.h>
-#import <SessionMessagingKit/ProtoUtils.h>
-#import <SessionMessagingKit/SignalRecipient.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
 #import <SessionMessagingKit/TSAccountManager.h>
 #import <SessionMessagingKit/TSAttachment.h>

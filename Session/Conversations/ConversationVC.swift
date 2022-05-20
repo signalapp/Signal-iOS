@@ -18,6 +18,10 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     private var dataChangeObservable: DatabaseCancellable?
     private var hasLoadedInitialData: Bool = false
     
+    /// This flag indicates whether the data has been reloaded after a disappearance (it defaults to true as it will never
+    /// have disappeared before)
+    private var hasReloadedDataAfterDisappearance: Bool = true
+    
     var focusedMessageIndexPath: IndexPath?
     var initialUnreadCount: UInt = 0
     var unreadViewItems: [ConversationViewItem] = []
@@ -50,7 +54,11 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     var baselineKeyboardHeight: CGFloat = 0
 
     var audioSession: OWSAudioSession { Environment.shared.audioSession }
-    override var canBecomeFirstResponder: Bool { true }
+    
+    /// This flag is used to temporarily prevent the ConversationVC from becoming the first responder (primarily used with
+    /// custom transitions from preventing them from being buggy
+    var delayFirstResponder: Bool = false
+    override var canBecomeFirstResponder: Bool { !delayFirstResponder }
 
     override var inputAccessoryView: UIView? {
         guard
@@ -119,8 +127,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         return result
     }()
 
-    lazy var tableView: UITableView = {
-        let result: UITableView = UITableView()
+    lazy var tableView: InsetLockableTableView = {
+        let result: InsetLockableTableView = InsetLockableTableView()
         result.separatorStyle = .none
         result.backgroundColor = .clear
         result.showsVerticalScrollIndicator = false
@@ -213,7 +221,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         return result
     }()
 
-    private let messageRequestAcceptButton: UIButton = {
+    private lazy var messageRequestAcceptButton: UIButton = {
         let result: UIButton = UIButton()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.clipsToBounds = true
@@ -244,7 +252,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         return result
     }()
 
-    private let messageRequestDeleteButton: UIButton = {
+    private lazy var messageRequestDeleteButton: UIButton = {
         let result: UIButton = UIButton()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.clipsToBounds = true
@@ -459,6 +467,14 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         highlightFocusedMessageIfNeeded()
         didFinishInitialLayout = true
         viewModel.markAllAsRead()
+        
+        if delayFirstResponder {
+            delayFirstResponder = false
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) { [weak self] in
+                self?.becomeFirstResponder()
+            }
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -474,6 +490,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         super.viewDidDisappear(animated)
         
         mediaCache.removeAllObjects()
+        hasReloadedDataAfterDisappearance = false
     }
     
     @objc func applicationDidBecomeActive(_ notification: Notification) {
@@ -501,10 +518,11 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     }
     
     private func handleUpdates(_ updatedViewData: ConversationViewModel.ViewData, initialLoad: Bool = false) {
-        // Ensure the first load runs without animations (if we don't do this the cells will animate
-        // in from a frame of CGRect.zero)
-        guard hasLoadedInitialData else {
+        // Ensure the first load or a load when returning from a child screen runs without animations (if
+        // we don't do this the cells will animate in from a frame of CGRect.zero or have a buggy transition)
+        guard hasLoadedInitialData && hasReloadedDataAfterDisappearance else {
             hasLoadedInitialData = true
+            hasReloadedDataAfterDisappearance = true
             UIView.performWithoutAnimation { handleUpdates(updatedViewData, initialLoad: true) }
             return
         }
@@ -556,6 +574,12 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         let changeset = StagedChangeset(source: viewModel.viewData.items, target: updatedViewData.items)
         tableView.reload(
             using: StagedChangeset(source: viewModel.viewData.items, target: updatedViewData.items),
+            deleteSectionsAnimation: .bottom,
+            insertSectionsAnimation: .bottom,
+            reloadSectionsAnimation: .none,
+            deleteRowsAnimation: .bottom,
+            insertRowsAnimation: .bottom,
+            reloadRowsAnimation: .none,
             interrupt: {
                 return $0.changeCount > 100
             }    // Prevent too many changes from causing performance issues
@@ -635,6 +659,9 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
     }
     
+
+    // MARK: Notifications
+
     private func highlightFocusedMessageIfNeeded() {
         if let indexPath = focusedMessageIndexPath, let cell = tableView.cellForRow(at: indexPath) as? VisibleMessageCell {
             cell.highlight()

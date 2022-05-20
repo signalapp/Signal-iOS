@@ -42,6 +42,8 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
 
     private var fastEnoughToCompleteTransition = false
     private var farEnoughToCompleteTransition = false
+    private var lastProgress: CGFloat = 0
+    private var lastIncreasedProgress: CGFloat = 0
 
     private var shouldCompleteTransition: Bool {
         if farEnoughToCompleteTransition { return true }
@@ -73,9 +75,21 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
 
                 let offset = gestureRecognizer.translation(in: coordinateSpace)
                 let progress = abs(offset.y) / totalDistance
+                
                 // `farEnoughToCompleteTransition` is cancelable if the user reverses direction
-                farEnoughToCompleteTransition = progress >= 0.5
+                farEnoughToCompleteTransition = (progress >= 0.5)
+                
+                // If the user has reverted enough progress then we want to reset the velocity
+                // flag (don't want the user to start quickly, slowly drag it back end end up
+                // dismissing the screen)
+                if (lastIncreasedProgress - progress) > 0.2 || progress < 0.05 {
+                    fastEnoughToCompleteTransition = false
+                }
+                
                 update(progress)
+                
+                lastIncreasedProgress = (progress > lastProgress ? progress : lastIncreasedProgress)
+                lastProgress = progress
 
                 interactiveDismissDelegate?.interactiveDismissUpdate(self, didChangeTouchOffset: offset)
 
@@ -86,6 +100,8 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
                 interactionInProgress = false
                 farEnoughToCompleteTransition = false
                 fastEnoughToCompleteTransition = false
+                lastIncreasedProgress = 0
+                lastProgress = 0
 
             case .ended:
                 if shouldCompleteTransition {
@@ -100,6 +116,8 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
                 interactionInProgress = false
                 farEnoughToCompleteTransition = false
                 fastEnoughToCompleteTransition = false
+                lastIncreasedProgress = 0
+                lastProgress = 0
 
             default:
                 break

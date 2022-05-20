@@ -249,15 +249,20 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         // Suggest that the user enable link previews if they haven't already and we haven't
         // told them about link previews yet
         let text = inputTextView.text!
-        let userDefaults = UserDefaults.standard
-        if !OWSLinkPreview.allPreviewUrls(forMessageBodyText: text).isEmpty && !SSKPreferences.areLinkPreviewsEnabled
-            && !userDefaults[.hasSeenLinkPreviewSuggestion] {
+        let areLinkPreviewsEnabled: Bool = GRDBStorage.shared[.areLinkPreviewsEnabled]
+        
+        if
+            !OWSLinkPreview.allPreviewUrls(forMessageBodyText: text).isEmpty &&
+            !areLinkPreviewsEnabled &&
+            !UserDefaults.standard[.hasSeenLinkPreviewSuggestion]
+        {
             delegate?.showLinkPreviewSuggestionModal()
-            userDefaults[.hasSeenLinkPreviewSuggestion] = true
+            UserDefaults.standard[.hasSeenLinkPreviewSuggestion] = true
             return
         }
         // Check that link previews are enabled
-        guard SSKPreferences.areLinkPreviewsEnabled else { return }
+        guard areLinkPreviewsEnabled else { return }
+        
         // Proceed
         autoGenerateLinkPreview()
     }
