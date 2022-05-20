@@ -533,9 +533,21 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         }
     }
     
-    @objc func handleLongPress() {
+    @objc func handleLongPress(_ gestureRecognizer: UITapGestureRecognizer) {
         guard let viewItem = viewItem else { return }
-        delegate?.handleViewItemLongPressed(viewItem)
+        let location = gestureRecognizer.location(in: self)
+        if reactionContainerView.frame.contains(location) {
+            let convertedLocation = reactionContainerView.convert(location, from: self)
+            for reactionView in reactionContainerView.reactionViews {
+                if reactionView.frame.contains(convertedLocation) {
+                    // TODO: Show react list
+                    print("Ryan Test: long press on emoji.")
+                    break
+                }
+            }
+        } else {
+            delegate?.handleViewItemLongPressed(viewItem)
+        }
     }
 
     @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
@@ -561,8 +573,12 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 }
             }
             if let expandButton = reactionContainerView.expandButton, expandButton.frame.contains(convertedLocation) {
-                // TODO: show all emojis
-                reactionContainerView.
+                reactionContainerView.showAllEmojis()
+                delegate?.needsLayout()
+            }
+            if reactionContainerView.collapseButton.frame.contains(convertedLocation) {
+                reactionContainerView.showLessEmojis()
+                delegate?.needsLayout()
             }
         } else {
             delegate?.handleViewItemTapped(viewItem, gestureRecognizer: gestureRecognizer)

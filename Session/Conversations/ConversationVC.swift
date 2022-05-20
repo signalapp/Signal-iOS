@@ -761,6 +761,13 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
+    
+    func needsLayout() {
+        UIView.setAnimationsEnabled(false)
+        messagesTableView.beginUpdates()
+        messagesTableView.endUpdates()
+        UIView.setAnimationsEnabled(true)
+    }
 
     func getMediaCache() -> NSCache<NSString, AnyObject> {
         return mediaCache

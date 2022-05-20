@@ -34,8 +34,8 @@ final class BodyTextView : UITextView {
         addGestureRecognizer(doubleTapGestureRecognizer)
     }
     
-    @objc private func handleLongPress() {
-        snDelegate.handleLongPress()
+    @objc private func handleLongPress(_ gestureRecognizer: UITapGestureRecognizer) {
+        snDelegate.handleLongPress(gestureRecognizer)
     }
     
     @objc private func handleDoubleTap() {
@@ -45,5 +45,5 @@ final class BodyTextView : UITextView {
 
 protocol BodyTextViewDelegate {
     
-    func handleLongPress()
+    func handleLongPress(_ gestureRecognizer: UITapGestureRecognizer)
 }

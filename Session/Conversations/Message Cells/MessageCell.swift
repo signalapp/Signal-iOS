@@ -82,4 +82,5 @@ protocol MessageCellDelegate : AnyObject {
     func showUserDetails(for sessionID: String)
     func quickReact(_ viewItem: ConversationViewItem, with emoji: String)
     func cancelReact(_ viewItem: ConversationViewItem, for emoji: String)
+    func needsLayout()
 }
