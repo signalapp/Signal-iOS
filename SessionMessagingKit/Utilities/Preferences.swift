@@ -45,7 +45,10 @@ public extension Setting.BoolKey {
     static let playNotificationSoundInForeground: Setting.BoolKey = "playNotificationSoundInForeground"
     
     /// A flag indicating whether the user has ever saved a thread
-    static let hasSavedThreadKey: Setting.BoolKey = "hasSavedThread"
+    static let hasSavedThread: Setting.BoolKey = "hasSavedThread"
+    
+    /// A flag indicating whether the user has ever send a message
+    static let hasSentAMessage: Setting.BoolKey = "hasSentAMessageKey"
 }
 
 public extension Setting.StringKey {

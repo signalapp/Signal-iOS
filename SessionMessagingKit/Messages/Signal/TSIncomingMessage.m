@@ -5,9 +5,7 @@
 #import "TSIncomingMessage.h"
 #import "NSNotificationCenter+OWS.h"
 #import "TSAttachmentPointer.h"
-#import "TSContactThread.h"
 #import "TSDatabaseSecondaryIndexes.h"
-#import "TSGroupThread.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>

@@ -7,7 +7,6 @@
 #import "TSAttachmentPointer.h"
 #import "TSIncomingMessage.h"
 #import "TSOutgoingMessage.h"
-#import "TSThread.h"
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>

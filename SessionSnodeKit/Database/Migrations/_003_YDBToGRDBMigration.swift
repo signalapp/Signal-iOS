@@ -11,28 +11,28 @@ enum _003_YDBToGRDBMigration: Migration {
         // MARK: - OnionRequestPath, Snode Pool & Swarm
         
         // Note: Want to exclude the Snode's we already added from the 'onionRequestPathResult'
-        var snodeResult: Set<Legacy.Snode> = []
-        var snodeSetResult: [String: Set<Legacy.Snode>] = [:]
+        var snodeResult: Set<SSKLegacy.Snode> = []
+        var snodeSetResult: [String: Set<SSKLegacy.Snode>] = [:]
         var lastSnodePoolRefreshDate: Date? = nil
         
         // Map the Legacy types for the NSKeyedUnarchiver
         NSKeyedUnarchiver.setClass(
-            Legacy.Snode.self,
+            SSKLegacy.Snode.self,
             forClassName: "SessionSnodeKit.Snode"
         )
         
         Storage.read { transaction in
             // Process the lastSnodePoolRefreshDate
             lastSnodePoolRefreshDate = transaction.object(
-                forKey: Legacy.lastSnodePoolRefreshDateKey,
-                inCollection: Legacy.lastSnodePoolRefreshDateCollection
+                forKey: SSKLegacy.lastSnodePoolRefreshDateKey,
+                inCollection: SSKLegacy.lastSnodePoolRefreshDateCollection
             ) as? Date
             
             // Process the OnionRequestPaths
             if
-                let path0Snode0 = transaction.object(forKey: "0-0", inCollection: Legacy.onionRequestPathCollection) as? Legacy.Snode,
-                let path0Snode1 = transaction.object(forKey: "0-1", inCollection: Legacy.onionRequestPathCollection) as? Legacy.Snode,
-                let path0Snode2 = transaction.object(forKey: "0-2", inCollection: Legacy.onionRequestPathCollection) as? Legacy.Snode
+                let path0Snode0 = transaction.object(forKey: "0-0", inCollection: SSKLegacy.onionRequestPathCollection) as? SSKLegacy.Snode,
+                let path0Snode1 = transaction.object(forKey: "0-1", inCollection: SSKLegacy.onionRequestPathCollection) as? SSKLegacy.Snode,
+                let path0Snode2 = transaction.object(forKey: "0-2", inCollection: SSKLegacy.onionRequestPathCollection) as? SSKLegacy.Snode
             {
                 snodeResult.insert(path0Snode0)
                 snodeResult.insert(path0Snode1)
@@ -40,9 +40,9 @@ enum _003_YDBToGRDBMigration: Migration {
                 snodeSetResult["\(SnodeSet.onionRequestPathPrefix)0"] = [ path0Snode0, path0Snode1, path0Snode2 ]
                 
                 if
-                    let path1Snode0 = transaction.object(forKey: "1-0", inCollection: Legacy.onionRequestPathCollection) as? Legacy.Snode,
-                    let path1Snode1 = transaction.object(forKey: "1-1", inCollection: Legacy.onionRequestPathCollection) as? Legacy.Snode,
-                    let path1Snode2 = transaction.object(forKey: "1-2", inCollection: Legacy.onionRequestPathCollection) as? Legacy.Snode
+                    let path1Snode0 = transaction.object(forKey: "1-0", inCollection: SSKLegacy.onionRequestPathCollection) as? SSKLegacy.Snode,
+                    let path1Snode1 = transaction.object(forKey: "1-1", inCollection: SSKLegacy.onionRequestPathCollection) as? SSKLegacy.Snode,
+                    let path1Snode2 = transaction.object(forKey: "1-2", inCollection: SSKLegacy.onionRequestPathCollection) as? SSKLegacy.Snode
                 {
                     snodeResult.insert(path1Snode0)
                     snodeResult.insert(path1Snode1)
@@ -52,8 +52,8 @@ enum _003_YDBToGRDBMigration: Migration {
             }
             
             // Process the SnodePool
-            transaction.enumerateKeysAndObjects(inCollection: Legacy.snodePoolCollection) { _, object, _ in
-                guard let snode = object as? Legacy.Snode else { return }
+            transaction.enumerateKeysAndObjects(inCollection: SSKLegacy.snodePoolCollection) { _, object, _ in
+                guard let snode = object as? SSKLegacy.Snode else { return }
                 snodeResult.insert(snode)
             }
             
@@ -61,16 +61,16 @@ enum _003_YDBToGRDBMigration: Migration {
             var swarmCollections: Set<String> = []
             
             transaction.enumerateCollections { collectionName, _ in
-                if collectionName.starts(with: Legacy.swarmCollectionPrefix) {
-                    swarmCollections.insert(collectionName.substring(from: Legacy.swarmCollectionPrefix.count))
+                if collectionName.starts(with: SSKLegacy.swarmCollectionPrefix) {
+                    swarmCollections.insert(collectionName.substring(from: SSKLegacy.swarmCollectionPrefix.count))
                 }
             }
             
             for swarmCollection in swarmCollections {
-                let collection: String = "\(Legacy.swarmCollectionPrefix)\(swarmCollection)"
+                let collection: String = "\(SSKLegacy.swarmCollectionPrefix)\(swarmCollection)"
                 
                 transaction.enumerateKeysAndObjects(inCollection: collection) { _, object, _ in
-                    guard let snode = object as? Legacy.Snode else { return }
+                    guard let snode = object as? SSKLegacy.Snode else { return }
                     snodeResult.insert(snode)
                     snodeSetResult[swarmCollection] = (snodeSetResult[swarmCollection] ?? Set()).inserting(snode)
                 }
@@ -112,13 +112,13 @@ enum _003_YDBToGRDBMigration: Migration {
         // TODO: Move into the top read block???
         Storage.read { transaction in
             // Extract the received message hashes
-            transaction.enumerateKeysAndObjects(inCollection: Legacy.receivedMessagesCollection) { key, object, _ in
+            transaction.enumerateKeysAndObjects(inCollection: SSKLegacy.receivedMessagesCollection) { key, object, _ in
                 guard let hashSet = object as? Set<String> else { return }
                 receivedMessageResults[key] = hashSet
             }
             
             // Retrieve the last message info
-            transaction.enumerateKeysAndObjects(inCollection: Legacy.lastMessageHashCollection) { key, object, _ in
+            transaction.enumerateKeysAndObjects(inCollection: SSKLegacy.lastMessageHashCollection) { key, object, _ in
                 guard let lastMessageJson = object as? JSON else { return }
                 guard let lastMessageHash: String = lastMessageJson["hash"] as? String else { return }
                 

@@ -1,10 +1,11 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import YapDatabase
 import SessionMessagingKit
 
 @objc(SNContactsMigration)
-public class ContactsMigration : OWSDatabaseMigration {
+public class ContactsMigration: OWSDatabaseMigration {
 
     @objc
     class func migrationId() -> String {
@@ -17,20 +18,33 @@ public class ContactsMigration : OWSDatabaseMigration {
     
     private func doMigrationAsync(completion: @escaping OWSDatabaseMigrationCompletion) {
         var contacts: [SMKLegacy._Contact] = []
-        TSContactThread.enumerateCollectionObjects { object, _ in
-            guard let thread = object as? TSContactThread else { return }
-            let sessionID = thread.contactSessionID()
-            var contact: SMKLegacy._Contact?
-            
-            Storage.read { transaction in
-                contact = transaction.object(forKey: sessionID, inCollection: SMKLegacy.contactCollection) as? SMKLegacy._Contact
-            }
-            
-            if let contact: SMKLegacy._Contact = contact {
-                contact.isTrusted = true
-                contacts.append(contact)
+        
+        // Note: These will be done in the YDB to GRDB migration but have added it here to be safe
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._Thread.self,
+            forClassName: "TSThread"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._ContactThread.self,
+            forClassName: "TSContactThread"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._Contact.self,
+            forClassName: "SNContact"
+        )
+
+        Storage.read { transaction in
+            transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.threadCollection) { _, object, _ in
+                guard let thread = object as? SMKLegacy._ContactThread else { return }
+                
+                let sessionId: String = SMKLegacy._ContactThread.contactSessionId(fromThreadId: thread.uniqueId)
+                let contact: SMKLegacy._Contact? = transaction.object(forKey: sessionId, inCollection: SMKLegacy.contactCollection) as? SMKLegacy._Contact
+                
+                contact?.isTrusted = true
+                contacts = contacts.appending(contact)
             }
         }
+        
         Storage.write(with: { transaction in
             contacts.forEach { contact in
                 transaction.setObject(contact, forKey: contact.sessionID, inCollection: SMKLegacy.contactCollection)

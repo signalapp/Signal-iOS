@@ -395,8 +395,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             PushNotificationAPI.unregister(data).retainUntilComplete()
         }
         
-        ThreadUtil.deleteAllContent()
-        Identity.clearAll()
+        GRDBStorage.shared.write { db in
+            _ = try SessionThread.deleteAll(db)
+            _ = try Identity.deleteAll(db)
+        }
+        
         SnodeAPI.clearSnodePool()
         stopPollers()
         

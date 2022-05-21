@@ -8,11 +8,9 @@
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
 #import <SessionMessagingKit/TSAccountManager.h>
-#import <SessionMessagingKit/TSContactThread.h>
 #import <SessionMessagingKit/TSDatabaseView.h>
 #import <SessionMessagingKit/TSIncomingMessage.h>
 #import <SessionMessagingKit/TSOutgoingMessage.h>
-#import <SessionMessagingKit/TSThread.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 

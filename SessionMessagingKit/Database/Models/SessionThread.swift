@@ -127,7 +127,7 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
     public func insert(_ db: Database) throws {
         try performInsert(db)
         
-        db[.hasSavedThreadKey] = true
+        db[.hasSavedThread] = true
     }
     
     public func delete(_ db: Database) throws -> Bool {
@@ -311,6 +311,13 @@ public extension SessionThread {
 
 @objc(SMKThread)
 public class SMKThread: NSObject {
+    @objc(deleteAll)
+    public static func deleteAll() {
+        GRDBStorage.shared.writeAsync { db in
+            _ = try SessionThread.deleteAll(db)
+        }
+    }
+    
     @objc(isThreadMuted:)
     public static func isThreadMuted(_ threadId: String) -> Bool {
         return GRDBStorage.shared.read { db in

@@ -62,12 +62,9 @@
 #import <SessionMessagingKit/TSAttachment.h>
 #import <SessionMessagingKit/TSAttachmentPointer.h>
 #import <SessionMessagingKit/TSAttachmentStream.h>
-#import <SessionMessagingKit/TSContactThread.h>
-#import <SessionMessagingKit/TSGroupThread.h>
 #import <SessionMessagingKit/TSIncomingMessage.h>
 #import <SessionMessagingKit/TSInfoMessage.h>
 #import <SessionMessagingKit/TSOutgoingMessage.h>
-#import <SessionMessagingKit/TSThread.h>
 #import <SessionUtilitiesKit/LKGroupUtilities.h>
 #import <SessionUtilitiesKit/UIImage+OWS.h>
 #import <YYImage/YYImage.h>

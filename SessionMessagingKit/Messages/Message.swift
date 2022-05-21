@@ -67,7 +67,7 @@ public class Message: Codable {
         guard
             let threadId: String = threadId,
             (try? ClosedGroup.exists(db, id: threadId)) == true,
-            let legacyGroupId: Data = "\(Legacy.closedGroupIdPrefix)\(threadId)".data(using: .utf8)
+            let legacyGroupId: Data = "\(SMKLegacy.closedGroupIdPrefix)\(threadId)".data(using: .utf8)
         else { return }
         
         // Android needs a group context or it'll interpret the message as a one-to-one message

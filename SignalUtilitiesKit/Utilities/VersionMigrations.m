@@ -8,8 +8,6 @@
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SessionUtilitiesKit/NSUserDefaults+OWS.h>
 #import <SessionMessagingKit/TSAccountManager.h>
-#import <SessionMessagingKit/TSThread.h>
-#import <SessionMessagingKit/TSGroupThread.h>
 #import <YapDatabase/YapDatabase.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 

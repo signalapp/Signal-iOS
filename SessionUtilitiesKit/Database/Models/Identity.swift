@@ -127,18 +127,4 @@ public extension Identity {
             return data.toHexString()
         }
     }
-    
-    static func clearAll() {
-        GRDBStorage.shared.write { db in
-            try Identity.deleteAll(db)
-        }
-    }
-}
-
-@objc(SUKIdentity)
-public class objc_Identity: NSObject {
-    @objc(clearAll)
-    public static func objc_clearAll() {
-        Identity.clearAll()
-    }
 }

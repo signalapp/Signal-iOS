@@ -10,7 +10,6 @@
 #import "TSIncomingMessage.h"
 #import "TSInteraction.h"
 #import "TSOutgoingMessage.h"
-#import "TSThread.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 

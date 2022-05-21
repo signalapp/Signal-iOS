@@ -16,18 +16,18 @@ enum _003_YDBToGRDBMigration: Migration {
         // MARK: - Process Contacts, Threads & Interactions
         print("RAWR [\(Date().timeIntervalSince1970)] - SessionMessagingKit migration - Start")
         var shouldFailMigration: Bool = false
-        var contacts: Set<Legacy._Contact> = []
+        var contacts: Set<SMKLegacy._Contact> = []
         var validProfileIds: Set<String> = []
         var contactThreadIds: Set<String> = []
         
         var legacyThreadIdToIdMap: [String: String] = [:]
-        var threads: Set<TSThread> = []
-        var disappearingMessagesConfiguration: [String: Legacy._DisappearingMessagesConfiguration] = [:]
+        var legacyThreads: Set<SMKLegacy._Thread> = []
+        var disappearingMessagesConfiguration: [String: SMKLegacy._DisappearingMessagesConfiguration] = [:]
         
         var closedGroupKeys: [String: [TimeInterval: SUKLegacy.KeyPair]] = [:]
         var closedGroupName: [String: String] = [:]
         var closedGroupFormation: [String: UInt64] = [:]
-        var closedGroupModel: [String: TSGroupModel] = [:]
+        var closedGroupModel: [String: SMKLegacy._GroupModel] = [:]
         var closedGroupZombieMemberIds: [String: Set<String>] = [:]
         
         var openGroupInfo: [String: OpenGroupV2] = [:]
@@ -38,37 +38,53 @@ enum _003_YDBToGRDBMigration: Migration {
 //        var openGroupServerToUniqueIdLookup: [String: [String]] = [:]   // TODO: Not needed????
         
         var interactions: [String: [TSInteraction]] = [:]
-        var attachments: [String: Legacy._Attachment] = [:]
+        var attachments: [String: SMKLegacy._Attachment] = [:]
         var processedAttachmentIds: Set<String> = []
         var outgoingReadReceiptsTimestampsMs: [String: Set<Int64>] = [:]
         var receivedMessageTimestamps: Set<UInt64> = []
         
         // Map the Legacy types for the NSKeyedUnarchiver
         NSKeyedUnarchiver.setClass(
-            Legacy._Contact.self,
+            SMKLegacy._Thread.self,
+            forClassName: "TSThread"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._ContactThread.self,
+            forClassName: "TSContactThread"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._GroupThread.self,
+            forClassName: "TSGroupThread"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._GroupModel.self,
+            forClassName: "TSGroupModel"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._Contact.self,
             forClassName: "SNContact"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._Attachment.self,
+            SMKLegacy._Attachment.self,
             forClassName: "TSAttachment"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._AttachmentStream.self,
+            SMKLegacy._AttachmentStream.self,
             forClassName: "TSAttachmentStream"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._AttachmentPointer.self,
+            SMKLegacy._AttachmentPointer.self,
             forClassName: "TSAttachmentPointer"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._DisappearingConfigurationUpdateInfoMessage.self,
+            SMKLegacy._DisappearingConfigurationUpdateInfoMessage.self,
             forClassName: "OWSDisappearingConfigurationUpdateInfoMessage"
         )
         
         Storage.read { transaction in
             // Process the Contacts
-            transaction.enumerateRows(inCollection: Legacy.contactCollection) { _, object, _, _ in
-                guard let contact = object as? Legacy._Contact else { return }
+            transaction.enumerateRows(inCollection: SMKLegacy.contactCollection) { _, object, _, _ in
+                guard let contact = object as? SMKLegacy._Contact else { return }
                 contacts.insert(contact)
                 validProfileIds.insert(contact.sessionID)
             }
@@ -76,26 +92,27 @@ enum _003_YDBToGRDBMigration: Migration {
             print("RAWR [\(Date().timeIntervalSince1970)] - Process threads - Start")
             
             // Process the threads
-            transaction.enumerateKeysAndObjects(inCollection: Legacy.threadCollection) { key, object, _ in
-                guard let thread: TSThread = object as? TSThread else { return }
-                guard let threadId: String = thread.uniqueId else { return }
+            transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.threadCollection) { key, object, _ in
+                guard let thread: SMKLegacy._Thread = object as? SMKLegacy._Thread else { return }
                 
-                threads.insert(thread)
+                legacyThreads.insert(thread)
                 
                 // Want to exclude threads which aren't visible (ie. threads which we started
                 // but the user never ended up sending a message)
-                if key.starts(with: Legacy.contactThreadPrefix) && thread.shouldBeVisible {
+                if key.starts(with: SMKLegacy.contactThreadPrefix) && thread.shouldBeVisible {
                     contactThreadIds.insert(key)
                 }
              
                 // Get the disappearing messages config
-                disappearingMessagesConfiguration[threadId] = transaction
-                    .object(forKey: threadId, inCollection: Legacy.disappearingMessagesCollection)
-                    .asType(Legacy._DisappearingMessagesConfiguration.self)
+                disappearingMessagesConfiguration[thread.uniqueId] = transaction
+                    .object(forKey: thread.uniqueId, inCollection: SMKLegacy.disappearingMessagesCollection)
+                    .asType(SMKLegacy._DisappearingMessagesConfiguration.self)
                 
                 // Process group-specific info
-                guard let groupThread: TSGroupThread = thread as? TSGroupThread else {
-                    legacyThreadIdToIdMap[threadId] = threadId.substring(from: Legacy.contactThreadPrefix.count)
+                guard let groupThread: SMKLegacy._GroupThread = thread as? SMKLegacy._GroupThread else {
+                    legacyThreadIdToIdMap[thread.uniqueId] = thread.uniqueId.substring(
+                        from: SMKLegacy.contactThreadPrefix.count
+                    )
                     return
                 }
                 
@@ -104,7 +121,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     // really need the unnecessary complexity so process the key and extract
                     // the publicKey from it
                     // `g{base64String(Data(__textsecure_group__!{publicKey}))}
-                    let base64GroupId: String = String(threadId.suffix(from: threadId.index(after: threadId.startIndex)))
+                    let base64GroupId: String = String(thread.uniqueId.suffix(from: thread.uniqueId.index(after: thread.uniqueId.startIndex)))
                     guard
                         let groupIdData: Data = Data(base64Encoded: base64GroupId),
                         let groupId: String = String(data: groupIdData, encoding: .utf8),
@@ -115,18 +132,18 @@ enum _003_YDBToGRDBMigration: Migration {
                         return
                     }
                     
-                    legacyThreadIdToIdMap[threadId] = publicKey
-                    closedGroupName[threadId] = groupThread.name(with: transaction)
-                    closedGroupModel[threadId] = groupThread.groupModel
-                    closedGroupFormation[threadId] = ((transaction.object(forKey: publicKey, inCollection: Legacy.closedGroupFormationTimestampCollection) as? UInt64) ?? 0)
-                    closedGroupZombieMemberIds[threadId] = transaction.object(
+                    legacyThreadIdToIdMap[thread.uniqueId] = publicKey
+                    closedGroupName[thread.uniqueId] = groupThread.groupModel.groupName
+                    closedGroupModel[thread.uniqueId] = groupThread.groupModel
+                    closedGroupFormation[thread.uniqueId] = ((transaction.object(forKey: publicKey, inCollection: SMKLegacy.closedGroupFormationTimestampCollection) as? UInt64) ?? 0)
+                    closedGroupZombieMemberIds[thread.uniqueId] = transaction.object(
                         forKey: publicKey,
-                        inCollection: Legacy.closedGroupZombieMembersCollection
+                        inCollection: SMKLegacy.closedGroupZombieMembersCollection
                     ) as? Set<String>
                     
                     // Note: If the user is no longer in a closed group then the group will still exist but the user
                     // won't have the closed group public key anymore
-                    let keyCollection: String = "\(Legacy.closedGroupKeyPairPrefix)\(publicKey)"
+                    let keyCollection: String = "\(SMKLegacy.closedGroupKeyPairPrefix)\(publicKey)"
                     
                     transaction.enumerateKeysAndObjects(inCollection: keyCollection) { key, object, _ in
                         guard
@@ -134,33 +151,33 @@ enum _003_YDBToGRDBMigration: Migration {
                             let keyPair: SUKLegacy.KeyPair = object as? SUKLegacy.KeyPair
                         else { return }
                         
-                        closedGroupKeys[threadId] = (closedGroupKeys[threadId] ?? [:])
+                        closedGroupKeys[thread.uniqueId] = (closedGroupKeys[thread.uniqueId] ?? [:])
                             .setting(timestamp, keyPair)
                     }
                 }
                 else if groupThread.isOpenGroup {
-                    guard let openGroup: OpenGroupV2 = transaction.object(forKey: threadId, inCollection: Legacy.openGroupCollection) as? OpenGroupV2 else {
+                    guard let openGroup: OpenGroupV2 = transaction.object(forKey: thread.uniqueId, inCollection: SMKLegacy.openGroupCollection) as? OpenGroupV2 else {
                         SNLog("[Migration Error] Unable to find open group info")
                         shouldFailMigration = true
                         return
                     }
                     
-                    legacyThreadIdToIdMap[threadId] = OpenGroup.idFor(
+                    legacyThreadIdToIdMap[thread.uniqueId] = OpenGroup.idFor(
                         room: openGroup.room,
                         server: openGroup.server
                     )
-                    openGroupInfo[threadId] = openGroup
-                    openGroupUserCount[threadId] = ((transaction.object(forKey: openGroup.id, inCollection: Legacy.openGroupUserCountCollection) as? Int) ?? 0)
-                    openGroupImage[threadId] = transaction.object(forKey: openGroup.id, inCollection: Legacy.openGroupImageCollection) as? Data
-                    openGroupLastMessageServerId[threadId] = transaction.object(forKey: openGroup.id, inCollection: Legacy.openGroupLastMessageServerIDCollection) as? Int64
-                    openGroupLastDeletionServerId[threadId] = transaction.object(forKey: openGroup.id, inCollection: Legacy.openGroupLastDeletionServerIDCollection) as? Int64
+                    openGroupInfo[thread.uniqueId] = openGroup
+                    openGroupUserCount[thread.uniqueId] = ((transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupUserCountCollection) as? Int) ?? 0)
+                    openGroupImage[thread.uniqueId] = transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupImageCollection) as? Data
+                    openGroupLastMessageServerId[thread.uniqueId] = transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupLastMessageServerIDCollection) as? Int64
+                    openGroupLastDeletionServerId[thread.uniqueId] = transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupLastDeletionServerIDCollection) as? Int64
                 }
             }
             print("RAWR [\(Date().timeIntervalSince1970)] - Process threads - End")
             
             // Process interactions
             print("RAWR [\(Date().timeIntervalSince1970)] - Process interactions - Start")
-            transaction.enumerateKeysAndObjects(inCollection: Legacy.interactionCollection) { _, object, _ in
+            transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.interactionCollection) { _, object, _ in
                 guard let interaction: TSInteraction = object as? TSInteraction else {
                     SNLog("[Migration Error] Unable to process interaction")
                     shouldFailMigration = true
@@ -174,8 +191,8 @@ enum _003_YDBToGRDBMigration: Migration {
             
             // Process attachments
             print("RAWR [\(Date().timeIntervalSince1970)] - Process attachments - Start")
-            transaction.enumerateKeysAndObjects(inCollection: Legacy.attachmentsCollection) { key, object, _ in
-                guard let attachment: Legacy._Attachment = object as? Legacy._Attachment else {
+            transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.attachmentsCollection) { key, object, _ in
+                guard let attachment: SMKLegacy._Attachment = object as? SMKLegacy._Attachment else {
                     SNLog("[Migration Error] Unable to process attachment")
                     shouldFailMigration = true
                     return
@@ -186,7 +203,7 @@ enum _003_YDBToGRDBMigration: Migration {
             print("RAWR [\(Date().timeIntervalSince1970)] - Process attachments - End")
             
             // Process read receipts
-            transaction.enumerateKeysAndObjects(inCollection: Legacy.outgoingReadReceiptManagerCollection) { key, object, _ in
+            transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.outgoingReadReceiptManagerCollection) { key, object, _ in
                 guard let timestampsMs: Set<Int64> = object as? Set<Int64> else { return }
                 
                 outgoingReadReceiptsTimestampsMs[key] = (outgoingReadReceiptsTimestampsMs[key] ?? Set())
@@ -196,8 +213,8 @@ enum _003_YDBToGRDBMigration: Migration {
             receivedMessageTimestamps = receivedMessageTimestamps.inserting(
                 contentsOf: transaction
                     .object(
-                        forKey: Legacy.receivedMessageTimestampsKey,
-                        inCollection: Legacy.receivedMessageTimestampsCollection
+                        forKey: SMKLegacy.receivedMessageTimestampsKey,
+                        inCollection: SMKLegacy.receivedMessageTimestampsCollection
                     )
                     .asType([UInt64].self)
                     .defaulting(to: [])
@@ -217,19 +234,18 @@ enum _003_YDBToGRDBMigration: Migration {
         try autoreleasepool {
             let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
             
-            try contacts.forEach { contact in
-                let isCurrentUser: Bool = (contact.sessionID == currentUserPublicKey)
-                let contactThreadId: String = TSContactThread.threadID(fromContactSessionID: contact.sessionID)
+            try contacts.forEach { legacyContact in
+                let isCurrentUser: Bool = (legacyContact.sessionID == currentUserPublicKey)
+                let contactThreadId: String = SMKLegacy._ContactThread.threadId(from: legacyContact.sessionID)
                 
-                // TODO: Contact 'hasOne' profile???
                 // Create the "Profile" for the legacy contact
                 try Profile(
-                    id: contact.sessionID,
-                    name: (contact.name ?? contact.sessionID),
-                    nickname: contact.nickname,
-                    profilePictureUrl: contact.profilePictureURL,
-                    profilePictureFileName: contact.profilePictureFileName,
-                    profileEncryptionKey: contact.profileEncryptionKey
+                    id: legacyContact.sessionID,
+                    name: (legacyContact.name ?? legacyContact.sessionID),
+                    nickname: legacyContact.nickname,
+                    profilePictureUrl: legacyContact.profilePictureURL,
+                    profilePictureFileName: legacyContact.profilePictureFileName,
+                    profileEncryptionKey: legacyContact.profileEncryptionKey
                 ).insert(db)
                 
                 // Determine if this contact is a "real" contact (don't want to create contacts for
@@ -237,19 +253,19 @@ enum _003_YDBToGRDBMigration: Migration {
                 if
                     isCurrentUser ||
                     contactThreadIds.contains(contactThreadId) ||
-                    contact.isApproved ||
-                    contact.didApproveMe ||
-                    contact.isBlocked ||
-                    contact.hasBeenBlocked {
+                    legacyContact.isApproved ||
+                    legacyContact.didApproveMe ||
+                    legacyContact.isBlocked ||
+                    legacyContact.hasBeenBlocked {
                     // Create the contact
                     // TODO: Closed group admins???
                     try Contact(
-                        id: contact.sessionID,
-                        isTrusted: (isCurrentUser || contact.isTrusted),
-                        isApproved: (isCurrentUser || contact.isApproved),
-                        isBlocked: (!isCurrentUser && contact.isBlocked),
-                        didApproveMe: (isCurrentUser || contact.didApproveMe),
-                        hasBeenBlocked: (!isCurrentUser && (contact.hasBeenBlocked || contact.isBlocked))
+                        id: legacyContact.sessionID,
+                        isTrusted: (isCurrentUser || legacyContact.isTrusted),
+                        isApproved: (isCurrentUser || legacyContact.isApproved),
+                        isBlocked: (!isCurrentUser && legacyContact.isBlocked),
+                        didApproveMe: (isCurrentUser || legacyContact.didApproveMe),
+                        hasBeenBlocked: (!isCurrentUser && (legacyContact.hasBeenBlocked || legacyContact.isBlocked))
                     ).insert(db)
                 }
             }
@@ -296,11 +312,8 @@ enum _003_YDBToGRDBMigration: Migration {
         }
         
         // Sort by id just so we can make the migration process more determinstic
-        try threads.sorted(by: { lhs, rhs in (lhs.uniqueId ?? "") < (rhs.uniqueId ?? "") }).forEach { thread in
-            guard
-                let legacyThreadId: String = thread.uniqueId,
-                let threadId: String = legacyThreadIdToIdMap[legacyThreadId]
-            else {
+        try legacyThreads.sorted(by: { lhs, rhs in lhs.uniqueId < rhs.uniqueId }).forEach { legacyThread in
+            guard let threadId: String = legacyThreadIdToIdMap[legacyThread.uniqueId] else {
                 SNLog("[Migration Error] Unable to migrate thread with no id mapping")
                 throw GRDBStorageError.migrationFailed
             }
@@ -308,8 +321,8 @@ enum _003_YDBToGRDBMigration: Migration {
             let threadVariant: SessionThread.Variant
             let onlyNotifyForMentions: Bool
             
-            switch thread {
-                case let groupThread as TSGroupThread:
+            switch legacyThread {
+                case let groupThread as SMKLegacy._GroupThread:
                     threadVariant = (groupThread.isOpenGroup ? .openGroup : .closedGroup)
                     onlyNotifyForMentions = groupThread.isOnlyNotifyingForMentions
                     
@@ -322,19 +335,19 @@ enum _003_YDBToGRDBMigration: Migration {
                 try SessionThread(
                     id: threadId,
                     variant: threadVariant,
-                    creationDateTimestamp: thread.creationDate.timeIntervalSince1970,
-                    shouldBeVisible: thread.shouldBeVisible,
-                    isPinned: thread.isPinned,
-                    messageDraft: ((thread.messageDraft ?? "").isEmpty ?
+                    creationDateTimestamp: legacyThread.creationDate.timeIntervalSince1970,
+                    shouldBeVisible: legacyThread.shouldBeVisible,
+                    isPinned: legacyThread.isPinned,
+                    messageDraft: ((legacyThread.messageDraft ?? "").isEmpty ?
                         nil :
-                        thread.messageDraft
+                        legacyThread.messageDraft
                     ),
-                    mutedUntilTimestamp: thread.mutedUntilDate?.timeIntervalSince1970,
+                    mutedUntilTimestamp: legacyThread.mutedUntilDate?.timeIntervalSince1970,
                     onlyNotifyForMentions: onlyNotifyForMentions
                 ).insert(db)
                 
                 // Disappearing Messages Configuration
-                if let config: Legacy._DisappearingMessagesConfiguration = disappearingMessagesConfiguration[threadId] {
+                if let config: SMKLegacy._DisappearingMessagesConfiguration = disappearingMessagesConfiguration[threadId] {
                     try DisappearingMessagesConfiguration(
                         threadId: threadId,
                         isEnabled: config.isEnabled,
@@ -348,11 +361,11 @@ enum _003_YDBToGRDBMigration: Migration {
                 }
                 
                 // Closed Groups
-                if (thread as? TSGroupThread)?.isClosedGroup == true {
+                if legacyThread.isClosedGroup {
                     guard
-                        let name: String = closedGroupName[legacyThreadId],
-                        let groupModel: TSGroupModel = closedGroupModel[legacyThreadId],
-                        let formationTimestamp: UInt64 = closedGroupFormation[legacyThreadId]
+                        let name: String = closedGroupName[legacyThread.uniqueId],
+                        let groupModel: SMKLegacy._GroupModel = closedGroupModel[legacyThread.uniqueId],
+                        let formationTimestamp: UInt64 = closedGroupFormation[legacyThread.uniqueId]
                     else {
                         SNLog("[Migration Error] Closed group missing required data")
                         throw GRDBStorageError.migrationFailed
@@ -367,7 +380,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     // Note: If a user has left a closed group then they won't actually have any keys
                     // but they should still be able to browse the old messages so we do want to allow
                     // this case and migrate the rest of the info
-                    try closedGroupKeys[legacyThreadId]?.forEach { timestamp, legacyKeys in
+                    try closedGroupKeys[legacyThread.uniqueId]?.forEach { timestamp, legacyKeys in
                         try ClosedGroupKeyPair(
                             threadId: threadId,
                             publicKey: legacyKeys.publicKey,
@@ -396,7 +409,7 @@ enum _003_YDBToGRDBMigration: Migration {
                             ).insert(db)
                         }
                         
-                        try (closedGroupZombieMemberIds[legacyThreadId] ?? []).forEach { zombieId in
+                        try (closedGroupZombieMemberIds[legacyThread.uniqueId] ?? []).forEach { zombieId in
                             try GroupMember(
                                 groupId: threadId,
                                 profileId: zombieId,
@@ -407,8 +420,8 @@ enum _003_YDBToGRDBMigration: Migration {
                 }
                 
                 // Open Groups
-                if (thread as? TSGroupThread)?.isOpenGroup == true {
-                    guard let openGroup: OpenGroupV2 = openGroupInfo[legacyThreadId] else {
+                if legacyThread.isOpenGroup {
+                    guard let openGroup: OpenGroupV2 = openGroupInfo[legacyThread.uniqueId] else {
                         SNLog("[Migration Error] Open group missing required data")
                         throw GRDBStorageError.migrationFailed
                     }
@@ -420,15 +433,15 @@ enum _003_YDBToGRDBMigration: Migration {
                         name: openGroup.name,
                         groupDescription: nil,  // TODO: Add with SOGS V4.
                         imageId: nil,  // TODO: Add with SOGS V4.
-                        imageData: openGroupImage[legacyThreadId],
-                        userCount: (openGroupUserCount[legacyThreadId] ?? 0),  // Will be updated next poll
+                        imageData: openGroupImage[legacyThread.uniqueId],
+                        userCount: (openGroupUserCount[legacyThread.uniqueId] ?? 0),  // Will be updated next poll
                         infoUpdates: 0  // TODO: Add with SOGS V4.
                     ).insert(db)
                 }
             }
             
             try autoreleasepool {
-                try interactions[legacyThreadId]?
+                try interactions[legacyThread.uniqueId]?
                     .sorted(by: { lhs, rhs in lhs.timestamp < rhs.timestamp }) // Maintain sort order
                     .forEach { legacyInteraction in
                         let serverHash: String?
@@ -530,7 +543,7 @@ enum _003_YDBToGRDBMigration: Migration {
                                     // a string at display time so we want to continue that behaviour
                                     guard
                                         infoMessage.messageType == .disappearingMessagesUpdate,
-                                        let updateMessage: Legacy._DisappearingConfigurationUpdateInfoMessage = infoMessage as? Legacy._DisappearingConfigurationUpdateInfoMessage,
+                                        let updateMessage: SMKLegacy._DisappearingConfigurationUpdateInfoMessage = infoMessage as? SMKLegacy._DisappearingConfigurationUpdateInfoMessage,
                                         let infoMessageData: Data = try? JSONEncoder().encode(
                                             DisappearingMessagesConfiguration.MessageInfo(
                                                 senderName: updateMessage.createdByRemoteName,
@@ -713,7 +726,7 @@ enum _003_YDBToGRDBMigration: Migration {
                             // original interaction and re-create the attachment link before
                             // falling back to having no attachment in the quote
                             if quoteAttachmentId == nil && !quotedMessage.quotedAttachments.isEmpty {
-                                quoteAttachmentId = interactions[legacyThreadId]?
+                                quoteAttachmentId = interactions[legacyThread.uniqueId]?
                                     .first(where: {
                                         $0.timestamp == quotedMessage.timestamp &&
                                         (
@@ -827,7 +840,7 @@ enum _003_YDBToGRDBMigration: Migration {
         contacts = []
         contactThreadIds = []
         
-        threads = []
+        legacyThreads = []
         disappearingMessagesConfiguration = [:]
         
         closedGroupKeys = [:]
@@ -850,137 +863,137 @@ enum _003_YDBToGRDBMigration: Migration {
         
         print("RAWR [\(Date().timeIntervalSince1970)] - Process jobs - Start")
         
-        var notifyPushServerJobs: Set<Legacy._NotifyPNServerJob> = []
-        var messageReceiveJobs: Set<Legacy._MessageReceiveJob> = []
-        var messageSendJobs: Set<Legacy._MessageSendJob> = []
-        var attachmentUploadJobs: Set<Legacy._AttachmentUploadJob> = []
-        var attachmentDownloadJobs: Set<Legacy._AttachmentDownloadJob> = []
+        var notifyPushServerJobs: Set<SMKLegacy._NotifyPNServerJob> = []
+        var messageReceiveJobs: Set<SMKLegacy._MessageReceiveJob> = []
+        var messageSendJobs: Set<SMKLegacy._MessageSendJob> = []
+        var attachmentUploadJobs: Set<SMKLegacy._AttachmentUploadJob> = []
+        var attachmentDownloadJobs: Set<SMKLegacy._AttachmentDownloadJob> = []
         
         // Map the Legacy types for the NSKeyedUnarchiver
         NSKeyedUnarchiver.setClass(
-            Legacy._NotifyPNServerJob.self,
+            SMKLegacy._NotifyPNServerJob.self,
             forClassName: "SessionMessagingKit.NotifyPNServerJob"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._NotifyPNServerJob._SnodeMessage.self,
+            SMKLegacy._NotifyPNServerJob._SnodeMessage.self,
             forClassName: "SessionSnodeKit.SnodeMessage"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._MessageSendJob.self,
+            SMKLegacy._MessageSendJob.self,
             forClassName: "SessionMessagingKit.SNMessageSendJob"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._MessageReceiveJob.self,
+            SMKLegacy._MessageReceiveJob.self,
             forClassName: "SessionMessagingKit.MessageReceiveJob"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._AttachmentUploadJob.self,
+            SMKLegacy._AttachmentUploadJob.self,
             forClassName: "SessionMessagingKit.AttachmentUploadJob"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._AttachmentDownloadJob.self,
+            SMKLegacy._AttachmentDownloadJob.self,
             forClassName: "SessionMessagingKit.AttachmentDownloadJob"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._Message.self,
+            SMKLegacy._Message.self,
             forClassName: "SNMessage"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._VisibleMessage.self,
+            SMKLegacy._VisibleMessage.self,
             forClassName: "SNVisibleMessage"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._Quote.self,
+            SMKLegacy._Quote.self,
             forClassName: "SNQuote"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._LinkPreview.self,
+            SMKLegacy._LinkPreview.self,
             forClassName: "SessionServiceKit.OWSLinkPreview"    // Very old legacy name
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._LinkPreview.self,
+            SMKLegacy._LinkPreview.self,
             forClassName: "SNLinkPreview"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._Profile.self,
+            SMKLegacy._Profile.self,
             forClassName: "SNProfile"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._OpenGroupInvitation.self,
+            SMKLegacy._OpenGroupInvitation.self,
             forClassName: "SNOpenGroupInvitation"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._ControlMessage.self,
+            SMKLegacy._ControlMessage.self,
             forClassName: "SNControlMessage"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._ReadReceipt.self,
+            SMKLegacy._ReadReceipt.self,
             forClassName: "SNReadReceipt"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._TypingIndicator.self,
+            SMKLegacy._TypingIndicator.self,
             forClassName: "SNTypingIndicator"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._ClosedGroupControlMessage.self,
+            SMKLegacy._ClosedGroupControlMessage.self,
             forClassName: "SessionMessagingKit.ClosedGroupControlMessage"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._ClosedGroupControlMessage._KeyPairWrapper.self,
+            SMKLegacy._ClosedGroupControlMessage._KeyPairWrapper.self,
             forClassName: "ClosedGroupControlMessage.SNKeyPairWrapper"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._DataExtractionNotification.self,
+            SMKLegacy._DataExtractionNotification.self,
             forClassName: "SessionMessagingKit.DataExtractionNotification"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._ExpirationTimerUpdate.self,
+            SMKLegacy._ExpirationTimerUpdate.self,
             forClassName: "SNExpirationTimerUpdate"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._ConfigurationMessage.self,
+            SMKLegacy._ConfigurationMessage.self,
             forClassName: "SNConfigurationMessage"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._CMClosedGroup.self,
+            SMKLegacy._CMClosedGroup.self,
             forClassName: "SNClosedGroup"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._CMContact.self,
+            SMKLegacy._CMContact.self,
             forClassName: "SNConfigurationMessage.SNConfigurationMessageContact"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._UnsendRequest.self,
+            SMKLegacy._UnsendRequest.self,
             forClassName: "SNUnsendRequest"
         )
         NSKeyedUnarchiver.setClass(
-            Legacy._MessageRequestResponse.self,
+            SMKLegacy._MessageRequestResponse.self,
             forClassName: "SNMessageRequestResponse"
         )
         
         Storage.read { transaction in
-            transaction.enumerateRows(inCollection: Legacy.notifyPushServerJobCollection) { _, object, _, _ in
-                guard let job = object as? Legacy._NotifyPNServerJob else { return }
+            transaction.enumerateRows(inCollection: SMKLegacy.notifyPushServerJobCollection) { _, object, _, _ in
+                guard let job = object as? SMKLegacy._NotifyPNServerJob else { return }
                 notifyPushServerJobs.insert(job)
             }
             
-            transaction.enumerateRows(inCollection: Legacy.messageReceiveJobCollection) { _, object, _, _ in
-                guard let job = object as? Legacy._MessageReceiveJob else { return }
+            transaction.enumerateRows(inCollection: SMKLegacy.messageReceiveJobCollection) { _, object, _, _ in
+                guard let job = object as? SMKLegacy._MessageReceiveJob else { return }
                 messageReceiveJobs.insert(job)
             }
             
-            transaction.enumerateRows(inCollection: Legacy.messageSendJobCollection) { _, object, _, _ in
-                guard let job = object as? Legacy._MessageSendJob else { return }
+            transaction.enumerateRows(inCollection: SMKLegacy.messageSendJobCollection) { _, object, _, _ in
+                guard let job = object as? SMKLegacy._MessageSendJob else { return }
                 messageSendJobs.insert(job)
             }
             
-            transaction.enumerateRows(inCollection: Legacy.attachmentUploadJobCollection) { _, object, _, _ in
-                guard let job = object as? Legacy._AttachmentUploadJob else { return }
+            transaction.enumerateRows(inCollection: SMKLegacy.attachmentUploadJobCollection) { _, object, _, _ in
+                guard let job = object as? SMKLegacy._AttachmentUploadJob else { return }
                 attachmentUploadJobs.insert(job)
             }
             
-            transaction.enumerateRows(inCollection: Legacy.attachmentDownloadJobCollection) { _, object, _, _ in
-                guard let job = object as? Legacy._AttachmentDownloadJob else { return }
+            transaction.enumerateRows(inCollection: SMKLegacy.attachmentDownloadJobCollection) { _, object, _, _ in
+                guard let job = object as? SMKLegacy._AttachmentDownloadJob else { return }
                 attachmentDownloadJobs.insert(job)
             }
         }
@@ -1110,7 +1123,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         destination: legacyJob.destination,
                         variant: {
                             switch legacyJob.message {
-                                case is Legacy._ExpirationTimerUpdate:
+                                case is SMKLegacy._ExpirationTimerUpdate:
                                     return .infoDisappearingMessagesUpdate
                                 default: return nil
                             }
@@ -1229,73 +1242,74 @@ enum _003_YDBToGRDBMigration: Migration {
         var legacyPreferences: [String: Any] = [:]
         
         Storage.read { transaction in
-            transaction.enumerateKeysAndObjects(inCollection: Legacy.preferencesCollection) { key, object, _ in
+            transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.preferencesCollection) { key, object, _ in
                 legacyPreferences[key] = object
             }
             
             // Note: The 'int(forKey:inCollection:)' defaults to `0` which is an incorrect value
             // for the notification sound so catch it and default
             let globalNotificationSoundValue: Int32 = transaction.int(
-                forKey: Legacy.soundsGlobalNotificationKey,
-                inCollection: Legacy.soundsStorageNotificationCollection
+                forKey: SMKLegacy.soundsGlobalNotificationKey,
+                inCollection: SMKLegacy.soundsStorageNotificationCollection
             )
-            legacyPreferences[Legacy.soundsGlobalNotificationKey] = (globalNotificationSoundValue > 0 ?
+            legacyPreferences[SMKLegacy.soundsGlobalNotificationKey] = (globalNotificationSoundValue > 0 ?
                 Int(globalNotificationSoundValue) :
                 Preferences.Sound.defaultNotificationSound.rawValue
             )
             
-            legacyPreferences[Legacy.readReceiptManagerAreReadReceiptsEnabled] = transaction.bool(
-                forKey: Legacy.readReceiptManagerAreReadReceiptsEnabled,
-                inCollection: Legacy.readReceiptManagerCollection,
+            legacyPreferences[SMKLegacy.readReceiptManagerAreReadReceiptsEnabled] = transaction.bool(
+                forKey: SMKLegacy.readReceiptManagerAreReadReceiptsEnabled,
+                inCollection: SMKLegacy.readReceiptManagerCollection,
                 defaultValue: false
             )
             
-            legacyPreferences[Legacy.typingIndicatorsEnabledKey] = transaction.bool(
-                forKey: Legacy.typingIndicatorsEnabledKey,
-                inCollection: Legacy.typingIndicatorsCollection,
+            legacyPreferences[SMKLegacy.typingIndicatorsEnabledKey] = transaction.bool(
+                forKey: SMKLegacy.typingIndicatorsEnabledKey,
+                inCollection: SMKLegacy.typingIndicatorsCollection,
                 defaultValue: false
             )
             
-            legacyPreferences[Legacy.screenLockIsScreenLockEnabledKey] = transaction.bool(
-                forKey: Legacy.screenLockIsScreenLockEnabledKey,
-                inCollection: Legacy.screenLockCollection,
+            legacyPreferences[SMKLegacy.screenLockIsScreenLockEnabledKey] = transaction.bool(
+                forKey: SMKLegacy.screenLockIsScreenLockEnabledKey,
+                inCollection: SMKLegacy.screenLockCollection,
                 defaultValue: false
             )
             
-            legacyPreferences[Legacy.screenLockScreenLockTimeoutSecondsKey] = transaction.double(
-                forKey: Legacy.screenLockScreenLockTimeoutSecondsKey,
-                inCollection: Legacy.screenLockCollection,
+            legacyPreferences[SMKLegacy.screenLockScreenLockTimeoutSecondsKey] = transaction.double(
+                forKey: SMKLegacy.screenLockScreenLockTimeoutSecondsKey,
+                inCollection: SMKLegacy.screenLockCollection,
                 defaultValue: (15 * 60)
             )
         }
         
-        db[.defaultNotificationSound] = Preferences.Sound(rawValue: legacyPreferences[Legacy.soundsGlobalNotificationKey] as? Int ?? -1)
+        db[.defaultNotificationSound] = Preferences.Sound(rawValue: legacyPreferences[SMKLegacy.soundsGlobalNotificationKey] as? Int ?? -1)
             .defaulting(to: Preferences.Sound.defaultNotificationSound)
-        db[.playNotificationSoundInForeground] = (legacyPreferences[Legacy.preferencesKeyNotificationSoundInForeground] as? Bool == true)
-        db[.preferencesNotificationPreviewType] = Preferences.NotificationPreviewType(rawValue: legacyPreferences[Legacy.preferencesKeyNotificationPreviewType] as? Int ?? -1)
+        db[.playNotificationSoundInForeground] = (legacyPreferences[SMKLegacy.preferencesKeyNotificationSoundInForeground] as? Bool == true)
+        db[.preferencesNotificationPreviewType] = Preferences.NotificationPreviewType(rawValue: legacyPreferences[SMKLegacy.preferencesKeyNotificationPreviewType] as? Int ?? -1)
             .defaulting(to: .nameAndPreview)
         
-        if let lastPushToken: String = legacyPreferences[Legacy.preferencesKeyLastRecordedPushToken] as? String {
+        if let lastPushToken: String = legacyPreferences[SMKLegacy.preferencesKeyLastRecordedPushToken] as? String {
             db[.lastRecordedPushToken] = lastPushToken
         }
         
-        if let lastVoipToken: String = legacyPreferences[Legacy.preferencesKeyLastRecordedVoipToken] as? String {
+        if let lastVoipToken: String = legacyPreferences[SMKLegacy.preferencesKeyLastRecordedVoipToken] as? String {
             db[.lastRecordedVoipToken] = lastVoipToken
         }
         
         // Note: The 'preferencesKeyScreenSecurityDisabled' value previously controlled whether the
         // setting was disabled, this has been inverted to 'appSwitcherPreviewEnabled' so it can default
         // to 'false' (as most Bool values do)
-        db[.areReadReceiptsEnabled] = (legacyPreferences[Legacy.readReceiptManagerAreReadReceiptsEnabled] as? Bool == true)
-        db[.typingIndicatorsEnabled] = (legacyPreferences[Legacy.typingIndicatorsEnabledKey] as? Bool == true)
-        db[.isScreenLockEnabled] = (legacyPreferences[Legacy.screenLockIsScreenLockEnabledKey] as? Bool == true)
-        db[.screenLockTimeoutSeconds] = (legacyPreferences[Legacy.screenLockScreenLockTimeoutSecondsKey] as? Double)
+        db[.areReadReceiptsEnabled] = (legacyPreferences[SMKLegacy.readReceiptManagerAreReadReceiptsEnabled] as? Bool == true)
+        db[.typingIndicatorsEnabled] = (legacyPreferences[SMKLegacy.typingIndicatorsEnabledKey] as? Bool == true)
+        db[.isScreenLockEnabled] = (legacyPreferences[SMKLegacy.screenLockIsScreenLockEnabledKey] as? Bool == true)
+        db[.screenLockTimeoutSeconds] = (legacyPreferences[SMKLegacy.screenLockScreenLockTimeoutSecondsKey] as? Double)
             .defaulting(to: (15 * 60))
-        db[.appSwitcherPreviewEnabled] = (legacyPreferences[Legacy.preferencesKeyScreenSecurityDisabled] as? Bool == false)
-        db[.areLinkPreviewsEnabled] = (legacyPreferences[Legacy.preferencesKeyAreLinkPreviewsEnabled] as? Bool == true)
+        db[.appSwitcherPreviewEnabled] = (legacyPreferences[SMKLegacy.preferencesKeyScreenSecurityDisabled] as? Bool == false)
+        db[.areLinkPreviewsEnabled] = (legacyPreferences[SMKLegacy.preferencesKeyAreLinkPreviewsEnabled] as? Bool == true)
         db[.hasHiddenMessageRequests] = CurrentAppContext().appUserDefaults()
-            .bool(forKey: Legacy.userDefaultsHasHiddenMessageRequests)
-        db[.hasSavedThreadKey] = (legacyPreferences[Legacy.preferencesKeyHasSavedThreadKey] as? Bool == true)
+            .bool(forKey: SMKLegacy.userDefaultsHasHiddenMessageRequests)
+        db[.hasSavedThread] = (legacyPreferences[SMKLegacy.preferencesKeyHasSavedThreadKey] as? Bool == true)
+        db[.hasSentAMessage] = (legacyPreferences[SMKLegacy.preferencesKeyHasSentAMessageKey] as? Bool == true)
         
         print("RAWR [\(Date().timeIntervalSince1970)] - Process preferences inserts - End")
         
@@ -1309,7 +1323,7 @@ enum _003_YDBToGRDBMigration: Migration {
         for legacyAttachmentId: String?,
         interactionVariant: Interaction.Variant? = nil,
         isQuotedMessage: Bool = false,
-        attachments: [String: Legacy._Attachment],
+        attachments: [String: SMKLegacy._Attachment],
         processedAttachmentIds: inout Set<String>
     ) throws -> String? {
         guard let legacyAttachmentId: String = legacyAttachmentId else { return nil }
@@ -1322,12 +1336,12 @@ enum _003_YDBToGRDBMigration: Migration {
             return legacyAttachmentId
         }
         
-        guard let legacyAttachment: Legacy._Attachment = attachments[legacyAttachmentId] else {
+        guard let legacyAttachment: SMKLegacy._Attachment = attachments[legacyAttachmentId] else {
             SNLog("[Migration Warning] Missing attachment - interaction will appear as blank")
             return nil
         }
 
-        let processedLocalRelativeFilePath: String? = (legacyAttachment as? Legacy._AttachmentStream)?
+        let processedLocalRelativeFilePath: String? = (legacyAttachment as? SMKLegacy._AttachmentStream)?
             .localRelativeFilePath
             .map { filePath -> String in
                 // The old 'localRelativeFilePath' seemed to have a leading forward slash (want
@@ -1338,7 +1352,7 @@ enum _003_YDBToGRDBMigration: Migration {
             }
         let state: Attachment.State = {
             switch legacyAttachment {
-                case let stream as Legacy._AttachmentStream:  // Outgoing or already downloaded
+                case let stream as SMKLegacy._AttachmentStream:  // Outgoing or already downloaded
                     switch interactionVariant {
                         case .standardOutgoing: return (stream.isUploaded ? .uploaded : .pending)
                         default: return .downloaded
@@ -1350,7 +1364,7 @@ enum _003_YDBToGRDBMigration: Migration {
         }()
         let size: CGSize = {
             switch legacyAttachment {
-                case let stream as Legacy._AttachmentStream:
+                case let stream as SMKLegacy._AttachmentStream:
                     // First try to get an image size using the 'localRelativeFilePath' value
                     if
                         let localRelativeFilePath: String = processedLocalRelativeFilePath,
@@ -1377,13 +1391,13 @@ enum _003_YDBToGRDBMigration: Migration {
                         )
                         .defaulting(to: .zero)
                     
-                case let pointer as Legacy._AttachmentPointer: return pointer.mediaSize
+                case let pointer as SMKLegacy._AttachmentPointer: return pointer.mediaSize
                 default: return CGSize.zero
             }
         }()
         let (isValid, duration): (Bool, TimeInterval?) = {
             guard
-                let stream: Legacy._AttachmentStream = legacyAttachment as? Legacy._AttachmentStream,
+                let stream: SMKLegacy._AttachmentStream = legacyAttachment as? SMKLegacy._AttachmentStream,
                 let originalFilePath: String = Attachment.originalFilePath(
                     id: legacyAttachmentId,
                     mimeType: stream.contentType,
@@ -1435,7 +1449,7 @@ enum _003_YDBToGRDBMigration: Migration {
             state: state,
             contentType: legacyAttachment.contentType,
             byteCount: UInt(legacyAttachment.byteCount),
-            creationTimestamp: (legacyAttachment as? Legacy._AttachmentStream)?
+            creationTimestamp: (legacyAttachment as? SMKLegacy._AttachmentStream)?
                 .creationTimestamp.timeIntervalSince1970,
             sourceFilename: legacyAttachment.sourceFilename,
             downloadUrl: legacyAttachment.downloadURL,
@@ -1445,7 +1459,7 @@ enum _003_YDBToGRDBMigration: Migration {
             duration: duration,
             isValid: isValid,
             encryptionKey: legacyAttachment.encryptionKey,
-            digest: (legacyAttachment as? Legacy._AttachmentStream)?.digest,
+            digest: (legacyAttachment as? SMKLegacy._AttachmentStream)?.digest,
             caption: legacyAttachment.caption
         ).inserted(db)
         

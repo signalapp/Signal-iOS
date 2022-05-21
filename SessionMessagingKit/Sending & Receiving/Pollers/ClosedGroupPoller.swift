@@ -217,7 +217,7 @@ public final class ClosedGroupPoller: NSObject {
                         )
                     }
                     
-                    SNLog("Received \(messageCount) message(s) in closed group with public key: \(groupPublicKey).")
+                    SNLog("Received \(messageCount) new message\(messageCount == 1 ? "" : "s") in closed group with public key: \(groupPublicKey) (\(messages.count - messageCount) duplicates)")
                 }
             }
             .map { _ in }

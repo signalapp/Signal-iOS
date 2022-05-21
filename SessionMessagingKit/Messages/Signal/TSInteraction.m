@@ -4,8 +4,6 @@
 
 #import "TSInteraction.h"
 #import "TSDatabaseSecondaryIndexes.h"
-#import "TSThread.h"
-#import "TSGroupThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 

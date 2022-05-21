@@ -2,9 +2,7 @@
 
 import Foundation
 
-public typealias SUKLegacy = Legacy
-
-public enum Legacy {
+public enum SUKLegacy {
     // MARK: - Collections and Keys
     
     internal static let userAccountRegisteredNumberKey = "TSStorageRegisteredNumberKey"

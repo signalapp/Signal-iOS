@@ -9,9 +9,6 @@
 
 #import <SignalUtilitiesKit/UIUtil.h>
 
-#import <SessionMessagingKit/TSGroupModel.h>
-#import <SessionMessagingKit/TSGroupThread.h>
-#import <SessionMessagingKit/TSThread.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

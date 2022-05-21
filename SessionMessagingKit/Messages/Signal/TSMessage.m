@@ -8,12 +8,10 @@
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSQuotedMessage.h"
-#import "TSThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
-#import "TSContactThread.h"
 #import <SignalCoreKit/NSString+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN

@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import YapDatabase
 import SessionMessagingKit
 
 @objc(SNBlockingManagerRemovalMigration)
@@ -19,6 +20,12 @@ public class BlockingManagerRemovalMigration: OWSDatabaseMigration {
         let kOWSBlockingManager_BlockListCollection: String = "kOWSBlockingManager_BlockedPhoneNumbersCollection"
         let kOWSBlockingManager_BlockedPhoneNumbersKey: String = "kOWSBlockingManager_BlockedPhoneNumbersKey"
         
+        // Note: These will be done in the YDB to GRDB migration but have added it here to be safe
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._Contact.self,
+            forClassName: "SNContact"
+        )
+        
         let dbConnection: YapDatabaseConnection = primaryStorage.newDatabaseConnection()
         
         let blockedSessionIds: Set<String> = Set(dbConnection.object(
@@ -28,10 +35,10 @@ public class BlockingManagerRemovalMigration: OWSDatabaseMigration {
 
         Storage.write(
             with: { transaction in
-                var result: Set<SessionMessagingKit.Legacy._Contact> = []
+                var result: Set<SMKLegacy._Contact> = []
                 
-                transaction.enumerateRows(inCollection: Legacy.contactCollection) { _, object, _, _ in
-                    guard let contact = object as? SessionMessagingKit.Legacy._Contact else { return }
+                transaction.enumerateRows(inCollection: SMKLegacy.contactCollection) { _, object, _, _ in
+                    guard let contact = object as? SMKLegacy._Contact else { return }
                     result.insert(contact)
                 }
                 
@@ -39,7 +46,7 @@ public class BlockingManagerRemovalMigration: OWSDatabaseMigration {
                     .filter { contact -> Bool in blockedSessionIds.contains(contact.sessionID) }
                     .forEach { contact in
                         contact.isBlocked = true
-                        transaction.setObject(contact, forKey: contact.sessionID, inCollection: Legacy.contactCollection)
+                        transaction.setObject(contact, forKey: contact.sessionID, inCollection: SMKLegacy.contactCollection)
                     }
                 
                 // Now that the values have been migrated we can clear out the old collection

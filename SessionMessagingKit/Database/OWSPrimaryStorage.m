@@ -4,7 +4,6 @@
 
 #import "OWSPrimaryStorage.h"
 #import "AppContext.h"
-#import "OWSDisappearingMessagesFinder.h"
 #import "OWSFileSystem.h"
 #import "OWSIncomingMessageFinder.h"
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>

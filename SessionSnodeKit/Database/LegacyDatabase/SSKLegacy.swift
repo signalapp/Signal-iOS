@@ -2,7 +2,7 @@
 
 import Foundation
 
-public enum Legacy {
+public enum SSKLegacy {
     // MARK: - Collections and Keys
     
     internal static let swarmCollectionPrefix = "LokiSwarmCollection-"

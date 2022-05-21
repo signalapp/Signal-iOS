@@ -212,7 +212,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
 - (void)deleteThreadsAndMessages
 {
-    [ThreadUtil deleteAllContent];
+    [SMKThread deleteAll];
 }
 
 - (void)didToggleScreenSecuritySwitch:(UISwitch *)sender

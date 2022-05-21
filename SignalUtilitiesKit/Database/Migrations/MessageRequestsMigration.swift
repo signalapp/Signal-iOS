@@ -1,10 +1,11 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import YapDatabase
 import SessionMessagingKit
 
 @objc(SNMessageRequestsMigration)
-public class MessageRequestsMigration : OWSDatabaseMigration {
+public class MessageRequestsMigration: OWSDatabaseMigration {
 
     @objc
     class func migrationId() -> String {
@@ -16,42 +17,61 @@ public class MessageRequestsMigration : OWSDatabaseMigration {
     }
 
     private func doMigrationAsync(completion: @escaping OWSDatabaseMigrationCompletion) {
+        let userPublicKey: String = getUserHexEncodedPublicKey()
         var contacts: Set<SMKLegacy._Contact> = Set()
-        var threads: [TSThread] = []
+        var threads: [SMKLegacy._Thread] = []
+        
+        // Note: These will be done in the YDB to GRDB migration but have added it here to be safe
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._Thread.self,
+            forClassName: "TSThread"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._ContactThread.self,
+            forClassName: "TSContactThread"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._GroupThread.self,
+            forClassName: "TSGroupThread"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._GroupModel.self,
+            forClassName: "TSGroupModel"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._Contact.self,
+            forClassName: "SNContact"
+        )
 
-        TSThread.enumerateCollectionObjects { object, _ in
-            guard let thread: TSThread = object as? TSThread else { return }
+        Storage.read { transaction in
+            transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.threadCollection) { _, object, _ in
+                guard let thread: SMKLegacy._Thread = object as? SMKLegacy._Thread else { return }
             
-            Storage.read { transaction in
-                if let contactThread: TSContactThread = thread as? TSContactThread {
-                    let sessionId: String = contactThread.contactSessionID()
+                if thread is SMKLegacy._ContactThread {
+                    let sessionId: String = SMKLegacy._ContactThread.contactSessionId(fromThreadId: thread.uniqueId)
                     
-                    if let contact: SMKLegacy._Contact = transaction.object(forKey: sessionId, inCollection: Legacy.contactCollection) as? SMKLegacy._Contact {
+                    if let contact: SMKLegacy._Contact = transaction.object(forKey: sessionId, inCollection: SMKLegacy.contactCollection) as? SMKLegacy._Contact {
                         contact.isApproved = true
                         contact.didApproveMe = true
                         contacts.insert(contact)
                     }
                 }
-                else if let groupThread: TSGroupThread = thread as? TSGroupThread, groupThread.isClosedGroup {
+                else if let groupThread: SMKLegacy._GroupThread = thread as? SMKLegacy._GroupThread, groupThread.isClosedGroup {
                     let groupAdmins: [String] = groupThread.groupModel.groupAdminIds
                     
                     groupAdmins.forEach { sessionId in
-                        if let contact: SMKLegacy._Contact = transaction.object(forKey: sessionId, inCollection: Legacy.contactCollection) as? SMKLegacy._Contact {
+                        if let contact: SMKLegacy._Contact = transaction.object(forKey: sessionId, inCollection: SMKLegacy.contactCollection) as? SMKLegacy._Contact {
                             contact.isApproved = true
                             contact.didApproveMe = true
                             contacts.insert(contact)
                         }
                     }
                 }
+                
+                threads.append(thread)
             }
             
-            threads.append(thread)
-        }
-        
-        let userPublicKey: String = getUserHexEncodedPublicKey()
-        
-        Storage.read { transaction in
-            if let user = transaction.object(forKey: userPublicKey, inCollection: Legacy.contactCollection) as? SMKLegacy._Contact {
+            if let user = transaction.object(forKey: userPublicKey, inCollection: SMKLegacy.contactCollection) as? SMKLegacy._Contact {
                 user.isApproved = true
                 user.didApproveMe = true
                 contacts.insert(user)
@@ -60,10 +80,10 @@ public class MessageRequestsMigration : OWSDatabaseMigration {
         
         Storage.write(with: { transaction in
             contacts.forEach { contact in
-                transaction.setObject(contact, forKey: contact.sessionID, inCollection: Legacy.contactCollection)
+                transaction.setObject(contact, forKey: contact.sessionID, inCollection: SMKLegacy.contactCollection)
             }
             threads.forEach { thread in
-                thread.save(with: transaction)
+                transaction.setObject(thread, forKey: thread.uniqueId, inCollection: SMKLegacy.threadCollection)
             }
             self.save(with: transaction) // Intentionally capture self
         }, completion: {

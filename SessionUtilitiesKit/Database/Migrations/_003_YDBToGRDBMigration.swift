@@ -14,42 +14,42 @@ enum _003_YDBToGRDBMigration: Migration {
         var seedHexString: String?
         var userEd25519SecretKeyHexString: String?
         var userEd25519PublicKeyHexString: String?
-        var userX25519KeyPair: Legacy.KeyPair?
+        var userX25519KeyPair: SUKLegacy.KeyPair?
         
         // Map the Legacy types for the NSKeyedUnarchiver
         NSKeyedUnarchiver.setClass(
-            Legacy.KeyPair.self,
+            SUKLegacy.KeyPair.self,
             forClassName: "ECKeyPair"
         )
         
         Storage.read { transaction in
             registeredNumber = transaction.object(
-                forKey: Legacy.userAccountRegisteredNumberKey,
-                inCollection: Legacy.userAccountCollection
+                forKey: SUKLegacy.userAccountRegisteredNumberKey,
+                inCollection: SUKLegacy.userAccountCollection
             ) as? String
             
             // Note: The 'seed', 'ed25519SecretKey' and 'ed25519PublicKey' were
             // all previously stored as hex strings, so we need to convert them
             // to data before we store them in the new database
             seedHexString = transaction.object(
-                forKey: Legacy.identityKeyStoreSeedKey,
-                inCollection: Legacy.identityKeyStoreCollection
+                forKey: SUKLegacy.identityKeyStoreSeedKey,
+                inCollection: SUKLegacy.identityKeyStoreCollection
             ) as? String
             
             userEd25519SecretKeyHexString = transaction.object(
-                forKey: Legacy.identityKeyStoreEd25519SecretKey,
-                inCollection: Legacy.identityKeyStoreCollection
+                forKey: SUKLegacy.identityKeyStoreEd25519SecretKey,
+                inCollection: SUKLegacy.identityKeyStoreCollection
             ) as? String
             
             userEd25519PublicKeyHexString = transaction.object(
-                forKey: Legacy.identityKeyStoreEd25519PublicKey,
-                inCollection: Legacy.identityKeyStoreCollection
+                forKey: SUKLegacy.identityKeyStoreEd25519PublicKey,
+                inCollection: SUKLegacy.identityKeyStoreCollection
             ) as? String
             
             userX25519KeyPair = transaction.object(
-                forKey: Legacy.identityKeyStoreIdentityKey,
-                inCollection: Legacy.identityKeyStoreCollection
-            ) as? Legacy.KeyPair
+                forKey: SUKLegacy.identityKeyStoreIdentityKey,
+                inCollection: SUKLegacy.identityKeyStoreCollection
+            ) as? SUKLegacy.KeyPair
         }
         
         // No need to continue if the user isn't registered
@@ -60,7 +60,7 @@ enum _003_YDBToGRDBMigration: Migration {
             let seedHexString: String = seedHexString,
             let userEd25519SecretKeyHexString: String = userEd25519SecretKeyHexString,
             let userEd25519PublicKeyHexString: String = userEd25519PublicKeyHexString,
-            let userX25519KeyPair: Legacy.KeyPair = userX25519KeyPair
+            let userX25519KeyPair: SUKLegacy.KeyPair = userX25519KeyPair
         else {
             // If this is a fresh install then we would have created all of the Identity
             // values directly within the 'Identity' table so this is actually a valid

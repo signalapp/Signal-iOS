@@ -7,9 +7,7 @@ import YapDatabase
 import SignalCoreKit
 import SessionUtilitiesKit
 
-public typealias SMKLegacy = Legacy
-
-public enum Legacy {
+public enum SMKLegacy {
     // MARK: - Collections and Keys
     
     internal static let contactThreadPrefix = "c"
@@ -18,7 +16,7 @@ public enum Legacy {
     internal static let closedGroupKeyPairPrefix = "SNClosedGroupEncryptionKeyPairCollection-"
     
     public static let contactCollection = "LokiContactCollection"
-    internal static let threadCollection = "TSThread"
+    public static let threadCollection = "TSThread"
     internal static let disappearingMessagesCollection = "OWSDisappearingMessagesConfiguration"
     
     internal static let closedGroupPublicKeyCollection = "SNClosedGroupPublicKeyCollection"
@@ -32,6 +30,7 @@ public enum Legacy {
     internal static let openGroupLastDeletionServerIDCollection = "SNLastDeletionServerIDCollection"
     internal static let openGroupServerIdToUniqueIdLookupCollection = "SNOpenGroupServerIdToUniqueIdLookup"
     
+    public static let messageDatabaseViewExtensionName = "TSMessageDatabaseViewExtensionName_Monotonic"
     internal static let interactionCollection = "TSInteraction"
     internal static let attachmentsCollection = "TSAttachements"    // Note: This is how it was previously spelt
     internal static let outgoingReadReceiptManagerCollection = "kOutgoingReadReceiptManagerCollection"
@@ -54,6 +53,7 @@ public enum Legacy {
     internal static let preferencesKeyNotificationPreviewType = "preferencesKeyNotificationPreviewType"
     internal static let preferencesKeyNotificationSoundInForeground = "NotificationSoundInForeground"
     internal static let preferencesKeyHasSavedThreadKey = "hasSavedThread"
+    internal static let preferencesKeyHasSentAMessageKey = "User has sent a message"
     
     internal static let readReceiptManagerCollection = "OWSReadReceiptManagerCollection"
     internal static let readReceiptManagerAreReadReceiptsEnabled = "areReadReceiptsEnabled"
@@ -74,18 +74,18 @@ public enum Legacy {
     
     @objc(SNContact)
     public class _Contact: NSObject, NSCoding {
-        @objc public let sessionID: String
-        @objc public var profilePictureURL: String?
-        @objc public var profilePictureFileName: String?
-        @objc public var profileEncryptionKey: OWSAES256Key?
-        @objc public var threadID: String?
-        @objc public var isTrusted = false
-        @objc public var isApproved = false
-        @objc public var isBlocked = false
-        @objc public var didApproveMe = false
-        @objc public var hasBeenBlocked = false
-        @objc public var name: String?
-        @objc public var nickname: String?
+        public let sessionID: String
+        public var profilePictureURL: String?
+        public var profilePictureFileName: String?
+        public var profileEncryptionKey: OWSAES256Key?
+        public var threadID: String?
+        public var isTrusted = false
+        public var isApproved = false
+        public var isBlocked = false
+        public var didApproveMe = false
+        public var hasBeenBlocked = false
+        public var name: String?
+        public var nickname: String?
         
         // MARK: Coding
         
@@ -114,9 +114,9 @@ public enum Legacy {
     
     @objc(OWSDisappearingMessagesConfiguration)
     internal class _DisappearingMessagesConfiguration: MTLModel {
-        @objc public let uniqueId: String
-        @objc public var isEnabled: Bool
-        @objc public var durationSeconds: UInt32
+        public let uniqueId: String
+        public var isEnabled: Bool
+        public var durationSeconds: UInt32
         
         // MARK: - NSCoder
         
@@ -829,27 +829,139 @@ public enum Legacy {
             )
         }
     }
+    
+    // MARK: - Threads
+    
+    @objc(TSThread)
+    public class _Thread: NSObject, NSCoding {
+        public var uniqueId: String
+        public var creationDate: Date
+        public var shouldBeVisible: Bool
+        public var isPinned: Bool
+        public var mutedUntilDate: Date?
+        public var messageDraft: String?
+        
+        // MARK: - Convenience
+        
+        open var isClosedGroup: Bool { false }
+        open var isOpenGroup: Bool { false }
+        
+        // MARK: - NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.uniqueId = coder.decodeObject(forKey: "uniqueId") as! String
+            self.creationDate = coder.decodeObject(forKey: "creationDate") as! Date
+            
+            // Legacy version of 'shouldBeVisible'
+            if let hasEverHadMessage: Bool = (coder.decodeObject(forKey: "hasEverHadMessage") as? NSNumber)?.boolValue {
+                self.shouldBeVisible = hasEverHadMessage
+            }
+            else {
+                self.shouldBeVisible = ((coder.decodeObject(forKey: "shouldBeVisible") as? NSNumber)?
+                    .boolValue)
+                    .defaulting(to: false)
+            }
+            
+            self.isPinned = ((coder.decodeObject(forKey: "isPinned") as? NSNumber)?
+                .boolValue)
+                .defaulting(to: false)
+            self.mutedUntilDate = coder.decodeObject(forKey: "mutedUntilDate") as? Date
+            self.messageDraft = coder.decodeObject(forKey: "messageDraft") as? String   // TODO: Test this
+        }
+        
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
+    
+    @objc(TSContactThread)
+    public class _ContactThread: _Thread {
+        // MARK: - NSCoder
+        
+        public required init(coder: NSCoder) {
+            super.init(coder: coder)
+        }
+        
+        // MARK: - Functions
+        
+        internal static func threadId(from sessionId: String) -> String {
+            return "\(SMKLegacy.contactThreadPrefix)\(sessionId)"
+        }
+        
+        public static func contactSessionId(fromThreadId threadId: String) -> String {
+            return String(threadId.substring(from: SMKLegacy.contactThreadPrefix.count))
+        }
+    }
+    
+    @objc(TSGroupThread)
+    public class _GroupThread: _Thread {
+        public var groupModel: _GroupModel
+        public var isOnlyNotifyingForMentions: Bool
+        
+        // MARK: - Convenience
+        
+        public override var isClosedGroup: Bool { (groupModel.groupType == .closedGroup) }
+        public override var isOpenGroup: Bool { (groupModel.groupType == .openGroup) }
+        
+        // MARK: - NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.groupModel = coder.decodeObject(forKey: "groupModel") as! _GroupModel
+            self.isOnlyNotifyingForMentions = ((coder.decodeObject(forKey: "isOnlyNotifyingForMentions") as? NSNumber)?
+                .boolValue)
+                .defaulting(to: false)
+            
+            super.init(coder: coder)
+        }
+    }
+    
+    @objc(TSGroupModel)
+    public class _GroupModel: NSObject, NSCoding {
+        public enum _GroupType: Int {
+            case closedGroup
+            case openGroup
+        }
+        
+        public var groupId: Data
+        public var groupType: _GroupType
+        public var groupName: String?
+        public var groupMemberIds: [String]
+        public var groupAdminIds: [String]
+
+        // MARK: - NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.groupId = coder.decodeObject(forKey: "groupId") as! Data
+            self.groupType = _GroupType(rawValue: coder.decodeObject(forKey: "groupType") as! Int)!
+            self.groupName = ((coder.decodeObject(forKey: "groupName") as? String) ?? "Group")
+            self.groupMemberIds = coder.decodeObject(forKey: "groupMemberIds") as! [String]
+            self.groupAdminIds = coder.decodeObject(forKey: "groupAdminIds") as! [String]
+        }
+        
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
 
     // MARK: - Attachments
     
     @objc(TSAttachment)
     internal class _Attachment: NSObject, NSCoding {
-        @objc(TSAttachmentType)
         public enum _AttachmentType: Int {
             case `default`
             case voiceMessage
         }
         
-        @objc public var serverId: UInt64
-        @objc public var encryptionKey: Data?
-        @objc public var contentType: String
-        @objc public var isDownloaded: Bool
-        @objc public var attachmentType: _AttachmentType
-        @objc public var downloadURL: String
-        @objc public var byteCount: UInt32
-        @objc public var sourceFilename: String?
-        @objc public var caption: String?
-        @objc public var albumMessageId: String?
+        public var serverId: UInt64
+        public var encryptionKey: Data?
+        public var contentType: String
+        public var isDownloaded: Bool
+        public var attachmentType: _AttachmentType
+        public var downloadURL: String
+        public var byteCount: UInt32
+        public var sourceFilename: String?
+        public var caption: String?
+        public var albumMessageId: String?
         
         public var isImage: Bool { return MIMETypeUtil.isImage(contentType) }
         public var isVideo: Bool { return MIMETypeUtil.isVideo(contentType) }
@@ -879,18 +991,17 @@ public enum Legacy {
     
     @objc(TSAttachmentPointer)
     internal class _AttachmentPointer: _Attachment {
-        @objc(TSAttachmentPointerState)
         public enum _State: Int {
             case enqueued
             case downloading
             case failed
         }
         
-        @objc public var state: _State
-        @objc public var mostRecentFailureLocalizedText: String?
-        @objc public var digest: Data?
-        @objc public var mediaSize: CGSize
-        @objc public var lazyRestoreFragmentId: String?
+        public var state: _State
+        public var mostRecentFailureLocalizedText: String?
+        public var digest: Data?
+        public var mediaSize: CGSize
+        public var lazyRestoreFragmentId: String?
         
         // MARK: - NSCoder
         
@@ -913,15 +1024,15 @@ public enum Legacy {
     
     @objc(TSAttachmentStream)
     internal class _AttachmentStream: _Attachment {
-        @objc public var digest: Data?
-        @objc public var isUploaded: Bool
-        @objc public var creationTimestamp: Date
-        @objc public var localRelativeFilePath: String?
-        @objc public var cachedImageWidth: NSNumber?
-        @objc public var cachedImageHeight: NSNumber?
-        @objc public var cachedAudioDurationSeconds: NSNumber?
-        @objc public var isValidImageCached: NSNumber?
-        @objc public var isValidVideoCached: NSNumber?
+        public var digest: Data?
+        public var isUploaded: Bool
+        public var creationTimestamp: Date
+        public var localRelativeFilePath: String?
+        public var cachedImageWidth: NSNumber?
+        public var cachedImageHeight: NSNumber?
+        public var cachedAudioDurationSeconds: NSNumber?
+        public var isValidImageCached: NSNumber?
+        public var isValidVideoCached: NSNumber?
         
         public var isValidImage: Bool { return (isValidImageCached?.boolValue == true) }
         public var isValidVideo: Bool { return (isValidVideoCached?.boolValue == true) }

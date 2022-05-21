@@ -12,7 +12,6 @@
 #import <SessionMessagingKit/TSMessage.h>
 #import <SessionMessagingKit/TSOutgoingMessage.h>
 #import <SessionMessagingKit/TSQuotedMessage.h>
-#import <SessionMessagingKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -9,7 +9,6 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/OWSAudioPlayer.h>
 #import <SessionMessagingKit/OWSBackgroundTask.h>
 #import <SessionMessagingKit/OWSBackupFragment.h>
-#import <SessionMessagingKit/OWSDisappearingMessagesFinder.h>
 #import <SessionMessagingKit/OWSIncomingMessageFinder.h>
 #import <SessionMessagingKit/OWSPreferences.h>
 #import <SessionMessagingKit/OWSPrimaryStorage.h>
@@ -24,16 +23,12 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/TSAttachment.h>
 #import <SessionMessagingKit/TSAttachmentPointer.h>
 #import <SessionMessagingKit/TSAttachmentStream.h>
-#import <SessionMessagingKit/TSContactThread.h>
 #import <SessionMessagingKit/TSDatabaseSecondaryIndexes.h>
 #import <SessionMessagingKit/TSDatabaseView.h>
-#import <SessionMessagingKit/TSGroupModel.h>
-#import <SessionMessagingKit/TSGroupThread.h>
 #import <SessionMessagingKit/TSIncomingMessage.h>
 #import <SessionMessagingKit/TSInfoMessage.h>
 #import <SessionMessagingKit/TSInteraction.h>
 #import <SessionMessagingKit/TSOutgoingMessage.h>
 #import <SessionMessagingKit/TSQuotedMessage.h>
-#import <SessionMessagingKit/TSThread.h>
 #import <SessionMessagingKit/YapDatabaseConnection+OWS.h>
 #import <SessionMessagingKit/YapDatabaseTransaction+OWS.h>
