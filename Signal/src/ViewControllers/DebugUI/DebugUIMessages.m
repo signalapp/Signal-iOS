@@ -4573,11 +4573,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     [message anyInsertWithTransaction:transaction];
     [message updateWithFakeMessageState:messageState transaction:transaction];
-    [attachment anyUpdateWithTransaction:transaction block:^(TSAttachment *latest) {
-        // There's no public setter for albumMessageId, since it's usually set in the initializer.
-        // This isn't convenient for the DEBUG UI, so we abuse the migrateAlbumMessageId method.
-        [latest migrateAlbumMessageId:message.uniqueId];
-    }];
+    [self updateAttachment:attachment albumMessage:message transaction:transaction];
     if (isDelivered) {
         SignalServiceAddress *_Nullable address = thread.recipientAddresses.lastObject;
         if (address != nil) {
@@ -4627,7 +4623,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     return [self createFakeIncomingMessage:thread
                                messageBody:messageBody
-                              attachmentId:attachment.uniqueId
+                                attachment:attachment
                                   filename:fakeAssetLoader.filename
                     isAttachmentDownloaded:isAttachmentDownloaded
                              quotedMessage:quotedMessage
@@ -4636,7 +4632,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 + (TSIncomingMessage *)createFakeIncomingMessage:(TSThread *)thread
                                      messageBody:(nullable NSString *)messageBody
-                                    attachmentId:(nullable NSString *)attachmentId
+                                      attachment:(nullable TSAttachment *)attachment
                                         filename:(nullable NSString *)filename
                           isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
@@ -4644,11 +4640,11 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
-    OWSAssertDebug(messageBody.length > 0 || attachmentId.length > 0);
+    OWSAssertDebug(messageBody.length > 0 || attachment != nil);
 
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
-    if (attachmentId) {
-        [attachmentIds addObject:attachmentId];
+    if (attachment != nil) {
+        [attachmentIds addObject:attachment.uniqueId];
     }
 
     SignalServiceAddress *_Nullable incomingSenderAddress = [DebugUIMessages anyIncomingSenderAddressForThread:thread];
@@ -4664,6 +4660,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     TSIncomingMessage *message = [incomingMessageBuilder build];
     [message anyInsertWithTransaction:transaction];
     [message debugonly_markAsReadNowWithTransaction:transaction];
+    [self updateAttachment:attachment albumMessage:message transaction:transaction];
+
     return message;
 }
 
@@ -4714,6 +4712,22 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         [attachmentPointer setAttachmentPointerStateDebug:TSAttachmentPointerStateFailed];
         [attachmentPointer anyInsertWithTransaction:transaction];
         return attachmentPointer;
+    }
+}
+
++ (void)updateAttachment:(nullable TSAttachment *)attachment
+            albumMessage:(TSMessage *)albumMessage
+             transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [attachment anyUpdateWithTransaction:transaction
+                                   block:^(TSAttachment *latest) {
+                                       // There's no public setter for albumMessageId, since it's usually set in the
+                                       // initializer. This isn't convenient for the DEBUG UI, so we abuse the
+                                       // migrateAlbumMessageId method.
+                                       [latest migrateAlbumMessageId:albumMessage.uniqueId];
+                                   }];
+    if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+        [MediaGalleryManager didInsertAttachmentStream:(TSAttachmentStream *)attachment transaction:transaction];
     }
 }
 
