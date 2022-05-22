@@ -251,7 +251,7 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
                     // one then add it now
                     if
                         isSharingUrl,
-                        let linkPreviewDraft: OWSLinkPreviewDraft = attachments.first?.linkPreviewDraft,
+                        let linkPreviewDraft: LinkPreviewDraft = attachments.first?.linkPreviewDraft,
                         (try? interaction.linkPreview.isEmpty(db)) == true
                     {
                         try LinkPreview(
@@ -288,6 +288,11 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
-        // Do nothing
+    }
+    
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
+    }
+    
+    func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) {
     }
 }

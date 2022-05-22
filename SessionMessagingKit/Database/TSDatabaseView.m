@@ -3,10 +3,6 @@
 //
 
 #import "TSDatabaseView.h"
-#import "TSAttachment.h"
-#import "TSAttachmentPointer.h"
-#import "TSIncomingMessage.h"
-#import "TSOutgoingMessage.h"
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>

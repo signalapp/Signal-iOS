@@ -592,7 +592,9 @@ extension Attachment {
     }()
     
     private static var sharedDataAttachmentsDirPath: String = {
-        OWSFileSystem.appSharedDataDirectoryPath().appending("/Attachments")
+        URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
+            .appendingPathComponent("Attachments")
+            .path
     }()
     
     internal static var attachmentsFolder: String = {

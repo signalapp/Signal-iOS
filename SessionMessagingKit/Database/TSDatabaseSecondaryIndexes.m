@@ -4,7 +4,6 @@
 
 #import "TSDatabaseSecondaryIndexes.h"
 #import "OWSStorage.h"
-#import "TSInteraction.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -23,7 +23,6 @@ NSString *NSStringForNotificationType(NotificationType value);
 
 // Used when migrating logging to NSUserDefaults.
 extern NSString *const OWSPreferencesSignalDatabaseCollection;
-extern NSString *const OWSPreferencesKeyEnableDebugLog;
 extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 
 @class YapDatabaseReadWriteTransaction;

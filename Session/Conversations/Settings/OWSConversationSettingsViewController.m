@@ -13,7 +13,6 @@
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SessionMessagingKit/OWSPrimaryStorage.h>
-#import <SessionMessagingKit/TSOutgoingMessage.h>
 
 @import ContactsUI;
 @import PromiseKit;

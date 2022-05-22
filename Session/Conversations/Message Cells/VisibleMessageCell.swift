@@ -386,7 +386,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                         case .standard:
                             let linkPreviewView: LinkPreviewView = LinkPreviewView(maxWidth: maxWidth)
                             linkPreviewView.update(
-                                with: LinkPreviewSent(
+                                with: LinkPreview.SentState(
                                     linkPreview: linkPreview,
                                     imageAttachment: item.attachments?.first
                                 ),

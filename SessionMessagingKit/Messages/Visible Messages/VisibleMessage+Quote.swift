@@ -106,15 +106,4 @@ public extension VisibleMessage.VMQuote {
             attachmentId: quote.attachmentId
         )
     }
-    
-    static func from(_ quote: TSQuotedMessage?) -> VisibleMessage.VMQuote? {
-        guard let quote = quote else { return nil }
-        
-        return VisibleMessage.VMQuote(
-            timestamp: quote.timestamp,
-            publicKey: quote.authorId,
-            text: quote.body,
-            attachmentId: quote.quotedAttachments.first?.attachmentId
-        )
-    }
 }

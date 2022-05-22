@@ -1,7 +1,6 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
-import Mantle
 import Sodium
 import YapDatabase
 import SignalCoreKit
@@ -14,6 +13,8 @@ public enum SMKLegacy {
     internal static let groupThreadPrefix = "g"
     internal static let closedGroupIdPrefix = "__textsecure_group__!"
     internal static let closedGroupKeyPairPrefix = "SNClosedGroupEncryptionKeyPairCollection-"
+    
+    internal static let databaseMigrationCollection = "OWSDatabaseMigration"
     
     public static let contactCollection = "LokiContactCollection"
     public static let threadCollection = "TSThread"
@@ -43,6 +44,9 @@ public enum SMKLegacy {
     internal static let attachmentUploadJobCollection = "AttachmentUploadJobCollection"
     internal static let attachmentDownloadJobCollection = "AttachmentDownloadJobCollection"
     
+    internal static let blockListCollection: String = "kOWSBlockingManager_BlockedPhoneNumbersCollection"
+    internal static let blockedPhoneNumbersKey: String = "kOWSBlockingManager_BlockedPhoneNumbersKey"
+    
     // Preferences
     
     internal static let preferencesCollection = "SignalPreferences"
@@ -70,7 +74,16 @@ public enum SMKLegacy {
     
     internal static let userDefaultsHasHiddenMessageRequests = "hasHiddenMessageRequests"
     
-    // MARK: - Types (and NSCoding)
+    // MARK: - DatabaseMigration
+    
+    public enum _DBMigration: String {
+        case contactsMigration = "001"                  // Handled during contact migration
+        case messageRequestsMigration = "002"           // Handled during contact migration
+        case openGroupServerIdLookupMigration = "003"   // Ignored (creates a lookup table, replaced with an index)
+        case blockingManagerRemovalMigration = "004"    // Handled during contact migration
+    }
+    
+    // MARK: - Contact
     
     @objc(SNContact)
     public class _Contact: NSObject, NSCoding {
@@ -112,33 +125,7 @@ public enum SMKLegacy {
         }
     }
     
-    @objc(OWSDisappearingMessagesConfiguration)
-    internal class _DisappearingMessagesConfiguration: MTLModel {
-        public let uniqueId: String
-        public var isEnabled: Bool
-        public var durationSeconds: UInt32
-        
-        // MARK: - NSCoder
-        
-        required init(coder: NSCoder) {
-            self.uniqueId = coder.decodeObject(forKey: "uniqueId") as! String
-            self.isEnabled = coder.decodeObject(forKey: "enabled") as! Bool
-            self.durationSeconds = coder.decodeObject(forKey: "durationSeconds") as! UInt32
-            
-            // Intentionally not calling 'super.init(coder:) here
-            super.init()
-        }
-        
-        required init(dictionary dictionaryValue: [String : Any]!) throws {
-            fatalError("init(dictionary:) has not been implemented")
-        }
-        
-        override public func encode(with coder: NSCoder) {
-            fatalError("encode(with:) should never be called for legacy types")
-        }
-    }
-    
-    // MARK: - Visible/Control Message NSCoding
+    // MARK: - Message
     
     /// Abstract base class for `VisibleMessage` and `ControlMessage`.
     @objc(SNMessage)
@@ -191,6 +178,8 @@ public enum SMKLegacy {
             return result
         }
     }
+    
+    // MARK: - Visible Message
 
     @objc(SNVisibleMessage)
     internal final class _VisibleMessage: _Message {
@@ -202,7 +191,7 @@ public enum SMKLegacy {
         internal var profile: _Profile?
         internal var openGroupInvitation: _OpenGroupInvitation?
 
-        // MARK: - NSCoding
+        // MARK: NSCoding
         
         public required init?(coder: NSCoder) {
             super.init(coder: coder)
@@ -237,6 +226,8 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Quote
+    
     @objc(SNQuote)
     internal class _Quote: NSObject, NSCoding {
         internal var timestamp: UInt64?
@@ -244,7 +235,7 @@ public enum SMKLegacy {
         internal var text: String?
         internal var attachmentID: String?
         
-        // MARK: - NSCoding
+        // MARK: NSCoding
 
         public required init?(coder: NSCoder) {
             if let timestamp = coder.decodeObject(forKey: "timestamp") as! UInt64? { self.timestamp = timestamp }
@@ -269,13 +260,15 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Link Preview
+    
     @objc(SNLinkPreview)
     internal class _LinkPreview: NSObject, NSCoding {
         internal var title: String?
         internal var url: String?
         internal var attachmentID: String?
         
-        // MARK: - NSCoding
+        // MARK: NSCoding
 
         public required init?(coder: NSCoder) {
             if let title = coder.decodeObject(forKey: "title") as! String? { self.title = title }
@@ -298,13 +291,15 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Profile
+    
     @objc(SNProfile)
     internal class _Profile: NSObject, NSCoding {
         internal var displayName: String?
         internal var profileKey: Data?
         internal var profilePictureURL: String?
         
-        // MARK: - NSCoding
+        // MARK: NSCoding
 
         public required init?(coder: NSCoder) {
             if let displayName = coder.decodeObject(forKey: "displayName") as! String? { self.displayName = displayName }
@@ -327,12 +322,14 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Open Group Invitation
+    
     @objc(SNOpenGroupInvitation)
     internal class _OpenGroupInvitation: NSObject, NSCoding {
         internal var name: String?
         internal var url: String?
         
-        // MARK: - NSCoding
+        // MARK: NSCoding
 
         public required init?(coder: NSCoder) {
             if let name = coder.decodeObject(forKey: "name") as! String? { self.name = name }
@@ -353,14 +350,18 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Control Message
+    
     @objc(SNControlMessage)
     internal class _ControlMessage: _Message {}
+    
+    // MARK: - Read Receipt
     
     @objc(SNReadReceipt)
     internal final class _ReadReceipt: _ControlMessage {
         internal var timestamps: [UInt64]?
 
-        // MARK: - NSCoding
+        // MARK: NSCoding
         
         public required init?(coder: NSCoder) {
             super.init(coder: coder)
@@ -382,11 +383,13 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Typing Indicator
+    
     @objc(SNTypingIndicator)
     internal final class _TypingIndicator: _ControlMessage {
         public var rawKind: Int?
 
-        // MARK: - NSCoding
+        // MARK: NSCoding
         
         public required init?(coder: NSCoder) {
             super.init(coder: coder)
@@ -411,6 +414,8 @@ public enum SMKLegacy {
             )
         }
     }
+    
+    // MARK: - Closed Group Control Message
 
     @objc(SNClosedGroupControlMessage)
     internal final class _ClosedGroupControlMessage: _ControlMessage {
@@ -424,14 +429,14 @@ public enum SMKLegacy {
         internal var admins: [Data]?
         internal var expirationTimer: UInt32
 
-        // MARK: - Key Pair Wrapper
+        // MARK: Key Pair Wrapper
         
         @objc(SNKeyPairWrapper)
         internal final class _KeyPairWrapper: NSObject, NSCoding {
             internal var publicKey: String?
             internal var encryptedKeyPair: Data?
             
-            // MARK: - NSCoding
+            // MARK: NSCoding
 
             public required init?(coder: NSCoder) {
                 if let publicKey = coder.decodeObject(forKey: "publicKey") as! String? { self.publicKey = publicKey }
@@ -443,7 +448,7 @@ public enum SMKLegacy {
             }
         }
         
-        // MARK: - NSCoding
+        // MARK: NSCoding
         
         public required init?(coder: NSCoder) {
             self.rawKind = coder.decodeObject(forKey: "kind") as? String
@@ -554,12 +559,14 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Data Extraction Notification
+    
     @objc(SNDataExtractionNotification)
     internal final class _DataExtractionNotification: _ControlMessage {
         internal let rawKind: String?
         internal let timestamp: UInt64?
         
-        // MARK: - NSCoding
+        // MARK: NSCoding
         
         public required init?(coder: NSCoder) {
             self.rawKind = coder.decodeObject(forKey: "kind") as? String
@@ -596,12 +603,14 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Expiration Timer Update
+    
     @objc(SNExpirationTimerUpdate)
     internal final class _ExpirationTimerUpdate: _ControlMessage {
         internal var syncTarget: String?
         internal var duration: UInt32?
         
-        // MARK: - NSCoding
+        // MARK: NSCoding
         
         public required init?(coder: NSCoder) {
             super.init(coder: coder)
@@ -625,6 +634,8 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Configuration Message
+    
     @objc(SNConfigurationMessage)
     internal final class _ConfigurationMessage: _ControlMessage {
         internal var closedGroups: Set<_CMClosedGroup> = []
@@ -634,7 +645,7 @@ public enum SMKLegacy {
         internal var profileKey: Data?
         internal var contacts: Set<_CMContact> = []
         
-        // MARK: - NSCoding
+        // MARK: NSCoding
         
         public required init?(coder: NSCoder) {
             super.init(coder: coder)
@@ -669,6 +680,8 @@ public enum SMKLegacy {
             )
         }
     }
+    
+    // MARK: - Config Message Closed Group
 
     @objc(CMClosedGroup)
     internal final class _CMClosedGroup: NSObject, NSCoding {
@@ -679,7 +692,7 @@ public enum SMKLegacy {
         internal let admins: Set<String>
         internal let expirationTimer: UInt32
         
-        // MARK: - NSCoding
+        // MARK: NSCoding
 
         public required init?(coder: NSCoder) {
             guard
@@ -716,6 +729,8 @@ public enum SMKLegacy {
             )
         }
     }
+    
+    // MARK: - Config Message Contact
 
     @objc(SNConfigurationMessageContact)
     internal final class _CMContact: NSObject, NSCoding {
@@ -731,7 +746,7 @@ public enum SMKLegacy {
         internal var hasDidApproveMe: Bool
         internal var didApproveMe: Bool
         
-        // MARK: - NSCoding
+        // MARK: NSCoding
 
         public required init?(coder: NSCoder) {
             guard
@@ -773,12 +788,14 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Unsend Request
+    
     @objc(SNUnsendRequest)
     internal final class _UnsendRequest: _ControlMessage {
         internal var timestamp: UInt64?
         internal var author: String?
         
-        // MARK: - NSCoding
+        // MARK: NSCoding
         
         public required init?(coder: NSCoder) {
             super.init(coder: coder)
@@ -803,11 +820,13 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Message Request Response
+    
     @objc(SNMessageRequestResponse)
     internal final class _MessageRequestResponse: _ControlMessage {
         internal var isApproved: Bool
         
-        // MARK: - NSCoding
+        // MARK: NSCoding
 
         public required init?(coder: NSCoder) {
             self.isApproved = coder.decodeBool(forKey: "isApproved")
@@ -830,7 +849,7 @@ public enum SMKLegacy {
         }
     }
     
-    // MARK: - Threads
+    // MARK: - Thread
     
     @objc(TSThread)
     public class _Thread: NSObject, NSCoding {
@@ -841,32 +860,30 @@ public enum SMKLegacy {
         public var mutedUntilDate: Date?
         public var messageDraft: String?
         
-        // MARK: - Convenience
+        // MARK: Convenience
         
         open var isClosedGroup: Bool { false }
         open var isOpenGroup: Bool { false }
         
-        // MARK: - NSCoder
+        // MARK: NSCoder
         
         public required init(coder: NSCoder) {
             self.uniqueId = coder.decodeObject(forKey: "uniqueId") as! String
             self.creationDate = coder.decodeObject(forKey: "creationDate") as! Date
             
             // Legacy version of 'shouldBeVisible'
-            if let hasEverHadMessage: Bool = (coder.decodeObject(forKey: "hasEverHadMessage") as? NSNumber)?.boolValue {
+            if let hasEverHadMessage: Bool = (coder.decodeObject(forKey: "hasEverHadMessage") as? Bool) {
                 self.shouldBeVisible = hasEverHadMessage
             }
             else {
-                self.shouldBeVisible = ((coder.decodeObject(forKey: "shouldBeVisible") as? NSNumber)?
-                    .boolValue)
+                self.shouldBeVisible = (coder.decodeObject(forKey: "shouldBeVisible") as? Bool)
                     .defaulting(to: false)
             }
             
-            self.isPinned = ((coder.decodeObject(forKey: "isPinned") as? NSNumber)?
-                .boolValue)
+            self.isPinned = (coder.decodeObject(forKey: "isPinned") as? Bool)
                 .defaulting(to: false)
             self.mutedUntilDate = coder.decodeObject(forKey: "mutedUntilDate") as? Date
-            self.messageDraft = coder.decodeObject(forKey: "messageDraft") as? String   // TODO: Test this
+            self.messageDraft = coder.decodeObject(forKey: "messageDraft") as? String
         }
         
         public func encode(with coder: NSCoder) {
@@ -874,15 +891,17 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Contact Thread
+    
     @objc(TSContactThread)
     public class _ContactThread: _Thread {
-        // MARK: - NSCoder
+        // MARK: NSCoder
         
         public required init(coder: NSCoder) {
             super.init(coder: coder)
         }
         
-        // MARK: - Functions
+        // MARK: Functions
         
         internal static func threadId(from sessionId: String) -> String {
             return "\(SMKLegacy.contactThreadPrefix)\(sessionId)"
@@ -893,27 +912,30 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Group Thread
+    
     @objc(TSGroupThread)
     public class _GroupThread: _Thread {
         public var groupModel: _GroupModel
         public var isOnlyNotifyingForMentions: Bool
         
-        // MARK: - Convenience
+        // MARK: Convenience
         
         public override var isClosedGroup: Bool { (groupModel.groupType == .closedGroup) }
         public override var isOpenGroup: Bool { (groupModel.groupType == .openGroup) }
         
-        // MARK: - NSCoder
+        // MARK: NSCoder
         
         public required init(coder: NSCoder) {
             self.groupModel = coder.decodeObject(forKey: "groupModel") as! _GroupModel
-            self.isOnlyNotifyingForMentions = ((coder.decodeObject(forKey: "isOnlyNotifyingForMentions") as? NSNumber)?
-                .boolValue)
+            self.isOnlyNotifyingForMentions = (coder.decodeObject(forKey: "isOnlyNotifyingForMentions") as? Bool)
                 .defaulting(to: false)
             
             super.init(coder: coder)
         }
     }
+    
+    // MARK: - Group Model
     
     @objc(TSGroupModel)
     public class _GroupModel: NSObject, NSCoding {
@@ -928,7 +950,7 @@ public enum SMKLegacy {
         public var groupMemberIds: [String]
         public var groupAdminIds: [String]
 
-        // MARK: - NSCoder
+        // MARK: NSCoder
         
         public required init(coder: NSCoder) {
             self.groupId = coder.decodeObject(forKey: "groupId") as! Data
@@ -940,6 +962,298 @@ public enum SMKLegacy {
         
         public func encode(with coder: NSCoder) {
             fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
+    
+    // MARK: - Disappearing Messages Config
+    
+    @objc(OWSDisappearingMessagesConfiguration)
+    internal class _DisappearingMessagesConfiguration: NSObject, NSCoding {
+        public let uniqueId: String
+        public var isEnabled: Bool
+        public var durationSeconds: UInt32
+        
+        // MARK: NSCoder
+        
+        required init(coder: NSCoder) {
+            self.uniqueId = coder.decodeObject(forKey: "uniqueId") as! String
+            self.isEnabled = coder.decodeObject(forKey: "enabled") as! Bool
+            self.durationSeconds = coder.decodeObject(forKey: "durationSeconds") as! UInt32
+        }
+        
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
+    
+    // MARK: - Interaction
+    
+    @objc(TSInteraction)
+    public class _DBInteraction: NSObject, NSCoding {
+        public var uniqueId: String
+        public var uniqueThreadId: String
+        public var sortId: UInt64
+        public var timestamp: UInt64
+        public var receivedAtTimestamp: UInt64
+
+        // MARK: NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.uniqueId = coder.decodeObject(forKey: "uniqueId") as! String
+            self.uniqueThreadId = coder.decodeObject(forKey: "uniqueThreadId") as! String
+            self.sortId = coder.decodeObject(forKey: "sortId") as! UInt64
+            self.timestamp = coder.decodeObject(forKey: "timestamp") as! UInt64
+            self.receivedAtTimestamp = coder.decodeObject(forKey: "receivedAtTimestamp") as! UInt64
+        }
+        
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
+    
+    // MARK: - Message
+    
+    @objc(TSMessage)
+    public class _DBMessage: _DBInteraction {
+        public var body: String?
+        public var attachmentIds: [String]
+        public var expiresInSeconds: UInt32
+        public var expireStartedAt: UInt64
+        public var expiresAt: UInt64
+        public var quotedMessage: _DBQuotedMessage?
+        public var linkPreview: _DBLinkPreview?
+        public var openGroupServerMessageID: UInt64
+        public var openGroupInvitationName: String?
+        public var openGroupInvitationURL: String?
+        public var serverHash: String?
+        public var isDeleted: Bool
+        
+        // MARK: NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.body = coder.decodeObject(forKey: "body") as? String
+            // Note: 'attachments' was a legacy name for this key (schema version 2)
+            self.attachmentIds = (coder.decodeObject(forKey: "attachments") as? [String])
+                .defaulting(to: coder.decodeObject(forKey: "attachmentIds") as! [String])
+            self.expiresInSeconds = coder.decodeObject(forKey: "expiresInSeconds") as! UInt32
+            self.expireStartedAt = coder.decodeObject(forKey: "expireStartedAt") as! UInt64
+            self.expiresAt = coder.decodeObject(forKey: "expiresAt") as! UInt64
+            self.quotedMessage = coder.decodeObject(forKey: "quotedMessage") as? _DBQuotedMessage
+            self.linkPreview = coder.decodeObject(forKey: "linkPreview") as? _DBLinkPreview
+            self.openGroupServerMessageID = coder.decodeObject(forKey: "openGroupServerMessageID") as! UInt64
+            self.openGroupInvitationName = coder.decodeObject(forKey: "openGroupInvitationName") as? String
+            self.openGroupInvitationURL = coder.decodeObject(forKey: "openGroupInvitationURL") as? String
+            self.serverHash = coder.decodeObject(forKey: "serverHash") as? String
+            self.isDeleted = (coder.decodeObject(forKey: "isDeleted") as? Bool)
+                .defaulting(to: false)
+            
+            super.init(coder: coder)
+        }
+    }
+    
+    // MARK: - Quoted Message
+    
+    @objc(TSQuotedMessage)
+    public class _DBQuotedMessage: NSObject, NSCoding {
+        @objc(OWSAttachmentInfo)
+        public class _DBAttachmentInfo: NSObject, NSCoding {
+            public var contentType: String?
+            public var sourceFilename: String?
+            public var attachmentId: String?
+            public var thumbnailAttachmentStreamId: String?
+            public var thumbnailAttachmentPointerId: String?
+            
+            // MARK: NSCoder
+            
+            public required init(coder: NSCoder) {
+                self.contentType = coder.decodeObject(forKey: "contentType") as? String
+                self.sourceFilename = coder.decodeObject(forKey: "sourceFilename") as? String
+                self.attachmentId = coder.decodeObject(forKey: "attachmentId") as? String
+                self.thumbnailAttachmentStreamId = coder.decodeObject(forKey: "thumbnailAttachmentStreamId") as? String
+                self.thumbnailAttachmentPointerId = coder.decodeObject(forKey: "thumbnailAttachmentPointerId") as? String
+            }
+            
+            public func encode(with coder: NSCoder) {
+                fatalError("encode(with:) should never be called for legacy types")
+            }
+        }
+        
+        public var timestamp: UInt64
+        public var authorId: String
+        public var body: String?
+        public var quotedAttachments: [_DBAttachmentInfo]
+        
+        // MARK: NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.timestamp = coder.decodeObject(forKey: "timestamp") as! UInt64
+            self.authorId = coder.decodeObject(forKey: "authorId") as! String
+            self.body = coder.decodeObject(forKey: "body") as? String
+            self.quotedAttachments = coder.decodeObject(forKey: "quotedAttachments") as! [_DBAttachmentInfo]
+        }
+        
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
+    
+    // MARK: - Link Preview
+    
+    @objc(OWSLinkPreview)
+    public class _DBLinkPreview: NSObject, NSCoding {
+        public var urlString: String?
+        public var title: String?
+        public var imageAttachmentId: String?
+        
+        internal init(
+            urlString: String?,
+            title: String?,
+            imageAttachmentId: String?
+        ) {
+            self.urlString = urlString
+            self.title = title
+            self.imageAttachmentId = imageAttachmentId
+        }
+
+        // MARK: NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.urlString = coder.decodeObject(forKey: "urlString") as? String
+            self.title = coder.decodeObject(forKey: "title") as? String
+            self.imageAttachmentId = coder.decodeObject(forKey: "imageAttachmentId") as? String
+        }
+        
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
+    
+    // MARK: - Incoming Message
+    
+    @objc(TSIncomingMessage)
+    public class _DBIncomingMessage: _DBMessage {
+        public var authorId: String
+        public var sourceDeviceId: UInt32
+        public var wasRead: Bool
+        public var wasReceivedByUD: Bool
+        public var notificationIdentifier: String?
+        
+        // MARK: NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.authorId = coder.decodeObject(forKey: "authorId") as! String
+            self.sourceDeviceId = coder.decodeObject(forKey: "sourceDeviceId") as! UInt32
+            self.wasRead = (coder.decodeObject(forKey: "read") as? Bool)  // Note: 'read' is the correct key
+                .defaulting(to: false)
+            self.wasReceivedByUD = (coder.decodeObject(forKey: "wasReceivedByUD") as? Bool)
+                .defaulting(to: false)
+            self.notificationIdentifier = coder.decodeObject(forKey: "notificationIdentifier") as? String
+            
+            super.init(coder: coder)
+        }
+    }
+    
+    // MARK: - Outgoing Message
+    
+    @objc(TSOutgoingMessage)
+    public class _DBOutgoingMessage: _DBMessage {
+        public var recipientStateMap: [String: _DBOutgoingMessageRecipientState]?
+        public var hasSyncedTranscript: Bool
+        public var customMessage: String?
+        public var mostRecentFailureText: String?
+        public var isVoiceMessage: Bool
+        public var attachmentFilenameMap: [String: String]
+        
+        // MARK: NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.recipientStateMap = coder.decodeObject(forKey: "recipientStateMap") as? [String: _DBOutgoingMessageRecipientState]
+            self.hasSyncedTranscript = (coder.decodeObject(forKey: "hasSyncedTranscript") as? Bool)
+                .defaulting(to: false)
+            self.customMessage = coder.decodeObject(forKey: "customMessage") as? String
+            self.mostRecentFailureText = coder.decodeObject(forKey: "mostRecentFailureText") as? String
+            self.isVoiceMessage = (coder.decodeObject(forKey: "isVoiceMessage") as? Bool)
+                .defaulting(to: false)
+            self.attachmentFilenameMap = coder.decodeObject(forKey: "attachmentFilenameMap") as! [String: String]
+            
+            super.init(coder: coder)
+        }
+    }
+    
+    // MARK: - Outgoing Message Recipient State
+    
+    @objc(TSOutgoingMessageRecipientState)
+    public class _DBOutgoingMessageRecipientState: NSObject, NSCoding {
+        public enum _RecipientState: Int {
+            case failed = 0
+            case sending
+            case skipped
+            case sent
+        }
+        
+        public var state: _RecipientState
+        public var readTimestamp: Int64?
+        
+        // MARK: NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.state = _RecipientState(rawValue: (coder.decodeObject(forKey: "state") as! NSNumber).intValue)!
+            self.readTimestamp = coder.decodeObject(forKey: "readTimestamp") as? Int64
+        }
+        
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
+    
+    // MARK: - Info Message
+    
+    @objc(TSInfoMessage)
+    public class _DBInfoMessage: _DBMessage {
+        public enum _InfoMessageType: Int {
+            case groupCreated
+            case groupUpdated
+            case groupCurrentUserLeft
+            case disappearingMessagesUpdate
+            case screenshotNotification
+            case mediaSavedNotification
+            case messageRequestAccepted = 99
+        }
+        
+        public var wasRead: Bool
+        public var messageType: _InfoMessageType
+        public var customMessage: String?
+        
+        // MARK: NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.wasRead = (coder.decodeObject(forKey: "read") as? Bool)  // Note: 'read' is the correct key
+                .defaulting(to: false)
+            self.messageType = _InfoMessageType(rawValue: (coder.decodeObject(forKey: "messageType") as! NSNumber).intValue)!
+            self.customMessage = coder.decodeObject(forKey: "customMessage") as? String
+            
+            super.init(coder: coder)
+        }
+    }
+    
+    // MARK: - Disappearing Config Update Info Message
+    
+    public final class _DisappearingConfigurationUpdateInfoMessage: _DBInfoMessage {
+        // Note: Due to how Mantle works we need to set default values for these as the 'init(dictionary:)'
+        // method doesn't actually get values for them but the must be set before calling a super.init method
+        // so this allows us to work around the behaviour until 'init(coder:)' method completes it's super call
+        var createdByRemoteName: String?
+        var configurationDurationSeconds: UInt32 = 0
+        var configurationIsEnabled: Bool = false
+        
+        // MARK: Coding
+        
+        public required init(coder: NSCoder) {
+            self.createdByRemoteName = coder.decodeObject(forKey: "createdByRemoteName") as? String
+            self.configurationDurationSeconds = ((coder.decodeObject(forKey: "configurationDurationSeconds") as? UInt32) ?? 0)
+            self.configurationIsEnabled = ((coder.decodeObject(forKey: "configurationIsEnabled") as? Bool) ?? false)
+            
+            super.init(coder: coder)
         }
     }
 
@@ -970,7 +1284,7 @@ public enum SMKLegacy {
         
         public var isVisualMedia: Bool { isImage || isVideo || isAnimated }
         
-        // MARK: - NSCoder
+        // MARK: NSCoder
         
         public required init(coder: NSCoder) {
             self.serverId = coder.decodeObject(forKey: "serverId") as! UInt64
@@ -982,6 +1296,9 @@ public enum SMKLegacy {
             ).defaulting(to: .default)
             self.downloadURL = (coder.decodeObject(forKey: "downloadURL") as? String ?? "")
             self.byteCount = coder.decodeObject(forKey: "byteCount") as! UInt32
+            self.sourceFilename = coder.decodeObject(forKey: "sourceFilename") as? String
+            self.caption = coder.decodeObject(forKey: "caption") as? String
+            self.albumMessageId = coder.decodeObject(forKey: "albumMessageId") as? String
         }
         
         public func encode(with coder: NSCoder) {
@@ -1003,7 +1320,7 @@ public enum SMKLegacy {
         public var mediaSize: CGSize
         public var lazyRestoreFragmentId: String?
         
-        // MARK: - NSCoder
+        // MARK: NSCoder
         
         public required init(coder: NSCoder) {
             self.state = _State(
@@ -1045,7 +1362,7 @@ public enum SMKLegacy {
             return false
         }
         
-        // MARK: - NSCoder
+        // MARK: NSCoder
         
         public required init(coder: NSCoder) {
             self.digest = coder.decodeObject(forKey: "digest") as? Data
@@ -1065,6 +1382,8 @@ public enum SMKLegacy {
             fatalError("encode(with:) should never be called for legacy types")
         }
     }
+    
+    // MARK: - Notify Push Server Job
 
     @objc(NotifyPNServerJob)
     internal final class _NotifyPNServerJob: NSObject, NSCoding {
@@ -1075,7 +1394,7 @@ public enum SMKLegacy {
             public let ttl: UInt64
             public let timestamp: UInt64    // Milliseconds
 
-            // MARK: - Coding
+            // MARK: Coding
             
             public init?(coder: NSCoder) {
                 guard
@@ -1102,7 +1421,7 @@ public enum SMKLegacy {
         public var id: String?
         public var failureCount: UInt = 0
 
-        // MARK: - Coding
+        // MARK: Coding
         
         public init?(coder: NSCoder) {
             guard
@@ -1119,6 +1438,8 @@ public enum SMKLegacy {
             fatalError("encode(with:) should never be called for legacy types")
         }
     }
+    
+    // MARK: - Message Receive Job
 
     @objc(MessageReceiveJob)
     public final class _MessageReceiveJob: NSObject, NSCoding {
@@ -1130,7 +1451,7 @@ public enum SMKLegacy {
         public var id: String?
         public var failureCount: UInt = 0
 
-        // MARK: - Coding
+        // MARK: Coding
         
         public init?(coder: NSCoder) {
             guard
@@ -1155,6 +1476,8 @@ public enum SMKLegacy {
             fatalError("encode(with:) should never be called for legacy types")
         }
     }
+    
+    // MARK: - Message Send Job
 
     @objc(SNMessageSendJob)
     internal final class _MessageSendJob: NSObject, NSCoding {
@@ -1163,7 +1486,7 @@ public enum SMKLegacy {
         internal var id: String?
         internal var failureCount: UInt = 0
 
-        // MARK: - Coding
+        // MARK: Coding
         
         public init?(coder: NSCoder) {
             guard let message = coder.decodeObject(forKey: "message") as! _Message?,
@@ -1212,7 +1535,7 @@ public enum SMKLegacy {
             fatalError("encode(with:) should never be called for legacy types")
         }
         
-        // MARK: - Convenience
+        // MARK: Convenience
         
         private static func process(_ value: String, type: String) -> String? {
             guard value.hasPrefix("\(type)(") else { return nil }
@@ -1226,6 +1549,8 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Attachment Upload Job
+    
     @objc(AttachmentUploadJob)
     internal final class _AttachmentUploadJob: NSObject, NSCoding {
         internal let attachmentID: String
@@ -1235,7 +1560,7 @@ public enum SMKLegacy {
         internal var id: String?
         internal var failureCount: UInt = 0
         
-        // MARK: - Coding
+        // MARK: Coding
         
         public init?(coder: NSCoder) {
             guard
@@ -1259,6 +1584,8 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Attachment Download Job
+    
     @objc(AttachmentDownloadJob)
     public final class _AttachmentDownloadJob: NSObject, NSCoding {
         public let attachmentID: String
@@ -1268,7 +1595,7 @@ public enum SMKLegacy {
         public var failureCount: UInt = 0
         public var isDeferred = false
 
-        // MARK: - Coding
+        // MARK: Coding
         
         public init?(coder: NSCoder) {
             guard
@@ -1287,33 +1614,6 @@ public enum SMKLegacy {
         }
 
         public func encode(with coder: NSCoder) {
-            fatalError("encode(with:) should never be called for legacy types")
-        }
-    }
-    
-    public final class _DisappearingConfigurationUpdateInfoMessage: TSInfoMessage {
-        // Note: Due to how Mantle works we need to set default values for these as the 'init(dictionary:)'
-        // method doesn't actually get values for them but the must be set before calling a super.init method
-        // so this allows us to work around the behaviour until 'init(coder:)' method completes it's super call
-        var createdByRemoteName: String?
-        var configurationDurationSeconds: UInt32 = 0
-        var configurationIsEnabled: Bool = false
-        
-        // MARK: - Coding
-        
-        public required init(coder: NSCoder) {
-            super.init(coder: coder)
-            
-            self.createdByRemoteName = coder.decodeObject(forKey: "createdByRemoteName") as? String
-            self.configurationDurationSeconds = ((coder.decodeObject(forKey: "configurationDurationSeconds") as? UInt32) ?? 0)
-            self.configurationIsEnabled = ((coder.decodeObject(forKey: "configurationIsEnabled") as? Bool) ?? false)
-        }
-        
-        required init(dictionary dictionaryValue: [String : Any]!) throws {
-            try super.init(dictionary: dictionaryValue)
-        }
-        
-        public override func encode(with coder: NSCoder) {
             fatalError("encode(with:) should never be called for legacy types")
         }
     }

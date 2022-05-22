@@ -25,15 +25,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class ContactShareViewModel;
 @class ConversationViewCell;
 @class DisplayableText;
-@class SNVoiceMessageView;
-@class OWSLinkPreview;
-@class OWSQuotedReplyModel;
-@class OWSUnreadIndicator;
-@class TSAttachment;
-@class TSAttachmentPointer;
-@class TSAttachmentStream;
-@class TSInteraction;
-@class TSThread;
 @class YapDatabaseReadTransaction;
 
 @interface ConversationMediaAlbumItem : NSObject

@@ -7,24 +7,6 @@ import SignalCoreKit
 import SessionUtilitiesKit
 
 public struct ProfileManager {
-    public enum Error: LocalizedError {
-        case avatarImageTooLarge
-        case avatarWriteFailed
-        case avatarEncryptionFailed
-        case avatarUploadFailed
-        case avatarUploadMaxFileSizeExceeded
-        
-        var localizedDescription: String {
-            switch self {
-                case .avatarImageTooLarge: return "Avatar image too large."
-                case .avatarWriteFailed: return "Avatar write failed."
-                case .avatarEncryptionFailed: return "Avatar encryption failed."
-                case .avatarUploadFailed: return "Avatar upload failed."
-                case .avatarUploadMaxFileSizeExceeded: return "Maximum file size exceeded."
-            }
-        }
-    }
-    
     // The max bytes for a user's profile name, encoded in UTF8.
     // Before encrypting and submitting we NULL pad the name data to this length.
     private static let nameDataLength: UInt = 26
@@ -79,7 +61,7 @@ public struct ProfileManager {
     }
     
     private static func loadProfileData(with fileName: String) -> Data? {
-        let filePath: String = OWSUserProfile.profileAvatarFilepath(withFilename: fileName)
+        let filePath: String = ProfileManager.profileAvatarFilepath(filename: fileName)
         
         return try? Data(contentsOf: URL(fileURLWithPath: filePath))
     }
@@ -96,6 +78,33 @@ public struct ProfileManager {
         guard key.keyData.count == kAES256_KeyByteLength else { return nil }
         
         return Cryptography.decryptAESGCMProfileData(encryptedData: data, key: key)
+    }
+    
+    // MARK: - File Paths
+    
+    private static let sharedDataProfileAvatarsDirPath: String = {
+        URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
+            .appendingPathComponent("ProfileAvatars")
+            .path
+    }()
+    
+    private static let profileAvatarsDirPath: String = {
+        let path: String = ProfileManager.sharedDataProfileAvatarsDirPath
+        OWSFileSystem.ensureDirectoryExists(path)
+        
+        return path
+    }()
+    
+    public static func profileAvatarFilepath(filename: String) -> String {
+        guard !filename.isEmpty else { return "" }
+        
+        return URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
+            .appendingPathComponent(filename)
+            .path
+    }
+    
+    public static func resetProfileStorage() {
+        try? FileManager.default.removeItem(atPath: ProfileManager.profileAvatarsDirPath)
     }
     
     // MARK: - Other Users' Profiles
@@ -121,7 +130,7 @@ public struct ProfileManager {
         }
         
         let fileName: String = UUID().uuidString.appendingFileExtension("jpg")
-        let filePath: String = OWSUserProfile.profileAvatarFilepath(withFilename: fileName)
+        let filePath: String = ProfileManager.profileAvatarFilepath(filename: fileName)
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: funcName)
         
         DispatchQueue.global(qos: .default).async {
@@ -190,8 +199,8 @@ public struct ProfileManager {
         profileName: String,
         avatarImage: UIImage?,
         requiredSync: Bool,
-        success: ((Profile) -> ())? = nil,
-        failure: ((Error) -> ())? = nil
+        success: ((Database, Profile) throws -> ())? = nil,
+        failure: ((ProfileManagerError) -> ())? = nil
     ) {
         DispatchQueue.global(qos: .default).async {
             // If the profile avatar was updated or removed then encrypt with a new profile key
@@ -200,40 +209,35 @@ public struct ProfileManager {
             
             guard let avatarImage: UIImage = avatarImage else {
                 // If we have no image then we need to make sure to remove it from the profile
-                GRDBStorage.shared.writeAsync(
-                    updates: { db in
-                        let existingProfile: Profile = Profile.fetchOrCreateCurrentUser(db)
-                        
-                        OWSLogger.verbose(existingProfile.profilePictureUrl != nil ?
-                            "Updating local profile on service with cleared avatar." :
-                            "Updating local profile on service with no avatar."
-                        )
-                        
-                        let updatedProfile: Profile = try existingProfile
-                            .with(
-                                name: profileName,
-                                profilePictureUrl: nil,
-                                profilePictureFileName: nil,
-                                profileEncryptionKey: (existingProfile.profilePictureUrl != nil ?
-                                    .update(newProfileKey) :
-                                    .existing
-                                )
+                GRDBStorage.shared.writeAsync { db in
+                    let existingProfile: Profile = Profile.fetchOrCreateCurrentUser(db)
+                    
+                    OWSLogger.verbose(existingProfile.profilePictureUrl != nil ?
+                        "Updating local profile on service with cleared avatar." :
+                        "Updating local profile on service with no avatar."
+                    )
+                    
+                    let updatedProfile: Profile = try existingProfile
+                        .with(
+                            name: profileName,
+                            profilePictureUrl: nil,
+                            profilePictureFileName: nil,
+                            profileEncryptionKey: (existingProfile.profilePictureUrl != nil ?
+                                .update(newProfileKey) :
+                                .existing
                             )
-                            .saved(db)
-                        
-                        // Remove any cached avatar image value
-                        if let fileName: String = existingProfile.profilePictureFileName {
-                            profileAvatarCache.mutate { $0[fileName] = nil }
-                        }
-                        
-                        SNLog("Successfully updated service with profile.")
-                        
-                        DispatchQueue.main.async {
-                            success?(updatedProfile)
-                        }
-                    },
-                    completion: { _, _ in }
-                )
+                        )
+                        .saved(db)
+                    
+                    // Remove any cached avatar image value
+                    if let fileName: String = existingProfile.profilePictureFileName {
+                        profileAvatarCache.mutate { $0[fileName] = nil }
+                    }
+                    
+                    SNLog("Successfully updated service with profile.")
+                    
+                    try success?(db, updatedProfile)
+                }
                 return
             }
 
@@ -276,7 +280,7 @@ public struct ProfileManager {
             }
             
             let fileName: String = UUID().uuidString.appendingFileExtension("jpg")
-            let filePath: String = OWSUserProfile.profileAvatarFilepath(withFilename: fileName)
+            let filePath: String = ProfileManager.profileAvatarFilepath(filename: fileName)
             
             // Write the avatar to disk
             do { try data.write(to: URL(fileURLWithPath: filePath), options: [.atomic]) }
@@ -304,28 +308,23 @@ public struct ProfileManager {
                     let downloadUrl: String = "\(FileServerAPIV2.server)/files/\(fileId)"
                     UserDefaults.standard[.lastProfilePictureUpload] = Date()
                     
-                    GRDBStorage.shared.writeAsync(
-                        updates: { db in
-                            let profile: Profile = try Profile
-                                .fetchOrCreateCurrentUser(db)
-                                .with(
-                                    name: profileName,
-                                    profilePictureUrl: .update(downloadUrl),
-                                    profilePictureFileName: .update(fileName),
-                                    profileEncryptionKey: .update(newProfileKey)
-                                )
-                                .saved(db)
-                            
-                            // Update the cached avatar image value
-                            profileAvatarCache.mutate { $0[fileName] = avatarImage }
-                            
-                            DispatchQueue.main.async {
-                                SNLog("Successfully updated service with profile.")
-                                success?(profile)
-                            }
-                        },
-                        completion: { _, _ in }
-                    )
+                    GRDBStorage.shared.writeAsync { db in
+                        let profile: Profile = try Profile
+                            .fetchOrCreateCurrentUser(db)
+                            .with(
+                                name: profileName,
+                                profilePictureUrl: .update(downloadUrl),
+                                profilePictureFileName: .update(fileName),
+                                profileEncryptionKey: .update(newProfileKey)
+                            )
+                            .saved(db)
+                        
+                        // Update the cached avatar image value
+                        profileAvatarCache.mutate { $0[fileName] = avatarImage }
+                        
+                        SNLog("Successfully updated service with profile.")
+                        try success?(db, profile)
+                    }
                 }
                 .recover { error in
                     DispatchQueue.main.async {
@@ -340,17 +339,5 @@ public struct ProfileManager {
                 }
                 .retainUntilComplete()
         }
-    }
-}
-
-// MARK: - Objective-C Support
-@objc(SMKProfileManager)
-public class SMKProfileManager: NSObject {
-    @objc public static func profileAvatar(recipientId: String) -> UIImage? {
-        return ProfileManager.profileAvatar(id: recipientId)
-    }
-    
-    @objc public static func updateLocal(profileName: String, avatarImage: UIImage?, requiresSync: Bool) {
-        ProfileManager.updateLocal(profileName: profileName, avatarImage: avatarImage, requiredSync: requiresSync)
     }
 }

@@ -58,7 +58,7 @@ public struct SessionApp {
         DDLog.flushLog()
 
         OWSStorage.resetAllStorage()
-        OWSUserProfile.resetProfileStorage()
+        ProfileManager.resetProfileStorage()
         Environment.shared.preferences.clear()
         AppEnvironment.shared.notificationPresenter.clearAllNotifications()
 

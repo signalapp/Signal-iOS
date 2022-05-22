@@ -968,10 +968,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         return a * x
     }
 
-    func groupWasUpdated(_ groupModel: TSGroupModel) {
-        // Not currently in use
-    }
-
     // MARK: - Search
     
     func conversationSettingsDidRequestConversationSearch(_ conversationSettingsViewController: OWSConversationSettingsViewController) {

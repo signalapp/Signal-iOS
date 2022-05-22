@@ -134,19 +134,19 @@ final class LinkPreviewView: UIView {
     ) {
         cancelButton.removeFromSuperview()
         
-        var image: UIImage? = state.image()
+        var image: UIImage? = state.image
         let stateHasImage: Bool = (image != nil)
-        if image == nil && (state is LinkPreviewDraft || state is LinkPreviewSent) {
+        if image == nil && (state is LinkPreview.DraftState || state is LinkPreview.SentState) {
             image = UIImage(named: "Link")?.withTint(isLightMode ? .black : .white)
         }
         
         // Image view
-        let imageViewContainerSize: CGFloat = (state is LinkPreviewSent ? 100 : 80)
+        let imageViewContainerSize: CGFloat = (state is LinkPreview.SentState ? 100 : 80)
         imageViewContainerWidthConstraint.constant = imageViewContainerSize
         imageViewContainerHeightConstraint.constant = imageViewContainerSize
-        imageViewContainer.layer.cornerRadius = (state is LinkPreviewSent ? 0 : 8)
+        imageViewContainer.layer.cornerRadius = (state is LinkPreview.SentState ? 0 : 8)
         
-        if state is LinkPreviewLoading {
+        if state is LinkPreview.LoadingState {
             imageViewContainer.backgroundColor = .clear
         }
         else {
@@ -169,11 +169,11 @@ final class LinkPreviewView: UIView {
             }
         }()
         titleLabel.textColor = sentLinkPreviewTextColor
-        titleLabel.text = state.title()
+        titleLabel.text = state.title
         
         // Horizontal stack view
         switch state {
-            case is LinkPreviewSent:
+            case is LinkPreview.SentState:
                 // FIXME: This will have issues with theme transitions
                 hStackViewContainer.backgroundColor = (isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06))
                 
@@ -197,7 +197,7 @@ final class LinkPreviewView: UIView {
             bodyTextView.pin(to: bodyTextViewContainer, withInset: 12)
         }
         
-        if state is LinkPreviewDraft {
+        if state is LinkPreview.DraftState {
             hStackView.addArrangedSubview(cancelButton)
         }
     }

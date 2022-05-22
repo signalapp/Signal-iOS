@@ -40,7 +40,6 @@
 #import <SessionMessagingKit/OWSAudioPlayer.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SessionMessagingKit/OWSPreferences.h>
-#import <SessionMessagingKit/OWSQuotedReplyModel.h>
 #import <SignalUtilitiesKit/OWSViewController.h>
 #import <SignalUtilitiesKit/UIColor+OWS.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>
@@ -57,14 +56,7 @@
 #import <SignalUtilitiesKit/OWSDispatch.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
-#import <SessionMessagingKit/OWSRecipientIdentity.h>
 #import <SessionMessagingKit/TSAccountManager.h>
-#import <SessionMessagingKit/TSAttachment.h>
-#import <SessionMessagingKit/TSAttachmentPointer.h>
-#import <SessionMessagingKit/TSAttachmentStream.h>
-#import <SessionMessagingKit/TSIncomingMessage.h>
-#import <SessionMessagingKit/TSInfoMessage.h>
-#import <SessionMessagingKit/TSOutgoingMessage.h>
 #import <SessionUtilitiesKit/LKGroupUtilities.h>
 #import <SessionUtilitiesKit/UIImage+OWS.h>
 #import <YYImage/YYImage.h>

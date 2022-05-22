@@ -39,7 +39,7 @@ public enum UpdateProfilePictureJob: JobExecutor {
             profileName: profile.name,
             avatarImage: profilePicture,
             requiredSync: true,
-            success: { _ in success(job, false) },
+            success: { _, _ in success(job, false) },
             failure: { error in failure(job, error, false) }
         )
     }

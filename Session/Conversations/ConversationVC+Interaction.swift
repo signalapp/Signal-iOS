@@ -123,6 +123,12 @@ extension ConversationVC:
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
         snInputView.text = newMessageText ?? ""
     }
+    
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
+    }
+
+    func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) {
+    }
 
     // MARK: - ExpandingAttachmentsButtonDelegate
 
@@ -307,7 +313,7 @@ extension ConversationVC:
         let thread: SessionThread = viewModel.viewData.thread
         let oldThreadShouldBeVisible: Bool = thread.shouldBeVisible
         let sentTimestampMs: Int64 = Int64(floor((Date().timeIntervalSince1970 * 1000)))
-        let linkPreviewDraft: OWSLinkPreviewDraft? = snInputView.linkPreviewInfo?.draft
+        let linkPreviewDraft: LinkPreviewDraft? = snInputView.linkPreviewInfo?.draft
         let quoteModel: QuotedReplyModel? = snInputView.quoteDraftInfo?.model
         
         approveMessageRequestIfNeeded(
@@ -337,7 +343,7 @@ extension ConversationVC:
 
                     // If there is a LinkPreview and it doesn't match an existing one then add it now
                     if
-                        let linkPreviewDraft: OWSLinkPreviewDraft = linkPreviewDraft,
+                        let linkPreviewDraft: LinkPreviewDraft = linkPreviewDraft,
                         (try? interaction.linkPreview.isEmpty(db)) == true
                     {
                         try LinkPreview(
@@ -776,9 +782,6 @@ extension ConversationVC:
             case .began: tableView.isScrollEnabled = false
             case .ended, .cancelled: tableView.isScrollEnabled = true
         }
-    }
-
-    func showFullText(_ item: ConversationViewModel.Item) {
     }
     
     func openUrl(_ urlString: String) {

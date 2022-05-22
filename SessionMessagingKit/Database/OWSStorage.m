@@ -8,7 +8,6 @@
 #import "OWSFileSystem.h"
 #import "OWSPrimaryStorage.h"
 #import "TSYapDatabaseObject.h"
-#import "TSAttachmentStream.h"
 #import <SignalCoreKit/SignalCoreKit.h>
 #import <SignalCoreKit/Randomness.h>
 #import <YapDatabase/YapDatabase.h>

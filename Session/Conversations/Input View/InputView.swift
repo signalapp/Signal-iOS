@@ -19,7 +19,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
     private weak var delegate: InputViewDelegate?
     
     var quoteDraftInfo: (model: QuotedReplyModel, isOutgoing: Bool)? { didSet { handleQuoteDraftChanged() } }
-    var linkPreviewInfo: (url: String, draft: OWSLinkPreviewDraft?)?
+    var linkPreviewInfo: (url: String, draft: LinkPreviewDraft?)?
     private var voiceMessageRecordingView: VoiceMessageRecordingView?
     private lazy var mentionsViewHeightConstraint = mentionsView.set(.height, to: 0)
 
@@ -252,7 +252,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         let areLinkPreviewsEnabled: Bool = GRDBStorage.shared[.areLinkPreviewsEnabled]
         
         if
-            !OWSLinkPreview.allPreviewUrls(forMessageBodyText: text).isEmpty &&
+            !LinkPreview.allPreviewUrls(forMessageBodyText: text).isEmpty &&
             !areLinkPreviewsEnabled &&
             !UserDefaults.standard[.hasSeenLinkPreviewSuggestion]
         {
@@ -269,7 +269,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
 
     func autoGenerateLinkPreview() {
         // Check that a valid URL is present
-        guard let linkPreviewURL = OWSLinkPreview.previewUrl(forRawBodyText: text, selectedRange: inputTextView.selectedRange) else {
+        guard let linkPreviewURL = LinkPreview.previewUrl(for: text, selectedRange: inputTextView.selectedRange) else {
             return
         }
         
@@ -282,7 +282,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         
         // Set the state to loading
         linkPreviewInfo = (url: linkPreviewURL, draft: nil)
-        linkPreviewView.update(with: LinkPreviewLoading(), isOutgoing: false)
+        linkPreviewView.update(with: LinkPreview.LoadingState(), isOutgoing: false)
 
         // Add the link preview view
         additionalContentContainer.addSubview(linkPreviewView)
@@ -292,12 +292,12 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         linkPreviewView.pin(.bottom, to: .bottom, of: additionalContentContainer, withInset: -4)
         
         // Build the link preview
-        OWSLinkPreview.tryToBuildPreviewInfo(previewUrl: linkPreviewURL)
+        LinkPreview.tryToBuildPreviewInfo(previewUrl: linkPreviewURL)
             .done { [weak self] draft in
                 guard self?.linkPreviewInfo?.url == linkPreviewURL else { return } // Obsolete
                 
                 self?.linkPreviewInfo = (url: linkPreviewURL, draft: draft)
-                self?.linkPreviewView.update(with: LinkPreviewDraft(linkPreviewDraft: draft), isOutgoing: false)
+                self?.linkPreviewView.update(with: LinkPreview.DraftState(linkPreviewDraft: draft), isOutgoing: false)
             }
             .catch { [weak self] _ in
                 guard self?.linkPreviewInfo?.url == linkPreviewURL else { return } // Obsolete

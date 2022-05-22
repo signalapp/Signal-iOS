@@ -7,6 +7,7 @@ import MediaPlayer
 import YYImage
 import NVActivityIndicatorView
 import SessionUIKit
+import SessionMessagingKit
 
 public protocol MediaMessageViewAudioDelegate: AnyObject {
     func progressChanged(_ progressSeconds: CGFloat, durationSeconds: CGFloat)
@@ -85,7 +86,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         
         return image
     }()
-    private var linkPreviewInfo: (url: String, draft: OWSLinkPreviewDraft?)?
+    private var linkPreviewInfo: (url: String, draft: LinkPreviewDraft?)?
 
     // MARK: Initializers
 
@@ -103,7 +104,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         self.mode = mode
         
         // Set the linkPreviewUrl if it's a url
-        if attachment.isUrl, let linkPreviewURL: String = OWSLinkPreview.previewURL(forRawBodyText: attachment.text()) {
+        if attachment.isUrl, let linkPreviewURL: String = LinkPreview.previewUrl(for: attachment.text()) {
             self.linkPreviewInfo = (url: linkPreviewURL, draft: nil)
         }
         
@@ -543,7 +544,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     private func loadLinkPreview(linkPreviewURL: String) {
         loadingView.startAnimating()
         
-        OWSLinkPreview.tryToBuildPreviewInfo(previewUrl: linkPreviewURL)
+        LinkPreview.tryToBuildPreviewInfo(previewUrl: linkPreviewURL)
             .done { [weak self] draft in
                 // TODO: Look at refactoring this behaviour to consolidate attachment mutations
                 self?.attachment.linkPreviewDraft = draft

@@ -83,7 +83,8 @@ public struct Profile: Codable, Identifiable, Equatable, Hashable, FetchableReco
         db.afterNextTransactionCommit { db in
             // Delete old profile picture if needed
             if let oldProfilePictureFileName: String = oldProfile?.profilePictureFileName, oldProfilePictureFileName != profilePictureFileName {
-                let path: String = OWSUserProfile.profileAvatarFilepath(withFilename: oldProfilePictureFileName)
+                let path: String = ProfileManager.profileAvatarFilepath(filename: oldProfilePictureFileName)
+                
                 DispatchQueue.global(qos: .default).async {
                     OWSFileSystem.deleteFileIfExists(path)
                 }

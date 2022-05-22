@@ -8,7 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSPreferencesSignalDatabaseCollection = @"SignalPreferences";
 NSString *const OWSPreferencesCallLoggingDidChangeNotification = @"OWSPreferencesCallLoggingDidChangeNotification";
-NSString *const OWSPreferencesKeyHasSentAMessage = @"User has sent a message";
 NSString *const OWSPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 NSString *const OWSPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled";
 NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
@@ -84,21 +83,6 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 {
     [NSUserDefaults.appUserDefaults setObject:@(YES) forKey:OWSPreferencesKey_IsReadyForAppExtensions];
     [NSUserDefaults.appUserDefaults synchronize];
-}
-
-- (BOOL)hasSentAMessage
-{
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyHasSentAMessage];
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return NO;
-    }
-}
-
-- (void)setHasSentAMessage:(BOOL)enabled
-{
-    [self setValueForKey:OWSPreferencesKeyHasSentAMessage toValue:@(enabled)];
 }
 
 - (BOOL)hasDeclinedNoContactsView

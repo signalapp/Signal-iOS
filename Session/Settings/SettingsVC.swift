@@ -382,27 +382,29 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                 profileName: (name ?? ""),
                 avatarImage: profilePicture,
                 requiredSync: true,
-                success: { updatedProfile in
+                success: { db, updatedProfile in
                     if displayNameToBeUploaded != nil {
                         userDefaults[.lastDisplayNameUpdate] = Date()
                     }
                     if profilePictureToBeUploaded != nil {
                         userDefaults[.lastProfilePictureUpdate] = Date()
                     }
-                    GRDBStorage.shared.write { db in
-                        try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
-                    }
                     
-                    DispatchQueue.main.async {
-                        modalActivityIndicator.dismiss {
-                            self?.profilePictureView.update(
-                                publicKey: updatedProfile.id,
-                                profile: updatedProfile,
-                                threadVariant: .contact
-                            )
-                            self?.displayNameLabel.text = name
-                            self?.profilePictureToBeUploaded = nil
-                            self?.displayNameToBeUploaded = nil
+                    try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                    
+                    // Wait for the database transaction to complete before updating the UI
+                    db.afterNextTransactionCommit { _ in
+                        DispatchQueue.main.async {
+                            modalActivityIndicator.dismiss {
+                                self?.profilePictureView.update(
+                                    publicKey: updatedProfile.id,
+                                    profile: updatedProfile,
+                                    threadVariant: .contact
+                                )
+                                self?.displayNameLabel.text = name
+                                self?.profilePictureToBeUploaded = nil
+                                self?.displayNameToBeUploaded = nil
+                            }
                         }
                     }
                 },

@@ -16,7 +16,9 @@ enum _003_YDBToGRDBMigration: Migration {
         // MARK: - Process Contacts, Threads & Interactions
         print("RAWR [\(Date().timeIntervalSince1970)] - SessionMessagingKit migration - Start")
         var shouldFailMigration: Bool = false
+        var legacyMigrations: Set<SMKLegacy._DBMigration> = []
         var contacts: Set<SMKLegacy._Contact> = []
+        var legacyBlockedSessionIds: Set<String> = []
         var validProfileIds: Set<String> = []
         var contactThreadIds: Set<String> = []
         
@@ -35,9 +37,8 @@ enum _003_YDBToGRDBMigration: Migration {
         var openGroupImage: [String: Data] = [:]
         var openGroupLastMessageServerId: [String: Int64] = [:]    // Optional
         var openGroupLastDeletionServerId: [String: Int64] = [:]   // Optional
-//        var openGroupServerToUniqueIdLookup: [String: [String]] = [:]   // TODO: Not needed????
         
-        var interactions: [String: [TSInteraction]] = [:]
+        var interactions: [String: [SMKLegacy._DBInteraction]] = [:]
         var attachments: [String: SMKLegacy._Attachment] = [:]
         var processedAttachmentIds: Set<String> = []
         var outgoingReadReceiptsTimestampsMs: [String: Set<Int64>] = [:]
@@ -65,6 +66,50 @@ enum _003_YDBToGRDBMigration: Migration {
             forClassName: "SNContact"
         )
         NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBInteraction.self,
+            forClassName: "TSInteraction"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBMessage.self,
+            forClassName: "TSMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBQuotedMessage.self,
+            forClassName: "TSQuotedMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBQuotedMessage._DBAttachmentInfo.self,
+            forClassName: "OWSAttachmentInfo"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBLinkPreview.self,
+            forClassName: "SessionServiceKit.OWSLinkPreview"    // Very old legacy name
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBLinkPreview.self,
+            forClassName: "SessionMessagingKit.OWSLinkPreview"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBIncomingMessage.self,
+            forClassName: "TSIncomingMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBOutgoingMessage.self,
+            forClassName: "TSOutgoingMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBOutgoingMessageRecipientState.self,
+            forClassName: "TSOutgoingMessageRecipientState"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBInfoMessage.self,
+            forClassName: "TSInfoMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DisappearingConfigurationUpdateInfoMessage.self,
+            forClassName: "OWSDisappearingConfigurationUpdateInfoMessage"
+        )
+        NSKeyedUnarchiver.setClass(
             SMKLegacy._Attachment.self,
             forClassName: "TSAttachment"
         )
@@ -76,18 +121,33 @@ enum _003_YDBToGRDBMigration: Migration {
             SMKLegacy._AttachmentPointer.self,
             forClassName: "TSAttachmentPointer"
         )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._DisappearingConfigurationUpdateInfoMessage.self,
-            forClassName: "OWSDisappearingConfigurationUpdateInfoMessage"
-        )
         
         Storage.read { transaction in
+            // Process the migrations (we don't want to bother running the old migrations as it would be
+            // a waste of time, rather we include the logic from the old migrations in here and make the
+            // same changes if the migration hasn't already run)
+            transaction.enumerateRows(inCollection: SMKLegacy.databaseMigrationCollection) { key, _, _, _ in
+                guard let legacyMigration: SMKLegacy._DBMigration = SMKLegacy._DBMigration(rawValue: key) else {
+                    SNLog("[Migration Error] Found unknown migration")
+                    shouldFailMigration = true
+                    return
+                }
+                
+                legacyMigrations.insert(legacyMigration)
+            }
+            
             // Process the Contacts
             transaction.enumerateRows(inCollection: SMKLegacy.contactCollection) { _, object, _, _ in
                 guard let contact = object as? SMKLegacy._Contact else { return }
                 contacts.insert(contact)
                 validProfileIds.insert(contact.sessionID)
             }
+            
+            // Process legacy blocked contacts
+            legacyBlockedSessionIds = Set(transaction.object(
+                forKey: SMKLegacy.blockedPhoneNumbersKey,
+                inCollection: SMKLegacy.blockListCollection
+            ) as? [String] ?? [])
         
             print("RAWR [\(Date().timeIntervalSince1970)] - Process threads - Start")
             
@@ -178,7 +238,7 @@ enum _003_YDBToGRDBMigration: Migration {
             // Process interactions
             print("RAWR [\(Date().timeIntervalSince1970)] - Process interactions - Start")
             transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.interactionCollection) { _, object, _ in
-                guard let interaction: TSInteraction = object as? TSInteraction else {
+                guard let interaction: SMKLegacy._DBInteraction = object as? SMKLegacy._DBInteraction else {
                     SNLog("[Migration Error] Unable to process interaction")
                     shouldFailMigration = true
                     return
@@ -248,6 +308,21 @@ enum _003_YDBToGRDBMigration: Migration {
                     profileEncryptionKey: legacyContact.profileEncryptionKey
                 ).insert(db)
                 
+                /// **Note:** The blow "shouldForce" flags are here to allow us to avoid having to run legacy migrations they
+                /// replicate the behaviour of a number of the migrations and perform the changes if the migrations had never run
+                
+                /// `ContactsMigration` - Marked all existing contacts as trusted
+                let shouldForceTrustContact: Bool = (!legacyMigrations.contains(.contactsMigration))
+                
+                /// `MessageRequestsMigration` - Marked all existing contacts as isApproved and didApproveMe
+                let shouldForceApproveContact: Bool = (!legacyMigrations.contains(.messageRequestsMigration))
+                
+                /// `BlockingManagerRemovalMigration` - Removed the old blocking manager and updated contacts isBlocked flag accordingly
+                let shouldForceBlockContact: Bool = (
+                    !legacyMigrations.contains(.messageRequestsMigration) &&
+                    legacyBlockedSessionIds.contains(legacyContact.sessionID)
+                )
+                
                 // Determine if this contact is a "real" contact (don't want to create contacts for
                 // every user in the new structure but still want profiles for every user)
                 if
@@ -256,15 +331,36 @@ enum _003_YDBToGRDBMigration: Migration {
                     legacyContact.isApproved ||
                     legacyContact.didApproveMe ||
                     legacyContact.isBlocked ||
-                    legacyContact.hasBeenBlocked {
+                    legacyContact.hasBeenBlocked ||
+                    shouldForceTrustContact ||
+                    shouldForceApproveContact ||
+                    shouldForceBlockContact
+                {
                     // Create the contact
                     // TODO: Closed group admins???
                     try Contact(
                         id: legacyContact.sessionID,
-                        isTrusted: (isCurrentUser || legacyContact.isTrusted),
-                        isApproved: (isCurrentUser || legacyContact.isApproved),
-                        isBlocked: (!isCurrentUser && legacyContact.isBlocked),
-                        didApproveMe: (isCurrentUser || legacyContact.didApproveMe),
+                        isTrusted: (
+                            isCurrentUser ||
+                            legacyContact.isTrusted ||
+                            shouldForceTrustContact
+                        ),
+                        isApproved: (
+                            isCurrentUser ||
+                            legacyContact.isApproved ||
+                            shouldForceApproveContact
+                        ),
+                        isBlocked: (
+                            !isCurrentUser && (
+                                legacyContact.isBlocked ||
+                                shouldForceBlockContact
+                            )
+                        ),
+                        didApproveMe: (
+                            isCurrentUser ||
+                            legacyContact.didApproveMe ||
+                            shouldForceApproveContact
+                        ),
                         hasBeenBlocked: (!isCurrentUser && (legacyContact.hasBeenBlocked || legacyContact.isBlocked))
                     ).insert(db)
                 }
@@ -452,15 +548,15 @@ enum _003_YDBToGRDBMigration: Migration {
                         let expiresInSeconds: UInt32?
                         let expiresStartedAtMs: UInt64?
                         let openGroupServerMessageId: UInt64?
-                        let recipientStateMap: [String: TSOutgoingMessageRecipientState]?
+                        let recipientStateMap: [String: SMKLegacy._DBOutgoingMessageRecipientState]?
                         let mostRecentFailureText: String?
-                        let quotedMessage: TSQuotedMessage?
-                        let linkPreview: OWSLinkPreview?
+                        let quotedMessage: SMKLegacy._DBQuotedMessage?
+                        let linkPreview: SMKLegacy._DBLinkPreview?
                         let linkPreviewVariant: LinkPreview.Variant
                         var attachmentIds: [String]
                         
-                        // Handle the common 'TSMessage' values first
-                        if let legacyMessage: TSMessage = legacyInteraction as? TSMessage {
+                        // Handle the common 'SMKLegacy._DBMessage' values first
+                        if let legacyMessage: SMKLegacy._DBMessage = legacyInteraction as? SMKLegacy._DBMessage {
                             serverHash = legacyMessage.serverHash
                             
                             // The legacy code only considered '!= 0' ids as valid so set those
@@ -475,7 +571,7 @@ enum _003_YDBToGRDBMigration: Migration {
                             // Convert the 'OpenGroupInvitation' into a LinkPreview
                             if let openGroupInvitationName: String = legacyMessage.openGroupInvitationName, let openGroupInvitationUrl: String = legacyMessage.openGroupInvitationURL {
                                 linkPreviewVariant = .openGroupInvitation
-                                linkPreview = OWSLinkPreview(
+                                linkPreview = SMKLegacy._DBLinkPreview(
                                     urlString: openGroupInvitationUrl,
                                     title: openGroupInvitationName,
                                     imageAttachmentId: nil
@@ -489,14 +585,7 @@ enum _003_YDBToGRDBMigration: Migration {
                             // Attachments for deleted messages won't exist
                             attachmentIds = (legacyMessage.isDeleted ?
                                 [] :
-                                try legacyMessage.attachmentIds.map { legacyId in
-                                    guard let attachmentId: String = legacyId as? String else {
-                                        SNLog("[Migration Error] Unable to process attachment id")
-                                        throw GRDBStorageError.migrationFailed
-                                    }
-                                    
-                                    return attachmentId
-                                }
+                                legacyMessage.attachmentIds
                             )
                         }
                         else {
@@ -510,7 +599,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         
                         // Then handle the behaviours for each message type
                         switch legacyInteraction {
-                            case let incomingMessage as TSIncomingMessage:
+                            case let incomingMessage as SMKLegacy._DBIncomingMessage:
                                 // Note: We want to distinguish deleted messages from normal ones
                                 variant = (incomingMessage.isDeleted ?
                                     .standardIncomingDeleted :
@@ -524,7 +613,7 @@ enum _003_YDBToGRDBMigration: Migration {
                                 recipientStateMap = [:]
                                 mostRecentFailureText = nil
                                 
-                            case let outgoingMessage as TSOutgoingMessage:
+                            case let outgoingMessage as SMKLegacy._DBOutgoingMessage:
                                 variant = .standardOutgoing
                                 authorId = currentUserPublicKey
                                 body = outgoingMessage.body
@@ -534,7 +623,7 @@ enum _003_YDBToGRDBMigration: Migration {
                                 recipientStateMap = outgoingMessage.recipientStateMap
                                 mostRecentFailureText = outgoingMessage.mostRecentFailureText
                                 
-                            case let infoMessage as TSInfoMessage:
+                            case let infoMessage as SMKLegacy._DBInfoMessage:
                                 // Note: The legacy 'TSInfoMessage' didn't store the author id so there is no
                                 // way to determine who actually triggered the info message
                                 authorId = currentUserPublicKey
@@ -645,7 +734,11 @@ enum _003_YDBToGRDBMigration: Migration {
                         let legacyIdentifier: String = identifier(
                             for: threadId,
                             sentTimestamp: legacyInteraction.timestamp,
-                            recipients: ((legacyInteraction as? TSOutgoingMessage)?.recipientIds() ?? []),
+                            recipients: ((legacyInteraction as? SMKLegacy._DBOutgoingMessage)?
+                                .recipientStateMap?
+                                .keys
+                                .map { $0 })
+                                .defaulting(to: []),
                             destination: (threadVariant == .contact ? .contact(publicKey: threadId) : nil),
                             variant: variant,
                             useFallback: false
@@ -653,13 +746,17 @@ enum _003_YDBToGRDBMigration: Migration {
                         let legacyIdentifierFallback: String = identifier(
                             for: threadId,
                             sentTimestamp: legacyInteraction.timestamp,
-                            recipients: ((legacyInteraction as? TSOutgoingMessage)?.recipientIds() ?? []),
+                            recipients: ((legacyInteraction as? SMKLegacy._DBOutgoingMessage)?
+                                .recipientStateMap?
+                                .keys
+                                .map { $0 })
+                                .defaulting(to: []),
                             destination: (threadVariant == .contact ? .contact(publicKey: threadId) : nil),
                             variant: variant,
                             useFallback: true
                         )
                         
-                        legacyInteractionToIdMap[legacyInteraction.uniqueId ?? ""] = interactionId
+                        legacyInteractionToIdMap[legacyInteraction.uniqueId] = interactionId
                         legacyInteractionIdentifierToIdMap[legacyIdentifier] = interactionId
                         legacyInteractionIdentifierToIdFallbackMap[legacyIdentifierFallback] = interactionId
                         
@@ -680,7 +777,7 @@ enum _003_YDBToGRDBMigration: Migration {
                                         @unknown default: throw GRDBStorageError.migrationFailed
                                     }
                                 }(),
-                                readTimestampMs: legacyState.readTimestamp?.int64Value,
+                                readTimestampMs: legacyState.readTimestamp,
                                 mostRecentFailureText: (legacyState.state == .failed ?
                                     mostRecentFailureText :
                                     nil
@@ -690,7 +787,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         
                         // Handle any quote
                         
-                        if let quotedMessage: TSQuotedMessage = quotedMessage {
+                        if let quotedMessage: SMKLegacy._DBQuotedMessage = quotedMessage {
                             var quoteAttachmentId: String? = quotedMessage.quotedAttachments
                                 .flatMap { attachmentInfo in
                                     return [
@@ -734,13 +831,12 @@ enum _003_YDBToGRDBMigration: Migration {
                                             // need to compare against the 'currentUserPublicKey'
                                             // for those or cast to a TSIncomingMessage otherwise
                                             quotedMessage.authorId == currentUserPublicKey ||
-                                            quotedMessage.authorId == ($0 as? TSIncomingMessage)?.authorId
+                                            quotedMessage.authorId == ($0 as? SMKLegacy._DBIncomingMessage)?.authorId
                                         )
                                     })
-                                    .asType(TSMessage.self)?
+                                    .asType(SMKLegacy._DBMessage.self)?
                                     .attachmentIds
-                                    .firstObject
-                                    .asType(String.self)
+                                    .first
                                 
                                 SNLog([
                                     "[Migration Warning] Quote with invalid attachmentId found",
@@ -772,7 +868,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         
                         // Handle any LinkPreview
                         
-                        if let linkPreview: OWSLinkPreview = linkPreview, let urlString: String = linkPreview.urlString {
+                        if let linkPreview: SMKLegacy._DBLinkPreview = linkPreview, let urlString: String = linkPreview.urlString {
                             // Note: The `legacyInteraction.timestamp` value is in milliseconds
                             let timestamp: TimeInterval = LinkPreview.timestampFor(sentTimestampMs: Double(legacyInteraction.timestamp))
                             
@@ -838,6 +934,7 @@ enum _003_YDBToGRDBMigration: Migration {
         // Clear out processed data (give the memory a change to be freed)
         
         contacts = []
+        legacyBlockedSessionIds = []
         contactThreadIds = []
         
         legacyThreads = []
@@ -905,10 +1002,6 @@ enum _003_YDBToGRDBMigration: Migration {
         NSKeyedUnarchiver.setClass(
             SMKLegacy._Quote.self,
             forClassName: "SNQuote"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._LinkPreview.self,
-            forClassName: "SessionServiceKit.OWSLinkPreview"    // Very old legacy name
         )
         NSKeyedUnarchiver.setClass(
             SMKLegacy._LinkPreview.self,

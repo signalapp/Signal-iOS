@@ -3,7 +3,6 @@
 //
 
 #import "OWSAudioPlayer.h"
-#import "TSAttachmentStream.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
