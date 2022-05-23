@@ -123,7 +123,10 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     
     /// When the interaction was created in milliseconds since epoch
     ///
-    /// **Note:** This value will be `0` if it hasn't been set yet
+    /// **Notes:**
+    /// - This value will be `0` if it hasn't been set yet
+    /// - The code sorts messages using this value
+    /// - This value will ber overwritten by the `serverTimestamp` for open group messages
     public let timestampMs: Int64
     
     /// When the interaction was received in milliseconds since epoch
@@ -181,7 +184,10 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     /// **LinkPreview:** The thumbnails associated to the `LinkPreview`
     /// **Other:** The files directly attached to the interaction
     public var attachments: QueryInterfaceRequest<Attachment> {
-        request(for: Interaction.attachments)
+        let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
+        
+        return request(for: Interaction.attachments)
+            .order(interactionAttachment[.albumIndex])
     }
 
     public var quote: QueryInterfaceRequest<Quote> {
@@ -404,63 +410,6 @@ public extension Interaction {
 // MARK: - GRDB Interactions
 
 public extension Interaction {
-    static func lastInteractionTimestamp(timestampMsKey: String) -> CommonTableExpression<Void> {
-        return CommonTableExpression(
-            named: "lastInteraction",
-            request: Interaction
-                .select(
-                    Interaction.Columns.threadId,
-                    
-                    // 'max()' to get the latest
-                    max(Interaction.Columns.timestampMs).forKey(timestampMsKey)
-                )
-                .joining(required: Interaction.thread)
-                .group(Interaction.Columns.threadId)    // One interaction per thread
-        )
-    }
-    
-    static func lastInteraction(
-        lastInteractionKey: String,
-        timestampMsKey: String,
-        threadVariantKey: String,
-        isOpenGroupInvitationKey: String,
-        recipientStatesKey: String
-    ) -> CommonTableExpression<Void> {
-        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
-        let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
-        
-        return CommonTableExpression(
-            named: lastInteractionKey,
-            request: Interaction
-                .select(
-                    Interaction.Columns.id,
-                    Interaction.Columns.threadId,
-                    Interaction.Columns.variant,
-                    
-                    // 'max()' to get the latest
-                    max(Interaction.Columns.timestampMs).forKey(timestampMsKey),
-                    
-                    thread[.variant].forKey(threadVariantKey),
-                    Interaction.Columns.body,
-                    Interaction.Columns.authorId,
-                    (linkPreview[.url] != nil).forKey(isOpenGroupInvitationKey)
-                )
-                .joining(required: Interaction.thread.aliased(thread))
-                .joining(
-                    optional: Interaction.linkPreview
-                        .filter(literal: Interaction.linkPreviewFilterLiteral)
-                        .filter(LinkPreview.Columns.variant == LinkPreview.Variant.openGroupInvitation)
-                )
-                .including(all: Interaction.attachments)
-                .including(
-                    all: Interaction.recipientStates
-                        .select(RecipientState.Columns.state)
-                        .forKey(recipientStatesKey)
-                )
-                .group(Interaction.Columns.threadId)    // One interaction per thread
-        )
-    }
-    
     /// This will update the `wasRead` state the the interaction
     ///
     /// - Parameters
@@ -624,19 +573,11 @@ public extension Interaction {
     func previewText(_ db: Database) -> String {
         switch variant {
             case .standardIncoming, .standardOutgoing:
-                struct AttachmentDescriptionInfo: Decodable, FetchableRecord {
-                    let id: String
-                    let variant: Attachment.Variant
-                    let contentType: String
-                    let sourceFilename: String?
-                }
-
-                
                 return Interaction.previewText(
                     variant: self.variant,
                     body: self.body,
                     attachmentDescriptionInfo: try? attachments
-                        .select(.variant, .contentType, .sourceFilename)
+                        .select(.id, .variant, .contentType, .sourceFilename)
                         .asRequest(of: Attachment.DescriptionInfo.self)
                         .fetchOne(db),
                     attachmentCount: try? attachments.fetchCount(db),

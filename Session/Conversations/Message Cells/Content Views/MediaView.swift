@@ -78,11 +78,11 @@ public class MediaView: UIView {
     private func createContents() {
         AssertIsOnMainThread()
 
-        guard attachment.state == .uploaded || attachment.state == .downloaded else {
+        guard attachment.state != .pendingDownload && attachment.state != .downloading else {
             addDownloadProgressIfNecessary()
             return
         }
-        guard attachment.state != .failed else {
+        guard attachment.state != .failedDownload else {
             configure(forError: .failed)
             return
         }
@@ -101,9 +101,9 @@ public class MediaView: UIView {
             configure(forError: .invalid)
         }
     }
-
+    
     private func addDownloadProgressIfNecessary() {
-        guard attachment.state != .failed else {
+        guard attachment.state != .failedDownload else {
             configure(forError: .failed)
             return
         }

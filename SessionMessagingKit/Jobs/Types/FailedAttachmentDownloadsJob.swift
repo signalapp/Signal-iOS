@@ -20,7 +20,7 @@ public enum FailedAttachmentDownloadsJob: JobExecutor {
         GRDBStorage.shared.write { db in
             let changeCount: Int = try Attachment
                 .filter(Attachment.Columns.state == Attachment.State.downloading)
-                .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.failed))
+                .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.failedDownload))
         
             Logger.debug("Marked \(changeCount) attachments as failed")
         }

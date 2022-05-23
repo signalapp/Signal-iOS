@@ -205,13 +205,13 @@
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "Ryhmä luotu";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = " %@ liittyi ryhmään. ";
+"GROUP_MEMBER_JOINED" = "%@ liittyi ryhmään. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = " %@ poistui ryhmästä. ";
+"GROUP_MEMBER_LEFT" = "%@ poistui ryhmästä. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ poistettiin ryhmästä. ";
+"GROUP_MEMBER_REMOVED" = "%@ poistettiin ryhmästä. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ poistettiin ryhmästä. ";
+"GROUP_MEMBERS_REMOVED" = "%@ poistettiin ryhmästä. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Ryhmän nimi on nyt ”%@”. ";
 /* No comment provided by engineer. */

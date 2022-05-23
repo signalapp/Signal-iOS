@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import PromiseKit
 import SessionSnodeKit
 import SessionMessagingKit
@@ -38,8 +39,23 @@ public final class BackgroundPoller : NSObject {
     }
     
     private static func pollForClosedGroupMessages() -> [Promise<Void>] {
-        let publicKeys = Storage.shared.getUserClosedGroupPublicKeys()
-        return publicKeys.map { getMessages(for: $0) }
+        // Fetch all closed groups (excluding any don't contain the current user as a
+        // GroupMemeber as the user is no longer a member of those)
+        return GRDBStorage.shared
+            .read { db in
+                try ClosedGroup
+                    .select(.threadId)
+                    .joining(
+                        required: ClosedGroup.members
+                            .filter(GroupMember.Columns.profileId == getUserHexEncodedPublicKey(db))
+                    )
+                    .asRequest(of: String.self)
+                    .fetchAll(db)
+            }
+            .defaulting(to: [])
+            .map { groupPublicKey in
+                getMessages(for: groupPublicKey)
+            }
     }
     
     private static func getMessages(for publicKey: String) -> Promise<Void> {

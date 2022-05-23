@@ -9,7 +9,6 @@ FOUNDATION_EXPORT const unsigned char SessionUtilitiesKitVersionString[];
 #import <SessionUtilitiesKit/MIMETypeUtil.h>
 #import <SessionUtilitiesKit/NSArray+Functional.h>
 #import <SessionUtilitiesKit/NSData+Image.h>
-#import <SessionUtilitiesKit/NSDate+Timestamp.h>
 #import <SessionUtilitiesKit/NSNotificationCenter+OWS.h>
 #import <SessionUtilitiesKit/NSString+SSK.h>
 #import <SessionUtilitiesKit/NSTimer+Proxying.h>

@@ -49,12 +49,12 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
     }
     
     public enum State: Int, Codable, DatabaseValueConvertible {
-        case pending
+        case failedDownload
+        case pendingDownload
         case downloading
         case downloaded
         case uploading
         case uploaded
-        case failed
     }
     
     /// A unique identifier for the attachment
@@ -131,7 +131,7 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
         id: String = UUID().uuidString,
         serverId: String? = nil,
         variant: Variant,
-        state: State = .pending,
+        state: State = .pendingDownload,
         contentType: String,
         byteCount: UInt,
         creationTimestamp: TimeInterval? = nil,
@@ -198,13 +198,13 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
         self.id = id
         self.serverId = nil
         self.variant = variant
-        self.state = .pending
+        self.state = .uploading
         self.contentType = contentType
         self.byteCount = dataSource.dataLength()
         self.creationTimestamp = nil
         self.sourceFilename = sourceFilename
         self.downloadUrl = nil
-        self.localRelativeFilePath = URL(fileURLWithPath: originalFilePath).lastPathComponent
+        self.localRelativeFilePath = Attachment.localRelativeFilePath(from: originalFilePath)
         self.width = imageSize.map { UInt(floor($0.width)) }
         self.height = imageSize.map { UInt(floor($0.height)) }
         self.duration = duration
@@ -351,8 +351,8 @@ extension Attachment {
                     )
                 
                 // Assume the data is already correct for "uploading" attachments (and don't override it)
-                case (.uploading, .failed), (.uploaded, .failed): return (self.isValid, self.duration)
-                case (_, .failed): return (false, nil)
+                case (.uploading, .failedDownload), (.uploaded, .failedDownload): return (self.isValid, self.duration)
+                case (_, .failedDownload): return (false, nil)
                     
                 default: return (self.isValid, self.duration)
             }
@@ -407,7 +407,7 @@ extension Attachment {
             
             return .voiceMessage
         }()
-        self.state = .pending
+        self.state = .pendingDownload
         self.contentType = (proto.contentType ?? inferContentType(from: proto.fileName))
         self.byteCount = UInt(proto.size)
         self.creationTimestamp = nil
@@ -620,6 +620,13 @@ extension Attachment {
         )
     }
     
+    public static func localRelativeFilePath(from originalFilePath: String?) -> String? {
+        guard let originalFilePath: String = originalFilePath else { return nil }
+        
+        return originalFilePath
+            .substring(from: (Attachment.attachmentsFolder.count + 1))  // Leading forward slash
+    }
+    
     internal static func imageSize(contentType: String, originalFilePath: String) -> CGSize? {
         let isVideo: Bool = MIMETypeUtil.isVideo(contentType)
         let isImage: Bool = MIMETypeUtil.isImage(contentType)
@@ -824,7 +831,7 @@ extension Attachment {
             return
         }
         
-        OWSThumbnailService.shared.ensureThumbnail(
+        ThumbnailService.shared.ensureThumbnail(
             for: self,
             dimensions: dimensions,
             success: { loadedThumbnail in success(loadedThumbnail.image, loadedThumbnail.dataSourceBlock) },
@@ -913,8 +920,7 @@ extension Attachment {
             contentType: OWSMimeTypeImageJpeg,
             byteCount: UInt(thumbnailData.count),
             sourceFilename: thumbnailName,
-            localRelativeFilePath: thumbnailPath
-                .substring(from: (Attachment.attachmentsFolder.count + 1)), // Leading forward slash
+            localRelativeFilePath: Attachment.localRelativeFilePath(from: thumbnailPath),
             width: UInt(thumbnailSize.width),
             height: UInt(thumbnailSize.height),
             isValid: true
@@ -940,9 +946,11 @@ extension Attachment {
         success: (() -> Void)?,
         failure: ((Error) -> Void)?
     ) {
+        // This can occur if an AttachmnetUploadJob was explicitly created for a message
+        // dependant on the attachment being uploaded (in this case the attachment has
+        // already been uploaded so just succeed)
         guard state != .uploaded else {
-            SNLog("Attempted to upload an already uploaded/downloaded attachment.")
-            failure?(AttachmentError.invalidStartState)
+            success?()
             return
         }
         

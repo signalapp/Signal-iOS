@@ -293,12 +293,8 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
     private class func createDataSource(utiType: String, url: URL, customFileName: String?) -> DataSource? {
         if utiType == (kUTTypeURL as String) {
-            // Share URLs as oversize text messages whose text content is the URL.
-            //
-            // NOTE: SharingThreadPickerViewController will try to unpack them
-            //       and send them as normal text messages if possible.
-            let urlString = url.absoluteString
-            return DataSourceValue.dataSource(withOversizeText: urlString)
+            // Share URLs as text messages whose text content is the URL
+            return DataSourceValue.dataSource(withText: url.absoluteString)
         }
         else if UTTypeConformsTo(utiType as CFString, kUTTypeText) {
             // Share text as oversize text messages.

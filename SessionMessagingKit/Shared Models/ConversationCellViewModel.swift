@@ -3,9 +3,12 @@
 import Foundation
 import GRDB
 import DifferenceKit
-import SessionMessagingKit
 
 fileprivate typealias ViewModel = ConversationCell.ViewModel
+
+public enum ConversationCell {}
+
+// MARK: - ViewModel
 
 extension ConversationCell {
     /// This type is used to populate the `ConversationCell` in the `HomeVC`, `MessageRequestsViewController` and the
@@ -53,7 +56,7 @@ extension ConversationCell {
         public static let closedGroupProfileBackFallbackString: String = CodingKeys.closedGroupProfileBackFallback.stringValue
         public static let interactionAttachmentDescriptionInfoString: String = CodingKeys.interactionAttachmentDescriptionInfo.stringValue
         
-        public var differenceIdentifier: ViewModel { self }
+        public var differenceIdentifier: ViewModel { self } // TODO: Confirm this does what we want (ie. update on any data change)
         
         public let threadId: String
         public let threadVariant: SessionThread.Variant
@@ -243,6 +246,7 @@ public extension ConversationCell.ViewModel {
         /// Explicitly set default values for the fields ignored for search results
         let numColumnsBeforeProfiles: Int = 11
         let numColumnsBetweenProfilesAndAttachmentInfo: Int = 10
+        // TODO: Some testing around the subqueries in the joins to see if they impact performance ('Simulator1' device takes ~125ms to complete this query)
         let request: SQLRequest<ViewModel> = """
             SELECT
                 \(thread[.id]) AS \(ViewModel.threadIdKey),
@@ -391,6 +395,7 @@ public extension ConversationCell.ViewModel {
             GROUP BY \(thread[.id])
             ORDER BY \(ordering)
         """
+        
         return request.adapted { db in
             let adapters = try splittingRowAdapters(columnCounts: [
                 numColumnsBeforeProfiles,
@@ -523,7 +528,7 @@ public extension ConversationCell.ViewModel {
         /// parse and might throw
         ///
         /// Explicitly set default values for the fields ignored for search results
-        let numColumnsBeforeProfiles: Int = 11
+        let numColumnsBeforeProfiles: Int = 5
         let request: SQLRequest<ViewModel> = """
             SELECT
                 \(thread[.id]) AS \(ViewModel.threadIdKey),
@@ -680,14 +685,9 @@ public extension ConversationCell.ViewModel {
         
         """
         
-        // Contact thread nickname searching (ignoring note to self - handled separately)
-        sqlQuery += selectQuery
-        sqlQuery += """
+        // MARK: --Contact Threads
+        let contactQueryCommonJoinFilterGroup: SQL = """
             JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
-            JOIN \(profileFullTextSearch) ON (
-                \(profileFullTextSearch).rowid = \(ViewModel.contactProfileKey).rowid AND
-                \(profileFullTextSearch).\(profileNicknameColumnLiteral) MATCH \(pattern)
-            )
             LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON false
             LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackKey) ON false
             LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackFallbackKey) ON false
@@ -706,6 +706,16 @@ public extension ConversationCell.ViewModel {
             GROUP BY \(thread[.id])
         """
         
+        // Contact thread nickname searching (ignoring note to self - handled separately)
+        sqlQuery += selectQuery
+        sqlQuery += """
+            JOIN \(profileFullTextSearch) ON (
+                \(profileFullTextSearch).rowid = \(ViewModel.contactProfileKey).rowid AND
+                \(profileFullTextSearch).\(profileNicknameColumnLiteral) MATCH \(pattern)
+            )
+        """
+        sqlQuery += contactQueryCommonJoinFilterGroup
+        
         // Contact thread name searching (ignoring note to self - handled separately)
         sqlQuery += """
         
@@ -714,26 +724,61 @@ public extension ConversationCell.ViewModel {
         """
         sqlQuery += selectQuery
         sqlQuery += """
-            JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
             JOIN \(profileFullTextSearch) ON (
                 \(profileFullTextSearch).rowid = \(ViewModel.contactProfileKey).rowid AND
                 \(profileFullTextSearch).\(profileNameColumnLiteral) MATCH \(pattern)
             )
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON false
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackKey) ON false
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackFallbackKey) ON false
-            LEFT JOIN \(ClosedGroup.self) ON false
-            LEFT JOIN \(OpenGroup.self) ON false
+        """
+        sqlQuery += contactQueryCommonJoinFilterGroup
+        
+        // MARK: --Closed Group Threads
+        let closedGroupQueryCommonJoinFilterGroup: SQL = """
+            JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
+            JOIN \(GroupMember.self) ON (
+                \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
+                \(groupMember[.groupId]) = \(thread[.id])
+            )
             LEFT JOIN (
                 SELECT
                     \(groupMember[.groupId]),
-                    '' AS \(ViewModel.threadMemberNamesKey)
+                    GROUP_CONCAT(IFNULL(\(profile[.nickname]), \(profile[.name])), ', ') AS \(ViewModel.threadMemberNamesKey)
                 FROM \(GroupMember.self)
-            ) AS \(groupMemberInfoLiteral) ON false
+                JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
+                WHERE \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)"))
+                GROUP BY \(groupMember[.groupId])
+            ) AS \(groupMemberInfoLiteral) ON \(groupMemberInfoLiteral).\(groupMemberGroupIdColumnLiteral) = \(closedGroup[.threadId])
+            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON (
+                \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
+                    SELECT MIN(\(groupMember[.profileId]))
+                    FROM \(GroupMember.self)
+                    WHERE (
+                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
+                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
+                        \(groupMember[.profileId]) != \(userPublicKey)
+                    )
+                )
+            )
+            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackKey) ON (
+                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) != \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) AND
+                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) = (
+                    SELECT MAX(\(groupMember[.profileId]))
+                    FROM \(GroupMember.self)
+                    WHERE (
+                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
+                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
+                        \(groupMember[.profileId]) != \(userPublicKey)
+                    )
+                )
+            )
+            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackFallbackKey) ON (
+                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) IS NULL AND
+                \(ViewModel.closedGroupProfileBackFallbackKey).\(profileIdColumnLiteral) = \(userPublicKey)
+            )
         
-            WHERE
-                \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND
-                \(SQL("\(thread[.id]) != \(userPublicKey)"))
+            LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON false
+            LEFT JOIN \(OpenGroup.self) ON false
+        
+            WHERE \(SQL("\(thread[.variant]) = \(SessionThread.Variant.closedGroup)"))
             GROUP BY \(thread[.id])
         """
         
@@ -745,58 +790,12 @@ public extension ConversationCell.ViewModel {
         """
         sqlQuery += selectQuery
         sqlQuery += """
-            JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
-            JOIN \(GroupMember.self) ON (
-                \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
-                \(groupMember[.groupId]) = \(thread[.id])
-            )
             JOIN \(closedGroupFullTextSearch) ON (
                 \(closedGroupFullTextSearch).rowid = \(closedGroupLiteral).rowid AND
                 \(closedGroupFullTextSearch).\(closedGroupNameColumnLiteral) MATCH \(pattern)
             )
-            LEFT JOIN (
-                SELECT
-                    \(groupMember[.groupId]),
-                    GROUP_CONCAT(IFNULL(\(profile[.nickname]), \(profile[.name])), ', ') AS \(ViewModel.threadMemberNamesKey)
-                FROM \(GroupMember.self)
-                JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
-                WHERE \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)"))
-                GROUP BY \(groupMember[.groupId])
-            ) AS \(groupMemberInfoLiteral) ON \(groupMemberInfoLiteral).\(groupMemberGroupIdColumnLiteral) = \(closedGroup[.threadId])
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON (
-                \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
-                    SELECT MIN(\(groupMember[.profileId]))
-                    FROM \(GroupMember.self)
-                    WHERE (
-                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
-                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
-                        \(groupMember[.profileId]) != \(userPublicKey)
-                    )
-                )
-            )
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackKey) ON (
-                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) != \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) AND
-                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) = (
-                    SELECT MAX(\(groupMember[.profileId]))
-                    FROM \(GroupMember.self)
-                    WHERE (
-                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
-                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
-                        \(groupMember[.profileId]) != \(userPublicKey)
-                    )
-                )
-            )
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackFallbackKey) ON (
-                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) IS NULL AND
-                \(ViewModel.closedGroupProfileBackFallbackKey).\(profileIdColumnLiteral) = \(userPublicKey)
-            )
-        
-            LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON false
-            LEFT JOIN \(OpenGroup.self) ON false
-        
-            WHERE \(SQL("\(thread[.variant]) = \(SessionThread.Variant.closedGroup)"))
-            GROUP BY \(thread[.id])
         """
+        sqlQuery += closedGroupQueryCommonJoinFilterGroup
         
         // Closed group member nickname searching
         sqlQuery += """
@@ -806,59 +805,13 @@ public extension ConversationCell.ViewModel {
         """
         sqlQuery += selectQuery
         sqlQuery += """
-            JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
-            JOIN \(GroupMember.self) ON (
-                \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
-                \(groupMember[.groupId]) = \(thread[.id])
-            )
             JOIN \(Profile.self) AS \(groupMemberProfileLiteral) ON \(groupMemberProfileLiteral).\(profileIdColumnLiteral) = \(groupMember[.profileId])
             JOIN \(profileFullTextSearch) ON (
                 \(profileFullTextSearch).rowid = \(groupMemberProfileLiteral).rowid AND
                 \(profileFullTextSearch).\(profileNicknameColumnLiteral) MATCH \(pattern)
             )
-            LEFT JOIN (
-                SELECT
-                    \(groupMember[.groupId]),
-                    GROUP_CONCAT(IFNULL(\(profile[.nickname]), \(profile[.name])), ', ') AS \(ViewModel.threadMemberNamesKey)
-                FROM \(GroupMember.self)
-                JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
-                WHERE \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)"))
-                GROUP BY \(groupMember[.groupId])
-            ) AS \(groupMemberInfoLiteral) ON \(groupMemberInfoLiteral).\(groupMemberGroupIdColumnLiteral) = \(closedGroup[.threadId])
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON (
-                \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
-                    SELECT MIN(\(groupMember[.profileId]))
-                    FROM \(GroupMember.self)
-                    WHERE (
-                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
-                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
-                        \(groupMember[.profileId]) != \(userPublicKey)
-                    )
-                )
-            )
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackKey) ON (
-                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) != \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) AND
-                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) = (
-                    SELECT MAX(\(groupMember[.profileId]))
-                    FROM \(GroupMember.self)
-                    WHERE (
-                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
-                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
-                        \(groupMember[.profileId]) != \(userPublicKey)
-                    )
-                )
-            )
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackFallbackKey) ON (
-                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) IS NULL AND
-                \(ViewModel.closedGroupProfileBackFallbackKey).\(profileIdColumnLiteral) = \(userPublicKey)
-            )
-        
-            LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON false
-            LEFT JOIN \(OpenGroup.self) ON false
-        
-            WHERE \(SQL("\(thread[.variant]) = \(SessionThread.Variant.closedGroup)"))
-            GROUP BY \(thread[.id])
         """
+        sqlQuery += closedGroupQueryCommonJoinFilterGroup
         
         // Closed group member name searching
         sqlQuery += """
@@ -868,60 +821,15 @@ public extension ConversationCell.ViewModel {
         """
         sqlQuery += selectQuery
         sqlQuery += """
-            JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
-            JOIN \(GroupMember.self) ON (
-                \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
-                \(groupMember[.groupId]) = \(thread[.id])
-            )
             JOIN \(Profile.self) AS \(groupMemberProfileLiteral) ON \(groupMemberProfileLiteral).\(profileIdColumnLiteral) = \(groupMember[.profileId])
             JOIN \(profileFullTextSearch) ON (
                 \(profileFullTextSearch).rowid = \(groupMemberProfileLiteral).rowid AND
                 \(profileFullTextSearch).\(profileNameColumnLiteral) MATCH \(pattern)
             )
-            LEFT JOIN (
-                SELECT
-                    \(groupMember[.groupId]),
-                    GROUP_CONCAT(IFNULL(\(profile[.nickname]), \(profile[.name])), ', ') AS \(ViewModel.threadMemberNamesKey)
-                FROM \(GroupMember.self)
-                JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
-                WHERE \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)"))
-                GROUP BY \(groupMember[.groupId])
-            ) AS \(groupMemberInfoLiteral) ON \(groupMemberInfoLiteral).\(groupMemberGroupIdColumnLiteral) = \(closedGroup[.threadId])
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON (
-                \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
-                    SELECT MIN(\(groupMember[.profileId]))
-                    FROM \(GroupMember.self)
-                    WHERE (
-                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
-                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
-                        \(groupMember[.profileId]) != \(userPublicKey)
-                    )
-                )
-            )
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackKey) ON (
-                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) != \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) AND
-                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) = (
-                    SELECT MAX(\(groupMember[.profileId]))
-                    FROM \(GroupMember.self)
-                    WHERE (
-                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
-                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
-                        \(groupMember[.profileId]) != \(userPublicKey)
-                    )
-                )
-            )
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackFallbackKey) ON (
-                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) IS NULL AND
-                \(ViewModel.closedGroupProfileBackFallbackKey).\(profileIdColumnLiteral) = \(userPublicKey)
-            )
-        
-            LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON false
-            LEFT JOIN \(OpenGroup.self) ON false
-        
-            WHERE \(SQL("\(thread[.variant]) = \(SessionThread.Variant.closedGroup)"))
-            GROUP BY \(thread[.id])
         """
+        sqlQuery += closedGroupQueryCommonJoinFilterGroup
         
+        // MARK: --Open Group Threads
         // Open group thread name searching
         sqlQuery += """
         
@@ -953,17 +861,9 @@ public extension ConversationCell.ViewModel {
             GROUP BY \(thread[.id])
         """
         
-        // Note to self thread searching for 'Note to Self' (need to join an FTS table to
-        // ensure there is a 'rank' column)
-        sqlQuery += """
-        
-            UNION ALL
-        
-        """
-        sqlQuery += selectQuery
-        sqlQuery += """
+        // MARK: --Note to Self Thread
+        let noteToSelfQueryCommonJoins: SQL = """
             JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
-            LEFT JOIN \(profileFullTextSearch) ON false
             LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON false
             LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackKey) ON false
             LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackFallbackKey) ON false
@@ -975,6 +875,22 @@ public extension ConversationCell.ViewModel {
                     '' AS \(ViewModel.threadMemberNamesKey)
                 FROM \(GroupMember.self)
             ) AS \(groupMemberInfoLiteral) ON false
+        """
+        
+        // Note to self thread searching for 'Note to Self' (need to join an FTS table to
+        // ensure there is a 'rank' column)
+        sqlQuery += """
+        
+            UNION ALL
+        
+        """
+        sqlQuery += selectQuery
+        sqlQuery += """
+        
+            LEFT JOIN \(profileFullTextSearch) ON false
+        """
+        sqlQuery += noteToSelfQueryCommonJoins
+        sqlQuery += """
         
             WHERE
                 \(SQL("\(thread[.id]) = \(userPublicKey)")) AND
@@ -989,22 +905,14 @@ public extension ConversationCell.ViewModel {
         """
         sqlQuery += selectQuery
         sqlQuery += """
-            JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
+        
             JOIN \(profileFullTextSearch) ON (
                 \(profileFullTextSearch).rowid = \(ViewModel.contactProfileKey).rowid AND
                 \(profileFullTextSearch).\(profileNicknameColumnLiteral) MATCH \(pattern)
             )
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON false
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackKey) ON false
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackFallbackKey) ON false
-            LEFT JOIN \(ClosedGroup.self) ON false
-            LEFT JOIN \(OpenGroup.self) ON false
-            LEFT JOIN (
-                SELECT
-                    \(groupMember[.groupId]),
-                    '' AS \(ViewModel.threadMemberNamesKey)
-                FROM \(GroupMember.self)
-            ) AS \(groupMemberInfoLiteral) ON false
+        """
+        sqlQuery += noteToSelfQueryCommonJoins
+        sqlQuery += """
         
             WHERE \(SQL("\(thread[.id]) = \(userPublicKey)"))
         """
@@ -1017,22 +925,14 @@ public extension ConversationCell.ViewModel {
         """
         sqlQuery += selectQuery
         sqlQuery += """
-            JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
+        
             JOIN \(profileFullTextSearch) ON (
                 \(profileFullTextSearch).rowid = \(ViewModel.contactProfileKey).rowid AND
                 \(profileFullTextSearch).\(profileNameColumnLiteral) MATCH \(pattern)
             )
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON false
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackKey) ON false
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackFallbackKey) ON false
-            LEFT JOIN \(ClosedGroup.self) ON false
-            LEFT JOIN \(OpenGroup.self) ON false
-            LEFT JOIN (
-                SELECT
-                    \(groupMember[.groupId]),
-                    '' AS \(ViewModel.threadMemberNamesKey)
-                FROM \(GroupMember.self)
-            ) AS \(groupMemberInfoLiteral) ON false
+        """
+        sqlQuery += noteToSelfQueryCommonJoins
+        sqlQuery += """
         
             WHERE \(SQL("\(thread[.id]) = \(userPublicKey)"))
         """
@@ -1081,6 +981,122 @@ public extension ConversationCell.ViewModel {
                 Profile.numberOfSelectedColumns(db)
             ])
 
+            return ScopeAdapter([
+                ViewModel.contactProfileString: adapters[1],
+                ViewModel.closedGroupProfileFrontString: adapters[2],
+                ViewModel.closedGroupProfileBackString: adapters[3],
+                ViewModel.closedGroupProfileBackFallbackString: adapters[4]
+            ])
+        }
+    }
+}
+
+// MARK: - Share Extension
+
+public extension ConversationCell.ViewModel {
+    static func shareQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<ConversationCell.ViewModel>> {
+        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let contact: TypedTableAlias<Contact> = TypedTableAlias()
+        let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
+        let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
+        let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        
+        let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
+        
+        /// **Note:** The `numColumnsBeforeProfiles` value **MUST** match the number of fields before
+        /// the `ViewModel.closedGroupProfileFrontKey` entry below otherwise the query will fail to
+        /// parse and might throw
+        ///
+        /// Explicitly set default values for the fields ignored for search results
+        let numColumnsBeforeProfiles: Int = 6
+        
+        let request: SQLRequest<ViewModel> = """
+            SELECT
+                \(thread[.id]) AS \(ViewModel.threadIdKey),
+                \(thread[.variant]) AS \(ViewModel.threadVariantKey),
+                \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
+                
+                (\(SQL("\(thread[.id]) = \(userPublicKey)"))) AS \(ViewModel.threadIsNoteToSelfKey),
+                \(thread[.isPinned]) AS \(ViewModel.threadIsPinnedKey),
+                \(contact[.isBlocked]) AS \(ViewModel.threadIsBlockedKey),
+        
+                \(ViewModel.contactProfileKey).*,
+                \(ViewModel.closedGroupProfileFrontKey).*,
+                \(ViewModel.closedGroupProfileBackKey).*,
+                \(ViewModel.closedGroupProfileBackFallbackKey).*,
+                \(closedGroup[.name]) AS \(ViewModel.closedGroupNameKey),
+                \(openGroup[.name]) AS \(ViewModel.openGroupNameKey),
+                \(openGroup[.imageData]) AS \(ViewModel.openGroupProfilePictureDataKey),
+        
+                \(SQL("\(userPublicKey)")) AS \(ViewModel.currentUserPublicKeyKey)
+            
+            FROM \(SessionThread.self)
+            LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
+            LEFT JOIN (
+                SELECT *, MAX(\(interaction[.timestampMs]))
+                FROM \(Interaction.self)
+                GROUP BY \(interaction[.threadId])
+            ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
+            LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
+            LEFT JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
+            LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(interaction[.threadId])
+        
+            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON (
+                \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
+                    SELECT MIN(\(groupMember[.profileId]))
+                    FROM \(GroupMember.self)
+                    WHERE (
+                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
+                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
+                        \(SQL("\(groupMember[.profileId]) != \(userPublicKey)"))
+                    )
+                )
+            )
+            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackKey) ON (
+                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) != \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) AND
+                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) = (
+                    SELECT MAX(\(groupMember[.profileId]))
+                    FROM \(GroupMember.self)
+                    WHERE (
+                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
+                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
+                        \(SQL("\(groupMember[.profileId]) != \(userPublicKey)"))
+                    )
+                )
+            )
+            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackFallbackKey) ON (
+                \(closedGroup[.threadId]) IS NOT NULL AND
+                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) IS NULL AND
+                \(ViewModel.closedGroupProfileBackFallbackKey).\(profileIdColumnLiteral) = \(SQL("\(userPublicKey)"))
+            )
+            
+            WHERE (
+                \(thread[.shouldBeVisible]) = true AND (
+                    -- Is not a message request
+                    \(SQL("\(thread[.variant]) != \(SessionThread.Variant.contact)")) OR
+                    \(SQL("\(thread[.id]) = \(userPublicKey)")) OR
+                    \(contact[.isApproved]) = true
+                ) AND (
+                    -- Only show the 'Note to Self' thread if it has an interaction
+                    \(SQL("\(thread[.id]) != \(userPublicKey)")) OR
+                    \(interaction[.id]) IS NOT NULL
+                )
+            )
+        
+            GROUP BY \(thread[.id])
+            ORDER BY IFNULL(\(interaction[.timestampMs]), \(thread[.creationDateTimestamp])) DESC
+        """
+        
+        return request.adapted { db in
+            let adapters = try splittingRowAdapters(columnCounts: [
+                numColumnsBeforeProfiles,
+                Profile.numberOfSelectedColumns(db),
+                Profile.numberOfSelectedColumns(db),
+                Profile.numberOfSelectedColumns(db),
+                Profile.numberOfSelectedColumns(db)
+            ])
+            
             return ScopeAdapter([
                 ViewModel.contactProfileString: adapters[1],
                 ViewModel.closedGroupProfileFrontString: adapters[2],

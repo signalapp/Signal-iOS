@@ -91,8 +91,8 @@ extension ConversationVC:
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], forThreadId threadId: String, messageText: String?) {
         sendAttachments(attachments, with: messageText ?? "")
-        resetMentions()
         self.snInputView.text = ""
+        resetMentions()
         dismiss(animated: true) { }
     }
 
@@ -112,8 +112,8 @@ extension ConversationVC:
         }
 
         scrollToBottom(isAnimated: false)
-        resetMentions()
         self.snInputView.text = ""
+        resetMentions()
     }
 
     func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
@@ -464,9 +464,9 @@ extension ConversationVC:
         DispatchQueue.main.async { [weak self] in
             self?.snInputView.text = ""
             self?.snInputView.quoteDraftInfo = nil
+            
+            self?.resetMentions()
         }
-        
-        resetMentions()
 
         if GRDBStorage.shared[.playNotificationSoundInForeground] {
             let soundID = Preferences.Sound.systemSoundId(for: .messageSent, quiet: true)
@@ -692,11 +692,11 @@ extension ConversationVC:
                 
                 
                 switch mediaView.attachment.state {
-                    case .pending, .downloading, .uploading:
+                    case .pendingDownload, .downloading, .uploading:
                         // TODO: Tapped a failed incoming attachment
                         break
                         
-                    case .failed:
+                    case .failedDownload:
                         // TODO: Tapped a failed incoming attachment
                         break
                         
@@ -755,6 +755,7 @@ extension ConversationVC:
                 // Otherwise share the file
                 let shareVC = UIActivityViewController(activityItems: [ fileUrl ], applicationActivities: nil)
                 navigationController?.present(shareVC, animated: true, completion: nil)
+                
             case .textOnlyMessage:
                 if let reply = viewItem.quotedReply {
                     // Scroll to the source of the reply

@@ -211,7 +211,7 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_REMOVED" = " Fue eliminado del grupo. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ fue eliminado del grupo. ";
+"GROUP_MEMBERS_REMOVED" = "%@ fue eliminado del grupo. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "El grupo se llama ahora «%@».";
 /* No comment provided by engineer. */

@@ -205,13 +205,13 @@
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "Kreirana Grupa";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = " %@ se pridružio grupi. ";
+"GROUP_MEMBER_JOINED" = "%@ se pridružio grupi. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = " %@ je napustio grupu. ";
+"GROUP_MEMBER_LEFT" = "%@ je napustio grupu. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ je uklonjen iz grupe. ";
+"GROUP_MEMBER_REMOVED" = "%@ je uklonjen iz grupe. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ su uklonjeni iz grupe. ";
+"GROUP_MEMBERS_REMOVED" = "%@ su uklonjeni iz grupe. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Naslov je sada %@. ";
 /* No comment provided by engineer. */

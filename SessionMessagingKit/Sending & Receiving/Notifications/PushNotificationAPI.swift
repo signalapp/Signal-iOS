@@ -1,5 +1,8 @@
-import SessionSnodeKit
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import GRDB
 import PromiseKit
+import SessionSnodeKit
 
 @objc(LKPushNotificationAPI)
 public final class PushNotificationAPI : NSObject {
@@ -44,10 +47,20 @@ public final class PushNotificationAPI : NSObject {
         promise.catch2 { error in
             SNLog("Couldn't unregister from push notifications.")
         }
-        // Unsubscribe from all closed groups
-        Storage.shared.getUserClosedGroupPublicKeys().forEach { closedGroupPublicKey in
-            performOperation(.unsubscribe, for: closedGroupPublicKey, publicKey: getUserHexEncodedPublicKey())
+        
+        // Unsubscribe from all closed groups (including ones the user is no longer a member of, just in case)
+        GRDBStorage.shared.read { db in
+            let userPublicKey: String = getUserHexEncodedPublicKey(db)
+            
+            try ClosedGroup
+                .select(.threadId)
+                .asRequest(of: String.self)
+                .fetchAll(db)
+                .forEach { closedGroupPublicKey in
+                    performOperation(.unsubscribe, for: closedGroupPublicKey, publicKey: userPublicKey)
+                }
         }
+        
         return promise
     }
 
@@ -86,10 +99,22 @@ public final class PushNotificationAPI : NSObject {
         promise.catch2 { error in
             SNLog("Couldn't register device token.")
         }
+        
         // Subscribe to all closed groups
-        Storage.shared.getUserClosedGroupPublicKeys().forEach { closedGroupPublicKey in
-            performOperation(.subscribe, for: closedGroupPublicKey, publicKey: publicKey)
+        GRDBStorage.shared.read { db in
+            try ClosedGroup
+                .select(.threadId)
+                .joining(
+                    required: ClosedGroup.members
+                        .filter(GroupMember.Columns.profileId == getUserHexEncodedPublicKey(db))
+                )
+                .asRequest(of: String.self)
+                .fetchAll(db)
+                .forEach { closedGroupPublicKey in
+                    performOperation(.subscribe, for: closedGroupPublicKey, publicKey: publicKey)
+                }
         }
+        
         return promise
     }
 

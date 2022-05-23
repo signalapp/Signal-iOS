@@ -58,7 +58,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         result.separatorStyle = .none
         result.keyboardDismissMode = .onDrag
         result.register(view: EmptySearchResultCell.self)
-        result.register(view: ConversationCell.self)
+        result.register(view: ConversationCell.Full.self)
         result.showsVerticalScrollIndicator = false
         
         return result
@@ -312,12 +312,12 @@ extension GlobalSearchViewController {
                 return cell
                 
             case .contactsAndGroups:
-                let cell: ConversationCell = tableView.dequeue(type: ConversationCell.self, for: indexPath)
+                let cell: ConversationCell.Full = tableView.dequeue(type: ConversationCell.Full.self, for: indexPath)
                 cell.updateForContactAndGroupSearchResult(with: section.elements[indexPath.row], searchText: self.termForCurrentSearchResultSet)
                 return cell
                 
             case .messages:
-                let cell: ConversationCell = tableView.dequeue(type: ConversationCell.self, for: indexPath)
+                let cell: ConversationCell.Full = tableView.dequeue(type: ConversationCell.Full.self, for: indexPath)
                 cell.updateForMessageSearchResult(with: section.elements[indexPath.row], searchText: self.termForCurrentSearchResultSet)
                 return cell
         }

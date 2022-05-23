@@ -209,9 +209,9 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ از گروه خارج شد.";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ از گروه حذف شد. ";
+"GROUP_MEMBER_REMOVED" = "%@ از گروه حذف شد. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ از گروه حذف شدند. ";
+"GROUP_MEMBERS_REMOVED" = "%@ از گروه حذف شدند. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "عنوان ، هم‌اکنون '%@' است.";
 /* No comment provided by engineer. */

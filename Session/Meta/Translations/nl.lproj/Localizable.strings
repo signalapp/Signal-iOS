@@ -205,13 +205,13 @@
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "Groep aangemaakt";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = " %@ is toegevoegd aan de groep. ";
+"GROUP_MEMBER_JOINED" = "%@ is toegevoegd aan de groep. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = " %@ heeft de groep verlaten. ";
+"GROUP_MEMBER_LEFT" = "%@ heeft de groep verlaten. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ is verwijderd uit de groep. ";
+"GROUP_MEMBER_REMOVED" = "%@ is verwijderd uit de groep. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ zijn uit de groep verwijderd. ";
+"GROUP_MEMBERS_REMOVED" = "%@ zijn uit de groep verwijderd. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Titel is nu '%@'. ";
 /* No comment provided by engineer. */

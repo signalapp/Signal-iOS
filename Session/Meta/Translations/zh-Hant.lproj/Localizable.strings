@@ -205,13 +205,13 @@
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "已創立群組";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = " %@ 已加入群組。 ";
+"GROUP_MEMBER_JOINED" = "%@ 已加入群組。 ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = " %@ 已離開群組。 ";
+"GROUP_MEMBER_LEFT" = "%@ 已離開群組。 ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ 被踢出群組。 ";
+"GROUP_MEMBER_REMOVED" = "%@ 被踢出群組。 ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ 已被群組踢出 ";
+"GROUP_MEMBERS_REMOVED" = "%@ 已被群組踢出 ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "標題已更改為 ‘%@‘ ";
 /* No comment provided by engineer. */

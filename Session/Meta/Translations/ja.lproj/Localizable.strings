@@ -209,9 +209,9 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@がグループを離れました";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ はグループから削除されました。 ";
+"GROUP_MEMBER_REMOVED" = "%@ はグループから削除されました。 ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ はグループから削除されました。 ";
+"GROUP_MEMBERS_REMOVED" = "%@ はグループから削除されました。 ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "タイトルが「%@」に変更されました";
 /* No comment provided by engineer. */

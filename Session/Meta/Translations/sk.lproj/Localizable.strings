@@ -205,13 +205,13 @@
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "Skupina vytvorená";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = " %@ sa pripojil/a ku skupine. ";
+"GROUP_MEMBER_JOINED" = "%@ sa pripojil/a ku skupine. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = " %@ opustil/a skupinu. ";
+"GROUP_MEMBER_LEFT" = "%@ opustil/a skupinu. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ bol/a odstránený/á zo skupiny. ";
+"GROUP_MEMBER_REMOVED" = "%@ bol/a odstránený/á zo skupiny. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ boli odstránení zo skupiny. ";
+"GROUP_MEMBERS_REMOVED" = "%@ boli odstránení zo skupiny. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Názov je teraz '%@'. ";
 /* No comment provided by engineer. */

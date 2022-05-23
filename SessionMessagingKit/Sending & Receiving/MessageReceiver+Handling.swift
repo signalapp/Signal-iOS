@@ -392,7 +392,7 @@ extension MessageReceiver {
         let messageSentTimestamp: TimeInterval = (TimeInterval(message.sentTimestamp ?? 0) / 1000)
         let isMainAppActive: Bool = (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false)
         
-        // Update profile if needed (want to do this regarless of whether the message exists or
+        // Update profile if needed (want to do this regardless of whether the message exists or
         // not to ensure the profile info gets sync between a users devices at every chance)
         if let profile = message.profile {
             var contactProfileKey: OWSAES256Key? = nil

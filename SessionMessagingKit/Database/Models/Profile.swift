@@ -17,10 +17,10 @@ public struct Profile: Codable, Identifiable, Equatable, Hashable, FetchableReco
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
         
-        case name = "displayName"
+        case name
         case nickname
         
-        case profilePictureUrl = "profilePictureURL"
+        case profilePictureUrl
         case profilePictureFileName
         case profileEncryptionKey
     }
@@ -66,9 +66,9 @@ public struct Profile: Codable, Identifiable, Equatable, Hashable, FetchableReco
     public var description: String {
         """
         Profile(
-            displayName: \(name),
+            name: \(name),
             profileKey: \(profileEncryptionKey?.keyData.description ?? "null"),
-            profilePictureURL: \(profilePictureUrl ?? "null")
+            profilePictureUrl: \(profilePictureUrl ?? "null")
         )
         """
     }

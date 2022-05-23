@@ -205,13 +205,13 @@
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "สร้างกลุ่มแล้ว";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = " %@ ได้เข้าร่วมกลุ่ม";
+"GROUP_MEMBER_JOINED" = "%@ ได้เข้าร่วมกลุ่ม";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = " %@ ออกจากกลุ่ม ";
+"GROUP_MEMBER_LEFT" = "%@ ออกจากกลุ่ม ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ ถูกลบออกจากกลุ่ม ";
+"GROUP_MEMBER_REMOVED" = "%@ ถูกลบออกจากกลุ่ม ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ ถูกลบออกจากกลุ่ม ";
+"GROUP_MEMBERS_REMOVED" = "%@ ถูกลบออกจากกลุ่ม ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "ชื่อเรื่องเปลี่ยนเป็น %@ แล้ว ";
 /* No comment provided by engineer. */

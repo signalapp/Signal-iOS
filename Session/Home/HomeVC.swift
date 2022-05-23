@@ -55,7 +55,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         )
         result.showsVerticalScrollIndicator = false
         result.register(view: MessageRequestsCell.self)
-        result.register(view: ConversationCell.self)
+        result.register(view: ConversationCell.Full.self)
         result.dataSource = self
         result.delegate = self
         
@@ -245,7 +245,12 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         // Reload the table content (animate changes after the first load)
         tableView.reload(
             using: StagedChangeset(source: viewModel.viewData, target: updatedViewData),
-            with: .automatic,
+            deleteSectionsAnimation: .none,
+            insertSectionsAnimation: .none,
+            reloadSectionsAnimation: .none,
+            deleteRowsAnimation: .bottom,
+            insertRowsAnimation: .top,
+            reloadRowsAnimation: .none,
             interrupt: {
                 print("Interrupt change check: \($0.changeCount)")
                 return $0.changeCount > 100
@@ -350,7 +355,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 return cell
                 
             case .threads:
-                let cell: ConversationCell = tableView.dequeue(type: ConversationCell.self, for: indexPath)
+                let cell: ConversationCell.Full = tableView.dequeue(type: ConversationCell.Full.self, for: indexPath)
                 cell.update(with: section.elements[indexPath.row])
                 return cell
         }

@@ -58,6 +58,7 @@ abstract_target 'GlobalDependencies' do
         pod 'Reachability'
         pod 'SAMKeychain'
         pod 'SwiftProtobuf', '~> 1.5.0'
+        pod 'DifferenceKit'
       end
       
       target 'SessionUtilitiesKit' do

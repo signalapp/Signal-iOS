@@ -47,7 +47,7 @@ public enum MessageSendJob: JobExecutor {
                 
                 // If there were failed attachments then this job should fail (can't send a
                 // message which has associated attachments if the attachments fail to upload)
-                guard !allAttachmentStateInfo.contains(where: { $0.state == .failed }) else {
+                guard !allAttachmentStateInfo.contains(where: { $0.state == .failedDownload }) else {
                     return (true, false)
                 }
                 
@@ -60,7 +60,7 @@ public enum MessageSendJob: JobExecutor {
                 // but not on the message recipients device - both LinkPreview and Quote can
                 // have this case)
                 try allAttachmentStateInfo
-                    .filter { $0.state == .pending || $0.state == .downloaded }
+                    .filter { $0.state == .uploading || $0.state == .downloaded }
                     .compactMap { stateInfo in
                         JobRunner
                             .insert(

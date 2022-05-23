@@ -116,7 +116,7 @@ extension MessageSender {
             }()
             let openGroup: OpenGroup? = try? OpenGroup.fetchOne(db, id: threadId)
             let attachmentStateInfo: [Attachment.StateInfo] = (try? Attachment
-                .stateInfo(interactionId: interactionId, state: .pending)
+                .stateInfo(interactionId: interactionId, state: .uploading)
                 .fetchAll(db))
                 .defaulting(to: [])
             

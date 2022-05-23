@@ -38,6 +38,7 @@ extension GarbageCollectionJob {
         case expiredControlMessageProcessRecords
         case threadTypingIndicators
         case orphanedAttachmentFiles
+        case orphanedProfileAvatars
     }
     
     public struct Details: Codable {

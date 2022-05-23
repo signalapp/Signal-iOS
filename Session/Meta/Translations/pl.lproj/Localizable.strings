@@ -209,9 +209,9 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ opuścił(a) grupę.";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ został usunięty z grupy. ";
+"GROUP_MEMBER_REMOVED" = "%@ został usunięty z grupy. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ zostali usunięci z grupy. ";
+"GROUP_MEMBERS_REMOVED" = "%@ zostali usunięci z grupy. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Nowy tytuł to '%@'. ";
 /* No comment provided by engineer. */

@@ -15,7 +15,7 @@ extern NSString *const OWSMimeTypeImageBmp2;
 extern NSString *const OWSMimeTypeUnknownForTests;
 
 extern NSString *const kOversizeTextAttachmentUTI;
-extern NSString *const kOversizeTextAttachmentFileExtension;
+extern NSString *const kTextAttachmentFileExtension;
 extern NSString *const kUnknownTestAttachmentUTI;
 extern NSString *const kSyncMessageFileExtension;
 

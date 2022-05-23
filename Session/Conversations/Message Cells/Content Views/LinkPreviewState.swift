@@ -95,8 +95,8 @@ public extension LinkPreview {
                     
                     return .loaded
                     
-                case .pending, .downloading, .uploading: return .loading
-                case .failed: return .invalid
+                case .pendingDownload, .downloading, .uploading: return .loading
+                case .failedDownload: return .invalid
             }
         }
 

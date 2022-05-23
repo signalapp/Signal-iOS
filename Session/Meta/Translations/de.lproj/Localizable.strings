@@ -205,13 +205,13 @@
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "Gruppe erstellt.";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = " %@ ist der Gruppe beigetreten.";
+"GROUP_MEMBER_JOINED" = "%@ ist der Gruppe beigetreten.";
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ hat die Gruppe verlassen.";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ wurde aus der Gruppe entfernt. ";
+"GROUP_MEMBER_REMOVED" = "%@ wurde aus der Gruppe entfernt. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ wurden aus der Gruppe entfernt. ";
+"GROUP_MEMBERS_REMOVED" = "%@ wurden aus der Gruppe entfernt. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Gruppenname lautet jetzt »%@«. ";
 /* No comment provided by engineer. */

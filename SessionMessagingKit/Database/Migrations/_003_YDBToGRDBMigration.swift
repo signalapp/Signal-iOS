@@ -774,7 +774,6 @@ enum _003_YDBToGRDBMigration: Migration {
                                         case .sending: return .sending
                                         case .skipped: return .skipped
                                         case .sent: return .sent
-                                        @unknown default: throw GRDBStorageError.migrationFailed
                                     }
                                 }(),
                                 readTimestampMs: legacyState.readTimestamp,
@@ -1227,6 +1226,20 @@ enum _003_YDBToGRDBMigration: Migration {
                     return legacyInteractionIdentifierToIdFallbackMap[fallbackIdentifier]
                 }()
                 
+                // Don't botther adding any 'MessageSend' jobs VisibleMessages which don't have associated
+                // interactions
+                switch legacyJob.message {
+                    case is SMKLegacy._VisibleMessage:
+                        guard interactionId != nil else {
+                            SNLog("[Migration Warning] Unable to find associated interaction to messageSend job, ignoring.")
+                            return
+                        }
+                        
+                        break
+                        
+                    default: break
+                }
+                
                 let job: Job? = try Job(
                     failureCount: legacyJob.failureCount,
                     variant: .messageSend,
@@ -1243,7 +1256,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     )
                 )?.inserted(db)
                 
-                if let oldId: String = legacyJob.id, let newId: Int64 = job?.id {
+                if let oldId: String = legacyJob.id {
                     messageSendJobLegacyMap[oldId] = job
                 }
             }
@@ -1336,6 +1349,10 @@ enum _003_YDBToGRDBMigration: Migration {
         
         Storage.read { transaction in
             transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.preferencesCollection) { key, object, _ in
+                legacyPreferences[key] = object
+            }
+            
+            transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.additionalPreferencesCollection) { key, object, _ in
                 legacyPreferences[key] = object
             }
             
@@ -1447,12 +1464,12 @@ enum _003_YDBToGRDBMigration: Migration {
             switch legacyAttachment {
                 case let stream as SMKLegacy._AttachmentStream:  // Outgoing or already downloaded
                     switch interactionVariant {
-                        case .standardOutgoing: return (stream.isUploaded ? .uploaded : .pending)
+                        case .standardOutgoing: return (stream.isUploaded ? .uploaded : .uploading)
                         default: return .downloaded
                     }
                 
-                // All other cases can just be set to 'pending'
-                default: return .pending
+                // All other cases can just be set to 'pendingDownload'
+                default: return .pendingDownload
             }
         }()
         let size: CGSize = {

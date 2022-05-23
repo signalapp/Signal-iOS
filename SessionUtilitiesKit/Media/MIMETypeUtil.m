@@ -23,7 +23,7 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 NSString *const OWSMimeTypeApplicationZip = @"application/zip";
 NSString *const OWSMimeTypeApplicationPdf = @"application/pdf";
 
-NSString *const kOversizeTextAttachmentFileExtension = @"txt";
+NSString *const kTextAttachmentFileExtension = @"txt";
 NSString *const kUnknownTestAttachmentUTI = @"org.whispersystems.unknown";
 NSString *const kSyncMessageFileExtension = @"bin";
 

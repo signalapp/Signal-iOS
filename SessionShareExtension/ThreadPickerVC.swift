@@ -152,7 +152,7 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         )
     }
     
-    private func handleUpdates(_ updatedViewData: ThreadPickerViewModel.ViewData) {
+    private func handleUpdates(_ updatedViewData: [ConversationCell.ViewModel]) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
         guard hasLoadedInitialData else {
@@ -163,31 +163,23 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         
         // Reload the table content (animate changes after the first load)
         tableView.reload(
-            using: StagedChangeset(source: viewModel.viewData.items, target: updatedViewData.items),
+            using: StagedChangeset(source: viewModel.viewData, target: updatedViewData),
             with: .automatic,
             interrupt: { $0.changeCount > 100 }    // Prevent too many changes from causing performance issues
         ) { [weak self] updatedData in
-            self?.viewModel.updateData(
-                ThreadPickerViewModel.ViewData(
-                    currentUserProfile: updatedViewData.currentUserProfile,
-                    items: updatedData
-                )
-            )
+            self?.viewModel.updateData(updatedData)
         }
     }
     
     // MARK: - UITableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.viewModel.viewData.items.count
+        return self.viewModel.viewData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: SimplifiedConversationCell = tableView.dequeue(type: SimplifiedConversationCell.self, for: indexPath)
-        cell.update(
-            with: self.viewModel.viewData.items[indexPath.row],
-            currentUserProfile: self.viewModel.viewData.currentUserProfile
-        )
+        cell.update(with: self.viewModel.viewData[indexPath.row])
         
         return cell
     }
@@ -200,7 +192,7 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         guard let attachments: [SignalAttachment] = ShareVC.attachmentPrepPromise?.value else { return }
         
         let approvalVC: OWSNavigationController = AttachmentApprovalViewController.wrappedInNavController(
-            threadId: self.viewModel.viewData.items[indexPath.row].id,
+            threadId: self.viewModel.viewData[indexPath.row].threadId,
             attachments: attachments,
             approvalDelegate: self
         )

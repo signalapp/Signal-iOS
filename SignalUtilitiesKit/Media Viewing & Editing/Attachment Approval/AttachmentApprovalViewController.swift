@@ -436,7 +436,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // MARK: - View Helpers
 
     func remove(attachmentItem: SignalAttachmentItem) {
-        if attachmentItem == currentItem {
+        if attachmentItem.isEqual(to: currentItem) {
             if let nextItem = attachmentItemCollection.itemAfter(item: attachmentItem) {
                 setCurrentItem(nextItem, direction: .forward, animated: true)
             }
@@ -449,30 +449,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
         }
 
-        guard let cell = galleryRailView.cellViews.first(where: { $0.item === attachmentItem }) else {
-            owsFailDebug("cell was unexpectedly nil")
-            return
-        }
-
-        UIView.animate(
-            withDuration: 0.2,
-            animations: {
-                // shrink stack view item until it disappears
-                cell.isHidden = true
-                
-                // simultaneously fade out
-                cell.alpha = 0
-            },
-            completion: { [weak self] _ in
-                self?.attachmentItemCollection.remove(item: attachmentItem)
-                
-                if let strongSelf: AttachmentApprovalViewController = self {
-                    self?.approvalDelegate?.attachmentApproval?(strongSelf, didRemoveAttachment: attachmentItem.attachment)
-                }
-                
-                self?.updateMediaRail()
-            }
-        )
+        self.attachmentItemCollection.remove(item: attachmentItem)
+        self.approvalDelegate?.attachmentApproval(self, didRemoveAttachment: attachmentItem.attachment)
+        self.updateMediaRail()
     }
 
     // MARK: - UIPageViewControllerDelegate

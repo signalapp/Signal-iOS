@@ -432,7 +432,7 @@ public enum OnionRequestAPI {
                             guard let bodyAsData = bodyAsString.data(using: .utf8),
                             let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
                             if let timestamp = body["t"] as? Int64 {
-                                let offset = timestamp - Int64(NSDate.millisecondTimestamp())
+                                let offset = timestamp - Int64(floor(Date().timeIntervalSince1970 * 1000))
                                 SnodeAPI.clockOffset = offset
                             }
                             guard 200...299 ~= statusCode else {

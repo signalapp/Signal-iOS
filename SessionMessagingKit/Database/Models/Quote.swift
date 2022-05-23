@@ -102,26 +102,26 @@ public struct Quote: Codable, Equatable, FetchableRecord, PersistableRecord, Tab
 public extension Quote {
     init?(_ db: Database, proto: SNProtoDataMessage, interactionId: Int64, thread: SessionThread) throws {
         guard
-            let quote = proto.quote,
-            quote.id != 0,
-            !quote.author.isEmpty
+            let quoteProto = proto.quote,
+            quoteProto.id != 0,
+            !quoteProto.author.isEmpty
         else { return nil }
         
         self.interactionId = interactionId
-        self.timestampMs = Int64(quote.id)
-        self.authorId = quote.author
+        self.timestampMs = Int64(quoteProto.id)
+        self.authorId = quoteProto.author
 
         // Prefer to generate the text snippet locally if available.
         let quotedInteraction: Interaction? = try? thread
             .interactions
-            .filter(Interaction.Columns.authorId == quote.author)
-            .filter(Interaction.Columns.timestampMs == Double(quote.id))
+            .filter(Interaction.Columns.authorId == quoteProto.author)
+            .filter(Interaction.Columns.timestampMs == Double(quoteProto.id))
             .fetchOne(db)
         
         if let quotedInteraction: Interaction = quotedInteraction, quotedInteraction.body?.isEmpty == false {
             self.body = quotedInteraction.body
         }
-        else if let body: String = proto.body, !body.isEmpty {
+        else if let body: String = quoteProto.text, !body.isEmpty {
             self.body = body
         }
         else {
@@ -129,7 +129,7 @@ public extension Quote {
         }
         
         // We only use the first attachment
-        if let attachment = quote.attachments.first(where: { $0.thumbnail != nil })?.thumbnail {
+        if let attachment = quoteProto.attachments.first(where: { $0.thumbnail != nil })?.thumbnail {
             self.attachmentId = try quotedInteraction
                 .map { quotedInteraction -> Attachment? in
                     // If the quotedInteraction has an attachment then try clone it

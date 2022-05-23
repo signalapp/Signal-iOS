@@ -87,16 +87,16 @@ final class SimplifiedConversationCell: UITableViewCell {
     
     // MARK: - Updating
     
-    public func update(with item: ThreadPickerViewModel.Item, currentUserProfile: Profile) {
-        accentLineView.alpha = (item.isBlocked ? 1 : 0)
+    public func update(with cellViewModel: ConversationCell.ViewModel) {
+        accentLineView.alpha = (cellViewModel.threadIsBlocked == true ? 1 : 0)
         profilePictureView.update(
-            publicKey: item.id,
-            profile: item.profile(currentUserProfile: currentUserProfile),
-            additionalProfile: item.additionalProfile,
-            threadVariant: item.variant,
-            openGroupProfilePicture: item.openGroupProfilePictureData.map { UIImage(data: $0) },
-            useFallbackPicture: (item.variant == .openGroup && item.openGroupProfilePictureData == nil)
+            publicKey: cellViewModel.threadId,
+            profile: cellViewModel.profile,
+            additionalProfile: cellViewModel.additionalProfile,
+            threadVariant: cellViewModel.threadVariant,
+            openGroupProfilePicture: cellViewModel.openGroupProfilePictureData.map { UIImage(data: $0) },
+            useFallbackPicture: (cellViewModel.threadVariant == .openGroup && cellViewModel.openGroupProfilePictureData == nil)
         )
-        displayNameLabel.text = item.displayName(currentUserProfile: currentUserProfile)
+        displayNameLabel.text = cellViewModel.displayName
     }
 }

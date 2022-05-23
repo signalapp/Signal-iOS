@@ -205,13 +205,13 @@
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "Grupp skapad";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = " %@ gick med i gruppen. ";
+"GROUP_MEMBER_JOINED" = "%@ gick med i gruppen. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = " %@ lämnade gruppen. ";
+"GROUP_MEMBER_LEFT" = "%@ lämnade gruppen. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ togs bort från gruppen. ";
+"GROUP_MEMBER_REMOVED" = "%@ togs bort från gruppen. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ togs bort från gruppen. ";
+"GROUP_MEMBERS_REMOVED" = "%@ togs bort från gruppen. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Titeln är nu '%@'. ";
 /* No comment provided by engineer. */

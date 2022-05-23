@@ -504,7 +504,19 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
         
-        AttachmentSharing.showShareUI(for: URL(fileURLWithPath: originalFilePath)) { activityType in
+        let shareVC = UIActivityViewController(activityItems: [ URL(fileURLWithPath: originalFilePath) ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
+        shareVC.completionWithItemsHandler = { activityType, completed, returnedItems, activityError in
+            if let activityError = activityError {
+                SNLog("Failed to share with activityError: \(activityError)")
+            } else if completed {
+                SNLog("Did share with activityType: \(activityType.debugDescription)")
+            }
             guard
                 let activityType = activityType,
                 activityType == .saveToCameraRoll,
@@ -513,7 +525,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             else { return }
             
             GRDBStorage.shared.write { db in
-                
                 guard let thread: SessionThread = try SessionThread.fetchOne(db, id: self.viewModel.threadId) else {
                     return
                 }
@@ -530,6 +541,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
                 )
             }
         }
+        self.present(shareVC, animated: true, completion: nil)
     }
 
     @objc public func didPressDelete(_ sender: Any) {

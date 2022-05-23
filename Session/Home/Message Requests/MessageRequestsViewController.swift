@@ -19,7 +19,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         result.translatesAutoresizingMaskIntoConstraints = false
         result.backgroundColor = .clear
         result.separatorStyle = .none
-        result.register(view: ConversationCell.self)
+        result.register(view: ConversationCell.Full.self)
         result.dataSource = self
         result.delegate = self
 
@@ -189,7 +189,12 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         // Reload the table content (animate changes after the first load)
         tableView.reload(
             using: StagedChangeset(source: viewModel.viewData, target: updatedViewData),
-            with: .automatic,
+            deleteSectionsAnimation: .none,
+            insertSectionsAnimation: .none,
+            reloadSectionsAnimation: .none,
+            deleteRowsAnimation: .bottom,
+            insertRowsAnimation: .top,
+            reloadRowsAnimation: .none,
             interrupt: { $0.changeCount > 100 }    // Prevent too many changes from causing performance issues
         ) { [weak self] updatedData in
             self?.viewModel.updateData(updatedData)
@@ -211,7 +216,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: ConversationCell = tableView.dequeue(type: ConversationCell.self, for: indexPath)
+        let cell: ConversationCell.Full = tableView.dequeue(type: ConversationCell.Full.self, for: indexPath)
         cell.update(with: viewModel.viewData[indexPath.row])
         return cell
     }

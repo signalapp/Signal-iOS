@@ -209,9 +209,9 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ keluar dari group.";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ telah dihapus dari grup. ";
+"GROUP_MEMBER_REMOVED" = "%@ telah dihapus dari grup. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ telah dihapus dari grup. ";
+"GROUP_MEMBERS_REMOVED" = "%@ telah dihapus dari grup. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Topik baru saat ini '%@'.";
 /* No comment provided by engineer. */

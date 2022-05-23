@@ -35,7 +35,6 @@
 #import <SignalCoreKit/OWSAsserts.h>
 #import <SignalCoreKit/OWSLogs.h>
 #import <SignalCoreKit/Threading.h>
-#import <SignalUtilitiesKit/AttachmentSharing.h>
 #import <SessionMessagingKit/Environment.h>
 #import <SessionMessagingKit/OWSAudioPlayer.h>
 #import <SignalUtilitiesKit/OWSFormat.h>

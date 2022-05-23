@@ -436,9 +436,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         
         // Scroll to the last unread message if possible; otherwise scroll to the bottom.
         // When the unread message count is more than the number of view items of a page,
-        // the screen will scroll to the bottom instead of the first unread message.
-        // unreadIndicatorIndex is calculated during loading of the viewItems, so it's
-        // supposed to be accurate.
+        // the screen will scroll to the bottom instead of the first unread message
         DispatchQueue.main.async {
             if let focusedInteractionId: Int64 = self.viewModel.focusedInteractionId {
                 self.scrollToInteraction(with: focusedInteractionId, isAnimated: false, highlighted: true)

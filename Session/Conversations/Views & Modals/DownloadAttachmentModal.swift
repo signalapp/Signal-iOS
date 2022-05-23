@@ -93,7 +93,7 @@ final class DownloadAttachmentModal: Modal {
             // Start downloading any pending attachments for this contact (UI will automatically be
             // updated due to the database observation)
             try Attachment
-                .stateInfo(authorId: profileId, state: .pending)
+                .stateInfo(authorId: profileId, state: .pendingDownload)
                 .fetchAll(db)
                 .forEach { attachmentDownloadInfo in
                     JobRunner.add(

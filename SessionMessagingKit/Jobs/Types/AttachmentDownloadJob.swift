@@ -101,8 +101,10 @@ public enum AttachmentDownloadJob: JobExecutor {
                         .with(
                             state: .downloaded,
                             creationTimestamp: Date().timeIntervalSince1970,
-                            localRelativeFilePath: attachment.originalFilePath?
-                                .substring(from: (Attachment.attachmentsFolder.count + 1))  // Leading forward slash
+                            localRelativeFilePath: (
+                                attachment.localRelativeFilePath ??
+                                Attachment.localRelativeFilePath(from: attachment.originalFilePath)
+                            )
                         )
                         .saved(db)
                 }
@@ -121,7 +123,7 @@ public enum AttachmentDownloadJob: JobExecutor {
                         /// `isValid` and `duration` values based on the downloaded data and the state
                         GRDBStorage.shared.write { db in
                             _ = try attachment
-                                .with(state: .failed)
+                                .with(state: .failedDownload)
                                 .saved(db)
                         }
                         

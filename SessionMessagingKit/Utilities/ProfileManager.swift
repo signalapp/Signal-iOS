@@ -98,7 +98,7 @@ public struct ProfileManager {
     public static func profileAvatarFilepath(filename: String) -> String {
         guard !filename.isEmpty else { return "" }
         
-        return URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
+        return URL(fileURLWithPath: sharedDataProfileAvatarsDirPath)
             .appendingPathComponent(filename)
             .path
     }
