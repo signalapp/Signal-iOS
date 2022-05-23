@@ -76,7 +76,16 @@ def symbolicate_v2(xcode_path, path, output_path):
             file=sys.stderr,
         )
         exit(1)
-    args = ["python3", script_path, "-d", symbols_path, "-o", output_path, path]
+    args = [
+        "python3",
+        script_path,
+        "--dsym",
+        symbols_path,
+        "--output",
+        output_path,
+        "--pretty",
+        path,
+    ]
     subprocess.run(args, check=True)
 
 
