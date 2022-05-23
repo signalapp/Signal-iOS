@@ -8,7 +8,7 @@ extension WebRTCSession: RTCDataChannelDelegate {
         dataChannelConfiguration.isOrdered = true
         dataChannelConfiguration.isNegotiated = true
         dataChannelConfiguration.channelId = 548
-        guard let dataChannel = peerConnection.dataChannel(forLabel: "CONTROL", configuration: dataChannelConfiguration) else {
+        guard let dataChannel = peerConnection?.dataChannel(forLabel: "CONTROL", configuration: dataChannelConfiguration) else {
             SNLog("[Calls] Couldn't create data channel.")
             return nil
         }
