@@ -58,30 +58,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 Environment.shared.audioSession.setup()
                 SSKEnvironment.shared.reachabilityManager.setup()
                 
-                if !Environment.shared.preferences.hasGeneratedThumbnails() {
-                
-                // Disable the SAE until the main app has successfully completed launch process
-                // at least once in the post-SAE world.
-                OWSPreferences.setIsReadyForAppExtensions()
-                
-                // Setup the UI
-                self?.ensureRootViewController()
-                
-                if Identity.userExists() {
-                    let appVersion: AppVersion = AppVersion.sharedInstance()
+                GRDBStorage.shared.writeAsync { db in
+                    // Disable the SAE until the main app has successfully completed launch process
+                    // at least once in the post-SAE world.
+                    db[.isReadyForAppExtensions] = true
                     
-                    // If the device needs to sync config or the user updated to a new version
-                    if
-                        needsConfigSync || (    // TODO: 'needsConfigSync' logic for migrations
-                            (appVersion.lastAppVersion?.count ?? 0) > 0 &&
-                            appVersion.lastAppVersion != appVersion.currentAppVersion
-                        )
-                    {
-                        GRDBStorage.shared.write { db in
+                    if Identity.userExists(db) {
+                        let appVersion: AppVersion = AppVersion.sharedInstance()
+                        
+                        // If the device needs to sync config or the user updated to a new version
+                        if
+                            needsConfigSync || (
+                                (appVersion.lastAppVersion?.count ?? 0) > 0 &&
+                                appVersion.lastAppVersion != appVersion.currentAppVersion
+                            )
+                        {
                             try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
                         }
                     }
                 }
+                
+                // Setup the UI
+                self?.ensureRootViewController()
             }
         )
         

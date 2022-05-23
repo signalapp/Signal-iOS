@@ -49,6 +49,9 @@ public extension Setting.BoolKey {
     
     /// A flag indicating whether the user has ever send a message
     static let hasSentAMessage: Setting.BoolKey = "hasSentAMessageKey"
+    
+    /// A flag indicating whether the app is ready for app extensions to run
+    static let isReadyForAppExtensions: Setting.BoolKey = "isReadyForAppExtensions"
 }
 
 public extension Setting.StringKey {

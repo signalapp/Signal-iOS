@@ -59,6 +59,7 @@ public enum SMKLegacy {
     internal static let preferencesKeyNotificationSoundInForeground = "NotificationSoundInForeground"
     internal static let preferencesKeyHasSavedThreadKey = "hasSavedThread"
     internal static let preferencesKeyHasSentAMessageKey = "User has sent a message"
+    internal static let preferencesKeyIsReadyForAppExtensions = "isReadyForAppExtensions_5"
     
     internal static let readReceiptManagerCollection = "OWSReadReceiptManagerCollection"
     internal static let readReceiptManagerAreReadReceiptsEnabled = "areReadReceiptsEnabled"

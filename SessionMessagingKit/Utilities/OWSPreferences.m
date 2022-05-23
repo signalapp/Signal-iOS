@@ -12,11 +12,9 @@ NSString *const OWSPreferencesKeyCallKitEnabled = @"CallKitEnabled";
 NSString *const OWSPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled";
 NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
-NSString *const OWSPreferencesKeyHasGeneratedThumbnails = @"OWSPreferencesKeyHasGeneratedThumbnails";
 NSString *const OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators
     = @"OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators";
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
-NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
 
 @implementation OWSPreferences
@@ -68,23 +66,6 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 
 #pragma mark - Specific Preferences
 
-+ (BOOL)isReadyForAppExtensions
-{
-    NSNumber *preference = [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKey_IsReadyForAppExtensions];
-
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return NO;
-    }
-}
-
-+ (void)setIsReadyForAppExtensions
-{
-    [NSUserDefaults.appUserDefaults setObject:@(YES) forKey:OWSPreferencesKey_IsReadyForAppExtensions];
-    [NSUserDefaults.appUserDefaults synchronize];
-}
-
 - (BOOL)hasDeclinedNoContactsView
 {
     NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyHasDeclinedNoContactsView];
@@ -95,18 +76,6 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (void)setHasDeclinedNoContactsView:(BOOL)value
 {
     [self setValueForKey:OWSPreferencesKeyHasDeclinedNoContactsView toValue:@(value)];
-}
-
-- (BOOL)hasGeneratedThumbnails
-{
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyHasGeneratedThumbnails];
-    // Default to NO.
-    return preference ? [preference boolValue] : NO;
-}
-
-- (void)setHasGeneratedThumbnails:(BOOL)value
-{
-    [self setValueForKey:OWSPreferencesKeyHasGeneratedThumbnails toValue:@(value)];
 }
 
 - (void)setIOSUpgradeNagDate:(NSDate *)value

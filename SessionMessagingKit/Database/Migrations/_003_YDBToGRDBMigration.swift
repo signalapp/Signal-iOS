@@ -1420,6 +1420,7 @@ enum _003_YDBToGRDBMigration: Migration {
             .bool(forKey: SMKLegacy.userDefaultsHasHiddenMessageRequests)
         db[.hasSavedThread] = (legacyPreferences[SMKLegacy.preferencesKeyHasSavedThreadKey] as? Bool == true)
         db[.hasSentAMessage] = (legacyPreferences[SMKLegacy.preferencesKeyHasSentAMessageKey] as? Bool == true)
+        db[.isReadyForAppExtensions] = CurrentAppContext().appUserDefaults().bool(forKey: SMKLegacy.preferencesKeyIsReadyForAppExtensions)
         
         print("RAWR [\(Date().timeIntervalSince1970)] - Process preferences inserts - End")
         

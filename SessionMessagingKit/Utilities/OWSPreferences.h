@@ -36,9 +36,6 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 
 #pragma mark - Specific Preferences
 
-+ (BOOL)isReadyForAppExtensions;
-+ (void)setIsReadyForAppExtensions;
-
 - (BOOL)hasSentAMessage;
 - (void)setHasSentAMessage:(BOOL)enabled;
 
@@ -47,9 +44,6 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 
 - (void)setIOSUpgradeNagDate:(NSDate *)value;
 - (nullable NSDate *)iOSUpgradeNagDate;
-
-- (BOOL)hasGeneratedThumbnails;
-- (void)setHasGeneratedThumbnails:(BOOL)value;
 
 - (BOOL)shouldShowUnidentifiedDeliveryIndicators;
 - (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value;
