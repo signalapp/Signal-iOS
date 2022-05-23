@@ -8,8 +8,8 @@ import MediaPlayer
 import PromiseKit
 import SessionUIKit
 import CoreServices
+import SessionMessagingKit
 
-@objc
 public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
     func attachmentApproval(
         _ attachmentApproval: AttachmentApprovalViewController,
@@ -25,14 +25,12 @@ public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
         didChangeMessageText newMessageText: String?
     )
 
-    @objc
-    optional func attachmentApproval(
+    func attachmentApproval(
         _ attachmentApproval: AttachmentApprovalViewController,
         didRemoveAttachment attachment: SignalAttachment
     )
 
-    @objc
-    optional func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController)
+    func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController)
 }
 
 // MARK: -
@@ -45,9 +43,8 @@ public enum AttachmentApprovalViewControllerMode: UInt {
 
 // MARK: -
 
-@objc
 public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
-    @objc public enum Mode: UInt {
+    public enum Mode: UInt {
         case modal
         case sharedNavigation
     }
@@ -122,7 +119,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         notImplemented()
     }
 
-    @objc
     required public init(
         mode: Mode,
         threadId: String,
@@ -248,7 +244,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         
         // If the first item is just text, or is a URL and LinkPreviews are disabled
         // then just fill the 'message' box with it
-        if firstItem.attachment.isText || (firstItem.attachment.isUrl && OWSLinkPreview.previewURL(forRawBodyText: firstItem.attachment.text()) == nil) {
+        if firstItem.attachment.isText || (firstItem.attachment.isUrl && LinkPreview.previewUrl(for: firstItem.attachment.text()) == nil) {
             bottomToolView.attachmentTextToolbar.messageText = firstItem.attachment.text()
         }
 
@@ -607,9 +603,13 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                     return GalleryRailCellView()
             }
         }
-
+        
         galleryRailView.configureCellViews(
-            itemProvider: attachmentItemCollection,
+            album: (attachmentItemCollection.attachmentItems as [GalleryRailItem])
+                .appending(attachmentItemCollection.isAddMoreVisible ?
+                    AddMoreRailItem() :
+                    nil
+                ),
             focusedItem: currentItem,
             cellViewBuilder: cellViewBuilder
         )
@@ -797,17 +797,11 @@ extension SignalAttachmentItem: GalleryRailItem {
 
         return imageView
     }
-}
-
-// MARK: -
-
-extension AttachmentItemCollection: GalleryRailItemProvider {
-    var railItems: [GalleryRailItem] {
-        if isAddMoreVisible {
-            return self.attachmentItems + [AddMoreRailItem()]
-        } else {
-            return self.attachmentItems
-        }
+    
+    func isEqual(to other: GalleryRailItem?) -> Bool {
+        guard let otherAttachmentItem: SignalAttachmentItem = other as? SignalAttachmentItem else { return false }
+        
+        return (self.attachment == otherAttachmentItem.attachment)
     }
 }
 
@@ -816,7 +810,7 @@ extension AttachmentItemCollection: GalleryRailItemProvider {
 extension AttachmentApprovalViewController: GalleryRailViewDelegate {
     public func galleryRailView(_ galleryRailView: GalleryRailView, didTapItem imageRailItem: GalleryRailItem) {
         if imageRailItem is AddMoreRailItem {
-            self.approvalDelegate?.attachmentApprovalDidTapAddMore?(self)
+            self.approvalDelegate?.attachmentApprovalDidTapAddMore(self)
             return
         }
 

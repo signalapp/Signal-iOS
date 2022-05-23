@@ -8,7 +8,6 @@
 #import <SignalUtilitiesKit/OWSDatabaseMigration.h>
 #import <SessionMessagingKit/OWSBackgroundTask.h>
 #import <SessionMessagingKit/OWSStorage.h>
-#import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -44,7 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         OWSPreferences *preferences = [OWSPreferences new];
 
-        TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
@@ -59,15 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
         // TODO: Add this back
         // TODO: Refactor this file to Swift
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithPrimaryStorage:primaryStorage
-                                                                tsAccountManager:tsAccountManager
                                                              reachabilityManager:reachabilityManager]];
-//        [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithPrimaryStorage:primaryStorage
-//                                                                tsAccountManager:tsAccountManager
-//                                                         disappearingMessagesJob:disappearingMessagesJob
-//                                                              readReceiptManager:readReceiptManager
-//                                                          outgoingReceiptManager:outgoingReceiptManager
-//                                                             reachabilityManager:reachabilityManager
-//                                                                typingIndicators:typingIndicators]];
 
         appSpecificSingletonBlock();
 
@@ -77,7 +67,6 @@ NS_ASSUME_NONNULL_BEGIN
         [SNConfiguration performMainSetup]; // Must happen before the performUpdateCheck call below
 
         // Register renamed classes.
-        [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
 
         [OWSStorage registerExtensionsWithMigrationBlock:^() {

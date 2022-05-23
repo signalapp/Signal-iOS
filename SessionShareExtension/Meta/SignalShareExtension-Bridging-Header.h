@@ -19,4 +19,3 @@
 #import <SessionMessagingKit/AppReadiness.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SessionUtilitiesKit/OWSMath.h>
-#import <SessionMessagingKit/TSAccountManager.h>

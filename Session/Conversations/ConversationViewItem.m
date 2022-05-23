@@ -6,11 +6,8 @@
 #import "ConversationViewItem.h"
 #import "Session-Swift.h"
 #import "AnyPromise.h"
-#import <SignalUtilitiesKit/OWSUnreadIndicator.h>
 #import <SessionUtilitiesKit/NSData+Image.h>
 #import <SessionUtilitiesKit/NSString+SSK.h>
-#import <SessionMessagingKit/TSInteraction.h>
-#import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

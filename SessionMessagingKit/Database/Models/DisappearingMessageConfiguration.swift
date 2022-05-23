@@ -64,7 +64,7 @@ public extension DisappearingMessagesConfiguration {
         
         var previewText: String {
             guard let senderName: String = senderName else {
-                // Changed by localNumber on this device or via synced transcript
+                // Changed by this device or via synced transcript
                 guard isEnabled, durationSeconds > 0 else { return "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION".localized() }
                 
                 return String(

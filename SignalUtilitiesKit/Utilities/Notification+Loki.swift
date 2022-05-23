@@ -1,9 +1,8 @@
-import UIKit
+import Foundation
 
 public extension Notification.Name {
 
     // State changes
-    static let registrationStateDidChange = Notification.Name("registrationStateDidChange")
     static let blockedContactsUpdated = Notification.Name("blockedContactsUpdated")
     static let contactOnlineStatusChanged = Notification.Name("contactOnlineStatusChanged")
     static let threadDeleted = Notification.Name("threadDeleted")
@@ -17,7 +16,6 @@ public extension Notification.Name {
 @objc public extension NSNotification {
 
     // State changes
-    @objc static let registrationStateDidChange = Notification.Name.registrationStateDidChange.rawValue as NSString
     @objc static let blockedContactsUpdated = Notification.Name.blockedContactsUpdated.rawValue as NSString
     @objc static let contactOnlineStatusChanged = Notification.Name.contactOnlineStatusChanged.rawValue as NSString
     @objc static let threadDeleted = Notification.Name.threadDeleted.rawValue as NSString

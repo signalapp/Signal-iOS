@@ -6,7 +6,6 @@ import SessionUtilitiesKit
 @objc
 public class SSKEnvironment: NSObject {
     @objc public let primaryStorage: OWSPrimaryStorage
-    public let tsAccountManager: TSAccountManager
     public let reachabilityManager: SSKReachabilityManager
     
     // Note: This property is configured after Environment is created.
@@ -27,11 +26,9 @@ public class SSKEnvironment: NSObject {
     
     @objc public init(
         primaryStorage: OWSPrimaryStorage,
-        tsAccountManager: TSAccountManager,
         reachabilityManager: SSKReachabilityManager
     ) {
         self.primaryStorage = primaryStorage
-        self.tsAccountManager = tsAccountManager
         self.reachabilityManager = reachabilityManager
         
         self.objectReadWriteConnection = primaryStorage.newDatabaseConnection()

@@ -67,24 +67,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 // Setup the UI
                 self?.ensureRootViewController()
                 
-                
-                // Every time the user upgrades to a new version:
-                //
-                // * Update account attributes.
-                // * Sync configuration.
                 if Identity.userExists() {
-                    // TODO: This
-//                    AppVersion *appVersion = AppVersion.sharedInstance;
-//                    if (appVersion.lastAppVersion.length > 0
-//                        && ![appVersion.lastAppVersion isEqualToString:appVersion.currentAppVersion]) {
-//                        [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
-//                    }
-                }
-                
-                // If we need a config sync then trigger it now
-                if (needsConfigSync) {
-                    GRDBStorage.shared.write { db in
-                        try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                    let appVersion: AppVersion = AppVersion.sharedInstance()
+                    
+                    // If the device needs to sync config or the user updated to a new version
+                    if
+                        needsConfigSync || (    // TODO: 'needsConfigSync' logic for migrations
+                            (appVersion.lastAppVersion?.count ?? 0) > 0 &&
+                            appVersion.lastAppVersion != appVersion.currentAppVersion
+                        )
+                    {
+                        GRDBStorage.shared.write { db in
+                            try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                        }
                     }
                 }
             }

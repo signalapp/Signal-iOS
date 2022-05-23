@@ -7,7 +7,6 @@
 #import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SessionUtilitiesKit/NSUserDefaults+OWS.h>
-#import <SessionMessagingKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabase.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
@@ -17,15 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 #define NEEDS_TO_REGISTER_ATTRIBUTES @"Register Attributes"
 
 @implementation VersionMigrations
-
-#pragma mark - Dependencies
-
-+ (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-    
-    return SSKEnvironment.shared.tsAccountManager;
-}
 
 #pragma mark - Utility methods
 
@@ -56,12 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
         });
         return;
     }
-
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [self.tsAccountManager isRegistered]) {
+    
+    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [SUKIdentity userExists]) {
         [self clearVideoCache];
     }
 
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] && [self.tsAccountManager isRegistered]) {
+    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] && [SUKIdentity userExists]) {
         [self clearBloomFilterCache];
     }
 

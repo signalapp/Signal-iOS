@@ -56,7 +56,6 @@
 #import <SignalUtilitiesKit/OWSDispatch.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
-#import <SessionMessagingKit/TSAccountManager.h>
 #import <SessionUtilitiesKit/LKGroupUtilities.h>
 #import <SessionUtilitiesKit/UIImage+OWS.h>
 #import <YYImage/YYImage.h>

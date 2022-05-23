@@ -3,7 +3,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <SessionMessagingKit/SSKEnvironment.h>
 #import <SessionMessagingKit/YapDatabaseConnection+OWS.h>
 #import <SessionMessagingKit/YapDatabaseTransaction+OWS.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>

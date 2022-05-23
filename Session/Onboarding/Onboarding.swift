@@ -16,7 +16,7 @@ enum Onboarding {
             let userDefaults = UserDefaults.standard
             Identity.store(seed: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
             let x25519PublicKey = x25519KeyPair.hexEncodedPublicKey
-            TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = x25519PublicKey
+            
             GRDBStorage.shared.write { db in
                 try Contact(id: x25519PublicKey)
                     .with(

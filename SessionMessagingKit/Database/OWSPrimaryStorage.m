@@ -5,11 +5,9 @@
 #import "OWSPrimaryStorage.h"
 #import "AppContext.h"
 #import "OWSFileSystem.h"
-#import "OWSIncomingMessageFinder.h"
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 #import "OWSStorage.h"
 #import "OWSStorage+Subclass.h"
-#import "SSKEnvironment.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
@@ -173,8 +171,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
 
     [FullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
-    [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:self];
-    [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
     [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
 
     [self.database

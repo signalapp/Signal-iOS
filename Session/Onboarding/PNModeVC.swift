@@ -1,4 +1,6 @@
+import UIKit
 import PromiseKit
+import SessionMessagingKit
 
 final class PNModeVC : BaseVC, OptionViewDelegate {
 
@@ -94,7 +96,7 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
             return present(alert, animated: true, completion: nil)
         }
         UserDefaults.standard[.isUsingFullAPNs] = (selectedOptionView == apnsOptionView)
-        TSAccountManager.sharedInstance().didRegister()
+        Identity.didRegister()
         let homeVC = HomeVC()
         navigationController!.setViewControllers([ homeVC ], animated: true)
         

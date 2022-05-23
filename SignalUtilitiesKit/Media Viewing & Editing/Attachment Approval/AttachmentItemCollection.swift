@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SessionMessagingKit
 
 class AddMoreRailItem: GalleryRailItem {
     func buildRailItemView() -> UIView {

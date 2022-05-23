@@ -50,8 +50,8 @@ public enum SyncPushTokensJob: JobExecutor {
         
         PushRegistrationManager.shared.requestPushTokens()
             .then { (pushToken: String, voipToken: String) -> Promise<Void> in
-                let lastPushToken: String? = GRDBStorage.shared.read { db in db[.lastRecordedPushToken] }
-                let lastVoipToken: String? = GRDBStorage.shared.read { db in db[.lastRecordedVoipToken] }
+                let lastPushToken: String? = GRDBStorage.shared[.lastRecordedPushToken]
+                let lastVoipToken: String? = GRDBStorage.shared[.lastRecordedVoipToken]
                 let shouldUploadTokens: Bool = (
                     !uploadOnlyIfStale || (
                         lastPushToken != pushToken ||
@@ -64,14 +64,13 @@ public enum SyncPushTokensJob: JobExecutor {
                 
                 let (promise, seal) = Promise<Void>.pending()
                 
-                SSKEnvironment.shared.tsAccountManager
-                    .registerForPushNotifications(
-                        pushToken: pushToken,
-                        voipToken: voipToken,
-                        isForcedUpdate: shouldUploadTokens,
-                        success: { seal.fulfill(()) },
-                        failure: seal.reject
-                    )
+                SyncPushTokensJob.registerForPushNotifications(
+                    pushToken: pushToken,
+                    voipToken: voipToken,
+                    isForcedUpdate: shouldUploadTokens,
+                    success: { seal.fulfill(()) },
+                    failure: seal.reject
+                )
                 
                 return promise
                     .done { _ in
@@ -117,6 +116,46 @@ extension SyncPushTokensJob {
 
 private func redact(_ string: String) -> String {
     return OWSIsDebugBuild() ? string : "[ READACTED \(string.prefix(2))...\(string.suffix(2)) ]"
+}
+
+extension SyncPushTokensJob {
+    fileprivate static func registerForPushNotifications(
+        pushToken: String,
+        voipToken: String,
+        isForcedUpdate: Bool,
+        success: @escaping () -> (),
+        failure: @escaping (Error) -> (),
+        remainingRetries: Int = 3
+    ) {
+        let isUsingFullAPNs: Bool = UserDefaults.standard[.isUsingFullAPNs]
+        let pushTokenAsData = Data(hex: pushToken)
+        let promise: Promise<Void> = (isUsingFullAPNs ?
+            PushNotificationAPI.register(
+                with: pushTokenAsData,
+                publicKey: getUserHexEncodedPublicKey(),
+                isForcedUpdate: isForcedUpdate
+            ) :
+            PushNotificationAPI.unregister(pushTokenAsData)
+        )
+        
+        promise
+            .done { success() }
+            .catch { error in
+                guard remainingRetries == 0 else {
+                    SyncPushTokensJob.registerForPushNotifications(
+                        pushToken: pushToken,
+                        voipToken: voipToken,
+                        isForcedUpdate: isForcedUpdate,
+                        success: success,
+                        failure: failure,
+                        remainingRetries: (remainingRetries - 1)
+                    )
+                    return
+                }
+                
+                failure(error)
+            }
+    }
 }
 
 // MARK: - Objective C Support

@@ -26,9 +26,6 @@ import SignalUtilitiesKit
     }
 
     @objc
-    public var accountManager: AccountManager
-
-    @objc
     public var notificationPresenter: NotificationPresenter
 
     @objc
@@ -47,7 +44,6 @@ import SignalUtilitiesKit
     }
 
     private override init() {
-        self.accountManager = AccountManager()
         self.notificationPresenter = NotificationPresenter()
         self.pushRegistrationManager = PushRegistrationManager()
         self._userNotificationActionHandler = UserNotificationActionHandler()

@@ -128,3 +128,28 @@ public extension Identity {
         }
     }
 }
+
+// MARK: - Convenience
+
+public extension Notification.Name {
+    static let registrationStateDidChange = Notification.Name("registrationStateDidChange")
+}
+
+public extension Identity {
+    static func didRegister() {
+        NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
+    }
+}
+
+// MARK: - Objective-C Support
+
+// TODO: Remove this when possible
+@objc(SUKIdentity)
+public class SUKIdentity: NSObject {
+    @objc(userExists)
+    public static func userExists() -> Bool {
+        return GRDBStorage.shared
+            .read { db in Identity.userExists(db) }
+            .defaulting(to: false)
+    }
+}
