@@ -429,12 +429,12 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         Storage.write { transaction in
             self.thread.setDraft(text, transaction: transaction)
         }
-        self.resignFirstResponder()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         mediaCache.removeAllObjects()
+        self.resignFirstResponder()
     }
     
     override func appDidBecomeActive(_ notification: Notification) {
