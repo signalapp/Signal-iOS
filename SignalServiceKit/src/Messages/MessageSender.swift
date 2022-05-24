@@ -1114,7 +1114,7 @@ extension MessageSender {
             owsFailDebug("No devices to add or remove.")
             return
         }
-        owsAssertDebug(Set(devicesToAdd).intersection(Set(devicesToRemove)).isEmpty)
+        owsAssertDebug(Set(devicesToAdd).isDisjoint(with: devicesToRemove))
 
         if !devicesToAdd.isEmpty, address.isLocalAddress {
             deviceManager.setMayHaveLinkedDevices()

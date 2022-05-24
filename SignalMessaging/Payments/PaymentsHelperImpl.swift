@@ -584,9 +584,9 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
                     owsFailDebug("Duplicate paymentModel.")
                     return true
                 }
-                let otherSpentKeyImages = Set(otherPaymentModel.mobileCoin?.spentKeyImages ?? [])
-                let otherOutputPublicKeys = Set(otherPaymentModel.mobileCoin?.outputPublicKeys ?? [])
-                if !spentKeyImages.intersection(otherSpentKeyImages).isEmpty {
+                let otherSpentKeyImages = otherPaymentModel.mobileCoin?.spentKeyImages ?? []
+                let otherOutputPublicKeys = otherPaymentModel.mobileCoin?.outputPublicKeys ?? []
+                if !spentKeyImages.isDisjoint(with: otherSpentKeyImages) {
                     for value in spentKeyImages {
                         Logger.verbose("spentKeyImage: \(value.hexadecimalString)")
                     }
@@ -596,7 +596,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
                     owsFailDebug("spentKeyImage conflict.")
                     return true
                 }
-                if !outputPublicKeys.intersection(otherOutputPublicKeys).isEmpty {
+                if !outputPublicKeys.isDisjoint(with: otherOutputPublicKeys) {
                     for value in outputPublicKeys {
                         Logger.verbose("outputPublicKey: \(value.hexadecimalString)")
                     }

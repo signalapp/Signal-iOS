@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -252,7 +252,7 @@ public class CVLoadCoordinator: NSObject {
                 threadAddressKeys.insert(phoneNumber)
             }
         }
-        let shouldReload = !notificationAddressKeys.intersection(threadAddressKeys).isEmpty
+        let shouldReload = !notificationAddressKeys.isDisjoint(with: threadAddressKeys)
         if shouldReload {
             enqueueReloadWithoutCaches()
         }
