@@ -155,7 +155,6 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     OWSLogInfo(@"Signal Commit: %@", buildDetails[@"SignalCommit"]);
     OWSLogInfo(@"WebRTC Commit: %@", buildDetails[@"WebRTCCommit"]);
     OWSLogInfo(@"Build XCode Version: %@", buildDetails[@"XCodeVersion"]);
-    OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
     OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
 
     OWSLogInfo(@"Core count: %lu (active: %lu)",
