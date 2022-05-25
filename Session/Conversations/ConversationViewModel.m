@@ -333,6 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(applicationWillEnterForeground:)
                                                  name:OWSApplicationWillEnterForegroundNotification
                                                object:nil];
+    [self addNotificationListeners];
 }
 
 - (void)viewDidLoad
