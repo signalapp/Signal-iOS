@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can&apos;t select more than 1 chat.</string>
+			<string>You can’t select more than 1 chat.</string>
 			<key>other</key>
-			<string>You can&apos;t select more than %d chats.</string>
+			<string>You can’t select more than %d chats.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -648,9 +648,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can&apos;t share more than 1 item.</string>
+			<string>You can’t share more than 1 item.</string>
 			<key>other</key>
-			<string>You can&apos;t share more than %d items.</string>
+			<string>You can’t share more than %d items.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -840,9 +840,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoke group invite sent by &quot;%2$@&quot;?</string>
+			<string>Revoke group invite sent by “%2$@”?</string>
 			<key>other</key>
-			<string>Revoke %d invites sent by &quot;%2$@&quot;?</string>
+			<string>Revoke %d invites sent by “%2$@”?</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
