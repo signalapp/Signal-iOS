@@ -391,14 +391,26 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
 
+/* Indicates that a contact cannot receive badges because they need to update Signal */
+"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
 
-/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because we couldn’t process your payment. Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment method in Apple Pay and subscribe again.";
+/* Title on the screen where you choose a gift badge's recipient */
+"BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "انتخاب گیرنده";
+
+/* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+
+/* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
+"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+
+/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
@@ -1582,6 +1594,45 @@
 /* Title for donate megaphone */
 "DONATE_MEGAPHONE_TITLE" = "حمایت از سیگنال";
 
+/* Donation payment error for decline failures where authentication is required. */
+"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "یک روش پرداختی دیگر را امتحان کنید یا با بانک خود برای اطلاعات بیشتر تماس بگیرید.";
+
+/* Donation payment error for decline failures where the user may need to contact their card or bank. */
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+
+/* Donation payment error for decline failures where the card is not supported. */
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+
+/* Donation payment error for decline failures where the card has expired. */
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+
+/* Donation payment error for decline failures where the card number is incorrect. */
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+
+/* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+
+/* Donation payment error for decline failures where the card has insufficient funds. */
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+
+/* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+
+/* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+
+/* Donation payment error for decline failures where the card number is incorrect. */
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+
+/* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
+"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "دوباره تکمیل پرداخت را امتحان کنید یا برای اطلاعات بیشتر با بانک خود تماس بگیرید.";
+
+/* Donation payment error for unspecified decline failures. */
+"DONATION_PAYMENT_ERROR_OTHER" = "یک روش پرداختی دیگر را امتحان کنید یا با بانک خود برای اطلاعات بیشتر تماس بگیرید.";
+
+/* Donation payment error for decline failures where the payment cannot be authorized. */
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Amount";
 
@@ -2722,12 +2773,6 @@
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
 "GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "شما به پذیرفتن یک دعوت برای پیوستن دوباره به این گروه نیاز خواهید داشت و پیام‌های گروه را تا زمانی که نپذیرید دریافت نخواهید کرد.";
 
-/* Label for the 'migrate' button in the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "ارتقا‌ی گروه";
-
-/* Title for the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "برای دسترسی به قابلیت‌های جدید مثل اشاره‌ها@ و مدیران این گروه را ارتقا دهید.";
-
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "گروه‌های جدید چیستند؟";
 
@@ -2973,6 +3018,9 @@
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "پیوستن";
+
+/* Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot */
+"JOINED_WITH_DOT" = "%@ · %@";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "رفتن به تمام رسانه‌ها";

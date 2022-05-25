@@ -391,14 +391,26 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "每月定期捐贈已取消";
 
+/* Indicates that a contact cannot receive badges because they need to update Signal */
+"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "以某人的名義向 Signal 捐款。他們將獲得一個徽章，以展示在他們的個人資料照片上。";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "贈送徽章";
 
-/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because we couldn’t process your payment. Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment method in Apple Pay and subscribe again.";
+/* Title on the screen where you choose a gift badge's recipient */
+"BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "選擇收件人";
+
+/* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+
+/* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
+"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+
+/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "你的每月定期捐款被自動取消，因為你太久沒有活動。你的個人資料上不會再顯示你的%@徽章。\n\n你可以繼續使用 Signal，若要支持該app並重新啟動你的徽章，請立即續訂。";
@@ -1582,6 +1594,45 @@
 /* Title for donate megaphone */
 "DONATE_MEGAPHONE_TITLE" = "贊助 Signal";
 
+/* Donation payment error for decline failures where authentication is required. */
+"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "嘗試其他付款方式或聯繫你的銀行以獲得更多訊息。";
+
+/* Donation payment error for decline failures where the user may need to contact their card or bank. */
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+
+/* Donation payment error for decline failures where the card is not supported. */
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+
+/* Donation payment error for decline failures where the card has expired. */
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+
+/* Donation payment error for decline failures where the card number is incorrect. */
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+
+/* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+
+/* Donation payment error for decline failures where the card has insufficient funds. */
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+
+/* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+
+/* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+
+/* Donation payment error for decline failures where the card number is incorrect. */
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+
+/* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
+"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "請嘗試再次付款或聯繫你的銀行以取得更多資訊。";
+
+/* Donation payment error for unspecified decline failures. */
+"DONATION_PAYMENT_ERROR_OTHER" = "嘗試其他付款方式或聯繫你的銀行以獲得更多訊息。";
+
+/* Donation payment error for decline failures where the payment cannot be authorized. */
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "金額";
 
@@ -2722,12 +2773,6 @@
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
 "GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "你將需要接受邀請才能再次加入該群組，並且在你接受之前，你將不會收到群組訊息。";
 
-/* Label for the 'migrate' button in the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "升級群組";
-
-/* Title for the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "要連結@提及和管理員等新功能，請升級此群組。";
-
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "什麼是新群組？";
 
@@ -2974,6 +3019,9 @@
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "加入";
 
+/* Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot */
+"JOINED_WITH_DOT" = "%@ · %@";
+
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "前往所有的媒體";
 
@@ -3161,10 +3209,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "通話";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime 語音";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime 影像";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "傳送文字訊息";
@@ -4823,10 +4871,10 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "關閉";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "你將遺失拍攝的所有照片或影片。";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "要關閉多重模式嗎？";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "透過未加密的簡訊邀請朋友？";
