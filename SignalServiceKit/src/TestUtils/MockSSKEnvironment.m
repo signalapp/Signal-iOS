@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];
     OWSReceiptManager *receiptManager = [OWSReceiptManager new];
     OWSOutgoingReceiptManager *outgoingReceiptManager = [OWSOutgoingReceiptManager new];
-    id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
+    id<SSKReachabilityManager> reachabilityManager = [MockSSKReachabilityManager new];
     id<SyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
     id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
     OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];

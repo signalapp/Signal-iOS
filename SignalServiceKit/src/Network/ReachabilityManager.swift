@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -47,7 +47,7 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
 
     private let backgroundSession = OWSURLSession(
         securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
-        configuration: .background(withIdentifier: "backgroundSession")
+        configuration: .background(withIdentifier: "SSKReachabilityManagerImpl")
     )
 
     // This property should only be accessed on the main thread.
@@ -181,3 +181,15 @@ private extension NetworkInterface {
         }
     }
 }
+
+// MARK: -
+
+#if TESTABLE_BUILD
+
+@objc
+public class MockSSKReachabilityManager: NSObject, SSKReachabilityManager {
+    public var isReachable: Bool = false
+    public func isReachable(via reachabilityType: ReachabilityType) -> Bool { isReachable }
+}
+
+#endif
