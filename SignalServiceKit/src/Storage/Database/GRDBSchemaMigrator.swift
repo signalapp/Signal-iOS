@@ -17,40 +17,23 @@ public class GRDBSchemaMigrator: NSObject {
     // Returns true IFF incremental migrations were performed.
     @objc
     public func runSchemaMigrations() -> Bool {
-        var didPerformIncrementalMigrations = false
+        let didPerformIncrementalMigrations: Bool
 
         if hasCreatedInitialSchema {
-            Logger.info("Using incrementalMigrator.")
-            let previouslyAppliedMigrations = try! grdbStorageAdapter.read { transaction in
-                try! DatabaseMigrator().appliedIdentifiers(transaction.database)
+            do {
+                Logger.info("Using incrementalMigrator.")
+                didPerformIncrementalMigrations = try runIncrementalMigrations()
+            } catch {
+                owsFail("Incremental migrations failed: \(error.grdbErrorForLogging)")
             }
-
-            // First do the schema migrations. (See the comment within MigrationId for why schema and data
-            // migrations are separate.)
-            let incrementalMigrator = DatabaseMigratorWrapper()
-            registerSchemaMigrations(migrator: incrementalMigrator)
-            incrementalMigrator.migrate(grdbStorageAdapter.pool)
-
-            // Hack: Load the account state now, so it can be accessed while performing other migrations.
-            // Otherwise one of them might indirectly try to load the account state using a sneaky transaction,
-            // which won't work because migrations use a barrier block to prevent observing database state
-            // before migration.
-            try! grdbStorageAdapter.read { transaction in
-                _ = self.tsAccountManager.localAddress(with: transaction.asAnyRead)
-            }
-
-            // Finally, do data migrations.
-            registerDataMigrations(migrator: incrementalMigrator)
-            incrementalMigrator.migrate(grdbStorageAdapter.pool)
-
-            let allAppliedMigrations = try! grdbStorageAdapter.read { transaction in
-                try! DatabaseMigrator().appliedIdentifiers(transaction.database)
-            }
-
-            didPerformIncrementalMigrations = allAppliedMigrations != previouslyAppliedMigrations
         } else {
-            Logger.info("Using newUserMigrator.")
-            try! newUserMigrator.migrate(grdbStorageAdapter.pool)
+            do {
+                Logger.info("Using newUserMigrator.")
+                try newUserMigrator.migrate(grdbStorageAdapter.pool)
+                didPerformIncrementalMigrations = false
+            } catch {
+                owsFail("New user migrator failed: \(error.grdbErrorForLogging)")
+            }
         }
         Logger.info("Migrations complete.")
 
@@ -59,6 +42,36 @@ public class GRDBSchemaMigrator: NSObject {
         Self._areMigrationsComplete.set(true)
 
         return didPerformIncrementalMigrations
+    }
+
+    private func runIncrementalMigrations() throws -> Bool {
+        let previouslyAppliedMigrations = try grdbStorageAdapter.read { transaction in
+            try DatabaseMigrator().appliedIdentifiers(transaction.database)
+        }
+
+        // First do the schema migrations. (See the comment within MigrationId for why schema and data
+        // migrations are separate.)
+        let incrementalMigrator = DatabaseMigratorWrapper()
+        registerSchemaMigrations(migrator: incrementalMigrator)
+        try incrementalMigrator.migrate(grdbStorageAdapter.pool)
+
+        // Hack: Load the account state now, so it can be accessed while performing other migrations.
+        // Otherwise one of them might indirectly try to load the account state using a sneaky transaction,
+        // which won't work because migrations use a barrier block to prevent observing database state
+        // before migration.
+        try grdbStorageAdapter.read { transaction in
+            _ = self.tsAccountManager.localAddress(with: transaction.asAnyRead)
+        }
+
+        // Finally, do data migrations.
+        registerDataMigrations(migrator: incrementalMigrator)
+        try incrementalMigrator.migrate(grdbStorageAdapter.pool)
+
+        let allAppliedMigrations = try grdbStorageAdapter.read { transaction in
+            try DatabaseMigrator().appliedIdentifiers(transaction.database)
+        }
+
+        return allAppliedMigrations != previouslyAppliedMigrations
     }
 
     private var hasCreatedInitialSchema: Bool {
@@ -236,8 +249,8 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        func migrate(_ database: DatabaseWriter) {
-            try! migrator.migrate(database)
+        func migrate(_ database: DatabaseWriter) throws {
+            try migrator.migrate(database)
         }
     }
 
