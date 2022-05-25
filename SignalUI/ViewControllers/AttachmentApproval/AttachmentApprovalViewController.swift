@@ -233,7 +233,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         self.setCurrentItem(firstItem, direction: .forward, animated: false)
 
         // layout immediately to avoid animating the layout process during the transition
-        self.currentPageViewController.view.layoutIfNeeded()
+        currentPageViewController?.view.layoutIfNeeded()
 
         view.addSubview(touchInterceptorView)
         touchInterceptorView.autoPinEdgesToSuperviewEdges()
@@ -568,12 +568,15 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return nextPage
     }
 
-    public var currentPageViewController: AttachmentPrepViewController {
-        return pageViewControllers.first!
+    public var currentPageViewController: AttachmentPrepViewController? {
+        return pageViewControllers.first
     }
 
     public var pageViewControllers: [AttachmentPrepViewController] {
-        return super.viewControllers!.map { $0 as! AttachmentPrepViewController }
+        guard let viewControllers = super.viewControllers else {
+            return []
+        }
+        return viewControllers.compactMap { $0 as? AttachmentPrepViewController }
     }
 
     @objc
@@ -588,13 +591,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
     }
 
-    var currentItem: AttachmentApprovalItem! {
-        get {
-            return currentPageViewController.attachmentApprovalItem
-        }
-        set {
-            setCurrentItem(newValue, direction: .forward, animated: false)
-        }
+    var currentItem: AttachmentApprovalItem? {
+        return currentPageViewController?.attachmentApprovalItem
     }
 
     private var cachedPages: [AttachmentApprovalItem: AttachmentPrepViewController] = [:]
@@ -627,6 +625,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     func updateMediaRail(animated: Bool = false, isTypingMention: Bool = false) {
+        guard isViewLoaded else { return }
+
         guard let currentItem = self.currentItem else {
             owsFailDebug("currentItem was unexpectedly nil")
             return
@@ -837,43 +837,45 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     public func didTapSave() {
-            let errorText = OWSLocalizedString("ATTACHMENT_APPROVAL_FAILED_TO_SAVE",
-                                              comment: "alert text when Signal was unable to save a copy of the attachment to the system photo library")
-            do {
-                let saveableAsset: SaveableAsset = try SaveableAsset(attachmentApprovalItem: self.currentItem)
+        guard let currentItem = currentItem else { return }
 
-                self.ows_askForMediaLibraryPermissions { isGranted in
-                    guard isGranted else {
-                        return
+        let errorText = OWSLocalizedString("ATTACHMENT_APPROVAL_FAILED_TO_SAVE",
+                                          comment: "alert text when Signal was unable to save a copy of the attachment to the system photo library")
+        do {
+            let saveableAsset: SaveableAsset = try SaveableAsset(attachmentApprovalItem: currentItem)
+
+            self.ows_askForMediaLibraryPermissions { isGranted in
+                guard isGranted else {
+                    return
+                }
+
+                PHPhotoLibrary.shared().performChanges({
+                    switch saveableAsset {
+                    case .image(let image):
+                        PHAssetCreationRequest.creationRequestForAsset(from: image)
+                    case .imageUrl(let imageUrl):
+                        PHAssetCreationRequest.creationRequestForAssetFromImage(atFileURL: imageUrl)
+                    case .videoUrl(let videoUrl):
+                        PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
                     }
-
-                    PHPhotoLibrary.shared().performChanges({
-                        switch saveableAsset {
-                        case .image(let image):
-                            PHAssetCreationRequest.creationRequestForAsset(from: image)
-                        case .imageUrl(let imageUrl):
-                            PHAssetCreationRequest.creationRequestForAssetFromImage(atFileURL: imageUrl)
-                        case .videoUrl(let videoUrl):
-                            PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
-                        }
-                    }) { didSucceed, error in
-                        DispatchQueue.main.async {
-                            if didSucceed {
-                                let toastController = ToastController(text: OWSLocalizedString("ATTACHMENT_APPROVAL_MEDIA_DID_SAVE",
-                                                                                              comment: "toast alert shown after user taps the 'save' button"))
-                                let inset = self.bottomToolView.height + 16
-                                toastController.presentToastView(fromBottomOfView: self.view, inset: inset)
-                            } else {
-                                owsFailDebug("error: \(String(describing: error))")
-                                OWSActionSheets.showErrorAlert(message: errorText)
-                            }
+                }) { didSucceed, error in
+                    DispatchQueue.main.async {
+                        if didSucceed {
+                            let toastController = ToastController(text: OWSLocalizedString("ATTACHMENT_APPROVAL_MEDIA_DID_SAVE",
+                                                                                          comment: "toast alert shown after user taps the 'save' button"))
+                            let inset = self.bottomToolView.height + 16
+                            toastController.presentToastView(fromBottomOfView: self.view, inset: inset)
+                        } else {
+                            owsFailDebug("error: \(String(describing: error))")
+                            OWSActionSheets.showErrorAlert(message: errorText)
                         }
                     }
                 }
-            } catch {
-                owsFailDebug("error: \(error)")
-                OWSActionSheets.showErrorAlert(message: errorText)
             }
+        } catch {
+            owsFailDebug("error: \(error)")
+            OWSActionSheets.showErrorAlert(message: errorText)
+        }
     }
 }
 
@@ -881,18 +883,18 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
 extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        currentPageViewController.setAttachmentViewScale(.compact, animated: true)
+        currentPageViewController?.setAttachmentViewScale(.compact, animated: true)
     }
 
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        currentPageViewController.setAttachmentViewScale(.fullsize, animated: true)
+        currentPageViewController?.setAttachmentViewScale(.fullsize, animated: true)
     }
 
     func attachmentTextToolbarDidTapSend(_ attachmentTextToolbar: AttachmentTextToolbar) {
         // Toolbar flickers in and out if there are errors
         // and remains visible momentarily after share extension is dismissed.
         // It's easiest to just hide it at this point since we're done with it.
-        currentPageViewController.shouldAllowAttachmentViewResizing = false
+        currentPageViewController?.shouldAllowAttachmentViewResizing = false
         updateContents(isApproved: true)
 
         // Generate the attachments once, so that any changes we
@@ -1130,7 +1132,8 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
             return
         }
 
-        guard let currentIndex = attachmentApprovalItems.firstIndex(of: currentItem) else {
+        guard let currentItem = currentItem,
+              let currentIndex = attachmentApprovalItems.firstIndex(of: currentItem) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return
         }
