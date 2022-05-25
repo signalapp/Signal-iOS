@@ -336,13 +336,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self addNotificationListeners];
 }
 
-- (void)viewDidLoad
-{
-    [self addNotificationListeners];
-
-    [self touchDbAsync];
-}
-
 - (void)touchDbAsync
 {
     // See comments in primaryStorage.touchDbAsync.
