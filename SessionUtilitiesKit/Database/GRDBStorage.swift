@@ -270,7 +270,9 @@ public final class GRDBStorage {
         )
     }
     
-    public func addObserver(_ observer: TransactionObserver) {
+    public func addObserver(_ observer: TransactionObserver?) {
+        guard let observer: TransactionObserver = observer else { return }
+        
         dbPool.add(transactionObserver: observer)
     }
 }

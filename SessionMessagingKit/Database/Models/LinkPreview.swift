@@ -7,7 +7,7 @@ import AFNetworking
 import SignalCoreKit
 import SessionUtilitiesKit
 
-public struct LinkPreview: Codable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
+public struct LinkPreview: Codable, Equatable, Hashable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "linkPreview" }
     internal static let interactionForeignKey = ForeignKey(
         [Columns.url],
@@ -28,7 +28,7 @@ public struct LinkPreview: Codable, Equatable, FetchableRecord, PersistableRecor
         case attachmentId
     }
     
-    public enum Variant: Int, Codable, DatabaseValueConvertible {
+    public enum Variant: Int, Codable, Hashable, DatabaseValueConvertible {
         case standard
         case openGroupInvitation
     }

@@ -128,7 +128,7 @@ final class LinkPreviewView: UIView {
         with state: LinkPreviewState,
         isOutgoing: Bool,
         delegate: (UITextViewDelegate & BodyTextViewDelegate)? = nil,
-        item: ConversationViewModel.Item? = nil,
+        cellViewModel: MessageCell.ViewModel? = nil,
         bodyLabelTextColor: UIColor? = nil,
         lastSearchText: String? = nil
     ) {
@@ -184,9 +184,9 @@ final class LinkPreviewView: UIView {
         // Body text view
         bodyTextViewContainer.subviews.forEach { $0.removeFromSuperview() }
         
-        if let item: ConversationViewModel.Item = item {
+        if let cellViewModel: MessageCell.ViewModel = cellViewModel {
             let bodyTextView = VisibleMessageCell.getBodyTextView(
-                for: item,
+                for: cellViewModel,
                 with: maxWidth,
                 textColor: (bodyLabelTextColor ?? sentLinkPreviewTextColor),
                 searchText: lastSearchText,

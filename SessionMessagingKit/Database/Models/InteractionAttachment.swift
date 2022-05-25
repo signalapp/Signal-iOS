@@ -4,7 +4,7 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-public struct InteractionAttachment: Codable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
+public struct InteractionAttachment: Codable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "interactionAttachment" }
     internal static let interactionForeignKey = ForeignKey([Columns.interactionId], to: [Interaction.Columns.id])
     internal static let attachmentForeignKey = ForeignKey([Columns.attachmentId], to: [Attachment.Columns.id])

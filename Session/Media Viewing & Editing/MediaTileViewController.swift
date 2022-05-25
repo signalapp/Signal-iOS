@@ -34,9 +34,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
 
     init(viewModel: MediaGalleryViewModel) {
         self.viewModel = viewModel
-        
-        // Start observing database changes
-        GRDBStorage.shared.addObserver(viewModel)
+        GRDBStorage.shared.addObserver(viewModel.pagedDatabaseObserver)
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -163,8 +161,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        // Stop observing database changes
-        self.viewModel.onGalleryChange = nil
+        stopObservingChanges()
     }
     
     @objc func applicationDidBecomeActive(_ notification: Notification) {
@@ -172,8 +169,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     }
     
     @objc func applicationDidResignActive(_ notification: Notification) {
-        // Stop observing database changes
-        self.viewModel.onGalleryChange = nil
+        stopObservingChanges()
     }
 
     override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -240,17 +236,23 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     
     private func startObservingChanges() {
         // Start observing for data changes (will callback on the main thread)
-        self.viewModel.onGalleryChange = { [weak self] updatedGalleryData, pageInfo in
-            self?.handleUpdates(updatedGalleryData, pageInfo: pageInfo)
+        self.viewModel.onGalleryChange = { [weak self] updatedGalleryData in
+            self?.handleUpdates(updatedGalleryData)
         }
     }
     
-    private func handleUpdates(_ updatedGalleryData: [MediaGalleryViewModel.SectionModel], pageInfo: MediaGalleryViewModel.PageInfo) {
+    private func stopObservingChanges() {
+        // Note: The 'PagedDatabaseObserver' will continue to get changes but
+        // we don't want to trigger any UI updates
+        self.viewModel.onGalleryChange = nil
+    }
+    
+    private func handleUpdates(_ updatedGalleryData: [MediaGalleryViewModel.SectionModel]) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
         guard hasLoadedInitialData else {
             UIView.performWithoutAnimation {
-                handleUpdates(updatedGalleryData, pageInfo: pageInfo)
+                handleUpdates(updatedGalleryData)
                 triggerInitialDataLoadIfNeeded()
             }
             return
@@ -291,7 +293,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
             using: StagedChangeset(source: self.viewModel.galleryData, target: updatedGalleryData),
             interrupt: { $0.changeCount > MediaTileViewController.itemPageSize }
         ) { [weak self] updatedData in
-            self?.viewModel.updateGalleryData(updatedData, pageInfo: pageInfo)
+            self?.viewModel.updateGalleryData(updatedData)
         }
         
         CATransaction.setCompletionBlock { [weak self] in

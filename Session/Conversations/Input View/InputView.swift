@@ -5,12 +5,6 @@ import SessionUIKit
 import SessionMessagingKit
 
 final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, MentionSelectionViewDelegate {
-    enum MessageTypes: Equatable {
-        case all
-        case textOnly
-        case none
-    }
-    
     // MARK: - Variables
     
     private static let linkPreviewViewInset: CGFloat = 6
@@ -37,7 +31,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         set { inputTextView.text = newValue }
     }
 
-    var enabledMessageTypes: MessageTypes = .all {
+    var enabledMessageTypes: MessageInputTypes = .all {
         didSet {
             setEnabledMessageTypes(enabledMessageTypes, message: nil)
         }
@@ -308,7 +302,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
             .retainUntilComplete()
     }
 
-    func setEnabledMessageTypes(_ messageTypes: MessageTypes, message: String?) {
+    func setEnabledMessageTypes(_ messageTypes: MessageInputTypes, message: String?) {
         guard enabledMessageTypes != messageTypes else { return }
 
         enabledMessageTypes = messageTypes

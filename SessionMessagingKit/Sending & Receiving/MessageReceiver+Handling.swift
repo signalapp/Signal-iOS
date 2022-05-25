@@ -105,13 +105,15 @@ extension MessageReceiver {
             case .started:
                 TypingIndicators.didStartTyping(
                     db,
-                    in: thread,
+                    threadId: thread.id,
+                    threadVariant: thread.variant,
+                    threadIsMessageRequest: thread.isMessageRequest(db),
                     direction: .incoming,
                     timestampMs: message.sentTimestamp.map { Int64($0) }
                 )
                 
             case .stopped:
-                TypingIndicators.didStopTyping(db, in: thread, direction: .incoming)
+                TypingIndicators.didStopTyping(db, threadId: thread.id, direction: .incoming)
             
             default:
                 SNLog("Unknown TypingIndicator Kind ignored")
@@ -582,7 +584,7 @@ extension MessageReceiver {
         
         // Cancel any typing indicators if needed
         if isMainAppActive {
-            TypingIndicators.didStopTyping(db, in: thread, direction: .incoming)
+            TypingIndicators.didStopTyping(db, threadId: thread.id, direction: .incoming)
         }
         
         // Update the contact's approval status of the current user if needed (if we are getting messages from

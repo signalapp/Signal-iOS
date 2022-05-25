@@ -62,8 +62,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
 
     override var inputAccessoryView: UIView? {
         guard
-            viewModel.viewData.thread.variant != .closedGroup ||
-            viewModel.viewData.isClosedGroupMember
+            viewModel.threadData.threadVariant != .closedGroup ||
+            viewModel.threadData.currentUserIsClosedGroupMember == true
         else { return nil }
         
         return (isShowingSearchUI ? searchController.resultsBar : snInputView)
@@ -150,7 +150,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     }()
 
     lazy var snInputView: InputView = InputView(
-        threadVariant: viewModel.viewData.thread.variant,
+        threadVariant: self.viewModel.threadData.threadVariant,
         delegate: self
     )
 
@@ -176,7 +176,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
 
     lazy var blockedBanner: InfoBanner = {
         let result: InfoBanner = InfoBanner(
-            message: viewModel.blockedBannerMessage,
+            message: self.viewModel.blockedBannerMessage,
             backgroundColor: Colors.destructive
         )
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(unblock))
@@ -203,7 +203,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     lazy var messageRequestView: UIView = {
         let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.isHidden = !viewModel.viewData.threadIsMessageRequest
+        result.isHidden = (self.viewModel.threadData.threadIsMessageRequest == false)
         result.setGradient(Gradients.defaultBackground)
 
         return result
@@ -330,19 +330,19 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         navigationItem.titleView = titleView
         
         titleView.update(
-            with: viewModel.viewData.threadName,
-            mutedUntilTimestamp: viewModel.viewData.thread.mutedUntilTimestamp,
-            onlyNotifyForMentions: viewModel.viewData.thread.onlyNotifyForMentions,
-            userCount: viewModel.viewData.userCount
+            with: viewModel.threadData.displayName,
+            mutedUntilTimestamp: viewModel.threadData.threadMutedUntilTimestamp,
+            onlyNotifyForMentions: (viewModel.threadData.threadOnlyNotifyForMentions == true),
+            userCount: viewModel.threadData.userCount
         )
-        updateNavBarButtons(viewData: viewModel.viewData)
+        updateNavBarButtons(threadData: viewModel.threadData)
         
         // Constraints
         view.addSubview(tableView)
         tableView.pin(to: view)
 
         // Blocked banner
-        addOrRemoveBlockedBanner(threadIsBlocked: viewModel.viewData.threadIsBlocked)
+        addOrRemoveBlockedBanner(threadIsBlocked: (viewModel.threadData.threadIsBlocked == true))
 
         // Message requests view & scroll to bottom
         view.addSubview(scrollButton)
@@ -359,8 +359,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         self.scrollButtonBottomConstraint = scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -16)
         self.scrollButtonBottomConstraint?.isActive = false // Note: Need to disable this to avoid a conflict with the other bottom constraint
         self.scrollButtonMessageRequestsBottomConstraint = scrollButton.pin(.bottom, to: .top, of: messageRequestView, withInset: -16)
-        self.scrollButtonMessageRequestsBottomConstraint?.isActive = viewModel.viewData.threadIsMessageRequest
-        self.scrollButtonBottomConstraint?.isActive = !viewModel.viewData.threadIsMessageRequest
+        self.scrollButtonMessageRequestsBottomConstraint?.isActive = (viewModel.threadData.threadIsMessageRequest == true)
+        self.scrollButtonBottomConstraint?.isActive = (viewModel.threadData.threadIsMessageRequest == false)
         
         messageRequestDescriptionLabel.pin(.top, to: .top, of: messageRequestView, withInset: 10)
         messageRequestDescriptionLabel.pin(.left, to: .left, of: messageRequestView, withInset: 40)
@@ -392,7 +392,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         unreadCountView.pin(.trailing, to: .trailing, of: unreadCountLabel, withInset: 4)
         unreadCountView.centerYAnchor.constraint(equalTo: scrollButton.topAnchor).isActive = true
         unreadCountView.center(.horizontal, in: scrollButton)
-        updateUnreadCountView(unreadCount: viewModel.viewData.unreadCount)
+        updateUnreadCountView(unreadCount: viewModel.threadData.threadUnreadCount)
 
         // Notifications
         NotificationCenter.default.addObserver(
@@ -420,12 +420,12 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         )
         
         // Draft
-        if let draft: String = viewModel.viewData.thread.messageDraft, !draft.isEmpty {
+        if let draft: String = viewModel.threadData.threadMessageDraft, !draft.isEmpty {
             snInputView.text = draft
         }
 
         // Update the input state
-        snInputView.setEnabledMessageTypes(viewModel.viewData.enabledMessageTypes, message: nil)
+        snInputView.setEnabledMessageTypes(viewModel.threadData.enabledMessageTypes, message: nil)
 
     }
 
@@ -441,7 +441,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             if let focusedInteractionId: Int64 = self.viewModel.focusedInteractionId {
                 self.scrollToInteraction(with: focusedInteractionId, isAnimated: false, highlighted: true)
             }
-            else if let firstUnreadInteractionId: Int64 = self.viewModel.viewData.firstUnreadInteractionId {
+            else if let firstUnreadInteractionId: Int64 = self.viewModel.threadData.threadFirstUnreadInteractionId {
                 self.scrollToInteraction(with: firstUnreadInteractionId, position: .top, isAnimated: false)
                 self.unreadCountView.alpha = self.scrollButton.alpha
             }
@@ -478,8 +478,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        // Stop observing database changes
-        dataChangeObservable?.cancel()
+        stopObservingChanges()
         viewModel.updateDraft(to: snInputView.text)
         inputAccessoryView?.resignFirstResponder()
     }
@@ -496,8 +495,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     }
     
     @objc func applicationDidResignActive(_ notification: Notification) {
-        // Stop observing database changes
-        dataChangeObservable?.cancel()
+        stopObservingChanges()
     }
     
     // MARK: - Updating
@@ -505,84 +503,104 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     private func startObservingChanges() {
         // Start observing for data changes
         dataChangeObservable = GRDBStorage.shared.start(
-            viewModel.observableViewData,
-            onError:  { error in
-            },
-            onChange: { [weak self] viewData in
+            viewModel.observableThreadData,
+            onError:  { _ in },
+            onChange: { [weak self] maybeThreadData in
+                guard let threadData: ConversationCell.ViewModel = maybeThreadData else { return }
+                
                 // The default scheduler emits changes on the main thread
-                self?.handleUpdates(viewData)
+                self?.handleThreadUpdates(threadData)
             }
         )
+        
+        self.viewModel.onInteractionChange = { [weak self] updatedInteractionData in
+            self?.handleInteractionUpdates(updatedInteractionData)
+        }
     }
     
-    private func handleUpdates(_ updatedViewData: ConversationViewModel.ViewData, initialLoad: Bool = false) {
+    private func stopObservingChanges() {
+        // Stop observing database changes
+        dataChangeObservable?.cancel()
+        self.viewModel.onInteractionChange = nil
+    }
+    
+    private func handleThreadUpdates(_ updatedThreadData: ConversationCell.ViewModel, initialLoad: Bool = false) {
         // Ensure the first load or a load when returning from a child screen runs without animations (if
         // we don't do this the cells will animate in from a frame of CGRect.zero or have a buggy transition)
         guard hasLoadedInitialData && hasReloadedDataAfterDisappearance else {
             hasLoadedInitialData = true
             hasReloadedDataAfterDisappearance = true
-            UIView.performWithoutAnimation { handleUpdates(updatedViewData, initialLoad: true) }
+            UIView.performWithoutAnimation { handleThreadUpdates(updatedThreadData, initialLoad: true) }
             return
         }
         // Update general conversation UI
         
         if
             initialLoad ||
-            viewModel.viewData.threadName != updatedViewData.threadName ||
-            viewModel.viewData.thread.mutedUntilTimestamp != updatedViewData.thread.mutedUntilTimestamp ||
-            viewModel.viewData.thread.onlyNotifyForMentions != updatedViewData.thread.onlyNotifyForMentions ||
-            viewModel.viewData.userCount != updatedViewData.userCount
+            viewModel.threadData.displayName != updatedThreadData.displayName ||
+            viewModel.threadData.threadMutedUntilTimestamp != updatedThreadData.threadMutedUntilTimestamp ||
+            viewModel.threadData.threadOnlyNotifyForMentions != updatedThreadData.threadOnlyNotifyForMentions ||
+            viewModel.threadData.userCount != updatedThreadData.userCount
         {
             titleView.update(
-                with: updatedViewData.threadName,
-                mutedUntilTimestamp: updatedViewData.thread.mutedUntilTimestamp,
-                onlyNotifyForMentions: updatedViewData.thread.onlyNotifyForMentions,
-                userCount: updatedViewData.userCount
+                with: updatedThreadData.displayName,
+                mutedUntilTimestamp: updatedThreadData.threadMutedUntilTimestamp,
+                onlyNotifyForMentions: (updatedThreadData.threadOnlyNotifyForMentions == true),
+                userCount: updatedThreadData.userCount
             )
         }
         
         if
             initialLoad ||
-            viewModel.viewData.requiresApproval != updatedViewData.requiresApproval ||
-            viewModel.viewData.threadAvatarProfiles != updatedViewData.threadAvatarProfiles
+            viewModel.threadData.threadRequiresApproval != updatedThreadData.threadRequiresApproval ||
+            viewModel.threadData.profile != updatedThreadData.profile
         {
-            updateNavBarButtons(viewData: updatedViewData)
+            updateNavBarButtons(threadData: updatedThreadData)
         }
         
-        if viewModel.viewData.isClosedGroupMember != updatedViewData.isClosedGroupMember {
+        if viewModel.threadData.currentUserIsClosedGroupMember != updatedThreadData.currentUserIsClosedGroupMember {
             reloadInputViews()
         }
         
-        if initialLoad || viewModel.viewData.enabledMessageTypes != updatedViewData.enabledMessageTypes {
+        if initialLoad || viewModel.threadData.enabledMessageTypes != updatedThreadData.enabledMessageTypes {
             snInputView.setEnabledMessageTypes(
-                updatedViewData.enabledMessageTypes,
+                updatedThreadData.enabledMessageTypes,
                 message: nil
             )
         }
         
-        if initialLoad || viewModel.viewData.threadIsBlocked != updatedViewData.threadIsBlocked {
-            addOrRemoveBlockedBanner(threadIsBlocked: updatedViewData.threadIsBlocked)
+        if initialLoad || viewModel.threadData.threadIsBlocked != updatedThreadData.threadIsBlocked {
+            addOrRemoveBlockedBanner(threadIsBlocked: (updatedThreadData.threadIsBlocked == true))
         }
         
-        if initialLoad || viewModel.viewData.unreadCount != updatedViewData.unreadCount {
-            updateUnreadCountView(unreadCount: updatedViewData.unreadCount)
+        if initialLoad || viewModel.threadData.threadUnreadCount != updatedThreadData.threadUnreadCount {
+            updateUnreadCountView(unreadCount: updatedThreadData.threadUnreadCount)
+        }
+    }
+    
+    private func handleInteractionUpdates(_ updatedViewData: [MessageCell.ViewModel], initialLoad: Bool = false) {
+        // Ensure the first load or a load when returning from a child screen runs without animations (if
+        // we don't do this the cells will animate in from a frame of CGRect.zero or have a buggy transition)
+        guard hasLoadedInitialData && hasReloadedDataAfterDisappearance else {
+            hasLoadedInitialData = true
+            hasReloadedDataAfterDisappearance = true
+            UIView.performWithoutAnimation { handleInteractionUpdates(updatedViewData, initialLoad: true) }
+            return
         }
         
         // Reload the table content (animate changes after the first load)
-        let changeset = StagedChangeset(source: viewModel.viewData.items, target: updatedViewData.items)
+        let changeset = StagedChangeset(source: viewModel.interactionData, target: updatedViewData)
         tableView.reload(
-            using: StagedChangeset(source: viewModel.viewData.items, target: updatedViewData.items),
+            using: StagedChangeset(source: viewModel.interactionData, target: updatedViewData),
             deleteSectionsAnimation: .bottom,
             insertSectionsAnimation: .bottom,
             reloadSectionsAnimation: .none,
             deleteRowsAnimation: .bottom,
             insertRowsAnimation: .bottom,
             reloadRowsAnimation: .none,
-            interrupt: {
-                return $0.changeCount > 100
-            }    // Prevent too many changes from causing performance issues
-        ) { [weak self] items in
-            self?.viewModel.updateData(updatedViewData.with(items: items))
+            interrupt: { $0.changeCount > ConversationViewModel.pageSize }
+        ) { [weak self] updatedData in
+            self?.viewModel.updateInteractionData(updatedData)
         }
         
         // Scroll to the bottom if we just inserted a message and are close enough
@@ -601,7 +619,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         viewModel.sentMessageBeforeUpdate = false
     }
     
-    func updateNavBarButtons(viewData: ConversationViewModel.ViewData) {
+    func updateNavBarButtons(threadData: ConversationCell.ViewModel) {
         navigationItem.hidesBackButton = isShowingSearchUI
 
         if isShowingSearchUI {
@@ -609,7 +627,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             navigationItem.rightBarButtonItems = []
         }
         else {
-            guard !viewData.requiresApproval else {
+            guard threadData.threadRequiresApproval == false else {
                 // Note: Adding an empty button because without it the title alignment is
                 // busted (Note: The size was taken from the layout inspector for the back
                 // button in Xcode
@@ -626,14 +644,14 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 return
             }
             
-            switch viewData.thread.variant {
+            switch threadData.threadVariant {
                 case .contact:
                     let profilePictureView = ProfilePictureView()
                     profilePictureView.size = Values.verySmallProfilePictureSize
                     profilePictureView.update(
-                        publicKey: viewData.thread.id,  // Contact thread uses the contactId
-                        profile: viewData.threadAvatarProfiles.first,
-                        threadVariant: viewData.thread.variant
+                        publicKey: threadData.threadId,  // Contact thread uses the contactId
+                        profile: threadData.profile,
+                        threadVariant: threadData.threadVariant
                     )
                     profilePictureView.set(.width, to: (44 - 16))   // Width of the standard back button
                     profilePictureView.set(.height, to: Values.verySmallProfilePictureSize)
@@ -882,26 +900,26 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     // MARK: - UITableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.viewData.items.count
+        return viewModel.interactionData.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let item: ConversationViewModel.Item = viewModel.viewData.items[indexPath.row]
-        let cell: MessageCell = tableView.dequeue(type: MessageCell.cellType(for: item), for: indexPath)
+        let cellViewModel: MessageCell.ViewModel = viewModel.interactionData[indexPath.row]
+        let cell: MessageCell = tableView.dequeue(type: MessageCell.cellType(for: cellViewModel), for: indexPath)
         cell.update(
-            with: item,
+            with: cellViewModel,
             mediaCache: mediaCache,
-            playbackInfo: viewModel.playbackInfo(for: item) { updatedInfo, error in
+            playbackInfo: viewModel.playbackInfo(for: cellViewModel) { updatedInfo, error in
                 DispatchQueue.main.async {
                     guard error == nil else {
                         OWSAlerts.showErrorAlert(message: "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE".localized())
                         return
                     }
                     
-                    cell.dynamicUpdate(with: item, playbackInfo: updatedInfo)
+                    cell.dynamicUpdate(with: cellViewModel, playbackInfo: updatedInfo)
                 }
             },
-            lastSearchText: viewModel.viewData.lastSearchedText
+            lastSearchText: viewModel.lastSearchedText
         )
         cell.delegate = self
         
@@ -919,11 +937,11 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     }
 
     func scrollToBottom(isAnimated: Bool) {
-        guard !isUserScrolling && !viewModel.viewData.items.isEmpty else { return }
+        guard !isUserScrolling && !viewModel.interactionData.isEmpty else { return }
         
         tableView.scrollToRow(
             at: IndexPath(
-                row: viewModel.viewData.items.count - 1,
+                row: viewModel.interactionData.count - 1,
                 section: 0),
             at: .bottom,
             animated: isAnimated
@@ -944,7 +962,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         autoLoadMoreIfNeeded()
     }
 
-    func updateUnreadCountView(unreadCount: Int) {
+    func updateUnreadCountView(unreadCount: UInt?) {
+        let unreadCount: Int = Int(unreadCount ?? 0)
         let fontSize: CGFloat = (unreadCount < 10000 ? Values.verySmallFontSize : 8)
         unreadCountLabel.text = (unreadCount < 10000 ? "\(unreadCount)" : "9999+")
         unreadCountLabel.font = .boldSystemFont(ofSize: fontSize)
@@ -996,7 +1015,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         navigationItem.titleView = searchBar
         
         // Nav bar buttons
-        updateNavBarButtons(viewData: viewModel.viewData)
+        updateNavBarButtons(threadData: self.viewModel.threadData)
         
         // Hack so that the ResultsBar stays on the screen when dismissing the search field
         // keyboard.
@@ -1032,7 +1051,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     func hideSearchUI() {
         isShowingSearchUI = false
         navigationItem.titleView = titleView
-        updateNavBarButtons(viewData: viewModel.viewData)
+        updateNavBarButtons(threadData: self.viewModel.threadData)
         
         let navBar = navigationController!.navigationBar as! OWSNavigationBar
         navBar.stubbedNextResponder = nil

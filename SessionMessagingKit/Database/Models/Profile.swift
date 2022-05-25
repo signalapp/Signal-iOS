@@ -345,8 +345,8 @@ public extension Profile {
     }
     
     /// A standardised mechanism for truncating a user id for a given thread
-    static func truncated(id: String, thread: SessionThread) -> String {
-        switch thread.variant {
+    static func truncated(id: String, threadVariant: SessionThread.Variant = .contact) -> String {
+        switch threadVariant {
             case .openGroup: return truncated(id: id, truncating: .start)
             default: return truncated(id: id, truncating: .middle)
         }
@@ -378,7 +378,7 @@ public extension Profile {
         if let nickname: String = nickname { return nickname }
         
         guard let name: String = name, name != id else {
-            return (customFallback ?? Profile.truncated(id: id, truncating: .middle))
+            return (customFallback ?? Profile.truncated(id: id, threadVariant: threadVariant))
         }
         
         switch threadVariant {

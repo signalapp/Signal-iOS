@@ -4,7 +4,7 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-public struct Quote: Codable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
+public struct Quote: Codable, Equatable, Hashable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "quote" }
     public static let interactionForeignKey = ForeignKey([Columns.interactionId], to: [Interaction.Columns.id])
     internal static let originalInteractionForeignKey = ForeignKey(

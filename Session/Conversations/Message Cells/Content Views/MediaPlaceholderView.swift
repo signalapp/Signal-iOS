@@ -9,10 +9,10 @@ final class MediaPlaceholderView: UIView {
     
     // MARK: - Lifecycle
     
-    init(item: ConversationViewModel.Item, textColor: UIColor) {
+    init(cellViewModel: MessageCell.ViewModel, textColor: UIColor) {
         super.init(frame: CGRect.zero)
         
-        setUpViewHierarchy(item: item, textColor: textColor)
+        setUpViewHierarchy(cellViewModel: cellViewModel, textColor: textColor)
     }
     
     override init(frame: CGRect) {
@@ -24,13 +24,13 @@ final class MediaPlaceholderView: UIView {
     }
     
     private func setUpViewHierarchy(
-        item: ConversationViewModel.Item,
+        cellViewModel: MessageCell.ViewModel,
         textColor: UIColor
     ) {
         let (iconName, attachmentDescription): (String, String) = {
             guard
-                item.interactionVariant == .standardIncoming,
-                let attachment: Attachment = item.attachments?.first
+                cellViewModel.variant == .standardIncoming,
+                let attachment: Attachment = cellViewModel.attachments?.first
             else {
                 return ("actionsheet_document_black", "file") // Should never occur
             }

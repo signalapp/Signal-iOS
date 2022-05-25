@@ -32,7 +32,7 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
         case onlyNotifyForMentions
     }
     
-    public enum Variant: Int, Codable, DatabaseValueConvertible {
+    public enum Variant: Int, Codable, Hashable, DatabaseValueConvertible {
         case contact
         case closedGroup
         case openGroup

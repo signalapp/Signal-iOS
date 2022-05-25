@@ -35,8 +35,6 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         result.delegate = self
         return result
     }()
-
-    var lastSearchedText: String? { delegate?.lastSearchedText }
     
     // MARK: - UI Components
     
@@ -200,79 +198,80 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     // MARK: - Updating
     
     override func update(
-        with item: ConversationViewModel.Item,
+        with cellViewModel: MessageCell.ViewModel,
         mediaCache: NSCache<NSString, AnyObject>,
         playbackInfo: ConversationViewModel.PlaybackInfo?,
         lastSearchText: String?
     ) {
-        self.item = item
+        self.viewModel = cellViewModel
         
-        let isGroupThread: Bool = (item.threadVariant == .openGroup || item.threadVariant == .closedGroup)
+        let isGroupThread: Bool = (cellViewModel.threadVariant == .openGroup || cellViewModel.threadVariant == .closedGroup)
         let shouldInsetHeader: Bool = (
-            item.previousInteractionVariant?.isInfoMessage != true &&
+            cellViewModel.previousVariant?.isInfoMessage != true &&
             (
-                item.positionInCluster == .top ||
-                item.isOnlyMessageInCluster
+                cellViewModel.positionInCluster == .top ||
+                cellViewModel.isOnlyMessageInCluster
             )
         )
         
         // Profile picture view
         profilePictureViewLeftConstraint.constant = (isGroupThread ? VisibleMessageCell.groupThreadHSpacing : 0)
         profilePictureViewWidthConstraint.constant = (isGroupThread ? VisibleMessageCell.profilePictureSize : 0)
-        profilePictureView.isHidden = (!item.shouldShowProfile || item.profile == nil)
+        profilePictureView.isHidden = (!cellViewModel.shouldShowProfile || cellViewModel.profile == nil)
         profilePictureView.update(
-            publicKey: item.authorId,
-            profile: item.profile,
-            threadVariant: item.threadVariant
+            publicKey: cellViewModel.authorId,
+            profile: cellViewModel.profile,
+            threadVariant: cellViewModel.threadVariant
         )
-        moderatorIconImageView.isHidden = !item.isSenderOpenGroupModerator
+        moderatorIconImageView.isHidden = !cellViewModel.isSenderOpenGroupModerator
         
         // Bubble view
         bubbleViewLeftConstraint1.isActive = (
-            item.interactionVariant == .standardIncoming ||
-            item.interactionVariant == .standardIncomingDeleted
+            cellViewModel.variant == .standardIncoming ||
+            cellViewModel.variant == .standardIncomingDeleted
         )
         bubbleViewLeftConstraint1.constant = (isGroupThread ? VisibleMessageCell.groupThreadHSpacing : VisibleMessageCell.contactThreadHSpacing)
-        bubbleViewLeftConstraint2.isActive = (item.interactionVariant == .standardOutgoing)
-        bubbleViewTopConstraint.constant = (item.senderName == nil ? 0 : VisibleMessageCell.authorLabelBottomSpacing)
-        bubbleViewRightConstraint1.isActive = (item.interactionVariant == .standardOutgoing)
+        bubbleViewLeftConstraint2.isActive = (cellViewModel.variant == .standardOutgoing)
+        bubbleViewTopConstraint.constant = (cellViewModel.senderName == nil ? 0 : VisibleMessageCell.authorLabelBottomSpacing)
+        bubbleViewRightConstraint1.isActive = (cellViewModel.variant == .standardOutgoing)
         bubbleViewRightConstraint2.isActive = (
-            item.interactionVariant == .standardIncoming ||
-            item.interactionVariant == .standardIncomingDeleted
+            cellViewModel.variant == .standardIncoming ||
+            cellViewModel.variant == .standardIncomingDeleted
         )
         bubbleView.backgroundColor = ((
-            item.interactionVariant == .standardIncoming ||
-            item.interactionVariant == .standardIncomingDeleted
+            cellViewModel.variant == .standardIncoming ||
+            cellViewModel.variant == .standardIncomingDeleted
         ) ? Colors.receivedMessageBackground : Colors.sentMessageBackground)
         updateBubbleViewCorners()
         
         // Content view
-        populateContentView(for: item, mediaCache: mediaCache, playbackInfo: playbackInfo, lastSearchText: lastSearchText)
+        populateContentView(for: cellViewModel, mediaCache: mediaCache, playbackInfo: playbackInfo, lastSearchText: lastSearchText)
         
         // Date break
         headerViewTopConstraint.constant = (shouldInsetHeader ? Values.mediumSpacing : 1)
         headerView.subviews.forEach { $0.removeFromSuperview() }
-        populateHeader(for: item, shouldInsetHeader: shouldInsetHeader)
+        populateHeader(for: cellViewModel, shouldInsetHeader: shouldInsetHeader)
         
         // Author label
         authorLabel.textColor = Colors.text
-        authorLabel.isHidden = (item.senderName == nil)
-        authorLabel.text = item.senderName
+        authorLabel.isHidden = (cellViewModel.senderName == nil)
+        authorLabel.text = cellViewModel.senderName
         
-        let authorLabelAvailableWidth: CGFloat = (VisibleMessageCell.getMaxWidth(for: item) - 2 * VisibleMessageCell.authorLabelInset)
+        let authorLabelAvailableWidth: CGFloat = (VisibleMessageCell.getMaxWidth(for: cellViewModel) - 2 * VisibleMessageCell.authorLabelInset)
         let authorLabelAvailableSpace = CGSize(width: authorLabelAvailableWidth, height: .greatestFiniteMagnitude)
         let authorLabelSize = authorLabel.sizeThatFits(authorLabelAvailableSpace)
-        authorLabelHeightConstraint.constant = (item.senderName != nil ? authorLabelSize.height : 0)
+        authorLabelHeightConstraint.constant = (cellViewModel.senderName != nil ? authorLabelSize.height : 0)
         
         // Message status image view
-        let (image, tintColor, backgroundColor) = getMessageStatusImage(for: item)
+        let (image, tintColor, backgroundColor) = getMessageStatusImage(for: cellViewModel)
         messageStatusImageView.image = image
         messageStatusImageView.tintColor = tintColor
         messageStatusImageView.backgroundColor = backgroundColor
         messageStatusImageView.isHidden = (
-            item.interactionVariant != .standardOutgoing || (
-                item.state == .sent &&
-                item.isLastInteraction
+            cellViewModel.variant != .standardOutgoing ||
+            (
+                cellViewModel.state == .sent &&
+                !cellViewModel.isLast
             )
         )
         messageStatusImageViewTopConstraint.constant = (messageStatusImageView.isHidden ? 0 : 5)
@@ -283,9 +282,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         
         // Timer
         if
-            item.isExpiringMessage,
-            let expiresStartedAtMs: Double = item.expiresStartedAtMs,
-            let expiresInSeconds: TimeInterval = item.expiresInSeconds
+            let expiresStartedAtMs: Double = cellViewModel.expiresStartedAtMs,
+            let expiresInSeconds: TimeInterval = cellViewModel.expiresInSeconds
         {
             let expirationTimestampMs: Double = (expiresStartedAtMs + (expiresInSeconds * 1000))
             
@@ -294,17 +292,20 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 initialDurationSeconds: UInt32(floor(expiresInSeconds)),
                 tintColor: Colors.text
             )
+            timerView.isHidden = false
+        }
+        else {
+            timerView.isHidden = true
         }
         
-        timerView.isHidden = !item.isExpiringMessage
-        timerViewOutgoingMessageConstraint.isActive = (item.interactionVariant == .standardOutgoing)
+        timerViewOutgoingMessageConstraint.isActive = (cellViewModel.variant == .standardOutgoing)
         timerViewIncomingMessageConstraint.isActive = (
-            item.interactionVariant == .standardIncoming ||
-            item.interactionVariant == .standardIncomingDeleted
+            cellViewModel.variant == .standardIncoming ||
+            cellViewModel.variant == .standardIncomingDeleted
         )
         
         // Swipe to reply
-        if item.interactionVariant == .standardIncomingDeleted {
+        if cellViewModel.variant == .standardIncomingDeleted {
             removeGestureRecognizer(panGestureRecognizer)
         }
         else {
@@ -312,8 +313,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         }
     }
 
-    private func populateHeader(for item: ConversationViewModel.Item, shouldInsetHeader: Bool) {
-        guard let date: Date = item.dateForUI else { return }
+    private func populateHeader(for cellViewModel: MessageCell.ViewModel, shouldInsetHeader: Bool) {
+        guard let date: Date = cellViewModel.dateForUI else { return }
         
         let dateBreakLabel: UILabel = UILabel()
         dateBreakLabel.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
@@ -329,20 +330,20 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         headerView.pin(.bottom, to: .bottom, of: dateBreakLabel, withInset: Values.smallSpacing + additionalBottomInset)
         dateBreakLabel.center(.horizontal, in: headerView)
         
-        let availableWidth = VisibleMessageCell.getMaxWidth(for: item)
+        let availableWidth = VisibleMessageCell.getMaxWidth(for: cellViewModel)
         let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
         let dateBreakLabelSize = dateBreakLabel.sizeThatFits(availableSpace)
         dateBreakLabel.set(.height, to: dateBreakLabelSize.height)
     }
 
     private func populateContentView(
-        for item: ConversationViewModel.Item,
+        for cellViewModel: MessageCell.ViewModel,
         mediaCache: NSCache<NSString, AnyObject>,
         playbackInfo: ConversationViewModel.PlaybackInfo?,
         lastSearchText: String?
     ) {
         let bodyLabelTextColor: UIColor = {
-            let direction: Direction = (item.interactionVariant == .standardOutgoing ?
+            let direction: Direction = (cellViewModel.variant == .standardOutgoing ?
                 .outgoing :
                 .incoming
             )
@@ -359,7 +360,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         bodyTextView = nil
         
         // Handle the deleted state first (it's much simpler than the others)
-        guard item.interactionVariant != .standardIncomingDeleted else {
+        guard cellViewModel.variant != .standardIncomingDeleted else {
             let deletedMessageView: DeletedMessageView = DeletedMessageView(textColor: bodyLabelTextColor)
             snContentView.addSubview(deletedMessageView)
             deletedMessageView.pin(to: snContentView)
@@ -367,32 +368,32 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         }
         
         // If it's an incoming media message and the thread isn't trusted then show the placeholder view
-        if item.cellType != .textOnlyMessage && item.interactionVariant == .standardIncoming && !item.isThreadTrusted {
-            let mediaPlaceholderView = MediaPlaceholderView(item: item, textColor: bodyLabelTextColor)
+        if cellViewModel.cellType != .textOnlyMessage && cellViewModel.variant == .standardIncoming && !cellViewModel.threadIsTrusted {
+            let mediaPlaceholderView = MediaPlaceholderView(cellViewModel: cellViewModel, textColor: bodyLabelTextColor)
             snContentView.addSubview(mediaPlaceholderView)
             mediaPlaceholderView.pin(to: snContentView)
             return
         }
 
-        switch item.cellType {
+        switch cellViewModel.cellType {
             case .typingIndicator: break
             
             case .textOnlyMessage:
                 let inset: CGFloat = 12
-                let maxWidth: CGFloat = (VisibleMessageCell.getMaxWidth(for: item) - 2 * inset)
+                let maxWidth: CGFloat = (VisibleMessageCell.getMaxWidth(for: cellViewModel) - 2 * inset)
                 
-                if let linkPreview: LinkPreview = item.linkPreview {
+                if let linkPreview: LinkPreview = cellViewModel.linkPreview {
                     switch linkPreview.variant {
                         case .standard:
                             let linkPreviewView: LinkPreviewView = LinkPreviewView(maxWidth: maxWidth)
                             linkPreviewView.update(
                                 with: LinkPreview.SentState(
                                     linkPreview: linkPreview,
-                                    imageAttachment: item.attachments?.first
+                                    imageAttachment: cellViewModel.linkPreviewAttachment
                                 ),
-                                isOutgoing: (item.interactionVariant == .standardOutgoing),
+                                isOutgoing: (cellViewModel.variant == .standardOutgoing),
                                 delegate: self,
-                                item: item,
+                                cellViewModel: cellViewModel,
                                 bodyLabelTextColor: bodyLabelTextColor,
                                 lastSearchText: lastSearchText
                             )
@@ -406,7 +407,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                                 name: (linkPreview.title ?? ""),
                                 url: linkPreview.url,
                                 textColor: bodyLabelTextColor,
-                                isOutgoing: (item.interactionVariant == .standardOutgoing)
+                                isOutgoing: (cellViewModel.variant == .standardOutgoing)
                             )
                             
                             snContentView.addSubview(openGroupInvitationView)
@@ -421,18 +422,18 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                     stackView.spacing = 2
                     
                     // Quote view
-                    if let quote: Quote = item.quote {
+                    if let quote: Quote = cellViewModel.quote {
                         let hInset: CGFloat = 2
                         let quoteView: QuoteView = QuoteView(
                             for: .regular,
                             authorId: quote.authorId,
                             quotedText: quote.body,
-                            threadVariant: item.threadVariant,
-                            direction: (item.interactionVariant == .standardOutgoing ?
+                            threadVariant: cellViewModel.threadVariant,
+                            direction: (cellViewModel.variant == .standardOutgoing ?
                                 .outgoing :
                                 .incoming
                             ),
-                            attachment: item.attachments?.first,
+                            attachment: cellViewModel.quoteAttachment,
                             hInset: hInset,
                             maxWidth: maxWidth
                         )
@@ -441,7 +442,13 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                     }
                     
                     // Body text view
-                    let bodyTextView = VisibleMessageCell.getBodyTextView(for: item, with: maxWidth, textColor: bodyLabelTextColor, searchText: lastSearchText, delegate: self)
+                    let bodyTextView = VisibleMessageCell.getBodyTextView(
+                        for: cellViewModel,
+                        with: maxWidth,
+                        textColor: bodyLabelTextColor,
+                        searchText: lastSearchText,
+                        delegate: self
+                    )
                     self.bodyTextView = bodyTextView
                     stackView.addArrangedSubview(bodyTextView)
                     
@@ -457,17 +464,17 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 stackView.spacing = Values.smallSpacing
                 
                 // Album view
-                let maxMessageWidth: CGFloat = VisibleMessageCell.getMaxWidth(for: item)
+                let maxMessageWidth: CGFloat = VisibleMessageCell.getMaxWidth(for: cellViewModel)
                 let albumView = MediaAlbumView(
                     mediaCache: mediaCache,
-                    items: (item.attachments?
+                    items: (cellViewModel.attachments?
                         .filter { $0.isVisualMedia })
                         .defaulting(to: []),
-                    isOutgoing: (item.interactionVariant == .standardOutgoing),
+                    isOutgoing: (cellViewModel.variant == .standardOutgoing),
                     maxMessageWidth: maxMessageWidth
                 )
                 self.albumView = albumView
-                let size = getSize(for: item)
+                let size = getSize(for: cellViewModel)
                 albumView.set(.width, to: size.width)
                 albumView.set(.height, to: size.height)
                 albumView.loadMedia()
@@ -475,10 +482,16 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 stackView.addArrangedSubview(albumView)
                 
                 // Body text view
-                if let body: String = item.body, !body.isEmpty {
+                if let body: String = cellViewModel.body, !body.isEmpty {
                     let inset: CGFloat = 12
                     let maxWidth = size.width - 2 * inset
-                    let bodyTextView = VisibleMessageCell.getBodyTextView(for: item, with: maxWidth, textColor: bodyLabelTextColor, searchText: lastSearchText, delegate: self)
+                    let bodyTextView = VisibleMessageCell.getBodyTextView(
+                        for: cellViewModel,
+                        with: maxWidth,
+                        textColor: bodyLabelTextColor,
+                        searchText: lastSearchText,
+                        delegate: self
+                    )
                     self.bodyTextView = bodyTextView
                     stackView.addArrangedSubview(UIView(wrapping: bodyTextView, withInsets: UIEdgeInsets(top: 0, left: inset, bottom: inset, right: inset)))
                 }
@@ -489,7 +502,9 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 stackView.pin(to: snContentView)
                 
             case .audio:
-                guard let attachment: Attachment = item.attachments?.first(where: { $0.isAudio }) else { return }
+                guard let attachment: Attachment = cellViewModel.attachments?.first(where: { $0.isAudio }) else {
+                    return
+                }
                 
                 let voiceMessageView: VoiceMessageView = VoiceMessageView()
                 voiceMessageView.update(
@@ -506,10 +521,10 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 self.voiceMessageView = voiceMessageView
                 
             case .genericAttachment:
-                guard let attachment: Attachment = item.attachments?.first else { preconditionFailure() }
+                guard let attachment: Attachment = cellViewModel.attachments?.first else { preconditionFailure() }
                 
                 let inset: CGFloat = 12
-                let maxWidth = (VisibleMessageCell.getMaxWidth(for: item) - 2 * inset)
+                let maxWidth = (VisibleMessageCell.getMaxWidth(for: cellViewModel) - 2 * inset)
                 
                 // Stack view
                 let stackView = UIStackView(arrangedSubviews: [])
@@ -521,8 +536,14 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 stackView.addArrangedSubview(documentView)
                 
                 // Body text view
-                if let body: String = item.body, !body.isEmpty { // delegate should always be set at this point
-                    let bodyTextView = VisibleMessageCell.getBodyTextView(for: item, with: maxWidth, textColor: bodyLabelTextColor, searchText: lastSearchText, delegate: self)
+                if let body: String = cellViewModel.body, !body.isEmpty { // delegate should always be set at this point
+                    let bodyTextView = VisibleMessageCell.getBodyTextView(
+                        for: cellViewModel,
+                        with: maxWidth,
+                        textColor: bodyLabelTextColor,
+                        searchText: lastSearchText,
+                        delegate: self
+                    )
                     self.bodyTextView = bodyTextView
                     stackView.addArrangedSubview(bodyTextView)
                 }
@@ -554,17 +575,19 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         bubbleView.layer.maskedCorners = getCornerMask(from: cornersToRound)
     }
     
-    override func dynamicUpdate(with item: ConversationViewModel.Item, playbackInfo: ConversationViewModel.PlaybackInfo?) {
-        guard item.interactionVariant != .standardIncomingDeleted else { return }
+    override func dynamicUpdate(with cellViewModel: MessageCell.ViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
+        guard cellViewModel.variant != .standardIncomingDeleted else { return }
         
         // If it's an incoming media message and the thread isn't trusted then show the placeholder view
-        if item.cellType != .textOnlyMessage && item.interactionVariant == .standardIncoming && !item.isThreadTrusted {
+        if cellViewModel.cellType != .textOnlyMessage && cellViewModel.variant == .standardIncoming && !cellViewModel.threadIsTrusted {
             return
         }
 
-        switch item.cellType {
+        switch cellViewModel.cellType {
             case .audio:
-                guard let attachment: Attachment = item.attachments?.first(where: { $0.isAudio }) else { return }
+                guard let attachment: Attachment = cellViewModel.attachments?.first(where: { $0.isAudio }) else {
+                    return
+                }
                 
                 self.voiceMessageView?.update(
                     with: attachment,
@@ -631,17 +654,17 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     }
 
     @objc func handleLongPress() {
-        guard let item: ConversationViewModel.Item = self.item else { return }
+        guard let cellViewModel: MessageCell.ViewModel = self.viewModel else { return }
         
-        delegate?.handleItemLongPressed(item)
+        delegate?.handleItemLongPressed(cellViewModel)
     }
 
     @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
-        guard let item: ConversationViewModel.Item = self.item else { return }
+        guard let cellViewModel: MessageCell.ViewModel = self.viewModel else { return }
         
         let location = gestureRecognizer.location(in: self)
         
-        if profilePictureView.frame.contains(location), let profile: Profile = item.profile, item.threadVariant != .openGroup {
+        if profilePictureView.frame.contains(location), let profile: Profile = cellViewModel.profile, cellViewModel.threadVariant != .openGroup {
             delegate?.showUserDetails(for: profile)
         }
         else if replyButton.alpha > 0 && replyButton.frame.contains(location) {
@@ -649,18 +672,18 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
             reply()
         }
         else if bubbleView.frame.contains(location) {
-            delegate?.handleItemTapped(item, gestureRecognizer: gestureRecognizer)
+            delegate?.handleItemTapped(cellViewModel, gestureRecognizer: gestureRecognizer)
         }
     }
 
     @objc private func handleDoubleTap() {
-        guard let item: ConversationViewModel.Item = self.item else { return }
+        guard let cellViewModel: MessageCell.ViewModel = self.viewModel else { return }
         
-        delegate?.handleItemDoubleTapped(item)
+        delegate?.handleItemDoubleTapped(cellViewModel)
     }
 
     @objc private func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
-        guard let item: ConversationViewModel.Item = self.item else { return }
+        guard let cellViewModel: MessageCell.ViewModel = self.viewModel else { return }
         
         let viewsToMove: [UIView] = [
             bubbleView, profilePictureView, replyButton, timerView, messageStatusImageView
@@ -668,7 +691,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         let translationX = gestureRecognizer.translation(in: self).x.clamp(-CGFloat.greatestFiniteMagnitude, 0)
         
         switch gestureRecognizer.state {
-            case .began: delegate?.handleItemSwiped(item, state: .began)
+            case .began: delegate?.handleItemSwiped(cellViewModel, state: .began)
                 
             case .changed:
                 // The idea here is to asymptotically approach a maximum drag distance
@@ -688,11 +711,11 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 
             case .ended, .cancelled:
                 if abs(translationX) > VisibleMessageCell.swipeToReplyThreshold {
-                    delegate?.handleItemSwiped(item, state: .ended)
+                    delegate?.handleItemSwiped(cellViewModel, state: .ended)
                     reply()
                 }
                 else {
-                    delegate?.handleItemSwiped(item, state: .cancelled)
+                    delegate?.handleItemSwiped(cellViewModel, state: .cancelled)
                     resetReply()
                 }
                 
@@ -722,20 +745,20 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     }
 
     private func reply() {
-        guard let item: ConversationViewModel.Item = self.item else { return }
+        guard let cellViewModel: MessageCell.ViewModel = self.viewModel else { return }
         
         resetReply()
-        delegate?.handleReplyButtonTapped(for: item)
+        delegate?.handleReplyButtonTapped(for: cellViewModel)
     }
 
     // MARK: - Convenience
     
     private func getCornersToRound() -> UIRectCorner {
-        guard item?.isOnlyMessageInCluster == false else { return .allCorners }
+        guard viewModel?.isOnlyMessageInCluster == false else { return .allCorners }
         
-        let direction: Direction = (item?.interactionVariant == .standardOutgoing ? .outgoing : .incoming)
+        let direction: Direction = (viewModel?.variant == .standardOutgoing ? .outgoing : .incoming)
         
-        switch (item?.positionInCluster, direction) {
+        switch (viewModel?.positionInCluster, direction) {
             case (.top, .outgoing): return [ .bottomLeft, .topLeft, .topRight ]
             case (.middle, .outgoing): return [ .bottomLeft, .topLeft ]
             case (.bottom, .outgoing): return [ .bottomRight, .bottomLeft, .topLeft ]
@@ -759,7 +782,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         return cornerMask
     }
 
-    private static func getFontSize(for item: ConversationViewModel.Item) -> CGFloat {
+    private static func getFontSize(for cellViewModel: MessageCell.ViewModel) -> CGFloat {
         let baselineFontSize = Values.mediumFontSize
         switch viewItem.displayableBodyText?.jumbomojiCount {
         case 1: return baselineFontSize + 30
@@ -769,14 +792,14 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         }
     }
 
-    private func getMessageStatusImage(for item: ConversationViewModel.Item) -> (image: UIImage?, tintColor: UIColor?, backgroundColor: UIColor?) {
-        guard item.interactionVariant == .standardOutgoing else { return (nil, nil, nil) }
+    private func getMessageStatusImage(for cellViewModel: MessageCell.ViewModel) -> (image: UIImage?, tintColor: UIColor?, backgroundColor: UIColor?) {
+        guard cellViewModel.variant == .standardOutgoing else { return (nil, nil, nil) }
 
         let image: UIImage
         var tintColor: UIColor? = nil
         var backgroundColor: UIColor? = nil
         
-        switch (item.state, item.hasAtLeastOneReadReceipt) {
+        switch (cellViewModel.state, cellViewModel.hasAtLeastOneReadReceipt) {
             case (.sending, _):
                 image = #imageLiteral(resourceName: "CircleDotDotDot").withRenderingMode(.alwaysTemplate)
                 tintColor = Colors.text
@@ -797,10 +820,12 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         return (image, tintColor, backgroundColor)
     }
 
-    private func getSize(for item: ConversationViewModel.Item) -> CGSize {
-        guard let mediaAttachments: [Attachment] = item.attachments?.filter({ $0.isVisualMedia }) else { preconditionFailure() }
+    private func getSize(for cellViewModel: MessageCell.ViewModel) -> CGSize {
+        guard let mediaAttachments: [Attachment] = cellViewModel.attachments?.filter({ $0.isVisualMedia }) else {
+            preconditionFailure()
+        }
         
-        let maxMessageWidth = VisibleMessageCell.getMaxWidth(for: item)
+        let maxMessageWidth = VisibleMessageCell.getMaxWidth(for: cellViewModel)
         let defaultSize = MediaAlbumView.layoutSize(forMaxMessageWidth: maxMessageWidth, items: mediaAttachments)
         
         guard
@@ -843,13 +868,16 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         return CGSize(width: width, height: height)
     }
 
-    static func getMaxWidth(for item: ConversationViewModel.Item) -> CGFloat {
+    static func getMaxWidth(for cellViewModel: MessageCell.ViewModel) -> CGFloat {
         let screen: CGRect = UIScreen.main.bounds
         
-        switch item.interactionVariant {
+        switch cellViewModel.variant {
             case .standardOutgoing: return (screen.width - contactThreadHSpacing - gutterSize)
             case .standardIncoming, .standardIncomingDeleted:
-                let isGroupThread = (item.threadVariant == .openGroup || item.threadVariant == .closedGroup)
+                let isGroupThread = (
+                    cellViewModel.threadVariant == .openGroup ||
+                    cellViewModel.threadVariant == .closedGroup
+                )
                 let leftGutterSize = (isGroupThread ? gutterSize : contactThreadHSpacing)
                 
                 return (screen.width - leftGutterSize - gutterSize)
@@ -859,7 +887,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     }
 
     static func getBodyTextView(
-        for item: ConversationViewModel.Item,
+        for cellViewModel: MessageCell.ViewModel,
         with availableWidth: CGFloat,
         textColor: UIColor,
         searchText: String?,
@@ -872,18 +900,18 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         //
         // Note: We can't just set 'isSelectable' to false otherwise the link detection/selection
         // stops working
-        let isOutgoing: Bool = (item.interactionVariant == .standardOutgoing)
+        let isOutgoing: Bool = (cellViewModel.variant == .standardOutgoing)
         let result: BodyTextView = BodyTextView(snDelegate: delegate)
         result.isEditable = false
         
         let attributedText: NSMutableAttributedString = NSMutableAttributedString(
             attributedString: MentionUtilities.highlightMentions(
-                in: (item.body ?? ""),
-                threadVariant: item.threadVariant,
+                in: (cellViewModel.body ?? ""),
+                threadVariant: cellViewModel.threadVariant,
                 isOutgoingMessage: isOutgoing,
                 attributes: [
                     .foregroundColor : textColor,
-                    .font : UIFont.systemFont(ofSize: getFontSize(for: item))
+                    .font : UIFont.systemFont(ofSize: getFontSize(for: cellViewModel))
                 ]
             )
         )

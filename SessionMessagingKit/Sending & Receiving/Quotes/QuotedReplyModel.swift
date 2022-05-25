@@ -42,19 +42,21 @@ public struct QuotedReplyModel {
         body: String?,
         timestampMs: Int64,
         attachments: [Attachment]?,
-        linkPreview: LinkPreview?
+        linkPreviewAttachment: Attachment?
     ) -> QuotedReplyModel? {
         guard variant == .standardOutgoing || variant == .standardIncoming else { return nil }
         guard (body != nil && body?.isEmpty == false) || attachments?.isEmpty == false else { return nil }
+        
+        let targetAttachment: Attachment? = (attachments?.first ?? linkPreviewAttachment)
         
         return QuotedReplyModel(
             threadId: threadId,
             authorId: authorId,
             timestampMs: timestampMs,
             body: body,
-            attachment: attachments?.first,
-            contentType: attachments?.first?.contentType,
-            sourceFileName: attachments?.first?.sourceFilename,
+            attachment: targetAttachment,
+            contentType: targetAttachment?.contentType,
+            sourceFileName: targetAttachment?.sourceFilename,
             thumbnailDownloadFailed: false
         )
     }

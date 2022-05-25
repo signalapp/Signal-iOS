@@ -13,38 +13,38 @@ public class TypingIndicators {
     }
     
     private class Indicator {
-        fileprivate let thread: SessionThread
+        fileprivate let threadId: String
         fileprivate let direction: Direction
         fileprivate let timestampMs: Int64
         
         fileprivate var refreshTimer: Timer?
         fileprivate var stopTimer: Timer?
         
-        init?(thread: SessionThread, direction: Direction, timestampMs: Int64?) {
+        init?(
+            threadId: String,
+            threadVariant: SessionThread.Variant,
+            threadIsMessageRequest: Bool,
+            direction: Direction,
+            timestampMs: Int64?
+        ) {
             // The `typingIndicatorsEnabled` flag reflects the user-facing setting in the app
             // preferences, if it's disabled we don't want to emit "typing indicator" messages
             // or show typing indicators for other users
             //
             // We also don't want to show/send typing indicators for message requests
-            guard GRDBStorage.shared.read({ db in
-                (
-                    db[.typingIndicatorsEnabled] == true &&
-                    thread.isMessageRequest(db) == false
-                )
-            }) == true else {
+            guard GRDBStorage.shared[.typingIndicatorsEnabled] && !threadIsMessageRequest else {
                 return nil
             }
             
             // Don't send typing indicators in group threads
-            guard thread.variant != .closedGroup && thread.variant != .openGroup else { return nil }
+            guard threadVariant != .closedGroup && threadVariant != .openGroup else { return nil }
             
-            self.thread = thread
+            self.threadId = threadId
             self.direction = direction
             self.timestampMs = (timestampMs ?? Int64(floor(Date().timeIntervalSince1970 * 1000)))
         }
         
         fileprivate func starting(_ db: Database) -> Indicator {
-            let thread: SessionThread = self.thread
             let direction: Direction = self.direction
             let timestampMs: Int64 = self.timestampMs
             
@@ -55,7 +55,7 @@ public class TypingIndicators {
                     
                 case .incoming:
                     try? ThreadTypingIndicator(
-                        threadId: thread.id,
+                        threadId: self.threadId,
                         timestampMs: timestampMs
                     )
                     .save(db)
@@ -83,6 +83,10 @@ public class TypingIndicators {
             
             switch direction {
                 case .outgoing:
+                    guard let thread: SessionThread = try? SessionThread.fetchOne(db, id: self.threadId) else {
+                        return nil
+                    }
+                    
                     try? MessageSender.send(
                         db,
                         message: TypingIndicator(kind: .stopped),
@@ -92,7 +96,7 @@ public class TypingIndicators {
                     
                 case .incoming:
                     _ = try? ThreadTypingIndicator
-                        .filter(ThreadTypingIndicator.Columns.threadId == thread.id)
+                        .filter(ThreadTypingIndicator.Columns.threadId == self.threadId)
                         .deleteAll(db)
             }
             
@@ -101,6 +105,10 @@ public class TypingIndicators {
         
         private func scheduleRefreshCallback(_ db: Database, shouldSend: Bool = true) {
             if shouldSend {
+                guard let thread: SessionThread = try? SessionThread.fetchOne(db, id: self.threadId) else {
+                    return
+                }
+                
                 try? MessageSender.send(
                     db,
                     message: TypingIndicator(kind: .started),
@@ -130,37 +138,56 @@ public class TypingIndicators {
     
     // MARK: - Functions
     
-    public static func didStartTyping(_ db: Database, in thread: SessionThread, direction: Direction, timestampMs: Int64?) {
+    public static func didStartTyping(
+        _ db: Database,
+        threadId: String,
+        threadVariant: SessionThread.Variant,
+        threadIsMessageRequest: Bool,
+        direction: Direction,
+        timestampMs: Int64?
+    ) {
         switch direction {
             case .outgoing:
                 let updatedIndicator: Indicator? = (
-                    outgoing.wrappedValue[thread.id] ??
-                    Indicator(thread: thread, direction: direction, timestampMs: timestampMs)
+                    outgoing.wrappedValue[threadId] ??
+                    Indicator(
+                        threadId: threadId,
+                        threadVariant: threadVariant,
+                        threadIsMessageRequest: threadIsMessageRequest,
+                        direction: direction,
+                        timestampMs: timestampMs
+                    )
                 )?.starting(db)
                 
-                outgoing.mutate { $0[thread.id] = updatedIndicator }
+                outgoing.mutate { $0[threadId] = updatedIndicator }
                 
             case .incoming:
                 let updatedIndicator: Indicator? = (
-                    incoming.wrappedValue[thread.id] ??
-                    Indicator(thread: thread, direction: direction, timestampMs: timestampMs)
+                    incoming.wrappedValue[threadId] ??
+                    Indicator(
+                        threadId: threadId,
+                        threadVariant: threadVariant,
+                        threadIsMessageRequest: threadIsMessageRequest,
+                        direction: direction,
+                        timestampMs: timestampMs
+                    )
                 )?.starting(db)
                 
-                incoming.mutate { $0[thread.id] = updatedIndicator }
+                incoming.mutate { $0[threadId] = updatedIndicator }
         }
     }
     
-    public static func didStopTyping(_ db: Database, in thread: SessionThread, direction: Direction) {
+    public static func didStopTyping(_ db: Database, threadId: String, direction: Direction) {
         switch direction {
             case .outgoing:
-                let updatedIndicator: Indicator? = outgoing.wrappedValue[thread.id]?.stoping(db)
+                let updatedIndicator: Indicator? = outgoing.wrappedValue[threadId]?.stoping(db)
                 
-                outgoing.mutate { $0[thread.id] = updatedIndicator }
+                outgoing.mutate { $0[threadId] = updatedIndicator }
                 
             case .incoming:
-                let updatedIndicator: Indicator? = incoming.wrappedValue[thread.id]?.stoping(db)
+                let updatedIndicator: Indicator? = incoming.wrappedValue[threadId]?.stoping(db)
                 
-                incoming.mutate { $0[thread.id] = updatedIndicator }
+                incoming.mutate { $0[threadId] = updatedIndicator }
         }
     }
 }

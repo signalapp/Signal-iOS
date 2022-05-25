@@ -52,20 +52,15 @@ final class InfoMessageCell: MessageCell {
 
     // MARK: - Updating
     
-    override func update(with item: ConversationViewModel.Item, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
-        switch item.interactionVariant {
-            case .infoClosedGroupCreated, .infoClosedGroupUpdated, .infoClosedGroupCurrentUserLeft,
-                .infoDisappearingMessagesUpdate, .infoScreenshotNotification, .infoMediaSavedNotification,
-                .infoMessageRequestAccepted:
-                break
-                
-            default: return // Ignore non-info variants
-        }
+    override func update(with cellViewModel: MessageCell.ViewModel, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
+        guard cellViewModel.variant.isInfoMessage else { return }
+        
+        self.viewModel = cellViewModel
         
         let icon: UIImage? = {
-            switch item.interactionVariant {
+            switch cellViewModel.variant {
                 case .infoDisappearingMessagesUpdate:
-                    return (item.threadHasDisappearingMessagesEnabled ?
+                    return (cellViewModel.threadHasDisappearingMessagesEnabled ?
                         UIImage(named: "ic_timer") :
                         UIImage(named: "ic_timer_disabled")
                     )
@@ -83,9 +78,9 @@ final class InfoMessageCell: MessageCell {
         iconImageViewWidthConstraint.constant = (icon != nil) ? InfoMessageCell.iconSize : 0
         iconImageViewHeightConstraint.constant = (icon != nil) ? InfoMessageCell.iconSize : 0
         
-        self.label.text = item.body
+        self.label.text = cellViewModel.body
     }
     
-    override func dynamicUpdate(with item: ConversationViewModel.Item, playbackInfo: ConversationViewModel.PlaybackInfo?) {
+    override func dynamicUpdate(with cellViewModel: MessageCell.ViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
     }
 }

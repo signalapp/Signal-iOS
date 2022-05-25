@@ -23,21 +23,31 @@ extension ConversationCell {
         public static let threadCreationDateTimestampKey: SQL = SQL(stringLiteral: CodingKeys.threadCreationDateTimestamp.stringValue)
         public static let threadMemberNamesKey: SQL = SQL(stringLiteral: CodingKeys.threadMemberNames.stringValue)
         public static let threadIsNoteToSelfKey: SQL = SQL(stringLiteral: CodingKeys.threadIsNoteToSelf.stringValue)
+        public static let threadIsMessageRequestKey: SQL = SQL(stringLiteral: CodingKeys.threadIsMessageRequest.stringValue)
+        public static let threadRequiresApprovalKey: SQL = SQL(stringLiteral: CodingKeys.threadRequiresApproval.stringValue)
+        public static let threadShouldBeVisibleKey: SQL = SQL(stringLiteral: CodingKeys.threadShouldBeVisible.stringValue)
         public static let threadIsPinnedKey: SQL = SQL(stringLiteral: CodingKeys.threadIsPinned.stringValue)
         public static let threadIsBlockedKey: SQL = SQL(stringLiteral: CodingKeys.threadIsBlocked.stringValue)
         public static let threadMutedUntilTimestampKey: SQL = SQL(stringLiteral: CodingKeys.threadMutedUntilTimestamp.stringValue)
         public static let threadOnlyNotifyForMentionsKey: SQL = SQL(stringLiteral: CodingKeys.threadOnlyNotifyForMentions.stringValue)
+        public static let threadMessageDraftKey: SQL = SQL(stringLiteral: CodingKeys.threadMessageDraft.stringValue)
         public static let threadContactIsTypingKey: SQL = SQL(stringLiteral: CodingKeys.threadContactIsTyping.stringValue)
         public static let threadUnreadCountKey: SQL = SQL(stringLiteral: CodingKeys.threadUnreadCount.stringValue)
         public static let threadUnreadMentionCountKey: SQL = SQL(stringLiteral: CodingKeys.threadUnreadMentionCount.stringValue)
+        public static let threadFirstUnreadInteractionIdKey: SQL = SQL(stringLiteral: CodingKeys.threadFirstUnreadInteractionId.stringValue)
         public static let contactProfileKey: SQL = SQL(stringLiteral: CodingKeys.contactProfile.stringValue)
         public static let closedGroupNameKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupName.stringValue)
+        public static let closedGroupUserCountKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupUserCount.stringValue)
+        public static let currentUserIsClosedGroupMemberKey: SQL = SQL(stringLiteral: CodingKeys.currentUserIsClosedGroupMember.stringValue)
         public static let currentUserIsClosedGroupAdminKey: SQL = SQL(stringLiteral: CodingKeys.currentUserIsClosedGroupAdmin.stringValue)
         public static let closedGroupProfileFrontKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupProfileFront.stringValue)
         public static let closedGroupProfileBackKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupProfileBack.stringValue)
         public static let closedGroupProfileBackFallbackKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupProfileBackFallback.stringValue)
         public static let openGroupNameKey: SQL = SQL(stringLiteral: CodingKeys.openGroupName.stringValue)
+        public static let openGroupServerKey: SQL = SQL(stringLiteral: CodingKeys.openGroupServer.stringValue)
+        public static let openGroupRoomKey: SQL = SQL(stringLiteral: CodingKeys.openGroupRoom.stringValue)
         public static let openGroupProfilePictureDataKey: SQL = SQL(stringLiteral: CodingKeys.openGroupProfilePictureData.stringValue)
+        public static let openGroupUserCountKey: SQL = SQL(stringLiteral: CodingKeys.openGroupUserCount.stringValue)
         public static let interactionIdKey: SQL = SQL(stringLiteral: CodingKeys.interactionId.stringValue)
         public static let interactionVariantKey: SQL = SQL(stringLiteral: CodingKeys.interactionVariant.stringValue)
         public static let interactionTimestampMsKey: SQL = SQL(stringLiteral: CodingKeys.interactionTimestampMs.stringValue)
@@ -50,6 +60,9 @@ extension ConversationCell {
         
         public static let threadUnreadCountString: String = CodingKeys.threadUnreadCount.stringValue
         public static let threadUnreadMentionCountString: String = CodingKeys.threadUnreadMentionCount.stringValue
+        public static let threadFirstUnreadInteractionIdString: String = CodingKeys.threadFirstUnreadInteractionId.stringValue
+        public static let closedGroupUserCountString: String = CodingKeys.closedGroupUserCount.stringValue
+        public static let openGroupUserCountString: String = CodingKeys.openGroupUserCount.stringValue
         public static let contactProfileString: String = CodingKeys.contactProfile.stringValue
         public static let closedGroupProfileFrontString: String = CodingKeys.closedGroupProfileFront.stringValue
         public static let closedGroupProfileBackString: String = CodingKeys.closedGroupProfileBack.stringValue
@@ -64,14 +77,19 @@ extension ConversationCell {
         public let threadMemberNames: String?
         
         public let threadIsNoteToSelf: Bool
+        public var threadIsMessageRequest: Bool?
+        public let threadRequiresApproval: Bool?
+        public let threadShouldBeVisible: Bool?
         public let threadIsPinned: Bool
         public var threadIsBlocked: Bool?
         public let threadMutedUntilTimestamp: TimeInterval?
         public let threadOnlyNotifyForMentions: Bool?
+        public let threadMessageDraft: String?
         
         public let threadContactIsTyping: Bool?
         public let threadUnreadCount: UInt?
         public let threadUnreadMentionCount: UInt?
+        public let threadFirstUnreadInteractionId: Int64?
         
         // Thread display info
         
@@ -80,9 +98,14 @@ extension ConversationCell {
         private let closedGroupProfileBack: Profile?
         private let closedGroupProfileBackFallback: Profile?
         public let closedGroupName: String?
+        private let closedGroupUserCount: Int?
+        public let currentUserIsClosedGroupMember: Bool?
         public let currentUserIsClosedGroupAdmin: Bool?
         public let openGroupName: String?
+        public let openGroupServer: String?
+        public let openGroupRoom: String?
         public let openGroupProfilePictureData: Data?
+        private let openGroupUserCount: Int?
         
         // Interaction display info
         
@@ -135,6 +158,23 @@ extension ConversationCell {
             return Date(timeIntervalSince1970: (TimeInterval(interactionTimestampMs) / 1000))
         }
         
+        public var enabledMessageTypes: MessageInputTypes {
+            guard !threadIsNoteToSelf else { return .all }
+            
+            return (threadRequiresApproval == false && threadIsMessageRequest == false ?
+                .all :
+                .textOnly
+            )
+        }
+        
+        public var userCount: Int? {
+            switch threadVariant {
+                case .contact: return nil
+                case .closedGroup: return closedGroupUserCount
+                case .openGroup: return openGroupUserCount
+            }
+        }
+        
         /// This function returns the profile name formatted for the specific type of thread provided
         ///
         /// **Note:** The 'threadVariant' parameter is used for profile context but in the search results we actually want this
@@ -166,14 +206,19 @@ public extension ConversationCell.ViewModel {
         self.threadMemberNames = nil
         
         self.threadIsNoteToSelf = false
+        self.threadIsMessageRequest = false
+        self.threadRequiresApproval = false
+        self.threadShouldBeVisible = false
         self.threadIsPinned = false
         self.threadIsBlocked = nil
         self.threadMutedUntilTimestamp = nil
         self.threadOnlyNotifyForMentions = nil
+        self.threadMessageDraft = nil
         
         self.threadContactIsTyping = nil
         self.threadUnreadCount = unreadCount
         self.threadUnreadMentionCount = nil
+        self.threadFirstUnreadInteractionId = nil
         
         // Thread display info
         
@@ -182,9 +227,14 @@ public extension ConversationCell.ViewModel {
         self.closedGroupProfileBack = nil
         self.closedGroupProfileBackFallback = nil
         self.closedGroupName = nil
+        self.closedGroupUserCount = nil
+        self.currentUserIsClosedGroupMember = nil
         self.currentUserIsClosedGroupAdmin = nil
         self.openGroupName = nil
+        self.openGroupServer = nil
+        self.openGroupRoom = nil
         self.openGroupProfilePictureData = nil
+        self.openGroupUserCount = nil
         
         // Interaction display info
         
@@ -221,7 +271,6 @@ public extension ConversationCell.ViewModel {
         let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
         let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
         let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
-        let recipientState: TypedTableAlias<RecipientState> = TypedTableAlias()
         
         let unreadCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadUnreadCountString)_table")
         let unreadMentionCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadUnreadMentionCountString)_table")
@@ -240,7 +289,7 @@ public extension ConversationCell.ViewModel {
         let interactionStateStateColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.state.name)
         
         /// **Note:** The `numColumnsBeforeProfiles` value **MUST** match the number of fields before
-        /// the `ViewModel.closedGroupProfileFrontKey` entry below otherwise the query will fail to
+        /// the `ViewModel.contactProfileKey` entry below otherwise the query will fail to
         /// parse and might throw
         ///
         /// Explicitly set default values for the fields ignored for search results
@@ -372,20 +421,10 @@ public extension ConversationCell.ViewModel {
                 FROM \(Attachment.self)
             ) AS \(ViewModel.interactionAttachmentDescriptionInfoKey) ON \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentIdColumnLiteral) = \(firstInteractionAttachmentLiteral).\(interactionAttachmentAttachmentIdColumnLiteral)
             LEFT JOIN (
-                SELECT * FROM (
-                    SELECT
-                        \(recipientState[.interactionId]),
-                        \(recipientState[.state])
-                    FROM \(RecipientState.self)
-                    JOIN \(Interaction.self) ON \(interaction[.id]) = \(recipientState[.interactionId])
-                    WHERE \(SQL("\(recipientState[.state]) != \(RecipientState.State.skipped)"))  -- Ignore 'skipped'
-                    ORDER BY
-                        -- If there is a single 'sending' then should be 'sending', otherwise if there is a single
-                        -- 'failed' and there is no 'sending' then it should be 'failed'
-                        \(SQL("\(recipientState[.state]) = \(RecipientState.State.sending)")) DESC,
-                        \(SQL("\(recipientState[.state]) = \(RecipientState.State.failed)")) DESC
-                ) AS \(interactionStateTableLiteral)
-                GROUP BY \(interactionStateTableLiteral).\(interactionStateInteractionIdColumnLiteral)
+                \(RecipientState.selectInteractionState(
+                    tableLiteral: interactionStateTableLiteral,
+                    idColumnLiteral: interactionStateInteractionIdColumnLiteral
+                ))
             ) AS \(interactionStateTableLiteral) ON \(interactionStateTableLiteral).\(interactionStateInteractionIdColumnLiteral) = \(interaction[.id])
             
             WHERE (
@@ -467,6 +506,153 @@ public extension ConversationCell.ViewModel {
     }
 }
 
+// MARK: - ConversationVC
+
+public extension ConversationCell.ViewModel {
+    static func conversationQuery(threadId: String, userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<ConversationCell.ViewModel>> {
+        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let contact: TypedTableAlias<Contact> = TypedTableAlias()
+        let typingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias()
+        let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
+        let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
+        let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        
+        let unreadCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadUnreadCountString)_table")
+        let unreadMentionCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadUnreadMentionCountString)_table")
+        let firstUnreadInteractionTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadFirstUnreadInteractionIdString)_table")
+        let interactionIdLiteral: SQL = SQL(stringLiteral: Interaction.Columns.id.name)
+        let interactionThreadIdLiteral: SQL = SQL(stringLiteral: Interaction.Columns.threadId.name)
+        let closedGroupUserCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.closedGroupUserCountString)_table")
+        let groupMemberGroupIdColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.groupId.name)
+        let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
+        
+        /// **Note:** The `numColumnsBeforeProfiles` value **MUST** match the number of fields before
+        /// the `ViewModel.contactProfileKey` entry below otherwise the query will fail to
+        /// parse and might throw
+        ///
+        /// Explicitly set default values for the fields ignored for search results
+        let numColumnsBeforeProfiles: Int = 16
+        let request: SQLRequest<ViewModel> = """
+            SELECT
+                \(thread[.id]) AS \(ViewModel.threadIdKey),
+                \(thread[.variant]) AS \(ViewModel.threadVariantKey),
+                \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
+                
+                (\(SQL("\(thread[.id]) = \(userPublicKey)"))) AS \(ViewModel.threadIsNoteToSelfKey),
+                (
+                    \(thread[.shouldBeVisible]) = true AND
+                    \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND
+                    \(SQL("\(thread[.id]) != \(userPublicKey)")) AND (
+                        -- A '!= true' check doesn't work properly so we need to be explicit
+                        \(contact[.isApproved]) IS NULL OR
+                        \(contact[.isApproved]) = false
+                    )
+                ) AS \(ViewModel.threadIsMessageRequestKey),
+                (
+                    IFNULL(\(contact[.isApproved]), false) = false OR
+                    IFNULL(\(contact[.didApproveMe]), false) = false
+                ) AS \(ViewModel.threadRequiresApprovalKey),
+                \(thread[.shouldBeVisible]) AS \(ViewModel.threadShouldBeVisibleKey),
+        
+                \(thread[.isPinned]) AS \(ViewModel.threadIsPinnedKey),
+                \(contact[.isBlocked]) AS \(ViewModel.threadIsBlockedKey),
+                \(thread[.mutedUntilTimestamp]) AS \(ViewModel.threadMutedUntilTimestampKey),
+                \(thread[.onlyNotifyForMentions]) AS \(ViewModel.threadOnlyNotifyForMentionsKey),
+                \(thread[.messageDraft]) AS \(ViewModel.threadMessageDraftKey),
+        
+                (\(typingIndicator[.threadId]) IS NOT NULL) AS \(ViewModel.threadContactIsTypingKey),
+                \(unreadCountTableLiteral).\(ViewModel.threadUnreadCountKey) AS \(ViewModel.threadUnreadCountKey),
+                \(unreadMentionCountTableLiteral).\(ViewModel.threadUnreadMentionCountKey) AS \(ViewModel.threadUnreadMentionCountKey),
+                \(firstUnreadInteractionTableLiteral).\(interactionIdLiteral) AS \(ViewModel.threadFirstUnreadInteractionIdKey),
+            
+                \(ViewModel.contactProfileKey).*,
+                \(closedGroup[.name]) AS \(ViewModel.closedGroupNameKey),
+                \(closedGroupUserCountTableLiteral).\(ViewModel.closedGroupUserCountKey) AS \(ViewModel.closedGroupUserCountKey),
+                (\(groupMember[.profileId]) IS NOT NULL) AS \(ViewModel.currentUserIsClosedGroupMemberKey),
+                \(openGroup[.name]) AS \(ViewModel.openGroupNameKey),
+                \(openGroup[.server]) AS \(ViewModel.openGroupServerKey),
+                \(openGroup[.room]) AS \(ViewModel.openGroupRoomKey),
+                \(openGroup[.imageData]) AS \(ViewModel.openGroupProfilePictureDataKey),
+                \(openGroup[.userCount]) AS \(ViewModel.openGroupUserCountKey),
+            
+                \(SQL("\(userPublicKey)")) AS \(ViewModel.currentUserPublicKeyKey)
+            
+            FROM \(SessionThread.self)
+            LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
+            LEFT JOIN \(ThreadTypingIndicator.self) ON \(typingIndicator[.threadId]) = \(thread[.id])
+            LEFT JOIN (
+                SELECT
+                    \(interaction[.id]),
+                    \(interaction[.threadId]),
+                    MIN(\(interaction[.timestampMs]))
+                FROM \(Interaction.self)
+                WHERE (
+                    \(interaction[.wasRead]) = false AND
+                    \(SQL("\(interaction[.threadId]) = \(threadId)"))
+                )
+            ) AS \(firstUnreadInteractionTableLiteral) ON \(firstUnreadInteractionTableLiteral).\(interactionThreadIdLiteral) = \(thread[.id])
+            LEFT JOIN (
+                SELECT
+                    \(interaction[.threadId]),
+                    COUNT(*) AS \(ViewModel.threadUnreadCountKey)
+                FROM \(Interaction.self)
+                WHERE (
+                    \(interaction[.wasRead]) = false AND
+                    \(SQL("\(interaction[.threadId]) = \(threadId)"))
+                )
+                GROUP BY \(interaction[.threadId])
+            ) AS \(unreadCountTableLiteral) ON \(unreadCountTableLiteral).\(interactionThreadIdLiteral) = \(thread[.id])
+            LEFT JOIN (
+                SELECT
+                    \(interaction[.threadId]),
+                    COUNT(*) AS \(ViewModel.threadUnreadMentionCountKey)
+                FROM \(Interaction.self)
+                WHERE (
+                    \(interaction[.wasRead]) = false AND
+                    \(interaction[.hasMention]) = true AND
+                    \(SQL("\(interaction[.threadId]) = \(threadId)"))
+                )
+                GROUP BY \(interaction[.threadId])
+            ) AS \(unreadMentionCountTableLiteral) ON \(unreadMentionCountTableLiteral).\(interactionThreadIdLiteral) = \(thread[.id])
+        
+            LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
+            LEFT JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
+            LEFT JOIN \(GroupMember.self) ON (
+                \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
+                \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
+                \(SQL("\(groupMember[.profileId]) = \(userPublicKey)"))
+            )
+            LEFT JOIN (
+                SELECT
+                    \(groupMember[.groupId]),
+                    COUNT(*) AS \(ViewModel.closedGroupUserCountKey)
+                FROM \(GroupMember.self)
+                WHERE (
+                    \(SQL("\(groupMember[.groupId]) = \(threadId)")) AND
+                    \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)"))
+                )
+                GROUP BY \(groupMember[.groupId])
+            ) AS \(closedGroupUserCountTableLiteral) ON \(SQL("\(closedGroupUserCountTableLiteral).\(groupMemberGroupIdColumnLiteral) = \(threadId)"))
+            LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(thread[.id])
+            
+            WHERE \(SQL("\(thread[.id]) = \(threadId)"))
+            GROUP BY \(thread[.id])
+        """
+        
+        return request.adapted { db in
+            let adapters = try splittingRowAdapters(columnCounts: [
+                numColumnsBeforeProfiles,
+                Profile.numberOfSelectedColumns(db)
+            ])
+            
+            return ScopeAdapter([
+                ViewModel.contactProfileString: adapters[1]
+            ])
+        }
+    }
+}
+
 // MARK: - Search Queries
 
 public extension ConversationCell.ViewModel {
@@ -524,7 +710,7 @@ public extension ConversationCell.ViewModel {
         let interactionFullTextSearch: SQL = SQL(stringLiteral: Interaction.fullTextSearchTableName)
         
         /// **Note:** The `numColumnsBeforeProfiles` value **MUST** match the number of fields before
-        /// the `ViewModel.closedGroupProfileFrontKey` entry below otherwise the query will fail to
+        /// the `ViewModel.contactProfileKey` entry below otherwise the query will fail to
         /// parse and might throw
         ///
         /// Explicitly set default values for the fields ignored for search results
@@ -651,7 +837,7 @@ public extension ConversationCell.ViewModel {
         let searchTermLiteral: SQL = SQL(stringLiteral: searchTerm.lowercased())
         
         /// **Note:** The `numColumnsBeforeProfiles` value **MUST** match the number of fields before
-        /// the `ViewModel.closedGroupProfileFrontKey` entry below otherwise the query will fail to
+        /// the `ViewModel.contactProfileKey` entry below otherwise the query will fail to
         /// parse and might throw
         ///
         /// We use `IFNULL(rank, 100)` because the custom `Note to Self` like comparison will get a null
@@ -1005,7 +1191,7 @@ public extension ConversationCell.ViewModel {
         let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
         
         /// **Note:** The `numColumnsBeforeProfiles` value **MUST** match the number of fields before
-        /// the `ViewModel.closedGroupProfileFrontKey` entry below otherwise the query will fail to
+        /// the `ViewModel.contactProfileKey` entry below otherwise the query will fail to
         /// parse and might throw
         ///
         /// Explicitly set default values for the fields ignored for search results
@@ -1018,6 +1204,7 @@ public extension ConversationCell.ViewModel {
                 \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
                 
                 (\(SQL("\(thread[.id]) = \(userPublicKey)"))) AS \(ViewModel.threadIsNoteToSelfKey),
+                
                 \(thread[.isPinned]) AS \(ViewModel.threadIsPinnedKey),
                 \(contact[.isBlocked]) AS \(ViewModel.threadIsBlockedKey),
         

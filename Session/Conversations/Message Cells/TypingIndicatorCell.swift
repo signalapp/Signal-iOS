@@ -39,10 +39,10 @@ final class TypingIndicatorCell: MessageCell {
 
     // MARK: - Updating
     
-    override func update(with item: ConversationViewModel.Item, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
-        guard item.cellType == .typingIndicator else { return }
+    override func update(with cellViewModel: MessageCell.ViewModel, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
+        guard cellViewModel.cellType == .typingIndicator else { return }
         
-        self.item = item
+        self.viewModel = cellViewModel
         
         // Bubble view
         updateBubbleViewCorners()
@@ -51,7 +51,7 @@ final class TypingIndicatorCell: MessageCell {
         typingIndicatorView.startAnimation()
     }
     
-    override func dynamicUpdate(with item: ConversationViewModel.Item, playbackInfo: ConversationViewModel.PlaybackInfo?) {
+    override func dynamicUpdate(with cellViewModel: MessageCell.ViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
     }
 
     override func layoutSubviews() {
@@ -82,9 +82,9 @@ final class TypingIndicatorCell: MessageCell {
     // MARK: - Convenience
     
     private func getCornersToRound() -> UIRectCorner {
-        guard item?.isOnlyMessageInCluster == false else { return .allCorners }
+        guard viewModel?.isOnlyMessageInCluster == false else { return .allCorners }
         
-        switch item?.positionInCluster {
+        switch viewModel?.positionInCluster {
             case .top: return [ .topLeft, .topRight, .bottomRight ]
             case .middle: return [ .topRight, .bottomRight ]
             case .bottom: return [ .topRight, .bottomRight, .bottomLeft ]

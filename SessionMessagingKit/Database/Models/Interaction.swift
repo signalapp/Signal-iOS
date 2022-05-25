@@ -36,7 +36,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     public static let recipientStates = hasMany(RecipientState.self, using: RecipientState.interactionForeignKey)
     
     public typealias Columns = CodingKeys
-    public enum CodingKeys: String, CodingKey, ColumnExpression {
+    public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
         case serverHash
         case threadId
@@ -60,7 +60,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
         case openGroupWhisperTo
     }
     
-    public enum Variant: Int, Codable, DatabaseValueConvertible {
+    public enum Variant: Int, Codable, Hashable, DatabaseValueConvertible {
         case standardIncoming
         case standardOutgoing
         case standardIncomingDeleted

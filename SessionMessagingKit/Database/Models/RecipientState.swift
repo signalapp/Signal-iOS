@@ -21,7 +21,7 @@ public struct RecipientState: Codable, Equatable, FetchableRecord, PersistableRe
         case mostRecentFailureText
     }
     
-    public enum State: Int, Codable, DatabaseValueConvertible {
+    public enum State: Int, Codable, Hashable, DatabaseValueConvertible {
         case failed
         case sending
         case skipped
@@ -115,5 +115,32 @@ public extension RecipientState {
             readTimestampMs: (readTimestampMs ?? self.readTimestampMs),
             mostRecentFailureText: (mostRecentFailureText ?? self.mostRecentFailureText)
         )
+    }
+}
+
+// MARK: - GRDB Queries
+
+public extension RecipientState {
+    static func selectInteractionState(tableLiteral: SQL, idColumnLiteral: SQL) -> SQL {
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        let recipientState: TypedTableAlias<RecipientState> = TypedTableAlias()
+        
+        return """
+            SELECT * FROM (
+                SELECT
+                    \(recipientState[.interactionId]),
+                    \(recipientState[.state]),
+                    \(recipientState[.mostRecentFailureText])
+                FROM \(RecipientState.self)
+                JOIN \(Interaction.self) ON \(interaction[.id]) = \(recipientState[.interactionId])
+                WHERE \(SQL("\(recipientState[.state]) != \(RecipientState.State.skipped)"))  -- Ignore 'skipped'
+                ORDER BY
+                    -- If there is a single 'sending' then should be 'sending', otherwise if there is a single
+                    -- 'failed' and there is no 'sending' then it should be 'failed'
+                    \(SQL("\(recipientState[.state]) = \(RecipientState.State.sending)")) DESC,
+                    \(SQL("\(recipientState[.state]) = \(RecipientState.State.failed)")) DESC
+            ) AS \(tableLiteral)
+            GROUP BY \(tableLiteral).\(idColumnLiteral)
+        """
     }
 }

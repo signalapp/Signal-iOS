@@ -9,7 +9,7 @@ final class ContextMenuVC: UIViewController {
     
     private let snapshot: UIView
     private let frame: CGRect
-    private let item: ConversationViewModel.Item
+    private let cellViewModel: MessageCell.ViewModel
     private let actions: [Action]
     private let dismiss: () -> Void
 
@@ -32,7 +32,7 @@ final class ContextMenuVC: UIViewController {
         result.font = .systemFont(ofSize: Values.verySmallFontSize)
         result.textColor = (isLightMode ? .black : .white)
         
-        if let dateForUI: Date = item.dateForUI {
+        if let dateForUI: Date = cellViewModel.dateForUI {
             result.text = DateUtil.formatDate(forDisplay: dateForUI)
         }
         
@@ -44,13 +44,13 @@ final class ContextMenuVC: UIViewController {
     init(
         snapshot: UIView,
         frame: CGRect,
-        item: ConversationViewModel.Item,
+        cellViewModel: MessageCell.ViewModel,
         actions: [Action],
         dismiss: @escaping () -> Void
     ) {
         self.snapshot = snapshot
         self.frame = frame
-        self.item = item
+        self.cellViewModel = cellViewModel
         self.actions = actions
         self.dismiss = dismiss
         
@@ -93,7 +93,7 @@ final class ContextMenuVC: UIViewController {
         view.addSubview(timestampLabel)
         timestampLabel.center(.vertical, in: snapshot)
         
-        if item.interactionVariant == .standardOutgoing {
+        if cellViewModel.variant == .standardOutgoing {
             timestampLabel.pin(.right, to: .left, of: snapshot, withInset: -Values.smallSpacing)
         }
         else {
@@ -128,7 +128,7 @@ final class ContextMenuVC: UIViewController {
             menuView.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
         }
 
-        switch item.interactionVariant {
+        switch cellViewModel.variant {
             case .standardOutgoing: menuView.pin(.right, to: .right, of: snapshot)
             case .standardIncoming: menuView.pin(.left, to: .left, of: snapshot)
             default: break // Should never occur

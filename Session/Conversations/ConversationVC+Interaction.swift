@@ -21,7 +21,7 @@ extension ConversationVC:
 {
     @objc func handleTitleViewTapped() {
         // Don't take the user to settings for unapproved threads
-        guard !viewModel.viewData.requiresApproval else { return }
+        guard viewModel.threadData.threadRequiresApproval == false else { return }
 
         openSettings()
     }
@@ -29,11 +29,11 @@ extension ConversationVC:
     @objc func openSettings() {
         let settingsVC: OWSConversationSettingsViewController = OWSConversationSettingsViewController()
         settingsVC.configure(
-            withThreadId: viewModel.viewData.thread.id,
-            threadName: viewModel.viewData.threadName,
-            isClosedGroup: (viewModel.viewData.thread.variant == .closedGroup),
-            isOpenGroup: (viewModel.viewData.thread.variant == .openGroup),
-            isNoteToSelf: viewModel.viewData.threadIsNoteToSelf
+            withThreadId: viewModel.threadData.threadId,
+            threadName: viewModel.threadData.displayName,
+            isClosedGroup: (viewModel.threadData.threadVariant == .closedGroup),
+            isOpenGroup: (viewModel.threadData.threadVariant == .openGroup),
+            isNoteToSelf: viewModel.threadData.threadIsNoteToSelf
         )
         settingsVC.conversationSettingsViewDelegate = self
         navigationController?.pushViewController(settingsVC, animated: true, completion: nil)
@@ -51,9 +51,9 @@ extension ConversationVC:
     // MARK: - Blocking
     
     @objc func unblock() {
-        guard self.viewModel.viewData.thread.variant == .contact else { return }
+        guard self.viewModel.threadData.threadVariant == .contact else { return }
         
-        let publicKey: String = self.viewModel.viewData.thread.id
+        let publicKey: String = self.viewModel.threadData.threadId
 
         UIView.animate(
             withDuration: 0.25,
@@ -73,9 +73,9 @@ extension ConversationVC:
     }
 
     func showBlockedModalIfNeeded() -> Bool {
-        guard viewModel.viewData.threadIsBlocked else { return false }
+        guard viewModel.threadData.threadIsBlocked == true else { return false }
         
-        let blockedModal = BlockedModal(publicKey: viewModel.viewData.thread.id)
+        let blockedModal = BlockedModal(publicKey: viewModel.threadData.threadId)
         blockedModal.modalPresentationStyle = .overFullScreen
         blockedModal.modalTransitionStyle = .crossDissolve
         present(blockedModal, animated: true, completion: nil)
@@ -152,7 +152,7 @@ extension ConversationVC:
     }
     
     func handleLibraryButtonTapped() {
-        let threadId: String = self.viewModel.viewData.thread.id
+        let threadId: String = self.viewModel.threadData.threadId
         
         requestLibraryPermissionIfNeeded { [weak self] in
             DispatchQueue.main.async {
@@ -175,7 +175,7 @@ extension ConversationVC:
             SNLog("Proceeding without microphone access. Any recorded video will be silent.")
         }
         
-        let sendMediaNavController = SendMediaNavigationController.showingCameraFirst(threadId: self.viewModel.viewData.thread.id)
+        let sendMediaNavController = SendMediaNavigationController.showingCameraFirst(threadId: self.viewModel.threadData.threadId)
         sendMediaNavController.sendMediaNavDelegate = self
         sendMediaNavController.modalPresentationStyle = .fullScreen
         
@@ -245,7 +245,7 @@ extension ConversationVC:
 
     func showAttachmentApprovalDialog(for attachments: [SignalAttachment]) {
         let navController = AttachmentApprovalViewController.wrappedInNavController(
-            threadId: self.viewModel.viewData.thread.id,
+            threadId: self.viewModel.threadData.threadId,
             attachments: attachments,
             approvalDelegate: self
         )
@@ -298,7 +298,7 @@ extension ConversationVC:
         
         guard !text.isEmpty else { return }
 
-        if text.contains(mnemonic) && !viewModel.viewData.threadIsNoteToSelf && !hasPermissionToSendSeed {
+        if text.contains(mnemonic) && !viewModel.threadData.threadIsNoteToSelf && !hasPermissionToSendSeed {
             // Warn the user if they're about to send their seed to someone
             let modal = SendSeedModal()
             modal.modalPresentationStyle = .overFullScreen
@@ -310,29 +310,34 @@ extension ConversationVC:
         // Note: 'shouldBeVisible' is set to true the first time a thread is saved so we can
         // use it to determine if the user is creating a new thread and update the 'isApproved'
         // flags appropriately
-        let thread: SessionThread = viewModel.viewData.thread
-        let oldThreadShouldBeVisible: Bool = thread.shouldBeVisible
+        let threadId: String = self.viewModel.threadData.threadId
+        let oldThreadShouldBeVisible: Bool = (self.viewModel.threadData.threadShouldBeVisible == true)
         let sentTimestampMs: Int64 = Int64(floor((Date().timeIntervalSince1970 * 1000)))
         let linkPreviewDraft: LinkPreviewDraft? = snInputView.linkPreviewInfo?.draft
         let quoteModel: QuotedReplyModel? = snInputView.quoteDraftInfo?.model
         
         approveMessageRequestIfNeeded(
-            for: thread,
+            for: threadId,
+            threadVariant: self.viewModel.threadData.threadVariant,
             isNewThread: !oldThreadShouldBeVisible,
             timestampMs: (sentTimestampMs - 1)  // Set 1ms earlier as this is used for sorting
         )
         .done { [weak self] _ in
             GRDBStorage.shared.writeAsync(
                 updates: { db in
+                    guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
+                        return
+                    }
+                    
                     // Update the thread to be visible
                     _ = try SessionThread
-                        .filter(id: thread.id)
+                        .filter(id: threadId)
                         .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
                     
                     // Create the interaction
                     let userPublicKey: String = getUserHexEncodedPublicKey(db)
                     let interaction: Interaction = try Interaction(
-                        threadId: thread.id,
+                        threadId: threadId,
                         authorId: getUserHexEncodedPublicKey(db),
                         variant: .standardOutgoing,
                         body: text,
@@ -405,27 +410,32 @@ extension ConversationVC:
         // Note: 'shouldBeVisible' is set to true the first time a thread is saved so we can
         // use it to determine if the user is creating a new thread and update the 'isApproved'
         // flags appropriately
-        let thread: SessionThread = viewModel.viewData.thread
-        let oldThreadShouldBeVisible: Bool = thread.shouldBeVisible
+        let threadId: String = self.viewModel.threadData.threadId
+        let oldThreadShouldBeVisible: Bool = (self.viewModel.threadData.threadShouldBeVisible == true)
         let sentTimestampMs: Int64 = Int64(floor((Date().timeIntervalSince1970 * 1000)))
 
         approveMessageRequestIfNeeded(
-            for: thread,
+            for: threadId,
+            threadVariant: self.viewModel.threadData.threadVariant,
             isNewThread: !oldThreadShouldBeVisible,
             timestampMs: (sentTimestampMs - 1)  // Set 1ms earlier as this is used for sorting
         )
         .done { [weak self] _ in
             GRDBStorage.shared.writeAsync(
                 updates: { db in
+                    guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
+                        return
+                    }
+                    
                     // Update the thread to be visible
                     _ = try SessionThread
-                        .filter(id: thread.id)
+                        .filter(id: threadId)
                         .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
                     
                     // Create the interaction
                     let userPublicKey: String = getUserHexEncodedPublicKey(db)
                     let interaction: Interaction = try Interaction(
-                        threadId: thread.id,
+                        threadId: threadId,
                         authorId: getUserHexEncodedPublicKey(db),
                         variant: .standardOutgoing,
                         body: text,
@@ -473,13 +483,13 @@ extension ConversationVC:
             AudioServicesPlaySystemSound(soundID)
         }
         
-        let thread: SessionThread = self.viewModel.viewData.thread
+        let threadId: String = self.viewModel.threadData.threadId
         
         GRDBStorage.shared.writeAsync { db in
-            TypingIndicators.didStopTyping(db, in: thread, direction: .outgoing)
+            TypingIndicators.didStopTyping(db, threadId: threadId, direction: .outgoing)
             
             _ = try SessionThread
-                .filter(id: thread.id)
+                .filter(id: threadId)
                 .updateAll(db, SessionThread.Columns.messageDraft.set(to: ""))
         }
     }
@@ -497,12 +507,16 @@ extension ConversationVC:
         let newText: String = (inputTextView.text ?? "")
         
         if !newText.isEmpty {
-            let thread: SessionThread = self.viewModel.viewData.thread
+            let threadId: String = self.viewModel.threadData.threadId
+            let threadVariant: SessionThread.Variant = self.viewModel.threadData.threadVariant
+            let threadIsMessageRequest: Bool = (self.viewModel.threadData.threadIsMessageRequest == true)
             
             GRDBStorage.shared.writeAsync { db in
                 TypingIndicators.didStartTyping(
                     db,
-                    in: thread,
+                    threadId: threadId,
+                    threadVariant: threadVariant,
+                    threadIsMessageRequest: threadIsMessageRequest,
                     direction: .outgoing,
                     timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
                 )
@@ -521,7 +535,7 @@ extension ConversationVC:
         let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String, imageQuality: .medium)
 
         let approvalVC = AttachmentApprovalViewController.wrappedInNavController(
-            threadId: self.viewModel.viewData.thread.id,
+            threadId: self.viewModel.threadData.threadId,
             attachments: [ attachment ],
             approvalDelegate: self
         )
@@ -539,7 +553,7 @@ extension ConversationVC:
         
         let newText: String = snInputView.text.replacingCharacters(
             in: currentMentionStartIndex...,
-            with: "@\(mentionInfo.profile.displayName(for: self.viewModel.viewData.thread.variant)) "
+            with: "@\(mentionInfo.profile.displayName(for: self.viewModel.threadData.threadVariant)) "
         )
         
         snInputView.text = newText
@@ -547,7 +561,7 @@ extension ConversationVC:
         snInputView.hideMentionsUI()
         
         mentions = mentions.filter { mentionInfo -> Bool in
-            newText.contains(mentionInfo.profile.displayName(for: self.viewModel.viewData.thread.variant))
+            newText.contains(mentionInfo.profile.displayName(for: self.viewModel.threadData.threadVariant))
         }
     }
     
@@ -614,20 +628,20 @@ extension ConversationVC:
 
     // MARK: MessageCellDelegate
 
-    func handleItemLongPressed(_ item: ConversationViewModel.Item) {
+    func handleItemLongPressed(_ cellViewModel: MessageCell.ViewModel) {
         // Show the context menu if applicable
         guard
             let keyWindow: UIWindow = UIApplication.shared.keyWindow,
-            let index = viewModel.viewData.items.firstIndex(of: item),
+            let index = viewModel.interactionData.firstIndex(of: cellViewModel),
             let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell,
             let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false),
             contextMenuWindow == nil,
             let actions: [ContextMenuVC.Action] = ContextMenuVC.actions(
-                for: item,
+                for: cellViewModel,
                 currentUserIsOpenGroupModerator: OpenGroupAPIV2.isUserModerator(
-                    self.viewModel.viewData.userPublicKey,
-                    for: self.viewModel.viewData.openGroupRoom,
-                    on: self.viewModel.viewData.openGroupServer
+                    self.viewModel.threadData.currentUserPublicKey,
+                    for: self.viewModel.threadData.openGroupRoom,
+                    on: self.viewModel.threadData.openGroupServer
                 ),
                 delegate: self
             )
@@ -638,7 +652,7 @@ extension ConversationVC:
         self.contextMenuVC = ContextMenuVC(
             snapshot: snapshot,
             frame: cell.convert(cell.bubbleView.frame, to: keyWindow),
-            item: item,
+            cellViewModel: cellViewModel,
             actions: actions
         ) { [weak self] in
             self?.contextMenuWindow?.isHidden = true
@@ -657,16 +671,16 @@ extension ConversationVC:
         self.contextMenuWindow?.makeKeyAndVisible()
     }
 
-    func handleItemTapped(_ item: ConversationViewModel.Item, gestureRecognizer: UITapGestureRecognizer) {
-        guard item.interactionVariant != .standardOutgoing || item.state != .failed else {
+    func handleItemTapped(_ cellViewModel: MessageCell.ViewModel, gestureRecognizer: UITapGestureRecognizer) {
+        guard cellViewModel.variant != .standardOutgoing || cellViewModel.state != .failed else {
             // Show the failed message sheet
-            showFailedMessageSheet(for: item)
+            showFailedMessageSheet(for: cellViewModel)
             return
         }
         
         // If it's an incoming media message and the thread isn't trusted then show the placeholder view
-        if item.cellType != .textOnlyMessage && item.interactionVariant == .standardIncoming && !item.isThreadTrusted {
-            let modal = DownloadAttachmentModal(profile: item.profile)
+        if cellViewModel.cellType != .textOnlyMessage && cellViewModel.variant == .standardIncoming && !cellViewModel.threadIsTrusted {
+            let modal = DownloadAttachmentModal(profile: cellViewModel.profile)
             modal.modalPresentationStyle = .overFullScreen
             modal.modalTransitionStyle = .crossDissolve
             
@@ -674,12 +688,12 @@ extension ConversationVC:
             return
         }
         
-        switch item.cellType {
-            case .audio: viewModel.playOrPauseAudio(for: item)
+        switch cellViewModel.cellType {
+            case .audio: viewModel.playOrPauseAudio(for: cellViewModel)
             
             case .mediaMessage:
                 guard
-                    let index = self.viewModel.viewData.items.firstIndex(where: { $0.interactionId == item.interactionId }),
+                    let index = self.viewModel.interactionData.firstIndex(where: { $0.id == cellViewModel.id }),
                     let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell,
                     let albumView: MediaAlbumView = cell.albumView
                 else { return }
@@ -702,9 +716,9 @@ extension ConversationVC:
                         
                     default:
                         let viewController: UIViewController? = MediaGalleryViewModel.createDetailViewController(
-                            for: self.viewModel.viewData.thread.id,
-                            threadVariant: self.viewModel.viewData.thread.variant,
-                            interactionId: item.interactionId,
+                            for: self.viewModel.threadData.threadId,
+                            threadVariant: self.viewModel.threadData.threadVariant,
+                            interactionId: cellViewModel.id,
                             selectedAttachmentId: mediaView.attachment.id,
                             options: [ .sliderEnabled, .showAllMediaButton ]
                         )
@@ -718,7 +732,7 @@ extension ConversationVC:
                             self.resignFirstResponder()
                             
                             /// Delay the actual presentation to give the 'resignFirstResponder' call the chance to complete
-                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) { [weak self] in
+                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(250)) { [weak self] in
                                 /// Lock the contentOffset of the tableView so the transition doesn't look buggy
                                 self?.tableView.lockContentOffset = true
                                 
@@ -733,7 +747,7 @@ extension ConversationVC:
                 
             case .genericAttachment:
                 guard
-                    let attachment: Attachment = item.attachments?.first,
+                    let attachment: Attachment = cellViewModel.attachments?.first,
                     let originalFilePath: String = attachment.originalFilePath
                 else { return }
                 
@@ -766,19 +780,18 @@ extension ConversationVC:
                     joinOpenGroup(name: name, url: url)
                 }
             default: break
-            }
         }
     }
     
-    func handleItemDoubleTapped(_ item: ConversationViewModel.Item) {
-        switch item.cellType {
+    func handleItemDoubleTapped(_ cellViewModel: MessageCell.ViewModel) {
+        switch cellViewModel.cellType {
             // The user can double tap a voice message when it's playing to speed it up
-            case .audio: self.viewModel.speedUpAudio(for: item)
+            case .audio: self.viewModel.speedUpAudio(for: cellViewModel)
             default: break
         }
     }
 
-    func handleItemSwiped(_ item: ConversationViewModel.Item, state: SwipeState) {
+    func handleItemSwiped(_ cellViewModel: MessageCell.ViewModel, state: SwipeState) {
         switch state {
             case .began: tableView.isScrollEnabled = false
             case .ended, .cancelled: tableView.isScrollEnabled = true
@@ -809,8 +822,8 @@ extension ConversationVC:
         self.presentAlert(alertVC)
     }
     
-    func handleReplyButtonTapped(for item: ConversationViewModel.Item) {
-        reply(item)
+    func handleReplyButtonTapped(for cellViewModel: MessageCell.ViewModel) {
+        reply(cellViewModel)
     }
     
     func showUserDetails(for profile: Profile) {
@@ -824,21 +837,22 @@ extension ConversationVC:
     // MARK: --action handling
     
     
-    func showFailedMessageSheet(for item: ConversationViewModel.Item) {
-        let sheet = UIAlertController(title: item.mostRecentFailureText, message: nil, preferredStyle: .actionSheet)
+    func showFailedMessageSheet(for cellViewModel: MessageCell.ViewModel) {
+        let sheet = UIAlertController(title: cellViewModel.mostRecentFailureText, message: nil, preferredStyle: .actionSheet)
         sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         sheet.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in
             GRDBStorage.shared.writeAsync { db in
                 try Interaction
-                    .filter(id: item.interactionId)
+                    .filter(id: cellViewModel.id)
                     .deleteAll(db)
             }
         }))
         sheet.addAction(UIAlertAction(title: "Resend", style: .default, handler: { _ in
             GRDBStorage.shared.writeAsync { [weak self] db in
                 guard
-                    let interaction: Interaction = try? Interaction.fetchOne(db, id: item.interactionId),
-                    let thread: SessionThread = self?.viewModel.viewData.thread
+                    let threadId: String = self?.viewModel.threadData.threadId,
+                    let interaction: Interaction = try? Interaction.fetchOne(db, id: cellViewModel.id),
+                    let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId)
                 else { return }
                 try MessageSender.send(
                     db,
@@ -850,7 +864,7 @@ extension ConversationVC:
         
         // HACK: Extracting this info from the error string is pretty dodgy
         let prefix: String = "HTTP request failed at destination (Service node "
-        if let mostRecentFailureText: String = item.mostRecentFailureText, mostRecentFailureText.hasPrefix(prefix) {
+        if let mostRecentFailureText: String = cellViewModel.mostRecentFailureText, mostRecentFailureText.hasPrefix(prefix) {
             let rest = mostRecentFailureText.substring(from: prefix.count)
             
             if let index = rest.firstIndex(of: ")") {
@@ -876,37 +890,37 @@ extension ConversationVC:
     
     // MARK: - ContextMenuActionDelegate
 
-    func reply(_ item: ConversationViewModel.Item) {
+    func reply(_ cellViewModel: MessageCell.ViewModel) {
         let maybeQuoteDraft: QuotedReplyModel? = QuotedReplyModel.quotedReplyForSending(
-            threadId: self.viewModel.viewData.thread.id,
-            authorId: item.authorId,
-            variant: item.interactionVariant,
-            body: item.body,
-            timestampMs: item.timestampMs,
-            attachments: item.attachments,
-            linkPreview: item.linkPreview
+            threadId: self.viewModel.threadData.threadId,
+            authorId: cellViewModel.authorId,
+            variant: cellViewModel.variant,
+            body: cellViewModel.body,
+            timestampMs: cellViewModel.timestampMs,
+            attachments: cellViewModel.attachments,
+            linkPreviewAttachment: cellViewModel.linkPreviewAttachment
         )
         
         guard let quoteDraft: QuotedReplyModel = maybeQuoteDraft else { return }
         
         snInputView.quoteDraftInfo = (
             model: quoteDraft,
-            isOutgoing: (item.interactionVariant == .standardOutgoing)
+            isOutgoing: (cellViewModel.variant == .standardOutgoing)
         )
         snInputView.becomeFirstResponder()
     }
 
-    func copy(_ item: ConversationViewModel.Item) {
-        switch item.cellType {
+    func copy(_ cellViewModel: MessageCell.ViewModel) {
+        switch cellViewModel.cellType {
             case .typingIndicator: break
             
             case .textOnlyMessage:
-                UIPasteboard.general.string = item.body
+                UIPasteboard.general.string = cellViewModel.body
             
             case .audio, .genericAttachment, .mediaMessage:
                 guard
-                    item.attachments?.count == 1,
-                    let attachment: Attachment = item.attachments?.first,
+                    cellViewModel.attachments?.count == 1,
+                    let attachment: Attachment = cellViewModel.attachments?.first,
                     attachment.isValid,
                     (
                         attachment.state == .downloaded ||
@@ -921,22 +935,22 @@ extension ConversationVC:
         }
     }
 
-    func copySessionID(_ item: ConversationViewModel.Item) {
-        guard item.interactionVariant == .standardIncoming || item.interactionVariant == .standardIncomingDeleted else {
+    func copySessionID(_ cellViewModel: MessageCell.ViewModel) {
+        guard cellViewModel.variant == .standardIncoming || cellViewModel.variant == .standardIncomingDeleted else {
             return
         }
         
-        UIPasteboard.general.string = item.authorId
+        UIPasteboard.general.string = cellViewModel.authorId
     }
 
-    func delete(_ item: ConversationViewModel.Item) {
+    func delete(_ cellViewModel: MessageCell.ViewModel) {
         // Only allow deletion on incoming and outgoing messages
-        guard item.interactionVariant == .standardIncoming || item.interactionVariant == .standardOutgoing else {
+        guard cellViewModel.variant == .standardIncoming || cellViewModel.variant == .standardOutgoing else {
             return
         }
         
-        let thread: SessionThread = self.viewModel.viewData.thread
-        let threadName: String = self.viewModel.viewData.threadName
+        let threadId: String = self.viewModel.threadData.threadId
+        let threadName: String = self.viewModel.threadData.displayName
         let userPublicKey: String = getUserHexEncodedPublicKey()
         
         // Remote deletion logic
@@ -954,7 +968,7 @@ extension ConversationVC:
                     // Delete the interaction (and associated data) from the database
                     GRDBStorage.shared.writeAsync { db in
                         _ = try Interaction
-                            .filter(id: item.interactionId)
+                            .filter(id: cellViewModel.id)
                             .deleteAll(db)
                     }
                 }
@@ -971,7 +985,7 @@ extension ConversationVC:
         }
         
         // How we delete the message differs depending on the type of thread
-        switch item.threadVariant {
+        switch cellViewModel.threadVariant {
             // Handle open group messages the old way
             case .openGroup:
                 // If it's an incoming message the user must have moderator status
@@ -979,17 +993,17 @@ extension ConversationVC:
                     (
                         try Interaction
                             .select(.openGroupServerMessageId)
-                            .filter(id: item.interactionId)
+                            .filter(id: cellViewModel.id)
                             .asRequest(of: Int64.self)
                             .fetchOne(db),
-                        try OpenGroup.fetchOne(db, id: thread.id)
+                        try OpenGroup.fetchOne(db, id: threadId)
                     )
                 }
                 
                 guard
                     let openGroup: OpenGroup = result?.openGroup,
                     let openGroupServerMessageId: Int64 = result?.openGroupServerMessageId, (
-                        item.interactionVariant != .standardIncoming ||
+                        cellViewModel.variant != .standardIncoming ||
                         OpenGroupAPIV2.isUserModerator(userPublicKey, for: openGroup.room, on: openGroup.server)
                     )
                 else { return }
@@ -1010,23 +1024,23 @@ extension ConversationVC:
                 let serverHash: String? = GRDBStorage.shared.read { db -> String? in
                     try Interaction
                         .select(.serverHash)
-                        .filter(id: item.interactionId)
+                        .filter(id: cellViewModel.id)
                         .asRequest(of: String.self)
                         .fetchOne(db)
                 }
                 let unsendRequest: UnsendRequest = UnsendRequest(
-                    timestamp: UInt64(item.timestampMs),
-                    author: (item.interactionVariant == .standardOutgoing ?
+                    timestamp: UInt64(cellViewModel.timestampMs),
+                    author: (cellViewModel.variant == .standardOutgoing ?
                         userPublicKey :
-                        item.authorId
+                        cellViewModel.authorId
                     )
                 )
                 
                 // For incoming interactions or interactions with no serverHash just delete them locally
-                guard item.interactionVariant == .standardOutgoing, let serverHash: String = serverHash else {
+                guard cellViewModel.variant == .standardOutgoing, let serverHash: String = serverHash else {
                     GRDBStorage.shared.writeAsync { db in
                         _ = try Interaction
-                            .filter(id: item.interactionId)
+                            .filter(id: cellViewModel.id)
                             .deleteAll(db)
                         
                         // No need to send the unsendRequest if there is no serverHash (ie. the message
@@ -1037,7 +1051,7 @@ extension ConversationVC:
                             .send(
                                 db,
                                 message: unsendRequest,
-                                threadId: thread.id,
+                                threadId: threadId,
                                 interactionId: nil,
                                 to: .contact(publicKey: userPublicKey)
                             )
@@ -1049,14 +1063,14 @@ extension ConversationVC:
                 alertVC.addAction(UIAlertAction(title: "delete_message_for_me".localized(), style: .destructive) { [weak self] _ in
                     GRDBStorage.shared.writeAsync { db in
                         _ = try Interaction
-                            .filter(id: item.interactionId)
+                            .filter(id: cellViewModel.id)
                             .deleteAll(db)
                         
                         MessageSender
                             .send(
                                 db,
                                 message: unsendRequest,
-                                threadId: thread.id,
+                                threadId: threadId,
                                 interactionId: nil,
                                 to: .contact(publicKey: userPublicKey)
                             )
@@ -1065,7 +1079,7 @@ extension ConversationVC:
                 })
                 
                 alertVC.addAction(UIAlertAction(
-                    title: (item.threadVariant == .closedGroup ?
+                    title: (cellViewModel.threadVariant == .closedGroup ?
                         "delete_message_for_everyone".localized() :
                         String(format: "delete_message_for_me_and_recipient".localized(), threadName)
                     ),
@@ -1075,12 +1089,16 @@ extension ConversationVC:
                         from: self,
                         request: SnodeAPI
                             .deleteMessage(
-                                publicKey: thread.id,
+                                publicKey: threadId,
                                 serverHashes: [serverHash]
                             )
                             .map { _ in () }
                     ) { [weak self] in
                         GRDBStorage.shared.writeAsync { db in
+                            guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
+                                return
+                            }
+                            
                             try MessageSender
                                 .send(
                                     db,
@@ -1104,10 +1122,10 @@ extension ConversationVC:
         }
     }
 
-    func save(_ item: ConversationViewModel.Item) {
-        guard item.cellType == .mediaMessage else { return }
+    func save(_ cellViewModel: MessageCell.ViewModel) {
+        guard cellViewModel.cellType == .mediaMessage else { return }
         
-        let mediaAttachments: [(Attachment, String)] = (item.attachments ?? [])
+        let mediaAttachments: [(Attachment, String)] = (cellViewModel.attachments ?? [])
             .filter { attachment in
                 attachment.isValid &&
                 attachment.isVisualMedia && (
@@ -1142,17 +1160,19 @@ extension ConversationVC:
         }
         
         // Send a 'media saved' notification if needed
-        guard self.viewModel.viewData.thread.variant == .contact, item.interactionVariant == .standardIncoming else {
+        guard self.viewModel.threadData.threadVariant == .contact, cellViewModel.variant == .standardIncoming else {
             return
         }
         
-        let thread: SessionThread = self.viewModel.viewData.thread
+        let threadId: String = self.viewModel.threadData.threadId
         
         GRDBStorage.shared.writeAsync { db in
+            guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else { return }
+            
             try MessageSender.send(
                 db,
                 message: DataExtractionNotification(
-                    kind: .mediaSaved(timestamp: UInt64(item.timestampMs))
+                    kind: .mediaSaved(timestamp: UInt64(cellViewModel.timestampMs))
                 ),
                 interactionId: nil,
                 in: thread
@@ -1160,10 +1180,10 @@ extension ConversationVC:
         }
     }
 
-    func ban(_ item: ConversationViewModel.Item) {
-        guard item.threadVariant == .openGroup else { return }
+    func ban(_ cellViewModel: MessageCell.ViewModel) {
+        guard cellViewModel.threadVariant == .openGroup else { return }
         
-        let threadId: String = self.viewModel.viewData.thread.id
+        let threadId: String = self.viewModel.threadData.threadId
         let alert: UIAlertController = UIAlertController(
             title: "Session",
             message: "This will ban the selected user from this room. It won't ban them from other rooms.",
@@ -1175,7 +1195,7 @@ extension ConversationVC:
             }
             
             OpenGroupAPIV2
-                .ban(item.authorId, from: openGroup.room, on: openGroup.server)
+                .ban(cellViewModel.authorId, from: openGroup.room, on: openGroup.server)
                 .retainUntilComplete()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
@@ -1183,10 +1203,10 @@ extension ConversationVC:
         present(alert, animated: true, completion: nil)
     }
 
-    func banAndDeleteAllMessages(_ item: ConversationViewModel.Item) {
-        guard item.threadVariant == .openGroup else { return }
+    func banAndDeleteAllMessages(_ cellViewModel: MessageCell.ViewModel) {
+        guard cellViewModel.threadVariant == .openGroup else { return }
         
-        let threadId: String = self.viewModel.viewData.thread.id
+        let threadId: String = self.viewModel.threadData.threadId
         let alert: UIAlertController = UIAlertController(
             title: "Session",
             message: "This will ban the selected user from this room and delete all messages sent by them. It won't ban them from other rooms or delete the messages they sent there.",
@@ -1198,7 +1218,7 @@ extension ConversationVC:
             }
             
             OpenGroupAPIV2
-                .banAndDeleteAllMessages(item.authorId, from: openGroup.room, on: openGroup.server)
+                .banAndDeleteAllMessages(cellViewModel.authorId, from: openGroup.room, on: openGroup.server)
                 .retainUntilComplete()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
@@ -1451,18 +1471,25 @@ extension ConversationVC: UIDocumentInteractionControllerDelegate {
 
 extension ConversationVC {
     fileprivate func approveMessageRequestIfNeeded(
-        for thread: SessionThread?,
+        for threadId: String,
+        threadVariant: SessionThread.Variant,
         isNewThread: Bool,
         timestampMs: Int64
     ) -> Promise<Void> {
-        guard let thread: SessionThread = thread, thread.variant == .contact else { return Promise.value(()) }
+        guard threadVariant == .contact else { return Promise.value(()) }
 
         // If the contact doesn't exist then we should create it so we can store the 'isApproved' state
         // (it'll be updated with correct profile info if they accept the message request so this
         // shouldn't cause weird behaviours)
         guard
-            let contact: Contact = GRDBStorage.shared.read({ db in Contact.fetchOrCreate(db, id: thread.id) }),
-            !contact.isApproved
+            let approvalData: (contact: Contact, thread: SessionThread?) = GRDBStorage.shared.read({ db in
+                return (
+                    Contact.fetchOrCreate(db, id: threadId),
+                    try SessionThread.fetchOne(db, id: threadId)
+                )
+            }),
+            let thread: SessionThread = approvalData.thread,
+            !approvalData.contact.isApproved
         else {
             return Promise.value(())
         }
@@ -1507,10 +1534,10 @@ extension ConversationVC {
                 // Default 'didApproveMe' to true for the person approving the message request
                 GRDBStorage.shared.writeAsync(
                     updates: { db in
-                        try contact
+                        try approvalData.contact
                             .with(
                                 isApproved: true,
-                                didApproveMe: .update(contact.didApproveMe || !isNewThread)
+                                didApproveMe: .update(approvalData.contact.didApproveMe || !isNewThread)
                             )
                             .save(db)
                         
@@ -1559,7 +1586,8 @@ extension ConversationVC {
 
     @objc func acceptMessageRequest() {
         self.approveMessageRequestIfNeeded(
-            for: self.viewModel.viewData.thread,
+            for: self.viewModel.threadData.threadId,
+            threadVariant: self.viewModel.threadData.threadVariant,
             isNewThread: false,
             timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
         )
@@ -1577,9 +1605,9 @@ extension ConversationVC {
     }
 
     @objc func deleteMessageRequest() {
-        guard self.viewModel.viewData.thread.variant == .contact else { return }
+        guard self.viewModel.threadData.threadVariant == .contact else { return }
         
-        let threadId: String = self.viewModel.viewData.thread.id
+        let threadId: String = self.viewModel.threadData.threadId
         let alertVC: UIAlertController = UIAlertController(
             title: "MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON".localized(),
             message: nil,
