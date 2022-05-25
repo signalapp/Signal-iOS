@@ -368,7 +368,7 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Rhowch Hwb i Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer visible on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Mae eich bathodyn Hwb wedi dod i ben, ac nid yw bellach i'w weld ar eich proffil.\n\nGallwch barhau i ddefnyddio Signal ond i gefnogi technoleg sydd wedi'i hadeiladu ar eich cyfer chi, ystyriwch cyfrannu rhodd misol.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Mae eich bathodyn Hwb wedi dod i ben, ac nid yw bellach i'w weld ar eich proffil.\n\nGallwch ail-greu eich bathodyn Hwb am 30 diwrnod arall gyda chyfraniad unigol.";
@@ -419,7 +419,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "Pan fydd gennych fwy nag un bathodyn, gallwch ddewis un i'w ddangos i eraill gael ei weld ar eich proffil.";
 
 /* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Rydych chi wedi ennill bathodyn %@! Dangoswch y bathodyn hwn ar eich proffil i godi ymwybyddiaeth o gyfrannu at Signal.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Cau baner";
@@ -497,7 +497,7 @@
 "BLUR_TOOLTIP" = "Newydd: Pylu wynebau neu llunio unrhyw le i bylu.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Gwnewch gyfraniad untro ac ennill bathodyn Hwb am 30 diwrnod.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Bydd eich bathodyn Hwb yn dod i ben ar %@.";
@@ -3161,10 +3161,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Galw";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Sain FaceTime";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Fideo FaceTime";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Anfon Neges Destun";
@@ -5921,10 +5921,10 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Mae Signal yn sefydliad dim-er-elw heb unrhyw hysbysebwyr na buddsoddwyr, sy'n cael ei gynnal gan y bobl sy'n ei ddefnyddio a'i werthfawrogi. Gwnewch gyfraniad misol cylchol a derbyniwch fathodyn proffil i rannu eich cefnogaeth.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Mae Signal wedi ymrwymo i ddatblygu technoleg preifatrwydd ffynhonnell agored sy'n amddiffyn mynegiant rhydd ac yn galluogi cyfathrebu byd-eang diogel.\n\nMae eich rhodd yn cefnogi'r achos hwn ac yn talu am ddatblygu a gweithredu ap a ddefnyddir gan filiynau ar gyfer cyfathrebu preifat. Dim hysbysebion. Dim olrheinwyr. Dim lol.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Cefnogwch dechnoleg sydd wedi'i hadeiladu ar eich cyfer chi—nid ar gyfer eich data—trwy ymuno â'r gymuned sy'n ei chynnal.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Pam Cyfrannu?";
@@ -5981,7 +5981,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Yn Prosesu Trafodyn…";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read more.";
+"SUSTAINER_VIEW_READ_MORE" = "Darllen rhagor.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Yn adnewyddu ar %@";

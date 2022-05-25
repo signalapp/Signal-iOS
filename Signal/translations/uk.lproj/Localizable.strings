@@ -392,13 +392,13 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Щомісячний внесок скасовано";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Подаруйте комусь емблему, зробивши внесок у Signal. Ця особа отримає емблему, яку зможе показувати на своєму фото профілю.";
 
 /* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Подарувати емблему";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because we couldn’t process your payment. Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment method in Apple Pay and subscribe again.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Ваш регулярний щомісячний платіж було автоматично скасовано, оскільки ми не змогли його обробити. Ваша емблема більше не показуватиметься у профілі.\n\nДля продовження підтримки Signal та повернення емблеми, оновіть спосіб оплати в ApplePay та зробіть передплату знов.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Ваш регулярний щомісячний платіж було автоматично скасовано, оскільки ви занадто довго були неактивні. Відзнака %@ більше не показуватиметься у вашому профілі.\n\nВи можете й надалі користуватися Signal, але для підтримки програми та відновлення вашої відзнаки, необхідно поновити внесок.";
@@ -1622,7 +1622,7 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Зробити внесок для Signal";
 
 /* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "Gift a Badge";
+"DONATION_VIEW_GIFT" = "Подарувати емблему";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "Помилка мережі. Перевірте з'єднання та спробуйте знову.";
@@ -3161,10 +3161,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Виклик";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Аудіовиклик FaceTime";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Відеовиклик FaceTime";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Відправити текстове повідомлення";
@@ -4823,10 +4823,10 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Відключити";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "Ви втратите усі зроблені фото та відео.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Вимкнути мультирежим?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Запросити друга незахищеним SMS?";

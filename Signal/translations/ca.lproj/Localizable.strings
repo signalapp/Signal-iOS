@@ -392,13 +392,13 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Donació mensual cancel·lada";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Regaleu una insígnia a algú fent una donació al Signal amb el seu nom. Rebran una insígnia per mostrar a la fotografia de perfil.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Regaleu una insígnia";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because we couldn’t process your payment. Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment method in Apple Pay and subscribe again.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "La donació mensual recurrent s'ha cancel·lat automàticament perquè no hem pogut processar el pagament. La insígnia ja no és visible al perfil.\n\nPer continuar donant suport al Signal i per reactivar la insígnia, actualitzeu la forma de pagament a Apple Pay i torneu a subscriure-us-hi.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "La donació mensual recurrent s'ha cancel·lat automàticament perquè vau estar massa temps inactiu. La insígnia %@ ja no és visible al perfil.\n\nPodeu continuar usant el Signal, però per donar suport a l'aplicació i reactivar la insígnia, renoveu-la ara.";
@@ -3161,10 +3161,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Truca";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Àudio de FaceTime";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Vídeo de FaceTime";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Envia un missatge de text";
@@ -4823,10 +4823,10 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Desactiva";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "Perdreu les fotografies o els vídeos fets.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Voleu desactivar el multimode?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Convidar a un amic via SMS segur?";

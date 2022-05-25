@@ -14,6 +14,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Messaggio vocale 1 secondo</string>
+			<key>many</key>
+			<string>Messaggio vocale %d secondi</string>
 			<key>other</key>
 			<string>Messaggio vocale %d secondi</string>
 		</dict>
@@ -30,6 +32,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Aggiungere membro a “%2$@”?</string>
+			<key>many</key>
+			<string>Aggiungere %d membri a “%2$@”?</string>
 			<key>other</key>
 			<string>Aggiungere %d membri a “%2$@”?</string>
 		</dict>
@@ -46,6 +50,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Aggiungi nuovo membro</string>
+			<key>many</key>
+			<string>Aggiungi nuovi membri</string>
 			<key>other</key>
 			<string>Aggiungi nuovi membri</string>
 		</dict>
@@ -62,6 +68,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Aggiungi membro</string>
+			<key>many</key>
+			<string>Aggiungi membri</string>
 			<key>other</key>
 			<string>Aggiungi membri</string>
 		</dict>
@@ -78,6 +86,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Questo colore personalizzato è usato in 1 chat. Vuoi eliminarlo?</string>
+			<key>many</key>
+			<string>Questo colore personalizzato è usato in %d chat. Vuoi eliminarlo per tutte le chat?</string>
 			<key>other</key>
 			<string>Questo colore personalizzato è usato in %d chat. Vuoi eliminarlo per tutte le chat?</string>
 		</dict>
@@ -94,6 +104,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Questo colore è usato in 1 chat. Vuoi salvare le modifiche per tutte le chat?</string>
+			<key>many</key>
+			<string>Questo colore è usato in %d chat. Vuoi salvare le modifiche per tutte le chat?</string>
 			<key>other</key>
 			<string>Questo colore è usato in %d chat. Vuoi salvare le modifiche per tutte le chat?</string>
 		</dict>
@@ -110,6 +122,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Eliminare chat?</string>
+			<key>many</key>
+			<string>Eliminare %d chat?</string>
 			<key>other</key>
 			<string>Eliminare %d chat?</string>
 		</dict>
@@ -126,6 +140,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Questa chat verrà eliminata da questo dispositivo.</string>
+			<key>many</key>
+			<string>Queste chat verranno eliminate da questo dispositivo.</string>
 			<key>other</key>
 			<string>Queste chat verranno eliminate da questo dispositivo.</string>
 		</dict>
@@ -142,6 +158,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Non puoi selezionare più di 1 chat.</string>
+			<key>many</key>
+			<string>Non puoi selezionare più di %d chat.</string>
 			<key>other</key>
 			<string>Non puoi selezionare più di %d chat.</string>
 		</dict>
@@ -158,6 +176,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 %2$#@total@</string>
+			<key>many</key>
+			<string>%d %2$#@total@</string>
 			<key>other</key>
 			<string>%d %2$#@total@</string>
 		</dict>
@@ -169,6 +189,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>risultato</string>
+			<key>many</key>
+			<string>di %d risultati</string>
 			<key>other</key>
 			<string>di %d risultati</string>
 		</dict>
@@ -185,6 +207,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 membro</string>
+			<key>many</key>
+			<string>%d membri</string>
 			<key>other</key>
 			<string>%d membri</string>
 		</dict>
@@ -201,6 +225,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 gruppo in comune</string>
+			<key>many</key>
+			<string>%d gruppi in comune</string>
 			<key>other</key>
 			<string>%d gruppi in comune</string>
 		</dict>
@@ -216,6 +242,8 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
+			<string>%dmin</string>
+			<key>many</key>
 			<string>%dmin</string>
 			<key>other</key>
 			<string>%dmin</string>
@@ -233,6 +261,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 minuto fa</string>
+			<key>many</key>
+			<string>%d minuti fa</string>
 			<key>other</key>
 			<string>%d minuti fa</string>
 		</dict>
@@ -249,6 +279,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Eliminare il messaggio?</string>
+			<key>many</key>
+			<string>Eliminare %d messaggi?</string>
 			<key>other</key>
 			<string>Eliminare %d messaggi?</string>
 		</dict>
@@ -265,6 +297,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Massima dimensione del gruppo di %d membro raggiunta.</string>
+			<key>many</key>
+			<string>Massima dimensione del gruppo di %d membri raggiunta.</string>
 			<key>other</key>
 			<string>Massima dimensione del gruppo di %d membri raggiunta.</string>
 		</dict>
@@ -281,6 +315,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>La tua versione di Signal scadrà in 1 giorno. Tocca per aggiornare alla versione più recente.</string>
+			<key>many</key>
+			<string>La tua versione di Signal scadrà in %d giorni. Tocca per aggiornare alla versione più recente.</string>
 			<key>other</key>
 			<string>La tua versione di Signal scadrà in %d giorni. Tocca per aggiornare alla versione più recente.</string>
 		</dict>
@@ -297,6 +333,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Invia messaggio</string>
+			<key>many</key>
+			<string>Invia %d messaggi</string>
 			<key>other</key>
 			<string>Invia %d messaggi</string>
 		</dict>
@@ -313,6 +351,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>È stato raggiunto il numero massimo di 1 partecipante per questa chiamata. Riprova più tardi.</string>
+			<key>many</key>
+			<string>È stato raggiunto il numero massimo di %d partecipanti per questa chiamata. Riprova più tardi.</string>
 			<key>other</key>
 			<string>È stato raggiunto il numero massimo di %d partecipanti per questa chiamata. Riprova più tardi.</string>
 		</dict>
@@ -329,6 +369,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>In questa chiamata · 1 persona</string>
+			<key>many</key>
+			<string>In questa chiamata · %d persone</string>
 			<key>other</key>
 			<string>In questa chiamata · %d persone</string>
 		</dict>
@@ -345,6 +387,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>%2$@, %3$@, e 1 altro sono in questa chiamata</string>
+			<key>many</key>
+			<string>%2$@, %3$@, e altri %d sono in questa chiamata</string>
 			<key>other</key>
 			<string>%2$@, %3$@, e altri %d sono in questa chiamata</string>
 		</dict>
@@ -361,6 +405,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>%2$@, %3$@, e 1 altro si sono uniti alla chiamata</string>
+			<key>many</key>
+			<string>%2$@, %3$@, e altri %d si sono uniti alla chiamata</string>
 			<key>other</key>
 			<string>%2$@, %3$@, e altri %d si sono uniti alla chiamata</string>
 		</dict>
@@ -377,6 +423,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>%2$@, %3$@, e 1 altro hanno lasciato la chiamata</string>
+			<key>many</key>
+			<string>%2$@, %3$@, e altri %d hanno lasciato la chiamata</string>
 			<key>other</key>
 			<string>%2$@, %3$@, e altri %d hanno lasciato la chiamata</string>
 		</dict>
@@ -393,6 +441,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Invito inviato</string>
+			<key>many</key>
+			<string>%d inviti inviati</string>
 			<key>other</key>
 			<string>%d inviti inviati</string>
 		</dict>
@@ -409,6 +459,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 membro</string>
+			<key>many</key>
+			<string>%d membri</string>
 			<key>other</key>
 			<string>%d membri</string>
 		</dict>
@@ -425,6 +477,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 membro</string>
+			<key>many</key>
+			<string>%d membri</string>
 			<key>other</key>
 			<string>%d membri</string>
 		</dict>
@@ -441,6 +495,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 membro del gruppo ha nome simile.</string>
+			<key>many</key>
+			<string>%d membri del gruppo hanno nomi simili.</string>
 			<key>other</key>
 			<string>%d membri del gruppo hanno nomi simili.</string>
 		</dict>
@@ -457,6 +513,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 membro del gruppo ha nome simile, controlla il membro di seguito o scegli di agire.</string>
+			<key>many</key>
+			<string>%d membri del gruppo hanno nomi simili, controlla i membri di seguito o scegli di agire.</string>
 			<key>other</key>
 			<string>%d membri del gruppo hanno nomi simili, controlla i membri di seguito o scegli di agire.</string>
 		</dict>
@@ -473,6 +531,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 membro del gruppo ha lo stesso nome, controlla il membro di seguito o scegli di agire.</string>
+			<key>many</key>
+			<string>%d membri del gruppo hanno lo stesso nome, controlla i membri di seguito o scegli di agire.</string>
 			<key>other</key>
 			<string>%d membri del gruppo hanno lo stesso nome, controlla i membri di seguito o scegli di agire.</string>
 		</dict>
@@ -489,6 +549,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>L'invito al gruppo è stato revocato per 1 persona.</string>
+			<key>many</key>
+			<string>Gli inviti al gruppo sono stati revocati per %d persone.</string>
 			<key>other</key>
 			<string>Gli inviti al gruppo sono stati revocati per %d persone.</string>
 		</dict>
@@ -505,6 +567,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>%2$@ ha revocato un invito al gruppo per 1 persona.</string>
+			<key>many</key>
+			<string>%2$@ ha revocato un invito al gruppo per %d persone.</string>
 			<key>other</key>
 			<string>%2$@ ha revocato un invito al gruppo per %d persone.</string>
 		</dict>
@@ -521,6 +585,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 persona è stata invitata al gruppo.</string>
+			<key>many</key>
+			<string>%d persone sono state invitate al gruppo.</string>
 			<key>other</key>
 			<string>%d persone sono state invitate al gruppo.</string>
 		</dict>
@@ -537,6 +603,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>%2$@ ha invitato 1 persona al gruppo.</string>
+			<key>many</key>
+			<string>%2$@ ha invitato %d persone al gruppo.</string>
 			<key>other</key>
 			<string>%2$@ ha invitato %d persone al gruppo.</string>
 		</dict>
@@ -553,6 +621,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Un membro non può essere aggiunto al Nuovo Gruppo ed è stato rimosso dal gruppo.</string>
+			<key>many</key>
+			<string>%d membri non possono essere aggiunti al Nuovo Gruppo e sono stati rimossi dal gruppo.</string>
 			<key>other</key>
 			<string>%d membri non possono essere aggiunti al Nuovo Gruppo e sono stati rimossi dal gruppo.</string>
 		</dict>
@@ -569,6 +639,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Un membro non può essere aggiunto al Nuovo Gruppo ed è stato invitato a unirsi.</string>
+			<key>many</key>
+			<string>%d membri non possono essere aggiunti al Nuovo Gruppo e sono stati invitati a unirsi.</string>
 			<key>other</key>
 			<string>%d membri non possono essere aggiunti al Nuovo Gruppo e sono stati invitati a unirsi.</string>
 		</dict>
@@ -585,6 +657,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Questo gruppo non può essere creato perché 1 membro utilizza una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo. %2$@</string>
+			<key>many</key>
+			<string>Questo gruppo non può essere creato perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo. %2$@</string>
 			<key>other</key>
 			<string>Questo gruppo non può essere creato perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo. %2$@</string>
 		</dict>
@@ -601,6 +675,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 membro non supporta i Nuovi Gruppi, quindi questo sarà un Gruppo Legacy. %2$@</string>
+			<key>many</key>
+			<string>%d membri non supportano i Nuovi Gruppi, quindi questo sarà un Gruppo Legacy. %2$@</string>
 			<key>other</key>
 			<string>%d membri non supportano i Nuovi Gruppi, quindi questo sarà un Gruppo Legacy. %2$@</string>
 		</dict>
@@ -617,6 +693,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Questo gruppo non può essere creato perché 1 membro utilizza una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo.</string>
+			<key>many</key>
+			<string>Questo gruppo non può essere creato perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo.</string>
 			<key>other</key>
 			<string>Questo gruppo non può essere creato perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo che avranno aggiornato Signal o puoi rimuoverli prima di creare il gruppo.</string>
 		</dict>
@@ -633,6 +711,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Verrà creato un Gruppo Legacy perché 1 membro utilizza una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo aver aggiornato Signal o puoi rimuoverli prima di creare il Gruppo.</string>
+			<key>many</key>
+			<string>Verrà creato un Gruppo Legacy perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo aver aggiornato Signal o puoi rimuoverli prima di creare il Gruppo.</string>
 			<key>other</key>
 			<string>Verrà creato un Gruppo Legacy perché %d membri utilizzano una vecchia versione di Signal. Puoi creare un Nuovo Gruppo con loro dopo aver aggiornato Signal o puoi rimuoverli prima di creare il Gruppo.</string>
 		</dict>
@@ -649,6 +729,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Non è stato possibile aggiungere di nuovo 1 membro al Nuovo Gruppo. Vuoi aggiungerlo adesso?</string>
+			<key>many</key>
+			<string>Non è stato possibile aggiungere di nuovo %d membri al Nuovo Gruppo. Vuoi aggiungerli adesso?</string>
 			<key>other</key>
 			<string>Non è stato possibile aggiungere di nuovo %d membri al Nuovo Gruppo. Vuoi aggiungerli adesso?</string>
 		</dict>
@@ -665,6 +747,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>I gruppi di Signal funzionano meglio con 1 membro o meno. Aggiungere più membri causerà ritardi nell'invio e nella ricezione dei messaggi.</string>
+			<key>many</key>
+			<string>I gruppi di Signal funzionano meglio con %d membri o meno. Aggiungere più membri causerà ritardi nell'invio e nella ricezione dei messaggi.</string>
 			<key>other</key>
 			<string>I gruppi di Signal funzionano meglio con %d membri o meno. Aggiungere più membri causerà ritardi nell'invio e nella ricezione dei messaggi.</string>
 		</dict>
@@ -681,6 +765,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Non puoi condividere più di 1 elemento.</string>
+			<key>many</key>
+			<string>Non puoi condividere più di %d elementi.</string>
 			<key>other</key>
 			<string>Non puoi condividere più di %d elementi.</string>
 		</dict>
@@ -697,6 +783,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 gruppo in comune</string>
+			<key>many</key>
+			<string>%d gruppi in comune</string>
 			<key>other</key>
 			<string>%d gruppi in comune</string>
 		</dict>
@@ -713,6 +801,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Elimina 1 messaggio</string>
+			<key>many</key>
+			<string>Elimina %d messaggi</string>
 			<key>other</key>
 			<string>Elimina %d messaggi</string>
 		</dict>
@@ -729,6 +819,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 Foto</string>
+			<key>many</key>
+			<string>%d Foto</string>
 			<key>other</key>
 			<string>%d Foto</string>
 		</dict>
@@ -745,6 +837,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 elemento</string>
+			<key>many</key>
+			<string>%d elementi</string>
 			<key>other</key>
 			<string>%d elementi</string>
 		</dict>
@@ -761,6 +855,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 selezionato</string>
+			<key>many</key>
+			<string>%d selezionati</string>
 			<key>other</key>
 			<string>%d selezionati</string>
 		</dict>
@@ -777,6 +873,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Hai bloccato 1 membro di questo gruppo</string>
+			<key>many</key>
+			<string>Hai bloccato %d membri di questo gruppo</string>
 			<key>other</key>
 			<string>Hai bloccato %d membri di questo gruppo</string>
 		</dict>
@@ -793,6 +891,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 membro</string>
+			<key>many</key>
+			<string>%d membri</string>
 			<key>other</key>
 			<string>%d membri</string>
 		</dict>
@@ -809,6 +909,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>PIN errato. 1 tentativo rimanente.</string>
+			<key>many</key>
+			<string>PIN errato. %d tentativi rimanenti.</string>
 			<key>other</key>
 			<string>PIN errato. %d tentativi rimanenti.</string>
 		</dict>
@@ -825,6 +927,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>%2$@ ha invitato 1 persona</string>
+			<key>many</key>
+			<string>%2$@ ha invitato %d persone</string>
 			<key>other</key>
 			<string>%2$@ ha invitato %d persone</string>
 		</dict>
@@ -841,6 +945,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 richiesta di diventare membro in attesa.</string>
+			<key>many</key>
+			<string>%d richieste di diventare membro in attesa.</string>
 			<key>other</key>
 			<string>%d richieste di diventare membro in attesa.</string>
 		</dict>
@@ -857,6 +963,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Revoca invito non valido</string>
+			<key>many</key>
+			<string>Revoca %d inviti non validi</string>
 			<key>other</key>
 			<string>Revoca %d inviti non validi</string>
 		</dict>
@@ -873,6 +981,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Revocare l'invito al gruppo inviato da &quot;%2$@&quot;?</string>
+			<key>many</key>
+			<string>Revocare %d inviti inviati da &quot;%2$@&quot;?</string>
 			<key>other</key>
 			<string>Revocare %d inviti inviati da &quot;%2$@&quot;?</string>
 		</dict>
@@ -889,6 +999,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Revoca invito</string>
+			<key>many</key>
+			<string>Revoca inviti</string>
 			<key>other</key>
 			<string>Revoca inviti</string>
 		</dict>
@@ -905,6 +1017,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Te lo ricorderemo più tardi. Creare un PIN diventerà obbligatorio tra 1 giorno.</string>
+			<key>many</key>
+			<string>Te lo ricorderemo più tardi. Creare un PIN diventerà obbligatorio tra %d giorni.</string>
 			<key>other</key>
 			<string>Te lo ricorderemo più tardi. Creare un PIN diventerà obbligatorio tra %d giorni.</string>
 		</dict>
@@ -921,6 +1035,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Hai 1 tentativo rimanente. Se esaurisci i tentativi, puoi creare un nuovo PIN. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.</string>
+			<key>many</key>
+			<string>Hai %d tentativi rimanenti. Se esaurisci i tentativi, puoi creare un nuovo PIN. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.</string>
 			<key>other</key>
 			<string>Hai %d tentativi rimanenti. Se esaurisci i tentativi, puoi creare un nuovo PIN. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.</string>
 		</dict>
@@ -937,6 +1053,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Hai 1 tentativo rimanente. Se esaurisci i tentativi il tuo account verrà bloccato. Dopo 7 giorni di inattività, potrai registrarti nuovamente senza il tuo PIN. Il tuo account sarà cancellato e tutti i contenuti eliminati.</string>
+			<key>many</key>
+			<string>Hai %d tentativi rimanenti. Se esaurisci i tentativi il tuo account verrà bloccato. Dopo 7 giorni di inattività, potrai registrarti nuovamente senza il tuo PIN. Il tuo account sarà cancellato e tutti i contenuti eliminati.</string>
 			<key>other</key>
 			<string>Hai %d tentativi rimanenti. Se esaurisci i tentativi il tuo account verrà bloccato. Dopo 7 giorni di inattività, potrai registrarti nuovamente senza il tuo PIN. Il tuo account sarà cancellato e tutti i contenuti eliminati.</string>
 		</dict>
@@ -953,6 +1071,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>Membro di %2$@, %3$@, e 1 altro gruppo</string>
+			<key>many</key>
+			<string>Membro di %2$@, %3$@, e altri %d gruppi</string>
 			<key>other</key>
 			<string>Membro di %2$@, %3$@, e altri %d gruppi</string>
 		</dict>
@@ -969,6 +1089,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 giorno</string>
+			<key>many</key>
+			<string>%d giorni</string>
 			<key>other</key>
 			<string>%d giorni</string>
 		</dict>
@@ -985,6 +1107,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1d</string>
+			<key>many</key>
+			<string>%dd</string>
 			<key>other</key>
 			<string>%dd</string>
 		</dict>
@@ -1001,6 +1125,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 ora</string>
+			<key>many</key>
+			<string>%d ore</string>
 			<key>other</key>
 			<string>%d ore</string>
 		</dict>
@@ -1017,6 +1143,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1h</string>
+			<key>many</key>
+			<string>%dh</string>
 			<key>other</key>
 			<string>%dh</string>
 		</dict>
@@ -1033,6 +1161,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 minuto</string>
+			<key>many</key>
+			<string>%d minuti</string>
 			<key>other</key>
 			<string>%d minuti</string>
 		</dict>
@@ -1049,6 +1179,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1min</string>
+			<key>many</key>
+			<string>%dmin</string>
 			<key>other</key>
 			<string>%dmin</string>
 		</dict>
@@ -1065,6 +1197,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 secondo</string>
+			<key>many</key>
+			<string>%d secondi</string>
 			<key>other</key>
 			<string>%d secondi</string>
 		</dict>
@@ -1081,6 +1215,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1s</string>
+			<key>many</key>
+			<string>%ds</string>
 			<key>other</key>
 			<string>%ds</string>
 		</dict>
@@ -1097,6 +1233,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 settimana</string>
+			<key>many</key>
+			<string>%d settimane</string>
 			<key>other</key>
 			<string>%d settimane</string>
 		</dict>
@@ -1113,6 +1251,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1set</string>
+			<key>many</key>
+			<string>%dset</string>
 			<key>other</key>
 			<string>%dset</string>
 		</dict>
@@ -1129,6 +1269,8 @@
 			<string>d</string>
 			<key>one</key>
 			<string>1 anno</string>
+			<key>many</key>
+			<string>%d anni</string>
 			<key>other</key>
 			<string>%d anni</string>
 		</dict>

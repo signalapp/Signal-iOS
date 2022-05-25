@@ -392,13 +392,13 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Mėnesinis paaukojimas nutrauktas";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Padovanokite kam nors ženkliuką paaukodami Signal programėlei tam tikro asmens vardu. Žmogus gaus ženkliuką, kuris galės būti rodomas jo profilio nuotraukoje.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Dovanoti ženkliuką";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because we couldn’t process your payment. Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment method in Apple Pay and subscribe again.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Jūsų pasikartojantis mėnesinis paaukojimas buvo automatiškai nutrauktas, nes nepavyko apdoroti jūsų mokėjimo. Jūsų ženkliukas yra daugiau nebematomas jūsų profilyje.\n\nNorėdami ir toliau palaikyti Signal bei iš naujo aktyvuoti savo ženkliuką, atnaujinkite savo mokėjimo būdą „Apple Pay“ sistemoje ir prenumeruokite dar kartą.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Jūsų pasikartojantis mėnesinis paaukojimas buvo automatiškai nutrauktas, nes pernelyg ilgą laiką buvote neaktyvūs. Jūsų %@ ženkliukas yra daugiau nebematomas jūsų profilyje.\n\nGalite ir toliau naudotis Signal programėle, bet norėdami ją paremti ir iš naujo aktyvuoti ženkliuką, atnaujinkite paaukojimą dabar.";
@@ -3161,10 +3161,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Skambinti";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "„FaceTime“ garso skambutis";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "„FaceTime“ vaizdo skambutis";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Siųsti tekstinę žinutę";
@@ -4823,10 +4823,10 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Išjungti";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "Bus prarastos nufotografuotos nuotraukos ir nufilmuoti vaizdo įrašai.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Išjungti multi-veikseną?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Pakviesti draugą, naudojant nesaugiąją SMS?";

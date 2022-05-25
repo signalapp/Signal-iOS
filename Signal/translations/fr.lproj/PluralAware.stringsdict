@@ -28,10 +28,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Ajouter des membres</string>
 			<key>one</key>
-			<string>Add Member</string>
+			<string>Ajouter un membre</string>
 			<key>other</key>
-			<string>Add Members</string>
+			<string>Ajouter des membres</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -60,10 +62,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Ajouter de nouveaux membres</string>
 			<key>one</key>
-			<string>Add New Member</string>
+			<string>Ajouter un nouveau membre</string>
 			<key>other</key>
-			<string>Add New Members</string>
+			<string>Ajouter de nouveaux membres</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -76,10 +80,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Cette couleur personnalisée est utilisée dans %d conversations. Voulez-vous la supprimer pour toutes les conversations ?</string>
 			<key>one</key>
-			<string>This custom color is used in 1 chat. Do you want to delete it?</string>
+			<string>Cette couleur personnalisée est utilisée dans 1 conversations. Voulez-vous la supprimer ?</string>
 			<key>other</key>
-			<string>This custom color is used in %d chats. Do you want to delete it for all chats?</string>
+			<string>Cette couleur personnalisée est utilisée dans %d conversations. Voulez-vous la supprimer pour toutes les conversations ?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -92,10 +98,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Cette couleur est utilisée dans %d conversations. Voulez-vous enregistrer les changements pour toutes les conversations ?</string>
 			<key>one</key>
-			<string>This color is used in 1 chat. Do you want to save changes for all chats?</string>
+			<string>Cette couleur est utilisée dans 1 conversation. Voulez-vous enregistrer les changements pour toutes les conversations ?</string>
 			<key>other</key>
-			<string>This color is used in %d chats. Do you want to save changes for all chats?</string>
+			<string>Cette couleur est utilisée dans %d conversations. Voulez-vous enregistrer les changements pour toutes les conversations ?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -108,10 +116,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Supprimer %d conversations ?</string>
 			<key>one</key>
-			<string>Delete Chat?</string>
+			<string>Supprimer la conversation ?</string>
 			<key>other</key>
-			<string>Delete %d Chats?</string>
+			<string>Supprimer %d conversations ?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -124,10 +134,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Ces conversations seront supprimées de cet appareil.</string>
 			<key>one</key>
-			<string>This chat will be deleted from this device.</string>
+			<string>Cette conversation sera supprimée de cet appareil.</string>
 			<key>other</key>
-			<string>These chats will be deleted from this device.</string>
+			<string>Ces conversations seront supprimées de cet appareil.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -156,6 +168,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%2$#@total@ de %d</string>
 			<key>one</key>
 			<string>%2$#@total@ de 1</string>
 			<key>other</key>
@@ -167,6 +181,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>de %d correspondances</string>
 			<key>one</key>
 			<string>correspondance</string>
 			<key>other</key>
@@ -183,6 +199,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d membres</string>
 			<key>one</key>
 			<string>1 membre</string>
 			<key>other</key>
@@ -199,10 +217,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d groupes en commun</string>
 			<key>one</key>
-			<string>1 Group in Common</string>
+			<string>1 groupe en commun</string>
 			<key>other</key>
-			<string>%d Groups in Common</string>
+			<string>%d groupes en commun</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -215,10 +235,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d min</string>
 			<key>one</key>
-			<string>%dm</string>
+			<string>%d min</string>
 			<key>other</key>
-			<string>%dm</string>
+			<string>%d min</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -231,10 +253,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Il y a %d minutes</string>
 			<key>one</key>
-			<string>1 minute ago</string>
+			<string>Il y a 1 minute</string>
 			<key>other</key>
-			<string>%d minutes ago</string>
+			<string>Il y a %d minutes</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -247,10 +271,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Supprimer %d messages ?</string>
 			<key>one</key>
-			<string>Delete Message?</string>
+			<string>Supprimer le message ?</string>
 			<key>other</key>
-			<string>Delete %d Messages?</string>
+			<string>Supprimer %d messages ?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -263,10 +289,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>La taille de groupe maximale de %d membres est atteinte.</string>
 			<key>one</key>
-			<string>Maximum group size of %d member reached.</string>
+			<string>La taille de groupe maximale de %d membre est atteinte.</string>
 			<key>other</key>
-			<string>Maximum group size of %d members reached.</string>
+			<string>La taille de groupe maximale de %d membres est atteinte.</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -279,6 +307,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Votre version de Signal expirera dans %d jours. Touchez pour passer à la version la plus récente.</string>
 			<key>one</key>
 			<string>Votre version de Signal expirera dans un jour. Touchez pour passer à la version la plus récente.</string>
 			<key>other</key>
@@ -295,10 +325,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Envoyer %d messages</string>
 			<key>one</key>
-			<string>Send message</string>
+			<string>Envoyer le message</string>
 			<key>other</key>
-			<string>Send %d messages</string>
+			<string>Envoyer %d messages</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
@@ -551,6 +583,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d membres</string>
 			<key>one</key>
 			<string>1 membre</string>
 			<key>other</key>
@@ -583,10 +617,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d personnes ont été invitées au groupe.</string>
 			<key>one</key>
-			<string>1 person was invited to the group.</string>
+			<string>1 personne a été invitée au groupe.</string>
 			<key>other</key>
-			<string>%d people were invited to the group.</string>
+			<string>%d personnes ont été invitées au groupe.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -695,10 +731,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d groupes en commun</string>
 			<key>one</key>
-			<string>1 group in common</string>
+			<string>1 groupe en commun</string>
 			<key>other</key>
-			<string>%d groups in common</string>
+			<string>%d groupes en commun</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -711,6 +749,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Supprimer %d messages</string>
 			<key>one</key>
 			<string>Supprimer 1 message</string>
 			<key>other</key>
@@ -727,10 +767,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d photos</string>
 			<key>one</key>
-			<string>1 Photo</string>
+			<string>1 photo</string>
 			<key>other</key>
-			<string>%d Photos</string>
+			<string>%d photos</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -743,10 +785,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d éléments</string>
 			<key>one</key>
-			<string>1 Item</string>
+			<string>1 élément</string>
 			<key>other</key>
-			<string>%d Items</string>
+			<string>%d éléments</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -775,6 +819,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d sélectionnés</string>
 			<key>one</key>
 			<string>1 sélectionné</string>
 			<key>other</key>
@@ -791,10 +837,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d membres</string>
 			<key>one</key>
-			<string>1 Member</string>
+			<string>1 membre</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>%d membres</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>

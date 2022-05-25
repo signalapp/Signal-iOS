@@ -536,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$s heeft één persoon uitgenodigd om lid te worden van de groep.</string>
+			<string>%2$@ heeft één persoon uitgenodigd om lid te worden van de groep.</string>
 			<key>other</key>
-			<string>%2$s heeft %d personen uitgenodigd om lid te worden van de groep.</string>
+			<string>%2$@ heeft %d personen uitgenodigd om lid te worden van de groep.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>

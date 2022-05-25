@@ -1,3 +1,3 @@
-• Fixed some bugs in the in-app camera, so your photos can shine.
-• Fixed a bug where we'd ask you to upgrade after you upgraded. If you're reading these release notes, you're probably upgrading—this one's for you.
-• Fixed a bug where we'd give you the wrong error if your monthly subscription failed to renew. Thanks for supporting Signal!
+• Behebung einiger Fehler in der In-App-Kamera, damit deine Fotos glänzen können.
+• Behebung eines Fehlers, bei dem du nach einer Aktualisierung erneut zum Aktualisieren auffgefordert wurdest. Wenn du diese Versionshinweise liest, dann aktualisierst du wahrscheinlich gerade – das hier ist für dich.
+• Behebung eines Fehlers, bei dem eine falsche Fehlermeldung angezeigt wurde, wenn eine Verlängerung deiner monatlichen Spende fehlschlug. Danke für das Unterstützen von Signal!

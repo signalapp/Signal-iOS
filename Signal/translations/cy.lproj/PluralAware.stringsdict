@@ -12,10 +12,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Neges llais %d eiliad</string>
 			<key>one</key>
-			<string>Voice message 1 second</string>
+			<string>Neges llais 1 eiliad</string>
 			<key>other</key>
-			<string>Voice message %d seconds</string>
+			<string>Neges llais %d eiliad</string>
+			<key>two</key>
+			<string>Neges llais %d eiliad</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -48,10 +52,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Ychwanegu %d aelod i "%2$@"?</string>
 			<key>one</key>
-			<string>Add member to “%2$@”?</string>
+			<string>Ychwanegu aelod i "%2$@"?</string>
 			<key>other</key>
-			<string>Add %d members to “%2$@”?</string>
+			<string>Ychwanegu %d aelod i "%2$@"?</string>
+			<key>two</key>
+			<string>Ychwanegu %d aelod i "%2$@"?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -160,9 +168,13 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d %2$#@total@</string>
 			<key>one</key>
 			<string>1 %2$#@total@</string>
 			<key>other</key>
+			<string>%d %2$#@total@</string>
+			<key>two</key>
 			<string>%d %2$#@total@</string>
 		</dict>
 		<key>total</key>
@@ -171,10 +183,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>o %d yn cyfateb</string>
 			<key>one</key>
-			<string>match</string>
+			<string>yn cyfateb</string>
 			<key>other</key>
-			<string>of %d matches</string>
+			<string>o %d yn cyfateb</string>
+			<key>two</key>
+			<string>o %d yn cyfateb</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -187,10 +203,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d Aelod</string>
 			<key>one</key>
-			<string>1 Member</string>
+			<string>1 Aelod</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>%d Aelod</string>
+			<key>two</key>
+			<string>%d Aelod</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -283,10 +303,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Bydd eich fersiwn o Signal yn dod i ben ymhen %d diwrnod. Tapiwch i ddiweddaru i'r fersiwn ddiweddaraf.</string>
 			<key>one</key>
-			<string>Your version of Signal will expire in 1 day. Tap to update to the most recent version.</string>
+			<string>Bydd eich fersiwn o Signal yn dod i ben ymhen 1 diwrnod. Tapiwch i ddiweddaru i'r fersiwn ddiweddaraf.</string>
 			<key>other</key>
-			<string>Your version of Signal will expire in %d days. Tap to update to the most recent version.</string>
+			<string>Bydd eich fersiwn o Signal yn dod i ben ymhen %d diwrnod. Tapiwch i ddiweddaru i'r fersiwn ddiweddaraf.</string>
+			<key>two</key>
+			<string>Bydd eich fersiwn o Signal yn dod i ben ymhen %d diwrnod. Tapiwch i ddiweddaru i'r fersiwn ddiweddaraf.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -555,10 +579,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d aelod</string>
 			<key>one</key>
-			<string>1 member</string>
+			<string>1 aelod</string>
 			<key>other</key>
-			<string>%d members</string>
+			<string>%d aelod</string>
+			<key>two</key>
+			<string>%d aelod</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -715,10 +743,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Dileu %d Neges</string>
 			<key>one</key>
-			<string>Delete 1 Message</string>
+			<string>Dileu 1 Neges</string>
 			<key>other</key>
-			<string>Delete %d Messages</string>
+			<string>Dileu %d Neges</string>
+			<key>two</key>
+			<string>Dileu %d Neges</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -779,10 +811,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Dewiswyd %d</string>
 			<key>one</key>
-			<string>1 Selected</string>
+			<string>Dewiswyd 1</string>
 			<key>other</key>
-			<string>%d Selected</string>
+			<string>Dewiswyd %d</string>
+			<key>two</key>
+			<string>Dewiswyd %d</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>

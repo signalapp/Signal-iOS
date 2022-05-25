@@ -1,3 +1,3 @@
-• Fixed some bugs in the in-app camera, so your photos can shine.
-• Fixed a bug where we'd ask you to upgrade after you upgraded. If you're reading these release notes, you're probably upgrading—this one's for you.
-• Fixed a bug where we'd give you the wrong error if your monthly subscription failed to renew. Thanks for supporting Signal!
+• Opraveny některé chyby ve fotoaparátu v aplikaci, aby vaše fotografie mohly zářit.
+• Opravena chyba, kdy jsme vás po aktualizaci požádali o aktualizaci. Pokud čtete tyto poznámky k vydání, pravděpodobně aktualizujete - tato zpráva je pro vás.
+• Byla opravena chyba, která způsobovala, že se při neobnovení měsíčního předplatného zobrazovala chybná zpráva. Děkujeme za podporu služby Signal!

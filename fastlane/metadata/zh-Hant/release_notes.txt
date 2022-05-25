@@ -1,3 +1,3 @@
-• Fixed some bugs in the in-app camera, so your photos can shine.
-• Fixed a bug where we'd ask you to upgrade after you upgraded. If you're reading these release notes, you're probably upgrading—this one's for you.
-• Fixed a bug where we'd give you the wrong error if your monthly subscription failed to renew. Thanks for supporting Signal!
+• 修復了app內相機中的一些錯誤，讓你的照片更閃亮。
+• 修復了升級後我們又會要求你升級的錯誤。 如果你正在閱讀這些更新說明，那麼你可能正在升級——這是給你的資訊。
+• 修復了一個錯誤，如果你的每月的訂閱未能續訂，我們會給你錯誤的錯誤訊息。 感謝你對Signal的支持！

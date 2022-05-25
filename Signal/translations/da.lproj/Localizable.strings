@@ -392,13 +392,13 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Månedlig donation annulleret";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Forær en person et emblem i gave ved at give en donation til Signal i deres navn. Vedkommende vil få et emblem, som kan vises på deres profilbillede.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Giv et emblem som gave";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because we couldn’t process your payment. Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment method in Apple Pay and subscribe again.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Din tilbagevendende månedlige donation blev automatisk annulleret, fordi vi ikke kunne behandle din betaling. Dit emblem er ikke længere synligt på din profil.\n\nHvis du fortsat vil støtte Signal og genaktivere dit emblem, skal du opdatere din betalingsmetode i Apple Pay og tilmelde dig igen.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Din tilbagevendende, månedlige donation blev automatisk opsagt, fordi du har været inaktiv i for lang tid. Dit %@-emblem er ikke længere synligt på din profil.\n\nDu kan fortsætte med at bruge Signal, men hvis du vil støtte appen og genaktivere dit emblem, skal du forny nu.";
@@ -3161,10 +3161,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Ring op ";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime-lyd";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime-video";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Tekstbesked";
@@ -4301,7 +4301,7 @@
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ er verificeret";
 
 /* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "Tryk for at skanne";
+"PRIVACY_TAP_TO_SCAN" = "Tryk for at scanne";
 
 /* Button that lets user mark another user's identity as unverified. */
 "PRIVACY_UNVERIFY_BUTTON" = "Ryd verifikation";
@@ -4748,10 +4748,10 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Version ikke understøttet";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Din anden enhed bruger en legacy version af Signal som ikke understøtter skanning af iPad QR koder. Installer venligst den nyeste version af Signal og prøv igen";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Din anden enhed bruger en forældet version af Signal, som ikke understøtter scanning af iPad QR-koder. Installer venligst den nyeste version af Signal og prøv igen";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Skan efter enhed";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Opdater scanningsenhed";
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Kunne ikke tilkoble din enhed";
@@ -4787,7 +4787,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Få hjælp til at forbinde din iPad her";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Skan QR koden med din mobil";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan QR koden med din mobil";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Start Signal på din gamle iPad for at overføre din konto";
@@ -4823,10 +4823,10 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Déaktiver";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "Du mister eventuelle fotos eller videoer, der er taget.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Slå multi-funktion fra?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Invitér en ven via usikret SMS?";

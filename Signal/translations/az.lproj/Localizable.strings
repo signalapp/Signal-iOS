@@ -392,13 +392,13 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Aylıq ianə ləğv edildi";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Signal üçün onun adına ianə edərək kiməsə nişan hədiyyə edin. Profil fotosunda nümayiş etdirmək üçün bir nişan alacaq.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Bir nişan hədiyyə et";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embed {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because we couldn’t process your payment. Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment method in Apple Pay and subscribe again.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Ödənişinizi emal edə bilmədiyimiz üçün təkrarlanan aylıq ianəniz avtomatik olaraq ləğv edildi. Nişanınız artıq profilinizdə görünmür.\n\nSignal-ı dəstəkləməyə davam etmək və nişanınızı təkrar aktivləşdirmək üçün ödəniş metodunuzu Apple Pay üzərindən yeniləyin və yenidən abunə olun.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Uzun müddət aktiv olmadığınız üçün təkrarlanan aylıq ianəniz avtomatik olaraq ləğv edildi. %@ nişanınız artıq profilinizdə görünmür.\n\nSignal-ı istifadə etməyə davam edə bilərsiniz, ancaq tətbiqi dəstəkləmək və nişanı təkrar aktivləşdirmək üçün indi yeniləyin.";
@@ -3161,10 +3161,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Zəng et";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Səsli";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Görüntülü";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Mətn mesajı göndər";
@@ -4820,13 +4820,13 @@
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Kameraya qayıt";
 
 /* In-app camera: confirmation button in the prompt to turn off multi-mode. */
-"SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Söndür";
+"SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Bağla";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "Çəkilmiş bütün foto və videoları itirəcəksiniz.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Çoxlu rejim bağlanılsın?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Dostunuzu güvənli olmayan SMS ilə dəvət edirsiniz?";
