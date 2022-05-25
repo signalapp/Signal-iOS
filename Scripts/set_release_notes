@@ -7,7 +7,7 @@ BASE_DIR=$(git rev-parse --show-toplevel)
 METADATA_ROOT="$BASE_DIR/fastlane/metadata"
 
 # Open the editor for entering the changelog
-"${VISUAL:-"${EDITOR:-vi}"}" "${METADATA_ROOT}/en-US/release_notes.txt"
+${VISUAL:-${EDITOR:-vi}} "${METADATA_ROOT}/en-US/release_notes.txt"
 
-${BASE_DIR}/Scripts/translation/push-metadata-source
-${BASE_DIR}/Scripts/translation/pull-metadata-translations
+"${BASE_DIR}"/Scripts/translation/push-metadata-source
+"${BASE_DIR}"/Scripts/translation/pull-metadata-translations
