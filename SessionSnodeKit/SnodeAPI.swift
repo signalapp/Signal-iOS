@@ -752,6 +752,9 @@ public final class SnodeAPI : NSObject {
         case 500, 502, 503:
             // The snode is unreachable
             handleBadSnode()
+        case 404:
+            // May caused by invalid open groups
+            SNLog("Can't reach the server.")
         case 406:
             SNLog("The user's clock is out of sync with the service node network.")
             return Error.clockOutOfSync
