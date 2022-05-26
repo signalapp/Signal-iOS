@@ -599,6 +599,8 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         builder.setDisplayBadgesOnProfile(subscriptionManager.displayBadgesOnProfile(transaction: transaction))
         builder.setSubscriptionManuallyCancelled(subscriptionManager.userManuallyCancelledSubscription(transaction: transaction))
 
+        builder.setKeepMutedChatsArchived(SSKPreferences.shouldKeepMutedChatsArchived(transaction: transaction))
+
         return try builder.build()
     }
 
@@ -792,6 +794,11 @@ extension StorageServiceProtoAccountRecord: Dependencies {
                 updateStorageService: false,
                 transaction: transaction
             )
+        }
+
+        let localKeepMutedChatsArchived = SSKPreferences.shouldKeepMutedChatsArchived(transaction: transaction)
+        if localKeepMutedChatsArchived != keepMutedChatsArchived {
+            SSKPreferences.setShouldKeepMutedChatsArchived(keepMutedChatsArchived, transaction: transaction)
         }
 
         if let serviceLocalE164 = self.e164?.strippedOrNil,

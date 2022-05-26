@@ -6,7 +6,7 @@ syntax = "proto3";
 
 // iOS - package name determines class prefix
 package StorageServiceProtos;
-  
+
 message StorageItem {
   // @required
   bytes key   = 1;  // Randomly generated 16-byte value
@@ -151,11 +151,12 @@ message AccountRecord {
   repeated PinnedConversation     pinnedConversations           = 14;
            bool                   preferContactAvatars          = 15;
            Payments               payments                      = 16;
-           uint32                 universalExpireTimer          = 17; 
+           uint32                 universalExpireTimer          = 17;
            string                 e164                          = 19;
   repeated string                 preferredReactionEmoji        = 20;
            bytes                  subscriberID                  = 21;
            string                 subscriberCurrencyCode        = 22;
            bool                   displayBadgesOnProfile        = 23;
            bool                   subscriptionManuallyCancelled = 24;
+           bool                   keepMutedChatsArchived        = 25;
 }

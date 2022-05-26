@@ -86,6 +86,23 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         ))
         contents.addSection(contactSection)
 
+        if RemoteConfig.keepMutedChatsArchivedOption {
+            let keepMutedChatsArchived = OWSTableSection()
+            keepMutedChatsArchived.add(.switch(
+                withText: NSLocalizedString("SETTINGS_KEEP_MUTED_ARCHIVED_LABEL", comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings."),
+                isOn: {
+                    Self.databaseStorage.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
+                },
+                target: self,
+                selector: #selector(didToggleShouldKeepMutedChatsArchivedSwitch)
+            ))
+            keepMutedChatsArchived.footerTitle = NSLocalizedString(
+                "SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION",
+                comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings."
+            )
+            contents.addSection(keepMutedChatsArchived)
+        }
+
         let clearHistorySection = OWSTableSection()
         clearHistorySection.add(.actionItem(
             withText: NSLocalizedString("SETTINGS_CLEAR_HISTORY", comment: ""),
@@ -137,9 +154,21 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     @objc
     func didToggleAvatarPreference(_ sender: UISwitch) {
         Logger.info("toggled to: \(sender.isOn)")
-        databaseStorage.write { transaction in
-            SSKPreferences.setPreferContactAvatars(sender.isOn, transaction: transaction)
-        }
+        let currentValue = databaseStorage.read { SSKPreferences.preferContactAvatars(transaction: $0) }
+        guard currentValue != sender.isOn else { return }
+
+        databaseStorage.write { SSKPreferences.setPreferContactAvatars(sender.isOn, transaction: $0) }
+    }
+
+    @objc
+    func didToggleShouldKeepMutedChatsArchivedSwitch(_ sender: UISwitch) {
+        Logger.info("toggled to \(sender.isOn)")
+        let currentValue = databaseStorage.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
+        guard currentValue != sender.isOn else { return }
+
+        databaseStorage.write { SSKPreferences.setShouldKeepMutedChatsArchived(sender.isOn, transaction: $0) }
+
+        Self.storageServiceManager.recordPendingLocalAccountUpdates()
     }
 
     private func didTapClearHistory() {

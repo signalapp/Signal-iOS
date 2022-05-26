@@ -51,8 +51,11 @@ public class CLVReminderViews: NSObject {
         reminderStackView.addArrangedSubview(outageView)
         outageView.accessibilityIdentifier = "outageView"
 
-        archiveReminderView = ReminderView.explanation(text: NSLocalizedString("INBOX_VIEW_ARCHIVE_MODE_REMINDER",
-                                                                               comment: "Label reminding the user that they are in archive mode."))
+        archiveReminderView = ReminderView.explanation(text: (databaseStorage.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
+                                                              ? NSLocalizedString("INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER",
+                                                                                  comment: "Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message.")
+                                                              : NSLocalizedString("INBOX_VIEW_ARCHIVE_MODE_REMINDER",
+                                                                                  comment: "Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message.")))
         reminderStackView.addArrangedSubview(archiveReminderView)
         archiveReminderView.accessibilityIdentifier = "archiveReminderView"
 

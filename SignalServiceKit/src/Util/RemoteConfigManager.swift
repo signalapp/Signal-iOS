@@ -210,6 +210,11 @@ public class RemoteConfig: BaseFlags {
         return isEnabled(.changePhoneNumberUI)
     }
 
+    @objc
+    public static var keepMutedChatsArchivedOption: Bool {
+        DebugFlags.internalSettings || isEnabled(.keepMutedChatsArchivedOption)
+    }
+
     // MARK: -
 
     private static func interval(
@@ -397,6 +402,7 @@ private struct Flags {
         case messageResendKillSwitch
         case donorBadgeDisplayKillSwitch
         case changePhoneNumberUI
+        case keepMutedChatsArchivedOption
     }
 
     // Values defined in this array remain set once they are

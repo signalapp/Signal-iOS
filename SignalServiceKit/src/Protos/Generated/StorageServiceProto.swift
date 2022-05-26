@@ -2680,6 +2680,13 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         return true
     }
 
+    public var keepMutedChatsArchived: Bool {
+        return proto.keepMutedChatsArchived
+    }
+    public var hasKeepMutedChatsArchived: Bool {
+        return true
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2810,6 +2817,9 @@ extension StorageServiceProtoAccountRecord {
         }
         if hasSubscriptionManuallyCancelled {
             builder.setSubscriptionManuallyCancelled(subscriptionManuallyCancelled)
+        }
+        if hasKeepMutedChatsArchived {
+            builder.setKeepMutedChatsArchived(keepMutedChatsArchived)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -2970,6 +2980,10 @@ public struct StorageServiceProtoAccountRecordBuilder {
 
     public mutating func setSubscriptionManuallyCancelled(_ valueParam: Bool) {
         proto.subscriptionManuallyCancelled = valueParam
+    }
+
+    public mutating func setKeepMutedChatsArchived(_ valueParam: Bool) {
+        proto.keepMutedChatsArchived = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

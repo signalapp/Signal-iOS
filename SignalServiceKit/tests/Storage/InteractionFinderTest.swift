@@ -72,4 +72,37 @@ class InteractionFinderTest: SSKBaseTestSwift {
             XCTAssertEqual(2, finder2.count(transaction: transaction))
         }
     }
+
+    func testUnreadInArchiveIsIgnored() {
+        func makeThread(withUnreadMessages unreadCount: UInt, transaction: SDSAnyWriteTransaction) -> TSContactThread {
+            let thread = ContactThreadFactory().create(transaction: transaction)
+
+            if unreadCount > 0 {
+                let messageFactory = IncomingMessageFactory()
+                messageFactory.threadCreator = { _ in return thread }
+                _ = messageFactory.create(count: unreadCount, transaction: transaction)
+            }
+
+            return thread
+        }
+
+        let unarchivedCount = UInt(10)
+        let archivedCount = UInt(3)
+
+        write { transaction in
+            _ = makeThread(withUnreadMessages: unarchivedCount, transaction: transaction)
+
+            let archivedWithMessages = makeThread(withUnreadMessages: archivedCount, transaction: transaction)
+            ThreadAssociatedData
+                .fetchOrDefault(for: archivedWithMessages, transaction: transaction)
+                .updateWith(isArchived: true, updateStorageService: false, transaction: transaction)
+        }
+
+        // Unread count should be just the unarchived threads
+
+        read { transaction in
+            let unreadCount = InteractionFinder.unreadCountInAllThreads(transaction: transaction.unwrapGrdbRead)
+            XCTAssertEqual(unarchivedCount, unreadCount)
+        }
+    }
 }

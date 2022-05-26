@@ -149,13 +149,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             var unreadInteractionQuery = """
                 SELECT COUNT(interaction.\(interactionColumn: .id))
                 FROM \(InteractionRecord.databaseTableName) AS interaction
+                INNER JOIN \(ThreadAssociatedData.databaseTableName) AS associatedData
+                    ON associatedData.threadUniqueId = \(interactionColumn: .threadUniqueId)
+                WHERE associatedData.isArchived = "0"
             """
 
             if !SSKPreferences.includeMutedThreadsInBadgeCount(transaction: transaction.asAnyRead) {
-                unreadInteractionQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread) "
+                unreadInteractionQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread(threadAssociatedDataAlias: "associatedData")) "
             }
 
-            unreadInteractionQuery += " WHERE \(sqlClauseForUnreadInteractionCounts(interactionsAlias: "interaction")) "
+            unreadInteractionQuery += " AND \(sqlClauseForUnreadInteractionCounts(interactionsAlias: "interaction")) "
 
             guard let unreadInteractionCount = try UInt.fetchOne(transaction.database, sql: unreadInteractionQuery) else {
                 owsFailDebug("unreadInteractionCount was unexpectedly nil")
@@ -168,6 +171,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
                 INNER JOIN \(ThreadAssociatedData.databaseTableName) AS associatedData
                     ON associatedData.threadUniqueId = \(threadColumn: .uniqueId)
                 WHERE associatedData.isMarkedUnread = 1
+                AND associatedData.isArchived = "0"
                 AND \(threadColumn: .shouldThreadBeVisible) = 1
             """
 
@@ -639,16 +643,14 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         """
     }
 
-    private static let sqlClauseForIgnoringInteractionsWithMutedThread: String = {
-        return """
-        INNER JOIN \(ThreadAssociatedData.databaseTableName) AS associatedData
-            ON associatedData.threadUniqueId = \(interactionColumn: .threadUniqueId)
-        AND (
-            associatedData.mutedUntilTimestamp <= strftime('%s','now') * 1000
-            OR associatedData.mutedUntilTimestamp = 0
-        )
+    private static func sqlClauseForIgnoringInteractionsWithMutedThread(threadAssociatedDataAlias: String) -> String {
         """
-    }()
+            AND (
+                \(threadAssociatedDataAlias).mutedUntilTimestamp <= strftime('%s','now') * 1000
+                OR \(threadAssociatedDataAlias).mutedUntilTimestamp = 0
+            )
+        """
+    }
 }
 
 // MARK: -
