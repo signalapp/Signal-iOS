@@ -1219,6 +1219,7 @@ CREATE
             ,"resourcePath" TEXT NOT NULL
             ,"badgeVariant" TEXT NOT NULL
             ,"localization" TEXT NOT NULL
+            ,"duration" NUMERIC
         )
 ;
 

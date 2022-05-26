@@ -159,6 +159,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createDonationReceiptTable
         case addBoostAmountToSubscriptionDurableJob
         case improvedDisappearingMessageIndices
+        case addProfileBadgeDuration
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1744,6 +1745,16 @@ public class GRDBSchemaMigrator: NSObject {
                         (expiresAt IS 0 OR expireStartedAt IS 0)
                     ;
                 """)
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addProfileBadgeDuration) { db in
+            do {
+                try db.alter(table: "model_ProfileBadgeTable") { (table: TableAlteration) -> Void in
+                    table.add(column: "duration", .numeric)
+                }
             } catch {
                 owsFail("Error: \(error)")
             }
