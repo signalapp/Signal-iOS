@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -81,7 +81,6 @@ class CVMessageMappingTest: SignalBaseTest {
         }
 
         let insertedMessages = messageFactory.create(count: 3)
-        let insertedIds = Set(insertedMessages.map { $0.uniqueId})
         try read { transaction in
             return try self.mapping.loadSameLocation(reusableInteractions: [:],
                                                        deletedInteractionIds: [],
@@ -110,7 +109,6 @@ class CVMessageMappingTest: SignalBaseTest {
             }
         }
 
-        let updatedIds = Set(updatedMessages.map { $0.uniqueId })
         try read { transaction in
             return try self.mapping.loadSameLocation(reusableInteractions: [:],
                                                        deletedInteractionIds: [],
@@ -143,7 +141,6 @@ class CVMessageMappingTest: SignalBaseTest {
             return self.messageFactory.create(transaction: transaction)
         }
 
-        let updatedIds = Set((updatedMessages + removedMessages + [insertedMessage]).map { $0.uniqueId })
         let deletedInteractionIds: Set<String> = Set(removedMessages.map { $0.uniqueId })
         try read { transaction in
             return try self.mapping.loadSameLocation(reusableInteractions: [:],
