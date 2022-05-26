@@ -9,36 +9,41 @@ import SessionUtilitiesKit
 import SignalUtilitiesKit
 
 class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSource {
-    private struct SearchResultSet {
-        let contactsAndGroups: [ConversationCell.ViewModel]
-        let messages: [ConversationCell.ViewModel]
+    fileprivate typealias SectionModel = ArraySection<SearchSection, ConversationCell.ViewModel>
+    
+    // MARK: - SearchSection
+    
+    enum SearchSection: Int, Differentiable {
+        case noResults
+        case contactsAndGroups
+        case messages
     }
     
-    let isRecentSearchResultsEnabled = false
-
+    // MARK: - Variables
+    
+    private lazy var defaultSearchResults: [SectionModel] = {
+        let result: ConversationCell.ViewModel? = GRDBStorage.shared.read { db -> ConversationCell.ViewModel? in
+            try ConversationCell.ViewModel
+                .noteToSelfOnlyQuery(userPublicKey: getUserHexEncodedPublicKey(db))
+                .fetchOne(db)
+        }
+        
+        return [ result.map { ArraySection(model: .contactsAndGroups, elements: [$0]) } ]
+            .compactMap { $0 }
+    }()
+    private lazy var searchResultSet: [SectionModel] = self.defaultSearchResults
+    private var termForCurrentSearchResultSet: String = ""
+    private var lastSearchText: String?
+    private var refreshTimer: Timer?
+    
+    var isLoading = false
+    
     @objc public var searchText = "" {
         didSet {
             AssertIsOnMainThread()
             // Use a slight delay to debounce updates.
             refreshSearchResults()
         }
-    }
-    var defaultSearchResults: HomeScreenSearchResultSet = HomeScreenSearchResultSet.noteToSelfOnly
-    
-    var searchResultSet: [ArraySection<SearchSection, ConversationCell.ViewModel>] = []
-    private var termForCurrentSearchResultSet: String = ""
-    
-    
-    private var lastSearchText: String?
-    var searcher: FullTextSearcher {
-        return FullTextSearcher.shared
-    }
-    var isLoading = false
-
-    enum SearchSection: Int, Differentiable {
-        case noResults
-        case contactsAndGroups
-        case messages
     }
 
     // MARK: - UI Components
@@ -114,8 +119,6 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
 
     // MARK: - Update Search Results
 
-    var refreshTimer: Timer?
-
     private func refreshSearchResults() {
         refreshTimer?.invalidate()
         refreshTimer = WeakTimer.scheduledTimer(timeInterval: 0.1, target: self, userInfo: nil, repeats: false) { [weak self] _ in
@@ -136,49 +139,55 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
 
         lastSearchText = searchText
 
-        GRDBStorage.shared
-            .read { db -> Result<SearchResultSet, Error> in
-                do {
-                    let contactsAndGroupsResults: [ConversationCell.ViewModel] = try ConversationCell.ViewModel
-                        .contactsAndGroupsQuery(
-                            userPublicKey: getUserHexEncodedPublicKey(db),
-                            pattern: try ConversationCell.ViewModel.pattern(db, searchTerm: searchText),
-                            searchTerm: searchText
-                        )
-                        .fetchAll(db)
-                    
-                    let messageResults: [ConversationCell.ViewModel] = try ConversationCell.ViewModel
-                        .messagesQuery(
-                            userPublicKey: getUserHexEncodedPublicKey(db),
-                            pattern: try ConversationCell.ViewModel.pattern(db, searchTerm: searchText)
-                        )
-                        .fetchAll(db)
-                    
-                    return .success(SearchResultSet(
-                        contactsAndGroups: contactsAndGroupsResults,
-                        messages: messageResults
-                    ))
-                }
-                catch {
-                    return .failure(error)
-                }
+        let result: Result<[SectionModel], Error>? = GRDBStorage.shared.read { db -> Result<[SectionModel], Error> in
+            do {
+                let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                
+                let contactsAndGroupsResults: [ConversationCell.ViewModel] = try ConversationCell.ViewModel
+                    .contactsAndGroupsQuery(
+                        userPublicKey: userPublicKey,
+                        pattern: try ConversationCell.ViewModel.pattern(db, searchTerm: searchText),
+                        searchTerm: searchText
+                    )
+                    .fetchAll(db)
+                
+                let messageResults: [ConversationCell.ViewModel] = try ConversationCell.ViewModel
+                    .messagesQuery(
+                        userPublicKey: userPublicKey,
+                        pattern: try ConversationCell.ViewModel.pattern(db, searchTerm: searchText)
+                    )
+                    .fetchAll(db)
+                
+                return .success([
+                    ArraySection(model: .contactsAndGroups, elements: contactsAndGroupsResults),
+                    ArraySection(model: .messages, elements: messageResults)
+                ])
             }
-            .map { [weak self] result in
-                switch result {
-                    case .success(let resultSet):
-                        self?.termForCurrentSearchResultSet = searchText
-                        self?.searchResultSet = [
-                            ArraySection(model: .contactsAndGroups, elements: resultSet.contactsAndGroups),
-                            ArraySection(model: .messages, elements: resultSet.messages)
-                        ]
-                        self?.isLoading = false
-                        self?.reloadTableData()
-                        self?.refreshTimer = nil
-                        
-                        
-                    case .failure: break
-                }
+            catch {
+                return .failure(error)
             }
+        }
+        
+        switch result {
+            case .success(let sections):
+                let hasResults: Bool = (
+                    !searchText.isEmpty &&
+                    (sections.map { $0.elements.count }.reduce(0, +) > 0)
+                )
+                
+                self.termForCurrentSearchResultSet = searchText
+                self.searchResultSet = [
+                    (hasResults ? nil : [ArraySection(model: .noResults, elements: [ConversationCell.ViewModel(unreadCount: 0)])]),
+                    (hasResults ? sections : nil)
+                ]
+                .compactMap { $0 }
+                .flatMap { $0 }
+                self.isLoading = false
+                self.reloadTableData()
+                self.refreshTimer = nil
+                
+            default: break
+        }
     }
 }
 
@@ -218,36 +227,50 @@ extension GlobalSearchViewController {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
         
-        guard let searchSection = SearchSection(rawValue: indexPath.section) else { return }
+        let section: SectionModel = self.searchResultSet[indexPath.section]
         
-        switch searchSection {
-            case .noResults:
-                SNLog("shouldn't be able to tap 'no results' section")
-                
-            case .contactsAndGroups:
-                break
-                
-            case .messages:
-                break
+        switch section.model {
+            case .noResults: break
+            case .contactsAndGroups, .messages:
+                show(
+                    threadId: section.elements[indexPath.row].threadId,
+                    focusedInteractionId: section.elements[indexPath.row].interactionId
+                )
         }
     }
 
-    private func show(_ thread: TSThread, highlightedMessageID: String?, animated: Bool, isFromRecent: Bool = false) {
-            if let presentedVC = self.presentedViewController {
-                presentedVC.dismiss(animated: false, completion: nil)
+    private func show(threadId: String, focusedInteractionId: Int64? = nil, animated: Bool = true) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { [weak self] in
+                self?.show(threadId: threadId, focusedInteractionId: focusedInteractionId, animated: animated)
             }
-            let conversationVC = ConversationVC(thread: thread, focusedMessageID: highlightedMessageID)
-            var viewControllers = self.navigationController?.viewControllers
-            if isFromRecent, let index = viewControllers?.firstIndex(of: self) { viewControllers?.remove(at: index) }
-            viewControllers?.append(conversationVC)
-            self.navigationController?.setViewControllers(viewControllers!, animated: true)
+            return
         }
+        
+        guard let conversationVC: ConversationVC = ConversationVC(threadId: threadId, focusedInteractionId: focusedInteractionId) else {
+            return
+        }
+        
+        if let presentedVC = self.presentedViewController {
+            presentedVC.dismiss(animated: false, completion: nil)
+        }
+        
+        let viewControllers: [UIViewController] = (self.navigationController?
+            .viewControllers)
+            .defaulting(to: [])
+            .appending(conversationVC)
+        
+        self.navigationController?.setViewControllers(viewControllers, animated: true)
     }
 
     // MARK: - UITableViewDataSource
 
     public func numberOfSections(in tableView: UITableView) -> Int {
         return self.searchResultSet.count
+    }
+    
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.searchResultSet[section].elements.count
     }
 
     public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -286,7 +309,8 @@ extension GlobalSearchViewController {
     }
 
     public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let section: ArraySection<SearchSection, ConversationCell.ViewModel> = self.searchResultSet[section]
+        let section: SectionModel = self.searchResultSet[section]
+        
         switch section.model {
             case .noResults: return nil
             case .contactsAndGroups: return (section.elements.isEmpty ? nil : "SEARCH_SECTION_CONTACTS".localized())
@@ -294,16 +318,12 @@ extension GlobalSearchViewController {
         }
     }
 
-    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.searchResultSet[section].elements.count
-    }
-
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let section: ArraySection<SearchSection, ConversationCell.ViewModel> = self.searchResultSet[indexPath.section]
+        let section: SectionModel = self.searchResultSet[indexPath.section]
         
         switch section.model {
             case .noResults:

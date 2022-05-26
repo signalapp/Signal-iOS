@@ -198,9 +198,9 @@ extension ConversationCell {
 // MARK: - Convenience Initialization
 
 public extension ConversationCell.ViewModel {
-    // Note: This init method is only used for the message requests cell on the home screen so we can avoid having
-    init(unreadCount: UInt) {
-        self.threadId = "UNREAD_MESSAGE_REQUEST_THREADS"
+    // Note: This init method is only used for the message requests cell or empty states
+    init(unreadCount: UInt = 0) {
+        self.threadId = "INVALID_THREAD_ID"
         self.threadVariant = .contact
         self.threadCreationDateTimestamp = 0
         self.threadMemberNames = nil
@@ -1172,6 +1172,51 @@ public extension ConversationCell.ViewModel {
                 ViewModel.closedGroupProfileFrontString: adapters[2],
                 ViewModel.closedGroupProfileBackString: adapters[3],
                 ViewModel.closedGroupProfileBackFallbackString: adapters[4]
+            ])
+        }
+    }
+    
+    /// This method returns only the 'Note to Self' thread in the structure of a search result conversation
+    static func noteToSelfOnlyQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<ConversationCell.ViewModel>> {
+        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
+        
+        /// **Note:** The `numColumnsBeforeProfiles` value **MUST** match the number of fields before
+        /// the `ViewModel.contactProfileKey` entry below otherwise the query will fail to
+        /// parse and might throw
+        let numColumnsBeforeProfiles: Int = 7
+        let request: SQLRequest<ViewModel> = """
+            SELECT
+                100 AS \(Column.rank),
+                
+                \(thread[.id]) AS \(ViewModel.threadIdKey),
+                \(thread[.variant]) AS \(ViewModel.threadVariantKey),
+                \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
+                '' AS \(ViewModel.threadMemberNamesKey),
+                
+                true AS \(ViewModel.threadIsNoteToSelfKey),
+                \(thread[.isPinned]) AS \(ViewModel.threadIsPinnedKey),
+                
+                \(ViewModel.contactProfileKey).*,
+                
+                \(SQL("\(userPublicKey)")) AS \(ViewModel.currentUserPublicKeyKey)
+
+            FROM \(SessionThread.self)
+            JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
+        
+            WHERE \(SQL("\(thread[.id]) = \(userPublicKey)"))
+        """
+        
+        // Add adapters which will group the various 'Profile' columns so they can be decoded
+        // as instances of 'Profile' types
+        return request.adapted { db in
+            let adapters = try splittingRowAdapters(columnCounts: [
+                numColumnsBeforeProfiles,
+                Profile.numberOfSelectedColumns(db)
+            ])
+
+            return ScopeAdapter([
+                ViewModel.contactProfileString: adapters[1]
             ])
         }
     }

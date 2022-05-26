@@ -450,6 +450,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             if let updatedPageInfo: PagedData.PageInfo = loadedPage?.pageInfo {
                 self.pageInfo.mutate { $0 = updatedPageInfo }
             }
+            self.isLoadingMoreData.mutate { $0 = false }
             return
         }
         

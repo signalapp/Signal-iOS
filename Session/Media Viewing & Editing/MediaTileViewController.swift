@@ -20,6 +20,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     
     private let viewModel: MediaGalleryViewModel
     private var hasLoadedInitialData: Bool = false
+    private var isAutoLoadingNextPage: Bool = false
     private var currentTargetOffset: CGPoint?
     
     var isInBatchSelectMode = false {
@@ -34,7 +35,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
 
     init(viewModel: MediaGalleryViewModel) {
         self.viewModel = viewModel
-        GRDBStorage.shared.addObserver(viewModel.pagedDatabaseObserver)
+        GRDBStorage.shared.addObserver(viewModel.pagedDataObserver)
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -212,20 +213,30 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     }
     
     private func autoLoadNextPageIfNeeded() {
+        guard !self.isAutoLoadingNextPage else { return }
+        
+        self.isAutoLoadingNextPage = true
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + MediaTileViewController.autoLoadNextPageDelay) { [weak self] in
+            self?.isAutoLoadingNextPage = false
+            
+            // Note: We sort the headers as we want to prioritise loading newer pages over older ones
             let sortedVisibleIndexPaths: [IndexPath] = (self?.collectionView
                 .indexPathsForVisibleSupplementaryElements(ofKind: UICollectionView.elementKindSectionHeader))
                 .defaulting(to: [])
                 .sorted()
             
             for headerIndexPath in sortedVisibleIndexPaths {
-                switch self?.viewModel.galleryData[safe: headerIndexPath.section]?.model {
-                    case .loadNewer:
-                        self?.viewModel.loadNewerGalleryItems()
-                        return
-                        
-                    case .loadOlder:
-                        self?.viewModel.loadOlderGalleryItems()
+                let section: MediaGalleryViewModel.SectionModel? = self?.viewModel.galleryData[safe: headerIndexPath.section]
+                
+                switch section?.model {
+                    case .loadNewer, .loadOlder:
+                        // Attachments are loaded in descending order so 'loadOlder' actually corresponds with
+                        // 'pageAfter' in this case
+                        self?.viewModel.pagedDataObserver?.load(section?.model == .loadOlder ?
+                            .pageAfter :
+                            .pageBefore
+                        )
                         return
                         
                     default: continue
@@ -242,7 +253,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     }
     
     private func stopObservingChanges() {
-        // Note: The 'PagedDatabaseObserver' will continue to get changes but
+        // Note: The 'pagedDataObserver' will continue to get changes but
         // we don't want to trigger any UI updates
         self.viewModel.onGalleryChange = nil
     }
@@ -261,8 +272,8 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
         // Determine if we are inserting content at the top of the collectionView
         let isInsertingAtTop: Bool = {
             let oldFirstSectionIsLoadMore: Bool = (
-                self.viewModel.galleryData[safe: 0]?.model == .loadNewer ||
-                self.viewModel.galleryData[safe: 0]?.model == .loadOlder
+                self.viewModel.galleryData.first?.model == .loadNewer ||
+                self.viewModel.galleryData.first?.model == .loadOlder
             )
             let oldTargetSectionIndex: Int = (oldFirstSectionIsLoadMore ? 1 : 0)
             
@@ -399,41 +410,17 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
         guard self.hasLoadedInitialData else { return }
         
         let section: MediaGalleryViewModel.SectionModel = self.viewModel.galleryData[indexPath.section]
-        let fastEndScrollingThen: ((@escaping () -> ()) -> ()) = { callback in
-            let endOffset: CGPoint
-            
-            if let currentTargetOffset: CGPoint = self.currentTargetOffset {
-                endOffset = currentTargetOffset
-            }
-            else {
-                let currentVelocity: CGPoint = collectionView.panGestureRecognizer.velocity(in: collectionView)
-                
-                endOffset = CGPoint(
-                    x: collectionView.contentOffset.x,
-                    y: collectionView.contentOffset.y - (currentVelocity.y / 100)
-                )
-            }
-            
-            guard endOffset != collectionView.contentOffset else {
-                return callback()
-            }
-            
-            UIView.animate(
-                withDuration: 0.1,
-                delay: 0,
-                options: .curveEaseOut,
-                animations: {
-                    collectionView.setContentOffset(endOffset, animated: false)
-                },
-                completion: { _ in
-                    callback()
-                }
-            )
-        }
         
         switch section.model {
-            case .loadOlder: fastEndScrollingThen { self.viewModel.loadOlderGalleryItems() }
-            case .loadNewer: fastEndScrollingThen { self.viewModel.loadNewerGalleryItems() }
+            case .loadOlder, .loadNewer:
+                UIScrollView.fastEndScrollingThen(collectionView, self.currentTargetOffset) { [weak self] in
+                    // Attachments are loaded in descending order so 'loadOlder' actually corresponds with
+                    // 'pageAfter' in this case
+                    self?.viewModel.pagedDataObserver?.load(section.model == .loadOlder ?
+                        .pageAfter :
+                        .pageBefore
+                    )
+                }
                 
             case .emptyGallery, .galleryMonth: break
         }

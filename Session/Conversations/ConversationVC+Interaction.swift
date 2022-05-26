@@ -632,8 +632,12 @@ extension ConversationVC:
         // Show the context menu if applicable
         guard
             let keyWindow: UIWindow = UIApplication.shared.keyWindow,
-            let index = viewModel.interactionData.firstIndex(of: cellViewModel),
-            let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell,
+            let sectionIndex: Int = self.viewModel.interactionData
+                .firstIndex(where: { $0.model == .messages }),
+            let index = self.viewModel.interactionData[sectionIndex]
+                .elements
+                .firstIndex(of: cellViewModel),
+            let cell = tableView.cellForRow(at: IndexPath(row: index, section: sectionIndex)) as? VisibleMessageCell,
             let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false),
             contextMenuWindow == nil,
             let actions: [ContextMenuVC.Action] = ContextMenuVC.actions(
@@ -693,8 +697,12 @@ extension ConversationVC:
             
             case .mediaMessage:
                 guard
-                    let index = self.viewModel.interactionData.firstIndex(where: { $0.id == cellViewModel.id }),
-                    let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell,
+                    let sectionIndex: Int = self.viewModel.interactionData
+                        .firstIndex(where: { $0.model == .messages }),
+                    let messageIndex: Int = self.viewModel.interactionData[sectionIndex]
+                        .elements
+                        .firstIndex(where: { $0.id == cellViewModel.id }),
+                    let cell = tableView.cellForRow(at: IndexPath(row: messageIndex, section: sectionIndex)) as? VisibleMessageCell,
                     let albumView: MediaAlbumView = cell.albumView
                 else { return }
                 

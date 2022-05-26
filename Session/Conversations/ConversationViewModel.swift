@@ -7,6 +7,10 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 
 public class ConversationViewModel: OWSAudioPlayerDelegate {
+    public typealias SectionModel = ArraySection<Section, MessageCell.ViewModel>
+    
+    // MARK: - Action
+    
     public enum Action {
         case none
         case compose
@@ -15,6 +19,16 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     }
     
     public static let pageSize: Int = 50
+    // MARK: - Section
+    
+    public enum Section: Differentiable, Equatable, Comparable, Hashable {
+        case loadOlder
+        case messages
+        case loadNewer
+    }
+    
+    // MARK: - Variables
+    
     
     // MARK: - Initialization
     
@@ -34,58 +48,52 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         
         self.threadId = threadId
         self.threadData = threadData
-        self.focusedInteractionId = focusedInteractionId    // TODO: This
+        self.focusedInteractionId = focusedInteractionId
         self.pagedDataObserver = nil
-        var hasSavedIntialUpdate: Bool = false
-        self.pagedDataObserver = PagedDatabaseObserver(
-            pagedTable: Interaction.self,
-            pageSize: ConversationViewModel.pageSize,
-            idColumn: .id,
-            initialFocusedId: nil,
-            observedChanges: [
-                PagedData.ObservedChanges(
-                    table: Interaction.self,
-                    columns: Interaction.Columns
-                        .allCases
-                        .filter { $0 != .wasRead }
-                )
-            ],
-            filterSQL: MessageCell.ViewModel.filterSQL(threadId: threadId),
-            orderSQL: MessageCell.ViewModel.orderSQL,
-            dataQuery: MessageCell.ViewModel.baseQuery(
+        
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            self?.pagedDataObserver = PagedDatabaseObserver(
+                pagedTable: Interaction.self,
+                pageSize: ConversationViewModel.pageSize,
+                idColumn: .id,
+                initialFocusedId: focusedInteractionId,
+                observedChanges: [
+                    PagedData.ObservedChanges(
+                        table: Interaction.self,
+                        columns: Interaction.Columns
+                            .allCases
+                            .filter { $0 != .wasRead }
+                    )
+                ],
+                filterSQL: MessageCell.ViewModel.filterSQL(threadId: threadId),
                 orderSQL: MessageCell.ViewModel.orderSQL,
-                baseFilterSQL: MessageCell.ViewModel.filterSQL(threadId: threadId)
-            ),
-            associatedRecords: [
-                AssociatedRecord<MessageCell.AttachmentInteractionInfo, MessageCell.ViewModel>(
-                    trackedAgainst: Attachment.self,
-                    observedChanges: [
-                        PagedData.ObservedChanges(
-                            table: Attachment.self,
-                            columns: [.state]
-                        )
-                    ],
-                    dataQuery: MessageCell.AttachmentInteractionInfo.baseQuery,
-                    joinToPagedType: MessageCell.AttachmentInteractionInfo.joinToViewModelQuerySQL,
-                    associateData: MessageCell.AttachmentInteractionInfo.createAssociateDataClosure()
-                )
-            ],
-            onChangeUnsorted: { [weak self] updatedData, updatedPageInfo in
-                guard let updatedInteractionData: [MessageCell.ViewModel] = self?.process(data: updatedData, for: updatedPageInfo) else {
-                    return
+                dataQuery: MessageCell.ViewModel.baseQuery(
+                    orderSQL: MessageCell.ViewModel.orderSQL,
+                    baseFilterSQL: MessageCell.ViewModel.filterSQL(threadId: threadId)
+                ),
+                associatedRecords: [
+                    AssociatedRecord<MessageCell.AttachmentInteractionInfo, MessageCell.ViewModel>(
+                        trackedAgainst: Attachment.self,
+                        observedChanges: [
+                            PagedData.ObservedChanges(
+                                table: Attachment.self,
+                                columns: [.state]
+                            )
+                        ],
+                        dataQuery: MessageCell.AttachmentInteractionInfo.baseQuery,
+                        joinToPagedType: MessageCell.AttachmentInteractionInfo.joinToViewModelQuerySQL,
+                        associateData: MessageCell.AttachmentInteractionInfo.createAssociateDataClosure()
+                    )
+                ],
+                onChangeUnsorted: { [weak self] updatedData, updatedPageInfo in
+                    guard let updatedInteractionData: [SectionModel] = self?.process(data: updatedData, for: updatedPageInfo) else {
+                        return
+                    }
+                    
+                    self?.onInteractionChange?(updatedInteractionData)
                 }
-                
-                // If we haven't stored the data for the initial fetch then do so now (no need
-                // to call 'onInteractionsChange' in this case as it will always be null)
-                guard hasSavedIntialUpdate else {
-                    self?.updateInteractionData(updatedInteractionData)
-                    hasSavedIntialUpdate = true
-                    return
-                }
-                
-                self?.onInteractionChange?(updatedInteractionData)
-            }
-        )
+            )
+        }
     }
     
     // MARK: - Variables
@@ -130,29 +138,44 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     
     // MARK: - Interaction Data
     
-    public private(set) var interactionData: [MessageCell.ViewModel] = []
+    public private(set) var interactionData: [SectionModel] = []
     public private(set) var pagedDataObserver: PagedDatabaseObserver<Interaction, MessageCell.ViewModel>?
-    public var onInteractionChange: (([MessageCell.ViewModel]) -> ())?
+    public var onInteractionChange: (([SectionModel]) -> ())?
     
-    private func process(data: [MessageCell.ViewModel], for pageInfo: PagedData.PageInfo) -> [MessageCell.ViewModel] {
+    private func process(data: [MessageCell.ViewModel], for pageInfo: PagedData.PageInfo) -> [SectionModel] {
         let sortedData: [MessageCell.ViewModel] = data
             .sorted { lhs, rhs -> Bool in lhs.timestampMs < rhs.timestampMs }
         
-        return sortedData
-            .enumerated()
-            .map { index, cellViewModel -> MessageCell.ViewModel in
-                cellViewModel.withClusteringChanges(
-                    prevModel: (index > 0 ? sortedData[index - 1] : nil),
-                    nextModel: (index < (sortedData.count - 2) ? sortedData[index + 1] : nil),
-                    isLast: (
-                        index == (sortedData.count - 1) &&
-                        pageInfo.currentCount == pageInfo.totalCount
-                    )
+        return [
+            (!data.isEmpty && (pageInfo.pageOffset + pageInfo.currentCount) < pageInfo.totalCount ?
+                [SectionModel(section: .loadOlder)] :
+                []
+            ),
+            [
+                SectionModel(
+                    section: .messages,
+                    elements: sortedData
+                        .enumerated()
+                        .map { index, cellViewModel -> MessageCell.ViewModel in
+                            cellViewModel.withClusteringChanges(
+                                prevModel: (index > 0 ? sortedData[index - 1] : nil),
+                                nextModel: (index < (sortedData.count - 2) ? sortedData[index + 1] : nil),
+                                isLast: (
+                                    index == (sortedData.count - 1) &&
+                                    pageInfo.currentCount == pageInfo.totalCount
+                                )
+                            )
+                        }
                 )
-            }
+            ],
+            (data.isEmpty && pageInfo.pageOffset > 0 ?
+                [SectionModel(section: .loadNewer)] :
+                []
+            )
+        ].flatMap { $0 }
     }
     
-    public func updateInteractionData(_ updatedData: [MessageCell.ViewModel]) {
+    public func updateInteractionData(_ updatedData: [SectionModel]) {
         self.interactionData = updatedData
     }
     
@@ -288,7 +311,13 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     }
     
     public func markAllAsRead() {
-        guard let lastInteractionId: Int64 = self.interactionData.last?.id else { return }
+        guard
+            let lastInteractionId: Int64 = self.interactionData
+                .first(where: { $0.model == .messages })?
+                .elements
+                .last?
+                .id
+        else { return }
         
         GRDBStorage.shared.write { db in
             try Interaction.markAsRead(
@@ -487,12 +516,15 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         
         // If the next interaction is another voice message then autoplay it
         guard
-            let currentIndex: Int = self.interactionData.firstIndex(where: { $0.id == interactionId }),
-            currentIndex < (self.interactionData.count - 1),
-            self.interactionData[currentIndex + 1].cellType == .audio
+            let messageSection: SectionModel = self.interactionData
+                .first(where: { $0.model == .messages }),
+            let currentIndex: Int = messageSection.elements
+                .firstIndex(where: { $0.id == interactionId }),
+            currentIndex < (messageSection.elements.count - 1),
+            messageSection.elements[currentIndex + 1].cellType == .audio
         else { return }
         
-        let nextItem: MessageCell.ViewModel = self.interactionData[currentIndex + 1]
+        let nextItem: MessageCell.ViewModel = messageSection.elements[currentIndex + 1]
         playOrPauseAudio(for: nextItem)
     }
     

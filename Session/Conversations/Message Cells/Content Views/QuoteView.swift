@@ -136,10 +136,16 @@ final class QuoteView: UIView {
             attachment.thumbnail(
                 size: .small,
                 success: { image, _ in
-                    DispatchQueue.main.async {
-                        imageView.image = image
-                        imageView.contentMode = .scaleAspectFill
+                    guard Thread.isMainThread else {
+                        DispatchQueue.main.async {
+                            imageView.image = image
+                            imageView.contentMode = .scaleAspectFill
+                        }
+                        return
                     }
+                    
+                    imageView.image = image
+                    imageView.contentMode = .scaleAspectFill
                 },
                 failure: {}
             )

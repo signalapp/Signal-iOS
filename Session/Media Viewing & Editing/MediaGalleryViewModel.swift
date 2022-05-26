@@ -18,6 +18,8 @@ public class MediaGalleryViewModel {
         case loadNewer
     }
     
+    // MARK: - Variables
+    
     public let threadId: String
     public let threadVariant: SessionThread.Variant
     private var focusedAttachmentId: String?
@@ -30,7 +32,7 @@ public class MediaGalleryViewModel {
     public var interactionIdBefore: [Int64: Int64] { cachedInteractionIdBefore.wrappedValue }
     public var interactionIdAfter: [Int64: Int64] { cachedInteractionIdAfter.wrappedValue }
     public private(set) var albumData: [Int64: [Item]] = [:]
-    public private(set) var pagedDatabaseObserver: PagedDatabaseObserver<Attachment, Item>?
+    public private(set) var pagedDataObserver: PagedDatabaseObserver<Attachment, Item>?
     
     /// This value is the current state of a gallery view
     public private(set) var galleryData: [SectionModel] = []
@@ -48,13 +50,13 @@ public class MediaGalleryViewModel {
         self.threadId = threadId
         self.threadVariant = threadVariant
         self.focusedAttachmentId = focusedAttachmentId
-        self.pagedDatabaseObserver = nil
+        self.pagedDataObserver = nil
         
         guard isPagedData else { return }
      
         var hasSavedIntialUpdate: Bool = false
         let filterSQL: SQL = Item.filterSQL(threadId: threadId)
-        self.pagedDatabaseObserver = PagedDatabaseObserver(
+        self.pagedDataObserver = PagedDatabaseObserver(
             pagedTable: Attachment.self,
             pageSize: pageSize,
             idColumn: .id,
@@ -431,14 +433,6 @@ public class MediaGalleryViewModel {
                 if self.focusedIndexPath != nil { break }
             }
         }
-    }
-    
-    public func loadNewerGalleryItems() {
-        self.pagedDatabaseObserver?.load(.pageBefore)
-    }
-    
-    public func loadOlderGalleryItems() {
-        self.pagedDatabaseObserver?.load(.pageAfter)
     }
     
     public func updateFocusedItem(attachmentId: String, indexPath: IndexPath) {

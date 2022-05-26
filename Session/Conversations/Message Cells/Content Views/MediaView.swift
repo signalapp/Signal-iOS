@@ -173,7 +173,7 @@ public class MediaView: UIView {
                         owsFailDebug("Media has unexpected type: \(type(of: media))")
                         return
                     }
-                    
+                    // FIXME: Animated images flicker when reloading the cells (even though they are in the cache)
                     animatedImageView.image = image
                 },
                 cacheKey: attachment.id
@@ -365,9 +365,9 @@ public class MediaView: UIView {
         if let media: AnyObject = self.mediaCache.object(forKey: cacheKey as NSString) {
             Logger.verbose("media cache hit")
             
-            guard !Thread.isMainThread else {
+            guard Thread.isMainThread else {
                 DispatchQueue.main.async {
-                    loadMediaBlock(loadCompletion)
+                    loadCompletion(media)
                 }
                 return
             }

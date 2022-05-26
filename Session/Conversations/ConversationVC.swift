@@ -937,12 +937,20 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     }
 
     func scrollToBottom(isAnimated: Bool) {
-        guard !isUserScrolling && !viewModel.interactionData.isEmpty else { return }
+        guard
+            !isUserScrolling,
+            let messagesSectionIndex: Int = self.viewModel.interactionData
+                .firstIndex(where: { $0.model == .messages }),
+            !self.viewModel.interactionData[messagesSectionIndex]
+                .elements
+                .isEmpty
+        else { return }
         
         tableView.scrollToRow(
             at: IndexPath(
-                row: viewModel.interactionData.count - 1,
-                section: 0),
+                row: viewModel.interactionData[messagesSectionIndex].elements.count - 1,
+                section: messagesSectionIndex
+            ),
             at: .bottom,
             animated: isAnimated
         )
@@ -959,7 +967,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         scrollButton.alpha = getScrollButtonOpacity()
         unreadCountView.alpha = scrollButton.alpha
-        autoLoadMoreIfNeeded()
     }
 
     func updateUnreadCountView(unreadCount: UInt?) {
@@ -968,14 +975,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         unreadCountLabel.text = (unreadCount < 10000 ? "\(unreadCount)" : "9999+")
         unreadCountLabel.font = .boldSystemFont(ofSize: fontSize)
         unreadCountView.isHidden = (unreadCount == 0)
-    }
-
-    func autoLoadMoreIfNeeded() {
-        let isMainAppAndActive = CurrentAppContext().isMainAppAndActive
-        guard isMainAppAndActive && didFinishInitialLayout && viewModel.canLoadMoreItems() && !isLoadingMore
-            && messagesTableView.contentOffset.y < ConversationVC.loadMoreThreshold else { return }
-        isLoadingMore = true
-        viewModel.loadAnotherPageOfMessages()
     }
 
     func getScrollButtonOpacity() -> CGFloat {
@@ -1078,5 +1077,28 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         isAnimated: Bool = true,
         highlighted: Bool = false
     ) {
+        // Ensure the interaction is loaded
+        self.viewModel.pagedDataObserver?.load(.untilInclusive(id: interactionId, padding: 0))
+        
+        guard
+            let messageSectionIndex: Int = self.viewModel.interactionData
+                .firstIndex(where: { $0.model == .messages }),
+            let targetMessageIndex = self.viewModel.interactionData[messageSectionIndex]
+                .elements
+                .firstIndex(where: { $0.id == interactionId })
+        else { return }
+
+        tableView.scrollToRow(
+            at: IndexPath(
+                row: targetMessageIndex,
+                section: messageSectionIndex
+            ),
+            at: position,
+            animated: isAnimated
+        )
+
+        if highlighted {
+            focusedMessageId = interactionId
+        }
     }
 }

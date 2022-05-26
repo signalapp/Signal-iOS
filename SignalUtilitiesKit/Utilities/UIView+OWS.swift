@@ -137,7 +137,7 @@ public extension UIViewController {
     }
 
     func presentAlert(_ alert: UIAlertController, animated: Bool) {
-        if !Thread.isMainThread {
+        guard Thread.isMainThread else {
             DispatchQueue.main.async { [weak self] in
                 self?.presentAlert(alert, animated: animated)
             }
@@ -150,7 +150,7 @@ public extension UIViewController {
     }
 
     func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
-        if !Thread.isMainThread {
+        guard Thread.isMainThread else {
             DispatchQueue.main.async { [weak self] in
                 self?.presentAlert(alert, completion: completion)
             }

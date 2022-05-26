@@ -26,6 +26,7 @@ class EmptySearchResultCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         backgroundColor = .clear
+        selectionStyle = .none
         
         contentView.addSubview(messageLabel)
         messageLabel.autoSetDimension(.height, toSize: 150)
