@@ -922,7 +922,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func conversationSearchController(_ conversationSearchController: ConversationSearchController, didSelectMessageId interactionID: String) {
-        scrollToInteraction(with: interactionID)
+        scrollToInteraction(with: interactionID, highlighted: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            self.highlightFocusedMessageIfNeeded()
+        }
     }
     
     func scrollToInteraction(with interactionID: String, position: UITableView.ScrollPosition = .middle, isAnimated: Bool = true, highlighted: Bool = false) {
