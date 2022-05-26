@@ -67,11 +67,11 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         tableView.keyboardDismissMode = .interactive
+        tableView.backgroundColor = .ows_gray90
         tableView.addInteraction(contextMenu)
 
         contentView.addSubview(tableView)
-        tableView.autoPinWidthToSuperview()
-        tableView.autoPinEdge(toSuperviewEdge: .bottom)
+        tableView.autoPinEdgesToSuperviewEdges()
 
         inputToolbar.delegate = self
         contentView.addSubview(inputToolbar)
