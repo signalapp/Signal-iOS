@@ -152,7 +152,7 @@ public final class AtomicValue<T> {
 
     // Transform the current value using a block.
     @discardableResult
-    public func map(_ block: @escaping (T) -> T) -> T {
+    public func map(_ block: (T) -> T) -> T {
         lock.perform {
             let newValue = block(self.value)
             self.value = newValue
@@ -171,7 +171,7 @@ extension AtomicValue: Codable where T: Codable {
 
     public func encode(to encoder: Encoder) throws {
         var singleValueContainer = encoder.singleValueContainer()
-        try singleValueContainer.encode(value)
+        try singleValueContainer.encode(self.get())
     }
 }
 
@@ -212,7 +212,7 @@ public final class AtomicOptional<T> {
         self.value.swap(value)
     }
 
-    public func map(_ block: @escaping (T?) -> T?) -> T? {
+    public func map(_ block: (T?) -> T?) -> T? {
         value.map(block)
     }
 }
