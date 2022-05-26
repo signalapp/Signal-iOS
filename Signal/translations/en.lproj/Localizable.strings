@@ -391,6 +391,12 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
 
+/* Text telling the user that they can add a message along with their gift badge */
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
+
+/* Placeholder in the text field where you can add text for a message along with your gift */
+"BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Add a message";
+
 /* Indicates that a contact cannot receive badges because they need to update Signal */
 "BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
 
@@ -403,8 +409,20 @@
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
 
+/* Title on the screen where you confirm sending of a gift badge, and can write a message */
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+
+/* Text telling the user that their gift is a one-time donation */
+"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "One-time Donation";
+
+/* Text in the action sheet when you try to send a gift badge but the payment failed */
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+
+/* Title for the action sheet when you try to send a gift badge but the payment failed */
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Lasts %@";

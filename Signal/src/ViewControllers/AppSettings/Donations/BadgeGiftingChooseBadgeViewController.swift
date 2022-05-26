@@ -88,8 +88,19 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     }
 
     private func didTapNext() {
-        let vc = BadgeGiftingChooseRecipientViewController()
-        self.navigationController?.pushViewController(vc, animated: true)
+        switch state {
+        case .initializing, .loading, .loadFailed:
+            owsFailDebug("Tapped next when the state wasn't loaded")
+        case let .loaded(selectedCurrencyCode, badge, pricesByCurrencyCode):
+            guard let price = pricesByCurrencyCode[selectedCurrencyCode] else {
+                owsFailDebug("State is invalid. We selected a currency code that we don't have a price for")
+                return
+            }
+            let vc = BadgeGiftingChooseRecipientViewController(badge: badge,
+                                                               price: price,
+                                                               currencyCode: selectedCurrencyCode)
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     // MARK: - Callbacks
@@ -249,8 +260,10 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             guard let self = self else { return UITableViewCell() }
             let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
 
-            // We ensure that this value is set when we load.
-            let price = pricesByCurrencyCode[selectedCurrencyCode] ?? 0
+            guard let price = pricesByCurrencyCode[selectedCurrencyCode] else {
+                owsFailDebug("State is invalid. We selected a currency code that we don't have a price for.")
+                return cell
+            }
             let badgeCellView = GiftBadgeCellView(badge: badge, price: price, currencyCode: selectedCurrencyCode)
             cell.contentView.addSubview(badgeCellView)
             badgeCellView.autoPinEdgesToSuperviewMargins()

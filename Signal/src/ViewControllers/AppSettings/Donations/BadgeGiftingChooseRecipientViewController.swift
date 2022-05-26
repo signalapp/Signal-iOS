@@ -4,9 +4,20 @@
 
 import Foundation
 
-// TODO(evanhahn) This view is unfinished.
 class BadgeGiftingChooseRecipientViewController: OWSViewController {
+    private let badge: ProfileBadge
+    private let price: UInt
+    private let currencyCode: Currency.Code
+
     private let recipientPicker = RecipientPickerViewController()
+
+    private lazy var threadFinder: AnyThreadFinder = AnyThreadFinder()
+
+    public init(badge: ProfileBadge, price: UInt, currencyCode: Currency.Code) {
+        self.badge = badge
+        self.price = price
+        self.currencyCode = currencyCode
+    }
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,27 +62,55 @@ class BadgeGiftingChooseRecipientViewController: OWSViewController {
 }
 
 extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         canSelectRecipient recipient: PickedRecipient) -> RecipientPickerRecipientState {
+    private enum RecipientGiftMode {
+        case invalidRecipient
+        case cannotReceiveGifts
+        case canReceiveGifts
+    }
+
+    private func getRecipientGiftMode(_ recipient: PickedRecipient) -> RecipientGiftMode {
         guard let address = recipient.address, address.isValid, !address.isLocalAddress else {
-            owsFailDebug("Invalid recipient")
-            return .unknownError
+            owsFailDebug("Invalid recipient. Did a group make its way in?")
+            return .invalidRecipient
         }
 
-        // TODO(evanhahn): Fail if they lack the capability.
+        // TODO (GB): Properly respect capabilities.
+        return .canReceiveGifts
+    }
 
-        return .canBeSelected
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         canSelectRecipient recipient: PickedRecipient) -> RecipientPickerRecipientState {
+        switch getRecipientGiftMode(recipient) {
+        case .invalidRecipient:
+            return .unknownError
+        case .cannotReceiveGifts:
+            // TODO (GB): Return a better error here.
+            return .unknownError
+        case .canReceiveGifts:
+            return .canBeSelected
+        }
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          didSelectRecipient recipient: PickedRecipient) {
-        guard let address = recipient.address, address.isValid, !address.isLocalAddress else {
-            owsFailDebug("Invalid recipient")
-            dismiss(animated: true)
-            return
-        }
+        switch getRecipientGiftMode(recipient) {
+        case .invalidRecipient, .cannotReceiveGifts:
+            owsFail("Invalid recipient. Can this recipient receive gifts?")
+        case .canReceiveGifts:
+            guard let address = recipient.address else {
+                owsFail("Recipient is missing address, but we expected one")
+            }
 
-        print("TODO(evanhahn): Send badge to this person")
+            let recipientName = databaseStorage.read { transaction -> String in
+                contactsManager.displayName(for: address, transaction: transaction)
+            }
+            let vc = BadgeGiftingConfirmationViewController(badge: badge,
+                                                            price: price,
+                                                            currencyCode: currencyCode,
+                                                            recipientAddress: address,
+                                                            recipientName: recipientName)
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
@@ -92,9 +131,13 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient,
                          transaction: SDSAnyReadTransaction) -> NSAttributedString? {
-        // TODO(evanhahn) Only show this if they lack the capability.
-        NSLocalizedString("BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE",
-                          comment: "Indicates that a contact cannot receive badges because they need to update Signal").attributedString()
+        switch getRecipientGiftMode(recipient) {
+        case .invalidRecipient, .cannotReceiveGifts:
+            return NSLocalizedString("BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE",
+                                     comment: "Indicates that a contact cannot receive badges because they need to update Signal").attributedString()
+        case .canReceiveGifts:
+            return nil
+        }
     }
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}

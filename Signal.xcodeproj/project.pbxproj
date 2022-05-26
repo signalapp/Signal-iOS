@@ -1047,6 +1047,7 @@
 		F9BC0A2527FB8E730085B23D /* AppSettingsViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */; };
 		F9D83012282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */; };
 		F9DD70B92811AF82000C5960 /* DonationViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */; };
+		F9F4DE2A283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */; };
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
 
@@ -2490,6 +2491,7 @@
 		F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsViewsUtil.swift; sourceTree = "<group>"; };
 		F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseBadgeViewController.swift; sourceTree = "<group>"; };
 		F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationViewsUtil.swift; sourceTree = "<group>"; };
+		F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingConfirmationViewController.swift; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		FD351756BE688D00B63E00CD /* Pods-SignalMessaging.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.testable release.xcconfig"; sourceTree = "<group>"; };
@@ -4840,6 +4842,7 @@
 			children = (
 				F941B16F28412D5F00498CCD /* ApplePayButton.swift */,
 				F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */,
+				F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */,
 				F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */,
 				F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */,
 				888017912741F33B00346E9A /* BoostViewController.swift */,
@@ -6442,6 +6445,7 @@
 				3420CF6D26327B1A00E7DCB0 /* CVBackgroundContainer.swift in Sources */,
 				3414896925C9B6490098E3ED /* CurrencyPickerViewController.swift in Sources */,
 				3470C87A2555DE5F00F5847C /* CVComponentContactShare.swift in Sources */,
+				F9F4DE2A283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift in Sources */,
 				886BB3D225BA0C9D00079781 /* PreviewWallpaperViewController.swift in Sources */,
 				34ACA7DA2733159600E47AD4 /* OnboardingDroppedYdbViewController.swift in Sources */,
 				88238EA424E9DDE900F28079 /* CallButton.swift in Sources */,
