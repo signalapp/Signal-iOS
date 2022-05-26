@@ -220,19 +220,16 @@ public class GRDBSchemaMigrator: NSObject {
             }
             let sql = try String(contentsOf: sqlFile)
             try db.execute(sql: sql)
-        }
 
-        // After importing the initial schema, we want to skip the remaining incremental migrations
-        // so we register each migration id with a no-op implementation.
-        for migrationId in (MigrationId.allCases.filter { $0 != .createInitialSchema }) {
-            migrator.registerMigration(migrationId.rawValue) { _ in
+            // After importing the initial schema, we want to skip the remaining
+            // incremental migrations, so we manually mark them as complete.
+            for migrationId in (MigrationId.allCases.filter { $0 != .createInitialSchema }) {
                 if !CurrentAppContext().isRunningTests {
                     Logger.info("skipping migration: \(migrationId) for new user.")
                 }
-                // no-op
+                insertMigration(migrationId.rawValue, db: db)
             }
         }
-
         return migrator
     }()
 
@@ -2159,6 +2156,14 @@ public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
 private func hasRunMigration(_ identifier: String, transaction: GRDBReadTransaction) -> Bool {
     do {
         return try String.fetchOne(transaction.database, sql: "SELECT identifier FROM grdb_migrations WHERE identifier = ?", arguments: [identifier]) != nil
+    } catch {
+        owsFail("Error: \(error)")
+    }
+}
+
+private func insertMigration(_ identifier: String, db: Database) {
+    do {
+        try db.execute(sql: "INSERT INTO grdb_migrations (identifier) VALUES (?)", arguments: [identifier])
     } catch {
         owsFail("Error: \(error)")
     }
