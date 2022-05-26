@@ -705,6 +705,20 @@ public final class SnodeAPI : NSObject {
         }
     }
     
+    public static func updateReceivedMessages(from messages: [JSON], associatedWith publicKey: String) {
+        let oldReceivedMessages = SNSnodeKitConfiguration.shared.storage.getReceivedMessages(for: publicKey)
+        var newReceivedMessages = oldReceivedMessages
+        for message in messages {
+            guard let hash = message["hash"] as? String else { continue }
+            newReceivedMessages.insert(hash)
+        }
+        if oldReceivedMessages != newReceivedMessages {
+            SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
+                SNSnodeKitConfiguration.shared.storage.setReceivedMessages(to: newReceivedMessages, for: publicKey, using: transaction)
+            }
+        }
+    }
+    
     private static func removeDuplicates(from rawMessages: [JSON], associatedWith publicKey: String) -> [JSON] {
         let oldReceivedMessages = SNSnodeKitConfiguration.shared.storage.getReceivedMessages(for: publicKey)
         var newReceivedMessages = oldReceivedMessages
@@ -716,12 +730,6 @@ public final class SnodeAPI : NSObject {
             let isDuplicate = newReceivedMessages.contains(hash)
             newReceivedMessages.insert(hash)
             return !isDuplicate
-        }
-        // Avoid the sync write transaction if possible
-        if oldReceivedMessages != newReceivedMessages {
-            SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
-                SNSnodeKitConfiguration.shared.storage.setReceivedMessages(to: newReceivedMessages, for: publicKey, using: transaction)
-            }
         }
         return result
     }
