@@ -406,6 +406,10 @@ message DataMessage {
     CURRENT                  = 7;
   }
 
+  message GiftBadge {
+    optional bytes receiptCredentialPresentation = 1;
+  }
+
   optional string            body                    =  1;
   repeated AttachmentPointer attachments             =  2;
   optional GroupContext      group                   =  3;
@@ -426,6 +430,7 @@ message DataMessage {
   optional GroupCallUpdate   groupCallUpdate         = 19;
   optional Payment           payment                 = 20;
   optional StoryContext      storyContext            = 21;
+  optional GiftBadge         giftBadge               = 22;
 }
 
 message NullMessage {

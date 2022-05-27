@@ -1310,6 +1310,15 @@ struct SignalServiceProtos_DataMessage {
   /// Clears the value of `storyContext`. Subsequent reads from it will return its default value.
   mutating func clearStoryContext() {_uniqueStorage()._storyContext = nil}
 
+  var giftBadge: SignalServiceProtos_DataMessage.GiftBadge {
+    get {return _storage._giftBadge ?? SignalServiceProtos_DataMessage.GiftBadge()}
+    set {_uniqueStorage()._giftBadge = newValue}
+  }
+  /// Returns true if `giftBadge` has been explicitly set.
+  var hasGiftBadge: Bool {return _storage._giftBadge != nil}
+  /// Clears the value of `giftBadge`. Subsequent reads from it will return its default value.
+  mutating func clearGiftBadge() {_uniqueStorage()._giftBadge = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Flags: SwiftProtobuf.Enum {
@@ -2429,6 +2438,27 @@ struct SignalServiceProtos_DataMessage {
 
     fileprivate var _authorUuid: String? = nil
     fileprivate var _sentTimestamp: UInt64? = nil
+  }
+
+  struct GiftBadge {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var receiptCredentialPresentation: Data {
+      get {return _receiptCredentialPresentation ?? Data()}
+      set {_receiptCredentialPresentation = newValue}
+    }
+    /// Returns true if `receiptCredentialPresentation` has been explicitly set.
+    var hasReceiptCredentialPresentation: Bool {return self._receiptCredentialPresentation != nil}
+    /// Clears the value of `receiptCredentialPresentation`. Subsequent reads from it will return its default value.
+    mutating func clearReceiptCredentialPresentation() {self._receiptCredentialPresentation = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _receiptCredentialPresentation: Data? = nil
   }
 
   init() {}
@@ -4578,6 +4608,7 @@ extension SignalServiceProtos_DataMessage.Payment.Notification: @unchecked Senda
 extension SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Payment.Cancellation: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.StoryContext: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.GiftBadge: @unchecked Sendable {}
 extension SignalServiceProtos_NullMessage: @unchecked Sendable {}
 extension SignalServiceProtos_ReceiptMessage: @unchecked Sendable {}
 extension SignalServiceProtos_ReceiptMessage.TypeEnum: @unchecked Sendable {}
@@ -5688,6 +5719,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     19: .same(proto: "groupCallUpdate"),
     20: .same(proto: "payment"),
     21: .same(proto: "storyContext"),
+    22: .same(proto: "giftBadge"),
   ]
 
   fileprivate class _StorageClass {
@@ -5711,6 +5743,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _groupCallUpdate: SignalServiceProtos_DataMessage.GroupCallUpdate? = nil
     var _payment: SignalServiceProtos_DataMessage.Payment? = nil
     var _storyContext: SignalServiceProtos_DataMessage.StoryContext? = nil
+    var _giftBadge: SignalServiceProtos_DataMessage.GiftBadge? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -5737,6 +5770,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _groupCallUpdate = source._groupCallUpdate
       _payment = source._payment
       _storyContext = source._storyContext
+      _giftBadge = source._giftBadge
     }
   }
 
@@ -5775,6 +5809,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 19: try { try decoder.decodeSingularMessageField(value: &_storage._groupCallUpdate) }()
         case 20: try { try decoder.decodeSingularMessageField(value: &_storage._payment) }()
         case 21: try { try decoder.decodeSingularMessageField(value: &_storage._storyContext) }()
+        case 22: try { try decoder.decodeSingularMessageField(value: &_storage._giftBadge) }()
         default: break
         }
       }
@@ -5847,6 +5882,9 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._storyContext {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 21)
       } }()
+      try { if let v = _storage._giftBadge {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 22)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5876,6 +5914,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._groupCallUpdate != rhs_storage._groupCallUpdate {return false}
         if _storage._payment != rhs_storage._payment {return false}
         if _storage._storyContext != rhs_storage._storyContext {return false}
+        if _storage._giftBadge != rhs_storage._giftBadge {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -7133,6 +7172,42 @@ extension SignalServiceProtos_DataMessage.StoryContext: SwiftProtobuf.Message, S
   static func ==(lhs: SignalServiceProtos_DataMessage.StoryContext, rhs: SignalServiceProtos_DataMessage.StoryContext) -> Bool {
     if lhs._authorUuid != rhs._authorUuid {return false}
     if lhs._sentTimestamp != rhs._sentTimestamp {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_DataMessage.GiftBadge: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".GiftBadge"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "receiptCredentialPresentation"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._receiptCredentialPresentation) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._receiptCredentialPresentation {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_DataMessage.GiftBadge, rhs: SignalServiceProtos_DataMessage.GiftBadge) -> Bool {
+    if lhs._receiptCredentialPresentation != rhs._receiptCredentialPresentation {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -8613,6 +8613,164 @@ extension SSKProtoDataMessageStoryContextBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessageGiftBadge
+
+@objc
+public class SSKProtoDataMessageGiftBadge: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.GiftBadge
+
+    @objc
+    public var receiptCredentialPresentation: Data? {
+        guard hasReceiptCredentialPresentation else {
+            return nil
+        }
+        return proto.receiptCredentialPresentation
+    }
+    @objc
+    public var hasReceiptCredentialPresentation: Bool {
+        return proto.hasReceiptCredentialPresentation
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.GiftBadge) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.GiftBadge(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.GiftBadge) throws {
+        // MARK: - Begin Validation Logic for SSKProtoDataMessageGiftBadge -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessageGiftBadge -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoDataMessageGiftBadge {
+    @objc
+    public static func builder() -> SSKProtoDataMessageGiftBadgeBuilder {
+        return SSKProtoDataMessageGiftBadgeBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessageGiftBadgeBuilder {
+        let builder = SSKProtoDataMessageGiftBadgeBuilder()
+        if let _value = receiptCredentialPresentation {
+            builder.setReceiptCredentialPresentation(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoDataMessageGiftBadgeBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_DataMessage.GiftBadge()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setReceiptCredentialPresentation(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.receiptCredentialPresentation = valueParam
+    }
+
+    public func setReceiptCredentialPresentation(_ valueParam: Data) {
+        proto.receiptCredentialPresentation = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> SSKProtoDataMessageGiftBadge {
+        return try SSKProtoDataMessageGiftBadge(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoDataMessageGiftBadge(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoDataMessageGiftBadge {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessageGiftBadgeBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessageGiftBadge? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessageFlags
 
 @objc
@@ -8725,6 +8883,9 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
     public let storyContext: SSKProtoDataMessageStoryContext?
 
     @objc
+    public let giftBadge: SSKProtoDataMessageGiftBadge?
+
+    @objc
     public var body: String? {
         guard hasBody else {
             return nil
@@ -8814,7 +8975,8 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
                  bodyRanges: [SSKProtoDataMessageBodyRange],
                  groupCallUpdate: SSKProtoDataMessageGroupCallUpdate?,
                  payment: SSKProtoDataMessagePayment?,
-                 storyContext: SSKProtoDataMessageStoryContext?) {
+                 storyContext: SSKProtoDataMessageStoryContext?,
+                 giftBadge: SSKProtoDataMessageGiftBadge?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
@@ -8829,6 +8991,7 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
         self.groupCallUpdate = groupCallUpdate
         self.payment = payment
         self.storyContext = storyContext
+        self.giftBadge = giftBadge
     }
 
     @objc
@@ -8900,6 +9063,11 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
             storyContext = try SSKProtoDataMessageStoryContext(proto.storyContext)
         }
 
+        var giftBadge: SSKProtoDataMessageGiftBadge?
+        if proto.hasGiftBadge {
+            giftBadge = try SSKProtoDataMessageGiftBadge(proto.giftBadge)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
@@ -8917,7 +9085,8 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
                   bodyRanges: bodyRanges,
                   groupCallUpdate: groupCallUpdate,
                   payment: payment,
-                  storyContext: storyContext)
+                  storyContext: storyContext,
+                  giftBadge: giftBadge)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -9017,6 +9186,9 @@ extension SSKProtoDataMessage {
         }
         if let _value = storyContext {
             builder.setStoryContext(_value)
+        }
+        if let _value = giftBadge {
+            builder.setGiftBadge(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -9217,6 +9389,17 @@ public class SSKProtoDataMessageBuilder: NSObject {
 
     public func setStoryContext(_ valueParam: SSKProtoDataMessageStoryContext) {
         proto.storyContext = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setGiftBadge(_ valueParam: SSKProtoDataMessageGiftBadge?) {
+        guard let valueParam = valueParam else { return }
+        proto.giftBadge = valueParam.proto
+    }
+
+    public func setGiftBadge(_ valueParam: SSKProtoDataMessageGiftBadge) {
+        proto.giftBadge = valueParam.proto
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
