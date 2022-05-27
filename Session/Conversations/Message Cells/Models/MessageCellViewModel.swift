@@ -373,6 +373,53 @@ extension MessageCell {
     }
 }
 
+// MARK: - Convenience Initialization
+
+public extension MessageCell.ViewModel {
+    // Note: This init method is only used system-created cells or empty states
+    init(isTypingIndicator: Bool = false) {
+        self.threadVariant = .contact
+        self.threadIsTrusted = false
+        self.threadHasDisappearingMessagesEnabled = false
+        
+        // Interaction Info
+        
+        self.rowId = -1
+        self.id = -1
+        self.variant = .standardOutgoing
+        self.timestampMs = Int64.max
+        self.authorId = ""
+        self.authorNameInternal = nil
+        self.body = nil
+        self.expiresStartedAtMs = nil
+        self.expiresInSeconds = nil
+        
+        self.state = .sent
+        self.hasAtLeastOneReadReceipt = false
+        self.mostRecentFailureText = nil
+        self.isTypingIndicator = isTypingIndicator
+        self.isSenderOpenGroupModerator = false
+        self.profile = nil
+        self.quote = nil
+        self.quoteAttachment = nil
+        self.linkPreview = nil
+        self.linkPreviewAttachment = nil
+        
+        // Post-Query Processing Data
+        
+        self.attachments = nil
+        self.cellType = .typingIndicator
+        self.authorName = ""
+        self.senderName = nil
+        self.shouldShowProfile = false
+        self.dateForUI = nil
+        self.previousVariant = nil
+        self.positionInCluster = .middle
+        self.isOnlyMessageInCluster = true
+        self.isLast = true
+    }
+}
+
 // MARK: - ConversationVC
 
 extension MessageCell.ViewModel {

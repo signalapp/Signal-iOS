@@ -375,7 +375,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 
             case .threads:
                 let threadId: String = section.elements[indexPath.row].threadId
-                show(threadId, with: .none, highlightedInteractionId: nil, animated: true)
+                show(threadId, with: .none, focusedInteractionId: nil, animated: true)
         }
     }
     
@@ -505,10 +505,10 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     func show(
         _ threadId: String,
         with action: ConversationViewModel.Action,
-        highlightedInteractionId: Int64?,
+        focusedInteractionId: Int64?,
         animated: Bool
     ) {
-        guard let conversationVC: ConversationVC = ConversationVC(threadId: threadId) else {
+        guard let conversationVC: ConversationVC = ConversationVC(threadId: threadId, focusedInteractionId: focusedInteractionId) else {
             return
         }
         

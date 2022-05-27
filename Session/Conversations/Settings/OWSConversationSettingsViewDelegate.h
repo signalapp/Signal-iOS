@@ -11,8 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)conversationSettingsDidRequestConversationSearch:(OWSConversationSettingsViewController *)conversationSettingsViewController;
 
-- (void)popAllConversationSettingsViewsWithCompletion:(void (^_Nullable)(void))completionBlock;
-
 @end
 
 NS_ASSUME_NONNULL_END

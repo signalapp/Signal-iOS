@@ -18,7 +18,6 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         case videoCall
     }
     
-    public static let pageSize: Int = 50
     // MARK: - Section
     
     public enum Section: Differentiable, Equatable, Comparable, Hashable {
@@ -29,6 +28,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     
     // MARK: - Variables
     
+    public static let pageSize: Int = 50
     
     // MARK: - Initialization
     

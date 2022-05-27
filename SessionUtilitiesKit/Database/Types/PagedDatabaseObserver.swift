@@ -733,6 +733,8 @@ public struct DataCache<T: FetchableRecordWithRowId & Identifiable> {
 // MARK: - PagedData
 
 public enum PagedData {
+    public static let autoLoadNextPageDelay: DispatchTimeInterval = .milliseconds(400)
+    
     // MARK: - PageInfo
     
     public struct PageInfo {

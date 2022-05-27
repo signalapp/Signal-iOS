@@ -383,9 +383,16 @@ public class MediaView: UIView {
                 Logger.verbose("Skipping obsolete load.")
                 return
             }
-
-            DispatchQueue.main.async {
-                loadMediaBlock(loadCompletion)
+            
+            loadMediaBlock { media in
+                guard Thread.isMainThread else {
+                    DispatchQueue.main.async {
+                        loadCompletion(media)
+                    }
+                    return
+                }
+                
+                loadCompletion(media)
             }
         }
     }

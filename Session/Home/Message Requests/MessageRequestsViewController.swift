@@ -163,9 +163,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         // Start observing for data changes
         dataChangeObservable = GRDBStorage.shared.start(
             viewModel.observableViewData,
-            onError:  { error in
-                print("Update error \(error)!!!!")
-            },
+            onError: { _ in },
             onChange: { [weak self] viewData in
                 // The defaul scheduler emits changes on the main thread
                 self?.handleUpdates(viewData)

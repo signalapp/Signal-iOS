@@ -14,7 +14,7 @@ public struct ThreadTypingIndicator: Codable, FetchableRecord, PersistableRecord
     private static let thread = belongsTo(SessionThread.self, using: threadForeignKey)
     
     public typealias Columns = CodingKeys
-    public enum CodingKeys: String, CodingKey, ColumnExpression {
+    public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case threadId
         case timestampMs
     }

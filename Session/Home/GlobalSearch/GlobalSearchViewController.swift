@@ -127,8 +127,8 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
     }
 
     private func updateSearchResults(searchText rawSearchText: String) {
-
         let searchText = rawSearchText.stripped
+        
         guard searchText.count > 0 else {
             searchResultSet = defaultSearchResults
             lastSearchText = nil

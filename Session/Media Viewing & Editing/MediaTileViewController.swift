@@ -16,7 +16,6 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     static let interItemSpacing: CGFloat = 2
     static let footerBarHeight: CGFloat = 40
     static let loadMoreHeaderHeight: CGFloat = 100
-    static let autoLoadNextPageDelay: DispatchTimeInterval = .milliseconds(400)
     
     private let viewModel: MediaGalleryViewModel
     private var hasLoadedInitialData: Bool = false
@@ -217,7 +216,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
         
         self.isAutoLoadingNextPage = true
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + MediaTileViewController.autoLoadNextPageDelay) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + PagedData.autoLoadNextPageDelay) { [weak self] in
             self?.isAutoLoadingNextPage = false
             
             // Note: We sort the headers as we want to prioritise loading newer pages over older ones

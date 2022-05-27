@@ -198,7 +198,7 @@ extension ConversationCell {
 // MARK: - Convenience Initialization
 
 public extension ConversationCell.ViewModel {
-    // Note: This init method is only used for the message requests cell or empty states
+    // Note: This init method is only used system-created cells or empty states
     init(unreadCount: UInt = 0) {
         self.threadId = "INVALID_THREAD_ID"
         self.threadVariant = .contact

@@ -14,24 +14,28 @@ import SignalUtilitiesKit
 // • Remaining search glitchiness
 
 final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
+    private static let loadingHeaderHeight: CGFloat = 20
+    
     internal let viewModel: ConversationViewModel
     private var dataChangeObservable: DatabaseCancellable?
-    private var hasLoadedInitialData: Bool = false
+    private var hasLoadedInitialThreadData: Bool = false
+    private var hasLoadedInitialInteractionData: Bool = false
+    private var currentTargetOffset: CGPoint?
+    private var isAutoLoadingNextPage: Bool = false
+    private var isLoadingMore: Bool = false
     
-    /// This flag indicates whether the data has been reloaded after a disappearance (it defaults to true as it will never
-    /// have disappeared before)
-    private var hasReloadedDataAfterDisappearance: Bool = true
+    /// This flag indicates whether the thread data has been reloaded after a disappearance (it defaults to true as it will
+    /// never have disappeared before - this is only needed for value observers since they run asynchronously)
+    private var hasReloadedThreadDataAfterDisappearance: Bool = true
     
-    var focusedMessageIndexPath: IndexPath?
-    var initialUnreadCount: UInt = 0
-    var unreadViewItems: [ConversationViewItem] = []
+    var focusedInteractionId: Int64?
+    var shouldHighlightNextScrollToInteraction: Bool = false
     var scrollButtonBottomConstraint: NSLayoutConstraint?
     var scrollButtonMessageRequestsBottomConstraint: NSLayoutConstraint?
     var messageRequestsViewBotomConstraint: NSLayoutConstraint?
     
     // Search
     var isShowingSearchUI = false
-    var lastSearchedText: String?
     
     // Audio playback & recording
     var audioPlayer: OWSAudioPlayer?
@@ -49,7 +53,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     // Scrolling & paging
     var isUserScrolling = false
     var didFinishInitialLayout = false
-    var isLoadingMore = false
     var scrollDistanceToBottomBeforeUpdate: CGFloat?
     var baselineKeyboardHeight: CGFloat = 0
 
@@ -105,7 +108,9 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     lazy var recordVoiceMessageActivity = AudioActivity(audioDescription: "Voice message", behavior: .playAndRecord)
 
     lazy var searchController: ConversationSearchController = {
-        let result: ConversationSearchController = ConversationSearchController()
+        let result: ConversationSearchController = ConversationSearchController(
+            threadId: self.viewModel.threadData.threadId
+        )
         result.uiSearchController.obscuresBackgroundDuringPresentation = false
         result.delegate = self
         
@@ -140,6 +145,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             bottom: Values.mediumSpacing,
             trailing: 0
         )
+        result.registerHeaderFooterView(view: UITableViewHeaderFooterView.self)
         result.register(view: VisibleMessageCell.self)
         result.register(view: InfoMessageCell.self)
         result.register(view: TypingIndicatorCell.self)
@@ -305,6 +311,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
         
         self.viewModel = viewModel
+        GRDBStorage.shared.addObserver(viewModel.pagedDataObserver)
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -426,31 +433,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
 
         // Update the input state
         snInputView.setEnabledMessageTypes(viewModel.threadData.enabledMessageTypes, message: nil)
-
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        guard !didFinishInitialLayout else { return }
-        
-        // Scroll to the last unread message if possible; otherwise scroll to the bottom.
-        // When the unread message count is more than the number of view items of a page,
-        // the screen will scroll to the bottom instead of the first unread message
-        DispatchQueue.main.async {
-            if let focusedInteractionId: Int64 = self.viewModel.focusedInteractionId {
-                self.scrollToInteraction(with: focusedInteractionId, isAnimated: false, highlighted: true)
-            }
-            else if let firstUnreadInteractionId: Int64 = self.viewModel.threadData.threadFirstUnreadInteractionId {
-                self.scrollToInteraction(with: firstUnreadInteractionId, position: .top, isAnimated: false)
-                self.unreadCountView.alpha = self.scrollButton.alpha
-            }
-            else {
-                self.scrollToBottom(isAnimated: false)
-            }
-            
-            self.scrollButton.alpha = self.getScrollButtonOpacity()
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -462,15 +444,17 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        highlightFocusedMessageIfNeeded()
         didFinishInitialLayout = true
         viewModel.markAllAsRead()
         
-        if delayFirstResponder {
+        if delayFirstResponder || isShowingSearchUI {
             delayFirstResponder = false
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) { [weak self] in
-                self?.becomeFirstResponder()
+                (self?.isShowingSearchUI == false ?
+                    self :
+                    self?.searchController.uiSearchController.searchBar
+                )?.becomeFirstResponder()
             }
         }
     }
@@ -487,7 +471,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         super.viewDidDisappear(animated)
         
         mediaCache.removeAllObjects()
-        hasReloadedDataAfterDisappearance = false
+        hasReloadedThreadDataAfterDisappearance = false
     }
     
     @objc func applicationDidBecomeActive(_ notification: Notification) {
@@ -510,6 +494,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 
                 // The default scheduler emits changes on the main thread
                 self?.handleThreadUpdates(threadData)
+                self?.performInitialScrollIfNeeded()
             }
         )
         
@@ -527,9 +512,9 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     private func handleThreadUpdates(_ updatedThreadData: ConversationCell.ViewModel, initialLoad: Bool = false) {
         // Ensure the first load or a load when returning from a child screen runs without animations (if
         // we don't do this the cells will animate in from a frame of CGRect.zero or have a buggy transition)
-        guard hasLoadedInitialData && hasReloadedDataAfterDisappearance else {
-            hasLoadedInitialData = true
-            hasReloadedDataAfterDisappearance = true
+        guard hasLoadedInitialThreadData && hasReloadedThreadDataAfterDisappearance else {
+            hasLoadedInitialThreadData = true
+            hasReloadedThreadDataAfterDisappearance = true
             UIView.performWithoutAnimation { handleThreadUpdates(updatedThreadData, initialLoad: true) }
             return
         }
@@ -578,27 +563,159 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
     }
     
-    private func handleInteractionUpdates(_ updatedViewData: [MessageCell.ViewModel], initialLoad: Bool = false) {
+    private func handleInteractionUpdates(_ updatedData: [ConversationViewModel.SectionModel], initialLoad: Bool = false) {
         // Ensure the first load or a load when returning from a child screen runs without animations (if
         // we don't do this the cells will animate in from a frame of CGRect.zero or have a buggy transition)
-        guard hasLoadedInitialData && hasReloadedDataAfterDisappearance else {
-            hasLoadedInitialData = true
-            hasReloadedDataAfterDisappearance = true
-            UIView.performWithoutAnimation { handleInteractionUpdates(updatedViewData, initialLoad: true) }
+        guard self.hasLoadedInitialInteractionData else {
+            self.hasLoadedInitialInteractionData = true
+            self.viewModel.updateInteractionData(updatedData)
+            
+            UIView.performWithoutAnimation {
+                self.tableView.reloadData()
+                self.performInitialScrollIfNeeded()
+            }
             return
         }
         
-        // Reload the table content (animate changes after the first load)
-        let changeset = StagedChangeset(source: viewModel.interactionData, target: updatedViewData)
-        tableView.reload(
-            using: StagedChangeset(source: viewModel.interactionData, target: updatedViewData),
-            deleteSectionsAnimation: .bottom,
-            insertSectionsAnimation: .bottom,
+        // Determine if we are inserting content at the top of the collectionView
+        struct ItemChangeInfo {
+            let insertedAtTop: Bool
+            let firstIndexIsVisible: Bool
+            let visibleInteractionId: Int64
+            let visibleIndexPath: IndexPath
+            let oldVisibleIndexPath: IndexPath
+            
+            init(
+                insertedAtTop: Bool,
+                firstIndexIsVisible: Bool = false,
+                visibleInteractionId: Int64 = -1,
+                visibleIndexPath: IndexPath = IndexPath(row: 0, section: 0),
+                oldVisibleIndexPath: IndexPath = IndexPath(row: 0, section: 0)
+            ) {
+                self.insertedAtTop = insertedAtTop
+                self.firstIndexIsVisible = firstIndexIsVisible
+                self.visibleInteractionId = visibleInteractionId
+                self.visibleIndexPath = visibleIndexPath
+                self.oldVisibleIndexPath = oldVisibleIndexPath
+            }
+        }
+        
+        let itemChangeInfo: ItemChangeInfo = {
+            guard
+                let oldSectionIndex: Int = self.viewModel.interactionData.firstIndex(where: { $0.model == .messages }),
+                let newSectionIndex: Int = updatedData.firstIndex(where: { $0.model == .messages }),
+                let newFirstItemIndex: Int = updatedData[newSectionIndex].elements
+                    .firstIndex(where: { item -> Bool in
+                        item.id == self.viewModel.interactionData[oldSectionIndex].elements.first?.id
+                    }),
+                let firstVisibleIndexPath: IndexPath = self.tableView.indexPathsForVisibleRows?
+                    .filter({ $0.section == oldSectionIndex })
+                    .sorted()
+                    .first,
+                let newVisibleIndex: Int = updatedData[newSectionIndex].elements
+                    .firstIndex(where: { item in
+                        item.id == self.viewModel.interactionData[oldSectionIndex]
+                            .elements[firstVisibleIndexPath.row]
+                            .id
+                    }),
+                (
+                    newSectionIndex > oldSectionIndex ||
+                    newFirstItemIndex > 0
+                )
+            else { return ItemChangeInfo(insertedAtTop: false) }
+            
+            return ItemChangeInfo(
+                insertedAtTop: true,
+                firstIndexIsVisible: (firstVisibleIndexPath.row == 0),
+                visibleInteractionId: updatedData[newSectionIndex].elements[newVisibleIndex].id,
+                visibleIndexPath: IndexPath(row: newVisibleIndex, section: newSectionIndex),
+                oldVisibleIndexPath: firstVisibleIndexPath
+            )
+        }()
+        
+        /// If we are inserting at the top then we want to maintain the same visual position from before the table view was updated,
+        /// unfortunately the UITableView does some weird things when updating (where it won't have updated data until after it
+        /// performs the next layout); the below code checks a condition on layout and if it passes it calls a closure
+        ///
+        /// In the below case we set the tableView offset of the first row to the same offset it had before the UI loaded with new
+        /// data (including the difference in height in case the date header was removed when loading the new cell)
+        if itemChangeInfo.insertedAtTop {
+            let numItemsInUpdatedData: [Int] = updatedData.map { $0.elements.count }
+            let cellSorting: (MessageCell, MessageCell) -> Bool = { lhs, rhs -> Bool in
+                if !lhs.isHidden && rhs.isHidden { return true }
+                if lhs.isHidden && !rhs.isHidden { return false }
+                
+                return (lhs.frame.minY < rhs.frame.minY)
+            }
+            let oldRect: CGRect = (self.tableView.subviews
+                .compactMap { $0 as? MessageCell }
+                .sorted(by: cellSorting)
+                .first(where: { cell -> Bool in cell.viewModel?.id == itemChangeInfo.visibleInteractionId })?
+                .frame)
+                .defaulting(to: self.tableView.rectForRow(at: itemChangeInfo.oldVisibleIndexPath))
+            let oldContentSize: CGSize = self.tableView.contentSize
+            let oldContentOffset: CGPoint = self.tableView.contentOffset
+            
+            // Distance of 64 when paging works properly
+            self.tableView.afterNextLayoutSubviews(
+                when: { numSections, numRowsInSections -> Bool in
+                    numSections == updatedData.count &&
+                    numRowsInSections == numItemsInUpdatedData
+                },
+                then: { [weak self] in
+                    self?.tableView.scrollToRow(at: itemChangeInfo.visibleIndexPath, at: .top, animated: false)
+                    self?.tableView.layoutIfNeeded()
+                    
+                    /// **Note:** I wasn't able to get a prober equation to handle both "insert above first item" and "insert
+                    /// at top off screen", it seems that the 'contentOffset' value won't expose negative values (eg. when you
+                    /// over-scroll and trigger the bounce effect) and this results in requiring the conditional logic below
+                    if itemChangeInfo.firstIndexIsVisible {
+                        let newRect: CGRect = (self?.tableView.subviews
+                            .compactMap { $0 as? MessageCell }
+                            .sorted(by: cellSorting)
+                            .first(where: { $0.viewModel?.id == itemChangeInfo.visibleInteractionId })?
+                            .frame)
+                            .defaulting(to: oldRect)
+                        let heightDiff: CGFloat = (oldRect.height - newRect.height)
+                        
+                        self?.tableView.contentOffset.y = (newRect.minY - (oldRect.minY + heightDiff))
+                    }
+                    else {
+                        let newContentSize: CGSize = (self?.tableView.contentSize)
+                            .defaulting(to: oldContentSize)
+                        let contentSizeDiff: CGFloat = (newContentSize.height - oldContentSize.height)
+                        
+                        self?.tableView.contentOffset.y = (contentSizeDiff + oldContentOffset.y)
+                    }
+                    
+                    if let focusedInteractionId: Int64 = self?.focusedInteractionId {
+                        DispatchQueue.main.async {
+                            self?.searchController.resultsBar.stopLoading()
+                            self?.scrollToInteractionIfNeeded(
+                                with: focusedInteractionId,
+                                isAnimated: true,
+                                highlight: (self?.shouldHighlightNextScrollToInteraction == true)
+                            )
+                        }
+                    }
+                    
+                    // Complete page loading
+                    self?.isLoadingMore = false
+                    self?.autoLoadNextPageIfNeeded()
+                }
+            )
+        }
+        
+        // Reload the table content (animate changes if we aren't inserting at the top)
+        self.tableView.reload(
+            using: StagedChangeset(source: viewModel.interactionData, target: updatedData),
+            deleteSectionsAnimation: .none,
+            insertSectionsAnimation: .none,
             reloadSectionsAnimation: .none,
             deleteRowsAnimation: .bottom,
             insertRowsAnimation: .bottom,
             reloadRowsAnimation: .none,
-            interrupt: { $0.changeCount > ConversationViewModel.pageSize }
+            interrupt: { itemChangeInfo.insertedAtTop || $0.changeCount > ConversationViewModel.pageSize }
         ) { [weak self] updatedData in
             self?.viewModel.updateInteractionData(updatedData)
         }
@@ -617,6 +734,76 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         // Mark received messages as read
         viewModel.markAllAsRead()
         viewModel.sentMessageBeforeUpdate = false
+    }
+    
+    private func performInitialScrollIfNeeded() {
+        guard !didFinishInitialLayout && hasLoadedInitialThreadData && hasLoadedInitialInteractionData else { return }
+        
+        // Scroll to the last unread message if possible; otherwise scroll to the bottom.
+        // When the unread message count is more than the number of view items of a page,
+        // the screen will scroll to the bottom instead of the first unread message
+        DispatchQueue.main.async {
+            if let focusedInteractionId: Int64 = self.viewModel.focusedInteractionId {
+                self.scrollToInteractionIfNeeded(with: focusedInteractionId, isAnimated: false, highlight: true)
+            }
+            else if let firstUnreadInteractionId: Int64 = self.viewModel.threadData.threadFirstUnreadInteractionId {
+                self.scrollToInteractionIfNeeded(with: firstUnreadInteractionId, position: .top, isAnimated: false)
+                self.unreadCountView.alpha = self.scrollButton.alpha
+            }
+            else {
+                self.scrollToBottom(isAnimated: false)
+            }
+
+            self.scrollButton.alpha = self.getScrollButtonOpacity()
+            
+            // Now that the data has loaded we need to check if either of the "load more" sections are
+            // visible and trigger them if so
+            //
+            // Note: We do it this way as we want to trigger the load behaviour for the first section
+            // if it has one before trying to trigger the load behaviour for the last section
+            self.autoLoadNextPageIfNeeded()
+        }
+    }
+    
+    private func autoLoadNextPageIfNeeded() {
+        guard !self.isAutoLoadingNextPage && !self.isLoadingMore else { return }
+        
+        self.isAutoLoadingNextPage = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + PagedData.autoLoadNextPageDelay) { [weak self] in
+            self?.isAutoLoadingNextPage = false
+            
+            // Note: We sort the headers as we want to prioritise loading newer pages over older ones
+            let sections: [(ConversationViewModel.Section, CGRect)] = (self?.viewModel.interactionData
+                .enumerated()
+                .map { index, section in (section.model, (self?.tableView.rectForHeader(inSection: 0) ?? .zero)) })
+                .defaulting(to: [])
+            let shouldLoadOlder: Bool = sections
+                .contains { section, headerRect in
+                    section == .loadOlder &&
+                    headerRect != .zero &&
+                    (self?.tableView.bounds.contains(headerRect) == true)
+                }
+            let shouldLoadNewer: Bool = sections
+                .contains { section, headerRect in
+                    section == .loadNewer &&
+                    headerRect != .zero &&
+                    (self?.tableView.bounds.contains(headerRect) == true)
+                }
+            
+            guard shouldLoadOlder || shouldLoadNewer else { return }
+            
+            self?.isLoadingMore = true
+            
+            DispatchQueue.global(qos: .default).async { [weak self] in
+                // Attachments are loaded in descending order so 'loadOlder' actually corresponds with
+                // 'pageAfter' in this case
+                self?.viewModel.pagedDataObserver?.load(shouldLoadOlder ?
+                    .pageAfter :
+                    .pageBefore
+                )
+            }
+        }
     }
     
     func updateNavBarButtons(threadData: ConversationCell.ViewModel) {
@@ -675,15 +862,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
     }
     
-
-    // MARK: Notifications
-
-    private func highlightFocusedMessageIfNeeded() {
-        if let indexPath = focusedMessageIndexPath, let cell = tableView.cellForRow(at: indexPath) as? VisibleMessageCell {
-            cell.highlight()
-            focusedMessageIndexPath = nil
-        }
-    }
+    // MARK: - Notifications
 
     @objc func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         // Please refer to https://github.com/mapbox/mapbox-navigation-ios/issues/1600
@@ -777,113 +956,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             completion: nil
         )
     }
-    
-    func conversationViewModelWillUpdate() {
-        // Not currently in use
-    }
-    
-    func conversationViewModelDidUpdate(_ conversationUpdate: ConversationUpdate) {
-        guard self.isViewLoaded else { return }
-        let updateType = conversationUpdate.conversationUpdateType
-        guard updateType != .minor else { return } // No view items were affected
-        if updateType == .reload {
-            if threadStartedAsMessageRequest {
-                updateNavBarButtons()   // In case the message request was approved
-            }
-            
-            return messagesTableView.reloadData()
-        }
-        var shouldScrollToBottom = false
-        let batchUpdates: () -> Void = {
-            for update in conversationUpdate.updateItems! {
-                switch update.updateItemType {
-                case .delete:
-                    self.messagesTableView.deleteRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .none)
-                case .insert:
-                    // Perform inserts before updates
-                    self.messagesTableView.insertRows(at: [ IndexPath(row: Int(update.newIndex), section: 0) ], with: .none)
-                    if update.viewItem?.interaction is TSOutgoingMessage {
-                        shouldScrollToBottom = true
-                    } else {
-                        shouldScrollToBottom = self.isCloseToBottom
-                    }
-                case .update:
-                    self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .none)
-                default: preconditionFailure()
-                }
-                
-                // Update the nav items if the message request was approved
-                if (update.viewItem?.interaction as? TSInfoMessage)?.messageType == .messageRequestAccepted {
-                    self.updateNavBarButtons()
-                }
-            }
-        }
-        UIView.performWithoutAnimation {
-            messagesTableView.performBatchUpdates(batchUpdates) { _ in
-                if shouldScrollToBottom {
-                    self.scrollToBottom(isAnimated: false)
-                }
-                self.markAllAsRead()
-            }
-        }
-        
-        // Update the input state if this is a contact thread
-        if let contactThread: TSContactThread = thread as? TSContactThread {
-            let contact: Contact? = GRDBStorage.shared.read { db in try Contact.fetchOne(db, id: contactThread.contactSessionID()) }
-            
-            // If the contact doesn't exist yet then it's a message request without the first message sent
-            // so only allow text-based messages
-            self.snInputView.setEnabledMessageTypes(
-                (thread.isNoteToSelf() || contact?.didApproveMe == true || thread.isMessageRequest() ?
-                    .all : .textOnly
-                ),
-                message: nil
-            )
-        }
-    }
-    
-    func conversationViewModelWillLoadMoreItems() {
-        view.layoutIfNeeded()
-        // The scroll distance to bottom will be restored in conversationViewModelDidLoadMoreItems
-        scrollDistanceToBottomBeforeUpdate = messagesTableView.contentSize.height - messagesTableView.contentOffset.y
-    }
-    
-    func conversationViewModelDidLoadMoreItems() {
-        guard let scrollDistanceToBottomBeforeUpdate = scrollDistanceToBottomBeforeUpdate else { return }
-        view.layoutIfNeeded()
-        messagesTableView.contentOffset.y = messagesTableView.contentSize.height - scrollDistanceToBottomBeforeUpdate
-        isLoadingMore = false
-    }
-    
-    func conversationViewModelDidLoadPrevPage() {
-        // Not currently in use
-    }
-    
-    func conversationViewModelRangeDidChange() {
-        // Not currently in use
-    }
-    
-    func conversationViewModelDidReset() {
-        // Not currently in use
-    }
-
-    @objc private func handleMessageSentStatusChanged() {
-        DispatchQueue.main.async {
-            guard let indexPaths = self.tableView.indexPathsForVisibleRows else { return }
-            var indexPathsToReload: [IndexPath] = []
-            for indexPath in indexPaths {
-                guard let cell = self.tableView.cellForRow(at: indexPath) as? VisibleMessageCell else { continue }
-                let isLast = (indexPath.item == (self.tableView.numberOfRows(inSection: 0) - 1))
-                guard !isLast else { continue }
-                if !cell.messageStatusImageView.isHidden {
-                    indexPathsToReload.append(indexPath)
-                }
-            }
-            UIView.performWithoutAnimation {
-                self.tableView.reloadRows(at: indexPathsToReload, with: .none)
-            }
-        }
-    }
 
     // MARK: - General
 
@@ -899,31 +971,64 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
 
     // MARK: - UITableViewDataSource
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return viewModel.interactionData.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let section: ConversationViewModel.SectionModel = viewModel.interactionData[section]
+        
+        return section.elements.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cellViewModel: MessageCell.ViewModel = viewModel.interactionData[indexPath.row]
-        let cell: MessageCell = tableView.dequeue(type: MessageCell.cellType(for: cellViewModel), for: indexPath)
-        cell.update(
-            with: cellViewModel,
-            mediaCache: mediaCache,
-            playbackInfo: viewModel.playbackInfo(for: cellViewModel) { updatedInfo, error in
-                DispatchQueue.main.async {
-                    guard error == nil else {
-                        OWSAlerts.showErrorAlert(message: "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE".localized())
-                        return
-                    }
-                    
-                    cell.dynamicUpdate(with: cellViewModel, playbackInfo: updatedInfo)
-                }
-            },
-            lastSearchText: viewModel.lastSearchedText
-        )
-        cell.delegate = self
+        let section: ConversationViewModel.SectionModel = viewModel.interactionData[indexPath.section]
         
-        return cell
+        switch section.model {
+            case .messages:
+                let cellViewModel: MessageCell.ViewModel = section.elements[indexPath.row]
+                let cell: MessageCell = tableView.dequeue(type: MessageCell.cellType(for: cellViewModel), for: indexPath)
+                cell.update(
+                    with: cellViewModel,
+                    mediaCache: mediaCache,
+                    playbackInfo: viewModel.playbackInfo(for: cellViewModel) { updatedInfo, error in
+                        DispatchQueue.main.async {
+                            guard error == nil else {
+                                OWSAlerts.showErrorAlert(message: "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE".localized())
+                                return
+                            }
+                            // TODO: Looks like the 'play/pause' icon isn't swapping when it auto-plays to the next item)
+                            cell.dynamicUpdate(with: cellViewModel, playbackInfo: updatedInfo)
+                        }
+                    },
+                    lastSearchText: viewModel.lastSearchedText
+                )
+                cell.delegate = self
+                
+                return cell
+                
+            default: preconditionFailure("Other sections should have no content")
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let section: ConversationViewModel.SectionModel = viewModel.interactionData[section]
+        
+        switch section.model {
+            case .loadOlder, .loadNewer:
+                let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(style: .medium)
+                loadingIndicator.tintColor = Colors.text
+                loadingIndicator.alpha = 0.5
+                loadingIndicator.startAnimating()
+                
+                let view: UIView = UIView()
+                view.addSubview(loadingIndicator)
+                loadingIndicator.center(in: view)
+                
+                return view
+            
+            case .messages: return nil
+        }
     }
     
     // MARK: - UITableViewDelegate
@@ -934,6 +1039,37 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        let section: ConversationViewModel.SectionModel = viewModel.interactionData[section]
+        
+        switch section.model {
+            case .loadOlder, .loadNewer: return ConversationVC.loadingHeaderHeight
+            case .messages: return 0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard self.didFinishInitialLayout && !self.isLoadingMore else { return }
+        
+        let section: ConversationViewModel.SectionModel = self.viewModel.interactionData[section]
+        
+        switch section.model {
+            case .loadOlder, .loadNewer:
+                self.isLoadingMore = true
+                
+                DispatchQueue.global(qos: .default).async { [weak self] in
+                    // Messages are loaded in descending order so 'loadOlder' actually corresponds with
+                    // 'pageAfter' in this case
+                    self?.viewModel.pagedDataObserver?.load(section.model == .loadOlder ?
+                        .pageAfter :
+                        .pageBefore
+                    )
+                }
+                
+            case .messages: break
+        }
     }
 
     func scrollToBottom(isAnimated: Bool) {
@@ -968,6 +1104,18 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         scrollButton.alpha = getScrollButtonOpacity()
         unreadCountView.alpha = scrollButton.alpha
     }
+    
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        guard
+            let focusedInteractionId: Int64 = self.focusedInteractionId,
+            self.shouldHighlightNextScrollToInteraction
+        else {
+            self.focusedInteractionId = nil
+            return
+        }
+        
+        self.highlightCellIfNeeded(interactionId: focusedInteractionId)
+    }
 
     func updateUnreadCountView(unreadCount: UInt?) {
         let unreadCount: Int = Int(unreadCount ?? 0)
@@ -988,20 +1136,14 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     
     func conversationSettingsDidRequestConversationSearch(_ conversationSettingsViewController: OWSConversationSettingsViewController) {
         showSearchUI()
-        popAllConversationSettingsViews {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { // Without this delay the search bar doesn't show
-                self.searchController.uiSearchController.searchBar.becomeFirstResponder()
-            }
+        
+        guard presentedViewController != nil else {
+            self.navigationController?.popToViewController(self, animated: true, completion: nil)
+            return
         }
-    }
-
-    func popAllConversationSettingsViews(completion completionBlock: (() -> Void)? = nil) {
-        if presentedViewController != nil {
-            dismiss(animated: true) {
-                self.navigationController!.popToViewController(self, animated: true, completion: completionBlock)
-            }
-        } else {
-            navigationController!.popToViewController(self, animated: true, completion: completionBlock)
+        
+        dismiss(animated: true) {
+            self.navigationController?.popToViewController(self, animated: true, completion: nil)
         }
     }
 
@@ -1052,8 +1194,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         navigationItem.titleView = titleView
         updateNavBarButtons(threadData: self.viewModel.threadData)
         
-        let navBar = navigationController!.navigationBar as! OWSNavigationBar
-        navBar.stubbedNextResponder = nil
+        let navBar: OWSNavigationBar? = navigationController?.navigationBar as? OWSNavigationBar
+        navBar?.stubbedNextResponder = nil
         becomeFirstResponder()
         reloadInputViews()
     }
@@ -1062,43 +1204,89 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         hideSearchUI()
     }
 
-    func conversationSearchController(_ conversationSearchController: ConversationSearchController, didUpdateSearchResults resultSet: ConversationScreenSearchResultSet?) {
-        lastSearchedText = resultSet?.searchText
+    func conversationSearchController(_ conversationSearchController: ConversationSearchController, didUpdateSearchResults results: [Int64]?, searchText: String?) {
         tableView.reloadRows(at: tableView.indexPathsForVisibleRows ?? [], with: UITableView.RowAnimation.none)
     }
 
     func conversationSearchController(_ conversationSearchController: ConversationSearchController, didSelectInteractionId interactionId: Int64) {
-        scrollToInteraction(with: interactionId)
+        scrollToInteractionIfNeeded(with: interactionId, highlight: true)
     }
 
-    func scrollToInteraction(
+    func scrollToInteractionIfNeeded(
         with interactionId: Int64,
         position: UITableView.ScrollPosition = .middle,
         isAnimated: Bool = true,
-        highlighted: Bool = false
+        highlight: Bool = false
     ) {
-        // Ensure the interaction is loaded
-        self.viewModel.pagedDataObserver?.load(.untilInclusive(id: interactionId, padding: 0))
+        // Store the info incase we need to load more data (call will be re-triggered)
+        self.focusedInteractionId = interactionId
+        self.shouldHighlightNextScrollToInteraction = highlight
         
+        // Ensure the target interaction has been loaded
         guard
             let messageSectionIndex: Int = self.viewModel.interactionData
                 .firstIndex(where: { $0.model == .messages }),
             let targetMessageIndex = self.viewModel.interactionData[messageSectionIndex]
                 .elements
                 .firstIndex(where: { $0.id == interactionId })
-        else { return }
-
-        tableView.scrollToRow(
-            at: IndexPath(
-                row: targetMessageIndex,
-                section: messageSectionIndex
-            ),
-            at: position,
-            animated: isAnimated
+        else {
+            // If not the make sure we have finished the initial layout before trying to
+            // load the up until the specified interaction
+            guard self.didFinishInitialLayout else { return }
+            
+            self.searchController.resultsBar.startLoading()
+            
+            DispatchQueue.global(qos: .default).async { [weak self] in
+                self?.viewModel.pagedDataObserver?.load(.untilInclusive(
+                    id: interactionId,
+                    padding: 5
+                ))
+            }
+            return
+        }
+        
+        let targetIndexPath: IndexPath = IndexPath(
+            row: targetMessageIndex,
+            section: messageSectionIndex
         )
-
-        if highlighted {
-            focusedMessageId = interactionId
+        
+        // If we aren't animating or aren't highlighting then everything can be run immediately
+        guard isAnimated && highlight else {
+            self.tableView.scrollToRow(at: targetIndexPath, at: position, animated: isAnimated)
+            self.focusedInteractionId = nil
+            self.shouldHighlightNextScrollToInteraction = false
+            
+            if highlight {
+                self.highlightCellIfNeeded(interactionId: interactionId)
+            }
+            return
+        }
+        
+        // If we are animating and highlighting then determine if we want to scroll to the target
+        // cell (if we try to trigger the `scrollToRow` call and the animation doesn't occur then
+        // the highlight will not be triggered so if a cell is entirely on the screen then just
+        // don't bother scrolling)
+        let targetRect: CGRect = self.tableView.rectForRow(at: targetIndexPath)
+        
+        guard !self.tableView.bounds.contains(targetRect) else {
+            self.highlightCellIfNeeded(interactionId: interactionId)
+            return
+        }
+        
+        self.tableView.scrollToRow(at: targetIndexPath, at: position, animated: true)
+    }
+    
+    func highlightCellIfNeeded(interactionId: Int64) {
+        self.shouldHighlightNextScrollToInteraction = false
+        self.focusedInteractionId = nil
+        
+        // Trigger on the next run loop incase we are still finishing some other animation
+        DispatchQueue.main.async {
+            self.tableView
+                .visibleCells
+                .first(where: { ($0 as? VisibleMessageCell)?.viewModel?.id == interactionId })
+                .asType(VisibleMessageCell.self)?
+                .highlight(interactionId: interactionId)
         }
     }
 }

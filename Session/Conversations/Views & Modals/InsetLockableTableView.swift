@@ -20,11 +20,19 @@ public class InsetLockableTableView: UITableView {
     }
     public var oldOffset: CGPoint = .zero
     public var newOffset: CGPoint = .zero
-    private var afterNextLayoutCondition: ((Int, [Int]) -> Bool)?
-    private var afterNextLayoutCallback: (() -> ())?
+    private var callbackCondition: ((Int, [Int]) -> Bool)?
+    private var afterLayoutSubviewsCallback: (() -> ())?
     
     public override func layoutSubviews() {
-        newOffset = self.contentOffset
+        self.newOffset = self.contentOffset
+        
+        // Store the callback locally to prevent infinite loops
+        var callback: (() -> ())?
+        
+        if self.testCallbackCondition() {
+            callback = self.afterLayoutSubviewsCallback
+            self.afterLayoutSubviewsCallback = nil
+        }
         
         guard !lockContentOffset else {
             self.contentOffset = CGPoint(
@@ -33,33 +41,38 @@ public class InsetLockableTableView: UITableView {
             )
             
             super.layoutSubviews()
-            
-            self.performNextLayoutCallbackIfPossible()
+            callback?()
             return
         }
         
         super.layoutSubviews()
+        callback?()
         
-        self.performNextLayoutCallbackIfPossible()
         self.oldOffset = self.contentOffset
     }
     
-    // MARK: - Function
+    // MARK: - Functions
     
-    public func afterNextLayout(when condition: @escaping (Int, [Int]) -> Bool, then callback: @escaping () -> ()) {
-        self.afterNextLayoutCondition = condition
-        self.afterNextLayoutCallback = callback
+    public func afterNextLayoutSubviews(
+        when condition: @escaping (Int, [Int]) -> Bool,
+        then callback: @escaping () -> ()
+    ) {
+        self.callbackCondition = condition
+        self.afterLayoutSubviewsCallback = callback
     }
     
-    private func performNextLayoutCallbackIfPossible() {
+    private func testCallbackCondition() -> Bool {
+        guard self.callbackCondition != nil else { return false }
+        
         let numSections: Int = self.numberOfSections
         let numRowInSections: [Int] = (0..<numSections)
             .map { self.numberOfRows(inSection: $0) }
         
-        guard self.afterNextLayoutCondition?(numSections, numRowInSections) == true else { return }
+        // Store the layout info locally so if they pass we can clear the states before running to
+        // prevent layouts within the callbacks from triggering infinite loops
+        guard self.callbackCondition?(numSections, numRowInSections) == true else { return false }
         
-        self.afterNextLayoutCallback?()
-        self.afterNextLayoutCondition = nil
-        self.afterNextLayoutCallback = nil
+        self.callbackCondition = nil
+        return true
     }
 }

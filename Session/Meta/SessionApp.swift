@@ -45,7 +45,7 @@ public struct SessionApp {
         homeViewController.wrappedValue?.show(
             threadId,
             with: action,
-            highlightedInteractionId: focusInteractionId,
+            focusedInteractionId: focusInteractionId,
             animated: animated
         )
     }
