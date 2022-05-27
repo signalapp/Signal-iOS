@@ -2079,6 +2079,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"stickerError: %@", stickerError);
     }
 
+    OWSGiftBadge *_Nullable giftBadge = [OWSGiftBadge maybeBuildFromDataMessage:dataMessage];
+    (void)giftBadge;
+
     BOOL isViewOnceMessage = dataMessage.hasIsViewOnce && dataMessage.isViewOnce;
 
     TSPaymentModels *_Nullable paymentModels = [TSPaymentModels parsePaymentProtosInDataMessage:dataMessage

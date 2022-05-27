@@ -3,6 +3,13 @@
 //
 
 import Foundation
+import LibSignalClient
+
+public enum GiftBadgeError: Error {
+    case noGiftBadge
+    case featureNotEnabled
+    case malformed
+}
 
 @objc
 public enum OWSGiftBadgeRedemptionState: Int {
@@ -38,5 +45,37 @@ public class OWSGiftBadge: MTLModel {
     @objc
     public required init!(coder: NSCoder) {
         super.init(coder: coder)
+    }
+
+    @objc(maybeBuildFromDataMessage:)
+    public class func maybeBuild(from dataMessage: SSKProtoDataMessage) -> OWSGiftBadge? {
+        do {
+            return try self.build(from: dataMessage)
+        } catch GiftBadgeError.noGiftBadge {
+            // this isn't an error -- it will be codepath for all non-gift messages
+            return nil
+        } catch {
+            Logger.warn("Couldn't parse incoming gift badge: \(error)")
+            return nil
+        }
+    }
+
+    private class func build(from dataMessage: SSKProtoDataMessage) throws -> OWSGiftBadge {
+        guard let giftBadge = dataMessage.giftBadge else {
+            throw GiftBadgeError.noGiftBadge
+        }
+        guard FeatureFlags.giftBadgeReceiving else {
+            throw GiftBadgeError.featureNotEnabled
+        }
+        guard let rcPresentationData = giftBadge.receiptCredentialPresentation else {
+            throw GiftBadgeError.malformed
+        }
+        // If we can't parse the credential, we should drop the message.
+        let rcPresentation = try ReceiptCredentialPresentation(contents: [UInt8](rcPresentationData))
+
+        // TODO: (GB) Validate additional fields, if necessary.
+        _ = rcPresentation
+
+        return .init(redemptionCredential: rcPresentationData)
     }
 }
