@@ -467,15 +467,10 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
                 guard let self = self else { return UITableViewCell() }
                 let cell = self.newCell()
 
-                let donateButton = PKPaymentButton(
-                    paymentButtonType: .donate,
-                    paymentButtonStyle: Theme.isDarkThemeEnabled ? .white : .black
-                )
-                donateButton.cornerRadius = 12
-                donateButton.addTarget(self, action: #selector(self.requestApplePayDonation), for: .touchUpInside)
-                cell.contentView.addSubview(donateButton)
-                donateButton.autoPinEdgesToSuperviewMargins()
-                donateButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
+                let applePayButton = ApplePayButton(actionBlock: self.requestApplePayDonation)
+                cell.contentView.addSubview(applePayButton)
+                applePayButton.autoPinEdgesToSuperviewMargins()
+                applePayButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
 
                 return cell
             },

@@ -24,7 +24,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                     selectedSubscriptionLevel: SubscriptionLevel?,
                     currentSubscription: Subscription?)
 
-        public var isPaymentButtonEnabled: Bool {
+        public var isApplePayButtonEnabled: Bool {
             switch self {
             case .initializing, .loading, .loadFailed:
                 return false
@@ -87,7 +87,7 @@ class SubscriptionViewController: OWSTableViewController2 {
 
     private var avatarImage: UIImage?
 
-    private var paymentButton: PKPaymentButton?
+    private var applePayButton: ApplePayButton?
 
     private lazy var redemptionLoadingSpinner: AnimationView = {
         let loadingAnimationView = AnimationView(name: "indeterminate_spinner_blue")
@@ -282,7 +282,7 @@ class SubscriptionViewController: OWSTableViewController2 {
 
         // Update avatar view
         updateAvatarView()
-        paymentButton = nil
+        applePayButton = nil
 
         // Footer setup
         bottomFooterStackView.axis = .vertical
@@ -433,13 +433,13 @@ class SubscriptionViewController: OWSTableViewController2 {
                                     selectedSubscriptionLevel: selectedSubscriptionLevel,
                                     currentSubscription: currentSubscription)
 
-        let applePayContributeButton = newPaymentButton()
-        applePayContributeButton.isEnabled = state.isPaymentButtonEnabled
-        self.paymentButton = applePayContributeButton
+        let applePayButton = ApplePayButton(actionBlock: self.requestApplePayDonation)
+        self.applePayButton = applePayButton
+        applePayButton.isEnabled = state.isApplePayButtonEnabled
 
-        bottomFooterStackView.addArrangedSubview(applePayContributeButton)
-        applePayContributeButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
-        applePayContributeButton.autoPinWidthToSuperview(withMargin: 23)
+        bottomFooterStackView.addArrangedSubview(applePayButton)
+        applePayButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
+        applePayButton.autoPinWidthToSuperview(withMargin: 23)
 
         if currentSubscription != nil {
             bottomFooterStackView.addArrangedSubview(createCancelButton())
@@ -619,7 +619,7 @@ class SubscriptionViewController: OWSTableViewController2 {
         state.selectSubscriptionLevel(subscription)
 
         updateAvatarView()
-        self.paymentButton?.isEnabled = state.isPaymentButtonEnabled
+        self.applePayButton?.isEnabled = state.isApplePayButtonEnabled
 
         var subscriptionCell: SubscriptionLevelCell?
         var index: Int?
@@ -722,18 +722,6 @@ class SubscriptionViewController: OWSTableViewController2 {
 }
 
 extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
-
-    fileprivate func newPaymentButton() -> PKPaymentButton {
-
-        let applePayContributeButton = PKPaymentButton(
-            paymentButtonType: .donate,
-            paymentButtonStyle: Theme.isDarkThemeEnabled ? .white : .black
-        )
-
-        applePayContributeButton.cornerRadius = 12
-        applePayContributeButton.addTarget(self, action: #selector(self.requestApplePayDonation), for: .touchUpInside)
-        return applePayContributeButton
-    }
 
     @objc
     fileprivate func requestApplePayDonation() {
