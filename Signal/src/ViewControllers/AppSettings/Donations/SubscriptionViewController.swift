@@ -433,7 +433,9 @@ class SubscriptionViewController: OWSTableViewController2 {
                                     selectedSubscriptionLevel: selectedSubscriptionLevel,
                                     currentSubscription: currentSubscription)
 
-        let applePayButton = ApplePayButton(actionBlock: self.requestApplePayDonation)
+        let applePayButton = ApplePayButton { [weak self] in
+            self?.requestApplePayDonation()
+        }
         self.applePayButton = applePayButton
         applePayButton.isEnabled = state.isApplePayButtonEnabled
 

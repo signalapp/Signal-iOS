@@ -467,7 +467,9 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
                 guard let self = self else { return UITableViewCell() }
                 let cell = self.newCell()
 
-                let applePayButton = ApplePayButton(actionBlock: self.requestApplePayDonation)
+                let applePayButton = ApplePayButton { [weak self] in
+                    self?.requestApplePayDonation()
+                }
                 cell.contentView.addSubview(applePayButton)
                 applePayButton.autoPinEdgesToSuperviewMargins()
                 applePayButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
