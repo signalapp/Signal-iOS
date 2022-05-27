@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -35,10 +35,10 @@ extension DeviceTransferService {
                 CurrentAppContext().appUserDefaults().set(newValue, forKey: Self.pendingRestoreKey)
             }
         }
-        static let pendingWasTransferedClearKey = "DeviceTransferPendingWasTransferredClear"
+        static let pendingWasTransferredClearKey = "DeviceTransferPendingWasTransferredClear"
         static var pendingWasTransferredClear: Bool {
-            get { CurrentAppContext().appUserDefaults().bool(forKey: Self.pendingWasTransferedClearKey) }
-            set { CurrentAppContext().appUserDefaults().set(newValue, forKey: Self.pendingWasTransferedClearKey) }
+            get { CurrentAppContext().appUserDefaults().bool(forKey: Self.pendingWasTransferredClearKey) }
+            set { CurrentAppContext().appUserDefaults().set(newValue, forKey: Self.pendingWasTransferredClearKey) }
         }
 
         static let pendingPromotionFromHotSwapToPrimaryDatabaseKey = "DeviceTransferPendingPromotionFromHotSwapToPrimaryDatabase"
@@ -455,7 +455,7 @@ extension DeviceTransferService {
                 DeviceTransferService.hasBeenRestoredKey,
                 LegacyRestorationFlags.pendingRestoreKey,
                 LegacyRestorationFlags.pendingPromotionFromHotSwapToPrimaryDatabaseKey,
-                LegacyRestorationFlags.pendingWasTransferedClearKey
+                LegacyRestorationFlags.pendingWasTransferredClearKey
             ].contains(userDefault.key) else { continue }
 
             guard let unarchivedValue = NSKeyedUnarchiver.unarchiveObject(with: userDefault.encodedValue) else {
