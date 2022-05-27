@@ -3556,12 +3556,6 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Select Members";
 
-/* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to discard these changes?";
-
-/* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Unsaved Changes";
-
 /* No comment provided by engineer. */
 "new_message" = "New Message";
 
@@ -4026,6 +4020,12 @@
 
 /* Label for unknown payments. */
 "PAYMENTS_UNKNOWN_PAYMENT" = "Invalid Payment";
+
+/* The alert message if user tries to exit a task without saving changes. */
+"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Would you like to discard these changes?";
+
+/* The alert title if user tries to exit a task without saving changes. */
+"PENDING_CHANGES_ACTION_SHEET_TITLE" = "Unsaved Changes";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Add to Group";

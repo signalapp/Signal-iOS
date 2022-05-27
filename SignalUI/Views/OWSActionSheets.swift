@@ -114,15 +114,15 @@ public class OWSActionSheets: NSObject {
     @objc
     public class func showPendingChangesActionSheet(discardAction: @escaping () -> Void) {
         let actionSheet = ActionSheetController(
-            title: OWSLocalizedString("NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
-                                     comment: "The alert title if user tries to exit the new group view without saving changes."),
-            message: OWSLocalizedString("NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
-                                       comment: "The alert message if user tries to exit the new group view without saving changes.")
+            title: OWSLocalizedString("PENDING_CHANGES_ACTION_SHEET_TITLE",
+                                      comment: "The alert title if user tries to exit a task without saving changes."),
+            message: OWSLocalizedString("PENDING_CHANGES_ACTION_SHEET_MESSAGE",
+                                        comment: "The alert message if user tries to exit a task without saving changes.")
         )
 
         let discardAction = ActionSheetAction(
             title: OWSLocalizedString("ALERT_DISCARD_BUTTON",
-                                     comment: "The label for the 'discard' button in alerts and action sheets."),
+                                      comment: "The label for the 'discard' button in alerts and action sheets."),
             accessibilityIdentifier: "OWSActionSheets.discard",
             style: .destructive
         ) { _ in discardAction() }
