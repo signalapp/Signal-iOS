@@ -127,7 +127,7 @@ public class CDSHWebSocket: Dependencies, SSKWebSocketDelegate {
             let (handshakePromise, handshakeFuture) = Promise<Data>.pending()
             self.state = .handshaking(handshakeFuture)
 
-            let handshakeRequest = try Data(self.enclaveClient.initialRequest())
+            let handshakeRequest = Data(self.enclaveClient.initialRequest())
             self.socket.write(data: handshakeRequest)
             return handshakePromise
 
