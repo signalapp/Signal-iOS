@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -31,7 +31,7 @@ public class SMKUDAccessKey: NSObject {
                                                     throw SMKError.assertionError(description: "Could not derive UD access key from profile key.")
         }
         guard keyData.ciphertext.count == SMKUDAccessKey.kUDAccessKeyLength else {
-            throw SMKError.assertionError(description: "\(SMKUDAccessKey.logTag) key has invalid length")
+            throw SMKError.assertionError(description: "\(SMKUDAccessKey.logTag()) key has invalid length")
         }
 
         self.keyData = keyData.ciphertext
@@ -56,7 +56,7 @@ public class SMKUDAccessKey: NSObject {
     }
 
     // MARK: 
-    
+
     override public func isEqual(_ object: Any?) -> Bool {
         guard let other = object as? SMKUDAccessKey else { return false }
         return self.keyData == other.keyData
