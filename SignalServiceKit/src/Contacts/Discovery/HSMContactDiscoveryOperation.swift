@@ -84,7 +84,7 @@ class HSMContactDiscoveryOperation: ContactDiscovering, CDSHWebSocketDelegate, D
             case .unknown(let error):
                 throw ContactDiscoveryError(
                     kind: .generic,
-                    debugDescription: "Unknown error: \((error as NSError?).debugDescription ?? "nil")",
+                    debugDescription: "Unknown error: \((error as NSError?).debugDescription)",
                     retryable: false,
                     retryAfterDate: self.parseRetryAfterDate())
             }
