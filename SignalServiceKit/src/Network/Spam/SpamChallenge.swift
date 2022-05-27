@@ -20,7 +20,7 @@ class SpamChallenge: Codable {
     /// Does this challenge pause victim sends for an extended period of time
     var pausesMessages: Bool { true }
 
-    var completionHandler: ((Bool) -> Void)?
+    var completionHandlers: [(Bool) -> Void] = []
 
     enum State: Equatable {
         case actionable
@@ -46,13 +46,22 @@ class SpamChallenge: Codable {
             guard oldValue != state else { return }
             schedulingDelegate?.spamChallenge(self, stateDidChangeFrom: oldValue)
 
-            if state == .complete {
-                completionHandler?(true)
-                completionHandler = nil
-            } else if state == .failed {
-                completionHandler?(false)
-                completionHandler = nil
+            if state == .complete || state == .failed {
+                for handler in completionHandlers {
+                    handler(state == .complete)
+                }
+                completionHandlers = []
             }
+        }
+    }
+
+    var isLive: Bool {
+        guard expirationDate.isAfterNow else {
+            return false
+        }
+        switch state {
+        case .actionable, .inProgress, .deferred: return true
+        case .complete, .failed: return false
         }
     }
 
@@ -69,8 +78,10 @@ class SpamChallenge: Codable {
     }
 
     deinit {
-        // If we haven't fired our completion handler yet, fire a failure.
-        completionHandler?(false)
+        // If we haven't fired our completion handlers yet, fire a failure.
+        for handler in completionHandlers {
+            handler(false)
+        }
     }
 
     public func resolveChallenge() {

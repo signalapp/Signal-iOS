@@ -63,9 +63,7 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
 
         let countBefore = challenges?.count ?? 0
 
-        challenges = challenges?
-            .filter { ![.complete, .failed].contains($0.state) }
-            .filter { $0.expirationDate.isAfterNow }
+        challenges = challenges?.filter { $0.isLive }
 
         if let countAfter = challenges?.count, countBefore != countAfter {
             Logger.info("Removed \(countBefore - countAfter) complete, failed, or expired challenges")
@@ -223,17 +221,22 @@ extension SpamChallengeResolver {
             }
 
             if payload.options.contains(.pushChallenge), let completion = silentRecoveryCompletionHandler {
-                Logger.info("Requesting push for silent recovery")
-                let challenge = PushChallenge(expiry: Date(timeIntervalSinceNow: 10))
-                challenge.schedulingDelegate = self
-                challenge.completionHandler = { didSucceed in
-                    Logger.info("Silent recovery \(didSucceed ? "did" : "did not") succeed")
-                    if !didSucceed {
-                        self.handleServerChallengeBody(body, retryAfter: retryAfter)
-                    }
-                    completion(didSucceed)
+                if let latestPushChallenge = self.challenges?.first(where: { $0 is PushChallenge && $0.isLive }) {
+                    Logger.info("Push challenge already in progress; attempting silent recovery")
+                    latestPushChallenge.completionHandlers.append(completion)
+                } else {
+                    Logger.info("Requesting push for silent recovery")
+                    let challenge = PushChallenge(expiry: Date(timeIntervalSinceNow: 10))
+                    challenge.schedulingDelegate = self
+                    challenge.completionHandlers.append({ didSucceed in
+                        Logger.info("Silent recovery \(didSucceed ? "did" : "did not") succeed")
+                        if !didSucceed {
+                            self.handleServerChallengeBody(body, retryAfter: retryAfter)
+                        }
+                        completion(didSucceed)
+                    })
+                    self.challenges?.append(challenge)
                 }
-                self.challenges?.append(challenge)
                 self.recheckChallenges()
 
             } else if payload.options.contains(.recaptcha) {
