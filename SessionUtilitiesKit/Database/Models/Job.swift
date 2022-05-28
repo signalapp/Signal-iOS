@@ -16,18 +16,19 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         case failureCount
         case variant
         case behaviour
+        case shouldBlockFirstRunEachSession
         case nextRunTimestamp
         case threadId
         case interactionId
         case details
     }
     
-    public enum Variant: Int, Codable, DatabaseValueConvertible {
+    public enum Variant: Int, Codable, DatabaseValueConvertible, CaseIterable {
         /// This is a recurring job that handles the removal of disappearing messages and is triggered
         /// at the timestamp of the next disappearing message
         case disappearingMessages
         
-        /// This is a recurring job that ensures the app retrieves a service node pool on active
+        /// This is a recurring job that ensures the app retrieves a service node pool on become active
         ///
         /// **Note:** This is a blocking job so it will run before any other jobs and prevent them from
         /// running until it's complete
@@ -87,7 +88,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         case attachmentDownload
     }
     
-    public enum Behaviour: Int, Codable, DatabaseValueConvertible {
+    public enum Behaviour: Int, Codable, DatabaseValueConvertible, CaseIterable {
         /// This job will run once and then be removed from the jobs table
         case runOnce
         
@@ -102,22 +103,9 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         /// gets set
         case recurringOnLaunch
         
-        /// This job will run once each launch and may run again during the same session if `nextRunTimestamp`
-        /// gets set, it also must complete before any other jobs can run
-        case recurringOnLaunchBlocking
-        
-        /// This job will run once each launch and may run again during the same session if `nextRunTimestamp`
-        /// gets set, it also must complete before any other jobs can run
-        case recurringOnLaunchBlockingOncePerSession
-        
         /// This job will run once each whenever the app becomes active (launch and return from background) and
         /// may run again during the same session if `nextRunTimestamp` gets set
         case recurringOnActive
-        
-        /// This job will run once each whenever the app becomes active (launch and return from background) and
-        /// may run again during the same session if `nextRunTimestamp` gets set, it also must complete before
-        /// any other jobs can run
-        case recurringOnActiveBlocking
     }
     
     /// The `id` value is auto incremented by the database, if the `Job` hasn't been inserted into
@@ -130,8 +118,15 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     /// The type of job
     public let variant: Variant
     
-    /// The type of job
+    /// How the job should behave
     public let behaviour: Behaviour
+    
+    /// When the app starts or returns from the background this flag controls whether the job should prevent other
+    /// jobs from starting until after it completes
+    ///
+    /// **Note:** `OnLaunch` blocking jobs will be started on launch and all others will be triggered when becoming
+    /// active but the "blocking" behaviour will only occur if there are no other jobs already running
+    public let shouldBlockFirstRunEachSession: Bool
     
     /// Seconds since epoch to indicate the next datetime that this job should run
     public let nextRunTimestamp: TimeInterval
@@ -174,6 +169,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         failureCount: UInt,
         variant: Variant,
         behaviour: Behaviour,
+        shouldBlockFirstRunEachSession: Bool,
         nextRunTimestamp: TimeInterval,
         threadId: String?,
         interactionId: Int64?,
@@ -183,6 +179,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         self.failureCount = failureCount
         self.variant = variant
         self.behaviour = behaviour
+        self.shouldBlockFirstRunEachSession = shouldBlockFirstRunEachSession
         self.nextRunTimestamp = nextRunTimestamp
         self.threadId = threadId
         self.interactionId = interactionId
@@ -193,6 +190,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         failureCount: UInt = 0,
         variant: Variant,
         behaviour: Behaviour = .runOnce,
+        shouldBlockFirstRunEachSession: Bool = false,
         nextRunTimestamp: TimeInterval = 0,
         threadId: String? = nil,
         interactionId: Int64? = nil
@@ -200,6 +198,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         self.failureCount = failureCount
         self.variant = variant
         self.behaviour = behaviour
+        self.shouldBlockFirstRunEachSession = shouldBlockFirstRunEachSession
         self.nextRunTimestamp = nextRunTimestamp
         self.threadId = threadId
         self.interactionId = interactionId
@@ -210,6 +209,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         failureCount: UInt = 0,
         variant: Variant,
         behaviour: Behaviour = .runOnce,
+        shouldBlockFirstRunEachSession: Bool = false,
         nextRunTimestamp: TimeInterval = 0,
         threadId: String? = nil,
         interactionId: Int64? = nil,
@@ -225,6 +225,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         self.failureCount = failureCount
         self.variant = variant
         self.behaviour = behaviour
+        self.shouldBlockFirstRunEachSession = shouldBlockFirstRunEachSession
         self.nextRunTimestamp = nextRunTimestamp
         self.threadId = threadId
         self.interactionId = interactionId
@@ -236,23 +237,14 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     public mutating func didInsert(with rowID: Int64, for column: String?) {
         self.id = rowID
     }
-    
-    public func delete(_ db: Database) throws -> Bool {
-        // Delete any dependencies
-        try dependantJobs
-            .deleteAll(db)
-        
-        return try performDelete(db)
-    }
 }
 
 // MARK: - GRDB Interactions
 
 extension Job {
-    internal static func filterPendingJobs(excludeFutureJobs: Bool = true) -> QueryInterfaceRequest<Job> {
+    internal static func filterPendingJobs(variants: [Variant], excludeFutureJobs: Bool = true) -> QueryInterfaceRequest<Job> {
         let query: QueryInterfaceRequest<Job> = Job
             .filter(
-                // TODO: Should this include other behaviours? (what happens if one of the other types fails???? Just leave it until the next launch/active???) Set a 'failureCount' and use that to determine if it should run? (reset on success)
                 // Retrieve all 'runOnce' and 'recurring' jobs
                 [
                     Job.Behaviour.runOnce,
@@ -262,13 +254,12 @@ extension Job {
                     // 'nextRunTimestamp'
                     [
                         Job.Behaviour.recurringOnLaunch,
-                        Job.Behaviour.recurringOnLaunchBlocking,
-                        Job.Behaviour.recurringOnActive,
-                        Job.Behaviour.recurringOnActiveBlocking
+                        Job.Behaviour.recurringOnActive
                     ].contains(Job.Columns.behaviour) &&
                     Job.Columns.nextRunTimestamp > 0
                 )
             )
+            .filter(variants.contains(Job.Columns.variant))
             .order(Job.Columns.nextRunTimestamp)
             .order(Job.Columns.id)
         
@@ -284,30 +275,20 @@ extension Job {
 // MARK: - Convenience
 
 public extension Job {
-    var isBlocking: Bool {
-        switch self.behaviour {
-            case .recurringOnLaunchBlocking,
-                .recurringOnLaunchBlockingOncePerSession,
-                .recurringOnActiveBlocking:
-                return true
-                
-            default: return false
-        }
-    }
-    
     func with(
         failureCount: UInt = 0,
         nextRunTimestamp: TimeInterval
     ) -> Job {
         return Job(
-            id: id,
+            id: self.id,
             failureCount: failureCount,
-            variant: variant,
-            behaviour: behaviour,
+            variant: self.variant,
+            behaviour: self.behaviour,
+            shouldBlockFirstRunEachSession: self.shouldBlockFirstRunEachSession,
             nextRunTimestamp: nextRunTimestamp,
-            threadId: threadId,
-            interactionId: interactionId,
-            details: details
+            threadId: self.threadId,
+            interactionId: self.interactionId,
+            details: self.details
         )
     }
     
@@ -315,13 +296,14 @@ public extension Job {
         guard let detailsData: Data = try? JSONEncoder().encode(details) else { return nil }
         
         return Job(
-            id: id,
-            failureCount: failureCount,
-            variant: variant,
-            behaviour: behaviour,
-            nextRunTimestamp: nextRunTimestamp,
-            threadId: threadId,
-            interactionId: interactionId,
+            id: self.id,
+            failureCount: self.failureCount,
+            variant: self.variant,
+            behaviour: self.behaviour,
+            shouldBlockFirstRunEachSession: self.shouldBlockFirstRunEachSession,
+            nextRunTimestamp: self.nextRunTimestamp,
+            threadId: self.threadId,
+            interactionId: self.interactionId,
             details: detailsData
         )
     }

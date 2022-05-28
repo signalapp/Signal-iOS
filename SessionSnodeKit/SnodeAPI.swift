@@ -38,6 +38,9 @@ public final class SnodeAPI : NSObject {
     public typealias RawResponsePromise = Promise<RawResponse>
     
     // MARK: Snode Pool Interaction
+    
+    private static var hasInsufficientSnodes: Bool { snodePool.count < minSnodePoolCount }
+    
     private static func loadSnodePoolIfNeeded() {
         guard !hasLoadedSnodePool else { return }
         
@@ -250,9 +253,10 @@ public final class SnodeAPI : NSObject {
 
     // MARK: Public API
     
-    @objc(getSnodePool)
-    public static func objc_getSnodePool() -> AnyPromise {
-        AnyPromise.from(getSnodePool())
+    public static func hasCachedSnodesInclusingExpired() -> Bool {
+        loadSnodePoolIfNeeded()
+        
+        return !hasInsufficientSnodes
     }
     
     public static func getSnodePool() -> Promise<Set<Snode>> {
@@ -261,8 +265,7 @@ public final class SnodeAPI : NSObject {
         let hasSnodePoolExpired = given(GRDBStorage.shared[.lastSnodePoolRefreshDate]) {
             now.timeIntervalSince($0) > 2 * 60 * 60
         }.defaulting(to: true)
-        let snodePool = SnodeAPI.snodePool
-        let hasInsufficientSnodes = (snodePool.count < minSnodePoolCount)
+        let snodePool: Set<Snode> = SnodeAPI.snodePool
         
         if hasInsufficientSnodes || hasSnodePoolExpired {
             if let getSnodePoolPromise = getSnodePoolPromise { return getSnodePoolPromise }

@@ -16,9 +16,35 @@ public enum GetSnodePoolJob: JobExecutor {
         failure: @escaping (Job, Error?, Bool) -> (),
         deferred: @escaping (Job) -> ()
     ) {
+        // If the user doesn't exist then don't do anything (when the user registers we run this
+        // job directly)
+        guard Identity.userExists() else {
+            deferred(job)
+            return
+        }
+        
+        // If we already have cached Snodes then we still want to trigger the 'SnodeAPI.getSnodePool'
+        // but we want to succeed this job immediately (since it's marked as blocking), this allows us
+        // to block if we have no Snode pool and prevent other jobs from failing but avoids having to
+        // wait if we already have a potentially valid snode pool
+        guard !SnodeAPI.hasCachedSnodesInclusingExpired() else {
+            SnodeAPI.getSnodePool().retainUntilComplete()
+            success(job, false)
+            return
+        }
+        
         SnodeAPI.getSnodePool()
             .done { _ in success(job, false) }
             .catch { error in failure(job, error, false) }
             .retainUntilComplete()
+    }
+    
+    public static func run() {
+        GetSnodePoolJob.run(
+            Job(variant: .getSnodePool),
+            success: { _, _ in },
+            failure: { _, _, _ in },
+            deferred: { _ in }
+        )
     }
 }

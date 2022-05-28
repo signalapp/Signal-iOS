@@ -54,13 +54,15 @@ public class MediaGalleryViewModel {
         
         guard isPagedData else { return }
      
-        var hasSavedIntialUpdate: Bool = false
+        // Note: Since this references self we need to finish initializing before setting it, we
+        // also want to skip the initial query and trigger it async so that the push animation
+        // doesn't stutter (it should load basically immediately but without this there is a
+        // distinct stutter)
         let filterSQL: SQL = Item.filterSQL(threadId: threadId)
         self.pagedDataObserver = PagedDatabaseObserver(
             pagedTable: Attachment.self,
             pageSize: pageSize,
             idColumn: .id,
-            initialFocusedId: focusedAttachmentId,
             observedChanges: [
                 PagedData.ObservedChanges(
                     table: Attachment.self,
@@ -76,17 +78,21 @@ public class MediaGalleryViewModel {
                     return
                 }
                 
-                // If we haven't stored the data for the initial fetch then do so now (no need
-                // to call 'onGalleryChange' in this case as it will always be null)
-                guard hasSavedIntialUpdate else {
-                    self?.updateGalleryData(updatedGalleryData)
-                    hasSavedIntialUpdate = true
-                    return
-                }
-                
                 self?.onGalleryChange?(updatedGalleryData)
             }
         )
+        
+        // Run the initial query on a backgorund thread so we don't block the push transition
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            // If we don't have a `initialFocusedId` then default to `.pageBefore` (it'll query
+            // from a `0` offset)
+            guard let initialFocusedId: String = focusedAttachmentId else {
+                self?.pagedDataObserver?.load(.pageBefore)
+                return
+            }
+            
+            self?.pagedDataObserver?.load(.initialPageAround(id: initialFocusedId))
+        }
     }
     
     // MARK: - Data

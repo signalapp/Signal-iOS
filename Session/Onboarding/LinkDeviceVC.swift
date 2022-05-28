@@ -3,6 +3,7 @@
 import UIKit
 import PromiseKit
 import SessionUtilitiesKit
+import SessionSnodeKit
 
 final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
@@ -136,7 +137,12 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
         }
         let (ed25519KeyPair, x25519KeyPair) = try! Identity.generate(from: seed)
         Onboarding.Flow.link.preregister(with: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
+        
         Identity.didRegister()
+        
+        // Now that we have registered get the Snode pool
+        GetSnodePoolJob.run()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(handleInitialConfigurationMessageReceived), name: .initialConfigurationMessageReceived, object: nil)
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!) { [weak self] modal in
             self?.activityIndicatorModal = modal

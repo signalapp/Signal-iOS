@@ -3,6 +3,31 @@
 import SignalCoreKit
 
 public extension String {
+    var glyphCount: Int {
+        let richText = NSAttributedString(string: self)
+        let line = CTLineCreateWithAttributedString(richText)
+        
+        return CTLineGetGlyphCount(line)
+    }
+
+    var isSingleEmoji: Bool {
+        return (glyphCount == 1 && containsEmoji)
+    }
+
+    var containsEmoji: Bool {
+        return unicodeScalars.contains { $0.isEmoji }
+    }
+
+    var containsOnlyEmoji: Bool {
+        return (
+            !isEmpty &&
+            !unicodeScalars.contains(where: {
+                !$0.isEmoji &&
+                !$0.isZeroWidthJoiner
+            })
+        )
+    }
+    
     func localized() -> String {
         // If the localized string matches the key provided then the localisation failed
         let localizedString = NSLocalizedString(self, comment: "")
@@ -27,5 +52,16 @@ public extension String {
         }
         
         return ranges
+    }
+    
+    static func filterNotificationText(_ text: String?) -> String? {
+        guard let text = text?.filterStringForDisplay() else { return nil }
+
+        // iOS strips anything that looks like a printf formatting character from
+        // the notification body, so if we want to dispay a literal "%" in a notification
+        // it must be escaped.
+        // see https://developer.apple.com/documentation/uikit/uilocalnotification/1616646-alertbody
+        // for more details.
+        return text.replacingOccurrences(of: "%", with: "%%")
     }
 }

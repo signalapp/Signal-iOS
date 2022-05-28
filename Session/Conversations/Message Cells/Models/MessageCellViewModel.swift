@@ -105,6 +105,12 @@ extension MessageCell {
         /// This value will be used to populate the date header, if it's null then the header will be hidden
         let dateForUI: Date?
         
+        /// This value specifies whether the body contains only emoji characters
+        let containsOnlyEmoji: Bool?
+        
+        /// This value specifies the number of emoji characters the body contains
+        let glyphCount: Int?
+        
         /// This value indicates the variant of the previous ViewModel item, if it's null then there is no previous item
         let previousVariant: Interaction.Variant?
         
@@ -149,6 +155,8 @@ extension MessageCell {
                 senderName: self.senderName,
                 shouldShowProfile: self.shouldShowProfile,
                 dateForUI: self.dateForUI,
+                containsOnlyEmoji: self.containsOnlyEmoji,
+                glyphCount: self.glyphCount,
                 previousVariant: self.previousVariant,
                 positionInCluster: self.positionInCluster,
                 isOnlyMessageInCluster: self.isOnlyMessageInCluster,
@@ -339,6 +347,8 @@ extension MessageCell {
                     Date(timeIntervalSince1970: (TimeInterval(self.timestampMs) / 1000)) :
                     nil
                 ),
+                containsOnlyEmoji: self.body?.containsOnlyEmoji,
+                glyphCount: self.body?.glyphCount,
                 previousVariant: prevModel?.variant,
                 positionInCluster: positionInCluster,
                 isOnlyMessageInCluster: isOnlyMessageInCluster,
@@ -413,6 +423,8 @@ public extension MessageCell.ViewModel {
         self.senderName = nil
         self.shouldShowProfile = false
         self.dateForUI = nil
+        self.containsOnlyEmoji = nil
+        self.glyphCount = nil
         self.previousVariant = nil
         self.positionInCluster = .middle
         self.isOnlyMessageInCluster = true

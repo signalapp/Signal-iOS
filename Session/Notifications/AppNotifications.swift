@@ -184,7 +184,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // it must be escaped.
         // see https://developer.apple.com/documentation/uikit/uilocalnotification/1616646-alertbody
         // for more details.
-        let messageText: String? = DisplayableText.filterNotificationText(rawMessageText)
+        let messageText: String? = String.filterNotificationText(rawMessageText)
         
         // Don't fire the notification if the current user isn't mentioned
         // and isOnlyNotifyingForMentions is on.

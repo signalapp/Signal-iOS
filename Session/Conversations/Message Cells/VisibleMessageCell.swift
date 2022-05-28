@@ -47,15 +47,20 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     }()
 
     private lazy var moderatorIconImageView = UIImageView(image: #imageLiteral(resourceName: "Crown"))
+    
+    lazy var bubbleBackgroundView: UIView = {
+        let result = UIView()
+        result.layer.cornerRadius = VisibleMessageCell.largeCornerRadius
+        return result
+    }()
 
     lazy var bubbleView: UIView = {
         let result = UIView()
+        result.clipsToBounds = true
         result.layer.cornerRadius = VisibleMessageCell.largeCornerRadius
         result.set(.width, greaterThanOrEqualTo: VisibleMessageCell.largeCornerRadius * 2)
         return result
     }()
-
-    private let bubbleViewMaskLayer = CAShapeLayer()
 
     private lazy var headerView = UIView()
 
@@ -147,11 +152,15 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         moderatorIconImageView.pin(.trailing, to: .trailing, of: profilePictureView, withInset: 1)
         moderatorIconImageView.pin(.bottom, to: .bottom, of: profilePictureView, withInset: 4.5)
         
+        // Bubble background view (used for the 'highlighted' animation)
+        addSubview(bubbleBackgroundView)
+        
         // Bubble view
         addSubview(bubbleView)
         bubbleViewLeftConstraint1.isActive = true
         bubbleViewTopConstraint.isActive = true
         bubbleViewRightConstraint1.isActive = true
+        bubbleBackgroundView.pin(to: bubbleView)
         
         // Timer view
         addSubview(timerView)
@@ -242,10 +251,16 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
             cellViewModel.variant == .standardIncoming ||
             cellViewModel.variant == .standardIncomingDeleted
         ) ? Colors.receivedMessageBackground : Colors.sentMessageBackground)
+        bubbleBackgroundView.backgroundColor = bubbleView.backgroundColor
         updateBubbleViewCorners()
         
         // Content view
-        populateContentView(for: cellViewModel, mediaCache: mediaCache, playbackInfo: playbackInfo, lastSearchText: lastSearchText)
+        populateContentView(
+            for: cellViewModel,
+            mediaCache: mediaCache,
+            playbackInfo: playbackInfo,
+            lastSearchText: lastSearchText
+        )
         
         // Date break
         headerViewTopConstraint.constant = (shouldInsetHeader ? Values.mediumSpacing : 1)
@@ -399,7 +414,6 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                             )
                             snContentView.addSubview(linkPreviewView)
                             linkPreviewView.pin(to: snContentView)
-                            linkPreviewView.layer.mask = bubbleViewMaskLayer
                             self.bodyTextView = linkPreviewView.bodyTextView
                             
                         case .openGroupInvitation:
@@ -412,7 +426,6 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                             
                             snContentView.addSubview(openGroupInvitationView)
                             openGroupInvitationView.pin(to: snContentView)
-                            openGroupInvitationView.layer.mask = bubbleViewMaskLayer
                     }
                 }
                 else {
@@ -478,7 +491,6 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 albumView.set(.width, to: size.width)
                 albumView.set(.height, to: size.height)
                 albumView.loadMedia()
-                albumView.layer.mask = bubbleViewMaskLayer
                 stackView.addArrangedSubview(albumView)
                 
                 // Body text view
@@ -517,7 +529,6 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 
                 snContentView.addSubview(voiceMessageView)
                 voiceMessageView.pin(to: snContentView)
-                voiceMessageView.layer.mask = bubbleViewMaskLayer
                 self.voiceMessageView = voiceMessageView
                 
             case .genericAttachment:
@@ -561,16 +572,9 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
 
     private func updateBubbleViewCorners() {
         let cornersToRound: UIRectCorner = getCornersToRound()
-        let maskPath: UIBezierPath = UIBezierPath(
-            roundedRect: bubbleView.bounds,
-            byRoundingCorners: cornersToRound,
-            cornerRadii: CGSize(
-                width: VisibleMessageCell.largeCornerRadius,
-                height: VisibleMessageCell.largeCornerRadius
-            )
-        )
         
-        bubbleViewMaskLayer.path = maskPath.cgPath
+        bubbleBackgroundView.layer.cornerRadius = VisibleMessageCell.largeCornerRadius
+        bubbleBackgroundView.layer.maskedCorners = getCornerMask(from: cornersToRound)
         bubbleView.layer.cornerRadius = VisibleMessageCell.largeCornerRadius
         bubbleView.layer.maskedCorners = getCornerMask(from: cornersToRound)
     }
@@ -644,12 +648,23 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         // FIXME: This will have issues with themes
         let shawdowColour = (isLightMode ? UIColor.black.cgColor : Colors.accent.cgColor)
         let opacity: Float = (isLightMode ? 0.5 : 1)
-        bubbleView.setShadow(radius: 10, opacity: opacity, offset: .zero, color: shawdowColour)
         
-        DispatchQueue.main.async {
-            UIView.animate(withDuration: 1.6) {
-                self.bubbleView.setShadow(radius: 0, opacity: 0, offset: .zero, color: UIColor.clear.cgColor)
-            }
+        DispatchQueue.main.async { [weak self] in
+            let oldMasksToBounds: Bool = (self?.layer.masksToBounds ?? false)
+            self?.layer.masksToBounds = false
+            self?.bubbleBackgroundView.setShadow(radius: 10, opacity: opacity, offset: .zero, color: shawdowColour)
+            
+            UIView.animate(
+                withDuration: 1.6,
+                delay: 0,
+                options: .curveEaseInOut,
+                animations: {
+                    self?.bubbleBackgroundView.setShadow(radius: 0, opacity: 0, offset: .zero, color: UIColor.clear.cgColor)
+                },
+                completion: { _ in
+                    self?.layer.masksToBounds = oldMasksToBounds
+                }
+            )
         }
     }
 
@@ -784,11 +799,14 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
 
     private static func getFontSize(for cellViewModel: MessageCell.ViewModel) -> CGFloat {
         let baselineFontSize = Values.mediumFontSize
-        switch viewItem.displayableBodyText?.jumbomojiCount {
-        case 1: return baselineFontSize + 30
-        case 2: return baselineFontSize + 24
-        case 3, 4, 5: return baselineFontSize + 18
-        default: return baselineFontSize
+        
+        guard cellViewModel.containsOnlyEmoji == true else { return baselineFontSize }
+        
+        switch (cellViewModel.glyphCount ?? 0) {
+            case 1: return baselineFontSize + 30
+            case 2: return baselineFontSize + 24
+            case 3, 4, 5: return baselineFontSize + 18
+            default: return baselineFontSize
         }
     }
 
@@ -915,19 +933,34 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 ]
             )
         )
-        if let searchText = searchText, searchText.count >= ConversationSearchController.kMinimumSearchTextLength {
-            let normalizedSearchText = FullTextSearchFinder.normalize(text: searchText)
-            do {
-                let regex = try NSRegularExpression(pattern: NSRegularExpression.escapedPattern(for: normalizedSearchText), options: .caseInsensitive)
-                let matches = regex.matches(in: attributedText.string, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: (attributedText.string as NSString).length))
-                for match in matches {
-                    guard match.range.location + match.range.length < attributedText.length else { continue }
-                    attributedText.addAttribute(.backgroundColor, value: UIColor.white, range: match.range)
-                    attributedText.addAttribute(.foregroundColor, value: UIColor.black, range: match.range)
+        
+        // If there is a valid search term then highlight each part that matched
+        if let searchText = searchText, searchText.count >= ConversationSearchController.minimumSearchTextLength {
+            let normalizedBody: String = attributedText.string.lowercased()
+            
+            ConversationCell.ViewModel.searchTermParts(searchText)
+                .map { part -> String in
+                    guard part.hasPrefix("\"") && part.hasSuffix("\"") else { return part }
+                    
+                    return String(part[part.index(after: part.startIndex)..<part.endIndex])
                 }
-            } catch {
-                // Do nothing
-            }
+                .forEach { part in
+                    // Highlight all ranges of the text (Note: The search logic only finds results that start
+                    // with the term so we use the regex below to ensure we only highlight those cases)
+                    normalizedBody
+                        .ranges(
+                            of: (CurrentAppContext().isRTL ?
+                                 "\(part.lowercased())(^|[ ])" :
+                                 "(^|[ ])\(part.lowercased())"
+                            ),
+                            options: [.regularExpression]
+                        )
+                        .forEach { range in
+                            let legacyRange: NSRange = NSRange(range, in: normalizedBody)
+                            attributedText.addAttribute(.backgroundColor, value: UIColor.white, range: legacyRange)
+                            attributedText.addAttribute(.foregroundColor, value: UIColor.black, range: legacyRange)
+                        }
+                }
         }
         
         result.attributedText = attributedText

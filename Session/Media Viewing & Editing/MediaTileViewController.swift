@@ -19,6 +19,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     
     private let viewModel: MediaGalleryViewModel
     private var hasLoadedInitialData: Bool = false
+    private var didFinishInitialLayout: Bool = false
     private var isAutoLoadingNextPage: Bool = false
     private var currentTargetOffset: CGPoint?
     
@@ -155,7 +156,12 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
         super.viewWillAppear(animated)
         
         startObservingChanges()
-        triggerInitialDataLoadIfNeeded()
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.didFinishInitialLayout = true
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
@@ -184,24 +190,17 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     
     // MARK: - Updating
     
-    private func triggerInitialDataLoadIfNeeded() {
+    private func performInitialScrollIfNeeded() {
         // Ensure this hasn't run before and that we have data (The 'galleryData' will always
         // contain something as the 'empty' state is a section within 'galleryData')
-        guard !self.hasLoadedInitialData && !self.viewModel.galleryData.isEmpty else { return }
+        guard !self.didFinishInitialLayout && self.hasLoadedInitialData else { return }
         
         // If we have a focused item then we want to scroll to it
-        guard let focusedIndexPath: IndexPath = self.viewModel.focusedIndexPath else {
-            self.hasLoadedInitialData = true
-            return
-        }
+        guard let focusedIndexPath: IndexPath = self.viewModel.focusedIndexPath else { return }
         
         Logger.debug("scrolling to focused item at indexPath: \(focusedIndexPath)")
         self.view.layoutIfNeeded()
         self.collectionView.scrollToItem(at: focusedIndexPath, at: .centeredVertically, animated: false)
-        
-        // Note: If we have a 'focusedIndexPath' then we want to leave this until last so we can avoid
-        // triggering page loads due to default content offsets
-        self.hasLoadedInitialData = true
         
         // Now that the data has loaded we need to check if either of the "load more" sections are
         // visible and trigger them if so
@@ -261,9 +260,12 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
         guard hasLoadedInitialData else {
+            self.hasLoadedInitialData = true
+            self.viewModel.updateGalleryData(updatedGalleryData)
+            
             UIView.performWithoutAnimation {
-                handleUpdates(updatedGalleryData)
-                triggerInitialDataLoadIfNeeded()
+                self.collectionView.reloadData()
+                self.performInitialScrollIfNeeded()
             }
             return
         }
@@ -406,7 +408,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     
     public func collectionView(_ collectionView: UICollectionView, willDisplaySupplementaryView view: UICollectionReusableView, forElementKind elementKind: String, at indexPath: IndexPath) {
         // Want to ensure the initial content load has completed before we try to load any more data
-        guard self.hasLoadedInitialData else { return }
+        guard self.didFinishInitialLayout else { return }
         
         let section: MediaGalleryViewModel.SectionModel = self.viewModel.galleryData[indexPath.section]
         

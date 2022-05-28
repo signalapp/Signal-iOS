@@ -17,6 +17,8 @@ public final class Poller : NSObject {
     
     private static let pollInterval: TimeInterval = 1.5
     private static let retryInterval: TimeInterval = 0.25
+    private static let maxRetryInterval: TimeInterval = 15
+    
     /// After polling a given snode this many times we always switch to a new one.
     ///
     /// The reason for doing this is that sometimes a snode will be giving us successful responses while
@@ -53,7 +55,7 @@ public final class Poller : NSObject {
 
     // MARK: - Private API
     
-    private func setUpPolling() {
+    private func setUpPolling(delay: TimeInterval = Poller.retryInterval) {
         guard isPolling.wrappedValue else { return }
         
         Threading.pollerQueue.async {
@@ -66,10 +68,18 @@ public final class Poller : NSObject {
                     
                     return promise
                 }
-                .ensure(on: Threading.pollerQueue) { [weak self] in // Timers don't do well on background queues
+                .done(on: Threading.pollerQueue) { [weak self] in
                     guard self?.isPolling.wrappedValue == true else { return }
                     
                     Timer.scheduledTimerOnMainThread(withTimeInterval: Poller.retryInterval, repeats: false) { _ in
+                        self?.setUpPolling()
+                    }
+                }
+                .catch(on: Threading.pollerQueue) { [weak self] _ in
+                    guard self?.isPolling.wrappedValue == true else { return }
+                    
+                    let nextDelay: TimeInterval = min(Poller.maxRetryInterval, (delay * 1.2))
+                    Timer.scheduledTimerOnMainThread(withTimeInterval: nextDelay, repeats: false) { _ in
                         self?.setUpPolling()
                     }
                 }

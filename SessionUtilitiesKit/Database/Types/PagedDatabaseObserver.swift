@@ -33,7 +33,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
     
     // MARK: - Initialization
     
-    fileprivate init(
+    public init(
         pagedTable: ObservedTable.Type,
         pageSize: Int,
         idColumn: ObservedTable.Columns,
@@ -43,8 +43,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         orderSQL: SQL,
         dataQuery: @escaping (SQL?, SQL?) -> AdaptedFetchRequest<SQLRequest<T>>,
         associatedRecords: [ErasedAssociatedRecord] = [],
-        onChangeUnsorted: @escaping ([T], PagedData.PageInfo) -> (),
-        initialQueryTarget: PagedData.PageInfo.InternalTarget?
+        onChangeUnsorted: @escaping ([T], PagedData.PageInfo) -> ()
     ) {
         let associatedTables: Set<String> = associatedRecords.map { $0.databaseTableName }.asSet()
         assert(!associatedTables.contains(pagedTable.databaseTableName), "The paged table cannot also exist as an associatedRecord")
@@ -80,11 +79,6 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             .filter { $0.events.contains(.delete) }
             .map { $0.databaseTableName }
             .asSet()
-        
-        // Run the initial query if there is one
-        guard let initialQueryTarget: PagedData.PageInfo.InternalTarget = initialQueryTarget else { return }
-        
-        self.load(initialQueryTarget)
     }
     
     // MARK: - TransactionObserver
@@ -483,69 +477,18 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
 // MARK: - Convenience
 
 public extension PagedDatabaseObserver {
-    fileprivate static func initialQueryTarget<ID: SQLExpressible>(
-        for initialFocusedId: ID?,
-        skipInitialQuery: Bool
-    ) -> PagedData.PageInfo.InternalTarget? {
-        // Determine if we want to laod the first page immediately (this is generally needed
-        // to prevent transitions from looking buggy)
-        guard !skipInitialQuery else { return nil }
-
-        switch initialFocusedId {
-            case .some(let targetId): return .initialPageAround(id: targetId.sqlExpression)
-
-            // If we don't have a `initialFocusedId` then default to `.pageBefore` (it'll query
-            // from a `0` offset
-            case .none: return .pageBefore
-        }
-    }
-    
     convenience init(
         pagedTable: ObservedTable.Type,
         pageSize: Int,
         idColumn: ObservedTable.Columns,
-        initialFocusedId: ObservedTable.ID? = nil,
-        observedChanges: [PagedData.ObservedChanges],
-        joinSQL: SQL? = nil,
-        filterSQL: SQL,
-        orderSQL: SQL,
-        dataQuery: @escaping (SQL?, SQL?) -> AdaptedFetchRequest<SQLRequest<T>>,
-        associatedRecords: [ErasedAssociatedRecord] = [],
-        onChangeUnsorted: @escaping ([T], PagedData.PageInfo) -> (),
-        skipInitialQuery: Bool = false
-    ) where ObservedTable.ID: SQLExpressible {
-        self.init(
-            pagedTable: pagedTable,
-            pageSize: pageSize,
-            idColumn: idColumn,
-            observedChanges: observedChanges,
-            joinSQL: joinSQL,
-            filterSQL: filterSQL,
-            orderSQL: orderSQL,
-            dataQuery: dataQuery,
-            associatedRecords: associatedRecords,
-            onChangeUnsorted: onChangeUnsorted,
-            initialQueryTarget: PagedDatabaseObserver.initialQueryTarget(
-                for: initialFocusedId,
-                skipInitialQuery: skipInitialQuery
-            )
-        )
-    }
-    
-    convenience init(
-        pagedTable: ObservedTable.Type,
-        pageSize: Int,
-        idColumn: ObservedTable.Columns,
-        initialFocusedId: ObservedTable.ID? = nil,
         observedChanges: [PagedData.ObservedChanges],
         joinSQL: SQL? = nil,
         filterSQL: SQL,
         orderSQL: SQL,
         dataQuery: @escaping (SQL?, SQL?) -> SQLRequest<T>,
         associatedRecords: [ErasedAssociatedRecord] = [],
-        onChangeUnsorted: @escaping ([T], PagedData.PageInfo) -> (),
-        skipInitialQuery: Bool = false
-    ) where ObservedTable.ID: SQLExpressible {
+        onChangeUnsorted: @escaping ([T], PagedData.PageInfo) -> ()
+    ) {
         self.init(
             pagedTable: pagedTable,
             pageSize: pageSize,
@@ -558,77 +501,7 @@ public extension PagedDatabaseObserver {
                 dataQuery(additionalFilters, limit).adapted { _ in ScopeAdapter([:]) }
             },
             associatedRecords: associatedRecords,
-            onChangeUnsorted: onChangeUnsorted,
-            initialQueryTarget: PagedDatabaseObserver.initialQueryTarget(
-                for: initialFocusedId,
-                skipInitialQuery: skipInitialQuery
-            )
-        )
-    }
-    
-    convenience init<ID>(
-        pagedTable: ObservedTable.Type,
-        pageSize: Int,
-        idColumn: ObservedTable.Columns,
-        initialFocusedId: ID? = nil,
-        observedChanges: [PagedData.ObservedChanges],
-        joinSQL: SQL? = nil,
-        filterSQL: SQL,
-        orderSQL: SQL,
-        dataQuery: @escaping (SQL?, SQL?) -> AdaptedFetchRequest<SQLRequest<T>>,
-        associatedRecords: [ErasedAssociatedRecord] = [],
-        onChangeUnsorted: @escaping ([T], PagedData.PageInfo) -> (),
-        skipInitialQuery: Bool = false
-    ) where ObservedTable.ID == Optional<ID>, ID: SQLExpressible {
-        self.init(
-            pagedTable: pagedTable,
-            pageSize: pageSize,
-            idColumn: idColumn,
-            observedChanges: observedChanges,
-            joinSQL: joinSQL,
-            filterSQL: filterSQL,
-            orderSQL: orderSQL,
-            dataQuery: dataQuery,
-            associatedRecords: associatedRecords,
-            onChangeUnsorted: onChangeUnsorted,
-            initialQueryTarget: PagedDatabaseObserver.initialQueryTarget(
-                for: initialFocusedId,
-                skipInitialQuery: skipInitialQuery
-            )
-        )
-    }
-    
-    convenience init<ID>(
-        pagedTable: ObservedTable.Type,
-        pageSize: Int,
-        idColumn: ObservedTable.Columns,
-        initialFocusedId: ID? = nil,
-        observedChanges: [PagedData.ObservedChanges],
-        joinSQL: SQL? = nil,
-        filterSQL: SQL,
-        orderSQL: SQL,
-        dataQuery: @escaping (SQL?, SQL?) -> SQLRequest<T>,
-        associatedRecords: [ErasedAssociatedRecord] = [],
-        onChangeUnsorted: @escaping ([T], PagedData.PageInfo) -> (),
-        skipInitialQuery: Bool = false
-    ) where ObservedTable.ID == Optional<ID>, ID: SQLExpressible {
-        self.init(
-            pagedTable: pagedTable,
-            pageSize: pageSize,
-            idColumn: idColumn,
-            observedChanges: observedChanges,
-            joinSQL: joinSQL,
-            filterSQL: filterSQL,
-            orderSQL: orderSQL,
-            dataQuery: { additionalFilters, limit in
-                dataQuery(additionalFilters, limit).adapted { _ in ScopeAdapter([:]) }
-            },
-            associatedRecords: associatedRecords,
-            onChangeUnsorted: onChangeUnsorted,
-            initialQueryTarget: PagedDatabaseObserver.initialQueryTarget(
-                for: initialFocusedId,
-                skipInitialQuery: skipInitialQuery
-            )
+            onChangeUnsorted: onChangeUnsorted
         )
     }
     

@@ -15,20 +15,22 @@ enum _002_SetupStandardJobs: Migration {
         // Start by adding the jobs that don't have collections (in the jobs like these
         // will be added via migrations)
         try autoreleasepool {
-            // TODO: Add additional jobs from the AppDelegate
             _ = try Job(
                 variant: .disappearingMessages,
-                behaviour: .recurringOnLaunchBlockingOncePerSession
+                behaviour: .recurringOnLaunch,
+                shouldBlockFirstRunEachSession: true
             ).inserted(db)
             
             _ = try Job(
                 variant: .failedMessages,
-                behaviour: .recurringOnLaunchBlocking
+                behaviour: .recurringOnLaunch,
+                shouldBlockFirstRunEachSession: true
             ).inserted(db)
             
             _ = try Job(
                 variant: .failedAttachmentDownloads,
-                behaviour: .recurringOnLaunchBlocking
+                behaviour: .recurringOnLaunch,
+                shouldBlockFirstRunEachSession: true
             ).inserted(db)
             
             _ = try Job(

@@ -444,8 +444,17 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        // Perform the initial scroll and highlight if needed (if we started with a focused message
+        // this will have already been called to instantly snap to the destination but we don't
+        // trigger the highlight until after the screen has appeared to make it more obvious)
+        performInitialScrollIfNeeded()
+        
+        // Flag that the initial layout has been completed (the flag blocks and unblocks a number
+        // of different behaviours)
+        //
+        // Note: This MUST be set after the above 'performInitialScrollIfNeeded' is called as it
+        // won't run if this flag is set to true
         didFinishInitialLayout = true
-        viewModel.markAllAsRead()
         
         if delayFirstResponder || isShowingSearchUI {
             delayFirstResponder = false
@@ -457,6 +466,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 )?.becomeFirstResponder()
             }
         }
+        
+        viewModel.markAllAsRead()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -1252,7 +1263,16 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         
         // If we aren't animating or aren't highlighting then everything can be run immediately
         guard isAnimated && highlight else {
-            self.tableView.scrollToRow(at: targetIndexPath, at: position, animated: isAnimated)
+            self.tableView.scrollToRow(
+                at: targetIndexPath,
+                at: position,
+                animated: (self.didFinishInitialLayout && isAnimated)
+            )
+            
+            // Don't clear these values if we have't done the initial layout (we will call this
+            // method a second time to trigger the highlight after the screen appears)
+            guard self.didFinishInitialLayout else { return }
+            
             self.focusedInteractionId = nil
             self.shouldHighlightNextScrollToInteraction = false
             
@@ -1286,7 +1306,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 .visibleCells
                 .first(where: { ($0 as? VisibleMessageCell)?.viewModel?.id == interactionId })
                 .asType(VisibleMessageCell.self)?
-                .highlight(interactionId: interactionId)
+                .highlight()
         }
     }
 }

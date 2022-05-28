@@ -51,48 +51,65 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         self.focusedInteractionId = focusedInteractionId
         self.pagedDataObserver = nil
         
-        DispatchQueue.global(qos: .default).async { [weak self] in
-            self?.pagedDataObserver = PagedDatabaseObserver(
-                pagedTable: Interaction.self,
-                pageSize: ConversationViewModel.pageSize,
-                idColumn: .id,
-                initialFocusedId: focusedInteractionId,
-                observedChanges: [
-                    PagedData.ObservedChanges(
-                        table: Interaction.self,
-                        columns: Interaction.Columns
-                            .allCases
-                            .filter { $0 != .wasRead }
-                    )
-                ],
-                filterSQL: MessageCell.ViewModel.filterSQL(threadId: threadId),
-                orderSQL: MessageCell.ViewModel.orderSQL,
-                dataQuery: MessageCell.ViewModel.baseQuery(
-                    orderSQL: MessageCell.ViewModel.orderSQL,
-                    baseFilterSQL: MessageCell.ViewModel.filterSQL(threadId: threadId)
+        // Note: Since this references self we need to finish initializing before setting it, we
+        // also want to skip the initial query and trigger it async so that the push animation
+        // doesn't stutter (it should load basically immediately but without this there is a
+        // distinct stutter)
+        self.pagedDataObserver = PagedDatabaseObserver(
+            pagedTable: Interaction.self,
+            pageSize: ConversationViewModel.pageSize,
+            idColumn: .id,
+            observedChanges: [
+                PagedData.ObservedChanges(
+                    table: Interaction.self,
+                    columns: Interaction.Columns
+                        .allCases
+                        .filter { $0 != .wasRead }
                 ),
-                associatedRecords: [
-                    AssociatedRecord<MessageCell.AttachmentInteractionInfo, MessageCell.ViewModel>(
-                        trackedAgainst: Attachment.self,
-                        observedChanges: [
-                            PagedData.ObservedChanges(
-                                table: Attachment.self,
-                                columns: [.state]
-                            )
-                        ],
-                        dataQuery: MessageCell.AttachmentInteractionInfo.baseQuery,
-                        joinToPagedType: MessageCell.AttachmentInteractionInfo.joinToViewModelQuerySQL,
-                        associateData: MessageCell.AttachmentInteractionInfo.createAssociateDataClosure()
-                    )
-                ],
-                onChangeUnsorted: { [weak self] updatedData, updatedPageInfo in
-                    guard let updatedInteractionData: [SectionModel] = self?.process(data: updatedData, for: updatedPageInfo) else {
-                        return
-                    }
-                    
-                    self?.onInteractionChange?(updatedInteractionData)
+                PagedData.ObservedChanges(
+                    table: ThreadTypingIndicator.self,
+                    columns: ThreadTypingIndicator.Columns.allCases
+                )
+            ],
+            filterSQL: MessageCell.ViewModel.filterSQL(threadId: threadId),
+            orderSQL: MessageCell.ViewModel.orderSQL,
+            dataQuery: MessageCell.ViewModel.baseQuery(
+                orderSQL: MessageCell.ViewModel.orderSQL,
+                baseFilterSQL: MessageCell.ViewModel.filterSQL(threadId: threadId)
+            ),
+            associatedRecords: [
+                AssociatedRecord<MessageCell.AttachmentInteractionInfo, MessageCell.ViewModel>(
+                    trackedAgainst: Attachment.self,
+                    observedChanges: [
+                        PagedData.ObservedChanges(
+                            table: Attachment.self,
+                            columns: [.state]
+                        )
+                    ],
+                    dataQuery: MessageCell.AttachmentInteractionInfo.baseQuery,
+                    joinToPagedType: MessageCell.AttachmentInteractionInfo.joinToViewModelQuerySQL,
+                    associateData: MessageCell.AttachmentInteractionInfo.createAssociateDataClosure()
+                )
+            ],
+            onChangeUnsorted: { [weak self] updatedData, updatedPageInfo in
+                guard let updatedInteractionData: [SectionModel] = self?.process(data: updatedData, for: updatedPageInfo) else {
+                    return
                 }
-            )
+                
+                self?.onInteractionChange?(updatedInteractionData)
+            }
+        )
+        
+        // Run the initial query on a backgorund thread so we don't block the push transition
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            // If we don't have a `initialFocusedId` then default to `.pageBefore` (it'll query
+            // from a `0` offset)
+            guard let initialFocusedId: Int64 = focusedInteractionId else {
+                self?.pagedDataObserver?.load(.pageBefore)
+                return
+            }
+            
+            self?.pagedDataObserver?.load(.initialPageAround(id: initialFocusedId))
         }
     }
     

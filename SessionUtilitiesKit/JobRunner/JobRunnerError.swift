@@ -10,4 +10,5 @@ public enum JobRunnerError: Error {
     case requiredInteractionIdMissing
     
     case missingRequiredDetails
+    case missingDependencies
 }

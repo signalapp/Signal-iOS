@@ -430,7 +430,6 @@
 		C38EF2B3255B6D9C007E1867 /* UIViewController+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2B1255B6D9C007E1867 /* UIViewController+Utilities.swift */; };
 		C38EF2B4255B6D9C007E1867 /* UIView+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2B2255B6D9C007E1867 /* UIView+Utilities.swift */; };
 		C38EF30C255B6DBF007E1867 /* OWSScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2E2255B6DB9007E1867 /* OWSScreenLock.swift */; };
-		C38EF317255B6DBF007E1867 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2ED255B6DBB007E1867 /* DisplayableText.swift */; };
 		C38EF31A255B6DBF007E1867 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F0255B6DBB007E1867 /* OWSAnyTouchGestureRecognizer.m */; };
 		C38EF31C255B6DBF007E1867 /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F2255B6DBC007E1867 /* Searcher.swift */; };
 		C38EF31D255B6DBF007E1867 /* UIImage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F3255B6DBC007E1867 /* UIImage+OWS.swift */; };
@@ -498,7 +497,6 @@
 		C3A01E05261D24C400290BEB /* public-loki-foundation.der in Resources */ = {isa = PBXBuildFile; fileRef = C3A01E02261D24C400290BEB /* public-loki-foundation.der */; };
 		C3A01E06261D24C400290BEB /* storage-seed-1.der in Resources */ = {isa = PBXBuildFile; fileRef = C3A01E03261D24C400290BEB /* storage-seed-1.der */; };
 		C3A01E07261D24C400290BEB /* storage-seed-3.der in Resources */ = {isa = PBXBuildFile; fileRef = C3A01E04261D24C400290BEB /* storage-seed-3.der */; };
-		C3A3A08F256E1728004D228D /* FullTextSearchFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB7F255A581100E217F9 /* FullTextSearchFinder.swift */; };
 		C3A3A0FE256E1A3C004D228D /* TSDatabaseSecondaryIndexes.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB20255A580900E217F9 /* TSDatabaseSecondaryIndexes.m */; };
 		C3A3A12B256E1AD5004D228D /* TSDatabaseSecondaryIndexes.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB25255A580900E217F9 /* TSDatabaseSecondaryIndexes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C3A3A171256E1D25004D228D /* SSKReachabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A3A170256E1D25004D228D /* SSKReachabilityManager.swift */; };
@@ -681,6 +679,7 @@
 		FD848B8B283DC509000E298B /* PagedDatabaseObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD848B8A283DC509000E298B /* PagedDatabaseObserver.swift */; };
 		FD848B8D283E0B26000E298B /* MessageInputTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD848B8C283E0B26000E298B /* MessageInputTypes.swift */; };
 		FD848B8F283EF2A8000E298B /* UIScrollView+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD848B8E283EF2A8000E298B /* UIScrollView+Utilities.swift */; };
+		FD848B9328420164000E298B /* UnicodeScalar+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD848B9228420164000E298B /* UnicodeScalar+Utilities.swift */; };
 		FD859F0027C4691300510D0C /* MockDataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD859EFF27C4691300510D0C /* MockDataGenerator.swift */; };
 		FD88BAD927A7439C00BBC442 /* MessageRequestsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */; };
 		FD88BADB27A750F200BBC442 /* MessageRequestsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */; };
@@ -1287,7 +1286,6 @@
 		C33FDB75255A581000E217F9 /* AppReadiness.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppReadiness.m; sourceTree = "<group>"; };
 		C33FDB77255A581000E217F9 /* NSUserDefaults+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSUserDefaults+OWS.m"; sourceTree = "<group>"; };
 		C33FDB78255A581000E217F9 /* OWSOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOperation.m; sourceTree = "<group>"; };
-		C33FDB7F255A581100E217F9 /* FullTextSearchFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FullTextSearchFinder.swift; sourceTree = "<group>"; };
 		C33FDB80255A581100E217F9 /* Notification+Loki.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Notification+Loki.swift"; sourceTree = "<group>"; };
 		C33FDB81255A581100E217F9 /* UIImage+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+OWS.m"; sourceTree = "<group>"; };
 		C33FDB85255A581100E217F9 /* AppContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppContext.m; sourceTree = "<group>"; };
@@ -1379,7 +1377,6 @@
 		C38EF2B2255B6D9C007E1867 /* UIView+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIView+Utilities.swift"; path = "SignalUtilitiesKit/Utilities/UIView+Utilities.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF2E2255B6DB9007E1867 /* OWSScreenLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSScreenLock.swift; path = "SignalUtilitiesKit/Screen Lock/OWSScreenLock.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF2EC255B6DBA007E1867 /* ProximityMonitoringManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProximityMonitoringManager.swift; path = SessionMessagingKit/Utilities/ProximityMonitoringManager.swift; sourceTree = SOURCE_ROOT; };
-		C38EF2ED255B6DBB007E1867 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DisplayableText.swift; path = SignalUtilitiesKit/Utilities/DisplayableText.swift; sourceTree = SOURCE_ROOT; };
 		C38EF2EF255B6DBB007E1867 /* Weak.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Weak.swift; path = SessionUtilitiesKit/General/Weak.swift; sourceTree = SOURCE_ROOT; };
 		C38EF2F0255B6DBB007E1867 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = SignalUtilitiesKit/Utilities/OWSAnyTouchGestureRecognizer.m; sourceTree = SOURCE_ROOT; };
 		C38EF2F1255B6DBB007E1867 /* OWSPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSPreferences.h; path = SessionMessagingKit/Utilities/OWSPreferences.h; sourceTree = SOURCE_ROOT; };
@@ -1651,6 +1648,7 @@
 		FD848B8A283DC509000E298B /* PagedDatabaseObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagedDatabaseObserver.swift; sourceTree = "<group>"; };
 		FD848B8C283E0B26000E298B /* MessageInputTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageInputTypes.swift; sourceTree = "<group>"; };
 		FD848B8E283EF2A8000E298B /* UIScrollView+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Utilities.swift"; sourceTree = "<group>"; };
+		FD848B9228420164000E298B /* UnicodeScalar+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UnicodeScalar+Utilities.swift"; sourceTree = "<group>"; };
 		FD859EFF27C4691300510D0C /* MockDataGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDataGenerator.swift; sourceTree = "<group>"; };
 		FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsCell.swift; sourceTree = "<group>"; };
 		FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsMigration.swift; sourceTree = "<group>"; };
@@ -2227,6 +2225,7 @@
 				C33FDB51255A580D00E217F9 /* NSUserDefaults+OWS.h */,
 				C33FDB77255A581000E217F9 /* NSUserDefaults+OWS.m */,
 				C33FDB14255A580800E217F9 /* OWSMath.h */,
+				FD705A91278D051200F16121 /* ReusableView.swift */,
 				FD17D7AF27F4225C00122BE0 /* Set+Utilities.swift */,
 				C33FDB6B255A580F00E217F9 /* SNUserDefaults.swift */,
 				C33FDB3F255A580C00E217F9 /* String+SSK.swift */,
@@ -2234,11 +2233,11 @@
 				FD705A8D278CE29800F16121 /* String+Utilities.swift */,
 				C38EF237255B6D65007E1867 /* UIDevice+featureSupport.swift */,
 				C35D0DB425AE5F1200B6BF49 /* UIEdgeInsets.swift */,
-				FD705A91278D051200F16121 /* ReusableView.swift */,
 				FDED2E3B282E1B5D00B2CD2A /* UICollectionView+ReusableView.swift */,
 				FD705A93278D052B00F16121 /* UITableView+ReusableView.swift */,
 				C38EF23D255B6D66007E1867 /* UIView+OWS.h */,
 				C38EF23E255B6D66007E1867 /* UIView+OWS.m */,
+				FD848B9228420164000E298B /* UnicodeScalar+Utilities.swift */,
 				C38EF2EF255B6DBB007E1867 /* Weak.swift */,
 			);
 			path = General;
@@ -2879,7 +2878,6 @@
 				C37F53E8255BA9BB002AEA92 /* Environment.h */,
 				C37F5402255BA9ED002AEA92 /* Environment.m */,
 				C3BBE0C62554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift */,
-				C33FDB7F255A581100E217F9 /* FullTextSearchFinder.swift */,
 				C3A71D0A2558989C0043A11F /* MessageWrapper.swift */,
 				C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */,
 				C3A71D4825589FF20043A11F /* NSData+messagePadding.m */,
@@ -3041,7 +3039,6 @@
 				C38EF302255B6DBE007E1867 /* OWSAnyTouchGestureRecognizer.h */,
 				C38EF2F0255B6DBB007E1867 /* OWSAnyTouchGestureRecognizer.m */,
 				FDCDB8DD2810F73B00352A0C /* Differentiable+Utilities.swift */,
-				C38EF2ED255B6DBB007E1867 /* DisplayableText.swift */,
 				C38EF3DC255B6DF1007E1867 /* DirectionalPanGestureRecognizer.swift */,
 				C38EF240255B6D67007E1867 /* UIView+OWS.swift */,
 				C38EF236255B6D65007E1867 /* UIViewController+OWS.h */,
@@ -4305,7 +4302,6 @@
 			files = (
 				C38EF3FD255B6DF7007E1867 /* OWSTextView.m in Sources */,
 				C38EF3C6255B6DE7007E1867 /* ImageEditorModel.swift in Sources */,
-				C38EF317255B6DBF007E1867 /* DisplayableText.swift in Sources */,
 				C38EF3C3255B6DE7007E1867 /* ImageEditorTextItem.swift in Sources */,
 				FD28A4F227E990E800FF65E7 /* BlockingManagerRemovalMigration.swift in Sources */,
 				C33FDC7D255A582000E217F9 /* OWSDispatch.m in Sources */,
@@ -4497,6 +4493,7 @@
 				FD17D7C727F5207C00122BE0 /* DatabaseMigrator+Utilities.swift in Sources */,
 				C3D9E3C925676AF30040E4F3 /* TSYapDatabaseObject.m in Sources */,
 				C352A3A62557B60D00338F3E /* TSRequest.m in Sources */,
+				FD848B9328420164000E298B /* UnicodeScalar+Utilities.swift in Sources */,
 				FD09796B27F6C67500936362 /* Failable.swift in Sources */,
 				FD705A92278D051200F16121 /* ReusableView.swift in Sources */,
 				FD17D7BA27F51F2100122BE0 /* TargetMigrations.swift in Sources */,
@@ -4574,7 +4571,6 @@
 				C32C5A76256DBBCF003C73A2 /* SignalAttachment.swift in Sources */,
 				FDA8EB00280E8D58002B68E5 /* FailedAttachmentDownloadsJob.swift in Sources */,
 				FD09798927FD1C5A00936362 /* OpenGroup.swift in Sources */,
-				C3A3A08F256E1728004D228D /* FullTextSearchFinder.swift in Sources */,
 				FDF0B7472804F0CE004C14C5 /* DisappearingMessagesJob.swift in Sources */,
 				B8856D1A256F114D001CE70E /* ProximityMonitoringManager.swift in Sources */,
 				C3D9E52725677DF20040E4F3 /* ThumbnailService.swift in Sources */,

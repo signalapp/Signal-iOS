@@ -1,6 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import UIKit
 import PromiseKit
 import SessionMessagingKit
+import SessionSnodeKit
 
 final class PNModeVC : BaseVC, OptionViewDelegate {
 
@@ -96,10 +99,15 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
             return present(alert, animated: true, completion: nil)
         }
         UserDefaults.standard[.isUsingFullAPNs] = (selectedOptionView == apnsOptionView)
-        Identity.didRegister()
-        let homeVC = HomeVC()
-        navigationController!.setViewControllers([ homeVC ], animated: true)
         
+        Identity.didRegister()
+        
+        // Go to the home screen
+        let homeVC: HomeVC = HomeVC()
+        self.navigationController?.setViewControllers([ homeVC ], animated: true)
+        
+        // Now that we have registered get the Snode pool and sync push tokens
+        GetSnodePoolJob.run()
         SyncPushTokensJob.run(uploadOnlyIfStale: false)
     }
 }

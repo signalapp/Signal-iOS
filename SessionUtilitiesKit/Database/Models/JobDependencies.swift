@@ -15,8 +15,16 @@ public struct JobDependencies: Codable, FetchableRecord, PersistableRecord, Tabl
         case dependantId
     }
     
+    /// The is the id of the main job
     public let jobId: Int64
-    public let dependantId: Int64
+    
+    /// The is the id of the job that the main job is dependant on
+    ///
+    /// **Note:** If this is `null` it means the dependant job has been deleted (but the dependency wasn't
+    /// removed) this generally means a job has been directly deleted without it's dependencies getting cleaned
+    /// up - If we find a job that has a dependency with no `dependantId` then it's likely an invalid job and
+    /// should be removed
+    public let dependantId: Int64?
     
     // MARK: - Initialization
     

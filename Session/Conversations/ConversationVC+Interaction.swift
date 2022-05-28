@@ -712,7 +712,6 @@ extension ConversationVC:
                 let locationInAlbumView: CGPoint = cell.convert(locationInCell, to: albumView)
                 guard let mediaView = albumView.mediaView(forLocation: locationInAlbumView) else { return }
                 
-                
                 switch mediaView.attachment.state {
                     case .pendingDownload, .downloading, .uploading:
                         // TODO: Tapped a failed incoming attachment
@@ -779,14 +778,26 @@ extension ConversationVC:
                 navigationController?.present(shareVC, animated: true, completion: nil)
                 
             case .textOnlyMessage:
-                if let reply = viewItem.quotedReply {
-                    // Scroll to the source of the reply
-                    guard let indexPath = viewModel.ensureLoadWindowContainsQuotedReply(reply) else { return }
-                    messagesTableView.scrollToRow(at: indexPath, at: UITableView.ScrollPosition.middle, animated: true)
-                } else if let message = viewItem.interaction as? TSIncomingMessage, let name = message.openGroupInvitationName,
-                    let url = message.openGroupInvitationURL {
-                    joinOpenGroup(name: name, url: url)
+                if let quote: Quote = cellViewModel.quote {
+                    // Scroll to the original quoted message
+                    let maybeOriginalInteractionId: Int64? = GRDBStorage.shared.read { db in
+                        try quote.originalInteraction
+                            .select(.id)
+                            .asRequest(of: Int64.self)
+                            .fetchOne(db)
+                    }
+                    
+                    guard let interactionId: Int64 = maybeOriginalInteractionId else { return }
+                    
+                    self.scrollToInteractionIfNeeded(with: interactionId, highlight: true)
                 }
+                else if let linkPreview: LinkPreview = cellViewModel.linkPreview {
+                    switch linkPreview.variant {
+                        case .standard: openUrl(linkPreview.url)
+                        case .openGroupInvitation: joinOpenGroup(name: linkPreview.title, url: linkPreview.url)
+                    }
+                }
+                
             default: break
         }
     }

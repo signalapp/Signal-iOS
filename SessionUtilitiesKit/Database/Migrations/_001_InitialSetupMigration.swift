@@ -28,6 +28,10 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.behaviour, .integer)
                 .notNull()
                 .indexed()                                            // Quicker querying
+            t.column(.shouldBlockFirstRunEachSession, .boolean)
+                .notNull()
+                .indexed()                                            // Quicker querying
+                .defaults(to: false)
             t.column(.nextRunTimestamp, .double)
                 .notNull()
                 .indexed()                                            // Quicker querying
@@ -44,9 +48,8 @@ enum _001_InitialSetupMigration: Migration {
                 .notNull()
                 .references(Job.self, onDelete: .cascade)             // Delete if Job deleted
             t.column(.dependantId, .integer)
-                .notNull()
                 .indexed()                                            // Quicker querying
-                .references(Job.self, onDelete: .cascade)             // Delete if Job deleted
+                .references(Job.self, onDelete: .setNull)             // Delete if Job deleted
             
             t.primaryKey([.jobId, .dependantId])
         }

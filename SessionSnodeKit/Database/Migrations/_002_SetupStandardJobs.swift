@@ -13,7 +13,8 @@ enum _002_SetupStandardJobs: Migration {
         try autoreleasepool {
             _ = try Job(
                 variant: .getSnodePool,
-                behaviour: .recurringOnActiveBlocking
+                behaviour: .recurringOnActive,
+                shouldBlockFirstRunEachSession: true
             ).inserted(db)
         }
     }

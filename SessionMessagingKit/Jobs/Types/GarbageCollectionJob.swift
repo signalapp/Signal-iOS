@@ -8,9 +8,9 @@ import SessionUtilitiesKit
 import SessionSnodeKit
 
 public enum GarbageCollectionJob: JobExecutor {
-    public static var maxFailureCount: Int = 10
-    public static var requiresThreadId: Bool = true
-    public static let requiresInteractionId: Bool = false   // Some messages don't have interactions
+    public static var maxFailureCount: Int = -1
+    public static var requiresThreadId: Bool = false
+    public static let requiresInteractionId: Bool = false
     
     public static func run(
         _ job: Job,
