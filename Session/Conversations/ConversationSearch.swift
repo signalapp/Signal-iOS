@@ -125,7 +125,6 @@ extension ConversationSearchController : SearchResultsBarDelegate {
             return
         }
 
-//        BenchEventStart(title: "Conversation Search Nav", eventId: "Conversation Search Nav: \(searchResult.messageId)")
         self.delegate?.conversationSearchController(self, didSelectMessageId: searchResult.messageId)
     }
 }
