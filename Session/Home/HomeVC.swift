@@ -9,7 +9,7 @@ import SignalUtilitiesKit
 
 final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
     typealias Section = HomeViewModel.Section
-    typealias Item = ConversationCell.ViewModel
+    typealias Item = SessionThreadViewModel
     
     private let viewModel: HomeViewModel = HomeViewModel()
     private var dataChangeObservable: DatabaseCancellable?
@@ -55,7 +55,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         )
         result.showsVerticalScrollIndicator = false
         result.register(view: MessageRequestsCell.self)
-        result.register(view: ConversationCell.Full.self)
+        result.register(view: FullConversationCell.self)
         result.dataSource = self
         result.delegate = self
         
@@ -118,6 +118,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         }
         updateNavBarButtons()
         setUpNavBarSessionHeading()
+        
         // Recovery phrase reminder
         let hasViewedSeed = UserDefaults.standard[.hasViewedSeed]
         if !hasViewedSeed {
@@ -355,7 +356,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 return cell
                 
             case .threads:
-                let cell: ConversationCell.Full = tableView.dequeue(type: ConversationCell.Full.self, for: indexPath)
+                let cell: FullConversationCell = tableView.dequeue(type: FullConversationCell.self, for: indexPath)
                 cell.update(with: section.elements[indexPath.row])
                 return cell
         }
@@ -401,7 +402,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 return [hide]
                 
             case .threads:
-                let cellViewModel: ConversationCell.ViewModel = section.elements[indexPath.row]
+                let cellViewModel: SessionThreadViewModel = section.elements[indexPath.row]
                 let delete: UITableViewRowAction = UITableViewRowAction(
                     style: .destructive,
                     title: "TXT_DELETE_TITLE".localized()

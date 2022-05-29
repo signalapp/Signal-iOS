@@ -19,7 +19,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         result.translatesAutoresizingMaskIntoConstraints = false
         result.backgroundColor = .clear
         result.separatorStyle = .none
-        result.register(view: ConversationCell.Full.self)
+        result.register(view: FullConversationCell.self)
         result.dataSource = self
         result.delegate = self
 
@@ -171,7 +171,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         )
     }
     
-    private func handleUpdates(_ updatedViewData: [ConversationCell.ViewModel]) {
+    private func handleUpdates(_ updatedViewData: [SessionThreadViewModel]) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
         guard hasLoadedInitialData else {
@@ -214,7 +214,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: ConversationCell.Full = tableView.dequeue(type: ConversationCell.Full.self, for: indexPath)
+        let cell: FullConversationCell = tableView.dequeue(type: FullConversationCell.self, for: indexPath)
         cell.update(with: viewModel.viewData[indexPath.row])
         return cell
     }

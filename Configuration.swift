@@ -31,7 +31,7 @@ public enum SNMessagingKit { // Just to make the external API nice
     public static func configure(storage: SessionMessagingKitStorageProtocol) {
         // Configure the job executors
         JobRunner.add(executor: DisappearingMessagesJob.self, for: .disappearingMessages)
-        JobRunner.add(executor: FailedMessagesJob.self, for: .failedMessages)
+        JobRunner.add(executor: FailedMessageSendsJob.self, for: .failedMessageSends)
         JobRunner.add(executor: FailedAttachmentDownloadsJob.self, for: .failedAttachmentDownloads)
         JobRunner.add(executor: UpdateProfilePictureJob.self, for: .updateProfilePicture)
         JobRunner.add(executor: RetrieveDefaultOpenGroupRoomsJob.self, for: .retrieveDefaultOpenGroupRooms)

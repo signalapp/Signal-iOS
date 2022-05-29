@@ -39,7 +39,7 @@ final class TypingIndicatorCell: MessageCell {
 
     // MARK: - Updating
     
-    override func update(with cellViewModel: MessageCell.ViewModel, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
+    override func update(with cellViewModel: MessageViewModel, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
         guard cellViewModel.cellType == .typingIndicator else { return }
         
         self.viewModel = cellViewModel
@@ -51,7 +51,7 @@ final class TypingIndicatorCell: MessageCell {
         typingIndicatorView.startAnimation()
     }
     
-    override func dynamicUpdate(with cellViewModel: MessageCell.ViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
+    override func dynamicUpdate(with cellViewModel: MessageViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
     }
 
     override func layoutSubviews() {

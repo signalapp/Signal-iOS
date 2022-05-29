@@ -5,7 +5,7 @@ import GRDB
 import SignalCoreKit
 import SessionUtilitiesKit
 
-public enum FailedMessagesJob: JobExecutor {
+public enum FailedMessageSendsJob: JobExecutor {
     public static let maxFailureCount: Int = -1
     public static let requiresThreadId: Bool = false
     public static let requiresInteractionId: Bool = false
@@ -21,8 +21,11 @@ public enum FailedMessagesJob: JobExecutor {
             let changeCount: Int = try RecipientState
                 .filter(RecipientState.Columns.state == RecipientState.State.sending)
                 .updateAll(db, RecipientState.Columns.state.set(to: RecipientState.State.failed))
-        
-            Logger.debug("Marked \(changeCount) messages as failed")
+            let attachmentChangeCount: Int = try Attachment
+                .filter(Attachment.Columns.state == Attachment.State.uploading)
+                .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.failedUpload))
+            
+            Logger.debug("Marked \(changeCount) message\(changeCount == 1 ? "" : "s") as failed (\(attachmentChangeCount) upload\(attachmentChangeCount == 1 ? "" : "s") cancelled)")
         }
         
         success(job, false)

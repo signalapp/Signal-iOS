@@ -121,6 +121,10 @@ public class MediaView: UIView {
 
     private func addUploadProgressIfNecessary(_ subview: UIView) -> Bool {
         guard isOutgoing else { return false }
+        guard attachment.state != .failedUpload else {
+            configure(forError: .failed)
+            return false
+        }
         guard attachment.state != .uploaded else { return false }
         
         let loader = MediaLoaderView()
@@ -326,8 +330,18 @@ public class MediaView: UIView {
         
         backgroundColor = (isDarkMode ? .ows_gray90 : .ows_gray05)
         
+        // For failed ougoing messages add an overlay to make the icon more visible
+        if isOutgoing {
+            let attachmentOverlayView: UIView = UIView()
+            attachmentOverlayView.backgroundColor = Colors.navigationBarBackground
+                .withAlphaComponent(Values.lowOpacity)
+            addSubview(attachmentOverlayView)
+            attachmentOverlayView.pin(to: self)
+        }
+        
         let iconView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
-        iconView.tintColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+        iconView.tintColor = Colors.text
+            .withAlphaComponent(Values.mediumOpacity)
         addSubview(iconView)
         iconView.autoCenterInSuperview()
     }

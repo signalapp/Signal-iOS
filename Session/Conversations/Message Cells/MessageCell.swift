@@ -11,7 +11,7 @@ public enum SwipeState {
 
 public class MessageCell: UITableViewCell {
     weak var delegate: MessageCellDelegate?
-    var viewModel: MessageCell.ViewModel?
+    var viewModel: MessageViewModel?
 
     // MARK: - Lifecycle
     
@@ -43,19 +43,19 @@ public class MessageCell: UITableViewCell {
 
     // MARK: - Updating
     
-    func update(with cellViewModel: MessageCell.ViewModel, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
+    func update(with cellViewModel: MessageViewModel, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
         preconditionFailure("Must be overridden by subclasses.")
     }
     
     /// This is a cut-down version of the 'update' function which doesn't re-create the UI (it should be used for dynamically-updating content
     /// like playing inline audio/video)
-    func dynamicUpdate(with cellViewModel: MessageCell.ViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
+    func dynamicUpdate(with cellViewModel: MessageViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
         preconditionFailure("Must be overridden by subclasses.")
     }
 
     // MARK: - Convenience
     
-    static func cellType(for viewModel: MessageCell.ViewModel) -> MessageCell.Type {
+    static func cellType(for viewModel: MessageViewModel) -> MessageCell.Type {
         guard viewModel.cellType != .typingIndicator else { return TypingIndicatorCell.self }
         
         switch viewModel.variant {
@@ -73,11 +73,11 @@ public class MessageCell: UITableViewCell {
 // MARK: - MessageCellDelegate
 
 protocol MessageCellDelegate: AnyObject {
-    func handleItemLongPressed(_ cellViewModel: MessageCell.ViewModel)
-    func handleItemTapped(_ cellViewModel: MessageCell.ViewModel, gestureRecognizer: UITapGestureRecognizer)
-    func handleItemDoubleTapped(_ cellViewModel: MessageCell.ViewModel)
-    func handleItemSwiped(_ cellViewModel: MessageCell.ViewModel, state: SwipeState)
+    func handleItemLongPressed(_ cellViewModel: MessageViewModel)
+    func handleItemTapped(_ cellViewModel: MessageViewModel, gestureRecognizer: UITapGestureRecognizer)
+    func handleItemDoubleTapped(_ cellViewModel: MessageViewModel)
+    func handleItemSwiped(_ cellViewModel: MessageViewModel, state: SwipeState)
     func openUrl(_ urlString: String)
-    func handleReplyButtonTapped(for cellViewModel: MessageCell.ViewModel)
+    func handleReplyButtonTapped(for cellViewModel: MessageViewModel)
     func showUserDetails(for profile: Profile)
 }

@@ -7,17 +7,6 @@ import SessionMessagingKit
 
 @objc(LKProfilePictureView)
 public final class ProfilePictureView: UIView {
-    public static func closedGroupProfileQuery(threadId: String, userPublicKey: String) -> QueryInterfaceRequest<Profile> {
-        return Profile
-            .filter(Profile.Columns.id != userPublicKey)
-            .joining(
-                required: Profile.groupMembers
-                    .filter(GroupMember.Columns.groupId == threadId)
-            )
-            .order(.id)
-            .limit(2)
-    }
-         
     private var hasTappableProfilePicture: Bool = false
     @objc public var size: CGFloat = 0 // Not an implicitly unwrapped optional due to Obj-C limitations
     
@@ -65,66 +54,30 @@ public final class ProfilePictureView: UIView {
         additionalImageView.layer.cornerRadius = additionalImageViewSize / 2
     }
     
-    // FIXME: Look to deprecate this and replace it with the pattern in HomeViewModel (screen should fetch only the required info)
+    // FIXME: Remove this once we refactor the ConversationVC to Swift (use the HomeViewModel approach)
     @objc(updateForThreadId:)
     public func update(forThreadId threadId: String?) {
         guard
             let threadId: String = threadId,
-            let (thread, profiles, imageData) = GRDBStorage.shared.read({ db -> (SessionThread, [Profile], Data?) in
-                guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
-                    throw GRDBStorageError.objectNotFound
-                }
+            let viewModel: SessionThreadViewModel = GRDBStorage.shared.read({ db -> SessionThreadViewModel? in
+                let userPublicKey: String = getUserHexEncodedPublicKey(db)
                 
-                switch thread.variant {
-                    case .contact:
-                        return (
-                            thread,
-                            [try? Profile.fetchOne(db, id: thread.id)].compactMap { $0 },
-                            nil
-                        )
-                        
-                    case .closedGroup:
-                        let userPublicKey: String = getUserHexEncodedPublicKey(db)
-                        let randomUsers: [Profile] = (try? ProfilePictureView
-                            .closedGroupProfileQuery(threadId: thread.id, userPublicKey: userPublicKey)
-                            .fetchAll(db))
-                            .defaulting(to: [])
-                        
-                        // If there is only a single user in the group then insert the current user
-                        // at the back
-                        if randomUsers.count == 1 {
-                            return (
-                                thread,
-                                randomUsers.inserting(
-                                    Profile.fetchOrCreateCurrentUser(db),
-                                    at: 0
-                                ),
-                                nil
-                            )
-                        }
-                        
-                        return (thread, randomUsers, nil)
-                        
-                    case .openGroup:
-                        return (
-                            thread,
-                            [],
-                            try? thread.openGroup
-                                .select(OpenGroup.Columns.imageData)
-                                .asRequest(of: Data.self)
-                                .fetchOne(db)
-                        )
-                }
+                return try SessionThreadViewModel
+                    .conversationSettingsProfileQuery(threadId: threadId, userPublicKey: userPublicKey)
+                    .fetchOne(db)
             })
         else { return }
         
         update(
-            publicKey: (imageData != nil ? "" : thread.id),
-            profile: profiles.first,
-            additionalProfile: profiles.last,
-            threadVariant: thread.variant,
-            openGroupProfilePicture: imageData.map { UIImage(data: $0) },
-            useFallbackPicture: (thread.variant == .openGroup && imageData == nil)
+            publicKey: viewModel.threadId,
+            profile: viewModel.profile,
+            additionalProfile: viewModel.additionalProfile,
+            threadVariant: viewModel.threadVariant,
+            openGroupProfilePicture: viewModel.openGroupProfilePictureData.map { UIImage(data: $0) },
+            useFallbackPicture: (
+                viewModel.threadVariant == .openGroup &&
+                viewModel.openGroupProfilePictureData == nil
+            )
         )
     }
 

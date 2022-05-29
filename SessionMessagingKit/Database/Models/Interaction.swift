@@ -465,19 +465,22 @@ public extension Interaction {
         let interactionQuery = Interaction
             .filter(Columns.threadId == threadId)
             .filter(Columns.id <= interactionId)
+            .filter(Columns.wasRead == false)
             // The `wasRead` flag doesn't apply to `standardOutgoing` or `standardIncomingDeleted`
             .filter(Columns.variant != Variant.standardOutgoing && Columns.variant != Variant.standardIncomingDeleted)
+        let interactionIdsToMarkAsRead: [Int64] = try interactionQuery
+            .select(.id)
+            .asRequest(of: Int64.self)
+            .fetchAll(db)
+        
+        // Don't bother continuing if there are not interactions to mark as read
+        guard !interactionIdsToMarkAsRead.isEmpty else { return }
         
         // Update the `wasRead` flag to true
         try interactionQuery.updateAll(db, Columns.wasRead.set(to: true))
         
         // Retrieve the interaction ids we want to update
-        scheduleJobs(
-            interactionIds: try Int64.fetchAll(
-                db,
-                interactionQuery.select(.id)
-            )
-        )
+        scheduleJobs(interactionIds: interactionIdsToMarkAsRead)
     }
     
     /// This method flags sent messages as read for the specified recipients

@@ -9,7 +9,7 @@ import SessionUtilitiesKit
 import SignalUtilitiesKit
 
 class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSource {
-    fileprivate typealias SectionModel = ArraySection<SearchSection, ConversationCell.ViewModel>
+    fileprivate typealias SectionModel = ArraySection<SearchSection, SessionThreadViewModel>
     
     // MARK: - SearchSection
     
@@ -22,8 +22,8 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
     // MARK: - Variables
     
     private lazy var defaultSearchResults: [SectionModel] = {
-        let result: ConversationCell.ViewModel? = GRDBStorage.shared.read { db -> ConversationCell.ViewModel? in
-            try ConversationCell.ViewModel
+        let result: SessionThreadViewModel? = GRDBStorage.shared.read { db -> SessionThreadViewModel? in
+            try SessionThreadViewModel
                 .noteToSelfOnlyQuery(userPublicKey: getUserHexEncodedPublicKey(db))
                 .fetchOne(db)
         }
@@ -63,7 +63,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         result.separatorStyle = .none
         result.keyboardDismissMode = .onDrag
         result.register(view: EmptySearchResultCell.self)
-        result.register(view: ConversationCell.Full.self)
+        result.register(view: FullConversationCell.self)
         result.showsVerticalScrollIndicator = false
         
         return result
@@ -143,18 +143,18 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
             do {
                 let userPublicKey: String = getUserHexEncodedPublicKey(db)
                 
-                let contactsAndGroupsResults: [ConversationCell.ViewModel] = try ConversationCell.ViewModel
+                let contactsAndGroupsResults: [SessionThreadViewModel] = try SessionThreadViewModel
                     .contactsAndGroupsQuery(
                         userPublicKey: userPublicKey,
-                        pattern: try ConversationCell.ViewModel.pattern(db, searchTerm: searchText),
+                        pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText),
                         searchTerm: searchText
                     )
                     .fetchAll(db)
                 
-                let messageResults: [ConversationCell.ViewModel] = try ConversationCell.ViewModel
+                let messageResults: [SessionThreadViewModel] = try SessionThreadViewModel
                     .messagesQuery(
                         userPublicKey: userPublicKey,
-                        pattern: try ConversationCell.ViewModel.pattern(db, searchTerm: searchText)
+                        pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText)
                     )
                     .fetchAll(db)
                 
@@ -177,7 +177,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
                 
                 self.termForCurrentSearchResultSet = searchText
                 self.searchResultSet = [
-                    (hasResults ? nil : [ArraySection(model: .noResults, elements: [ConversationCell.ViewModel(unreadCount: 0)])]),
+                    (hasResults ? nil : [ArraySection(model: .noResults, elements: [SessionThreadViewModel(unreadCount: 0)])]),
                     (hasResults ? sections : nil)
                 ]
                 .compactMap { $0 }
@@ -332,12 +332,12 @@ extension GlobalSearchViewController {
                 return cell
                 
             case .contactsAndGroups:
-                let cell: ConversationCell.Full = tableView.dequeue(type: ConversationCell.Full.self, for: indexPath)
+                let cell: FullConversationCell = tableView.dequeue(type: FullConversationCell.self, for: indexPath)
                 cell.updateForContactAndGroupSearchResult(with: section.elements[indexPath.row], searchText: self.termForCurrentSearchResultSet)
                 return cell
                 
             case .messages:
-                let cell: ConversationCell.Full = tableView.dequeue(type: ConversationCell.Full.self, for: indexPath)
+                let cell: FullConversationCell = tableView.dequeue(type: FullConversationCell.self, for: indexPath)
                 cell.updateForMessageSearchResult(with: section.elements[indexPath.row], searchText: self.termForCurrentSearchResultSet)
                 return cell
         }

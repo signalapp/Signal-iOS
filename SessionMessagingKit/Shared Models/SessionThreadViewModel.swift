@@ -4,200 +4,194 @@ import Foundation
 import GRDB
 import DifferenceKit
 
-fileprivate typealias ViewModel = ConversationCell.ViewModel
+fileprivate typealias ViewModel = SessionThreadViewModel
 
-public enum ConversationCell {}
-
-// MARK: - ViewModel
-
-extension ConversationCell {
-    /// This type is used to populate the `ConversationCell` in the `HomeVC`, `MessageRequestsViewController` and the
-    /// `GlobalSearchViewController`, it has a number of query methods which can be used to retrieve the relevant data for each
-    /// screen in a single location in an attempt to avoid spreading out _almost_ duplicated code in multiple places
+/// This type is used to populate the `ConversationCell` in the `HomeVC`, `MessageRequestsViewController` and the
+/// `GlobalSearchViewController`, it has a number of query methods which can be used to retrieve the relevant data for each
+/// screen in a single location in an attempt to avoid spreading out _almost_ duplicated code in multiple places
+///
+/// **Note:** When updating the UI make sure to check the actual queries being run as some fields will have incorrect default values
+/// in order to optimise their queries to only include the required data
+public struct SessionThreadViewModel: FetchableRecord, Decodable, Equatable, Hashable, Differentiable {
+    public static let threadIdKey: SQL = SQL(stringLiteral: CodingKeys.threadId.stringValue)
+    public static let threadVariantKey: SQL = SQL(stringLiteral: CodingKeys.threadVariant.stringValue)
+    public static let threadCreationDateTimestampKey: SQL = SQL(stringLiteral: CodingKeys.threadCreationDateTimestamp.stringValue)
+    public static let threadMemberNamesKey: SQL = SQL(stringLiteral: CodingKeys.threadMemberNames.stringValue)
+    public static let threadIsNoteToSelfKey: SQL = SQL(stringLiteral: CodingKeys.threadIsNoteToSelf.stringValue)
+    public static let threadIsMessageRequestKey: SQL = SQL(stringLiteral: CodingKeys.threadIsMessageRequest.stringValue)
+    public static let threadRequiresApprovalKey: SQL = SQL(stringLiteral: CodingKeys.threadRequiresApproval.stringValue)
+    public static let threadShouldBeVisibleKey: SQL = SQL(stringLiteral: CodingKeys.threadShouldBeVisible.stringValue)
+    public static let threadIsPinnedKey: SQL = SQL(stringLiteral: CodingKeys.threadIsPinned.stringValue)
+    public static let threadIsBlockedKey: SQL = SQL(stringLiteral: CodingKeys.threadIsBlocked.stringValue)
+    public static let threadMutedUntilTimestampKey: SQL = SQL(stringLiteral: CodingKeys.threadMutedUntilTimestamp.stringValue)
+    public static let threadOnlyNotifyForMentionsKey: SQL = SQL(stringLiteral: CodingKeys.threadOnlyNotifyForMentions.stringValue)
+    public static let threadMessageDraftKey: SQL = SQL(stringLiteral: CodingKeys.threadMessageDraft.stringValue)
+    public static let threadContactIsTypingKey: SQL = SQL(stringLiteral: CodingKeys.threadContactIsTyping.stringValue)
+    public static let threadUnreadCountKey: SQL = SQL(stringLiteral: CodingKeys.threadUnreadCount.stringValue)
+    public static let threadUnreadMentionCountKey: SQL = SQL(stringLiteral: CodingKeys.threadUnreadMentionCount.stringValue)
+    public static let threadFirstUnreadInteractionIdKey: SQL = SQL(stringLiteral: CodingKeys.threadFirstUnreadInteractionId.stringValue)
+    public static let contactProfileKey: SQL = SQL(stringLiteral: CodingKeys.contactProfile.stringValue)
+    public static let closedGroupNameKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupName.stringValue)
+    public static let closedGroupUserCountKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupUserCount.stringValue)
+    public static let currentUserIsClosedGroupMemberKey: SQL = SQL(stringLiteral: CodingKeys.currentUserIsClosedGroupMember.stringValue)
+    public static let currentUserIsClosedGroupAdminKey: SQL = SQL(stringLiteral: CodingKeys.currentUserIsClosedGroupAdmin.stringValue)
+    public static let closedGroupProfileFrontKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupProfileFront.stringValue)
+    public static let closedGroupProfileBackKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupProfileBack.stringValue)
+    public static let closedGroupProfileBackFallbackKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupProfileBackFallback.stringValue)
+    public static let openGroupNameKey: SQL = SQL(stringLiteral: CodingKeys.openGroupName.stringValue)
+    public static let openGroupServerKey: SQL = SQL(stringLiteral: CodingKeys.openGroupServer.stringValue)
+    public static let openGroupRoomKey: SQL = SQL(stringLiteral: CodingKeys.openGroupRoom.stringValue)
+    public static let openGroupProfilePictureDataKey: SQL = SQL(stringLiteral: CodingKeys.openGroupProfilePictureData.stringValue)
+    public static let openGroupUserCountKey: SQL = SQL(stringLiteral: CodingKeys.openGroupUserCount.stringValue)
+    public static let interactionIdKey: SQL = SQL(stringLiteral: CodingKeys.interactionId.stringValue)
+    public static let interactionVariantKey: SQL = SQL(stringLiteral: CodingKeys.interactionVariant.stringValue)
+    public static let interactionTimestampMsKey: SQL = SQL(stringLiteral: CodingKeys.interactionTimestampMs.stringValue)
+    public static let interactionBodyKey: SQL = SQL(stringLiteral: CodingKeys.interactionBody.stringValue)
+    public static let interactionIsOpenGroupInvitationKey: SQL = SQL(stringLiteral: CodingKeys.interactionIsOpenGroupInvitation.stringValue)
+    public static let interactionAttachmentDescriptionInfoKey: SQL = SQL(stringLiteral: CodingKeys.interactionAttachmentDescriptionInfo.stringValue)
+    public static let interactionAttachmentCountKey: SQL = SQL(stringLiteral: CodingKeys.interactionAttachmentCount.stringValue)
+    public static let authorNameInternalKey: SQL = SQL(stringLiteral: CodingKeys.authorNameInternal.stringValue)
+    public static let currentUserPublicKeyKey: SQL = SQL(stringLiteral: CodingKeys.currentUserPublicKey.stringValue)
+    
+    public static let threadUnreadCountString: String = CodingKeys.threadUnreadCount.stringValue
+    public static let threadUnreadMentionCountString: String = CodingKeys.threadUnreadMentionCount.stringValue
+    public static let threadFirstUnreadInteractionIdString: String = CodingKeys.threadFirstUnreadInteractionId.stringValue
+    public static let closedGroupUserCountString: String = CodingKeys.closedGroupUserCount.stringValue
+    public static let openGroupUserCountString: String = CodingKeys.openGroupUserCount.stringValue
+    public static let contactProfileString: String = CodingKeys.contactProfile.stringValue
+    public static let closedGroupProfileFrontString: String = CodingKeys.closedGroupProfileFront.stringValue
+    public static let closedGroupProfileBackString: String = CodingKeys.closedGroupProfileBack.stringValue
+    public static let closedGroupProfileBackFallbackString: String = CodingKeys.closedGroupProfileBackFallback.stringValue
+    public static let interactionAttachmentDescriptionInfoString: String = CodingKeys.interactionAttachmentDescriptionInfo.stringValue
+    
+    public var differenceIdentifier: String { threadId }
+    
+    public let threadId: String
+    public let threadVariant: SessionThread.Variant
+    private let threadCreationDateTimestamp: TimeInterval
+    public let threadMemberNames: String?
+    
+    public let threadIsNoteToSelf: Bool
+    public var threadIsMessageRequest: Bool?
+    public let threadRequiresApproval: Bool?
+    public let threadShouldBeVisible: Bool?
+    public let threadIsPinned: Bool
+    public var threadIsBlocked: Bool?
+    public let threadMutedUntilTimestamp: TimeInterval?
+    public let threadOnlyNotifyForMentions: Bool?
+    public let threadMessageDraft: String?
+    
+    public let threadContactIsTyping: Bool?
+    public let threadUnreadCount: UInt?
+    public let threadUnreadMentionCount: UInt?
+    public let threadFirstUnreadInteractionId: Int64?
+    
+    // Thread display info
+    
+    private let contactProfile: Profile?
+    private let closedGroupProfileFront: Profile?
+    private let closedGroupProfileBack: Profile?
+    private let closedGroupProfileBackFallback: Profile?
+    public let closedGroupName: String?
+    private let closedGroupUserCount: Int?
+    public let currentUserIsClosedGroupMember: Bool?
+    public let currentUserIsClosedGroupAdmin: Bool?
+    public let openGroupName: String?
+    public let openGroupServer: String?
+    public let openGroupRoom: String?
+    public let openGroupProfilePictureData: Data?
+    private let openGroupUserCount: Int?
+    
+    // Interaction display info
+    
+    public let interactionId: Int64?
+    public let interactionVariant: Interaction.Variant?
+    private let interactionTimestampMs: Int64?
+    public let interactionBody: String?
+    public let interactionState: RecipientState.State?
+    public let interactionIsOpenGroupInvitation: Bool?
+    public let interactionAttachmentDescriptionInfo: Attachment.DescriptionInfo?
+    public let interactionAttachmentCount: Int?
+    
+    public let authorId: String?
+    private let authorNameInternal: String?
+    public let currentUserPublicKey: String
+    
+    // UI specific logic
+    
+    public var displayName: String {
+        return SessionThread.displayName(
+            threadId: threadId,
+            variant: threadVariant,
+            closedGroupName: closedGroupName,
+            openGroupName: openGroupName,
+            isNoteToSelf: threadIsNoteToSelf,
+            profile: profile
+        )
+    }
+    
+    public var profile: Profile? {
+        switch threadVariant {
+            case .contact: return contactProfile
+            case .closedGroup: return (closedGroupProfileBack ?? closedGroupProfileBackFallback)
+            case .openGroup: return nil
+        }
+    }
+    
+    public var additionalProfile: Profile? {
+        switch threadVariant {
+            case .closedGroup: return closedGroupProfileFront
+            default: return nil
+        }
+    }
+    
+    public var lastInteractionDate: Date {
+        guard let interactionTimestampMs: Int64 = interactionTimestampMs else {
+            return Date(timeIntervalSince1970: threadCreationDateTimestamp)
+        }
+                        
+        return Date(timeIntervalSince1970: (TimeInterval(interactionTimestampMs) / 1000))
+    }
+    
+    public var enabledMessageTypes: MessageInputTypes {
+        guard !threadIsNoteToSelf else { return .all }
+        
+        return (threadRequiresApproval == false && threadIsMessageRequest == false ?
+            .all :
+            .textOnly
+        )
+    }
+    
+    public var userCount: Int? {
+        switch threadVariant {
+            case .contact: return nil
+            case .closedGroup: return closedGroupUserCount
+            case .openGroup: return openGroupUserCount
+        }
+    }
+    
+    /// This function returns the profile name formatted for the specific type of thread provided
     ///
-    /// **Note:** When updating the UI make sure to check the actual queries being run as some fields will have incorrect default values
-    /// in order to optimise their queries to only include the required data
-    public struct ViewModel: FetchableRecord, Decodable, Equatable, Hashable, Differentiable {
-        public static let threadIdKey: SQL = SQL(stringLiteral: CodingKeys.threadId.stringValue)
-        public static let threadVariantKey: SQL = SQL(stringLiteral: CodingKeys.threadVariant.stringValue)
-        public static let threadCreationDateTimestampKey: SQL = SQL(stringLiteral: CodingKeys.threadCreationDateTimestamp.stringValue)
-        public static let threadMemberNamesKey: SQL = SQL(stringLiteral: CodingKeys.threadMemberNames.stringValue)
-        public static let threadIsNoteToSelfKey: SQL = SQL(stringLiteral: CodingKeys.threadIsNoteToSelf.stringValue)
-        public static let threadIsMessageRequestKey: SQL = SQL(stringLiteral: CodingKeys.threadIsMessageRequest.stringValue)
-        public static let threadRequiresApprovalKey: SQL = SQL(stringLiteral: CodingKeys.threadRequiresApproval.stringValue)
-        public static let threadShouldBeVisibleKey: SQL = SQL(stringLiteral: CodingKeys.threadShouldBeVisible.stringValue)
-        public static let threadIsPinnedKey: SQL = SQL(stringLiteral: CodingKeys.threadIsPinned.stringValue)
-        public static let threadIsBlockedKey: SQL = SQL(stringLiteral: CodingKeys.threadIsBlocked.stringValue)
-        public static let threadMutedUntilTimestampKey: SQL = SQL(stringLiteral: CodingKeys.threadMutedUntilTimestamp.stringValue)
-        public static let threadOnlyNotifyForMentionsKey: SQL = SQL(stringLiteral: CodingKeys.threadOnlyNotifyForMentions.stringValue)
-        public static let threadMessageDraftKey: SQL = SQL(stringLiteral: CodingKeys.threadMessageDraft.stringValue)
-        public static let threadContactIsTypingKey: SQL = SQL(stringLiteral: CodingKeys.threadContactIsTyping.stringValue)
-        public static let threadUnreadCountKey: SQL = SQL(stringLiteral: CodingKeys.threadUnreadCount.stringValue)
-        public static let threadUnreadMentionCountKey: SQL = SQL(stringLiteral: CodingKeys.threadUnreadMentionCount.stringValue)
-        public static let threadFirstUnreadInteractionIdKey: SQL = SQL(stringLiteral: CodingKeys.threadFirstUnreadInteractionId.stringValue)
-        public static let contactProfileKey: SQL = SQL(stringLiteral: CodingKeys.contactProfile.stringValue)
-        public static let closedGroupNameKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupName.stringValue)
-        public static let closedGroupUserCountKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupUserCount.stringValue)
-        public static let currentUserIsClosedGroupMemberKey: SQL = SQL(stringLiteral: CodingKeys.currentUserIsClosedGroupMember.stringValue)
-        public static let currentUserIsClosedGroupAdminKey: SQL = SQL(stringLiteral: CodingKeys.currentUserIsClosedGroupAdmin.stringValue)
-        public static let closedGroupProfileFrontKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupProfileFront.stringValue)
-        public static let closedGroupProfileBackKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupProfileBack.stringValue)
-        public static let closedGroupProfileBackFallbackKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupProfileBackFallback.stringValue)
-        public static let openGroupNameKey: SQL = SQL(stringLiteral: CodingKeys.openGroupName.stringValue)
-        public static let openGroupServerKey: SQL = SQL(stringLiteral: CodingKeys.openGroupServer.stringValue)
-        public static let openGroupRoomKey: SQL = SQL(stringLiteral: CodingKeys.openGroupRoom.stringValue)
-        public static let openGroupProfilePictureDataKey: SQL = SQL(stringLiteral: CodingKeys.openGroupProfilePictureData.stringValue)
-        public static let openGroupUserCountKey: SQL = SQL(stringLiteral: CodingKeys.openGroupUserCount.stringValue)
-        public static let interactionIdKey: SQL = SQL(stringLiteral: CodingKeys.interactionId.stringValue)
-        public static let interactionVariantKey: SQL = SQL(stringLiteral: CodingKeys.interactionVariant.stringValue)
-        public static let interactionTimestampMsKey: SQL = SQL(stringLiteral: CodingKeys.interactionTimestampMs.stringValue)
-        public static let interactionBodyKey: SQL = SQL(stringLiteral: CodingKeys.interactionBody.stringValue)
-        public static let interactionIsOpenGroupInvitationKey: SQL = SQL(stringLiteral: CodingKeys.interactionIsOpenGroupInvitation.stringValue)
-        public static let interactionAttachmentDescriptionInfoKey: SQL = SQL(stringLiteral: CodingKeys.interactionAttachmentDescriptionInfo.stringValue)
-        public static let interactionAttachmentCountKey: SQL = SQL(stringLiteral: CodingKeys.interactionAttachmentCount.stringValue)
-        public static let authorNameInternalKey: SQL = SQL(stringLiteral: CodingKeys.authorNameInternal.stringValue)
-        public static let currentUserPublicKeyKey: SQL = SQL(stringLiteral: CodingKeys.currentUserPublicKey.stringValue)
-        
-        public static let threadUnreadCountString: String = CodingKeys.threadUnreadCount.stringValue
-        public static let threadUnreadMentionCountString: String = CodingKeys.threadUnreadMentionCount.stringValue
-        public static let threadFirstUnreadInteractionIdString: String = CodingKeys.threadFirstUnreadInteractionId.stringValue
-        public static let closedGroupUserCountString: String = CodingKeys.closedGroupUserCount.stringValue
-        public static let openGroupUserCountString: String = CodingKeys.openGroupUserCount.stringValue
-        public static let contactProfileString: String = CodingKeys.contactProfile.stringValue
-        public static let closedGroupProfileFrontString: String = CodingKeys.closedGroupProfileFront.stringValue
-        public static let closedGroupProfileBackString: String = CodingKeys.closedGroupProfileBack.stringValue
-        public static let closedGroupProfileBackFallbackString: String = CodingKeys.closedGroupProfileBackFallback.stringValue
-        public static let interactionAttachmentDescriptionInfoString: String = CodingKeys.interactionAttachmentDescriptionInfo.stringValue
-        
-        public var differenceIdentifier: ViewModel { self } // TODO: Confirm this does what we want (ie. update on any data change)
-        
-        public let threadId: String
-        public let threadVariant: SessionThread.Variant
-        private let threadCreationDateTimestamp: TimeInterval
-        public let threadMemberNames: String?
-        
-        public let threadIsNoteToSelf: Bool
-        public var threadIsMessageRequest: Bool?
-        public let threadRequiresApproval: Bool?
-        public let threadShouldBeVisible: Bool?
-        public let threadIsPinned: Bool
-        public var threadIsBlocked: Bool?
-        public let threadMutedUntilTimestamp: TimeInterval?
-        public let threadOnlyNotifyForMentions: Bool?
-        public let threadMessageDraft: String?
-        
-        public let threadContactIsTyping: Bool?
-        public let threadUnreadCount: UInt?
-        public let threadUnreadMentionCount: UInt?
-        public let threadFirstUnreadInteractionId: Int64?
-        
-        // Thread display info
-        
-        private let contactProfile: Profile?
-        private let closedGroupProfileFront: Profile?
-        private let closedGroupProfileBack: Profile?
-        private let closedGroupProfileBackFallback: Profile?
-        public let closedGroupName: String?
-        private let closedGroupUserCount: Int?
-        public let currentUserIsClosedGroupMember: Bool?
-        public let currentUserIsClosedGroupAdmin: Bool?
-        public let openGroupName: String?
-        public let openGroupServer: String?
-        public let openGroupRoom: String?
-        public let openGroupProfilePictureData: Data?
-        private let openGroupUserCount: Int?
-        
-        // Interaction display info
-        
-        public let interactionId: Int64?
-        public let interactionVariant: Interaction.Variant?
-        private let interactionTimestampMs: Int64?
-        public let interactionBody: String?
-        public let interactionState: RecipientState.State?
-        public let interactionIsOpenGroupInvitation: Bool?
-        public let interactionAttachmentDescriptionInfo: Attachment.DescriptionInfo?
-        public let interactionAttachmentCount: Int?
-        
-        public let authorId: String?
-        private let authorNameInternal: String?
-        public let currentUserPublicKey: String
-        
-        // UI specific logic
-        
-        public var displayName: String {
-            return SessionThread.displayName(
-                threadId: threadId,
-                variant: threadVariant,
-                closedGroupName: closedGroupName,
-                openGroupName: openGroupName,
-                isNoteToSelf: threadIsNoteToSelf,
-                profile: profile
+    /// **Note:** The 'threadVariant' parameter is used for profile context but in the search results we actually want this
+    /// to always behave as the `contact` variant which is why this needs to be a function instead of just using the provided
+    /// parameter
+    public func authorName(for threadVariant: SessionThread.Variant) -> String {
+        return Profile.displayName(
+            for: threadVariant,
+            id: (authorId ?? threadId),
+            name: authorNameInternal,
+            nickname: nil,  // Folded into 'authorName' within the Query
+            customFallback: (threadVariant == .contact ?
+                "Anonymous" :
+                nil
             )
-        }
-        
-        public var profile: Profile? {
-            switch threadVariant {
-                case .contact: return contactProfile
-                case .closedGroup: return (closedGroupProfileBack ?? closedGroupProfileBackFallback)
-                case .openGroup: return nil
-            }
-        }
-        
-        public var additionalProfile: Profile? {
-            switch threadVariant {
-                case .closedGroup: return closedGroupProfileFront
-                default: return nil
-            }
-        }
-        
-        public var lastInteractionDate: Date {
-            guard let interactionTimestampMs: Int64 = interactionTimestampMs else {
-                return Date(timeIntervalSince1970: threadCreationDateTimestamp)
-            }
-                            
-            return Date(timeIntervalSince1970: (TimeInterval(interactionTimestampMs) / 1000))
-        }
-        
-        public var enabledMessageTypes: MessageInputTypes {
-            guard !threadIsNoteToSelf else { return .all }
-            
-            return (threadRequiresApproval == false && threadIsMessageRequest == false ?
-                .all :
-                .textOnly
-            )
-        }
-        
-        public var userCount: Int? {
-            switch threadVariant {
-                case .contact: return nil
-                case .closedGroup: return closedGroupUserCount
-                case .openGroup: return openGroupUserCount
-            }
-        }
-        
-        /// This function returns the profile name formatted for the specific type of thread provided
-        ///
-        /// **Note:** The 'threadVariant' parameter is used for profile context but in the search results we actually want this
-        /// to always behave as the `contact` variant which is why this needs to be a function instead of just using the provided
-        /// parameter
-        public func authorName(for threadVariant: SessionThread.Variant) -> String {
-            return Profile.displayName(
-                for: threadVariant,
-                id: (authorId ?? threadId),
-                name: authorNameInternal,
-                nickname: nil,  // Folded into 'authorName' within the Query
-                customFallback: (threadVariant == .contact ?
-                    "Anonymous" :
-                    nil
-                )
-            )
-        }
+        )
     }
 }
 
 // MARK: - Convenience Initialization
 
-public extension ConversationCell.ViewModel {
+public extension SessionThreadViewModel {
     // Note: This init method is only used system-created cells or empty states
     init(unreadCount: UInt = 0) {
         self.threadId = "INVALID_THREAD_ID"
@@ -255,12 +249,12 @@ public extension ConversationCell.ViewModel {
 
 // MARK: - HomeVC & MessageRequestsViewController
 
-public extension ConversationCell.ViewModel {
+public extension SessionThreadViewModel {
     private static func baseQuery(
         userPublicKey: String,
         filters: SQL,
         ordering: SQL
-    ) -> AdaptedFetchRequest<SQLRequest<ConversationCell.ViewModel>> {
+    ) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         let typingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias()
@@ -370,7 +364,7 @@ public extension ConversationCell.ViewModel {
                 \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
                 \(SQL("\(groupMember[.profileId]) = \(userPublicKey)"))
             )
-            LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(interaction[.threadId])
+            LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(thread[.id])
         
             LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON (
                 \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
@@ -456,7 +450,7 @@ public extension ConversationCell.ViewModel {
         }
     }
     
-    static func homeQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<ConversationCell.ViewModel>> {
+    static func homeQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
@@ -481,7 +475,7 @@ public extension ConversationCell.ViewModel {
         )
     }
     
-    static func messageRequestsQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<ConversationCell.ViewModel>> {
+    static func messageRequestsQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
@@ -508,11 +502,11 @@ public extension ConversationCell.ViewModel {
 
 // MARK: - ConversationVC
 
-public extension ConversationCell.ViewModel {
-    static func conversationQuery(threadId: String, userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<ConversationCell.ViewModel>> {
+public extension SessionThreadViewModel {
+    static func conversationQuery(threadId: String, userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
-        let typingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias()
+        let typingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias() // TODO: Remove this (not needed here - tracked via the messages)
         let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
         let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
         let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
@@ -550,8 +544,10 @@ public extension ConversationCell.ViewModel {
                     )
                 ) AS \(ViewModel.threadIsMessageRequestKey),
                 (
-                    IFNULL(\(contact[.isApproved]), false) = false OR
-                    IFNULL(\(contact[.didApproveMe]), false) = false
+                    \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND (
+                        IFNULL(\(contact[.isApproved]), false) = false OR
+                        IFNULL(\(contact[.didApproveMe]), false) = false
+                    )
                 ) AS \(ViewModel.threadRequiresApprovalKey),
                 \(thread[.shouldBeVisible]) AS \(ViewModel.threadShouldBeVisibleKey),
         
@@ -575,6 +571,8 @@ public extension ConversationCell.ViewModel {
                 \(openGroup[.room]) AS \(ViewModel.openGroupRoomKey),
                 \(openGroup[.imageData]) AS \(ViewModel.openGroupProfilePictureDataKey),
                 \(openGroup[.userCount]) AS \(ViewModel.openGroupUserCountKey),
+        
+                \(interaction[.id]) AS \(ViewModel.interactionIdKey),
             
                 \(SQL("\(userPublicKey)")) AS \(ViewModel.currentUserPublicKeyKey)
             
@@ -592,6 +590,11 @@ public extension ConversationCell.ViewModel {
                     \(SQL("\(interaction[.threadId]) = \(threadId)"))
                 )
             ) AS \(firstUnreadInteractionTableLiteral) ON \(firstUnreadInteractionTableLiteral).\(interactionThreadIdLiteral) = \(thread[.id])
+            LEFT JOIN (
+                SELECT *, MAX(\(interaction[.timestampMs]))
+                FROM \(Interaction.self)
+                GROUP BY \(interaction[.threadId])
+            ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
             LEFT JOIN (
                 SELECT
                     \(interaction[.threadId]),
@@ -651,11 +654,97 @@ public extension ConversationCell.ViewModel {
             ])
         }
     }
+    
+    static func conversationSettingsProfileQuery(threadId: String, userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
+        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
+        let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
+        let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
+        
+        let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
+        
+        /// **Note:** The `numColumnsBeforeProfiles` value **MUST** match the number of fields before
+        /// the `ViewModel.contactProfileKey` entry below otherwise the query will fail to
+        /// parse and might throw
+        ///
+        /// Explicitly set default values for the fields ignored for search results
+        let numColumnsBeforeProfiles: Int = 5
+        let request: SQLRequest<ViewModel> = """
+            SELECT
+                \(thread[.id]) AS \(ViewModel.threadIdKey),
+                \(thread[.variant]) AS \(ViewModel.threadVariantKey),
+                \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
+                
+                false AS \(ViewModel.threadIsNoteToSelfKey),
+                false AS \(ViewModel.threadIsPinnedKey),
+        
+                \(ViewModel.contactProfileKey).*,
+                \(ViewModel.closedGroupProfileFrontKey).*,
+                \(ViewModel.closedGroupProfileBackKey).*,
+                \(ViewModel.closedGroupProfileBackFallbackKey).*,
+                \(openGroup[.imageData]) AS \(ViewModel.openGroupProfilePictureDataKey),
+        
+                \(SQL("\(userPublicKey)")) AS \(ViewModel.currentUserPublicKeyKey)
+            
+            FROM \(SessionThread.self)
+            LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
+            LEFT JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
+            LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(thread[.id])
+        
+            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON (
+                \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
+                    SELECT MIN(\(groupMember[.profileId]))
+                    FROM \(GroupMember.self)
+                    WHERE (
+                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
+                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
+                        \(SQL("\(groupMember[.profileId]) != \(userPublicKey)"))
+                    )
+                )
+            )
+            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackKey) ON (
+                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) != \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) AND
+                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) = (
+                    SELECT MAX(\(groupMember[.profileId]))
+                    FROM \(GroupMember.self)
+                    WHERE (
+                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
+                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
+                        \(SQL("\(groupMember[.profileId]) != \(userPublicKey)"))
+                    )
+                )
+            )
+            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackFallbackKey) ON (
+                \(closedGroup[.threadId]) IS NOT NULL AND
+                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) IS NULL AND
+                \(ViewModel.closedGroupProfileBackFallbackKey).\(profileIdColumnLiteral) = \(SQL("\(userPublicKey)"))
+            )
+            
+            WHERE \(SQL("\(thread[.id]) = \(threadId)"))
+        """
+        
+        return request.adapted { db in
+            let adapters = try splittingRowAdapters(columnCounts: [
+                numColumnsBeforeProfiles,
+                Profile.numberOfSelectedColumns(db),
+                Profile.numberOfSelectedColumns(db),
+                Profile.numberOfSelectedColumns(db),
+                Profile.numberOfSelectedColumns(db)
+            ])
+            
+            return ScopeAdapter([
+                ViewModel.contactProfileString: adapters[1],
+                ViewModel.closedGroupProfileFrontString: adapters[2],
+                ViewModel.closedGroupProfileBackString: adapters[3],
+                ViewModel.closedGroupProfileBackFallbackString: adapters[4]
+            ])
+        }
+    }
 }
 
 // MARK: - Search Queries
 
-public extension ConversationCell.ViewModel {
+public extension SessionThreadViewModel {
     static func searchTermParts(_ searchTerm: String) -> [String] {
         /// Process the search term in order to extract the parts of the search pattern we want
         ///
@@ -698,7 +787,7 @@ public extension ConversationCell.ViewModel {
         return pattern
     }
     
-    static func messagesQuery(userPublicKey: String, pattern: FTS5Pattern) -> AdaptedFetchRequest<SQLRequest<ConversationCell.ViewModel>> {
+    static func messagesQuery(userPublicKey: String, pattern: FTS5Pattern) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
@@ -813,7 +902,7 @@ public extension ConversationCell.ViewModel {
     /// - Closed group member name
     /// - Open group name
     /// - "Note to self" text match
-    static func contactsAndGroupsQuery(userPublicKey: String, pattern: FTS5Pattern, searchTerm: String) -> AdaptedFetchRequest<SQLRequest<ConversationCell.ViewModel>> {
+    static func contactsAndGroupsQuery(userPublicKey: String, pattern: FTS5Pattern, searchTerm: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
         let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
@@ -1177,7 +1266,7 @@ public extension ConversationCell.ViewModel {
     }
     
     /// This method returns only the 'Note to Self' thread in the structure of a search result conversation
-    static func noteToSelfOnlyQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<ConversationCell.ViewModel>> {
+    static func noteToSelfOnlyQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
         
@@ -1224,8 +1313,8 @@ public extension ConversationCell.ViewModel {
 
 // MARK: - Share Extension
 
-public extension ConversationCell.ViewModel {
-    static func shareQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<ConversationCell.ViewModel>> {
+public extension SessionThreadViewModel {
+    static func shareQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
@@ -1272,7 +1361,7 @@ public extension ConversationCell.ViewModel {
             ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
             LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
             LEFT JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
-            LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(interaction[.threadId])
+            LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(thread[.id])
         
             LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON (
                 \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (

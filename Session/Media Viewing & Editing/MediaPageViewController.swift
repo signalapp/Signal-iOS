@@ -386,8 +386,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         // Start observing for data changes
         dataChangeObservable = GRDBStorage.shared.start(
             viewModel.observableAlbumData,
-            onError:  { error in
-            },
+            onError: { _ in },
             onChange: { [weak self] albumData in
                 // The defaul scheduler emits changes on the main thread
                 self?.handleUpdates(albumData)

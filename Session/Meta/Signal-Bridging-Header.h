@@ -9,7 +9,6 @@
 // Separate iOS Frameworks from other imports.
 #import "AvatarViewHelper.h"
 #import "AVAudioSession+OWS.h"
-#import "DateUtil.h"
 #import "NotificationSettingsViewController.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioPlayer.h"

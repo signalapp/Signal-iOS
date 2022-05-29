@@ -20,7 +20,7 @@ public class InsetLockableTableView: UITableView {
     }
     public var oldOffset: CGPoint = .zero
     public var newOffset: CGPoint = .zero
-    private var callbackCondition: ((Int, [Int]) -> Bool)?
+    private var callbackCondition: ((Int, [Int], CGSize) -> Bool)?
     private var afterLayoutSubviewsCallback: (() -> ())?
     
     public override func layoutSubviews() {
@@ -54,7 +54,7 @@ public class InsetLockableTableView: UITableView {
     // MARK: - Functions
     
     public func afterNextLayoutSubviews(
-        when condition: @escaping (Int, [Int]) -> Bool,
+        when condition: @escaping (Int, [Int], CGSize) -> Bool,
         then callback: @escaping () -> ()
     ) {
         self.callbackCondition = condition
@@ -70,7 +70,9 @@ public class InsetLockableTableView: UITableView {
         
         // Store the layout info locally so if they pass we can clear the states before running to
         // prevent layouts within the callbacks from triggering infinite loops
-        guard self.callbackCondition?(numSections, numRowInSections) == true else { return false }
+        guard self.callbackCondition?(numSections, numRowInSections, self.contentSize) == true else {
+            return false
+        }
         
         self.callbackCondition = nil
         return true

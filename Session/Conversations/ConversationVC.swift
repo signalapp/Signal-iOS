@@ -501,7 +501,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             viewModel.observableThreadData,
             onError:  { _ in },
             onChange: { [weak self] maybeThreadData in
-                guard let threadData: ConversationCell.ViewModel = maybeThreadData else { return }
+                guard let threadData: SessionThreadViewModel = maybeThreadData else { return }
                 
                 // The default scheduler emits changes on the main thread
                 self?.handleThreadUpdates(threadData)
@@ -520,7 +520,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         self.viewModel.onInteractionChange = nil
     }
     
-    private func handleThreadUpdates(_ updatedThreadData: ConversationCell.ViewModel, initialLoad: Bool = false) {
+    private func handleThreadUpdates(_ updatedThreadData: SessionThreadViewModel, initialLoad: Bool = false) {
         // Ensure the first load or a load when returning from a child screen runs without animations (if
         // we don't do this the cells will animate in from a frame of CGRect.zero or have a buggy transition)
         guard hasLoadedInitialThreadData && hasReloadedThreadDataAfterDisappearance else {
@@ -529,6 +529,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             UIView.performWithoutAnimation { handleThreadUpdates(updatedThreadData, initialLoad: true) }
             return
         }
+        
         // Update general conversation UI
         
         if
@@ -572,6 +573,9 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         if initialLoad || viewModel.threadData.threadUnreadCount != updatedThreadData.threadUnreadCount {
             updateUnreadCountView(unreadCount: updatedThreadData.threadUnreadCount)
         }
+        
+        // Now we have done all the needed diffs, update the viewModel with the latest data
+        self.viewModel.updateThreadData(updatedThreadData)
     }
     
     private func handleInteractionUpdates(_ updatedData: [ConversationViewModel.SectionModel], initialLoad: Bool = false) {
@@ -590,68 +594,125 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         
         // Determine if we are inserting content at the top of the collectionView
         struct ItemChangeInfo {
-            let insertedAtTop: Bool
+            enum InsertLocation {
+                case top
+                case bottom
+                case other
+                case none
+            }
+            
+            let insertLocation: InsertLocation
+            let wasCloseToBottom: Bool
+            let sentMessageBeforeUpdate: Bool
             let firstIndexIsVisible: Bool
             let visibleInteractionId: Int64
             let visibleIndexPath: IndexPath
             let oldVisibleIndexPath: IndexPath
+            let lastVisibleIndexPath: IndexPath
             
             init(
-                insertedAtTop: Bool,
+                insertLocation: InsertLocation,
+                wasCloseToBottom: Bool,
+                sentMessageBeforeUpdate: Bool,
                 firstIndexIsVisible: Bool = false,
                 visibleInteractionId: Int64 = -1,
                 visibleIndexPath: IndexPath = IndexPath(row: 0, section: 0),
-                oldVisibleIndexPath: IndexPath = IndexPath(row: 0, section: 0)
+                oldVisibleIndexPath: IndexPath = IndexPath(row: 0, section: 0),
+                lastVisibleIndexPath: IndexPath = IndexPath(row: 0, section: 0)
             ) {
-                self.insertedAtTop = insertedAtTop
+                self.insertLocation = insertLocation
+                self.wasCloseToBottom = wasCloseToBottom
+                self.sentMessageBeforeUpdate = sentMessageBeforeUpdate
                 self.firstIndexIsVisible = firstIndexIsVisible
                 self.visibleInteractionId = visibleInteractionId
                 self.visibleIndexPath = visibleIndexPath
                 self.oldVisibleIndexPath = oldVisibleIndexPath
+                self.lastVisibleIndexPath = lastVisibleIndexPath
             }
         }
         
+        let changeset: StagedChangeset<[ConversationViewModel.SectionModel]> = StagedChangeset(
+            source: viewModel.interactionData,
+            target: updatedData
+        )
+        let numItemsInUpdatedData: [Int] = updatedData.map { $0.elements.count }
         let itemChangeInfo: ItemChangeInfo = {
             guard
+                changeset.map { $0.elementInserted.count }.reduce(0, +) > 0,
                 let oldSectionIndex: Int = self.viewModel.interactionData.firstIndex(where: { $0.model == .messages }),
                 let newSectionIndex: Int = updatedData.firstIndex(where: { $0.model == .messages }),
                 let newFirstItemIndex: Int = updatedData[newSectionIndex].elements
                     .firstIndex(where: { item -> Bool in
                         item.id == self.viewModel.interactionData[oldSectionIndex].elements.first?.id
                     }),
+                let newLastItemIndex: Int = updatedData[newSectionIndex].elements
+                    .lastIndex(where: { item -> Bool in
+                        item.id == self.viewModel.interactionData[oldSectionIndex].elements.last?.id
+                    }),
                 let firstVisibleIndexPath: IndexPath = self.tableView.indexPathsForVisibleRows?
                     .filter({ $0.section == oldSectionIndex })
                     .sorted()
                     .first,
+                let lastVisibleIndexPath: IndexPath = self.tableView.indexPathsForVisibleRows?
+                    .filter({ $0.section == oldSectionIndex })
+                    .sorted()
+                    .last,
                 let newVisibleIndex: Int = updatedData[newSectionIndex].elements
                     .firstIndex(where: { item in
                         item.id == self.viewModel.interactionData[oldSectionIndex]
                             .elements[firstVisibleIndexPath.row]
                             .id
                     }),
-                (
-                    newSectionIndex > oldSectionIndex ||
-                    newFirstItemIndex > 0
+                let newLastVisibleIndex: Int = updatedData[newSectionIndex].elements
+                    .firstIndex(where: { item in
+                        item.id == self.viewModel.interactionData[oldSectionIndex]
+                            .elements[lastVisibleIndexPath.row]
+                            .id
+                    })
+            else {
+                return ItemChangeInfo(
+                    insertLocation: .none,
+                    wasCloseToBottom: isCloseToBottom,
+                    sentMessageBeforeUpdate: self.viewModel.sentMessageBeforeUpdate
                 )
-            else { return ItemChangeInfo(insertedAtTop: false) }
+            }
             
             return ItemChangeInfo(
-                insertedAtTop: true,
+                insertLocation: {
+                    let insertedAtTop: Bool = (
+                        newSectionIndex > oldSectionIndex ||
+                        newFirstItemIndex > 0
+                    )
+                    let insertedAtBot: Bool = (
+                        newSectionIndex < oldSectionIndex ||
+                        newLastItemIndex < (updatedData[newSectionIndex].elements.count - 1)
+                    )
+                    
+                    // If anything was inserted at the top then we need to maintain the current
+                    // offset so always return a 'top' insert location
+                    switch (insertedAtTop, insertedAtBot) {
+                        case (true, _): return .top
+                        case (false, true): return .bottom
+                        case (false, false): return .other
+                    }
+                }(),
+                wasCloseToBottom: isCloseToBottom,
+                sentMessageBeforeUpdate: self.viewModel.sentMessageBeforeUpdate,
                 firstIndexIsVisible: (firstVisibleIndexPath.row == 0),
                 visibleInteractionId: updatedData[newSectionIndex].elements[newVisibleIndex].id,
                 visibleIndexPath: IndexPath(row: newVisibleIndex, section: newSectionIndex),
-                oldVisibleIndexPath: firstVisibleIndexPath
+                oldVisibleIndexPath: firstVisibleIndexPath,
+                lastVisibleIndexPath: IndexPath(row: newLastVisibleIndex, section: newSectionIndex)
             )
         }()
         
-        /// If we are inserting at the top then we want to maintain the same visual position from before the table view was updated,
-        /// unfortunately the UITableView does some weird things when updating (where it won't have updated data until after it
-        /// performs the next layout); the below code checks a condition on layout and if it passes it calls a closure
+        /// UITableView doesn't really support bottom-aligned content very well and as such jumps around a lot when inserting content but
+        /// we want to maintain the current offset from before the data was inserted (except when adding at the bottom while the user is at
+        /// the bottom, in which case we want to scroll down)
         ///
-        /// In the below case we set the tableView offset of the first row to the same offset it had before the UI loaded with new
-        /// data (including the difference in height in case the date header was removed when loading the new cell)
-        if itemChangeInfo.insertedAtTop {
-            let numItemsInUpdatedData: [Int] = updatedData.map { $0.elements.count }
+        /// Unfortunately the UITableView also does some weird things when updating (where it won't have updated it's internal data until
+        /// after it performs the next layout); the below code checks a condition on layout and if it passes it calls a closure
+        if itemChangeInfo.insertLocation != .none {
             let cellSorting: (MessageCell, MessageCell) -> Bool = { lhs, rhs -> Bool in
                 if !lhs.isHidden && rhs.isHidden { return true }
                 if lhs.isHidden && !rhs.isHidden { return false }
@@ -665,42 +726,77 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 .frame)
                 .defaulting(to: self.tableView.rectForRow(at: itemChangeInfo.oldVisibleIndexPath))
             let oldContentSize: CGSize = self.tableView.contentSize
-            let oldContentOffset: CGPoint = self.tableView.contentOffset
+            let oldOffsetFromTop: CGFloat = (self.tableView.contentOffset.y - oldRect.minY)
+            let oldOffsetFromBottom: CGFloat = (oldContentSize.height - self.tableView.contentOffset.y)
             
-            // Distance of 64 when paging works properly
+            // Wait until the tableView has completed a layout and reported the correct number of
+            // sections/rows and then update the contentOffset
             self.tableView.afterNextLayoutSubviews(
-                when: { numSections, numRowsInSections -> Bool in
+                when: { numSections, numRowsInSections, _ -> Bool in
                     numSections == updatedData.count &&
                     numRowsInSections == numItemsInUpdatedData
                 },
                 then: { [weak self] in
-                    self?.tableView.scrollToRow(at: itemChangeInfo.visibleIndexPath, at: .top, animated: false)
-                    self?.tableView.layoutIfNeeded()
-                    
-                    /// **Note:** I wasn't able to get a prober equation to handle both "insert above first item" and "insert
-                    /// at top off screen", it seems that the 'contentOffset' value won't expose negative values (eg. when you
-                    /// over-scroll and trigger the bounce effect) and this results in requiring the conditional logic below
-                    if itemChangeInfo.firstIndexIsVisible {
-                        let newRect: CGRect = (self?.tableView.subviews
-                            .compactMap { $0 as? MessageCell }
-                            .sorted(by: cellSorting)
-                            .first(where: { $0.viewModel?.id == itemChangeInfo.visibleInteractionId })?
-                            .frame)
-                            .defaulting(to: oldRect)
-                        let heightDiff: CGFloat = (oldRect.height - newRect.height)
+                    UIView.performWithoutAnimation {
+                        self?.tableView.scrollToRow(
+                            at: (itemChangeInfo.insertLocation == .top ?
+                                itemChangeInfo.visibleIndexPath :
+                                itemChangeInfo.lastVisibleIndexPath
+                            ),
+                            at: (itemChangeInfo.insertLocation == .top ?
+                                .top :
+                                .bottom
+                            ),
+                            animated: false
+                        )
+                        self?.tableView.layoutIfNeeded()
                         
-                        self?.tableView.contentOffset.y = (newRect.minY - (oldRect.minY + heightDiff))
-                    }
-                    else {
                         let newContentSize: CGSize = (self?.tableView.contentSize)
                             .defaulting(to: oldContentSize)
-                        let contentSizeDiff: CGFloat = (newContentSize.height - oldContentSize.height)
                         
-                        self?.tableView.contentOffset.y = (contentSizeDiff + oldContentOffset.y)
+                        /// **Note:** I wasn't able to get a prober equation to handle both "insert" and "insert at top off screen", it
+                        /// seems that the 'contentOffset' value won't expose negative values (eg. when you over-scroll and trigger
+                        /// the bounce effect) and this results in requiring the conditional logic below
+                        if itemChangeInfo.insertLocation == .top {
+                            let newRect: CGRect = (self?.tableView.subviews
+                                .compactMap { $0 as? MessageCell }
+                                .sorted(by: cellSorting)
+                                .first(where: { $0.viewModel?.id == itemChangeInfo.visibleInteractionId })?
+                                .frame)
+                                .defaulting(to: oldRect)
+                            let heightDiff: CGFloat = (oldRect.height - newRect.height)
+                            
+                            if itemChangeInfo.firstIndexIsVisible {
+                                self?.tableView.contentOffset.y = (newRect.minY - (oldRect.minY + heightDiff))
+                            }
+                            else {
+                                self?.tableView.contentOffset.y = ((newRect.minY + heightDiff) + oldOffsetFromTop)
+                            }
+                        }
+                        else {
+                            self?.tableView.contentOffset.y = (newContentSize.height - oldOffsetFromBottom)
+                        }
+                        
+                        /// **Note:** There is yet another weird issue where the tableView will layout again shortly after the initial
+                        /// layout with a slightly different contentSize (usually about 8pt off), this catches that case and prevents it
+                        /// from affecting the UI
+                        if !itemChangeInfo.firstIndexIsVisible {
+                            self?.tableView.afterNextLayoutSubviews(
+                                when: { _, _, contentSize in (contentSize.height != newContentSize.height) },
+                                then: { [weak self] in
+                                    let finalContentSize: CGSize = (self?.tableView.contentSize)
+                                        .defaulting(to: newContentSize)
+                                    
+                                    self?.tableView.contentOffset.y += (finalContentSize.height - newContentSize.height)
+                                }
+                            )
+                        }
                     }
                     
-                    if let focusedInteractionId: Int64 = self?.focusedInteractionId {
-                        DispatchQueue.main.async {
+                    DispatchQueue.main.async { [weak self] in
+                        if let focusedInteractionId: Int64 = self?.focusedInteractionId {
+                            // If we had a focusedInteractionId then scroll to it (and hide the search
+                            // result bar loading indicator)
                             self?.searchController.resultsBar.stopLoading()
                             self?.scrollToInteractionIfNeeded(
                                 with: focusedInteractionId,
@@ -708,8 +804,13 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                                 highlight: (self?.shouldHighlightNextScrollToInteraction == true)
                             )
                         }
+                        else if itemChangeInfo.sentMessageBeforeUpdate || itemChangeInfo.wasCloseToBottom {
+                            // Scroll to the bottom if an interaction was just inserted and we either
+                            // just sent a message or are close enough to the bottom
+                            self?.scrollToBottom(isAnimated: true)
+                        }
                     }
-                    
+
                     // Complete page loading
                     self?.isLoadingMore = false
                     self?.autoLoadNextPageIfNeeded()
@@ -719,27 +820,16 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         
         // Reload the table content (animate changes if we aren't inserting at the top)
         self.tableView.reload(
-            using: StagedChangeset(source: viewModel.interactionData, target: updatedData),
+            using: changeset,
             deleteSectionsAnimation: .none,
             insertSectionsAnimation: .none,
             reloadSectionsAnimation: .none,
             deleteRowsAnimation: .bottom,
             insertRowsAnimation: .bottom,
             reloadRowsAnimation: .none,
-            interrupt: { itemChangeInfo.insertedAtTop || $0.changeCount > ConversationViewModel.pageSize }
+            interrupt: { itemChangeInfo.insertLocation == .top || $0.changeCount > ConversationViewModel.pageSize }
         ) { [weak self] updatedData in
             self?.viewModel.updateInteractionData(updatedData)
-        }
-        
-        // Scroll to the bottom if we just inserted a message and are close enough
-        // to the bottom
-        if
-            changeset.contains(where: { !$0.elementInserted.isEmpty }) && (
-                updatedViewData.items.last?.interactionVariant == .standardOutgoing ||
-                isCloseToBottom
-            )
-        {
-            scrollToBottom(isAnimated: true)
         }
         
         // Mark received messages as read
@@ -817,7 +907,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
     }
     
-    func updateNavBarButtons(threadData: ConversationCell.ViewModel) {
+    func updateNavBarButtons(threadData: SessionThreadViewModel) {
         navigationItem.hidesBackButton = isShowingSearchUI
 
         if isShowingSearchUI {
@@ -997,7 +1087,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         
         switch section.model {
             case .messages:
-                let cellViewModel: MessageCell.ViewModel = section.elements[indexPath.row]
+                let cellViewModel: MessageViewModel = section.elements[indexPath.row]
                 let cell: MessageCell = tableView.dequeue(type: MessageCell.cellType(for: cellViewModel), for: indexPath)
                 cell.update(
                     with: cellViewModel,
@@ -1085,7 +1175,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
 
     func scrollToBottom(isAnimated: Bool) {
         guard
-            !isUserScrolling,
+            !self.isUserScrolling,
             let messagesSectionIndex: Int = self.viewModel.interactionData
                 .firstIndex(where: { $0.model == .messages }),
             !self.viewModel.interactionData[messagesSectionIndex]
@@ -1093,9 +1183,26 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 .isEmpty
         else { return }
         
-        tableView.scrollToRow(
+        // If the last interaction isn't loaded then scroll to the final interactionId on
+        // the thread data
+        let hasNewerItems: Bool = self.viewModel.interactionData.contains(where: { $0.model == .loadNewer })
+        
+        guard !self.didFinishInitialLayout || !hasNewerItems else {
+            let messages: [MessageViewModel] = self.viewModel.interactionData[messagesSectionIndex].elements
+            let lastInteractionId: Int64 = self.viewModel.threadData.interactionId
+                .defaulting(to: messages[messages.count - 1].id)
+            
+            self.scrollToInteractionIfNeeded(
+                with: lastInteractionId,
+                position: .bottom,
+                isAnimated: true
+            )
+            return
+        }
+        
+        self.tableView.scrollToRow(
             at: IndexPath(
-                row: viewModel.interactionData[messagesSectionIndex].elements.count - 1,
+                row: (self.viewModel.interactionData[messagesSectionIndex].elements.count - 1),
                 section: messagesSectionIndex
             ),
             at: .bottom,
@@ -1125,7 +1232,9 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             return
         }
         
-        self.highlightCellIfNeeded(interactionId: focusedInteractionId)
+        DispatchQueue.main.async { [weak self] in
+            self?.highlightCellIfNeeded(interactionId: focusedInteractionId)
+        }
     }
 
     func updateUnreadCountView(unreadCount: UInt?) {
@@ -1245,6 +1354,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             // load the up until the specified interaction
             guard self.didFinishInitialLayout else { return }
             
+            self.isLoadingMore = true
             self.searchController.resultsBar.startLoading()
             
             DispatchQueue.global(qos: .default).async { [weak self] in

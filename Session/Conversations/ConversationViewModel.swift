@@ -7,7 +7,7 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 
 public class ConversationViewModel: OWSAudioPlayerDelegate {
-    public typealias SectionModel = ArraySection<Section, MessageCell.ViewModel>
+    public typealias SectionModel = ArraySection<Section, MessageViewModel>
     
     // MARK: - Action
     
@@ -33,10 +33,10 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     // MARK: - Initialization
     
     init?(threadId: String, focusedInteractionId: Int64?) {
-        let maybeThreadData: ConversationCell.ViewModel? = GRDBStorage.shared.read { db in
+        let maybeThreadData: SessionThreadViewModel? = GRDBStorage.shared.read { db in
             let userPublicKey: String = getUserHexEncodedPublicKey(db)
             
-            return try ConversationCell.ViewModel
+            return try SessionThreadViewModel
                 .conversationQuery(
                     threadId: threadId,
                     userPublicKey: userPublicKey
@@ -44,7 +44,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                 .fetchOne(db)
         }
         
-        guard let threadData: ConversationCell.ViewModel = maybeThreadData else { return nil }
+        guard let threadData: SessionThreadViewModel = maybeThreadData else { return nil }
         
         self.threadId = threadId
         self.threadData = threadData
@@ -71,14 +71,14 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                     columns: ThreadTypingIndicator.Columns.allCases
                 )
             ],
-            filterSQL: MessageCell.ViewModel.filterSQL(threadId: threadId),
-            orderSQL: MessageCell.ViewModel.orderSQL,
-            dataQuery: MessageCell.ViewModel.baseQuery(
-                orderSQL: MessageCell.ViewModel.orderSQL,
-                baseFilterSQL: MessageCell.ViewModel.filterSQL(threadId: threadId)
+            filterSQL: MessageViewModel.filterSQL(threadId: threadId),
+            orderSQL: MessageViewModel.orderSQL,
+            dataQuery: MessageViewModel.baseQuery(
+                orderSQL: MessageViewModel.orderSQL,
+                baseFilterSQL: MessageViewModel.filterSQL(threadId: threadId)
             ),
             associatedRecords: [
-                AssociatedRecord<MessageCell.AttachmentInteractionInfo, MessageCell.ViewModel>(
+                AssociatedRecord<MessageViewModel.AttachmentInteractionInfo, MessageViewModel>(
                     trackedAgainst: Attachment.self,
                     observedChanges: [
                         PagedData.ObservedChanges(
@@ -86,9 +86,10 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                             columns: [.state]
                         )
                     ],
-                    dataQuery: MessageCell.AttachmentInteractionInfo.baseQuery,
-                    joinToPagedType: MessageCell.AttachmentInteractionInfo.joinToViewModelQuerySQL,
-                    associateData: MessageCell.AttachmentInteractionInfo.createAssociateDataClosure()
+                    dataQuery: MessageViewModel.AttachmentInteractionInfo.baseQuery,
+                    joinToPagedType: MessageViewModel.AttachmentInteractionInfo.joinToViewModelQuerySQL,
+                    groupPagedType: MessageViewModel.AttachmentInteractionInfo.groupViewModelQuerySQL,
+                    associateData: MessageViewModel.AttachmentInteractionInfo.createAssociateDataClosure()
                 )
             ],
             onChangeUnsorted: { [weak self] updatedData, updatedPageInfo in
@@ -137,32 +138,34 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     // MARK: - Thread Data
     
     /// This value is the current state of the view
-    public private(set) var threadData: ConversationCell.ViewModel
+    public private(set) var threadData: SessionThreadViewModel
     
     public lazy var observableThreadData = ValueObservation
-        .trackingConstantRegion { [threadId = self.threadId] db -> ConversationCell.ViewModel? in
+        .trackingConstantRegion { [threadId = self.threadId] db -> SessionThreadViewModel? in
             let userPublicKey: String = getUserHexEncodedPublicKey(db)
             
-            return try ConversationCell.ViewModel
+            return try SessionThreadViewModel
                 .conversationQuery(threadId: threadId, userPublicKey: userPublicKey)
                 .fetchOne(db)
         }
         .removeDuplicates()
 
-    public func updateThreadData(_ updatedData: ConversationCell.ViewModel) {
+    public func updateThreadData(_ updatedData: SessionThreadViewModel) {
         self.threadData = updatedData
     }
     
     // MARK: - Interaction Data
     
     public private(set) var interactionData: [SectionModel] = []
-    public private(set) var pagedDataObserver: PagedDatabaseObserver<Interaction, MessageCell.ViewModel>?
+    public private(set) var pagedDataObserver: PagedDatabaseObserver<Interaction, MessageViewModel>?
     public var onInteractionChange: (([SectionModel]) -> ())?
     
-    private func process(data: [MessageCell.ViewModel], for pageInfo: PagedData.PageInfo) -> [SectionModel] {
-        let sortedData: [MessageCell.ViewModel] = data
+    private func process(data: [MessageViewModel], for pageInfo: PagedData.PageInfo) -> [SectionModel] {
+        let sortedData: [MessageViewModel] = data
             .sorted { lhs, rhs -> Bool in lhs.timestampMs < rhs.timestampMs }
         
+        // We load messages from newest to oldest so having a pageOffset larger than zero means
+        // there are newer pages to load
         return [
             (!data.isEmpty && (pageInfo.pageOffset + pageInfo.currentCount) < pageInfo.totalCount ?
                 [SectionModel(section: .loadOlder)] :
@@ -173,10 +176,10 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                     section: .messages,
                     elements: sortedData
                         .enumerated()
-                        .map { index, cellViewModel -> MessageCell.ViewModel in
+                        .map { index, cellViewModel -> MessageViewModel in
                             cellViewModel.withClusteringChanges(
                                 prevModel: (index > 0 ? sortedData[index - 1] : nil),
-                                nextModel: (index < (sortedData.count - 2) ? sortedData[index + 1] : nil),
+                                nextModel: (index < (sortedData.count - 1) ? sortedData[index + 1] : nil),
                                 isLast: (
                                     index == (sortedData.count - 1) &&
                                     pageInfo.currentCount == pageInfo.totalCount
@@ -185,7 +188,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                         }
                 )
             ],
-            (data.isEmpty && pageInfo.pageOffset > 0 ?
+            (!data.isEmpty && pageInfo.pageOffset > 0 ?
                 [SectionModel(section: .loadNewer)] :
                 []
             )
@@ -210,7 +213,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     }
     
     public func mentions(for query: String = "") -> [MentionInfo] {
-        let threadData: ConversationCell.ViewModel = self.threadData
+        let threadData: SessionThreadViewModel = self.threadData
         
         let results: [MentionInfo] = GRDBStorage.shared
             .read { db -> [MentionInfo] in
@@ -336,13 +339,16 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                 .id
         else { return }
         
-        GRDBStorage.shared.write { db in
+        let threadId: String = self.threadData.threadId
+        let trySendReadReceipt: Bool = (self.threadData.threadIsMessageRequest == false)
+        
+        GRDBStorage.shared.writeAsync { db in
             try Interaction.markAsRead(
                 db,
                 interactionId: lastInteractionId,
-                threadId: self.threadData.threadId,
+                threadId: threadId,
                 includingOlder: true,
-                trySendReadReceipt: (self.threadData.threadIsMessageRequest == false)
+                trySendReadReceipt: trySendReadReceipt
             )
         }
     }
@@ -376,7 +382,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     private var currentPlayingInteraction: Atomic<Int64?> = Atomic(nil)
     private var playbackInfo: Atomic<[Int64: PlaybackInfo]> = Atomic([:])
     
-    public func playbackInfo(for viewModel: MessageCell.ViewModel, updateCallback: ((PlaybackInfo?, Error?) -> ())? = nil) -> PlaybackInfo? {
+    public func playbackInfo(for viewModel: MessageViewModel, updateCallback: ((PlaybackInfo?, Error?) -> ())? = nil) -> PlaybackInfo? {
         // Use the existing info if it already exists (update it's callback if provided as that means
         // the cell was reloaded)
         if let currentPlaybackInfo: PlaybackInfo = playbackInfo.wrappedValue[viewModel.id] {
@@ -413,7 +419,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         return newPlaybackInfo
     }
     
-    public func playOrPauseAudio(for viewModel: MessageCell.ViewModel) {
+    public func playOrPauseAudio(for viewModel: MessageViewModel) {
         guard
             let attachment: Attachment = viewModel.attachments?.first,
             let originalFilePath: String = attachment.originalFilePath,
@@ -460,7 +466,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         }
     }
     
-    public func speedUpAudio(for viewModel: MessageCell.ViewModel) {
+    public func speedUpAudio(for viewModel: MessageViewModel) {
         // If we aren't playing the specified item then just start playing it
         guard viewModel.id == currentPlayingInteraction.wrappedValue else {
             playOrPauseAudio(for: viewModel)
@@ -541,7 +547,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
             messageSection.elements[currentIndex + 1].cellType == .audio
         else { return }
         
-        let nextItem: MessageCell.ViewModel = messageSection.elements[currentIndex + 1]
+        let nextItem: MessageViewModel = messageSection.elements[currentIndex + 1]
         playOrPauseAudio(for: nextItem)
     }
     

@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import SessionMessagingKit
 
 extension ContextMenuVC {
     struct Action {
@@ -8,49 +9,49 @@ extension ContextMenuVC {
         let title: String
         let work: () -> Void
 
-        static func reply(_ cellViewModel: MessageCell.ViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+        static func reply(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_reply"),
                 title: "context_menu_reply".localized()
             ) { delegate?.reply(cellViewModel) }
         }
 
-        static func copy(_ cellViewModel: MessageCell.ViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+        static func copy(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_copy"),
                 title: "copy".localized()
             ) { delegate?.copy(cellViewModel) }
         }
 
-        static func copySessionID(_ cellViewModel: MessageCell.ViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+        static func copySessionID(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_copy"),
                 title: "vc_conversation_settings_copy_session_id_button_title".localized()
             ) { delegate?.copySessionID(cellViewModel) }
         }
 
-        static func delete(_ cellViewModel: MessageCell.ViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+        static func delete(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_trash"),
                 title: "TXT_DELETE_TITLE".localized()
             ) { delegate?.delete(cellViewModel) }
         }
 
-        static func save(_ cellViewModel: MessageCell.ViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+        static func save(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_download"),
                 title: "context_menu_save".localized()
             ) { delegate?.save(cellViewModel) }
         }
 
-        static func ban(_ cellViewModel: MessageCell.ViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+        static func ban(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_block"),
                 title: "context_menu_ban_user".localized()
             ) { delegate?.ban(cellViewModel) }
         }
         
-        static func banAndDeleteAllMessages(_ cellViewModel: MessageCell.ViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+        static func banAndDeleteAllMessages(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_block"),
                 title: "context_menu_ban_and_delete_all".localized()
@@ -58,7 +59,7 @@ extension ContextMenuVC {
         }
     }
 
-    static func actions(for cellViewModel: MessageCell.ViewModel, currentUserIsOpenGroupModerator: Bool, delegate: ContextMenuActionDelegate?) -> [Action]? {
+    static func actions(for cellViewModel: MessageViewModel, currentUserIsOpenGroupModerator: Bool, delegate: ContextMenuActionDelegate?) -> [Action]? {
         // No context items for info messages
         guard cellViewModel.variant == .standardOutgoing || cellViewModel.variant == .standardIncoming else {
             return nil
@@ -124,11 +125,11 @@ extension ContextMenuVC {
 // MARK: - Delegate
 
 protocol ContextMenuActionDelegate {
-    func reply(_ cellViewModel: MessageCell.ViewModel)
-    func copy(_ cellViewModel: MessageCell.ViewModel)
-    func copySessionID(_ cellViewModel: MessageCell.ViewModel)
-    func delete(_ cellViewModel: MessageCell.ViewModel)
-    func save(_ cellViewModel: MessageCell.ViewModel)
-    func ban(_ cellViewModel: MessageCell.ViewModel)
-    func banAndDeleteAllMessages(_ cellViewModel: MessageCell.ViewModel)
+    func reply(_ cellViewModel: MessageViewModel)
+    func copy(_ cellViewModel: MessageViewModel)
+    func copySessionID(_ cellViewModel: MessageViewModel)
+    func delete(_ cellViewModel: MessageViewModel)
+    func save(_ cellViewModel: MessageViewModel)
+    func ban(_ cellViewModel: MessageViewModel)
+    func banAndDeleteAllMessages(_ cellViewModel: MessageViewModel)
 }

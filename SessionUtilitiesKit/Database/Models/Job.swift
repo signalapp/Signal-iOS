@@ -6,9 +6,24 @@ import GRDB
 public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "job" }
     internal static let dependencyForeignKey = ForeignKey([Columns.id], to: [JobDependencies.Columns.dependantId])
-    internal static let dependantJobForeignKey = ForeignKey([Columns.id], to: [JobDependencies.Columns.jobId])
-    internal static let dependencies = hasMany(Job.self, using: dependencyForeignKey)
-    internal static let dependantJobs = hasMany(Job.self, using: dependencyForeignKey)
+    public static let dependantJobDependency = hasMany(
+        JobDependencies.self,
+        using: JobDependencies.jobForeignKey
+    )
+    public static let dependancyJobDependency = hasMany(
+        JobDependencies.self,
+        using: JobDependencies.dependantForeignKey
+    )
+    internal static let jobsThisJobDependsOn = hasMany(
+        Job.self,
+        through: dependantJobDependency,
+        using: JobDependencies.dependant
+    )
+    internal static let jobsThatDependOnThisJob = hasMany(
+        Job.self,
+        through: dependancyJobDependency,
+        using: JobDependencies.job
+    )
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -50,7 +65,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         ///
         /// **Note:** This is a blocking job so it will run before any other jobs and prevent them from
         /// running until it's complete
-        case failedMessages = 1000
+        case failedMessageSends = 1000
         
         /// This is a recurring job that runs on launch and flags any attachments marked as 'uploading' to
         /// be in their 'failed' state
@@ -151,7 +166,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     /// **Note:** When completing a job the dependencies **MUST** be cleared before the job is
     /// deleted or it will automatically delete any dependant jobs
     public var dependencies: QueryInterfaceRequest<Job> {
-        request(for: Job.dependencies)
+        request(for: Job.jobsThisJobDependsOn)
     }
     
     /// The other jobs which depend on this job
@@ -159,7 +174,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     /// **Note:** When completing a job the dependencies **MUST** be cleared before the job is
     /// deleted or it will automatically delete any dependant jobs
     public var dependantJobs: QueryInterfaceRequest<Job> {
-        request(for: Job.dependantJobs)
+        request(for: Job.jobsThatDependOnThisJob)
     }
     
     // MARK: - Initialization
@@ -242,8 +257,12 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
 // MARK: - GRDB Interactions
 
 extension Job {
-    internal static func filterPendingJobs(variants: [Variant], excludeFutureJobs: Bool = true) -> QueryInterfaceRequest<Job> {
-        let query: QueryInterfaceRequest<Job> = Job
+    internal static func filterPendingJobs(
+        variants: [Variant],
+        excludeFutureJobs: Bool = true,
+        includeJobsWithDependencies: Bool = false
+    ) -> QueryInterfaceRequest<Job> {
+        var query: QueryInterfaceRequest<Job> = Job
             .filter(
                 // Retrieve all 'runOnce' and 'recurring' jobs
                 [
@@ -263,12 +282,15 @@ extension Job {
             .order(Job.Columns.nextRunTimestamp)
             .order(Job.Columns.id)
         
-        guard excludeFutureJobs else {
-            return query
+        if excludeFutureJobs {
+            query = query.filter(Job.Columns.nextRunTimestamp <= Date().timeIntervalSince1970)
+        }
+        
+        if !includeJobsWithDependencies {
+            query = query.having(Job.jobsThisJobDependsOn.isEmpty)
         }
         
         return query
-            .filter(Job.Columns.nextRunTimestamp <= Date().timeIntervalSince1970)
     }
 }
 

@@ -9,7 +9,7 @@ final class MediaPlaceholderView: UIView {
     
     // MARK: - Lifecycle
     
-    init(cellViewModel: MessageCell.ViewModel, textColor: UIColor) {
+    init(cellViewModel: MessageViewModel, textColor: UIColor) {
         super.init(frame: CGRect.zero)
         
         setUpViewHierarchy(cellViewModel: cellViewModel, textColor: textColor)
@@ -24,7 +24,7 @@ final class MediaPlaceholderView: UIView {
     }
     
     private func setUpViewHierarchy(
-        cellViewModel: MessageCell.ViewModel,
+        cellViewModel: MessageViewModel,
         textColor: UIColor
     ) {
         let (iconName, attachmentDescription): (String, String) = {

@@ -398,7 +398,7 @@ extension ConversationVC:
 
     func sendAttachments(_ attachments: [SignalAttachment], with text: String, onComplete: (() -> ())? = nil) {
         guard !showBlockedModalIfNeeded() else { return }
-
+        
         for attachment in attachments {
             if attachment.hasError {
                 return showErrorAlert(for: attachment, onDismiss: onComplete)
@@ -628,7 +628,7 @@ extension ConversationVC:
 
     // MARK: MessageCellDelegate
 
-    func handleItemLongPressed(_ cellViewModel: MessageCell.ViewModel) {
+    func handleItemLongPressed(_ cellViewModel: MessageViewModel) {
         // Show the context menu if applicable
         guard
             let keyWindow: UIWindow = UIApplication.shared.keyWindow,
@@ -675,7 +675,7 @@ extension ConversationVC:
         self.contextMenuWindow?.makeKeyAndVisible()
     }
 
-    func handleItemTapped(_ cellViewModel: MessageCell.ViewModel, gestureRecognizer: UITapGestureRecognizer) {
+    func handleItemTapped(_ cellViewModel: MessageViewModel, gestureRecognizer: UITapGestureRecognizer) {
         guard cellViewModel.variant != .standardOutgoing || cellViewModel.state != .failed else {
             // Show the failed message sheet
             showFailedMessageSheet(for: cellViewModel)
@@ -717,7 +717,7 @@ extension ConversationVC:
                         // TODO: Tapped a failed incoming attachment
                         break
                         
-                    case .failedDownload:
+                    case .failedDownload, .failedUpload:
                         // TODO: Tapped a failed incoming attachment
                         break
                         
@@ -802,7 +802,7 @@ extension ConversationVC:
         }
     }
     
-    func handleItemDoubleTapped(_ cellViewModel: MessageCell.ViewModel) {
+    func handleItemDoubleTapped(_ cellViewModel: MessageViewModel) {
         switch cellViewModel.cellType {
             // The user can double tap a voice message when it's playing to speed it up
             case .audio: self.viewModel.speedUpAudio(for: cellViewModel)
@@ -810,7 +810,7 @@ extension ConversationVC:
         }
     }
 
-    func handleItemSwiped(_ cellViewModel: MessageCell.ViewModel, state: SwipeState) {
+    func handleItemSwiped(_ cellViewModel: MessageViewModel, state: SwipeState) {
         switch state {
             case .began: tableView.isScrollEnabled = false
             case .ended, .cancelled: tableView.isScrollEnabled = true
@@ -841,7 +841,7 @@ extension ConversationVC:
         self.presentAlert(alertVC)
     }
     
-    func handleReplyButtonTapped(for cellViewModel: MessageCell.ViewModel) {
+    func handleReplyButtonTapped(for cellViewModel: MessageViewModel) {
         reply(cellViewModel)
     }
     
@@ -856,7 +856,7 @@ extension ConversationVC:
     // MARK: --action handling
     
     
-    func showFailedMessageSheet(for cellViewModel: MessageCell.ViewModel) {
+    func showFailedMessageSheet(for cellViewModel: MessageViewModel) {
         let sheet = UIAlertController(title: cellViewModel.mostRecentFailureText, message: nil, preferredStyle: .actionSheet)
         sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         sheet.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in
@@ -909,7 +909,7 @@ extension ConversationVC:
     
     // MARK: - ContextMenuActionDelegate
 
-    func reply(_ cellViewModel: MessageCell.ViewModel) {
+    func reply(_ cellViewModel: MessageViewModel) {
         let maybeQuoteDraft: QuotedReplyModel? = QuotedReplyModel.quotedReplyForSending(
             threadId: self.viewModel.threadData.threadId,
             authorId: cellViewModel.authorId,
@@ -929,7 +929,7 @@ extension ConversationVC:
         snInputView.becomeFirstResponder()
     }
 
-    func copy(_ cellViewModel: MessageCell.ViewModel) {
+    func copy(_ cellViewModel: MessageViewModel) {
         switch cellViewModel.cellType {
             case .typingIndicator: break
             
@@ -954,7 +954,7 @@ extension ConversationVC:
         }
     }
 
-    func copySessionID(_ cellViewModel: MessageCell.ViewModel) {
+    func copySessionID(_ cellViewModel: MessageViewModel) {
         guard cellViewModel.variant == .standardIncoming || cellViewModel.variant == .standardIncomingDeleted else {
             return
         }
@@ -962,7 +962,7 @@ extension ConversationVC:
         UIPasteboard.general.string = cellViewModel.authorId
     }
 
-    func delete(_ cellViewModel: MessageCell.ViewModel) {
+    func delete(_ cellViewModel: MessageViewModel) {
         // Only allow deletion on incoming and outgoing messages
         guard cellViewModel.variant == .standardIncoming || cellViewModel.variant == .standardOutgoing else {
             return
@@ -1141,7 +1141,7 @@ extension ConversationVC:
         }
     }
 
-    func save(_ cellViewModel: MessageCell.ViewModel) {
+    func save(_ cellViewModel: MessageViewModel) {
         guard cellViewModel.cellType == .mediaMessage else { return }
         
         let mediaAttachments: [(Attachment, String)] = (cellViewModel.attachments ?? [])
@@ -1199,7 +1199,7 @@ extension ConversationVC:
         }
     }
 
-    func ban(_ cellViewModel: MessageCell.ViewModel) {
+    func ban(_ cellViewModel: MessageViewModel) {
         guard cellViewModel.threadVariant == .openGroup else { return }
         
         let threadId: String = self.viewModel.threadData.threadId
@@ -1222,7 +1222,7 @@ extension ConversationVC:
         present(alert, animated: true, completion: nil)
     }
 
-    func banAndDeleteAllMessages(_ cellViewModel: MessageCell.ViewModel) {
+    func banAndDeleteAllMessages(_ cellViewModel: MessageViewModel) {
         guard cellViewModel.threadVariant == .openGroup else { return }
         
         let threadId: String = self.viewModel.threadData.threadId

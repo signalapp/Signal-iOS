@@ -152,7 +152,7 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         )
     }
     
-    private func handleUpdates(_ updatedViewData: [ConversationCell.ViewModel]) {
+    private func handleUpdates(_ updatedViewData: [SessionThreadViewModel]) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
         guard hasLoadedInitialData else {

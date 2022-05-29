@@ -39,6 +39,7 @@ extension GarbageCollectionJob {
         case threadTypingIndicators
         case orphanedAttachmentFiles
         case orphanedProfileAvatars
+        case orphanedLinkPreviews
     }
     
     public struct Details: Codable {

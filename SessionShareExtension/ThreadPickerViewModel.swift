@@ -8,7 +8,7 @@ import SessionMessagingKit
 
 public class ThreadPickerViewModel {
     /// This value is the current state of the view
-    public private(set) var viewData: [ConversationCell.ViewModel] = []
+    public private(set) var viewData: [SessionThreadViewModel] = []
     
     /// This is all the data the screen needs to populate itself, please see the following link for tips to help optimise
     /// performance https://github.com/groue/GRDB.swift#valueobservation-performance
@@ -16,10 +16,10 @@ public class ThreadPickerViewModel {
     /// **Note:** The 'trackingConstantRegion' is optimised in such a way that the request needs to be static
     /// otherwise there may be situations where it doesn't get updates, this means we can't have conditional queries
     public lazy var observableViewData = ValueObservation
-        .trackingConstantRegion { db -> [ConversationCell.ViewModel] in
+        .trackingConstantRegion { db -> [SessionThreadViewModel] in
             let userPublicKey: String = getUserHexEncodedPublicKey(db)
             
-            return try ConversationCell.ViewModel
+            return try SessionThreadViewModel
                 .shareQuery(userPublicKey: userPublicKey)
                 .fetchAll(db)
         }
@@ -27,7 +27,7 @@ public class ThreadPickerViewModel {
     
     // MARK: - Functions
     
-    public func updateData(_ updatedData: [ConversationCell.ViewModel]) {
+    public func updateData(_ updatedData: [SessionThreadViewModel]) {
         self.viewData = updatedData
     }
 }

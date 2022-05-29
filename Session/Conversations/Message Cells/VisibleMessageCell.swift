@@ -207,7 +207,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     // MARK: - Updating
     
     override func update(
-        with cellViewModel: MessageCell.ViewModel,
+        with cellViewModel: MessageViewModel,
         mediaCache: NSCache<NSString, AnyObject>,
         playbackInfo: ConversationViewModel.PlaybackInfo?,
         lastSearchText: String?
@@ -328,16 +328,14 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         }
     }
 
-    private func populateHeader(for cellViewModel: MessageCell.ViewModel, shouldInsetHeader: Bool) {
+    private func populateHeader(for cellViewModel: MessageViewModel, shouldInsetHeader: Bool) {
         guard let date: Date = cellViewModel.dateForUI else { return }
         
         let dateBreakLabel: UILabel = UILabel()
         dateBreakLabel.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
         dateBreakLabel.textColor = Colors.text
         dateBreakLabel.textAlignment = .center
-        
-        let description: String = DateUtil.formatDate(forDisplay: date)
-        dateBreakLabel.text = description
+        dateBreakLabel.text = date.formattedForDisplay
         headerView.addSubview(dateBreakLabel)
         dateBreakLabel.pin(.top, to: .top, of: headerView, withInset: Values.smallSpacing)
         
@@ -352,7 +350,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     }
 
     private func populateContentView(
-        for cellViewModel: MessageCell.ViewModel,
+        for cellViewModel: MessageViewModel,
         mediaCache: NSCache<NSString, AnyObject>,
         playbackInfo: ConversationViewModel.PlaybackInfo?,
         lastSearchText: String?
@@ -579,7 +577,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         bubbleView.layer.maskedCorners = getCornerMask(from: cornersToRound)
     }
     
-    override func dynamicUpdate(with cellViewModel: MessageCell.ViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
+    override func dynamicUpdate(with cellViewModel: MessageViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
         guard cellViewModel.variant != .standardIncomingDeleted else { return }
         
         // If it's an incoming media message and the thread isn't trusted then show the placeholder view
@@ -669,13 +667,13 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     }
 
     @objc func handleLongPress() {
-        guard let cellViewModel: MessageCell.ViewModel = self.viewModel else { return }
+        guard let cellViewModel: MessageViewModel = self.viewModel else { return }
         
         delegate?.handleItemLongPressed(cellViewModel)
     }
 
     @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
-        guard let cellViewModel: MessageCell.ViewModel = self.viewModel else { return }
+        guard let cellViewModel: MessageViewModel = self.viewModel else { return }
         
         let location = gestureRecognizer.location(in: self)
         
@@ -692,13 +690,13 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     }
 
     @objc private func handleDoubleTap() {
-        guard let cellViewModel: MessageCell.ViewModel = self.viewModel else { return }
+        guard let cellViewModel: MessageViewModel = self.viewModel else { return }
         
         delegate?.handleItemDoubleTapped(cellViewModel)
     }
 
     @objc private func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
-        guard let cellViewModel: MessageCell.ViewModel = self.viewModel else { return }
+        guard let cellViewModel: MessageViewModel = self.viewModel else { return }
         
         let viewsToMove: [UIView] = [
             bubbleView, profilePictureView, replyButton, timerView, messageStatusImageView
@@ -760,7 +758,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     }
 
     private func reply() {
-        guard let cellViewModel: MessageCell.ViewModel = self.viewModel else { return }
+        guard let cellViewModel: MessageViewModel = self.viewModel else { return }
         
         resetReply()
         delegate?.handleReplyButtonTapped(for: cellViewModel)
@@ -797,7 +795,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         return cornerMask
     }
 
-    private static func getFontSize(for cellViewModel: MessageCell.ViewModel) -> CGFloat {
+    private static func getFontSize(for cellViewModel: MessageViewModel) -> CGFloat {
         let baselineFontSize = Values.mediumFontSize
         
         guard cellViewModel.containsOnlyEmoji == true else { return baselineFontSize }
@@ -810,7 +808,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         }
     }
 
-    private func getMessageStatusImage(for cellViewModel: MessageCell.ViewModel) -> (image: UIImage?, tintColor: UIColor?, backgroundColor: UIColor?) {
+    private func getMessageStatusImage(for cellViewModel: MessageViewModel) -> (image: UIImage?, tintColor: UIColor?, backgroundColor: UIColor?) {
         guard cellViewModel.variant == .standardOutgoing else { return (nil, nil, nil) }
 
         let image: UIImage
@@ -838,7 +836,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         return (image, tintColor, backgroundColor)
     }
 
-    private func getSize(for cellViewModel: MessageCell.ViewModel) -> CGSize {
+    private func getSize(for cellViewModel: MessageViewModel) -> CGSize {
         guard let mediaAttachments: [Attachment] = cellViewModel.attachments?.filter({ $0.isVisualMedia }) else {
             preconditionFailure()
         }
@@ -886,7 +884,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         return CGSize(width: width, height: height)
     }
 
-    static func getMaxWidth(for cellViewModel: MessageCell.ViewModel) -> CGFloat {
+    static func getMaxWidth(for cellViewModel: MessageViewModel) -> CGFloat {
         let screen: CGRect = UIScreen.main.bounds
         
         switch cellViewModel.variant {
@@ -905,7 +903,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     }
 
     static func getBodyTextView(
-        for cellViewModel: MessageCell.ViewModel,
+        for cellViewModel: MessageViewModel,
         with availableWidth: CGFloat,
         textColor: UIColor,
         searchText: String?,
@@ -938,7 +936,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         if let searchText = searchText, searchText.count >= ConversationSearchController.minimumSearchTextLength {
             let normalizedBody: String = attributedText.string.lowercased()
             
-            ConversationCell.ViewModel.searchTermParts(searchText)
+            SessionThreadViewModel.searchTermParts(searchText)
                 .map { part -> String in
                     guard part.hasPrefix("\"") && part.hasSuffix("\"") else { return part }
                     

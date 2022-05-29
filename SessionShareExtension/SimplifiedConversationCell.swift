@@ -87,7 +87,7 @@ final class SimplifiedConversationCell: UITableViewCell {
     
     // MARK: - Updating
     
-    public func update(with cellViewModel: ConversationCell.ViewModel) {
+    public func update(with cellViewModel: SessionThreadViewModel) {
         accentLineView.alpha = (cellViewModel.threadIsBlocked == true ? 1 : 0)
         profilePictureView.update(
             publicKey: cellViewModel.threadId,

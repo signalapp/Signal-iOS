@@ -2,6 +2,7 @@
 
 import UIKit
 import SessionUIKit
+import SessionMessagingKit
 
 final class ContextMenuVC: UIViewController {
     private static let actionViewHeight: CGFloat = 40
@@ -9,7 +10,7 @@ final class ContextMenuVC: UIViewController {
     
     private let snapshot: UIView
     private let frame: CGRect
-    private let cellViewModel: MessageCell.ViewModel
+    private let cellViewModel: MessageViewModel
     private let actions: [Action]
     private let dismiss: () -> Void
 
@@ -33,7 +34,7 @@ final class ContextMenuVC: UIViewController {
         result.textColor = (isLightMode ? .black : .white)
         
         if let dateForUI: Date = cellViewModel.dateForUI {
-            result.text = DateUtil.formatDate(forDisplay: dateForUI)
+            result.text = dateForUI.formattedForDisplay
         }
         
         return result
@@ -44,7 +45,7 @@ final class ContextMenuVC: UIViewController {
     init(
         snapshot: UIView,
         frame: CGRect,
-        cellViewModel: MessageCell.ViewModel,
+        cellViewModel: MessageViewModel,
         actions: [Action],
         dismiss: @escaping () -> Void
     ) {

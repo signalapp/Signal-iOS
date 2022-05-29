@@ -200,7 +200,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         }
         
         // If there are no inserted/updated rows then trigger the update callback and stop here
-        let rowIdsToQuery: [Int64] = committedChanges
+        let rowIdsToQuery: [Int64] = relevantChanges
             .filter { $0.kind != .delete }
             .map { $0.rowId }
         
@@ -223,17 +223,34 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         // 'currentCount' and the indexes are sequential (ie. more than the current loaded content was
         // added at once)
         let itemIndexesAreSequential: Bool = (itemIndexes.map { $0 - 1 }.dropFirst() == itemIndexes.dropLast())
-        let hasOneValidIndex: Bool = itemIndexes.contains(where: { $0 < updatedPageInfo.currentCount })
+        let hasOneValidIndex: Bool = itemIndexes.contains(where: { index -> Bool in
+            index >= updatedPageInfo.pageOffset &&
+            index < updatedPageInfo.currentCount
+        })
         let validRowIds: [Int64] = (itemIndexesAreSequential && hasOneValidIndex ?
             rowIdsToQuery :
             zip(itemIndexes, rowIdsToQuery)
-                .filter { index, _ -> Bool in index < updatedPageInfo.currentCount }
+                .filter { index, _ -> Bool in
+                    index >= updatedPageInfo.pageOffset &&
+                    index < updatedPageInfo.currentCount
+                }
                 .map { _, rowId -> Int64 in rowId }
         )
+        let countBefore: Int = itemIndexes.filter { $0 < updatedPageInfo.pageOffset }.count
+        
+        // Update the offset and totalCount even if the rows are outside of the current page (need to
+        // in order to ensure the 'load more' sections are accurate)
+        updatedPageInfo = PagedData.PageInfo(
+            pageSize: updatedPageInfo.pageSize,
+            pageOffset: (updatedPageInfo.pageOffset + countBefore),
+            currentCount: updatedPageInfo.currentCount,
+            totalCount: (updatedPageInfo.totalCount + itemIndexes.count)
+        )
 
-        // If there are no valid attachment row ids then stop here
+        // If there are no valid row ids then stop here (trigger updates though since the page info
+        // has changes)
         guard !validRowIds.isEmpty else {
-            updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, !deletionChanges.isEmpty)
+            updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, true)
             return
         }
 
@@ -243,24 +260,17 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             .fetchAll(db))
             .defaulting(to: [])
 
-        // If the inserted/updated rows we irrelevant (associated to data which doesn't pass
-        // the filter) then trigger the update callback (if there were deletions) and stop here
-        guard !updatedItems.isEmpty else {
-            updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, !deletionChanges.isEmpty)
-            return
-        }
-
         // Process the upserted data
         updatedDataCache = updatedDataCache.upserting(items: updatedItems)
         
-        // Update the page info for the upserted data
+        // Update the currentCount for the upserted data
         let dataSizeDiff: Int = (updatedDataCache.count - oldDataCount)
         
         updatedPageInfo = PagedData.PageInfo(
             pageSize: updatedPageInfo.pageSize,
             pageOffset: updatedPageInfo.pageOffset,
             currentCount: (updatedPageInfo.currentCount + dataSizeDiff),
-            totalCount: (updatedPageInfo.totalCount + dataSizeDiff)
+            totalCount: updatedPageInfo.totalCount
         )
         
         updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, true)
@@ -526,6 +536,7 @@ public protocol ErasedAssociatedRecord {
     var databaseTableName: String { get }
     var observedChanges: [PagedData.ObservedChanges] { get }
     var joinToPagedType: SQL { get }
+    var groupPagedType: SQL? { get }
     
     func tryUpdateForDatabaseCommit(
         _ db: Database,
@@ -717,8 +728,7 @@ public enum PagedData {
         idColumn: String,
         requiredJoinSQL: SQL? = nil,
         orderSQL: SQL,
-        filterSQL: SQL,
-        joinToPagedType: SQL? = nil
+        filterSQL: SQL
     ) -> Int? {
         let tableNameLiteral: SQL = SQL(stringLiteral: tableName)
         let idColumnLiteral: SQL = SQL(stringLiteral: idColumn)
@@ -731,7 +741,6 @@ public enum PagedData {
                     ROW_NUMBER() OVER (ORDER BY \(orderSQL)) AS rowIndex
                 FROM \(tableNameLiteral)
                 \(requiredJoinSQL ?? "")
-                \(joinToPagedType ?? "")
                 WHERE \(filterSQL)
             ) AS data
             WHERE \(SQL("data.\(idColumnLiteral) = \(id)"))
@@ -750,9 +759,42 @@ public enum PagedData {
         requiredJoinSQL: SQL? = nil,
         orderSQL: SQL,
         filterSQL: SQL,
-        joinToPagedType: SQL? = nil
+        joinToPagedType: SQL? = nil,
+        groupPagedType: SQL? = nil
     ) -> [Int64] {
         let tableNameLiteral: SQL = SQL(stringLiteral: tableName)
+        
+        /// **Note:** `ROW_NUMBER` works by returning the index of the row in a given query, unfortunately when dealing
+        /// with associated data its possible for multiple results to connect to an individual paged result, this throws off the
+        /// indexes so in this case we need to do some sneaky aggregation and grouping and then individually retrieve each
+        /// index to prevent this
+        guard joinToPagedType == nil || rowIds.count == 1 else {
+            guard let groupPagedType: SQL = groupPagedType else { return [] }
+            
+            let groupByLiteral: SQL = SQL(stringLiteral: "GROUP BY ")
+            
+            return rowIds.compactMap { rowId in
+                let groupedRequest: SQLRequest<Int64> = """
+                    SELECT
+                        (data.rowIndex - 1) AS rowIndex -- Converting from 1-Indexed to 0-indexed
+                    FROM (
+                        SELECT
+                            \(tableNameLiteral).rowid AS rowid,
+                            \(SQL("MAX(\(tableNameLiteral).rowid = \(rowId))")),
+                            ROW_NUMBER() OVER (ORDER BY \(orderSQL)) AS rowIndex
+                        FROM \(tableNameLiteral)
+                        \(requiredJoinSQL ?? "")
+                        \(joinToPagedType ?? "")
+                        WHERE \(filterSQL)
+                        \(groupByLiteral)\(groupPagedType)
+                    ) AS data
+                    WHERE \(SQL("data.rowid = \(rowId)"))
+                """
+                
+                return try? groupedRequest.fetchOne(db)
+            }
+        }
+        
         let request: SQLRequest<Int64> = """
             SELECT
                 (data.rowIndex - 1) AS rowIndex -- Converting from 1-Indexed to 0-indexed
@@ -800,6 +842,7 @@ public class AssociatedRecord<T, PagedType>: ErasedAssociatedRecord where T: Fet
     public let databaseTableName: String
     public let observedChanges: [PagedData.ObservedChanges]
     public let joinToPagedType: SQL
+    public let groupPagedType: SQL?
     
     fileprivate let dataCache: Atomic<DataCache<T>> = Atomic(DataCache())
     fileprivate let dataQuery: (SQL?) -> AdaptedFetchRequest<SQLRequest<T>>
@@ -812,12 +855,14 @@ public class AssociatedRecord<T, PagedType>: ErasedAssociatedRecord where T: Fet
         observedChanges: [PagedData.ObservedChanges],
         dataQuery: @escaping (SQL?) -> AdaptedFetchRequest<SQLRequest<T>>,
         joinToPagedType: SQL,
+        groupPagedType: SQL? = nil,
         associateData: @escaping (DataCache<T>, DataCache<PagedType>) -> DataCache<PagedType>
     ) {
         self.databaseTableName = trackedAgainst.databaseTableName
         self.observedChanges = observedChanges
         self.dataQuery = dataQuery
         self.joinToPagedType = joinToPagedType
+        self.groupPagedType = groupPagedType
         self.associateData = associateData
     }
     
@@ -826,6 +871,7 @@ public class AssociatedRecord<T, PagedType>: ErasedAssociatedRecord where T: Fet
         observedChanges: [PagedData.ObservedChanges],
         dataQuery: @escaping (SQL?) -> SQLRequest<T>,
         joinToPagedType: SQL,
+        groupPagedType: SQL? = nil,
         associateData: @escaping (DataCache<T>, DataCache<PagedType>) -> DataCache<PagedType>
     ) {
         self.init(
@@ -835,6 +881,7 @@ public class AssociatedRecord<T, PagedType>: ErasedAssociatedRecord where T: Fet
                 dataQuery(additionalFilters).adapted { _ in ScopeAdapter([:]) }
             },
             joinToPagedType: joinToPagedType,
+            groupPagedType: groupPagedType,
             associateData: associateData
         )
     }
@@ -879,19 +926,27 @@ public class AssociatedRecord<T, PagedType>: ErasedAssociatedRecord where T: Fet
             tableName: databaseTableName,
             orderSQL: orderSQL,
             filterSQL: filterSQL,
-            joinToPagedType: joinToPagedType
+            joinToPagedType: joinToPagedType,
+            groupPagedType: groupPagedType
         )
         
         // Determine if the indexes for the row ids should be displayed on the screen and remove any
         // which shouldn't - values less than 'currentCount' or if there is at least one value less than
         // 'currentCount' and the indexes are sequential (ie. more than the current loaded content was
         // added at once)
-        let itemIndexesAreSequential: Bool = (itemIndexes.map { $0 - 1 }.dropFirst() == itemIndexes.dropLast())
-        let hasOneValidIndex: Bool = itemIndexes.contains(where: { $0 < pageInfo.currentCount })
+        let uniqueIndexes: [Int64] = itemIndexes.asSet().sorted()
+        let itemIndexesAreSequential: Bool = (uniqueIndexes.map { $0 - 1 }.dropFirst() == uniqueIndexes.dropLast())
+        let hasOneValidIndex: Bool = itemIndexes.contains(where: { index -> Bool in
+            index >= pageInfo.pageOffset &&
+            index < pageInfo.currentCount
+        })
         let validRowIds: [Int64] = (itemIndexesAreSequential && hasOneValidIndex ?
-            itemIndexes :
+            rowIdsToQuery :
             zip(itemIndexes, rowIdsToQuery)
-                .filter { index, _ -> Bool in index < pageInfo.currentCount }
+                .filter { index, _ -> Bool in
+                    index >= pageInfo.pageOffset &&
+                    index < pageInfo.currentCount
+                }
                 .map { _, rowId -> Int64 in rowId }
         )
 

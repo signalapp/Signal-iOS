@@ -60,7 +60,7 @@ class MessageRequestsCell: UITableViewCell {
         result.translatesAutoresizingMaskIntoConstraints = false
         result.clipsToBounds = true
         result.backgroundColor = Colors.text.withAlphaComponent(Values.veryLowOpacity)
-        result.layer.cornerRadius = (ConversationCell.Full.unreadCountViewSize / 2)
+        result.layer.cornerRadius = (FullConversationCell.unreadCountViewSize / 2)
         
         return result
     }()
@@ -115,8 +115,8 @@ class MessageRequestsCell: UITableViewCell {
             
             unreadCountView.leftAnchor.constraint(equalTo: titleLabel.rightAnchor, constant: (Values.smallSpacing / 2)),
             unreadCountView.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-            unreadCountView.widthAnchor.constraint(equalToConstant: ConversationCell.Full.unreadCountViewSize),
-            unreadCountView.heightAnchor.constraint(equalToConstant: ConversationCell.Full.unreadCountViewSize),
+            unreadCountView.widthAnchor.constraint(equalToConstant: FullConversationCell.unreadCountViewSize),
+            unreadCountView.heightAnchor.constraint(equalToConstant: FullConversationCell.unreadCountViewSize),
             
             unreadCountLabel.topAnchor.constraint(equalTo: unreadCountView.topAnchor),
             unreadCountLabel.leftAnchor.constraint(equalTo: unreadCountView.leftAnchor),

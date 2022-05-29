@@ -444,6 +444,7 @@ extension MessageReceiver {
                 variant: variant,
                 body: message.text,
                 timestampMs: Int64(messageSentTimestamp * 1000),
+                wasRead: (variant == .standardOutgoing), // Auto-mark sent messages as read
                 hasMention: (
                     message.text?.contains("@\(currentUserPublicKey)") == true ||
                     dataMessage.quote?.author == currentUserPublicKey
@@ -646,7 +647,9 @@ extension MessageReceiver {
                 }
         }
     
-        // For outgoing messages mark it and all older interactions as read
+        // For outgoing messages mark all older interactions as read (the user should have seen
+        // them if they send a message - also avoids a situation where the user has "phantom"
+        // unread messages that they need to scroll back to before they become marked as read)
         try Interaction.markAsRead(
             db,
             interactionId: interactionId,

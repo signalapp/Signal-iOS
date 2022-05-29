@@ -192,13 +192,13 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             owsFailDebug("threadId was unexpectedly nil")
             return true
         }
-
+        
         guard let conversationViewController = UIApplication.shared.frontmostViewController as? ConversationVC else {
             return true
         }
 
-        // Show notifications for any *other* thread
-        return conversationViewController.thread.uniqueId != notificationThreadId
+        /// Show notifications for any **other** threads
+        return (conversationViewController.viewModel.threadData.threadId != notificationThreadId)
     }
 }
 
@@ -230,16 +230,18 @@ public class UserNotificationActionHandler: NSObject {
         let userInfo = response.notification.request.content.userInfo
 
         switch response.actionIdentifier {
-        case UNNotificationDefaultActionIdentifier:
-            Logger.debug("default action")
-            return try actionHandler.showThread(userInfo: userInfo)
-        case UNNotificationDismissActionIdentifier:
-            // TODO - mark as read?
-            Logger.debug("dismissed notification")
-            return Promise.value(())
-        default:
-            // proceed
-            break
+            case UNNotificationDefaultActionIdentifier:
+                Logger.debug("default action")
+                return try actionHandler.showThread(userInfo: userInfo)
+                
+            case UNNotificationDismissActionIdentifier:
+                // TODO - mark as read?
+                Logger.debug("dismissed notification")
+                return Promise.value(())
+                
+            default:
+                // proceed
+                break
         }
 
         guard let action = UserNotificationConfig.action(identifier: response.actionIdentifier) else {
@@ -247,16 +249,18 @@ public class UserNotificationActionHandler: NSObject {
         }
 
         switch action {
-        case .markAsRead:
-            return try actionHandler.markAsRead(userInfo: userInfo)
-        case .reply:
-            guard let textInputResponse = response as? UNTextInputNotificationResponse else {
-                throw NotificationError.failDebug("response had unexpected type: \(response)")
-            }
+            case .markAsRead:
+                return try actionHandler.markAsRead(userInfo: userInfo)
+                
+            case .reply:
+                guard let textInputResponse = response as? UNTextInputNotificationResponse else {
+                    throw NotificationError.failDebug("response had unexpected type: \(response)")
+                }
 
-            return try actionHandler.reply(userInfo: userInfo, replyText: textInputResponse.userText)
-        case .showThread:
-            return try actionHandler.showThread(userInfo: userInfo)
+                return try actionHandler.reply(userInfo: userInfo, replyText: textInputResponse.userText)
+                    
+            case .showThread:
+                return try actionHandler.showThread(userInfo: userInfo)
         }
     }
 }

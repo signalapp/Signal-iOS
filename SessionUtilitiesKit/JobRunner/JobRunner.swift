@@ -56,7 +56,8 @@ public final class JobRunner {
             jobVariants: [
                 jobVariants.remove(.attachmentUpload),
                 jobVariants.remove(.messageSend),
-                jobVariants.remove(.notifyPushServer)// TODO: Read receipts
+                jobVariants.remove(.notifyPushServer),
+                jobVariants.remove(.sendReadReceipts)
             ].compactMap { $0 }
         )
         let messageReceiveQueue: JobQueue = JobQueue(
@@ -131,6 +132,11 @@ public final class JobRunner {
         guard let job: Job = job else { return }    // Ignore null jobs
         
         queues.wrappedValue[job.variant]?.upsert(job, canStartJob: canStartJob)
+        
+        // Start the job runner if needed
+        db.afterNextTransactionCommit { _ in
+            queues.wrappedValue[job.variant]?.start()
+        }
     }
     
     @discardableResult public static func insert(_ db: Database, job: Job?, before otherJob: Job) -> Job? {
@@ -149,6 +155,11 @@ public final class JobRunner {
         }
         
         queues.wrappedValue[updatedJob.variant]?.insert(updatedJob, before: otherJob)
+        
+        // Start the job runner if needed
+        db.afterNextTransactionCommit { _ in
+            queues.wrappedValue[updatedJob.variant]?.start()
+        }
         
         return updatedJob
     }
@@ -236,19 +247,26 @@ public final class JobRunner {
             }
             .defaulting(to: ([], []))
         
-        guard !jobsToRun.blocking.isEmpty || !jobsToRun.nonBlocking.isEmpty else { return }
+        // Store the current queue state locally to avoid multiple atomic retrievals
+        let jobQueues: [Job.Variant: JobQueue] = queues.wrappedValue
+        let blockingQueueIsRunning: Bool = (blockingQueue.wrappedValue?.isRunning.wrappedValue == true)
+        
+        guard !jobsToRun.blocking.isEmpty || !jobsToRun.nonBlocking.isEmpty else {
+            if !blockingQueueIsRunning {
+                jobQueues.forEach { _, queue in queue.start() }
+            }
+            return
+        }
         
         // Add and start any blocking jobs
         blockingQueue.wrappedValue?.appDidFinishLaunching(with: jobsToRun.blocking, canStart: true)
-        
-        let blockingQueueIsRunning: Bool = (blockingQueue.wrappedValue?.isRunning.wrappedValue == true)
+        // Add and start any non-blocking jobs (if there are no blocking jobs)
         let jobsByVariant: [Job.Variant: [Job]] = jobsToRun.nonBlocking.grouped(by: \.variant)
-        let jobQueues: [Job.Variant: JobQueue] = queues.wrappedValue
         
-        jobsByVariant.forEach { variant, jobs in
-            jobQueues[variant]?.appDidBecomeActive(
-                with: jobs,
-                canStart: !blockingQueueIsRunning
+        jobQueues.forEach { variant, queue in
+            queue.appDidBecomeActive(
+                with: (jobsByVariant[variant] ?? []),
+                canStart: (!blockingQueueIsRunning && jobsToRun.blocking.isEmpty)
             )
         }
     }
@@ -257,6 +275,13 @@ public final class JobRunner {
         guard let job: Job = job, let jobId: Int64 = job.id else { return false }
         
         return (queues.wrappedValue[job.variant]?.isCurrentlyRunning(jobId) == true)
+    }
+    
+    public static func hasPendingOrRunningJob<T: Encodable>(with variant: Job.Variant, details: T) -> Bool {
+        guard let targetQueue: JobQueue = queues.wrappedValue[variant] else { return false }
+        guard let detailsData: Data = try? JSONEncoder().encode(details) else { return false }
+        
+        return targetQueue.hasPendingOrRunningJob(with: detailsData)
     }
     
     // MARK: - Convenience
@@ -448,6 +473,12 @@ private final class JobQueue {
     
     fileprivate func isCurrentlyRunning(_ jobId: Int64) -> Bool {
         return jobsCurrentlyRunning.wrappedValue.contains(jobId)
+    }
+    
+    fileprivate func hasPendingOrRunningJob(with detailsData: Data?) -> Bool {
+        let pendingJobs: [Job] = queue.wrappedValue
+        
+        return pendingJobs.contains { job in job.details == detailsData }
     }
     
     // MARK: - Job Running

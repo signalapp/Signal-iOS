@@ -52,7 +52,7 @@ final class InfoMessageCell: MessageCell {
 
     // MARK: - Updating
     
-    override func update(with cellViewModel: MessageCell.ViewModel, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
+    override func update(with cellViewModel: MessageViewModel, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
         guard cellViewModel.variant.isInfoMessage else { return }
         
         self.viewModel = cellViewModel
@@ -81,6 +81,6 @@ final class InfoMessageCell: MessageCell {
         self.label.text = cellViewModel.body
     }
     
-    override func dynamicUpdate(with cellViewModel: MessageCell.ViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
+    override func dynamicUpdate(with cellViewModel: MessageViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
     }
 }

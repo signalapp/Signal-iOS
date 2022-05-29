@@ -53,6 +53,7 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
         case pendingDownload
         case downloading
         case downloaded
+        case failedUpload
         case uploading
         case uploaded
     }
@@ -351,7 +352,7 @@ extension Attachment {
                     )
                 
                 // Assume the data is already correct for "uploading" attachments (and don't override it)
-                case (.uploading, .failedDownload), (.uploaded, .failedDownload): return (self.isValid, self.duration)
+                case (.uploading, _), (.uploaded, _), (.failedUpload, _): return (self.isValid, self.duration)
                 case (_, .failedDownload): return (false, nil)
                     
                 default: return (self.isValid, self.duration)
@@ -1055,6 +1056,11 @@ extension Attachment {
                 success?()
             }
             .catch { error in
+                GRDBStorage.shared.write { db in
+                    try updatedAttachment?
+                        .with(state: .failedUpload)
+                        .saved(db)
+                }
                 failure?(error)
             }
     }

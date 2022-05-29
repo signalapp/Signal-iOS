@@ -51,7 +51,7 @@ public enum MessageSendJob: JobExecutor {
                     return (true, false)
                 }
                 
-                // Create jobs for any pending attachment jobs and insert them into the
+                // Create jobs for any pending (or failed) attachment jobs and insert them into the
                 // queue before the current job (this will mean the current job will re-run
                 // after these inserted jobs complete)
                 //
@@ -60,7 +60,17 @@ public enum MessageSendJob: JobExecutor {
                 // but not on the message recipients device - both LinkPreview and Quote can
                 // have this case)
                 try allAttachmentStateInfo
-                    .filter { $0.state == .uploading || $0.state == .downloaded }
+                    .filter { $0.state == .uploading || $0.state == .failedUpload || $0.state == .downloaded }
+                    .filter { stateInfo in
+                        // Don't add a new job if there is one already in the queue
+                        !JobRunner.hasPendingOrRunningJob(
+                            with: .attachmentUpload,
+                            details: AttachmentUploadJob.Details(
+                                messageSendJobId: jobId,
+                                attachmentId: stateInfo.attachmentId
+                            )
+                        )
+                    }
                     .compactMap { stateInfo in
                         JobRunner
                             .insert(

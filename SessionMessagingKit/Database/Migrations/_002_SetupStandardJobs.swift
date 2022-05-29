@@ -22,7 +22,7 @@ enum _002_SetupStandardJobs: Migration {
             ).inserted(db)
             
             _ = try Job(
-                variant: .failedMessages,
+                variant: .failedMessageSends,
                 behaviour: .recurringOnLaunch,
                 shouldBlockFirstRunEachSession: true
             ).inserted(db)
@@ -41,6 +41,11 @@ enum _002_SetupStandardJobs: Migration {
             _ = try Job(
                 variant: .retrieveDefaultOpenGroupRooms,
                 behaviour: .recurringOnActive
+            ).inserted(db)
+            
+            _ = try Job(
+                variant: .garbageCollection,
+                behaviour: .recurringOnLaunch
             ).inserted(db)
         }
     }

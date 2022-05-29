@@ -209,36 +209,6 @@ public extension SessionThread {
 // MARK: - Convenience
 
 public extension SessionThread {
-    static func displayName(userPublicKey: String) -> SQLSpecificExpressible {
-        let contactAlias: TypedTableAlias<Contact> = TypedTableAlias()
-        
-        return (
-            (
-                (
-                    SessionThread.Columns.variant == SessionThread.Variant.closedGroup &&
-                    ClosedGroup.Columns.name
-                ) || (
-                    SessionThread.Columns.variant == SessionThread.Variant.openGroup &&
-                    OpenGroup.Columns.name
-                ) || (
-                    isNoteToSelf(userPublicKey: userPublicKey)
-                ) || (
-                    Profile.Columns.nickname ||
-                    Profile.Columns.name
-                    //customFallback: Profile.truncated(id: thread.id, truncating: .middle)
-                )
-            )
-        )
-    }
-    
-    /// This method can be used to create a query based on whether a thread is the note to self thread
-    static func isNoteToSelf(userPublicKey: String) -> SQLSpecificExpressible {
-        return (
-            SessionThread.Columns.variant == SessionThread.Variant.contact &&
-            SessionThread.Columns.id == userPublicKey
-        )
-    }
-    
     /// This method can be used to filter a thread query to only include messages requests
     ///
     /// **Note:** In order to use this filter you **MUST** have a `joining(required/optional:)` to the

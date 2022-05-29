@@ -58,7 +58,7 @@ extension ConversationSearchController: UISearchResultsUpdating {
         let results: [Int64] = GRDBStorage.shared.read { db -> [Int64] in
             try Interaction.idsForTermWithin(
                 threadId: threadId,
-                pattern: try ConversationCell.ViewModel.pattern(db, searchTerm: searchText)
+                pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText)
             )
             .fetchAll(db)
         }
