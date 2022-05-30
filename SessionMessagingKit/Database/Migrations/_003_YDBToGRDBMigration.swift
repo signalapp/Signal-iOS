@@ -11,8 +11,12 @@ import SessionSnodeKit
 // ~250k messages and ~1000 threads seems to take up
 enum _003_YDBToGRDBMigration: Migration {
     static let identifier: String = "YDBToGRDBMigration"
+    static let minExpectedRunDuration: TimeInterval = 20
+    static let needsConfigSync: Bool = true
     
     static func migrate(_ db: Database) throws {
+        let targetIdentifier: TargetMigrations.Identifier = .messagingKit
+        
         // MARK: - Process Contacts, Threads & Interactions
         print("RAWR [\(Date().timeIntervalSince1970)] - SessionMessagingKit migration - Start")
         var shouldFailMigration: Bool = false
@@ -283,7 +287,7 @@ enum _003_YDBToGRDBMigration: Migration {
         }
         
         // We can't properly throw within the 'enumerateKeysAndObjects' block so have to throw here
-        guard !shouldFailMigration else { throw GRDBStorageError.migrationFailed }
+        guard !shouldFailMigration else { throw StorageError.migrationFailed }
         
         // Insert the data into GRDB
         
@@ -411,7 +415,7 @@ enum _003_YDBToGRDBMigration: Migration {
         try legacyThreads.sorted(by: { lhs, rhs in lhs.uniqueId < rhs.uniqueId }).forEach { legacyThread in
             guard let threadId: String = legacyThreadIdToIdMap[legacyThread.uniqueId] else {
                 SNLog("[Migration Error] Unable to migrate thread with no id mapping")
-                throw GRDBStorageError.migrationFailed
+                throw StorageError.migrationFailed
             }
             
             let threadVariant: SessionThread.Variant
@@ -464,7 +468,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         let formationTimestamp: UInt64 = closedGroupFormation[legacyThread.uniqueId]
                     else {
                         SNLog("[Migration Error] Closed group missing required data")
-                        throw GRDBStorageError.migrationFailed
+                        throw StorageError.migrationFailed
                     }
                     
                     try ClosedGroup(
@@ -519,7 +523,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 if legacyThread.isOpenGroup {
                     guard let openGroup: OpenGroupV2 = openGroupInfo[legacyThread.uniqueId] else {
                         SNLog("[Migration Error] Open group missing required data")
-                        throw GRDBStorageError.migrationFailed
+                        throw StorageError.migrationFailed
                     }
                     
                     try OpenGroup(
@@ -673,7 +677,7 @@ enum _003_YDBToGRDBMigration: Migration {
                             default:
                                 // TODO: What message types have no body?
                                 SNLog("[Migration Error] Unsupported interaction type")
-                                throw GRDBStorageError.migrationFailed
+                                throw StorageError.migrationFailed
                         }
                         
                         // Insert the data
@@ -727,7 +731,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         guard let interactionId: Int64 = interaction.id else {
                             // TODO: Is it possible the old database has duplicates which could hit this case?
                             SNLog("[Migration Error] Failed to insert interaction")
-                            throw GRDBStorageError.migrationFailed
+                            throw StorageError.migrationFailed
                         }
                         
                         // Store the interactionId in the lookup map to simplify job creation later
@@ -874,7 +878,7 @@ enum _003_YDBToGRDBMigration: Migration {
                             guard linkPreview.imageAttachmentId == nil || attachments[linkPreview.imageAttachmentId ?? ""] != nil else {
                                 // TODO: Is it possible to hit this case if a quoted attachment hasn't been downloaded?
                                 SNLog("[Migration Error] Missing link preview attachment")
-                                throw GRDBStorageError.migrationFailed
+                                throw StorageError.migrationFailed
                             }
                             
                             // Setup the attachment and add it to the lookup (if it exists)
@@ -1268,7 +1272,7 @@ enum _003_YDBToGRDBMigration: Migration {
             try attachmentUploadJobs.forEach { legacyJob in
                 guard let sendJob: Job = messageSendJobLegacyMap[legacyJob.messageSendJobID], let sendJobId: Int64 = sendJob.id else {
                     SNLog("[Migration Error] attachmentUpload job missing associated MessageSendJob")
-                    throw GRDBStorageError.migrationFailed
+                    throw StorageError.migrationFailed
                 }
 
                 let uploadJob: Job? = try Job(
@@ -1286,7 +1290,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 // Add the dependency to the relevant MessageSendJob
                 guard let uploadJobId: Int64 = uploadJob?.id else {
                     SNLog("[Migration Error] attachmentUpload job was not created")
-                    throw GRDBStorageError.migrationFailed
+                    throw StorageError.migrationFailed
                 }
                 
                 try JobDependencies(
@@ -1302,7 +1306,7 @@ enum _003_YDBToGRDBMigration: Migration {
             try attachmentDownloadJobs.forEach { legacyJob in
                 guard let interactionId: Int64 = legacyInteractionToIdMap[legacyJob.tsMessageID] else {
                     SNLog("[Migration Error] attachmentDownload job unable to find interaction")
-                    throw GRDBStorageError.migrationFailed
+                    throw StorageError.migrationFailed
                 }
                 guard processedAttachmentIds.contains(legacyJob.attachmentID) else {
                     SNLog("[Migration Error] attachmentDownload job unable to find attachment")
@@ -1441,7 +1445,7 @@ enum _003_YDBToGRDBMigration: Migration {
         guard !processedAttachmentIds.contains(legacyAttachmentId) else {
             guard isQuotedMessage else {
                 SNLog("[Migration Error] Attempted to process duplicate attachment")
-                throw GRDBStorageError.migrationFailed
+                throw StorageError.migrationFailed
             }
             
             return legacyAttachmentId

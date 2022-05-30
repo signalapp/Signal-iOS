@@ -782,7 +782,7 @@ public extension SessionThreadViewModel {
                     .defaulting(to: FTS5Pattern(matchingAnyTokenIn: searchTerm))
             )
         
-        guard let pattern: FTS5Pattern = maybePattern else { throw GRDBStorageError.invalidSearchPattern }
+        guard let pattern: FTS5Pattern = maybePattern else { throw StorageError.invalidSearchPattern }
         
         return pattern
     }

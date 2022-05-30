@@ -121,7 +121,7 @@ public extension Profile {
         {
             guard let validProfileKey: OWSAES256Key = OWSAES256Key(data: profileKeyData) else {
                 owsFailDebug("Failed to make profile key for key data")
-                throw GRDBStorageError.decodingFailed
+                throw StorageError.decodingFailed
             }
             
             profileKey = validProfileKey

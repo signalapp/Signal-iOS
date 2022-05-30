@@ -348,7 +348,7 @@ NS_ASSUME_NONNULL_BEGIN
         return ScreenLockUIStateNone;
     }
     
-    if (Environment.shared.isRequestingPermission) {
+    if (SMKEnvironment.shared.isRequestingPermission) {
         return ScreenLockUIStateNone;
     }
     

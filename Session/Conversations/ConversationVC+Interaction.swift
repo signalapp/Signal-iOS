@@ -873,6 +873,7 @@ extension ConversationVC:
                     let interaction: Interaction = try? Interaction.fetchOne(db, id: cellViewModel.id),
                     let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId)
                 else { return }
+                
                 try MessageSender.send(
                     db,
                     interaction: interaction,

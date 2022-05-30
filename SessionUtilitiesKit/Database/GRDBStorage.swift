@@ -5,25 +5,8 @@ import GRDB
 import PromiseKit
 import SignalCoreKit
 
-public enum GRDBStorageError: Error {  // TODO: Rename to `StorageError`
-    case generic
-    case migrationFailed
-    case invalidKeySpec
-    case decodingFailed
-    
-    case failedToSave
-    case objectNotFound
-    case objectNotSaved
-    
-    case invalidSearchPattern
-}
 
-// TODO: Protocol for storage (just need to have 'read' and 'write' methods and mock 'Database'?
-
-// TODO: Rename to `Storage`
 public final class GRDBStorage {
-    public static var shared: GRDBStorage!  // TODO: Figure out how/if we want to do this
-    
     private static let dbFileName: String = "Session.sqlite"
     private static let keychainService: String = "TSKeyChainService"
     private static let dbCipherKeySpecKey: String = "GRDBDatabaseCipherKeySpec"
@@ -40,14 +23,17 @@ public final class GRDBStorage {
         return true
     }
     
-    private let dbPool: DatabasePool
-    private let migrator: DatabaseMigrator
+    public static let shared: GRDBStorage = GRDBStorage()
+    public private(set) var isValid: Bool = false
+    public private(set) var hasCompletedMigrations: Bool = false
+    
+    private var dbPool: DatabasePool?
+    private var migrator: DatabaseMigrator?
+    private var migrationProgressUpdater: Atomic<((String, CGFloat) -> ())>?
     
     // MARK: - Initialization
     
-    public init?(
-        migrations: [TargetMigrations]
-    ) throws {
+    public init() {
         print("RAWR START \("\(GRDBStorage.sharedDatabaseDirectoryPath)/\(GRDBStorage.dbFileName)")")
         GRDBStorage.deleteDatabaseFiles() // TODO: Remove this
         try! GRDBStorage.deleteDbKeys() // TODO: Remove this
@@ -76,7 +62,7 @@ public final class GRDBStorage {
             // using explicit BLOB syntax, e.g.:
             //
             // x'98483C6EB40B6C31A448C22A66DED3B5E5E8D5119CAC8327B655C8B5C483648101010101010101010101010101010101'
-            keySpec = try (keySpec.toHexString().data(using: .utf8) ?? { throw GRDBStorageError.invalidKeySpec }())
+            keySpec = try (keySpec.toHexString().data(using: .utf8) ?? { throw StorageError.invalidKeySpec }())
             keySpec.insert(contentsOf: [120, 39], at: 0)    // "x'" prefix
             keySpec.append(39)                              // "'" suffix
             
@@ -90,40 +76,111 @@ public final class GRDBStorage {
             try db.execute(sql: "PRAGMA cipher_plaintext_header_size = 32")
         }
         
-        // Create the DatabasePool to allow us to connect to the database
-        dbPool = try DatabasePool(
-            path: "\(GRDBStorage.sharedDatabaseDirectoryPath)/\(GRDBStorage.dbFileName)",
-            configuration: config
-        )
+        // Create the DatabasePool to allow us to connect to the database and mark the storage as valid
+        do {
+            dbPool = try DatabasePool(
+                path: "\(GRDBStorage.sharedDatabaseDirectoryPath)/\(GRDBStorage.dbFileName)",
+                configuration: config
+            )
+            isValid = true
+        }
+        catch {}
+    }
+    
+    // MARK: - Migrations
+    
+    public func perform(
+        migrations: [TargetMigrations],
+        onProgressUpdate: ((CGFloat, TimeInterval) -> ())?,
+        onComplete: @escaping (Bool, Bool) -> ()
+    ) {
+        guard isValid, let dbPool: DatabasePool = dbPool else { return }
+        
+        typealias MigrationInfo = (identifier: TargetMigrations.Identifier, migrations: TargetMigrations.MigrationSet)
+        let sortedMigrationInfo: [MigrationInfo] = migrations
+            .sorted()
+            .reduce(into: [[MigrationInfo]]()) { result, next in
+                next.migrations.enumerated().forEach { index, migrationSet in
+                    if result.count <= index {
+                        result.append([])
+                    }
+
+                    result[index] = (result[index] + [(next.identifier, migrationSet)])
+                }
+            }
+            .reduce(into: []) { result, next in result.append(contentsOf: next) }
         
         // Setup and run any required migrations
         migrator = {
             var migrator: DatabaseMigrator = DatabaseMigrator()
-            migrations
-                .sorted()
-                .reduce(into: [[(identifier: TargetMigrations.Identifier, migrations: TargetMigrations.MigrationSet)]]()) { result, next in
-                    next.migrations.enumerated().forEach { index, migrationSet in
-                        if result.count <= index {
-                            result.append([])
-                        }
-
-                        result[index] = (result[index] + [(next.identifier, migrationSet)])
-                    }
+            sortedMigrationInfo.forEach { migrationInfo in
+                migrationInfo.migrations.forEach { migration in
+                    migrator.registerMigration(migrationInfo.identifier, migration: migration)
                 }
-                .compactMap { $0 }
-                .forEach { sortedMigrationInfo in
-                    sortedMigrationInfo.forEach { migrationInfo in
-                        migrationInfo.migrations.forEach { migration in
-                            migrator.registerMigration(migrationInfo.identifier, migration: migration)
-                        }
-                    }
-                }
+            }
             
             return migrator
         }()
-        try! migrator.migrate(dbPool)
         
-        GRDBStorage.shared = self   // TODO: Fix this
+        // Determine which migrations need to be performed and gather the relevant settings needed to
+        // inform the app of progress/states
+        let completedMigrations: [String] = (try? dbPool.read { db in try migrator?.completedMigrations(db) })
+            .defaulting(to: [])
+        let unperformedMigrations: [(key: String, migration: Migration.Type)] = sortedMigrationInfo
+            .reduce(into: []) { result, next in
+                next.migrations.forEach { migration in
+                    let key: String = next.identifier.key(with: migration)
+                    
+                    guard !completedMigrations.contains(key) else { return }
+                    
+                    result.append((key, migration))
+                }
+            }
+        let migrationToDurationMap: [String: TimeInterval] = unperformedMigrations
+            .reduce(into: [:]) { result, next in
+                result[next.key] = next.migration.minExpectedRunDuration
+            }
+        let unperformedMigrationDurations: [TimeInterval] = unperformedMigrations
+            .map { _, migration in migration.minExpectedRunDuration }
+        let totalMinExpectedDuration: TimeInterval = migrationToDurationMap.values.reduce(0, +)
+        let needsConfigSync: Bool = unperformedMigrations
+            .contains(where: { _, migration in migration.needsConfigSync })
+        
+        self.migrationProgressUpdater = Atomic({ targetKey, progress in
+            guard let migrationIndex: Int = unperformedMigrations.firstIndex(where: { key, _ in key == targetKey }) else {
+                return
+            }
+            
+            let completedExpectedDuration: TimeInterval = (
+                (migrationIndex > 0 ? unperformedMigrationDurations[0..<migrationIndex].reduce(0, +) : 0) +
+                (unperformedMigrationDurations[migrationIndex] * progress)
+            )
+            let totalProgress: CGFloat = (completedExpectedDuration / totalMinExpectedDuration)
+            
+            DispatchQueue.main.async {
+                onProgressUpdate?(totalProgress, totalMinExpectedDuration)
+            }
+        })
+        
+        // If we have an unperformed migration then trigger the progress updater immediately
+        if let firstMigrationKey: String = unperformedMigrations.first?.key {
+            self.migrationProgressUpdater?.wrappedValue(firstMigrationKey, 0)
+        }
+        
+        self.migrator?.asyncMigrate(dbPool) { [weak self] _, error in
+            self?.hasCompletedMigrations = true
+            self?.migrationProgressUpdater = nil
+            
+            onComplete((error == nil), needsConfigSync)
+        }
+    }
+    
+    public func update(
+        progress: CGFloat,
+        for migration: Migration.Type,
+        in target: TargetMigrations.Identifier
+    ) {
+        GRDBStorage.shared.migrationProgressUpdater?.wrappedValue(target.key(with: migration), progress)
     }
     
     // MARK: - Security
@@ -137,7 +194,7 @@ public final class GRDBStorage {
             var keySpec: Data = try getDatabaseCipherKeySpec()
             defer { keySpec.resetBytes(in: 0..<keySpec.count) }
             
-            guard keySpec.count == kSQLCipherKeySpecLength else { throw GRDBStorageError.invalidKeySpec }
+            guard keySpec.count == kSQLCipherKeySpecLength else { throw StorageError.invalidKeySpec }
             
             return keySpec
         }
@@ -151,7 +208,7 @@ public final class GRDBStorage {
                     
                     //errSecInteractionNotAllowed
                     
-                case (GRDBStorageError.invalidKeySpec, _):
+                case (StorageError.invalidKeySpec, _):
                     // For these cases it means either the keySpec or the keychain has become corrupt so in order to
                     // get back to a "known good state" and behave like a new install we need to reset the storage
                     // and regenerate the key
@@ -227,6 +284,8 @@ public final class GRDBStorage {
     // MARK: - Functions
     
     @discardableResult public func write<T>(updates: (Database) throws -> T?) -> T? {
+        guard isValid, let dbPool: DatabasePool = dbPool else { return nil }
+        
         return try? dbPool.write(updates)
     }
     
@@ -235,6 +294,8 @@ public final class GRDBStorage {
     }
     
     public func writeAsync<T>(updates: @escaping (Database) throws -> T, completion: @escaping (Database, Swift.Result<T, Error>) throws -> Void) {
+        guard isValid, let dbPool: DatabasePool = dbPool else { return }
+        
         dbPool.asyncWrite(
             updates,
             completion: { db, result in
@@ -244,6 +305,8 @@ public final class GRDBStorage {
     }
     
     @discardableResult public func read<T>(_ value: (Database) throws -> T?) -> T? {
+        guard isValid, let dbPool: DatabasePool = dbPool else { return nil }
+        
         return try? dbPool.read(value)
     }
     
@@ -262,7 +325,9 @@ public final class GRDBStorage {
         onError: @escaping (Error) -> Void,
         onChange: @escaping (Reducer.Value) -> Void
     ) -> DatabaseCancellable {
-        observation.start(
+        guard isValid, let dbPool: DatabasePool = dbPool else { return AnyDatabaseCancellable(cancel: {}) }
+        
+        return observation.start(
             in: dbPool,
             scheduling: scheduler,
             onError: onError,
@@ -271,6 +336,7 @@ public final class GRDBStorage {
     }
     
     public func addObserver(_ observer: TransactionObserver?) {
+        guard isValid, let dbPool: DatabasePool = dbPool else { return }
         guard let observer: TransactionObserver = observer else { return }
         
         dbPool.add(transactionObserver: observer)
@@ -282,6 +348,8 @@ public final class GRDBStorage {
 public extension GRDBStorage {
     // FIXME: Would be good to replace these with Swift Combine
     @discardableResult func read<T>(_ value: (Database) throws -> Promise<T>) -> Promise<T> {
+        guard isValid, let dbPool: DatabasePool = dbPool else { return Promise(error: StorageError.databaseInvalid) }
+        
         do {
             return try dbPool.read(value)
         }
@@ -291,6 +359,8 @@ public extension GRDBStorage {
     }
     
     @discardableResult func write<T>(updates: (Database) throws -> Promise<T>) -> Promise<T> {
+        guard isValid, let dbPool: DatabasePool = dbPool else { return Promise(error: StorageError.databaseInvalid) }
+        
         do {
             return try dbPool.write(updates)
         }

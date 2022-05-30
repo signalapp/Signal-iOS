@@ -10,7 +10,7 @@ extension MessageSender {
     // MARK: - Durable
     
     public static func send(_ db: Database, interaction: Interaction, with attachments: [SignalAttachment], in thread: SessionThread) throws {
-        guard let interactionId: Int64 = interaction.id else { throw GRDBStorageError.objectNotSaved }
+        guard let interactionId: Int64 = interaction.id else { throw StorageError.objectNotSaved }
         
         try prep(db, signalAttachments: attachments, for: interactionId)
         send(
@@ -25,7 +25,7 @@ extension MessageSender {
     public static func send(_ db: Database, interaction: Interaction, in thread: SessionThread) throws {
         // Only 'VisibleMessage' types can be sent via this method
         guard interaction.variant == .standardOutgoing else { throw MessageSenderError.invalidMessage }
-        guard let interactionId: Int64 = interaction.id else { throw GRDBStorageError.objectNotSaved }
+        guard let interactionId: Int64 = interaction.id else { throw StorageError.objectNotSaved }
         
         send(
             db,
@@ -64,7 +64,7 @@ extension MessageSender {
     // MARK: - Non-Durable
     
     public static func sendNonDurably(_ db: Database, interaction: Interaction, with attachments: [SignalAttachment], in thread: SessionThread) throws -> Promise<Void> {
-        guard let interactionId: Int64 = interaction.id else { return Promise(error: GRDBStorageError.objectNotSaved) }
+        guard let interactionId: Int64 = interaction.id else { return Promise(error: StorageError.objectNotSaved) }
         
         try prep(db, signalAttachments: attachments, for: interactionId)
         
@@ -80,7 +80,7 @@ extension MessageSender {
     public static func sendNonDurably(_ db: Database, interaction: Interaction, in thread: SessionThread) throws -> Promise<Void> {
         // Only 'VisibleMessage' types can be sent via this method
         guard interaction.variant == .standardOutgoing else { throw MessageSenderError.invalidMessage }
-        guard let interactionId: Int64 = interaction.id else { throw GRDBStorageError.objectNotSaved }
+        guard let interactionId: Int64 = interaction.id else { throw StorageError.objectNotSaved }
         
         return sendNonDurably(
             db,
@@ -174,9 +174,7 @@ extension MessageSender {
         // If we don't have a userKeyPair yet then there is no need to sync the configuration
         // as the user doesn't exist yet (this will get triggered on the first launch of a
         // fresh install due to the migrations getting run)
-        guard Identity.userExists(db) else {
-            return Promise(error: GRDBStorageError.generic)
-        }
+        guard Identity.userExists(db) else { return Promise(error: StorageError.generic) }
         
         let destination: Message.Destination = Message.Destination.contact(
             publicKey: getUserHexEncodedPublicKey(db)
@@ -188,7 +186,7 @@ extension MessageSender {
             try MessageSender
                 .sendImmediate(db, message: configurationMessage, to: destination, interactionId: nil)
                 .done { seal.fulfill(()) }
-                .catch { _ in seal.reject(GRDBStorageError.generic) }
+                .catch { _ in seal.reject(StorageError.generic) }
                 .retainUntilComplete()
         }
         else {

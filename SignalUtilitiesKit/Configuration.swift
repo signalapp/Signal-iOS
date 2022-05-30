@@ -3,8 +3,6 @@ import SessionSnodeKit
 
 extension OWSPrimaryStorage : OWSPrimaryStorageProtocol { }
 
-var isSetup: Bool = false // TODO: Remove this
-
 @objc(SNConfiguration)
 public final class Configuration : NSObject {
     
@@ -18,22 +16,5 @@ public final class Configuration : NSObject {
         
         SNMessagingKit.configure(storage: Storage.shared)
         SNSnodeKit.configure()
-    }
-    
-    @objc public static func performDatabaseSetup() {
-        if !isSetup {
-            isSetup = true
-
-            // TODO: Need to store this result somewhere?
-            // TODO: This function seems to get called multiple times
-            //DispatchQueue.main.once
-            let storage: GRDBStorage? = try? GRDBStorage(
-                migrations: [
-                    SNUtilitiesKit.migrations(),
-                    SNSnodeKit.migrations(),
-                    SNMessagingKit.migrations()
-                ]
-            )
-        }
     }
 }

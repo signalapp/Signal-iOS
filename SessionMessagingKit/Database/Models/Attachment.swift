@@ -983,7 +983,7 @@ extension Attachment {
             
             guard uploadedAttachment != nil else {
                 SNLog("Couldn't update attachmentUpload job.")
-                failure?(GRDBStorageError.failedToSave)
+                failure?(StorageError.failedToSave)
                 return
             }
                 
@@ -1025,7 +1025,7 @@ extension Attachment {
         
         guard updatedAttachment != nil else {
             SNLog("Couldn't update attachmentUpload job.")
-            failure?(GRDBStorageError.failedToSave)
+            failure?(StorageError.failedToSave)
             return
         }
         
@@ -1049,7 +1049,7 @@ extension Attachment {
                 
                 guard uploadedAttachment != nil else {
                     SNLog("Couldn't update attachmentUpload job.")
-                    failure?(GRDBStorageError.failedToSave)
+                    failure?(StorageError.failedToSave)
                     return
                 }
                     

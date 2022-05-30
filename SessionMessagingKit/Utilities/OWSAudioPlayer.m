@@ -94,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSAudioSession *)audioSession
 {
-    return Environment.shared.audioSession;
+    return SMKEnvironment.shared.audioSession;
 }
 
 #pragma mark

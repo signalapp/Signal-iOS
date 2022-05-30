@@ -486,7 +486,7 @@ public enum SMKLegacy {
                                     let admins: [Data] = self.admins
                                 else {
                                     SNLog("[Migration Error] Unable to decode Legacy ClosedGroupControlMessage")
-                                    throw GRDBStorageError.migrationFailed
+                                    throw StorageError.migrationFailed
                                 }
                                 
                                 return .new(
@@ -504,7 +504,7 @@ public enum SMKLegacy {
                             case "encryptionKeyPair":
                                 guard let wrappers: [_KeyPairWrapper] = self.wrappers else {
                                     SNLog("[Migration Error] Unable to decode Legacy ClosedGroupControlMessage")
-                                    throw GRDBStorageError.migrationFailed
+                                    throw StorageError.migrationFailed
                                 }
                                 
                                 return .encryptionKeyPair(
@@ -515,7 +515,7 @@ public enum SMKLegacy {
                                             let encryptedKeyPair: Data = wrapper.encryptedKeyPair
                                         else {
                                             SNLog("[Migration Error] Unable to decode Legacy ClosedGroupControlMessage")
-                                            throw GRDBStorageError.migrationFailed
+                                            throw StorageError.migrationFailed
                                         }
 
                                         return SessionMessagingKit.ClosedGroupControlMessage.KeyPairWrapper(
@@ -528,7 +528,7 @@ public enum SMKLegacy {
                             case "nameChange":
                                 guard let name: String = self.name else {
                                     SNLog("[Migration Error] Unable to decode Legacy ClosedGroupControlMessage")
-                                    throw GRDBStorageError.migrationFailed
+                                    throw StorageError.migrationFailed
                                 }
                                 
                                 return .nameChange(
@@ -538,7 +538,7 @@ public enum SMKLegacy {
                             case "membersAdded":
                                 guard let members: [Data] = self.members else {
                                     SNLog("[Migration Error] Unable to decode Legacy ClosedGroupControlMessage")
-                                    throw GRDBStorageError.migrationFailed
+                                    throw StorageError.migrationFailed
                                 }
                                 
                                 return .membersAdded(members: members)
@@ -546,14 +546,14 @@ public enum SMKLegacy {
                             case "membersRemoved":
                                 guard let members: [Data] = self.members else {
                                     SNLog("[Migration Error] Unable to decode Legacy ClosedGroupControlMessage")
-                                    throw GRDBStorageError.migrationFailed
+                                    throw StorageError.migrationFailed
                                 }
                                 
                                 return .membersRemoved(members: members)
                                 
                             case "memberLeft": return .memberLeft
                             case "encryptionKeyPairRequest": return .encryptionKeyPairRequest
-                            default: throw GRDBStorageError.migrationFailed
+                            default: throw StorageError.migrationFailed
                         }
                     }()
                 )
@@ -592,12 +592,12 @@ public enum SMKLegacy {
                             case "mediaSaved":
                                 guard let timestamp: UInt64 = self.timestamp else {
                                     SNLog("[Migration Error] Unable to decode Legacy DataExtractionNotification")
-                                    throw GRDBStorageError.migrationFailed
+                                    throw StorageError.migrationFailed
                                 }
                                 
                                 return .mediaSaved(timestamp: timestamp)
                                 
-                            default: throw GRDBStorageError.migrationFailed
+                            default: throw StorageError.migrationFailed
                         }
                     }()
                 )

@@ -5,6 +5,8 @@ import GRDB
 
 enum _003_YDBToGRDBMigration: Migration {
     static let identifier: String = "YDBToGRDBMigration"
+    static let minExpectedRunDuration: TimeInterval = 0.1
+    static let needsConfigSync: Bool = false
     
     static func migrate(_ db: Database) throws {
         // MARK: - Identity keys
@@ -69,7 +71,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 return
             }
             
-            throw GRDBStorageError.migrationFailed
+            throw StorageError.migrationFailed
         }
         print("RAWR publicKey \(userX25519KeyPair.publicKey.toHexString())")
         try autoreleasepool {

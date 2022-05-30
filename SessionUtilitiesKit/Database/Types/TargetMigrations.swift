@@ -26,6 +26,10 @@ public struct TargetMigrations: Comparable {
             
             return (lhsIndex < rhsIndex)
         }
+        
+        func key(with migration: Migration.Type) -> String {
+            return "\(self.rawValue).\(migration.identifier)"
+        }
     }
     
     public typealias MigrationSet = [Migration.Type]

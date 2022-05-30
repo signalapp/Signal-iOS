@@ -494,7 +494,7 @@ extension MessageReceiver {
             throw error
         }
         
-        guard let interactionId: Int64 = interaction.id else { throw GRDBStorageError.failedToSave }
+        guard let interactionId: Int64 = interaction.id else { throw StorageError.failedToSave }
         
         // Update and recipient and read states as needed
         try updateRecipientAndReadStates(

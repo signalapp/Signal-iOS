@@ -8,6 +8,8 @@ import Curve25519Kit
 /// before running the `YDBToGRDBMigration`
 enum _002_SetupStandardJobs: Migration {
     static let identifier: String = "SetupStandardJobs"
+    static let minExpectedRunDuration: TimeInterval = 0.1
+    static let needsConfigSync: Bool = false
     
     static func migrate(_ db: Database) throws {
         try autoreleasepool {

@@ -15,7 +15,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var window: UIWindow?
     var backgroundSnapshotBlockerWindow: UIWindow?
     var appStartupWindow: UIWindow?
-    var poller: Poller = Poller()
+    var hasInitialRootViewController: Bool = false
+    
+    /// This needs to be a lazy variable to ensure it doesn't get initialized before it actually needs to be used
+    lazy var poller: Poller = {
+        return Poller()
+    }()
     
     // MARK: - Lifecycle
 
@@ -26,8 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         AppModeManager.configure(delegate: self)
         Cryptography.seedRandom()
-
-        AppVersion.sharedInstance() // TODO: ???
+        AppVersion.sharedInstance()
 
         // Prevent the device from sleeping during database view async registration
         // (e.g. long database upgrades).
@@ -35,14 +39,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // This block will be cleared in storageIsReady.
         DeviceSleepManager.sharedInstance.addBlock(blockObject: self)
         
+        let mainWindow: UIWindow = UIWindow(frame: UIScreen.main.bounds)
+        let loadingViewController: LoadingViewController = LoadingViewController()
+        
         AppSetup.setupEnvironment(
-            appSpecificSingletonBlock: {
+            appSpecificBlock: {
                 // Create AppEnvironment
                 AppEnvironment.shared.setup()
-            },
-            migrationCompletion: { [weak self] successful, needsConfigSync in
-                guard let strongSelf = self else { return }
                 
+                // Note: Intentionally dispatching sync as we want to wait for these to complete before
+                // continuing
+                DispatchQueue.main.sync {
+                    OWSScreenLockUI.sharedManager().setup(withRootWindow: mainWindow)
+                    OWSWindowManager.shared().setup(
+                        withRootWindow: mainWindow,
+                        screenBlockingWindow: OWSScreenLockUI.sharedManager().screenBlockingWindow
+                    )
+                    OWSScreenLockUI.sharedManager().startObserving()
+                }
+            },
+            migrationProgressChanged: { progress, minEstimatedTotalTime in
+                loadingViewController.updateProgress(
+                    progress: progress,
+                    minEstimatedTotalTime: minEstimatedTotalTime
+                )
+            },
+            migrationsCompletion: { [weak self] successful, needsConfigSync in
+                guard let strongSelf = self else { return }
+                guard successful else {
+                    return
+                }
+                
+                Configuration.performMainSetup()
                 JobRunner.add(executor: SyncPushTokensJob.self, for: .syncPushTokens)
                 
                 // Trigger any launch-specific jobs and start the JobRunner
@@ -56,7 +84,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 DeviceSleepManager.sharedInstance.removeBlock(blockObject: strongSelf)
                 AppVersion.sharedInstance().mainAppLaunchDidComplete()
                 Environment.shared.audioSession.setup()
-                SSKEnvironment.shared.reachabilityManager.setup()
+                Environment.shared.reachabilityManager.setup()
                 
                 GRDBStorage.shared.writeAsync { db in
                     // Disable the SAE until the main app has successfully completed launch process
@@ -83,18 +111,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         )
         
-        Configuration.performMainSetup()
         SNAppearance.switchToSessionAppearance()
         
         // No point continuing if we are running tests
         guard !CurrentAppContext().isRunningTests else { return true }
 
-        let mainWindow: UIWindow = UIWindow(frame: UIScreen.main.bounds)
         self.window = mainWindow
         CurrentAppContext().mainWindow = mainWindow
         
         // Show LoadingViewController until the async database view registrations are complete.
-        mainWindow.rootViewController = LoadingViewController()
+        mainWindow.rootViewController = loadingViewController
         mainWindow.makeKeyAndVisible()
 
         adapt(appMode: AppModeManager.getAppModeOrSystemDefault())
@@ -104,14 +130,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Setting the delegate also seems to prevent us from getting the legacy notification
         // notification callbacks upon launch e.g. 'didReceiveLocalNotification'
         UNUserNotificationCenter.current().delegate = self
-
-        OWSScreenLockUI.sharedManager().setup(withRootWindow: mainWindow)
-        OWSWindowManager.shared().setup(
-            withRootWindow: mainWindow,
-            screenBlockingWindow: OWSScreenLockUI.sharedManager().screenBlockingWindow
-        )
-        OWSScreenLockUI.sharedManager().startObserving()
-
+        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(registrationStateDidChange),
@@ -196,10 +215,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private func verifyDBKeysAvailableBeforeBackgroundLaunch() {
         guard UIApplication.shared.applicationState == .background else { return }
         
-        let migrationHasRun: Bool = false
-        
+        // Ensure both databases are accessible (as long as we are supporting the YDB migration
+        // we should keep this check)
         let databasePasswordAccessible: Bool = (
-            (migrationHasRun && GRDBStorage.isDatabasePasswordAccessible) || // GRDB password access
+            GRDBStorage.isDatabasePasswordAccessible &&                      // GRDB password access
             OWSStorage.isDatabasePasswordAccessible()                        // YapDatabase password access
         )
         
@@ -250,8 +269,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     private func ensureRootViewController() {
-        // TODO: Add 'MigrationProcessingViewController' in here as well
-        guard self.window?.rootViewController is LoadingViewController else { return }
+        guard AppReadiness.isAppReady() && GRDBStorage.shared.isValid && !hasInitialRootViewController else {
+            return
+        }
         
         let navController: UINavigationController = OWSNavigationController(
             rootViewController: (Identity.userExists() ?

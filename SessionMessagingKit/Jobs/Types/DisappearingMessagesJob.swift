@@ -94,7 +94,7 @@ public extension DisappearingMessagesJob {
         
         do {
             guard let interactionId: Int64 = try? (interaction.id ?? interaction.inserted(db).id) else {
-                throw GRDBStorageError.objectNotFound
+                throw StorageError.objectNotFound
             }
             
             return updateNextRunIfNeeded(db, interactionIds: [interactionId], startedAtMs: startedAtMs)

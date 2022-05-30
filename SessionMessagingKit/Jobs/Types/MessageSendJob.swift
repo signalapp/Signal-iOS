@@ -211,18 +211,18 @@ extension MessageSendJob {
             
             guard let messageType: String = try? container.decode(String.self, forKey: .messageType) else {
                 Logger.error("Unable to decode messageSend job due to missing messageType")
-                throw GRDBStorageError.decodingFailed
+                throw StorageError.decodingFailed
             }
             
             /// Note: This **MUST** be a `Codable.Type` rather than a `Message.Type` otherwise the decoding will result
             /// in a `Message` object being returned rather than the desired subclass
             guard let MessageType: Codable.Type = MessageSendJob.Details.supportedMessageTypes[messageType] else {
                 Logger.error("Unable to decode messageSend job due to unsupported messageType")
-                throw GRDBStorageError.decodingFailed
+                throw StorageError.decodingFailed
             }
             guard let message: Message = try MessageType.decoded(with: container, forKey: .message) as? Message else {
                 Logger.error("Unable to decode messageSend job due to message conversion issue")
-                throw GRDBStorageError.decodingFailed
+                throw StorageError.decodingFailed
             }
 
             self = Details(
@@ -241,7 +241,7 @@ extension MessageSendJob {
             
             guard let messageTypeString: String = maybeMessageTypeString else {
                 Logger.error("Unable to encode messageSend job due to unsupported messageType")
-                throw GRDBStorageError.objectNotFound
+                throw StorageError.objectNotFound
             }
 
             try container.encode(destination, forKey: .destination)

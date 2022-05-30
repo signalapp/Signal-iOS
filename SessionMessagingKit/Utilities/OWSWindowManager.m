@@ -4,6 +4,7 @@
 
 #import "OWSWindowManager.h"
 #import "Environment.h"
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -153,7 +154,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 + (instancetype)sharedManager
 {
-    return Environment.shared.windowManager;
+    return SMKEnvironment.shared.windowManager;
 }
 
 - (instancetype)initDefault

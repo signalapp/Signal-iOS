@@ -6,6 +6,8 @@ import SessionUtilitiesKit
 
 enum _003_YDBToGRDBMigration: Migration {
     static let identifier: String = "YDBToGRDBMigration"
+    static let minExpectedRunDuration: TimeInterval = 0.2
+    static let needsConfigSync: Bool = false
     
     static func migrate(_ db: Database) throws {
         // MARK: - OnionRequestPath, Snode Pool & Swarm

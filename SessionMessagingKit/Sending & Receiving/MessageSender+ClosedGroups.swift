@@ -230,9 +230,7 @@ extension MessageSender {
                 timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
             ).inserted(db)
             
-            guard let interactionId: Int64 = interaction.id else {
-                throw GRDBStorageError.objectNotSaved
-            }
+            guard let interactionId: Int64 = interaction.id else { throw StorageError.objectNotSaved }
             
             // Send the update to the group
             let closedGroupControlMessage = ClosedGroupControlMessage(kind: .nameChange(name: name))
@@ -305,10 +303,10 @@ extension MessageSender {
         thread: SessionThread
     ) throws {
         guard let disappearingMessagesConfig: DisappearingMessagesConfiguration = try thread.disappearingMessagesConfiguration.fetchOne(db) else {
-            throw GRDBStorageError.objectNotFound
+            throw StorageError.objectNotFound
         }
         guard let encryptionKeyPair: ClosedGroupKeyPair = try closedGroup.fetchLatestKeyPair(db) else {
-            throw GRDBStorageError.objectNotFound
+            throw StorageError.objectNotFound
         }
         
         let groupMemberIds: [String] = allGroupMembers
@@ -332,9 +330,7 @@ extension MessageSender {
             timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
         ).inserted(db)
         
-        guard let interactionId: Int64 = interaction.id else {
-            throw GRDBStorageError.objectNotSaved
-        }
+        guard let interactionId: Int64 = interaction.id else { throw StorageError.objectNotSaved }
         
         // Send the update to the group
         try MessageSender.send(
@@ -437,9 +433,7 @@ extension MessageSender {
                 timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
             ).inserted(db)
             
-            guard let newInteractionId: Int64 = interaction.id else {
-                throw GRDBStorageError.objectNotSaved
-            }
+            guard let newInteractionId: Int64 = interaction.id else { throw StorageError.objectNotSaved }
             
             interactionId = newInteractionId
         }
@@ -505,7 +499,7 @@ extension MessageSender {
         ).inserted(db)
         
         guard let interactionId: Int64 = interaction.id else {
-            throw GRDBStorageError.objectNotSaved
+            throw StorageError.objectNotSaved
         }
         
         // Send the update to the group

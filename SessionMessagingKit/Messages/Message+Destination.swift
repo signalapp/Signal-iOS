@@ -17,7 +17,7 @@ public extension Message {
                 case .closedGroup: return .closedGroup(groupPublicKey: thread.id)
                 case .openGroup:
                     guard let openGroup: OpenGroup = try thread.openGroup.fetchOne(db) else {
-                        throw GRDBStorageError.objectNotFound
+                        throw StorageError.objectNotFound
                     }
                     
                     return .openGroupV2(room: openGroup.room, server: openGroup.server)

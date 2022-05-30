@@ -115,12 +115,12 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         guard GRDBStorage.shared[.isReadyForAppExtensions] else { return completeSilenty() }
 
         AppSetup.setupEnvironment(
-            appSpecificSingletonBlock: {
-                SSKEnvironment.shared.notificationsManager.mutate {
+            appSpecificBlock: {
+                Environment.shared.notificationsManager.mutate {
                     $0 = NSENotificationPresenter()
                 }
             },
-            migrationCompletion: { [weak self] _, needsConfigSync in
+            migrationsCompletion: { [weak self] _, needsConfigSync in
                 self?.versionMigrationsDidComplete(needsConfigSync: needsConfigSync)
                 completion()
             }

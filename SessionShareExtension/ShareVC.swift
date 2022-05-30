@@ -43,14 +43,12 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         }
 
         AppSetup.setupEnvironment(
-            appSpecificSingletonBlock: {
-                SSKEnvironment.shared.notificationsManager.mutate {
+            appSpecificBlock: {
+                Environment.shared.notificationsManager.mutate {
                     $0 = NoopNotificationsManager()
                 }
             },
-            migrationCompletion: { [weak self] _, needsConfigSync in
-                AssertIsOnMainThread()
-                
+            migrationsCompletion: { [weak self] _, needsConfigSync in
                 // performUpdateCheck must be invoked after Environment has been initialized because
                 // upgrade process may depend on Environment.
                 self?.versionMigrationsDidComplete(needsConfigSync: needsConfigSync)
