@@ -42,16 +42,19 @@ public final class BackgroundPoller : NSObject {
             return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
                 SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey).then(on: DispatchQueue.main) { rawResponse -> Promise<Void> in
                     let (messages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
+                    var processedMessages: [JSON] = []
                     let promises = messages.compactMap { json -> Promise<Void>? in
                         // Use a best attempt approach here; we don't want to fail the entire process if one of the
                         // messages failed to parse.
                         guard let envelope = SNProtoEnvelope.from(json),
                             let data = try? envelope.serializedData() else { return nil }
                         let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: true)
+                        processedMessages.append(json)
                         return job.execute()
                     }
-                    // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
+                    // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value & `receivedMessageHashes`
                     SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, namespace: SnodeAPI.defaultNamespace, associatedWith: publicKey, from: lastRawMessage)
+                    SnodeAPI.updateReceivedMessages(from: processedMessages, associatedWith: publicKey)
                     
                     return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects
                 }
@@ -82,16 +85,19 @@ public final class BackgroundPoller : NSObject {
                     for result in results {
                         if case .fulfilled(let rawResponse) = result {
                             let (messages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
+                            var processedMessages: [JSON] = []
                             let jobPromises = messages.compactMap { json -> Promise<Void>? in
                                 // Use a best attempt approach here; we don't want to fail the entire process if one of the
                                 // messages failed to parse.
                                 guard let envelope = SNProtoEnvelope.from(json),
                                     let data = try? envelope.serializedData() else { return nil }
                                 let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: true)
+                                processedMessages.append(json)
                                 return job.execute()
                             }
-                            // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
+                            // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value & `receivedMessageHashes`
                             SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, namespace: namespaces[index], associatedWith: publicKey, from: lastRawMessage)
+                            SnodeAPI.updateReceivedMessages(from: processedMessages, associatedWith: publicKey)
                             promises += jobPromises
                         }
                         index += 1

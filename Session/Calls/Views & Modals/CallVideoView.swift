@@ -2,12 +2,11 @@
 import WebRTC
 import Foundation
 
-#if arch(arm64)
-// Note: 'RTCMTLVideoView' requires arm64 (so won't work on the simulator which
-// we need to build for x86_64 due to WebRTC not supporting arm64 simulator builds)
-typealias TargetView = RTCMTLVideoView
-#else
+#if targetEnvironment(simulator)
+// Note: 'RTCMTLVideoView' doesn't seem to work on the simulator so use 'RTCEAGLVideoView' instead
 typealias TargetView = RTCEAGLVideoView
+#else
+typealias TargetView = RTCMTLVideoView
 #endif
 
 // MARK: RemoteVideoView
@@ -17,6 +16,7 @@ class RemoteVideoView: TargetView {
     override func renderFrame(_ frame: RTCVideoFrame?) {
         super.renderFrame(frame)
         guard let frame = frame else { return }
+        
         DispatchMainThreadSafe {
             let frameRatio = Double(frame.height) / Double(frame.width)
             let frameRotation = frame.rotation
@@ -47,7 +47,9 @@ class RemoteVideoView: TargetView {
                 // Assume we're already setup for the correct orientation.
                 break
             }
-#if arch(arm64)
+            
+#if targetEnvironment(simulator)
+#else
             if let rotationOverride = rotationOverride {
                 self.rotationOverride = NSNumber(value: rotationOverride.rawValue)
                 if [ RTCVideoRotation._0, RTCVideoRotation._180 ].contains(rotationOverride) {
@@ -86,7 +88,8 @@ class LocalVideoView: TargetView {
             // sometimes the rotationOverride is not working
             // if it is only set once on initialization
             self.rotationOverride = NSNumber(value: RTCVideoRotation._0.rawValue)
-#if arch(arm64)
+#if targetEnvironment(simulator)
+#else
             self.videoContentMode = .scaleAspectFill
 #endif
         }

@@ -333,13 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(applicationWillEnterForeground:)
                                                  name:OWSApplicationWillEnterForegroundNotification
                                                object:nil];
-}
-
-- (void)viewDidLoad
-{
     [self addNotificationListeners];
-
-    [self touchDbAsync];
 }
 
 - (void)touchDbAsync

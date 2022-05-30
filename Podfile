@@ -10,7 +10,7 @@ abstract_target 'GlobalDependencies' do
   pod 'CryptoSwift'
   pod 'Sodium', '~> 0.9.1'
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/oxen-io/session-ios-yap-database.git', branch: 'signal-release'
-  pod 'GoogleWebRTC'
+  pod 'WebRTC-lib'
   pod 'SocketRocket', '~> 0.5.1'
   
   target 'Session' do

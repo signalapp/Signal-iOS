@@ -369,7 +369,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                     stackView.addArrangedSubview(quoteViewContainer)
                 }
                 // Body text view
-                let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: bodyLabelTextColor, searchText: delegate?.lastSearchedText, delegate: self)
+                let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: bodyLabelTextColor, delegate: self)
                 self.bodyTextView = bodyTextView
                 stackView.addArrangedSubview(bodyTextView)
                 // Constraints
@@ -401,7 +401,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 if let message = viewItem.interaction as? TSMessage, let body = message.body, body.count > 0 {
                     let inset: CGFloat = 12
                     let maxWidth = size.width - 2 * inset
-                    let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: bodyLabelTextColor, searchText: delegate?.lastSearchedText, delegate: self)
+                    let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: bodyLabelTextColor, delegate: self)
                     self.bodyTextView = bodyTextView
                     stackView.addArrangedSubview(UIView(wrapping: bodyTextView, withInsets: UIEdgeInsets(top: 0, left: inset, bottom: inset, right: inset)))
                 }
@@ -438,9 +438,8 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 let documentView = DocumentView(viewItem: viewItem, textColor: bodyLabelTextColor)
                 stackView.addArrangedSubview(documentView)
                 // Body text view
-                if let message = viewItem.interaction as? TSMessage, let body = message.body, body.count > 0,
-                    let delegate = delegate { // delegate should always be set at this point
-                    let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: bodyLabelTextColor, searchText: delegate.lastSearchedText, delegate: self)
+                if let message = viewItem.interaction as? TSMessage, let body = message.body, body.count > 0 {
+                    let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: bodyLabelTextColor, delegate: self)
                     self.bodyTextView = bodyTextView
                     stackView.addArrangedSubview(bodyTextView)
                 }
@@ -769,7 +768,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         return isGroupThread && viewItem.shouldShowSenderProfilePicture && senderSessionID != nil
     }
     
-    static func getBodyTextView(for viewItem: ConversationViewItem, with availableWidth: CGFloat, textColor: UIColor, searchText: String?, delegate: UITextViewDelegate & BodyTextViewDelegate) -> UITextView {
+    static func getBodyTextView(for viewItem: ConversationViewItem, with availableWidth: CGFloat, textColor: UIColor, delegate: UITextViewDelegate & BodyTextViewDelegate) -> UITextView {
         // Take care of:
         // • Highlighting mentions
         // • Linkification
@@ -783,20 +782,6 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             .font : UIFont.systemFont(ofSize: getFontSize(for: viewItem))
         ]
         let attributedText = NSMutableAttributedString(attributedString: MentionUtilities.highlightMentions(in: message.body ?? "", isOutgoingMessage: isOutgoing, threadID: viewItem.interaction.uniqueThreadId, attributes: attributes))
-        if let searchText = searchText, searchText.count >= ConversationSearchController.kMinimumSearchTextLength {
-            let normalizedSearchText = FullTextSearchFinder.normalize(text: searchText)
-            do {
-                let regex = try NSRegularExpression(pattern: NSRegularExpression.escapedPattern(for: normalizedSearchText), options: .caseInsensitive)
-                let matches = regex.matches(in: attributedText.string, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: (attributedText.string as NSString).length))
-                for match in matches {
-                    guard match.range.location + match.range.length < attributedText.length else { continue }
-                    attributedText.addAttribute(.backgroundColor, value: UIColor.white, range: match.range)
-                    attributedText.addAttribute(.foregroundColor, value: UIColor.black, range: match.range)
-                }
-            } catch {
-                // Do nothing
-            }
-        }
         result.attributedText = attributedText
         result.dataDetectorTypes = .link
         result.backgroundColor = .clear
