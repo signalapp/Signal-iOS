@@ -17,6 +17,7 @@ final class ReactionContainerView : UIView {
     }()
     
     private var showingAllReactions = false
+    private var isOutgoingMessage = false
     
     var reactions: [(String, (Int, Bool))] = []
     var reactionViews: [ReactionView] = []
@@ -55,8 +56,9 @@ final class ReactionContainerView : UIView {
         mainStackView.pin(to: self)
     }
     
-    public func update(_ reactions: [(String, (Int, Bool))]) {
+    public func update(_ reactions: [(String, (Int, Bool))], isOutgoingMessage: Bool) {
         self.reactions = reactions
+        self.isOutgoingMessage = isOutgoingMessage
         prepareForUpdate()
         if showingAllReactions {
             updateAllReactions()
@@ -70,6 +72,13 @@ final class ReactionContainerView : UIView {
         stackView.axis = .horizontal
         stackView.spacing = Values.smallSpacing
         stackView.alignment = .center
+        if isOutgoingMessage {
+            stackView.semanticContentAttribute = .forceRightToLeft
+            reactionContainerView.semanticContentAttribute = .forceRightToLeft
+        } else {
+            stackView.semanticContentAttribute = .unspecified
+            reactionContainerView.semanticContentAttribute = .unspecified
+        }
         
         var displayedReactions: [(String, (Int, Bool))]
         var expandButtonReactions: [String]
@@ -121,13 +130,13 @@ final class ReactionContainerView : UIView {
     public func showAllEmojis() {
         guard !showingAllReactions else { return }
         showingAllReactions = true
-        update(reactions)
+        update(reactions, isOutgoingMessage: isOutgoingMessage)
     }
     
     public func showLessEmojis() {
         guard showingAllReactions else { return }
         showingAllReactions = false
-        update(reactions)
+        update(reactions, isOutgoingMessage: isOutgoingMessage)
     }
 }
 
