@@ -63,7 +63,7 @@ extension AppDelegate {
         let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
         let infoMessage = TSInfoMessage.from(message, associatedWith: thread)
         infoMessage.save(with: transaction)
-        receivedCalls.insert(message.uuid!)
+        receivedCalls.insert(uuid)
         Storage.shared.setReceivedCalls(to: receivedCalls, for: sender, using: transaction)
         return infoMessage
     }
