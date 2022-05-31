@@ -540,7 +540,6 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             for reactionView in reactionContainerView.reactionViews {
                 if reactionView.frame.contains(convertedLocation) {
                     // TODO: Show react list
-                    print("Ryan Test: long press on emoji.")
                     break
                 }
             }

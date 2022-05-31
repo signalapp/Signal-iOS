@@ -825,12 +825,10 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func quickReact(_ viewItem: ConversationViewItem, with emoji: String) {
-        print("Ryan Test: Quick react with \(emoji)")
         react(viewItem, with: emoji)
     }
     
     func cancelReact(_ viewItem: ConversationViewItem, for emoji: String) {
-        print("Ryan Test: Cancel react for \(emoji)")
         react(viewItem, with: emoji, cancel: true)
     }
     
