@@ -45,9 +45,6 @@ public final class ReactMessage : MTLModel {
     @objc
     public override func isEqual(_ object: Any!) -> Bool {
         guard let other = object as? ReactMessage else { return false }
-        return other.sender == self.sender &&
-               other.emoji == self.emoji &&
-               other.timestamp == self.timestamp &&
-               other.authorId == self.authorId
+        return other.sender == self.sender && other.emoji == self.emoji
      }
 }
