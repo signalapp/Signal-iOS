@@ -47,6 +47,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private var linkPreview: CVComponent?
 
+    private var giftBadge: CVComponent?
+
     private var reactions: CVComponent?
 
     private var audioAttachment: CVComponent?
@@ -119,6 +121,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return self.quotedReply
         case .linkPreview:
             return self.linkPreview
+        case .giftBadge:
+            return self.giftBadge
         case .reactions:
             return self.reactions
         case .contactShare:
@@ -275,6 +279,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if let linkPreviewState = componentState.linkPreview {
             self.linkPreview = CVComponentLinkPreview(itemModel: itemModel,
                                                       linkPreviewState: linkPreviewState)
+        }
+
+        if let giftBadgeState = componentState.giftBadge {
+            self.giftBadge = CVComponentGiftBadge(itemModel: itemModel, giftBadgeState: giftBadgeState)
         }
 
         if let reactionsState = componentState.reactions {
@@ -793,7 +801,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private static var topFullWidthCVComponentKeys: [CVComponentKey] { [.linkPreview] }
     private static var topNestedCVComponentKeys: [CVComponentKey] { [.senderName] }
     private static var bottomFullWidthCVComponentKeys: [CVComponentKey] { [.quotedReply, .bodyMedia] }
-    private static var bottomNestedShareCVComponentKeys: [CVComponentKey] { [.viewOnce, .audioAttachment, .genericAttachment, .contactShare] }
+    private static var bottomNestedShareCVComponentKeys: [CVComponentKey] { [.viewOnce, .audioAttachment, .genericAttachment, .contactShare, .giftBadge] }
     private static var bottomNestedTextCVComponentKeys: [CVComponentKey] { [.bodyText, .footer] }
 
     // The "message" contents of this component for most messages are vertically
@@ -1049,6 +1057,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             case .bodyText:
                 return false
             case .bodyMedia, .sticker, .quotedReply, .linkPreview, .viewOnce, .audioAttachment, .genericAttachment, .contactShare:
+                return true
+            case .giftBadge:
+                // TODO: (GB) Confirm that Gift Badges should use large component spacing.
                 return true
             case .senderName:
                 return false
@@ -1810,6 +1821,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         var viewOnceView: CVComponentView?
         var quotedReplyView: CVComponentView?
         var linkPreviewView: CVComponentView?
+        var giftBadgeView: CVComponentView?
         var reactionsView: CVComponentView?
         var audioAttachmentView: CVComponentView?
         var genericAttachmentView: CVComponentView?
@@ -1838,6 +1850,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return quotedReplyView
             case .linkPreview:
                 return linkPreviewView
+            case .giftBadge:
+                return giftBadgeView
             case .reactions:
                 return reactionsView
             case .audioAttachment:
@@ -1877,6 +1891,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 quotedReplyView = subcomponentView
             case .linkPreview:
                 linkPreviewView = subcomponentView
+            case .giftBadge:
+                giftBadgeView = subcomponentView
             case .reactions:
                 reactionsView = subcomponentView
             case .audioAttachment:

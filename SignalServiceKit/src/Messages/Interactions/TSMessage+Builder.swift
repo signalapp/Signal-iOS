@@ -45,6 +45,8 @@ public class TSMessageBuilder: NSObject {
     public var isGroupStoryReply: Bool {
         storyAuthorAddress != nil && storyTimestamp != nil && thread.isGroupThread
     }
+    @objc
+    public var giftBadge: OWSGiftBadge?
 
     init(thread: TSThread,
          timestamp: UInt64? = nil,
@@ -60,7 +62,8 @@ public class TSMessageBuilder: NSObject {
          isViewOnceMessage: Bool = false,
          storyAuthorAddress: SignalServiceAddress? = nil,
          storyTimestamp: UInt64? = nil,
-         storyReactionEmoji: String? = nil) {
+         storyReactionEmoji: String? = nil,
+         giftBadge: OWSGiftBadge? = nil) {
         self.thread = thread
 
         if let timestamp = timestamp {
@@ -81,6 +84,7 @@ public class TSMessageBuilder: NSObject {
         self.storyAuthorAddress = storyAuthorAddress
         self.storyTimestamp = storyTimestamp.map { NSNumber(value: $0) }
         self.storyReactionEmoji = storyReactionEmoji
+        self.giftBadge = giftBadge
     }
 
     @objc

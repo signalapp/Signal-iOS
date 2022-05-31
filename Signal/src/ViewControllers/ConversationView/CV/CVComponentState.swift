@@ -170,6 +170,11 @@ public class CVComponentState: Equatable, Dependencies {
     }
     let linkPreview: LinkPreview?
 
+    struct GiftBadge: Equatable {
+        // TODO: (GB)
+    }
+    let giftBadge: GiftBadge?
+
     struct SystemMessage: Equatable {
         let title: NSAttributedString
         let titleColor: UIColor
@@ -241,6 +246,7 @@ public class CVComponentState: Equatable, Dependencies {
                      sticker: Sticker?,
                      contactShare: ContactShare?,
                      linkPreview: LinkPreview?,
+                     giftBadge: GiftBadge?,
                      systemMessage: SystemMessage?,
                      dateHeader: DateHeader?,
                      unreadIndicator: UnreadIndicator?,
@@ -265,6 +271,7 @@ public class CVComponentState: Equatable, Dependencies {
         self.sticker = sticker
         self.contactShare = contactShare
         self.linkPreview = linkPreview
+        self.giftBadge = giftBadge
         self.systemMessage = systemMessage
         self.dateHeader = dateHeader
         self.unreadIndicator = unreadIndicator
@@ -293,6 +300,7 @@ public class CVComponentState: Equatable, Dependencies {
                     lhs.sticker == rhs.sticker &&
                     lhs.contactShare == rhs.contactShare &&
                     lhs.linkPreview == rhs.linkPreview &&
+                    lhs.giftBadge == rhs.giftBadge &&
                     lhs.systemMessage == rhs.systemMessage &&
                     lhs.dateHeader == rhs.dateHeader &&
                     lhs.unreadIndicator == rhs.unreadIndicator &&
@@ -321,6 +329,7 @@ public class CVComponentState: Equatable, Dependencies {
         typealias ContactShare = CVComponentState.ContactShare
         typealias Reactions = CVComponentState.Reactions
         typealias LinkPreview = CVComponentState.LinkPreview
+        typealias GiftBadge = CVComponentState.GiftBadge
         typealias DateHeader = CVComponentState.DateHeader
         typealias UnreadIndicator = CVComponentState.UnreadIndicator
         typealias TypingIndicator = CVComponentState.TypingIndicator
@@ -346,6 +355,7 @@ public class CVComponentState: Equatable, Dependencies {
         var systemMessage: SystemMessage?
         var contactShare: ContactShare?
         var linkPreview: LinkPreview?
+        var giftBadge: GiftBadge?
         var dateHeader: DateHeader?
         var unreadIndicator: UnreadIndicator?
         var typingIndicator: TypingIndicator?
@@ -381,6 +391,7 @@ public class CVComponentState: Equatable, Dependencies {
                                     sticker: sticker,
                                     contactShare: contactShare,
                                     linkPreview: linkPreview,
+                                    giftBadge: giftBadge,
                                     systemMessage: systemMessage,
                                     dateHeader: dateHeader,
                                     unreadIndicator: unreadIndicator,
@@ -441,6 +452,9 @@ public class CVComponentState: Equatable, Dependencies {
             if genericAttachment != nil {
                 return .genericAttachment
             }
+            if giftBadge != nil {
+                return .giftBadge
+            }
             if bodyMedia != nil {
                 return .bodyMedia
             }
@@ -499,6 +513,9 @@ public class CVComponentState: Equatable, Dependencies {
         }
         if linkPreview != nil {
             result.insert(.linkPreview)
+        }
+        if giftBadge != nil {
+            result.insert(.giftBadge)
         }
         if systemMessage != nil {
             result.insert(.systemMessage)
@@ -747,6 +764,10 @@ fileprivate extension CVComponentState.Builder {
             default:
                 break
             }
+        }
+
+        if let giftBadge = message.giftBadge {
+            return try buildGiftBadge(giftBadge: giftBadge)
         }
 
         do {
@@ -1114,6 +1135,11 @@ fileprivate extension CVComponentState.Builder {
                                            state: state)
         }
     }
+
+    private mutating func buildGiftBadge(giftBadge: OWSGiftBadge) throws -> CVComponentState {
+        self.giftBadge = GiftBadge()
+        return build()
+    }
 }
 
 // MARK: - DisplayableText
@@ -1199,6 +1225,9 @@ public extension CVComponentState {
                 hasPrimaryContent = true
             case .senderName, .senderAvatar, .footer, .reactions, .bottomButtons, .sendFailureBadge, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .unknownThreadWarning, .defaultDisappearingMessageTimer, .messageRoot:
                 // "Primary" content is not just metadata / UI.
+                break
+            case .giftBadge:
+                // Gift badges can't be forwarded.
                 break
             case .viewOnce:
                 // We should never forward view-once messages.

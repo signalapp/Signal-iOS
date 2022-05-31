@@ -98,6 +98,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _storyAuthorUuidString = messageBuilder.storyAuthorAddress.uuidString;
     _storyReactionEmoji = messageBuilder.storyReactionEmoji;
     _isGroupStoryReply = messageBuilder.isGroupStoryReply;
+    _giftBadge = messageBuilder.giftBadge;
 
 #ifdef DEBUG
     [self verifyPerConversationExpiration];
@@ -833,7 +834,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     // We DO NOT consider a message with just a linkPreview
     // or quotedMessage to be renderable.
-    return (self.body.length > 0 || self.attachmentIds.count > 0 || self.contactShare != nil || self.messageSticker);
+    return (self.body.length > 0 || self.attachmentIds.count > 0 || self.contactShare != nil
+        || self.messageSticker != nil || self.giftBadge != nil);
 }
 
 - (BOOL)hasRenderableStoryReplyContent

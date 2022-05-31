@@ -2080,7 +2080,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSGiftBadge *_Nullable giftBadge = [OWSGiftBadge maybeBuildFromDataMessage:dataMessage];
-    (void)giftBadge;
 
     BOOL isViewOnceMessage = dataMessage.hasIsViewOnce && dataMessage.isViewOnce;
 
@@ -2157,7 +2156,8 @@ NS_ASSUME_NONNULL_BEGIN
                                   isViewOnceMessage:isViewOnceMessage
                                  storyAuthorAddress:storyAuthorAddress
                                      storyTimestamp:storyTimestamp
-                                 storyReactionEmoji:nil];
+                                 storyReactionEmoji:nil
+                                          giftBadge:giftBadge];
     TSIncomingMessage *message = [incomingMessageBuilder build];
     if (!message) {
         OWSFailDebug(@"Missing incomingMessage.");

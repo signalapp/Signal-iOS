@@ -783,6 +783,8 @@
 		4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */; };
 		4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C622E7D393008010D2 /* MediaPresentationContext.swift */; };
 		4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */; };
+		503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503614CE282AF657008128B4 /* GiftBadgeView.swift */; };
+		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
 		641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */; };
 		760D93AB27A0E28600F351AC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 760D93AA27A0E28600F351AC /* CoreServices.framework */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
@@ -2079,6 +2081,7 @@
 		500049CD28330189006A7466 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fa; path = translations/fa.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049CE28330191006A7466 /* pa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = pa; path = translations/pa.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049CF28330195006A7466 /* pa_PK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = pa_PK; path = translations/pa_PK.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		503614CE282AF657008128B4 /* GiftBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftBadgeView.swift; sourceTree = "<group>"; };
 		503614D0282C5703008128B4 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ro; path = translations/ro.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D1282C5728008128B4 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fi; path = translations/fi.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D2282C572F008128B4 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = id; path = translations/id.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
@@ -2086,6 +2089,7 @@
 		503614D4282C5765008128B4 /* lt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = lt; path = translations/lt.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D5282C578C008128B4 /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = sq; path = translations/sq.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D6282C7B76008128B4 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = zh_CN; path = translations/zh_CN.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentGiftBadge.swift; sourceTree = "<group>"; };
 		55D83291ED67EE1A7FC96E60 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
 		63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3081,6 +3085,7 @@
 				347C3848252D004C00F3D941 /* CVComponentDateHeader.swift */,
 				347C383D252CE6C900F3D941 /* CVComponentFooter.swift */,
 				348815CD25545B0F00D4F4C4 /* CVComponentGenericAttachment.swift */,
+				50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */,
 				3426A36F25631C220036407F /* CVComponentLinkPreview.swift */,
 				347C383B252CE6C900F3D941 /* CVComponentMessage.swift */,
 				347C383E252CE6C900F3D941 /* CVComponentQuotedReply.swift */,
@@ -3730,6 +3735,7 @@
 				348EE28C25B897BF00814FC2 /* CVMediaCache.swift */,
 				3488F9352191CC4000E524CC /* CVMediaView.swift */,
 				34635331257549F1003C5428 /* CVReactionCountsView.swift */,
+				503614CE282AF657008128B4 /* GiftBadgeView.swift */,
 				4C25768923AD510800E0398D /* LoadMoreMessagesView.swift */,
 				34EB0E712629DC2B00B62DC3 /* MessageSelectionView.swift */,
 				34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */,
@@ -6407,6 +6413,7 @@
 				88D23D2223CEC0C700B0E74B /* OutboundIndividualCallInitiator.swift in Sources */,
 				8852572927DD366D0032073C /* StoriesViewController.swift in Sources */,
 				346594822434D5E000E5C510 /* GroupAttributesEditorHelper.swift in Sources */,
+				50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */,
 				34798A8725AF965300EC89B4 /* ProfileBioViewController.swift in Sources */,
 				880D902E2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
@@ -6673,6 +6680,7 @@
 				3497972125DAA86100E99FA4 /* SendPaymentViewController.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				34ACA7E02733159600E47AD4 /* OnboardingVerificationViewController.swift in Sources */,
+				503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */,
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				3490D57D25ADDC2A00F5F96C /* GroupLinkPromotionActionSheet.swift in Sources */,
 				887CD4812473098D00FDD265 /* DeviceTransferService+State.swift in Sources */,

@@ -42,7 +42,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                          isViewOnceMessage: Bool = false,
                          storyAuthorAddress: SignalServiceAddress? = nil,
                          storyTimestamp: UInt64? = nil,
-                         storyReactionEmoji: String? = nil) {
+                         storyReactionEmoji: String? = nil,
+                         giftBadge: OWSGiftBadge? = nil) {
 
         super.init(thread: thread,
                    timestamp: timestamp,
@@ -59,7 +60,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                    isViewOnceMessage: isViewOnceMessage,
                    storyAuthorAddress: storyAuthorAddress,
                    storyTimestamp: storyTimestamp,
-                   storyReactionEmoji: storyReactionEmoji)
+                   storyReactionEmoji: storyReactionEmoji,
+                   giftBadge: giftBadge)
 
         self.authorAddress = authorAddress
         self.sourceDeviceId = sourceDeviceId
@@ -104,7 +106,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                               isViewOnceMessage: Bool,
                               storyAuthorAddress: SignalServiceAddress?,
                               storyTimestamp: NSNumber?,
-                              storyReactionEmoji: String?) -> TSIncomingMessageBuilder {
+                              storyReactionEmoji: String?,
+                              giftBadge: OWSGiftBadge?) -> TSIncomingMessageBuilder {
         return TSIncomingMessageBuilder(thread: thread,
                                         timestamp: timestamp,
                                         authorAddress: authorAddress,
@@ -124,7 +127,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                                         isViewOnceMessage: isViewOnceMessage,
                                         storyAuthorAddress: storyAuthorAddress,
                                         storyTimestamp: storyTimestamp?.uint64Value,
-                                        storyReactionEmoji: storyReactionEmoji)
+                                        storyReactionEmoji: storyReactionEmoji,
+                                        giftBadge: giftBadge)
     }
 
     private var hasBuilt = false

@@ -320,6 +320,7 @@ public enum CVComponentKey: CustomStringConvertible, CaseIterable {
     case sticker
     case quotedReply
     case linkPreview
+    case giftBadge
     case reactions
     case viewOnce
     case audioAttachment
@@ -356,6 +357,8 @@ public enum CVComponentKey: CustomStringConvertible, CaseIterable {
             return ".quotedReply"
         case .linkPreview:
             return ".linkPreview"
+        case .giftBadge:
+            return ".giftBadge"
         case .reactions:
             return ".reactions"
         case .viewOnce:

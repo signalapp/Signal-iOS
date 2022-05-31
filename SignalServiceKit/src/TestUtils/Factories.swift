@@ -309,7 +309,8 @@ public class IncomingMessageFactory: NSObject, Factory {
                                                        isViewOnceMessage: isViewOnceMessageBuilder(),
                                                        storyAuthorAddress: storyAuthorAddressBuilder(),
                                                        storyTimestamp: storyTimestampBuilder(),
-                                                       storyReactionEmoji: storyReactionEmojiBuilder())
+                                                       storyReactionEmoji: storyReactionEmojiBuilder(),
+                                                       giftBadge: giftBadgeBuilder())
         let item = builder.build()
         item.anyInsert(transaction: transaction)
         return item
@@ -425,6 +426,11 @@ public class IncomingMessageFactory: NSObject, Factory {
 
     @objc
     public var storyReactionEmojiBuilder: () -> String? = {
+        return nil
+    }
+
+    @objc
+    public var giftBadgeBuilder: () -> OWSGiftBadge? = {
         return nil
     }
 }
