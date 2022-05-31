@@ -5,7 +5,6 @@
 #import "MainAppContext.h"
 #import "Session-Swift.h"
 #import <SignalCoreKit/Threading.h>
-#import <SessionMessagingKit/Environment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

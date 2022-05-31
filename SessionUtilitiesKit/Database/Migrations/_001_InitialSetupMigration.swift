@@ -4,9 +4,10 @@ import Foundation
 import GRDB
 
 enum _001_InitialSetupMigration: Migration {
+    static let target: TargetMigrations.Identifier = .utilitiesKit
     static let identifier: String = "initialSetup"
-    static let minExpectedRunDuration: TimeInterval = 0.1
     static let needsConfigSync: Bool = false
+    static let minExpectedRunDuration: TimeInterval = 0.1
     
     static func migrate(_ db: Database) throws {
         try db.create(table: Identity.self) { t in

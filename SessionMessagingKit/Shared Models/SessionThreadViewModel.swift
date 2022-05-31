@@ -264,7 +264,6 @@ public extension SessionThreadViewModel {
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
         let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
-        let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
         
         let unreadCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadUnreadCountString)_table")
         let unreadMentionCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadUnreadMentionCountString)_table")
@@ -274,6 +273,9 @@ public extension SessionThreadViewModel {
         let profileNameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.name.name)
         let authorProfileLiteral: SQL = SQL(stringLiteral: "authorProfile")
         let attachmentIdColumnLiteral: SQL = SQL(stringLiteral: Attachment.Columns.id.name)
+        let attachmentVariantColumnLiteral: SQL = SQL(stringLiteral: Attachment.Columns.variant.name)
+        let attachmentContentTypeColumnLiteral: SQL = SQL(stringLiteral: Attachment.Columns.contentType.name)
+        let attachmentSourceFilenameColumnLiteral: SQL = SQL(stringLiteral: Attachment.Columns.sourceFilename.name)
         let firstInteractionAttachmentLiteral: SQL = SQL(stringLiteral: "firstInteractionAttachment")
         let interactionAttachmentAttachmentIdColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.attachmentId.name)
         let interactionAttachmentInteractionIdColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.interactionId.name)
@@ -288,8 +290,9 @@ public extension SessionThreadViewModel {
         ///
         /// Explicitly set default values for the fields ignored for search results
         let numColumnsBeforeProfiles: Int = 11
-        let numColumnsBetweenProfilesAndAttachmentInfo: Int = 10
+        let numColumnsBetweenProfilesAndAttachmentInfo: Int = 10 // The attachment info columns will be combined
         // TODO: Some testing around the subqueries in the joins to see if they impact performance ('Simulator1' device takes ~125ms to complete this query)
+        
         let request: SQLRequest<ViewModel> = """
             SELECT
                 \(thread[.id]) AS \(ViewModel.threadIdKey),
@@ -322,7 +325,10 @@ public extension SessionThreadViewModel {
                 -- Default to 'sending' assuming non-processed interaction when null
                 IFNULL(\(interactionStateTableLiteral).\(interactionStateStateColumnLiteral), \(SQL("\(RecipientState.State.sending)"))) AS \(interactionStateTableLiteral),
                 (\(linkPreview[.url]) IS NOT NULL) AS \(ViewModel.interactionIsOpenGroupInvitationKey),
-                \(ViewModel.interactionAttachmentDescriptionInfoKey).*,
+                \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentIdColumnLiteral),
+                \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentVariantColumnLiteral),
+                \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentContentTypeColumnLiteral),
+                \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentSourceFilenameColumnLiteral),
                 COUNT(\(interactionAttachment[.interactionId])) AS \(ViewModel.interactionAttachmentCountKey),
         
                 \(interaction[.authorId]),
@@ -406,14 +412,7 @@ public extension SessionThreadViewModel {
                 \(firstInteractionAttachmentLiteral).\(interactionAttachmentAlbumIndexColumnLiteral) = 0 AND
                 \(firstInteractionAttachmentLiteral).\(interactionAttachmentInteractionIdColumnLiteral) = \(interaction[.id])
             )
-            LEFT JOIN (
-                SELECT
-                    \(attachment[.id]),
-                    \(attachment[.variant]),
-                    \(attachment[.contentType]),
-                    \(attachment[.sourceFilename])
-                FROM \(Attachment.self)
-            ) AS \(ViewModel.interactionAttachmentDescriptionInfoKey) ON \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentIdColumnLiteral) = \(firstInteractionAttachmentLiteral).\(interactionAttachmentAttachmentIdColumnLiteral)
+            LEFT JOIN \(Attachment.self) AS \(ViewModel.interactionAttachmentDescriptionInfoKey) ON \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentIdColumnLiteral) = \(firstInteractionAttachmentLiteral).\(interactionAttachmentAttachmentIdColumnLiteral)
             LEFT JOIN (
                 \(RecipientState.selectInteractionState(
                     tableLiteral: interactionStateTableLiteral,
@@ -506,7 +505,6 @@ public extension SessionThreadViewModel {
     static func conversationQuery(threadId: String, userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
-        let typingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias() // TODO: Remove this (not needed here - tracked via the messages)
         let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
         let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
         let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
@@ -526,7 +524,7 @@ public extension SessionThreadViewModel {
         /// parse and might throw
         ///
         /// Explicitly set default values for the fields ignored for search results
-        let numColumnsBeforeProfiles: Int = 16
+        let numColumnsBeforeProfiles: Int = 15
         let request: SQLRequest<ViewModel> = """
             SELECT
                 \(thread[.id]) AS \(ViewModel.threadIdKey),
@@ -557,7 +555,6 @@ public extension SessionThreadViewModel {
                 \(thread[.onlyNotifyForMentions]) AS \(ViewModel.threadOnlyNotifyForMentionsKey),
                 \(thread[.messageDraft]) AS \(ViewModel.threadMessageDraftKey),
         
-                (\(typingIndicator[.threadId]) IS NOT NULL) AS \(ViewModel.threadContactIsTypingKey),
                 \(unreadCountTableLiteral).\(ViewModel.threadUnreadCountKey) AS \(ViewModel.threadUnreadCountKey),
                 \(unreadMentionCountTableLiteral).\(ViewModel.threadUnreadMentionCountKey) AS \(ViewModel.threadUnreadMentionCountKey),
                 \(firstUnreadInteractionTableLiteral).\(interactionIdLiteral) AS \(ViewModel.threadFirstUnreadInteractionIdKey),
@@ -578,7 +575,6 @@ public extension SessionThreadViewModel {
             
             FROM \(SessionThread.self)
             LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
-            LEFT JOIN \(ThreadTypingIndicator.self) ON \(typingIndicator[.threadId]) = \(thread[.id])
             LEFT JOIN (
                 SELECT
                     \(interaction[.id]),
@@ -870,7 +866,7 @@ public extension SessionThreadViewModel {
                 \(ViewModel.closedGroupProfileBackFallbackKey).\(profileIdColumnLiteral) = \(userPublicKey)
             )
         
-            ORDER BY \(Column.rank)
+            ORDER BY \(Column.rank), \(interaction[.timestampMs].desc)
         """
         
         return request.adapted { db in

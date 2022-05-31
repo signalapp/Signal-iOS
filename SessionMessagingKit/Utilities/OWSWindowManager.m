@@ -3,7 +3,6 @@
 //
 
 #import "OWSWindowManager.h"
-#import "Environment.h"
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 

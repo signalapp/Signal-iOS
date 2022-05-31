@@ -282,8 +282,6 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         if viewController == captureViewController {
             setNavBarBackgroundColor(to: .black)
-        } else if viewController == mediaLibraryViewController {
-            setNavBarBackgroundColor(to: .white)
         } else {
             setNavBarBackgroundColor(to: Colors.navigationBarBackground)
         }
@@ -311,8 +309,6 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
         if viewController == captureViewController {
             setNavBarBackgroundColor(to: .black)
-        } else if viewController == mediaLibraryViewController {
-            setNavBarBackgroundColor(to: .white)
         } else {
             setNavBarBackgroundColor(to: Colors.navigationBarBackground)
         }

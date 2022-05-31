@@ -621,3 +621,5 @@
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
 "ALERT_ERROR_TITLE" = "Errore";
+"LOADING_CONVERSATIONS" = "Loading Conversations...";
+"DATABASE_MIGRATION_FAILED" = "An error occurred when optimising the database";

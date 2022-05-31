@@ -10,15 +10,19 @@ import SessionSnodeKit
 // Note: Looks like the oldest iOS device we support (min iOS 13.0) has 2Gb of RAM, processing
 // ~250k messages and ~1000 threads seems to take up
 enum _003_YDBToGRDBMigration: Migration {
+    static let target: TargetMigrations.Identifier = .messagingKit
     static let identifier: String = "YDBToGRDBMigration"
-    static let minExpectedRunDuration: TimeInterval = 20
     static let needsConfigSync: Bool = true
+    static let minExpectedRunDuration: TimeInterval = 20
     
     static func migrate(_ db: Database) throws {
-        let targetIdentifier: TargetMigrations.Identifier = .messagingKit
+        guard let dbConnection: YapDatabaseConnection = SUKLegacy.newDatabaseConnection() else {
+            SNLog("[Migration Warning] No legacy database, skipping \(target.key(with: self))")
+            return
+        }
         
-        // MARK: - Process Contacts, Threads & Interactions
-        print("RAWR [\(Date().timeIntervalSince1970)] - SessionMessagingKit migration - Start")
+        // MARK: - Read from Legacy Database
+        
         var shouldFailMigration: Bool = false
         var legacyMigrations: Set<SMKLegacy._DBMigration> = []
         var contacts: Set<SMKLegacy._Contact> = []
@@ -48,89 +52,24 @@ enum _003_YDBToGRDBMigration: Migration {
         var outgoingReadReceiptsTimestampsMs: [String: Set<Int64>] = [:]
         var receivedMessageTimestamps: Set<UInt64> = []
         
-        // Map the Legacy types for the NSKeyedUnarchiver
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._Thread.self,
-            forClassName: "TSThread"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._ContactThread.self,
-            forClassName: "TSContactThread"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._GroupThread.self,
-            forClassName: "TSGroupThread"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._GroupModel.self,
-            forClassName: "TSGroupModel"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._Contact.self,
-            forClassName: "SNContact"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._DBInteraction.self,
-            forClassName: "TSInteraction"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._DBMessage.self,
-            forClassName: "TSMessage"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._DBQuotedMessage.self,
-            forClassName: "TSQuotedMessage"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._DBQuotedMessage._DBAttachmentInfo.self,
-            forClassName: "OWSAttachmentInfo"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._DBLinkPreview.self,
-            forClassName: "SessionServiceKit.OWSLinkPreview"    // Very old legacy name
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._DBLinkPreview.self,
-            forClassName: "SessionMessagingKit.OWSLinkPreview"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._DBIncomingMessage.self,
-            forClassName: "TSIncomingMessage"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._DBOutgoingMessage.self,
-            forClassName: "TSOutgoingMessage"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._DBOutgoingMessageRecipientState.self,
-            forClassName: "TSOutgoingMessageRecipientState"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._DBInfoMessage.self,
-            forClassName: "TSInfoMessage"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._DisappearingConfigurationUpdateInfoMessage.self,
-            forClassName: "OWSDisappearingConfigurationUpdateInfoMessage"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._Attachment.self,
-            forClassName: "TSAttachment"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._AttachmentStream.self,
-            forClassName: "TSAttachmentStream"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._AttachmentPointer.self,
-            forClassName: "TSAttachmentPointer"
-        )
+        var notifyPushServerJobs: Set<SMKLegacy._NotifyPNServerJob> = []
+        var messageReceiveJobs: Set<SMKLegacy._MessageReceiveJob> = []
+        var messageSendJobs: Set<SMKLegacy._MessageSendJob> = []
+        var attachmentUploadJobs: Set<SMKLegacy._AttachmentUploadJob> = []
+        var attachmentDownloadJobs: Set<SMKLegacy._AttachmentDownloadJob> = []
         
-        Storage.read { transaction in
+        var legacyPreferences: [String: Any] = [:]
+        
+        // Map the Legacy types for the NSKeyedUnarchivez
+        self.mapLegacyTypesForNSKeyedUnarchiver()
+        
+        dbConnection.read { transaction in
+            // MARK: --Migrations
+            
             // Process the migrations (we don't want to bother running the old migrations as it would be
             // a waste of time, rather we include the logic from the old migrations in here and make the
             // same changes if the migration hasn't already run)
-            transaction.enumerateRows(inCollection: SMKLegacy.databaseMigrationCollection) { key, _, _, _ in
+            transaction.enumerateKeys(inCollection: SMKLegacy.databaseMigrationCollection) { key, _ in
                 guard let legacyMigration: SMKLegacy._DBMigration = SMKLegacy._DBMigration(rawValue: key) else {
                     SNLog("[Migration Error] Found unknown migration")
                     shouldFailMigration = true
@@ -139,23 +78,28 @@ enum _003_YDBToGRDBMigration: Migration {
                 
                 legacyMigrations.insert(legacyMigration)
             }
+            GRDBStorage.shared.update(progress: 0.01, for: self, in: target)
             
-            // Process the Contacts
+            // MARK: --Contacts
+            
+            SNLog("[Migration Info] \(target.key(with: self)) - Processing Contacts")
+            
             transaction.enumerateRows(inCollection: SMKLegacy.contactCollection) { _, object, _, _ in
                 guard let contact = object as? SMKLegacy._Contact else { return }
                 contacts.insert(contact)
                 validProfileIds.insert(contact.sessionID)
             }
             
-            // Process legacy blocked contacts
             legacyBlockedSessionIds = Set(transaction.object(
                 forKey: SMKLegacy.blockedPhoneNumbersKey,
                 inCollection: SMKLegacy.blockListCollection
             ) as? [String] ?? [])
-        
-            print("RAWR [\(Date().timeIntervalSince1970)] - Process threads - Start")
+            GRDBStorage.shared.update(progress: 0.02, for: self, in: target)
             
-            // Process the threads
+            // MARK: --Threads
+            
+            SNLog("[Migration Info] \(target.key(with: self)) - Processing Threads")
+            
             transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.threadCollection) { key, object, _ in
                 guard let thread: SMKLegacy._Thread = object as? SMKLegacy._Thread else { return }
                 
@@ -237,10 +181,12 @@ enum _003_YDBToGRDBMigration: Migration {
                     openGroupLastDeletionServerId[thread.uniqueId] = transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupLastDeletionServerIDCollection) as? Int64
                 }
             }
-            print("RAWR [\(Date().timeIntervalSince1970)] - Process threads - End")
+            GRDBStorage.shared.update(progress: 0.04, for: self, in: target)
             
-            // Process interactions
-            print("RAWR [\(Date().timeIntervalSince1970)] - Process interactions - Start")
+            // MARK: --Interactions
+            
+            SNLog("[Migration Info] \(target.key(with: self)) - Processing Interactions")
+            
             transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.interactionCollection) { _, object, _ in
                 guard let interaction: SMKLegacy._DBInteraction = object as? SMKLegacy._DBInteraction else {
                     SNLog("[Migration Error] Unable to process interaction")
@@ -251,10 +197,12 @@ enum _003_YDBToGRDBMigration: Migration {
                 interactions[interaction.uniqueThreadId] = (interactions[interaction.uniqueThreadId] ?? [])
                     .appending(interaction)
             }
-            print("RAWR [\(Date().timeIntervalSince1970)] - Process interactions - End")
+            GRDBStorage.shared.update(progress: 0.19, for: self, in: target)
             
-            // Process attachments
-            print("RAWR [\(Date().timeIntervalSince1970)] - Process attachments - Start")
+            // MARK: --Attachments
+            
+            SNLog("[Migration Info] \(target.key(with: self)) - Processing Attachments")
+            
             transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.attachmentsCollection) { key, object, _ in
                 guard let attachment: SMKLegacy._Attachment = object as? SMKLegacy._Attachment else {
                     SNLog("[Migration Error] Unable to process attachment")
@@ -264,9 +212,10 @@ enum _003_YDBToGRDBMigration: Migration {
                 
                 attachments[key] = attachment
             }
-            print("RAWR [\(Date().timeIntervalSince1970)] - Process attachments - End")
+            GRDBStorage.shared.update(progress: 0.21, for: self, in: target)
             
-            // Process read receipts
+            // MARK: --Read Receipts
+            
             transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.outgoingReadReceiptManagerCollection) { key, object, _ in
                 guard let timestampsMs: Set<Int64> = object as? Set<Int64> else { return }
                 
@@ -284,6 +233,84 @@ enum _003_YDBToGRDBMigration: Migration {
                     .defaulting(to: [])
                     .asSet()
             )
+            
+            // MARK: --Jobs
+            
+            SNLog("[Migration Info] \(target.key(with: self)) - Processing Jobs")
+            
+            transaction.enumerateRows(inCollection: SMKLegacy.notifyPushServerJobCollection) { _, object, _, _ in
+                guard let job = object as? SMKLegacy._NotifyPNServerJob else { return }
+                notifyPushServerJobs.insert(job)
+            }
+            
+            transaction.enumerateRows(inCollection: SMKLegacy.messageReceiveJobCollection) { _, object, _, _ in
+                guard let job = object as? SMKLegacy._MessageReceiveJob else { return }
+                messageReceiveJobs.insert(job)
+            }
+            
+            transaction.enumerateRows(inCollection: SMKLegacy.messageSendJobCollection) { _, object, _, _ in
+                guard let job = object as? SMKLegacy._MessageSendJob else { return }
+                messageSendJobs.insert(job)
+            }
+            
+            transaction.enumerateRows(inCollection: SMKLegacy.attachmentUploadJobCollection) { _, object, _, _ in
+                guard let job = object as? SMKLegacy._AttachmentUploadJob else { return }
+                attachmentUploadJobs.insert(job)
+            }
+            
+            transaction.enumerateRows(inCollection: SMKLegacy.attachmentDownloadJobCollection) { _, object, _, _ in
+                guard let job = object as? SMKLegacy._AttachmentDownloadJob else { return }
+                attachmentDownloadJobs.insert(job)
+            }
+            GRDBStorage.shared.update(progress: 0.22, for: self, in: target)
+            
+            // MARK: --Preferences
+            
+            SNLog("[Migration Info] \(target.key(with: self)) - Processing Preferences")
+            
+            transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.preferencesCollection) { key, object, _ in
+                legacyPreferences[key] = object
+            }
+            
+            transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.additionalPreferencesCollection) { key, object, _ in
+                legacyPreferences[key] = object
+            }
+            
+            // Note: The 'int(forKey:inCollection:)' defaults to `0` which is an incorrect value
+            // for the notification sound so catch it and default
+            let globalNotificationSoundValue: Int32 = transaction.int(
+                forKey: SMKLegacy.soundsGlobalNotificationKey,
+                inCollection: SMKLegacy.soundsStorageNotificationCollection
+            )
+            legacyPreferences[SMKLegacy.soundsGlobalNotificationKey] = (globalNotificationSoundValue > 0 ?
+                Int(globalNotificationSoundValue) :
+                Preferences.Sound.defaultNotificationSound.rawValue
+            )
+            
+            legacyPreferences[SMKLegacy.readReceiptManagerAreReadReceiptsEnabled] = transaction.bool(
+                forKey: SMKLegacy.readReceiptManagerAreReadReceiptsEnabled,
+                inCollection: SMKLegacy.readReceiptManagerCollection,
+                defaultValue: false
+            )
+            
+            legacyPreferences[SMKLegacy.typingIndicatorsEnabledKey] = transaction.bool(
+                forKey: SMKLegacy.typingIndicatorsEnabledKey,
+                inCollection: SMKLegacy.typingIndicatorsCollection,
+                defaultValue: false
+            )
+            
+            legacyPreferences[SMKLegacy.screenLockIsScreenLockEnabledKey] = transaction.bool(
+                forKey: SMKLegacy.screenLockIsScreenLockEnabledKey,
+                inCollection: SMKLegacy.screenLockCollection,
+                defaultValue: false
+            )
+            
+            legacyPreferences[SMKLegacy.screenLockScreenLockTimeoutSecondsKey] = transaction.double(
+                forKey: SMKLegacy.screenLockScreenLockTimeoutSecondsKey,
+                inCollection: SMKLegacy.screenLockCollection,
+                defaultValue: (15 * 60)
+            )
+            GRDBStorage.shared.update(progress: 0.23, for: self, in: target)
         }
         
         // We can't properly throw within the 'enumerateKeysAndObjects' block so have to throw here
@@ -295,10 +322,14 @@ enum _003_YDBToGRDBMigration: Migration {
         
         // MARK: - Insert Contacts
         
+        SNLog("[Migration Info] \(target.key(with: self)) - Inserting Contacts")
+        
         try autoreleasepool {
-            let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
+            // Values for contact progress
+            let contactStartProgress: CGFloat = 0.23
+            let progressPerContact: CGFloat = (0.05 / CGFloat(contacts.count))
             
-            try contacts.forEach { legacyContact in
+            try contacts.enumerated().forEach { index, legacyContact in
                 let isCurrentUser: Bool = (legacyContact.sessionID == currentUserPublicKey)
                 let contactThreadId: String = SMKLegacy._ContactThread.threadId(from: legacyContact.sessionID)
                 
@@ -368,12 +399,25 @@ enum _003_YDBToGRDBMigration: Migration {
                         hasBeenBlocked: (!isCurrentUser && (legacyContact.hasBeenBlocked || legacyContact.isBlocked))
                     ).insert(db)
                 }
+                
+                // Increment the progress for each contact
+                GRDBStorage.shared.update(
+                    progress: contactStartProgress + (progressPerContact * CGFloat(index + 1)),
+                    for: self,
+                    in: target
+                )
             }
         }
         
+        // Clear out processed data (give the memory a change to be freed)
+        contacts = []
+        legacyBlockedSessionIds = []
+        contactThreadIds = []
+        
         // MARK: - Insert Threads
         
-        print("RAWR [\(Date().timeIntervalSince1970)] - Process thread inserts - Start")
+        SNLog("[Migration Info] \(target.key(with: self)) - Inserting Threads & Interactions")
+        
         var legacyInteractionToIdMap: [String: Int64] = [:]
         var legacyInteractionIdentifierToIdMap: [String: Int64] = [:]
         var legacyInteractionIdentifierToIdFallbackMap: [String: Int64] = [:]
@@ -410,6 +454,12 @@ enum _003_YDBToGRDBMigration: Migration {
             .compactMap { $0 }
             .joined(separator: "-")
         }
+        
+        // Values for thread progress
+        var interactionCounter: CGFloat = 0
+        let allInteractionsCount: Int = interactions.map { $0.value.count }.reduce(0, +)
+        let threadInteractionsStartProgress: CGFloat = 0.28
+        let progressPerInteraction: CGFloat = (0.70 / CGFloat(allInteractionsCount))
         
         // Sort by id just so we can make the migration process more determinstic
         try legacyThreads.sorted(by: { lhs, rhs in lhs.uniqueId < rhs.uniqueId }).forEach { legacyThread in
@@ -921,25 +971,22 @@ enum _003_YDBToGRDBMigration: Migration {
                                 attachmentId: attachmentId
                             ).insert(db)
                         }
-                }
+                        
+                        // Increment the progress for each contact
+                        GRDBStorage.shared.update(
+                            progress: (
+                                threadInteractionsStartProgress +
+                                (progressPerInteraction * (interactionCounter + 1))
+                            ),
+                            for: self,
+                            in: target
+                        )
+                        interactionCounter += 1
+                    }
             }
         }
         
-        // Insert a 'ControlMessageProcessRecord' for any remaining 'receivedMessageTimestamp'
-        // entries as "legacy"
-        try ControlMessageProcessRecord.generateLegacyProcessRecords(
-            db,
-            receivedMessageTimestamps: receivedMessageTimestamps.map { Int64($0) }
-        )
-        
-        print("RAWR [\(Date().timeIntervalSince1970)] - Process thread inserts - End")
-        
         // Clear out processed data (give the memory a change to be freed)
-        
-        contacts = []
-        legacyBlockedSessionIds = []
-        contactThreadIds = []
-        
         legacyThreads = []
         disappearingMessagesConfiguration = [:]
         
@@ -957,150 +1004,24 @@ enum _003_YDBToGRDBMigration: Migration {
         
         interactions = [:]
         attachments = [:]
+        
+        // MARK: --Received Message Timestamps
+        
+        // Insert a 'ControlMessageProcessRecord' for any remaining 'receivedMessageTimestamp'
+        // entries as "legacy"
+        try ControlMessageProcessRecord.generateLegacyProcessRecords(
+            db,
+            receivedMessageTimestamps: receivedMessageTimestamps.map { Int64($0) }
+        )
+        
+        // Clear out processed data (give the memory a change to be freed)
         receivedMessageTimestamps = []
-        
-        // MARK: - Process Legacy Jobs
-        
-        print("RAWR [\(Date().timeIntervalSince1970)] - Process jobs - Start")
-        
-        var notifyPushServerJobs: Set<SMKLegacy._NotifyPNServerJob> = []
-        var messageReceiveJobs: Set<SMKLegacy._MessageReceiveJob> = []
-        var messageSendJobs: Set<SMKLegacy._MessageSendJob> = []
-        var attachmentUploadJobs: Set<SMKLegacy._AttachmentUploadJob> = []
-        var attachmentDownloadJobs: Set<SMKLegacy._AttachmentDownloadJob> = []
-        
-        // Map the Legacy types for the NSKeyedUnarchiver
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._NotifyPNServerJob.self,
-            forClassName: "SessionMessagingKit.NotifyPNServerJob"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._NotifyPNServerJob._SnodeMessage.self,
-            forClassName: "SessionSnodeKit.SnodeMessage"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._MessageSendJob.self,
-            forClassName: "SessionMessagingKit.SNMessageSendJob"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._MessageReceiveJob.self,
-            forClassName: "SessionMessagingKit.MessageReceiveJob"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._AttachmentUploadJob.self,
-            forClassName: "SessionMessagingKit.AttachmentUploadJob"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._AttachmentDownloadJob.self,
-            forClassName: "SessionMessagingKit.AttachmentDownloadJob"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._Message.self,
-            forClassName: "SNMessage"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._VisibleMessage.self,
-            forClassName: "SNVisibleMessage"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._Quote.self,
-            forClassName: "SNQuote"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._LinkPreview.self,
-            forClassName: "SNLinkPreview"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._Profile.self,
-            forClassName: "SNProfile"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._OpenGroupInvitation.self,
-            forClassName: "SNOpenGroupInvitation"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._ControlMessage.self,
-            forClassName: "SNControlMessage"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._ReadReceipt.self,
-            forClassName: "SNReadReceipt"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._TypingIndicator.self,
-            forClassName: "SNTypingIndicator"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._ClosedGroupControlMessage.self,
-            forClassName: "SessionMessagingKit.ClosedGroupControlMessage"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._ClosedGroupControlMessage._KeyPairWrapper.self,
-            forClassName: "ClosedGroupControlMessage.SNKeyPairWrapper"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._DataExtractionNotification.self,
-            forClassName: "SessionMessagingKit.DataExtractionNotification"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._ExpirationTimerUpdate.self,
-            forClassName: "SNExpirationTimerUpdate"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._ConfigurationMessage.self,
-            forClassName: "SNConfigurationMessage"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._CMClosedGroup.self,
-            forClassName: "SNClosedGroup"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._CMContact.self,
-            forClassName: "SNConfigurationMessage.SNConfigurationMessageContact"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._UnsendRequest.self,
-            forClassName: "SNUnsendRequest"
-        )
-        NSKeyedUnarchiver.setClass(
-            SMKLegacy._MessageRequestResponse.self,
-            forClassName: "SNMessageRequestResponse"
-        )
-        
-        Storage.read { transaction in
-            transaction.enumerateRows(inCollection: SMKLegacy.notifyPushServerJobCollection) { _, object, _, _ in
-                guard let job = object as? SMKLegacy._NotifyPNServerJob else { return }
-                notifyPushServerJobs.insert(job)
-            }
-            
-            transaction.enumerateRows(inCollection: SMKLegacy.messageReceiveJobCollection) { _, object, _, _ in
-                guard let job = object as? SMKLegacy._MessageReceiveJob else { return }
-                messageReceiveJobs.insert(job)
-            }
-            
-            transaction.enumerateRows(inCollection: SMKLegacy.messageSendJobCollection) { _, object, _, _ in
-                guard let job = object as? SMKLegacy._MessageSendJob else { return }
-                messageSendJobs.insert(job)
-            }
-            
-            transaction.enumerateRows(inCollection: SMKLegacy.attachmentUploadJobCollection) { _, object, _, _ in
-                guard let job = object as? SMKLegacy._AttachmentUploadJob else { return }
-                attachmentUploadJobs.insert(job)
-            }
-            
-            transaction.enumerateRows(inCollection: SMKLegacy.attachmentDownloadJobCollection) { _, object, _, _ in
-                guard let job = object as? SMKLegacy._AttachmentDownloadJob else { return }
-                attachmentDownloadJobs.insert(job)
-            }
-        }
-        
-        print("RAWR [\(Date().timeIntervalSince1970)] - Process jobs - End")
         
         // MARK: - Insert Jobs
         
-        print("RAWR [\(Date().timeIntervalSince1970)] - Process job inserts - Start")
+        SNLog("[Migration Info] \(target.key(with: self)) - Inserting Jobs")
         
-        // MARK: - --notifyPushServer
+        // MARK: --notifyPushServer
         
         try autoreleasepool {
             try notifyPushServerJobs.forEach { legacyJob in
@@ -1123,7 +1044,7 @@ enum _003_YDBToGRDBMigration: Migration {
             }
         }
         
-        // MARK: - --messageReceive
+        // MARK: --messageReceive
         
         try autoreleasepool {
             try messageReceiveJobs.forEach { legacyJob in
@@ -1172,7 +1093,7 @@ enum _003_YDBToGRDBMigration: Migration {
             }
         }
         
-        // MARK: - --messageSend
+        // MARK: --messageSend
         
         var messageSendJobLegacyMap: [String: Job] = [:]
 
@@ -1266,7 +1187,7 @@ enum _003_YDBToGRDBMigration: Migration {
             }
         }
         
-        // MARK: - --attachmentUpload
+        // MARK: --attachmentUpload
 
         try autoreleasepool {
             try attachmentUploadJobs.forEach { legacyJob in
@@ -1300,7 +1221,7 @@ enum _003_YDBToGRDBMigration: Migration {
             }
         }
         
-        // MARK: - --attachmentDownload
+        // MARK: --attachmentDownload
         
         try autoreleasepool {
             try attachmentDownloadJobs.forEach { legacyJob in
@@ -1327,7 +1248,7 @@ enum _003_YDBToGRDBMigration: Migration {
             }
         }
         
-        // MARK: - --sendReadReceipts
+        // MARK: --sendReadReceipts
         
         try autoreleasepool {
             try outgoingReadReceiptsTimestampsMs.forEach { threadId, timestampsMs in
@@ -1342,59 +1263,11 @@ enum _003_YDBToGRDBMigration: Migration {
                 )?.inserted(db)
             }
         }
+        GRDBStorage.shared.update(progress: 0.99, for: self, in: target)
         
-        print("RAWR [\(Date().timeIntervalSince1970)] - Process job inserts - End")
+        // MARK: - Preferences
         
-        // MARK: - Process Preferences
-        
-        print("RAWR [\(Date().timeIntervalSince1970)] - Process preferences inserts - Start")
-        
-        var legacyPreferences: [String: Any] = [:]
-        
-        Storage.read { transaction in
-            transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.preferencesCollection) { key, object, _ in
-                legacyPreferences[key] = object
-            }
-            
-            transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.additionalPreferencesCollection) { key, object, _ in
-                legacyPreferences[key] = object
-            }
-            
-            // Note: The 'int(forKey:inCollection:)' defaults to `0` which is an incorrect value
-            // for the notification sound so catch it and default
-            let globalNotificationSoundValue: Int32 = transaction.int(
-                forKey: SMKLegacy.soundsGlobalNotificationKey,
-                inCollection: SMKLegacy.soundsStorageNotificationCollection
-            )
-            legacyPreferences[SMKLegacy.soundsGlobalNotificationKey] = (globalNotificationSoundValue > 0 ?
-                Int(globalNotificationSoundValue) :
-                Preferences.Sound.defaultNotificationSound.rawValue
-            )
-            
-            legacyPreferences[SMKLegacy.readReceiptManagerAreReadReceiptsEnabled] = transaction.bool(
-                forKey: SMKLegacy.readReceiptManagerAreReadReceiptsEnabled,
-                inCollection: SMKLegacy.readReceiptManagerCollection,
-                defaultValue: false
-            )
-            
-            legacyPreferences[SMKLegacy.typingIndicatorsEnabledKey] = transaction.bool(
-                forKey: SMKLegacy.typingIndicatorsEnabledKey,
-                inCollection: SMKLegacy.typingIndicatorsCollection,
-                defaultValue: false
-            )
-            
-            legacyPreferences[SMKLegacy.screenLockIsScreenLockEnabledKey] = transaction.bool(
-                forKey: SMKLegacy.screenLockIsScreenLockEnabledKey,
-                inCollection: SMKLegacy.screenLockCollection,
-                defaultValue: false
-            )
-            
-            legacyPreferences[SMKLegacy.screenLockScreenLockTimeoutSecondsKey] = transaction.double(
-                forKey: SMKLegacy.screenLockScreenLockTimeoutSecondsKey,
-                inCollection: SMKLegacy.screenLockCollection,
-                defaultValue: (15 * 60)
-            )
-        }
+        SNLog("[Migration Info] \(target.key(with: self)) - Inserting Preferences")
         
         db[.defaultNotificationSound] = Preferences.Sound(rawValue: legacyPreferences[SMKLegacy.soundsGlobalNotificationKey] as? Int ?? -1)
             .defaulting(to: Preferences.Sound.defaultNotificationSound)
@@ -1425,10 +1298,6 @@ enum _003_YDBToGRDBMigration: Migration {
         db[.hasSavedThread] = (legacyPreferences[SMKLegacy.preferencesKeyHasSavedThreadKey] as? Bool == true)
         db[.hasSentAMessage] = (legacyPreferences[SMKLegacy.preferencesKeyHasSentAMessageKey] as? Bool == true)
         db[.isReadyForAppExtensions] = CurrentAppContext().appUserDefaults().bool(forKey: SMKLegacy.preferencesKeyIsReadyForAppExtensions)
-        
-        print("RAWR [\(Date().timeIntervalSince1970)] - Process preferences inserts - End")
-        
-        print("RAWR Done!!!")
     }
     
     // MARK: - Convenience
@@ -1581,5 +1450,180 @@ enum _003_YDBToGRDBMigration: Migration {
         processedAttachmentIds.insert(legacyAttachmentId)
         
         return legacyAttachmentId
+    }
+    
+    private static func mapLegacyTypesForNSKeyedUnarchiver() {
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._Thread.self,
+            forClassName: "TSThread"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._ContactThread.self,
+            forClassName: "TSContactThread"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._GroupThread.self,
+            forClassName: "TSGroupThread"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._GroupModel.self,
+            forClassName: "TSGroupModel"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._Contact.self,
+            forClassName: "SNContact"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBInteraction.self,
+            forClassName: "TSInteraction"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBMessage.self,
+            forClassName: "TSMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBQuotedMessage.self,
+            forClassName: "TSQuotedMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBQuotedMessage._DBAttachmentInfo.self,
+            forClassName: "OWSAttachmentInfo"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBLinkPreview.self,
+            forClassName: "SessionServiceKit.OWSLinkPreview"    // Very old legacy name
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBLinkPreview.self,
+            forClassName: "SessionMessagingKit.OWSLinkPreview"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBIncomingMessage.self,
+            forClassName: "TSIncomingMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBOutgoingMessage.self,
+            forClassName: "TSOutgoingMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBOutgoingMessageRecipientState.self,
+            forClassName: "TSOutgoingMessageRecipientState"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DBInfoMessage.self,
+            forClassName: "TSInfoMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DisappearingConfigurationUpdateInfoMessage.self,
+            forClassName: "OWSDisappearingConfigurationUpdateInfoMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._Attachment.self,
+            forClassName: "TSAttachment"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._AttachmentStream.self,
+            forClassName: "TSAttachmentStream"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._AttachmentPointer.self,
+            forClassName: "TSAttachmentPointer"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._NotifyPNServerJob.self,
+            forClassName: "SessionMessagingKit.NotifyPNServerJob"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._NotifyPNServerJob._SnodeMessage.self,
+            forClassName: "SessionSnodeKit.SnodeMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._MessageSendJob.self,
+            forClassName: "SessionMessagingKit.SNMessageSendJob"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._MessageReceiveJob.self,
+            forClassName: "SessionMessagingKit.MessageReceiveJob"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._AttachmentUploadJob.self,
+            forClassName: "SessionMessagingKit.AttachmentUploadJob"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._AttachmentDownloadJob.self,
+            forClassName: "SessionMessagingKit.AttachmentDownloadJob"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._Message.self,
+            forClassName: "SNMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._VisibleMessage.self,
+            forClassName: "SNVisibleMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._Quote.self,
+            forClassName: "SNQuote"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._LinkPreview.self,
+            forClassName: "SNLinkPreview"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._Profile.self,
+            forClassName: "SNProfile"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._OpenGroupInvitation.self,
+            forClassName: "SNOpenGroupInvitation"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._ControlMessage.self,
+            forClassName: "SNControlMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._ReadReceipt.self,
+            forClassName: "SNReadReceipt"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._TypingIndicator.self,
+            forClassName: "SNTypingIndicator"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._ClosedGroupControlMessage.self,
+            forClassName: "SessionMessagingKit.ClosedGroupControlMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._ClosedGroupControlMessage._KeyPairWrapper.self,
+            forClassName: "ClosedGroupControlMessage.SNKeyPairWrapper"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DataExtractionNotification.self,
+            forClassName: "SessionMessagingKit.DataExtractionNotification"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._ExpirationTimerUpdate.self,
+            forClassName: "SNExpirationTimerUpdate"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._ConfigurationMessage.self,
+            forClassName: "SNConfigurationMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._CMClosedGroup.self,
+            forClassName: "SNClosedGroup"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._CMContact.self,
+            forClassName: "SNConfigurationMessage.SNConfigurationMessageContact"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._UnsendRequest.self,
+            forClassName: "SNUnsendRequest"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._MessageRequestResponse.self,
+            forClassName: "SNMessageRequestResponse"
+        )
     }
 }

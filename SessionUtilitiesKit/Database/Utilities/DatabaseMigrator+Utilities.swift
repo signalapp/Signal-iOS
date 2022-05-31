@@ -4,7 +4,10 @@ import Foundation
 import GRDB
 
 public extension DatabaseMigrator {
-    mutating func registerMigration(_ identifier: TargetMigrations.Identifier, migration: Migration.Type, foreignKeyChecks: ForeignKeyChecks = .deferred) {
-        self.registerMigration("\(identifier).\(migration.identifier)", migrate: migration.migrate)
+    mutating func registerMigration(_ targetIdentifier: TargetMigrations.Identifier, migration: Migration.Type, foreignKeyChecks: ForeignKeyChecks = .deferred) {
+        self.registerMigration(
+            targetIdentifier.key(with: migration),
+            migrate: migration.loggedMigrate(targetIdentifier)
+        )
     }
 }

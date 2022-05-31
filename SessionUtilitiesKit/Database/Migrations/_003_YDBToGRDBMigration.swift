@@ -4,12 +4,18 @@ import Foundation
 import GRDB
 
 enum _003_YDBToGRDBMigration: Migration {
+    static let target: TargetMigrations.Identifier = .utilitiesKit
     static let identifier: String = "YDBToGRDBMigration"
-    static let minExpectedRunDuration: TimeInterval = 0.1
     static let needsConfigSync: Bool = false
+    static let minExpectedRunDuration: TimeInterval = 0.1
     
     static func migrate(_ db: Database) throws {
-        // MARK: - Identity keys
+        guard let dbConnection: YapDatabaseConnection = SUKLegacy.newDatabaseConnection() else {
+            SNLog("[Migration Warning] No legacy database, skipping \(target.key(with: self))")
+            return
+        }
+        
+        // MARK: - Read from Legacy Database
         
         // Note: Want to exclude the Snode's we already added from the 'onionRequestPathResult'
         var registeredNumber: String?
@@ -24,7 +30,9 @@ enum _003_YDBToGRDBMigration: Migration {
             forClassName: "ECKeyPair"
         )
         
-        Storage.read { transaction in
+        dbConnection.read { transaction in
+            // MARK: --Identity keys
+            
             registeredNumber = transaction.object(
                 forKey: SUKLegacy.userAccountRegisteredNumberKey,
                 inCollection: SUKLegacy.userAccountCollection
@@ -73,9 +81,12 @@ enum _003_YDBToGRDBMigration: Migration {
             
             throw StorageError.migrationFailed
         }
-        print("RAWR publicKey \(userX25519KeyPair.publicKey.toHexString())")
+        
+        // MARK: - Insert into GRDB
+        
         try autoreleasepool {
-            // Insert the data into GRDB
+            // MARK: --Identity keys
+            
             try Identity(
                 variant: .seed,
                 data: Data(hex: seedHexString)

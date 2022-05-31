@@ -6,9 +6,7 @@ import PromiseKit
 import Sodium
 import SessionSnodeKit
 
-@objc(LKPoller)
-public final class Poller : NSObject {
-    private let storage = OWSPrimaryStorage.shared()
+public final class Poller {
     private var isPolling: Atomic<Bool> = Atomic(false)
     private var usedSnodes = Set<Snode>()
     private var pollCount = 0
@@ -27,7 +25,7 @@ public final class Poller : NSObject {
 
     // MARK: - Error
     
-    private enum Error : LocalizedError {
+    private enum Error: LocalizedError {
         case pollLimitReached
 
         var localizedDescription: String {
@@ -39,7 +37,9 @@ public final class Poller : NSObject {
 
     // MARK: - Public API
     
-    @objc public func startIfNeeded() {
+    public init() {}
+    
+    public func startIfNeeded() {
         guard !isPolling.wrappedValue else { return }
         
         SNLog("Started polling.")
@@ -47,7 +47,7 @@ public final class Poller : NSObject {
         setUpPolling()
     }
 
-    @objc public func stop() {
+    public func stop() {
         SNLog("Stopped polling.")
         isPolling.mutate { $0 = false }
         usedSnodes.removeAll()

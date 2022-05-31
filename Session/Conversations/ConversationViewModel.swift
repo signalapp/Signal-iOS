@@ -65,10 +65,6 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                     columns: Interaction.Columns
                         .allCases
                         .filter { $0 != .wasRead }
-                ),
-                PagedData.ObservedChanges(
-                    table: ThreadTypingIndicator.self,
-                    columns: ThreadTypingIndicator.Columns.allCases
                 )
             ],
             filterSQL: MessageViewModel.filterSQL(threadId: threadId),
@@ -90,6 +86,19 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                     joinToPagedType: MessageViewModel.AttachmentInteractionInfo.joinToViewModelQuerySQL,
                     groupPagedType: MessageViewModel.AttachmentInteractionInfo.groupViewModelQuerySQL,
                     associateData: MessageViewModel.AttachmentInteractionInfo.createAssociateDataClosure()
+                ),
+                AssociatedRecord<MessageViewModel.TypingIndicatorInfo, MessageViewModel>(
+                    trackedAgainst: ThreadTypingIndicator.self,
+                    observedChanges: [
+                        PagedData.ObservedChanges(
+                            table: ThreadTypingIndicator.self,
+                            events: [.insert, .delete],
+                            columns: []
+                        )
+                    ],
+                    dataQuery: MessageViewModel.TypingIndicatorInfo.baseQuery,
+                    joinToPagedType: MessageViewModel.TypingIndicatorInfo.joinToViewModelQuerySQL,
+                    associateData: MessageViewModel.TypingIndicatorInfo.createAssociateDataClosure()
                 )
             ],
             onChangeUnsorted: { [weak self] updatedData, updatedPageInfo in
@@ -140,6 +149,16 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     /// This value is the current state of the view
     public private(set) var threadData: SessionThreadViewModel
     
+    /// This is all the data the screen needs to populate itself, please see the following link for tips to help optimise
+    /// performance https://github.com/groue/GRDB.swift#valueobservation-performance
+    ///
+    /// **Note:** The 'trackingConstantRegion' is optimised in such a way that the request needs to be static
+    /// otherwise there may be situations where it doesn't get updates, this means we can't have conditional queries
+    ///
+    /// **Note:** This observation will be triggered twice immediately (and be de-duped by the `removeDuplicates`)
+    /// this is due to the behaviour of `ValueConcurrentObserver.asyncStartObservation` which triggers it's own
+    /// fetch (after the ones in `ValueConcurrentObserver.asyncStart`/`ValueConcurrentObserver.syncStart`)
+    /// just in case the database has changed between the two reads - unfortunately it doesn't look like there is a way to prevent this
     public lazy var observableThreadData = ValueObservation
         .trackingConstantRegion { [threadId = self.threadId] db -> SessionThreadViewModel? in
             let userPublicKey: String = getUserHexEncodedPublicKey(db)
@@ -161,7 +180,9 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     public var onInteractionChange: (([SectionModel]) -> ())?
     
     private func process(data: [MessageViewModel], for pageInfo: PagedData.PageInfo) -> [SectionModel] {
+        let typingIndicator: MessageViewModel? = data.first(where: { $0.isTypingIndicator })
         let sortedData: [MessageViewModel] = data
+            .filter { !$0.isTypingIndicator }
             .sorted { lhs, rhs -> Bool in lhs.timestampMs < rhs.timestampMs }
         
         // We load messages from newest to oldest so having a pageOffset larger than zero means
@@ -186,6 +207,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                                 )
                             )
                         }
+                        .appending(typingIndicator)
                 )
             ],
             (!data.isEmpty && pageInfo.pageOffset > 0 ?

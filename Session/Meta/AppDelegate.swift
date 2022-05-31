@@ -18,9 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var hasInitialRootViewController: Bool = false
     
     /// This needs to be a lazy variable to ensure it doesn't get initialized before it actually needs to be used
-    lazy var poller: Poller = {
-        return Poller()
-    }()
+    lazy var poller: Poller = Poller()
     
     // MARK: - Lifecycle
 
@@ -67,6 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             migrationsCompletion: { [weak self] successful, needsConfigSync in
                 guard let strongSelf = self else { return }
                 guard successful else {
+                    self?.showFailedMigrationAlert()
                     return
                 }
                 
@@ -210,6 +209,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     // MARK: - App Readiness
+    
+    private func showFailedMigrationAlert() {
+        let alert = UIAlertController(
+            title: "Session",
+            message: [
+                "DATABASE_MIGRATION_FAILED".localized(),
+                "modal_share_logs_explanation".localized()
+            ].joined(separator: "\n\n"),
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "modal_share_logs_title".localized(), style: .default) { _ in
+            ShareLogsModal.shareLogs(from: alert) { [weak self] in
+                self?.showFailedMigrationAlert()
+            }
+        })
+        alert.addAction(UIAlertAction(title: "Close", style: .destructive) { _ in
+            DDLog.flushLog()
+            exit(0)
+        })
+        
+        self.window?.rootViewController?.present(alert, animated: true, completion: nil)
+    }
     
     /// The user must unlock the device once after reboot before the database encryption key can be accessed.
     private func verifyDBKeysAvailableBeforeBackgroundLaunch() {

@@ -5,17 +5,29 @@ import GRDB
 import SessionUtilitiesKit
 
 enum _003_YDBToGRDBMigration: Migration {
+    static let target: TargetMigrations.Identifier = .snodeKit
     static let identifier: String = "YDBToGRDBMigration"
-    static let minExpectedRunDuration: TimeInterval = 0.2
     static let needsConfigSync: Bool = false
     
+    /// This migration can take a while if it's a very large database or there are lots of closed groups (want this to account
+    /// for about 10% of the progress bar so we intentionally have a higher `minExpectedRunDuration` so show more
+    /// progress during the migration)
+    static let minExpectedRunDuration: TimeInterval = 2.0
+    
     static func migrate(_ db: Database) throws {
-        // MARK: - OnionRequestPath, Snode Pool & Swarm
+        guard let dbConnection: YapDatabaseConnection = SUKLegacy.newDatabaseConnection() else {
+            SNLog("[Migration Warning] No legacy database, skipping \(target.key(with: self))")
+            return
+        }
+        
+        // MARK: - Read from Legacy Database
         
         // Note: Want to exclude the Snode's we already added from the 'onionRequestPathResult'
         var snodeResult: Set<SSKLegacy.Snode> = []
         var snodeSetResult: [String: Set<SSKLegacy.Snode>] = [:]
         var lastSnodePoolRefreshDate: Date? = nil
+        var lastMessageResults: [String: (hash: String, json: JSON)] = [:]
+        var receivedMessageResults: [String: Set<String>] = [:]
         
         // Map the Legacy types for the NSKeyedUnarchiver
         NSKeyedUnarchiver.setClass(
@@ -23,14 +35,16 @@ enum _003_YDBToGRDBMigration: Migration {
             forClassName: "SessionSnodeKit.Snode"
         )
         
-        Storage.read { transaction in
-            // Process the lastSnodePoolRefreshDate
+        dbConnection.read { transaction in
+            // MARK: --lastSnodePoolRefreshDate
+            
             lastSnodePoolRefreshDate = transaction.object(
                 forKey: SSKLegacy.lastSnodePoolRefreshDateKey,
                 inCollection: SSKLegacy.lastSnodePoolRefreshDateCollection
             ) as? Date
             
-            // Process the OnionRequestPaths
+            // MARK: --OnionRequestPaths
+            
             if
                 let path0Snode0 = transaction.object(forKey: "0-0", inCollection: SSKLegacy.onionRequestPathCollection) as? SSKLegacy.Snode,
                 let path0Snode1 = transaction.object(forKey: "0-1", inCollection: SSKLegacy.onionRequestPathCollection) as? SSKLegacy.Snode,
@@ -52,21 +66,44 @@ enum _003_YDBToGRDBMigration: Migration {
                     snodeSetResult["\(SnodeSet.onionRequestPathPrefix)1"] = [ path1Snode0, path1Snode1, path1Snode2 ]
                 }
             }
+            GRDBStorage.shared.update(progress: 0.02, for: self, in: target)
             
-            // Process the SnodePool
+            // MARK: --SnodePool
+            
             transaction.enumerateKeysAndObjects(inCollection: SSKLegacy.snodePoolCollection) { _, object, _ in
                 guard let snode = object as? SSKLegacy.Snode else { return }
                 snodeResult.insert(snode)
             }
             
-            // Process the Swarms
-            var swarmCollections: Set<String> = []
+            // MARK: --Swarms
             
+            // Note: There is no index on the collection column so unfortunately it takes the same amount of
+            // time to enumerate through all collections as it does to just get the count of collections, as
+            // a result if the database is very large this part can be slow (~15s with 2,000,000 rows) - we
+            // want to show some kind of progress while doing this enumeration so the below code includes a
+            // number of rough values to show some kind of progression while the enumeration occurs (most users
+            // won't run into issues with this at all)
+            var swarmCollections: Set<String> = []
+            let startProgress: CGFloat = 0.02
+            let swarmCompleteProgress: CGFloat = 0.90
+            let interEnumerationMaxProgress: CGFloat = ((swarmCompleteProgress - startProgress) * 0.8)
+            let maxCollectionsEstimate: CGFloat = 1000
+            let numCollectionsToTriggerProgressUpdate: CGFloat = 20
+            var collectionIndex: CGFloat = 0
+            var oldProgress: CGFloat = startProgress
             transaction.enumerateCollections { collectionName, _ in
                 if collectionName.starts(with: SSKLegacy.swarmCollectionPrefix) {
                     swarmCollections.insert(collectionName.substring(from: SSKLegacy.swarmCollectionPrefix.count))
                 }
+                
+                collectionIndex += 1
+                
+                if collectionIndex.truncatingRemainder(dividingBy: numCollectionsToTriggerProgressUpdate) == 0 {
+                    oldProgress = (startProgress + (interEnumerationMaxProgress * (collectionIndex / maxCollectionsEstimate)))
+                    GRDBStorage.shared.update(progress: oldProgress, for: self, in: target)
+                }
             }
+            GRDBStorage.shared.update(progress: swarmCompleteProgress, for: self, in: target)
             
             for swarmCollection in swarmCollections {
                 let collection: String = "\(SSKLegacy.swarmCollectionPrefix)\(swarmCollection)"
@@ -77,12 +114,38 @@ enum _003_YDBToGRDBMigration: Migration {
                     snodeSetResult[swarmCollection] = (snodeSetResult[swarmCollection] ?? Set()).inserting(snode)
                 }
             }
+            GRDBStorage.shared.update(progress: 0.92, for: self, in: target)
+            
+            // MARK: --Received message hashes
+            
+            transaction.enumerateKeysAndObjects(inCollection: SSKLegacy.receivedMessagesCollection) { key, object, _ in
+                guard let hashSet = object as? Set<String> else { return }
+                receivedMessageResults[key] = hashSet
+            }
+            GRDBStorage.shared.update(progress: 0.93, for: self, in: target)
+            
+            // MARK: --Last message info
+            
+            transaction.enumerateKeysAndObjects(inCollection: SSKLegacy.lastMessageHashCollection) { key, object, _ in
+                guard let lastMessageJson = object as? JSON else { return }
+                guard let lastMessageHash: String = lastMessageJson["hash"] as? String else { return }
+                
+                // Note: We remove the value from 'receivedMessageResults' as we want to try and use
+                // it's actual 'expirationDate' value
+                lastMessageResults[key] = (lastMessageHash, lastMessageJson)
+                receivedMessageResults[key] = receivedMessageResults[key]?.removing(lastMessageHash)
+            }
+            GRDBStorage.shared.update(progress: 0.94, for: self, in: target)
         }
         
-        // Insert the data into GRDB
+        // MARK: - Insert into GRDB
         
         try autoreleasepool {
+            // MARK: --lastSnodePoolRefreshDate
+            
             db[.lastSnodePoolRefreshDate] = lastSnodePoolRefreshDate
+            
+            // MARK: --SnodePool
             
             try snodeResult.forEach { legacySnode in
                 try Snode(
@@ -92,6 +155,9 @@ enum _003_YDBToGRDBMigration: Migration {
                     x25519PublicKey: legacySnode.publicKeySet.x25519Key
                 ).insert(db)
             }
+            GRDBStorage.shared.update(progress: 0.96, for: self, in: target)
+            
+            // MARK: --SnodeSets
             
             try snodeSetResult.forEach { key, legacySnodeSet in
                 try legacySnodeSet.enumerated().forEach { nodeIndex, legacySnode in
@@ -104,34 +170,12 @@ enum _003_YDBToGRDBMigration: Migration {
                     ).insert(db)
                 }
             }
+            GRDBStorage.shared.update(progress: 0.98, for: self, in: target)
         }
         
-        // MARK: - Received Messages & Last Message Hash
-        
-        var lastMessageResults: [String: (hash: String, json: JSON)] = [:]
-        var receivedMessageResults: [String: Set<String>] = [:]
-
-        // TODO: Move into the top read block???
-        Storage.read { transaction in
-            // Extract the received message hashes
-            transaction.enumerateKeysAndObjects(inCollection: SSKLegacy.receivedMessagesCollection) { key, object, _ in
-                guard let hashSet = object as? Set<String> else { return }
-                receivedMessageResults[key] = hashSet
-            }
-            
-            // Retrieve the last message info
-            transaction.enumerateKeysAndObjects(inCollection: SSKLegacy.lastMessageHashCollection) { key, object, _ in
-                guard let lastMessageJson = object as? JSON else { return }
-                guard let lastMessageHash: String = lastMessageJson["hash"] as? String else { return }
-                
-                // Note: We remove the value from 'receivedMessageResults' as we want to try and use
-                // it's actual 'expirationDate' value
-                lastMessageResults[key] = (lastMessageHash, lastMessageJson)
-                receivedMessageResults[key] = receivedMessageResults[key]?.removing(lastMessageHash)
-            }
-        }
-
         try autoreleasepool {
+            // MARK: --Received Messages
+            
             try receivedMessageResults.forEach { key, hashes in
                 try hashes.forEach { hash in
                     _ = try SnodeReceivedMessageInfo(
@@ -141,6 +185,9 @@ enum _003_YDBToGRDBMigration: Migration {
                     ).inserted(db)
                 }
             }
+            GRDBStorage.shared.update(progress: 0.99, for: self, in: target)
+            
+            // MARK: --Last Message Hash
             
             try lastMessageResults.forEach { key, data in
                 let expirationDateMs: Int64 = ((data.json["expirationDate"] as? Int64) ?? 0)

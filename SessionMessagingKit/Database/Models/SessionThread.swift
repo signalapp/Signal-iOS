@@ -209,22 +209,46 @@ public extension SessionThread {
 // MARK: - Convenience
 
 public extension SessionThread {
+    static func unreadMessageRequestsCountQuery(userPublicKey: String) -> SQLRequest<Int> {
+        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let contact: TypedTableAlias<Contact> = TypedTableAlias()
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        
+        let unreadInteractionLiteral: SQL = SQL(stringLiteral: "unreadInteraction")
+        let interactionThreadIdColumnLiteral: SQL = SQL(stringLiteral: Interaction.Columns.threadId.name)
+        
+        return """
+            SELECT COUNT(\(thread[.id]))
+            FROM \(SessionThread.self)
+            JOIN (
+                SELECT \(interaction[.threadId])
+                FROM \(Interaction.self)
+                WHERE \(interaction[.wasRead]) = false
+                GROUP BY \(interaction[.threadId])
+            ) AS \(unreadInteractionLiteral) ON \(unreadInteractionLiteral).\(interactionThreadIdColumnLiteral) = \(thread[.id])
+            LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
+            WHERE (
+                \(SessionThread.isMessageRequest(userPublicKey: userPublicKey))
+            )
+        """
+    }
+    
     /// This method can be used to filter a thread query to only include messages requests
     ///
     /// **Note:** In order to use this filter you **MUST** have a `joining(required/optional:)` to the
     /// `SessionThread.contact` association or it won't work
     static func isMessageRequest(userPublicKey: String) -> SQLSpecificExpressible {
-        let threadAlias: TypedTableAlias<SessionThread> = TypedTableAlias()
-        let contactAlias: TypedTableAlias<Contact> = TypedTableAlias()
+        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let contact: TypedTableAlias<Contact> = TypedTableAlias()
         
         return SQL(
             """
-                \(threadAlias[.shouldBeVisible]) = true AND
-                    \(SQL("\(threadAlias[.variant]) = \(SessionThread.Variant.contact)")) AND
-                    \(SQL("\(threadAlias[.id]) != \(userPublicKey)")) AND (
+                \(thread[.shouldBeVisible]) = true AND
+                    \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND
+                    \(SQL("\(thread[.id]) != \(userPublicKey)")) AND (
                         /* Note: A '!= true' check doesn't work properly so we need to be explicit */
-                        \(contactAlias[.isApproved]) IS NULL OR
-                        \(contactAlias[.isApproved]) = false
+                        \(contact[.isApproved]) IS NULL OR
+                        \(contact[.isApproved]) = false
                     )
             """
         )

@@ -7,9 +7,10 @@ import Curve25519Kit
 /// This migration sets up the standard jobs, since we want these jobs to run before any "once-off" jobs we do this migration
 /// before running the `YDBToGRDBMigration`
 enum _002_SetupStandardJobs: Migration {
+    static let target: TargetMigrations.Identifier = .utilitiesKit
     static let identifier: String = "SetupStandardJobs"
-    static let minExpectedRunDuration: TimeInterval = 0.1
     static let needsConfigSync: Bool = false
+    static let minExpectedRunDuration: TimeInterval = 0.1
     
     static func migrate(_ db: Database) throws {
         try autoreleasepool {

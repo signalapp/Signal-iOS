@@ -55,17 +55,24 @@ final class ShareLogsModal : Modal {
         contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: Values.largeSpacing)
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func shareLogs() {
+        ShareLogsModal.shareLogs(from: self)
+    }
+    
+    public static func shareLogs(from viewController: UIViewController, onShareComplete: (() -> ())? = nil) {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
         OWSLogger.info("[Version] iOS \(UIDevice.current.systemVersion) \(version)")
         DDLog.flushLog()
         let logFilePaths = AppEnvironment.shared.fileLogger.logFileManager.sortedLogFilePaths
         if let latestLogFilePath = logFilePaths.first {
             let latestLogFileURL = URL(fileURLWithPath: latestLogFilePath)
-            self.dismiss(animated: true, completion: {
+            
+            viewController.dismiss(animated: true, completion: {
                 if let vc = CurrentAppContext().frontmostViewController() {
                     let shareVC = UIActivityViewController(activityItems: [ latestLogFileURL ], applicationActivities: nil)
+                    shareVC.completionWithItemsHandler = { _, _, _, _ in onShareComplete?() }
                     if UIDevice.current.isIPad {
                         shareVC.excludedActivityTypes = []
                         shareVC.popoverPresentationController?.permittedArrowDirections = []

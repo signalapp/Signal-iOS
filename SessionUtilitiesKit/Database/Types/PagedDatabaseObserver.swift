@@ -866,7 +866,7 @@ public class AssociatedRecord<T, PagedType>: ErasedAssociatedRecord where T: Fet
         self.associateData = associateData
     }
     
-    convenience init<Table: TableRecord>(
+    public convenience init<Table: TableRecord>(
         trackedAgainst: Table.Type,
         observedChanges: [PagedData.ObservedChanges],
         dataQuery: @escaping (SQL?) -> SQLRequest<T>,

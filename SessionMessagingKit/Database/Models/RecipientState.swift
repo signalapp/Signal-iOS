@@ -122,7 +122,6 @@ public extension RecipientState {
 
 public extension RecipientState {
     static func selectInteractionState(tableLiteral: SQL, idColumnLiteral: SQL) -> SQL {
-        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         let recipientState: TypedTableAlias<RecipientState> = TypedTableAlias()
         
         return """
@@ -132,7 +131,6 @@ public extension RecipientState {
                     \(recipientState[.state]),
                     \(recipientState[.mostRecentFailureText])
                 FROM \(RecipientState.self)
-                JOIN \(Interaction.self) ON \(interaction[.id]) = \(recipientState[.interactionId])
                 WHERE \(SQL("\(recipientState[.state]) != \(RecipientState.State.skipped)"))  -- Ignore 'skipped'
                 ORDER BY
                     -- If there is a single 'sending' then should be 'sending', otherwise if there is a single

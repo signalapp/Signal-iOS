@@ -7,6 +7,7 @@ import SessionUtilitiesKit
 
 fileprivate typealias ViewModel = MessageViewModel
 fileprivate typealias AttachmentInteractionInfo = MessageViewModel.AttachmentInteractionInfo
+fileprivate typealias TypingIndicatorInfo = MessageViewModel.TypingIndicatorInfo
 
 public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, Hashable, Identifiable, Differentiable {
     public static let threadVariantKey: SQL = SQL(stringLiteral: CodingKeys.threadVariant.stringValue)
@@ -384,9 +385,28 @@ public extension MessageViewModel {
     }
 }
 
+// MARK: - TypingIndicatorInfo
+
+public extension MessageViewModel {
+    struct TypingIndicatorInfo: FetchableRecordWithRowId, Decodable, Identifiable, Equatable {
+        public static let rowIdKey: SQL = SQL(stringLiteral: CodingKeys.rowId.stringValue)
+        public static let threadIdKey: SQL = SQL(stringLiteral: CodingKeys.threadId.stringValue)
+        
+        public let rowId: Int64
+        public let threadId: String
+        
+        // MARK: - Identifiable
+        
+        public var id: String { threadId }
+    }
+}
+
 // MARK: - Convenience Initialization
 
 public extension MessageViewModel {
+    public static let genericId: Int64 = -2
+    public static let typingIndicatorId: Int64 = -2
+    
     // Note: This init method is only used system-created cells or empty states
     init(isTypingIndicator: Bool = false) {
         self.threadVariant = .contact
@@ -395,8 +415,9 @@ public extension MessageViewModel {
         
         // Interaction Info
         
-        self.rowId = -1
-        self.id = -1
+        let targetId: Int64 = (isTypingIndicator ? MessageViewModel.typingIndicatorId : MessageViewModel.genericId)
+        self.rowId = targetId
+        self.id = targetId
         self.variant = .standardOutgoing
         self.timestampMs = Int64.max
         self.authorId = ""
@@ -472,6 +493,8 @@ extension MessageViewModel {
 }
 
 // MARK: - ConversationVC
+
+// MARK: --MessageViewModel
 
 public extension MessageViewModel {
     static func filterSQL(threadId: String) -> SQL {
@@ -612,6 +635,8 @@ public extension MessageViewModel {
     }
 }
 
+// MARK: --AttachmentInteractionInfo
+
 public extension MessageViewModel.AttachmentInteractionInfo {
     static let baseQuery: ((SQL?) -> AdaptedFetchRequest<SQLRequest<MessageViewModel.AttachmentInteractionInfo>>) = {
         return { additionalFilters -> AdaptedFetchRequest<SQLRequest<AttachmentInteractionInfo>> in
@@ -694,6 +719,54 @@ public extension MessageViewModel.AttachmentInteractionInfo {
                 }
             
             return updatedPagedDataCache
+        }
+    }
+}
+
+// MARK: --TypingIndicatorInfo
+
+public extension MessageViewModel.TypingIndicatorInfo {
+    static let baseQuery: ((SQL?) -> SQLRequest<MessageViewModel.TypingIndicatorInfo>) = {
+        return { additionalFilters -> SQLRequest<TypingIndicatorInfo> in
+            let threadTypingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias()
+            let finalFilterSQL: SQL = {
+                guard let additionalFilters: SQL = additionalFilters else {
+                    return SQL(stringLiteral: "")
+                }
+                
+                return """
+                    WHERE \(additionalFilters)
+                """
+            }()
+            let request: SQLRequest<MessageViewModel.TypingIndicatorInfo> = """
+                SELECT
+                    \(threadTypingIndicator.alias[Column.rowID]) AS \(MessageViewModel.TypingIndicatorInfo.rowIdKey),
+                    \(threadTypingIndicator[.threadId]) AS \(MessageViewModel.TypingIndicatorInfo.threadIdKey)
+                FROM \(ThreadTypingIndicator.self)
+                \(finalFilterSQL)
+            """
+            
+            return request
+        }
+    }()
+    
+    static var joinToViewModelQuerySQL: SQL = {
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        let threadTypingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias()
+        
+        return """
+            JOIN \(Interaction.self) ON \(interaction[.threadId]) = \(threadTypingIndicator[.threadId])
+        """
+    }()
+    
+    static func createAssociateDataClosure() -> (DataCache<MessageViewModel.TypingIndicatorInfo>, DataCache<MessageViewModel>) -> DataCache<MessageViewModel> {
+        return { dataCache, pagedDataCache -> DataCache<MessageViewModel> in
+            guard !dataCache.data.isEmpty else {
+                return pagedDataCache.deleting(rowIds: [MessageViewModel.typingIndicatorId])
+            }
+            
+            return pagedDataCache
+                .upserting(MessageViewModel(isTypingIndicator: true))
         }
     }
 }

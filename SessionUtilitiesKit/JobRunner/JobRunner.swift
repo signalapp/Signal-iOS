@@ -52,6 +52,7 @@ public final class JobRunner {
         
         let messageSendQueue: JobQueue = JobQueue(
             type: .messageSend,
+            executionType: .concurrent, // Allow as many jobs to run at once as supported by the device
             qos: .default,
             jobVariants: [
                 jobVariants.remove(.attachmentUpload),
@@ -62,6 +63,7 @@ public final class JobRunner {
         )
         let messageReceiveQueue: JobQueue = JobQueue(
             type: .messageReceive,
+            executionType: .concurrent, // Allow as many jobs to run at once as supported by the device
             qos: .default,
             jobVariants: [
                 jobVariants.remove(.messageReceive)
@@ -320,33 +322,48 @@ private final class JobQueue {
         }
     }
     
+    fileprivate enum ExecutionType {
+        /// A serial queue will execute one job at a time until the queue is empty, then will load any new/deferred
+        /// jobs and run those one at a time
+        case serial
+        
+        /// A concurrent queue will execute as many jobs as the device supports at once until the queue is empty,
+        /// then will load any new/deferred jobs and try to start them all
+        case concurrent
+    }
+    
     private class Trigger {
-        private weak var queue: JobQueue?
         private var timer: Timer?
+        fileprivate var fireTimestamp: TimeInterval = 0
         
         static func create(queue: JobQueue, timestamp: TimeInterval) -> Trigger? {
-            // Setup the trigger (wait at least 1 second before triggering)
+            /// Setup the trigger (wait at least 1 second before triggering)
+            ///
+            /// **Note:** We use the `Timer.scheduledTimerOnMainThread` method because running a timer
+            /// on our random queue threads results in the timer never firing, the `start` method will redirect itself to
+            /// the correct thread
             let trigger: Trigger = Trigger()
-            trigger.queue = queue
-            trigger.timer = Timer.scheduledTimer(
-                timeInterval: max(1, (timestamp - Date().timeIntervalSince1970)),
-                target: self,
-                selector: #selector(start),
-                userInfo: nil,
-                repeats: false
+            trigger.fireTimestamp = max(1, (timestamp - Date().timeIntervalSince1970))
+            trigger.timer = Timer.scheduledTimerOnMainThread(
+                withTimeInterval: trigger.fireTimestamp,
+                repeats: false,
+                block: { [weak queue] _ in
+                    queue?.start()
+                }
             )
             
             return trigger
         }
         
-        deinit { timer?.invalidate() }
-        
-        @objc func start() {
-            queue?.start()
+        func invalidate() {
+            // Need to do this to prevent a strong reference cycle
+            timer?.invalidate()
+            timer = nil
         }
     }
     
     private let type: QueueType
+    private let executionType: ExecutionType
     private let qosClass: DispatchQoS
     private let queueKey: DispatchSpecificKey = DispatchSpecificKey<String>()
     private let queueContext: String
@@ -360,7 +377,7 @@ private final class JobQueue {
         let result: DispatchQueue = DispatchQueue(
             label: self.queueContext,
             qos: self.qosClass,
-            attributes: [],
+            attributes: (self.executionType == .concurrent ? [.concurrent] : []),
             autoreleaseFrequency: .inherit,
             target: nil
         )
@@ -378,8 +395,15 @@ private final class JobQueue {
     
     // MARK: - Initialization
     
-    init(type: QueueType, qos: DispatchQoS, jobVariants: [Job.Variant], onQueueDrained: (() -> ())? = nil) {
+    init(
+        type: QueueType,
+        executionType: ExecutionType = .serial,
+        qos: DispatchQoS,
+        jobVariants: [Job.Variant],
+        onQueueDrained: (() -> ())? = nil
+    ) {
         self.type = type
+        self.executionType = executionType
         self.queueContext = "JobQueue-\(type.name)"
         self.qosClass = qos
         self.jobVariants = jobVariants
@@ -483,10 +507,10 @@ private final class JobQueue {
     
     // MARK: - Job Running
     
-    fileprivate func start() {
+    fileprivate func start(force: Bool = false) {
         // We only want the JobRunner to run in the main app
         guard CurrentAppContext().isMainApp else { return }
-        guard !isRunning.wrappedValue else { return }
+        guard force || !isRunning.wrappedValue else { return }
         
         // The JobRunner runs synchronously we need to ensure this doesn't start
         // on the main thread (if it is on the main thread then swap to a different thread)
@@ -497,9 +521,21 @@ private final class JobQueue {
             return
         }
         
+        // Flag the JobRunner as running (to prevent something else from trying to start it
+        // and messing with the execution behaviour)
+        var wasAlreadyRunning: Bool = false
+        isRunning.mutate { isRunning in
+            wasAlreadyRunning = isRunning
+            isRunning = true
+        }
+        
         // Get any pending jobs
+        let jobIdsAlreadyRunning: Set<Int64> = jobsCurrentlyRunning.wrappedValue
+        let jobsAlreadyInQueue: Set<Int64> = queue.wrappedValue.compactMap { $0.id }.asSet()
         let jobsToRun: [Job] = GRDBStorage.shared.read { db in
             try Job.filterPendingJobs(variants: jobVariants)
+                .filter(!jobIdsAlreadyRunning.contains(Job.Columns.id)) // Exclude jobs already running
+                .filter(!jobsAlreadyInQueue.contains(Job.Columns.id))   // Exclude jobs already in the queue
                 .fetchAll(db)
         }
         .defaulting(to: [])
@@ -508,28 +544,24 @@ private final class JobQueue {
         var jobCount: Int = 0
         
         queue.mutate { queue in
-            // Avoid re-adding jobs to the queue that are already in it
-            let jobsNotAlreadyInQueue: [Job] = jobsToRun
-                .filter { job in !queue.contains(where: { $0.id == job.id }) }
-            
-            // Add the jobs to the queue
-            if !jobsNotAlreadyInQueue.isEmpty {
-                queue.append(contentsOf: jobsToRun)
-            }
-            
+            queue.append(contentsOf: jobsToRun)
             jobCount = queue.count
         }
         
-        // If there are no pending jobs then schedule the JobRunner to start again
-        // when the next scheduled job should start
+        // If there are no pending jobs and nothing in the queue then schedule the JobRunner
+        // to start again when the next scheduled job should start
         guard jobCount > 0 else {
-            isRunning.mutate { $0 = false }
-            scheduleNextSoonestJob()
+            if jobIdsAlreadyRunning.isEmpty {
+                isRunning.mutate { $0 = false }
+                scheduleNextSoonestJob()
+            }
             return
         }
         
         // Run the first job in the queue
-        SNLog("[JobRunner] Starting \(queueContext) with (\(jobCount) job\(jobCount != 1 ? "s" : ""))")
+        if !wasAlreadyRunning {
+            SNLog("[JobRunner] Starting \(queueContext) with (\(jobCount) job\(jobCount != 1 ? "s" : ""))")
+        }
         runNextJob()
     }
     
@@ -542,7 +574,13 @@ private final class JobQueue {
             return
         }
         guard let (nextJob, numJobsRemaining): (Job, Int) = queue.mutate({ queue in queue.popFirst().map { ($0, queue.count) } }) else {
-            isRunning.mutate { $0 = false }
+            // If it's a serial queue, or there are no more jobs running then update the 'isRunning' flag
+            if executionType != .concurrent || jobsCurrentlyRunning.wrappedValue.isEmpty {
+                isRunning.mutate { $0 = false }
+            }
+            
+            // Always attempt to schedule the next soonest job (otherwise if enough jobs get started in rapid
+            // succession then pending/failed jobs in the database may never get re-started in a concurrent queue)
             scheduleNextSoonestJob()
             return
         }
@@ -606,15 +644,20 @@ private final class JobQueue {
                 return
             }
             
-            // Otherwise re-add the current job after it's dependencies
-            queue.mutate { queue in
-                guard let lastDependencyIndex: Int = queue.lastIndex(where: { jobDependencyIds.contains($0.id ?? -1) }) else {
-                    queue.append(nextJob)
-                    return
+            // Otherwise re-add the current job after it's dependencies (if this isn't a concurrent
+            // queue - don't want to immediately try to start the job again only for it to end up back
+            // in here)
+            if executionType != .concurrent {
+                queue.mutate { queue in
+                    guard let lastDependencyIndex: Int = queue.lastIndex(where: { jobDependencyIds.contains($0.id ?? -1) }) else {
+                        queue.append(nextJob)
+                        return
+                    }
+                    
+                    queue.insert(nextJob, at: lastDependencyIndex + 1)
                 }
-                
-                queue.insert(nextJob, at: lastDependencyIndex + 1)
             }
+            
             handleJobDeferred(nextJob)
             return
         }
@@ -624,10 +667,17 @@ private final class JobQueue {
         // Note: We need to store 'numJobsRemaining' in it's own variable because
         // the 'SNLog' seems to dispatch to it's own queue which ends up getting
         // blocked by the JobRunner's queue becuase 'jobQueue' is Atomic
-        nextTrigger.mutate { $0 = nil }
+        var numJobsRunning: Int = 0
+        nextTrigger.mutate { trigger in
+            trigger?.invalidate()   // Need to invalidate to prevent a memory leak
+            trigger = nil
+        }
         isRunning.mutate { $0 = true }
-        jobsCurrentlyRunning.mutate { $0 = $0.inserting(nextJob.id) }
-        SNLog("[JobRunner] \(queueContext) started job (\(numJobsRemaining) remaining)")
+        jobsCurrentlyRunning.mutate { jobsCurrentlyRunning in
+            jobsCurrentlyRunning = jobsCurrentlyRunning.inserting(nextJob.id)
+            numJobsRunning = jobsCurrentlyRunning.count
+        }
+        SNLog("[JobRunner] \(queueContext) started job (\(executionType == .concurrent ? "\(numJobsRunning) currently running, " : "")\(numJobsRemaining) remaining)")
         
         jobExecutor.run(
             nextJob,
@@ -635,6 +685,14 @@ private final class JobQueue {
             failure: handleJobFailed,
             deferred: handleJobDeferred
         )
+        
+        // If this queue executes concurrently and there are still jobs remaining then immediately attempt
+        // to start the next job
+        if executionType == .concurrent && numJobsRemaining > 0 {
+            internalQueue.async { [weak self] in
+                self?.runNextJob()
+            }
+        }
     }
     
     private func scheduleNextSoonestJob() {
@@ -647,7 +705,9 @@ private final class JobQueue {
         
         // If there are no remaining jobs the trigger the 'onQueueDrained' callback and stop
         guard let nextJobTimestamp: TimeInterval = nextJobTimestamp else {
-            self.onQueueDrained?()
+            if executionType != .concurrent || jobsCurrentlyRunning.wrappedValue.isEmpty {
+                self.onQueueDrained?()
+            }
             return
         }
         
@@ -655,17 +715,33 @@ private final class JobQueue {
         let secondsUntilNextJob: TimeInterval = (nextJobTimestamp - Date().timeIntervalSince1970)
         
         guard secondsUntilNextJob > 0 else {
-            SNLog("[JobRunner] Restarting \(queueContext) immediately for job scheduled \(Int(ceil(abs(secondsUntilNextJob)))) second\(Int(ceil(abs(secondsUntilNextJob))) == 1 ? "" : "s")) ago")
+            // Only log that the queue is getting restarted if this queue had actually been about to stop
+            if executionType != .concurrent || jobsCurrentlyRunning.wrappedValue.isEmpty {
+                let timingString: String = (nextJobTimestamp == 0 ?
+                    "that should be in the queue" :
+                    "scheduled \(Int(ceil(abs(secondsUntilNextJob)))) second\(Int(ceil(abs(secondsUntilNextJob))) == 1 ? "" : "s") ago"
+                )
+                SNLog("[JobRunner] Restarting \(queueContext) immediately for job \(timingString)")
+            }
             
+            // Trigger the 'start' function to load in any pending jobs that aren't already in the
+            // queue (for concurrent queues we want to force them to load in pending jobs and add
+            // them to the queue regardless of whether the queue is already running)
             internalQueue.async { [weak self] in
-                self?.start()
+                self?.start(force: (self?.executionType == .concurrent))
             }
             return
         }
         
+        // Only schedule a trigger if this queue has actually completed
+        guard executionType != .concurrent || jobsCurrentlyRunning.wrappedValue.isEmpty else { return }
+        
         // Setup a trigger
-        SNLog("[JobRunner] Stopping \(queueContext) until next job in \(Int(ceil(abs(secondsUntilNextJob)))) second\(Int(ceil(abs(secondsUntilNextJob))) == 1 ? "" : "s"))")
-        nextTrigger.mutate { $0 = Trigger.create(queue: self, timestamp: nextJobTimestamp) }
+        SNLog("[JobRunner] Stopping \(queueContext) until next job in \(Int(ceil(abs(secondsUntilNextJob)))) second\(Int(ceil(abs(secondsUntilNextJob))) == 1 ? "" : "s")")
+        nextTrigger.mutate { trigger in
+            trigger?.invalidate()   // Need to invalidate the old trigger to prevent a memory leak
+            trigger = Trigger.create(queue: self, timestamp: nextJobTimestamp)
+        }
     }
     
     // MARK: - Handling Results
@@ -708,6 +784,29 @@ private final class JobQueue {
             default: break
         }
         
+        // For concurrent queues retrieve any 'dependant' jobs and re-add them here (if they have other
+        // dependencies they will be removed again when they try to execute)
+        if executionType == .concurrent {
+            let dependantJobs: [Job] = GRDBStorage.shared
+                .read { db in try job.dependantJobs.fetchAll(db) }
+                .defaulting(to: [])
+            let dependantJobIds: [Int64] = dependantJobs
+                .compactMap { $0.id }
+            let jobIdsNotInQueue: Set<Int64> = dependantJobIds
+                .asSet()
+                .subtracting(queue.wrappedValue.compactMap { $0.id })
+            
+            // If there are dependant jobs which aren't in the queue we should just append them
+            if !jobIdsNotInQueue.isEmpty {
+                queue.mutate { queue in
+                    queue.append(
+                        contentsOf: dependantJobs
+                            .filter { jobIdsNotInQueue.contains($0.id ?? -1) }
+                    )
+                }
+            }
+        }
+        
         // The job is removed from the queue before it runs so all we need to to is remove it
         // from the 'currentlyRunning' set and start the next one
         jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
@@ -732,6 +831,7 @@ private final class JobQueue {
         // If this is the blocking queue and a "blocking" job failed then rerun it immediately
         if self.type == .blocking && job.shouldBlockFirstRunEachSession {
             SNLog("[JobRunner] \(queueContext) \(job.variant) job failed; retrying immediately")
+            jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
             queue.mutate { $0.insert(job, at: 0) }
             
             internalQueue.async { [weak self] in
@@ -752,9 +852,24 @@ private final class JobQueue {
             else {
                 SNLog("[JobRunner] \(queueContext) \(job.variant) failed permanently\(maxFailureCount >= 0 ? "; too many retries" : "")")
                 
+                let dependantJobIds: [Int64] = try job.dependantJobs
+                    .select(.id)
+                    .asRequest(of: Int64.self)
+                    .fetchAll(db)
+
                 // If the job permanently failed or we have performed all of our retry attempts
-                // then delete the job (it'll probably never succeed)
+                // then delete the job and all of it's dependant jobs (it'll probably never succeed)
+                _ = try job.dependantJobs
+                    .deleteAll(db)
+
                 _ = try job.delete(db)
+                
+                // Remove the dependant jobs from the queue (so we don't try to run a deleted job)
+                if !dependantJobIds.isEmpty {
+                    queue.mutate { queue in
+                        queue = queue.filter { !dependantJobIds.contains($0.id ?? -1) }
+                    }
+                }
                 return
             }
             
@@ -783,7 +898,7 @@ private final class JobQueue {
                 .fetchAll(db)
             
             // Remove the dependant jobs from the queue (so we don't get stuck in a loop of trying
-            // to run dependecies indefinitely
+            // to run dependecies indefinitely)
             if !dependantJobIds.isEmpty {
                 queue.mutate { queue in
                     queue = queue.filter { !dependantJobIds.contains($0.id ?? -1) }

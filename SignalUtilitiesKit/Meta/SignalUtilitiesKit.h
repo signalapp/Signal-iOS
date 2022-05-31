@@ -7,18 +7,11 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 @import SessionSnodeKit;
 @import SessionUtilitiesKit;
 
-#import <SignalUtilitiesKit/AppSetup.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SignalUtilitiesKit/ByteParser.h>
 #import <SignalUtilitiesKit/FunctionalUtil.h>
-#import <SignalUtilitiesKit/NSArray+OWS.h>
 #import <SignalUtilitiesKit/NSAttributedString+OWS.h>
-#import <SignalUtilitiesKit/NSObject+Casting.h>
-#import <SignalUtilitiesKit/NSSet+Functional.h>
 #import <SignalUtilitiesKit/NSURLSessionDataTask+StatusCode.h>
-#import <SignalUtilitiesKit/OWSAnyTouchGestureRecognizer.h>
-#import <SignalUtilitiesKit/OWSDatabaseMigration.h>
-#import <SignalUtilitiesKit/OWSDatabaseMigrationRunner.h>
 #import <SignalUtilitiesKit/OWSDispatch.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
@@ -35,4 +28,3 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/UIFont+OWS.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import <SignalUtilitiesKit/UIViewController+OWS.h>
-#import <SignalUtilitiesKit/VersionMigrations.h>

@@ -1325,6 +1325,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     }
 
     func conversationSearchController(_ conversationSearchController: ConversationSearchController, didUpdateSearchResults results: [Int64]?, searchText: String?) {
+        viewModel.lastSearchedText = searchText
         tableView.reloadRows(at: tableView.indexPathsForVisibleRows ?? [], with: UITableView.RowAnimation.none)
     }
 

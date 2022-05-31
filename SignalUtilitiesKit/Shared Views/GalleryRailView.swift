@@ -129,9 +129,12 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         addSubview(scrollView)
         scrollView.autoPinEdgesToSuperviewMargins()
         
-        scrollView.addSubview(stackView)
+        scrollView.addSubview(stackClippingView)
+        stackClippingView.addSubview(stackView)
+        
+        stackClippingView.autoPinEdgesToSuperviewEdges()
+        stackClippingView.autoMatch(.height, to: .height, of: scrollView)
         stackView.autoPinEdgesToSuperviewEdges()
-        stackView.autoMatch(.height, to: .height, of: scrollView)
     }
 
     public required init?(coder aDecoder: NSCoder) {
@@ -145,6 +148,14 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         result.clipsToBounds = false
         result.layoutMargins = .zero
         result.isScrollEnabled = true
+        result.scrollIndicatorInsets = UIEdgeInsets(top: 0, leading: 0, bottom: -10, trailing: 0)
+        
+        return result
+    }()
+    
+    private let stackClippingView: UIView = {
+        let result: UIView = UIView()
+        result.clipsToBounds = true
         
         return result
     }()
@@ -194,7 +205,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
                 completion: { [weak self] _ in
                     self?.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
                     self?.stackView.frame = oldFrame
-                    self?.isHidden = true
+                    self?.stackClippingView.isHidden = true
                     self?.cellViews = []
                 }
             )
@@ -202,54 +213,74 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         }
         
         // Otherwise slide it away, recreate it and then slide it back
-        var oldFrame: CGRect = self.stackView.frame
         let newCellViews: [GalleryRailCellView] = buildCellViews(
             items: album,
             cellViewBuilder: cellViewBuilder
         )
-
-        UIView.animate(
-            withDuration: (animationDuration / 2),
-            delay: 0,
-            options: .curveEaseIn,
-            animations: { [weak self] in
-                self?.stackView.frame = oldFrame.offsetBy(
-                    dx: 0,
-                    dy: oldFrame.height
-                )
-            },
-            completion: { [weak self] _ in
+        
+        let animateOut: ((CGRect, @escaping (CGRect) -> CGRect, @escaping (CGRect) -> ()) -> ()) = { [weak self] oldFrame, layoutNewItems, animateIn in
+            UIView.animate(
+                withDuration: (animationDuration / 2),
+                delay: 0,
+                options: .curveEaseIn,
+                animations: {
+                    self?.stackView.frame = oldFrame.offsetBy(
+                        dx: 0,
+                        dy: oldFrame.height
+                    )
+                },
+                completion: { _ in
+                    let updatedOldFrame: CGRect = layoutNewItems(oldFrame)
+                    animateIn(updatedOldFrame)
+                }
+            )
+        }
+        let layoutNewItems: (CGRect) -> CGRect = { [weak self] oldFrame -> CGRect in
+            var updatedOldFrame: CGRect = oldFrame
+            
+            // Update the UI (need to re-offset it as the position gets reset during
+            // during these changes)
+            UIView.performWithoutAnimation {
                 self?.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
                 newCellViews.forEach { cellView in
                     self?.stackView.addArrangedSubview(cellView)
                 }
                 self?.cellViews = newCellViews
                 
-                // Update the UI (need to re-offset it as the position gets reset during
-                // during these changes)
-                UIView.performWithoutAnimation {
-                    self?.updateFocusedItem(focusedItem)
-                    self?.isHidden = false
-                    
-                    oldFrame = (self?.stackView.frame)
-                        .defaulting(to: oldFrame)
-                    self?.stackView.frame = oldFrame.offsetBy(
-                        dx: 0,
-                        dy: oldFrame.height
-                    )
-                }
+                self?.updateFocusedItem(focusedItem)
+                self?.stackView.layoutIfNeeded()
+                self?.stackClippingView.isHidden = false
                 
-                UIView.animate(
-                    withDuration: (animationDuration / 2),
-                    delay: 0,
-                    options: .curveEaseOut,
-                    animations: { [weak self] in
-                        self?.stackView.frame = oldFrame
-                    },
-                    completion: nil
+                updatedOldFrame = (self?.stackView.frame)
+                    .defaulting(to: oldFrame)
+                self?.stackView.frame = oldFrame.offsetBy(
+                    dx: 0,
+                    dy: oldFrame.height
                 )
             }
-        )
+            
+            return updatedOldFrame
+        }
+        let animateIn: (CGRect) -> () = { [weak self] oldFrame in
+            UIView.animate(
+                withDuration: (animationDuration / 2),
+                delay: 0,
+                options: .curveEaseOut,
+                animations: { [weak self] in
+                    self?.stackView.frame = oldFrame
+                },
+                completion: nil
+            )
+        }
+        
+        // If we don't have arranged subviews already we can skip the 'animateOut'
+        guard !self.stackView.arrangedSubviews.isEmpty else {
+            let updatedOldFrame: CGRect = layoutNewItems(self.stackView.frame)
+            animateIn(updatedOldFrame)
+            return
+        }
+
+        animateOut(self.stackView.frame, layoutNewItems, animateIn)
     }
 
     // MARK: - GalleryRailCellViewDelegate

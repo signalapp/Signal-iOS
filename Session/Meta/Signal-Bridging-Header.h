@@ -10,11 +10,9 @@
 #import "AvatarViewHelper.h"
 #import "AVAudioSession+OWS.h"
 #import "NotificationSettingsViewController.h"
-#import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioPlayer.h"
 #import "OWSBezierPathView.h"
 #import "OWSConversationSettingsViewController.h"
-#import "OWSDatabaseMigration.h"
 #import "OWSMessageTimerView.h"
 #import "OWSNavigationController.h"
 #import "OWSProgressView.h"
@@ -32,7 +30,6 @@
 #import <SignalCoreKit/OWSAsserts.h>
 #import <SignalCoreKit/OWSLogs.h>
 #import <SignalCoreKit/Threading.h>
-#import <SessionMessagingKit/Environment.h>
 #import <SessionMessagingKit/OWSAudioPlayer.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SessionMessagingKit/OWSPreferences.h>

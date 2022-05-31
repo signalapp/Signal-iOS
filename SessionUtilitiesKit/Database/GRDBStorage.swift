@@ -170,6 +170,7 @@ public final class GRDBStorage {
         self.migrator?.asyncMigrate(dbPool) { [weak self] _, error in
             self?.hasCompletedMigrations = true
             self?.migrationProgressUpdater = nil
+            SUKLegacy.clearLegacyDatabaseInstance()
             
             onComplete((error == nil), needsConfigSync)
         }

@@ -37,6 +37,17 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         
         return result
     }()
+    
+    private lazy var loadingConversationsLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.font = UIFont.systemFont(ofSize: Values.smallFontSize)
+        result.text = "LOADING_CONVERSATIONS".localized()
+        result.textColor = Colors.text
+        result.textAlignment = .center
+        result.numberOfLines = 0
+        
+        return result
+    }()
         
     private lazy var tableView: UITableView = {
         let result = UITableView()
@@ -128,6 +139,13 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
             seedReminderView.pin(.trailing, to: .trailing, of: view)
         }
         
+        // Loading conversations label
+        view.addSubview(loadingConversationsLabel)
+        
+        loadingConversationsLabel.pin(.top, to: .top, of: view, withInset: Values.veryLargeSpacing)
+        loadingConversationsLabel.pin(.leading, to: .leading, of: view, withInset: 50)
+        loadingConversationsLabel.pin(.trailing, to: .trailing, of: view, withInset: -50)
+        
         // Table view
         view.addSubview(tableView)
         tableView.pin(.leading, to: .leading, of: view)
@@ -218,11 +236,9 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         // Start observing for data changes
         dataChangeObservable = GRDBStorage.shared.start(
             viewModel.observableViewData,
-            onError:  { error in
-                print("Update error!!!!")
-            },
+            onError: { _ in },
             onChange: { [weak self] viewData in
-                // The defaul scheduler emits changes on the main thread
+                // The default scheduler emits changes on the main thread
                 self?.handleUpdates(viewData)
             }
         )
@@ -236,6 +252,9 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
             UIView.performWithoutAnimation { handleUpdates(updatedViewData) }
             return
         }
+        
+        // Hide the 'loading conversations' label (now that we have received conversation data)
+        loadingConversationsLabel.isHidden = true
         
         // Show the empty state if there is no data
         emptyStateView.isHidden = (

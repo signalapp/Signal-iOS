@@ -27,7 +27,7 @@ public struct TargetMigrations: Comparable {
             return (lhsIndex < rhsIndex)
         }
         
-        func key(with migration: Migration.Type) -> String {
+        public func key(with migration: Migration.Type) -> String {
             return "\(self.rawValue).\(migration.identifier)"
         }
     }
@@ -43,6 +43,10 @@ public struct TargetMigrations: Comparable {
         identifier: Identifier,
         migrations: [MigrationSet]
     ) {
+        guard !migrations.contains(where: { migration in migration.contains(where: { $0.target != identifier }) }) else {
+            preconditionFailure("Attempted to register a migration with the wrong target")
+        }
+        
         self.identifier = identifier
         self.migrations = migrations
     }
