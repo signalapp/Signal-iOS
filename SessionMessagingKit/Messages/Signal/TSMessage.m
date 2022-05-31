@@ -464,6 +464,9 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
                                  changeBlock:^(TSMessage *message) {
                                     if (![message.reactions containsObject:reaction]) {
                                         [message.reactions addObject:reaction];
+                                    } else {
+                                        NSUInteger index = [message.reactions indexOfObject:reaction];
+                                        [message.reactions replaceObjectAtIndex:index withObject:reaction];
                                     }
                                  }];
     }

@@ -110,7 +110,7 @@ public final class VisibleMessage : Message {
         // Open group invitation
         if let openGroupInvitation = openGroupInvitation, let openGroupInvitationProto = openGroupInvitation.toProto() { dataMessage.setOpenGroupInvitation(openGroupInvitationProto) }
         // Emoji react
-        if let reaction = reaction, let reactionProto = reaction.toProto() {
+        if let reaction = reaction, let reactionProto = reaction.toProto(using: transaction) {
             dataMessage.setReaction(reactionProto)
         }
         // Group context

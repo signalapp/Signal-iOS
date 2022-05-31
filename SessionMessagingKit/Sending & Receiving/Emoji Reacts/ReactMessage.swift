@@ -36,4 +36,18 @@ public final class ReactMessage : MTLModel {
     public required init(dictionary dictionaryValue: [String: Any]!) throws {
         try super.init(dictionary: dictionaryValue)
     }
+    
+    @objc
+    public func isSelfReact() -> Bool {
+        return sender == getUserHexEncodedPublicKey()
+    }
+    
+    @objc
+    public override func isEqual(_ object: Any!) -> Bool {
+        guard let other = object as? ReactMessage else { return false }
+        return other.sender == self.sender &&
+               other.emoji == self.emoji &&
+               other.timestamp == self.timestamp &&
+               other.authorId == self.authorId
+     }
 }

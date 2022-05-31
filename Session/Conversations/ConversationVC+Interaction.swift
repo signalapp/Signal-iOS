@@ -852,7 +852,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             else {
                 message.addReaction(reactMessage, transaction: transaction)
             }
-            // MessageSender.send(visibleMessage, in: thread, using: transaction)
+            MessageSender.send(visibleMessage, in: thread, using: transaction)
         }
     }
     

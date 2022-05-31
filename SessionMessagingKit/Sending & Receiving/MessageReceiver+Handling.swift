@@ -376,6 +376,28 @@ extension MessageReceiver {
         }
         // Get or create thread
         guard let threadID = storage.getOrCreateThread(for: message.syncTarget ?? message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
+        // Handle emoji reacts first
+        if let reaction = message.reaction, proto.dataMessage?.reaction != nil, let author = reaction.publicKey, let timestamp = reaction.timestamp {
+            var tsMessage: TSMessage?
+            if author == getUserHexEncodedPublicKey() {
+                tsMessage = TSOutgoingMessage.find(withTimestamp: timestamp)
+            } else {
+                tsMessage = TSIncomingMessage.find(withAuthorId: author, timestamp: timestamp, transaction: transaction)
+            }
+            let reactionMessage = ReactMessage(timestamp: timestamp, authorId: author, emoji: reaction.emoji)
+            reactionMessage.sender = message.sender
+            if let serverID = message.openGroupServerMessageID { reactionMessage.messageId = "\(serverID)" }
+            if let serverHash = message.serverHash { reactionMessage.messageId = serverHash }
+            switch reaction.kind {
+            case .react:
+                tsMessage?.addReaction(reactionMessage, transaction: transaction)
+            case .remove:
+                tsMessage?.removeReaction(reactionMessage, transaction: transaction)
+            case .none:
+                break
+            }
+            return ""
+        }
         // Parse quote if needed
         var tsQuotedMessage: TSQuotedMessage? = nil
         if message.quote != nil && proto.dataMessage?.quote != nil, let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
