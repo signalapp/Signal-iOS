@@ -633,7 +633,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         let deleteAction = ActionSheetAction(title: confirmationTitle, style: .destructive) { _ in
             let galleryIndexPaths = indexPaths.map { IndexPath(item: $0.item, section: $0.section - 1) }
-            self.mediaGallery.delete(items: items, atIndexPaths: galleryIndexPaths, initiatedBy: self, deleteFromDB: true)
+            self.mediaGallery.delete(items: items, atIndexPaths: galleryIndexPaths, initiatedBy: self)
             self.endSelectMode()
         }
 
@@ -707,6 +707,19 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet) {
         collectionView.reloadSections(sections.shifted(by: 1))
+    }
+
+    func didAddSectionInMediaGallery(_ mediaGallery: MediaGallery) {
+        let oldSectionCount = self.numberOfSections(in: collectionView)
+        databaseStorage.read { transaction in
+            _ = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize, transaction: transaction)
+        }
+        let newSectionCount = self.numberOfSections(in: collectionView)
+        collectionView.insertSections(IndexSet(oldSectionCount..<newSectionCount))
+    }
+
+    func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery) {
+        collectionView.reloadData()
     }
 
     // MARK: Lazy Loading

@@ -171,6 +171,9 @@ protocol MediaGalleryDelegate: AnyObject {
     func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath])
 
     func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet)
+    /// `mediaGallery` has added one or more new sections at the end.
+    func didAddSectionInMediaGallery(_ mediaGallery: MediaGallery)
+    func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery)
 }
 
 /// A backing store for media views (page-based or tile-based)
@@ -192,7 +195,6 @@ class MediaGallery: Dependencies {
             AssertIsOnMainThread()
         }
     }
-    private var isCurrentlyProcessingExternalDeletion = false
 
     private let mediaGalleryFinder: MediaGalleryFinder
 
@@ -203,59 +205,123 @@ class MediaGallery: Dependencies {
     @objc
     init(thread: TSThread) {
         self.mediaGalleryFinder = MediaGalleryFinder(thread: thread)
-
-        setupDatabaseObservation()
-    }
-
-    func setupDatabaseObservation() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(Self.didRemoveAttachments(_:)),
+                                               name: MediaGalleryManager.didRemoveAttachmentsNotification,
+                                               object: nil)
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
 
-    // MARK: - 
+    private func reset(transaction: SDSAnyReadTransaction) {
+        let oldestLoadedSection = sections.orderedKeys.first
+        let newestLoadedSection = sections.orderedKeys.last
 
-    func process(deletedAttachmentIds incomingDeletedAttachmentIds: Set<String>) {
-        AssertIsOnMainThread()
+        sections = OrderedDictionary()
+        hasFetchedOldest = false
+        hasFetchedMostRecent = false
 
-        let newlyDeletedAttachmentIds = incomingDeletedAttachmentIds.subtracting(deletedAttachmentIds)
-        guard !newlyDeletedAttachmentIds.isEmpty else {
-            return
-        }
+        if let oldestLoadedSection = oldestLoadedSection, let newestLoadedSection = newestLoadedSection {
+            let count = numberOfItemsInSection(for: oldestLoadedSection, transaction: transaction)
+            if count > 0 {
+                let items: [MediaGalleryItem?] = Array(repeating: nil, count: count)
+                sections.append(key: oldestLoadedSection, value: items)
 
-        guard !sections.isEmpty else {
-            // Haven't loaded anything yet.
-            return
-        }
-
-        var deletedItems: [MediaGalleryItem] = []
-        var deletedIndexPaths: [IndexPath] = []
-
-        let allPaths = sequence(first: IndexPath(item: 0, section: 0), next: { self.indexPath(after: $0) })
-        // This is not very efficient, but we have no index of attachment IDs -> loaded items.
-        // An alternate approach would be to load the deleted attachments and check them by section.
-        for path in allPaths {
-            guard let loadedItem = galleryItem(at: path) else {
-                continue
-            }
-            if newlyDeletedAttachmentIds.contains(loadedItem.attachmentStream.uniqueId) {
-                deletedItems.append(loadedItem)
-                deletedIndexPaths.append(path)
+                while !hasFetchedMostRecent, sections.orderedKeys.last! < newestLoadedSection {
+                    _ = self.loadLaterSections(batchSize: 40, transaction: transaction)
+                }
+            } else {
+                // The previous oldest section is gone, so we just have to guess what to load.
+                // Try the newest section(s).
+                _ = self.loadEarlierSections(batchSize: 40, transaction: transaction)
             }
         }
-
-        delete(items: deletedItems, atIndexPaths: deletedIndexPaths, initiatedBy: self, deleteFromDB: false)
     }
 
-    func process(newAttachmentIds: Set<String>) {
-        AssertIsOnMainThread()
+    // MARK: -
 
-        guard !newAttachmentIds.isEmpty else {
+    @objc
+    private func didRemoveAttachments(_ notification: Notification) {
+        // Some of the deleted attachments may have been loaded and some may not.
+        // Rather than try to identify which individual items should be removed from a section,
+        // reload every section that was touched.
+        // In some cases this may result in deleting sections entirely; we do this as a follow-up step so that
+        // delegates don't get confused.
+        AssertIsOnMainThread()
+        let incomingDeletedAttachments = notification.object as! [MediaGalleryManager.RemovedAttachment]
+
+        var sectionsNeedingUpdate = Set<GalleryDate>()
+        for incomingDeletedAttachment in incomingDeletedAttachments {
+            guard incomingDeletedAttachment.threadGrdbId == mediaGalleryFinder.threadId else {
+                // This attachment is from a different thread.
+                continue
+            }
+            guard deletedAttachmentIds.remove(incomingDeletedAttachment.uniqueId) == nil else {
+                // This attachment was removed through MediaGallery and we already adjusted accordingly.
+                continue
+            }
+            let sectionDate = GalleryDate(date: Date(millisecondsSince1970: incomingDeletedAttachment.timestamp))
+            sectionsNeedingUpdate.insert(sectionDate)
+        }
+
+        guard !sectionsNeedingUpdate.isEmpty else {
             return
         }
 
-        var sectionsNeedingUpdate = IndexSet()
+        var sectionIndexesNeedingUpdate = IndexSet()
+        var sectionsToDelete = IndexSet()
 
         databaseStorage.read { transaction in
-            for attachmentId in newAttachmentIds {
+            for sectionDate in sectionsNeedingUpdate {
+                // Scan backwards; newer items are more likely to be modified.
+                // (We could use a binary search here as well.)
+                guard let sectionIndex = sections.orderedKeys.lastIndex(of: sectionDate) else {
+                    continue
+                }
+
+                // Refresh the section.
+                let newCount = self.numberOfItemsInSection(for: sectionDate, transaction: transaction)
+                sections.replace(key: sectionDate, value: Array(repeating: nil, count: newCount))
+
+                sectionIndexesNeedingUpdate.insert(sectionIndex)
+                if newCount == 0 {
+                    sectionsToDelete.insert(sectionIndex)
+                }
+            }
+        }
+        delegates.forEach {
+            $0.mediaGallery(self, didReloadItemsInSections: sectionIndexesNeedingUpdate)
+        }
+
+        guard !sectionsToDelete.isEmpty else {
+            return
+        }
+
+        // Delete in reverse order so indexes are preserved as we go.
+        for index in sectionsToDelete.reversed() {
+            sections.remove(at: index)
+        }
+        delegates.forEach {
+            $0.mediaGallery(self, deletedSections: sectionsToDelete, deletedItems: [])
+        }
+    }
+
+    func process(updatedAttachmentIds: Set<String>) {
+        AssertIsOnMainThread()
+
+        guard !updatedAttachmentIds.isEmpty else {
+            return
+        }
+        Logger.debug("")
+
+        // Conservatively assume that every updated attachment is an added attachment,
+        // and deal with this by reloading the affected sections.
+
+        var sectionsNeedingUpdate = IndexSet()
+        var didAddSectionAtEnd = false
+        var didReset = false
+
+        databaseStorage.read { transaction in
+            for attachmentId in updatedAttachmentIds {
                 let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
                 guard let attachmentStream = attachment as? TSAttachmentStream else {
                     // not downloaded yet
@@ -269,8 +335,23 @@ class MediaGallery: Dependencies {
                 let sectionDate = GalleryDate(message: message)
                 // Do a backwards search assuming new messages usually arrive at the end.
                 // Still, this is kept sorted, so we ought to be able to do a binary search instead.
-                if let sectionIndex = sections.orderedKeys.lastIndex(of: sectionDate) {
+                if let lastSectionDate = sections.orderedKeys.last, sectionDate > lastSectionDate {
+                    // Only let clients know about the new section if they thought they were at the end;
+                    // otherwise they'll fetch more if they need to.
+                    if hasFetchedMostRecent {
+                        hasFetchedMostRecent = false
+                        didAddSectionAtEnd = true
+                    }
+                } else if let sectionIndex = sections.orderedKeys.lastIndex(of: sectionDate) {
                     sectionsNeedingUpdate.insert(sectionIndex)
+                } else {
+                    // We've loaded the first attachment in a new section that's not at the end. That can't be done
+                    // transparently in MediaGallery's model, so let all our delegates know to refresh *everything*.
+                    // This should be rare, but can happen if someone has automatic attachment downloading off and then
+                    // goes back and downloads an attachment that crosses the month boundary.
+                    reset(transaction: transaction)
+                    didReset = true
+                    return
                 }
             }
 
@@ -282,7 +363,14 @@ class MediaGallery: Dependencies {
             }
         }
 
-        delegates.forEach { $0.mediaGallery(self, didReloadItemsInSections: sectionsNeedingUpdate) }
+        if didReset {
+            delegates.forEach { $0.didReloadAllSectionsInMediaGallery(self) }
+        } else {
+            delegates.forEach { $0.mediaGallery(self, didReloadItemsInSections: sectionsNeedingUpdate) }
+            if didAddSectionAtEnd {
+                delegates.forEach { $0.didAddSectionInMediaGallery(self) }
+            }
+        }
     }
 
     // MARK: -
@@ -303,7 +391,8 @@ class MediaGallery: Dependencies {
         }
 
         guard let message = attachmentStream.fetchAlbumMessage(transaction: transaction) else {
-            owsFailDebug("message was unexpectedly nil")
+            // The item may have just been deleted.
+            Logger.warn("message was unexpectedly nil")
             return nil
         }
 
@@ -341,11 +430,6 @@ class MediaGallery: Dependencies {
                                            amount: Int,
                                            shouldLoadAlbumRemainder: Bool,
                                            completion: ((_ newSections: IndexSet) -> Void)? = nil) {
-        guard !isCurrentlyProcessingExternalDeletion else {
-            owsFailDebug("cannot access database while model is being updated")
-            return
-        }
-
         let anchorItem: MediaGalleryItem? = sections[sectionIndex].value[safe: itemIndex] ?? nil
 
         // May include a negative start location.
@@ -586,7 +670,8 @@ class MediaGallery: Dependencies {
                                                                       in: focusedItem.galleryDate.interval,
                                                                       excluding: deletedAttachmentIds,
                                                                       transaction: transaction.unwrapGrdbRead) else {
-                owsFailDebug("showing detail for item not in the database")
+                // The item may have just been deleted.
+                Logger.warn("showing detail for item not in the database")
                 return nil
             }
 
@@ -742,8 +827,7 @@ class MediaGallery: Dependencies {
 
     internal func delete(items: [MediaGalleryItem],
                          atIndexPaths givenIndexPaths: [IndexPath]? = nil,
-                         initiatedBy: AnyObject,
-                         deleteFromDB: Bool) {
+                         initiatedBy: AnyObject) {
         AssertIsOnMainThread()
 
         guard items.count > 0 else {
@@ -751,46 +835,38 @@ class MediaGallery: Dependencies {
         }
 
         Logger.info("with items: \(items.map { ($0.attachmentStream, $0.message.timestamp) })")
-        isCurrentlyProcessingExternalDeletion = !deleteFromDB
-        defer { isCurrentlyProcessingExternalDeletion = false }
 
         deletedGalleryItems.formUnion(items)
         delegates.forEach { $0.mediaGallery(self, willDelete: items, initiatedBy: initiatedBy) }
 
-        if deleteFromDB {
-            deletedAttachmentIds.formUnion(items.lazy.map { $0.attachmentStream.uniqueId })
+        deletedAttachmentIds.formUnion(items.lazy.map { $0.attachmentStream.uniqueId })
 
-            self.databaseStorage.asyncWrite { transaction in
-                do {
-                    for item in items {
-                        let message = item.message
-                        let attachment = item.attachmentStream
-                        message.removeAttachment(attachment, transaction: transaction)
-                        // We always have to check the database in case we do more than one deletion (at a time or in a
-                        // row) without reloading existing media items and their associated message models.
-                        var shouldDeleteMessage = message.attachmentIds.isEmpty
-                        if !shouldDeleteMessage {
-                            let upToDateAttachmentCount = try self.mediaGalleryFinder.countAllAttachments(
-                                of: message,
-                                transaction: transaction.unwrapGrdbRead)
-                            if upToDateAttachmentCount == 0 {
-                                // Refresh attachment list on the model, so deletion doesn't try to remove them again.
-                                message.anyReload(transaction: transaction)
-                                shouldDeleteMessage = true
-                            }
-                        }
-                        if shouldDeleteMessage {
-                            Logger.debug("removing message after removing last media attachment")
-                            message.anyRemove(transaction: transaction)
+        self.databaseStorage.asyncWrite { transaction in
+            do {
+                for item in items {
+                    let message = item.message
+                    let attachment = item.attachmentStream
+                    message.removeAttachment(attachment, transaction: transaction)
+                    // We always have to check the database in case we do more than one deletion (at a time or in a
+                    // row) without reloading existing media items and their associated message models.
+                    var shouldDeleteMessage = message.attachmentIds.isEmpty
+                    if !shouldDeleteMessage {
+                        let upToDateAttachmentCount = try self.mediaGalleryFinder.countAllAttachments(
+                            of: message,
+                            transaction: transaction.unwrapGrdbRead)
+                        if upToDateAttachmentCount == 0 {
+                            // Refresh attachment list on the model, so deletion doesn't try to remove them again.
+                            message.anyReload(transaction: transaction)
+                            shouldDeleteMessage = true
                         }
                     }
-
-                    transaction.addAsyncCompletionOnMain {
-                        self.deletedAttachmentIds.subtract(items.lazy.map { $0.attachmentStream.uniqueId })
+                    if shouldDeleteMessage {
+                        Logger.debug("removing message after removing last media attachment")
+                        message.anyRemove(transaction: transaction)
                     }
-                } catch {
-                    owsFailDebug("database error: \(error)")
                 }
+            } catch {
+                owsFailDebug("database error: \(error)")
             }
         }
 
@@ -825,8 +901,6 @@ class MediaGallery: Dependencies {
                 self.sections.replace(key: sectionKey, value: section)
             }
         }
-
-        isCurrentlyProcessingExternalDeletion = false
 
         delegates.forEach { $0.mediaGallery(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths) }
     }
@@ -932,12 +1006,10 @@ class MediaGallery: Dependencies {
             advance = { self.indexPath(after: $0) }
         }
 
-        if !isCurrentlyProcessingExternalDeletion {
-            self.ensureGalleryItemsLoaded(direction,
-                                          item: currentItem,
-                                          amount: kGallerySwipeLoadBatchSize,
-                                          shouldLoadAlbumRemainder: true)
-        }
+        self.ensureGalleryItemsLoaded(direction,
+                                      item: currentItem,
+                                      amount: kGallerySwipeLoadBatchSize,
+                                      shouldLoadAlbumRemainder: true)
 
         guard let currentPath = indexPath(for: currentItem) else {
             owsFailDebug("current item not found")
@@ -949,8 +1021,7 @@ class MediaGallery: Dependencies {
         let laterItemPaths = sequence(first: currentPath, next: advance).dropFirst()
         for nextPath in laterItemPaths {
             guard let loadedNextItem = galleryItem(at: nextPath) else {
-                owsAssertDebug(isCurrentlyProcessingExternalDeletion,
-                               "should have loaded the next item already")
+                owsFailDebug("should have loaded the next item already")
                 return nil
             }
 
@@ -974,14 +1045,15 @@ class MediaGallery: Dependencies {
 extension MediaGallery: DatabaseChangeDelegate {
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        // Process deletions before insertions,
-        // because we can modify our existing model for deletions but have to reset with insertions.
-        process(deletedAttachmentIds: databaseChanges.attachmentDeletedUniqueIds)
-        process(newAttachmentIds: databaseChanges.attachmentUniqueIds)
+        process(updatedAttachmentIds: databaseChanges.attachmentUniqueIds.subtracting(deletedAttachmentIds))
     }
 
     func databaseChangesDidUpdateExternally() {
-        // no-op
+        // Conservatively assume anything could have happened.
+        databaseStorage.read { transaction in
+            reset(transaction: transaction)
+        }
+        delegates.forEach { $0.didReloadAllSectionsInMediaGallery(self) }
     }
 
     func databaseChangesDidReset() {

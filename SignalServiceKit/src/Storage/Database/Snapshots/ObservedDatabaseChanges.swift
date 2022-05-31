@@ -18,7 +18,6 @@ public protocol DatabaseChanges: AnyObject {
 
     var interactionDeletedUniqueIds: Set<UniqueId> { get }
     var storyMessageDeletedUniqueIds: Set<UniqueId> { get }
-    var attachmentDeletedUniqueIds: Set<UniqueId> { get }
 
     var tableNames: Set<String> { get }
     var collections: Set<String> { get }
@@ -303,14 +302,6 @@ class ObservedDatabaseChanges: NSObject {
         attachments.append(uniqueIds: attachmentUniqueIds)
     }
 
-    func append(attachmentDeletedUniqueIds: Set<UniqueId>) {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        attachments.append(deletedUniqueIds: attachmentDeletedUniqueIds)
-    }
-
     func append(attachmentRowId: RowId) {
         #if TESTABLE_BUILD
         checkConcurrency()
@@ -325,14 +316,6 @@ class ObservedDatabaseChanges: NSObject {
         #endif
 
         attachments.append(rowIds: attachmentRowIds)
-    }
-
-    func append(deletedAttachmentRowId: RowId) {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        attachments.append(deletedRowId: deletedAttachmentRowId)
     }
 
     func append(deletedInteractionRowId: RowId) {
@@ -528,16 +511,6 @@ extension ObservedDatabaseChanges: DatabaseChanges {
             #endif
 
             return storyMessages.deletedUniqueIds
-        }
-    }
-
-    var attachmentDeletedUniqueIds: Set<UniqueId> {
-        get {
-            #if TESTABLE_BUILD
-            checkConcurrency()
-            #endif
-
-            return attachments.deletedUniqueIds
         }
     }
 

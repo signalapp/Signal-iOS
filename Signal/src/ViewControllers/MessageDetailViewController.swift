@@ -565,7 +565,21 @@ extension MessageDetailViewController: MediaGalleryDelegate {
     }
 
     func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet) {
-        // No action needed
+        self.didReloadAllSectionsInMediaGallery(mediaGallery)
+    }
+
+    func didAddSectionInMediaGallery(_ mediaGallery: MediaGallery) {
+        // Does not affect the current item.
+    }
+
+    func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery) {
+        if let firstAttachment = self.attachments?.first,
+           mediaGallery.ensureLoadedForDetailView(focusedAttachment: firstAttachment) == nil {
+            // Assume the item was deleted.
+            self.dismiss(animated: true) {
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
     }
 }
 

@@ -397,9 +397,7 @@ extension DatabaseChangeObserver: TransactionObserver {
             }
 
             // We record certain deletions.
-            if event.kind == .delete && event.tableName == AttachmentRecord.databaseTableName {
-                pendingChanges.append(deletedAttachmentRowId: event.rowID)
-            } else if event.kind == .delete && event.tableName == InteractionRecord.databaseTableName {
+            if event.kind == .delete && event.tableName == InteractionRecord.databaseTableName {
                 pendingChanges.append(deletedInteractionRowId: event.rowID)
             }
 
@@ -431,7 +429,6 @@ extension DatabaseChangeObserver: TransactionObserver {
                 let attachmentUniqueIds = pendingChangesToCommit.attachmentUniqueIds
                 let interactionDeletedUniqueIds = pendingChangesToCommit.interactionDeletedUniqueIds
                 let storyMessageDeletedUniqueIds = pendingChangesToCommit.storyMessageDeletedUniqueIds
-                let attachmentDeletedUniqueIds = pendingChangesToCommit.attachmentDeletedUniqueIds
                 let collections = pendingChangesToCommit.collections
                 let tableNames = pendingChangesToCommit.tableNames
 
@@ -443,7 +440,6 @@ extension DatabaseChangeObserver: TransactionObserver {
                     self.committedChanges.append(attachmentUniqueIds: attachmentUniqueIds)
                     self.committedChanges.append(interactionDeletedUniqueIds: interactionDeletedUniqueIds)
                     self.committedChanges.append(storyMessageDeletedUniqueIds: storyMessageDeletedUniqueIds)
-                    self.committedChanges.append(attachmentDeletedUniqueIds: attachmentDeletedUniqueIds)
                     self.committedChanges.append(collections: collections)
                     self.committedChanges.append(tableNames: tableNames)
                 }

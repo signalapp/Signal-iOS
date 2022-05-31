@@ -432,7 +432,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let deleteAction = ActionSheetAction(title: CommonStrings.deleteButton,
                                              style: .destructive) { _ in
             let deletedItem = currentViewController.galleryItem
-            self.mediaGallery.delete(items: [deletedItem], initiatedBy: self, deleteFromDB: true)
+            self.mediaGallery.delete(items: [deletedItem], initiatedBy: self)
         }
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(deleteAction)
@@ -475,13 +475,23 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath]) {
-        // no-op
+        // Either this is an internal deletion, in which case willDelete would have been called already,
+        // or it's an external deletion, in which case didReloadItemsInSection would have been called already.
     }
 
     func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet) {
+        self.didReloadAllSectionsInMediaGallery(mediaGallery)
+    }
+
+    func didAddSectionInMediaGallery(_ mediaGallery: MediaGallery) {
+        // Does not affect the current item.
+    }
+
+    func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery) {
         let attachment = self.currentItem.attachmentStream
         guard let reloadedItem = mediaGallery.ensureLoadedForDetailView(focusedAttachment: attachment) else {
-            owsFailDebug("failed to reload")
+            // Assume the item was deleted.
+            self.dismissSelf(animated: true)
             return
         }
         self.setCurrentItem(reloadedItem, direction: .forward, animated: false)
@@ -873,9 +883,14 @@ extension MediaPageViewController: UIViewControllerTransitioningDelegate {
             return nil
         }
 
+        guard let mediaInteractiveDismiss = mediaInteractiveDismiss else {
+            // We can't do a media dismiss (probably the item was externally deleted).
+            return nil
+        }
+
         let animationController = MediaDismissAnimationController(galleryItem: currentItem,
                                                                   interactionController: mediaInteractiveDismiss)
-        mediaInteractiveDismiss?.interactiveDismissDelegate = animationController
+        mediaInteractiveDismiss.interactiveDismissDelegate = animationController
 
         return animationController
     }
