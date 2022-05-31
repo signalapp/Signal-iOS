@@ -18,6 +18,7 @@ final class ReactionContainerView : UIView {
     
     private var showingAllReactions = false
     private var isOutgoingMessage = false
+    private var maxEmojisPerLine = isIPhone6OrSmaller ? 5 : 6
     
     var reactions: [(String, (Int, Bool))] = []
     var reactionViews: [ReactionView] = []
@@ -83,9 +84,9 @@ final class ReactionContainerView : UIView {
         var displayedReactions: [(String, (Int, Bool))]
         var expandButtonReactions: [String]
         
-        if reactions.count >= 6 {
-            displayedReactions = Array(reactions[0...2])
-            expandButtonReactions = Array(reactions[3...5]).map{ $0.0 }
+        if reactions.count > maxEmojisPerLine {
+            displayedReactions = Array(reactions[0...(maxEmojisPerLine - 3)])
+            expandButtonReactions = Array(reactions[(maxEmojisPerLine - 2)...maxEmojisPerLine]).map{ $0.0 }
         } else {
             displayedReactions = reactions
             expandButtonReactions = []
@@ -109,7 +110,7 @@ final class ReactionContainerView : UIView {
         var reactions = self.reactions
         while reactions.count > 0 {
             var line: [(String, (Int, Bool))] = []
-            while reactions.count > 0 && line.count < 5 {
+            while reactions.count > 0 && line.count < maxEmojisPerLine {
                 line.append(reactions.removeFirst())
             }
             updateCollapsedReactions(line)
