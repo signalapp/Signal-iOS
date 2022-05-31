@@ -7,8 +7,10 @@ import PassKit
 import LibSignalClient
 import SignalServiceKit
 
-public let BOOST_BADGE_LEVEL = "1"
-public let GIFT_BADGE_LEVEL = "100"
+public enum OneTimeBadgeLevel: UInt64 {
+    case boostBadge = 1
+    case giftBadge = 100
+}
 
 private let SUBSCRIPTION_CHARGE_FAILURE_FALLBACK_CODE = "__signal_charge_failure_fallback_code__"
 
@@ -1159,14 +1161,14 @@ extension SubscriptionManager {
     }
 
     public class func getBoostBadge() -> Promise<ProfileBadge> {
-        getBadge(level: BOOST_BADGE_LEVEL)
+        getBadge(level: .boostBadge)
     }
 
     public class func getGiftBadge() -> Promise<ProfileBadge> {
-        getBadge(level: GIFT_BADGE_LEVEL)
+        getBadge(level: .giftBadge)
     }
 
-    private class func getBadge(level: String) -> Promise<ProfileBadge> {
+    private class func getBadge(level: OneTimeBadgeLevel) -> Promise<ProfileBadge> {
         let request = OWSRequestFactory.boostBadgesRequest()
 
         return firstly {
@@ -1187,7 +1189,7 @@ extension SubscriptionManager {
                 throw OWSAssertionError("Missing or invalid response.")
             }
 
-            let badgeLevel: [String: Any] = try levelsParser.required(key: level)
+            let badgeLevel: [String: Any] = try levelsParser.required(key: String(level.rawValue))
 
             guard let levelParser = ParamParser(responseObject: badgeLevel) else {
                 throw OWSAssertionError("Missing or invalid response.")
