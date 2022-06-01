@@ -96,6 +96,11 @@ public protocol SessionMessagingKitStorageProtocol {
     func setAttachmentState(to state: TSAttachmentPointerState, for pointer: TSAttachmentPointer, associatedWith tsIncomingMessageID: String, using transaction: Any)
     /// Also touches the associated message.
     func persist(_ stream: TSAttachmentStream, associatedWith tsIncomingMessageID: String, using transaction: Any)
+    
+    // MARK: - Calls
+    
+    func getReceivedCalls(for publicKey: String, using transaction: Any) -> Set<String>
+    func setReceivedCalls(to receivedCalls: Set<String>, for publicKey: String, using transaction: Any)
 }
 
 extension Storage: SessionMessagingKitStorageProtocol, SessionSnodeKitStorageProtocol {}
