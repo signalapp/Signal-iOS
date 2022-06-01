@@ -1,2 +1,2 @@
-• Through the magic of video encoding, a video call with another iPhone user will now use less battery.
-• Improved error information if your monthly badge subscription fails to renew. Thanks for supporting Signal!
+• A través de la màgia de la codificació de vídeo, una videotrucada amb un altre usuari d'iPhone ara usarà menys bateria.
+• Informació d'error millorada si la subscripció mensual de la insígnia no es renova. Gràcies per donar suport a Signal!

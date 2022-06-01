@@ -1,2 +1,2 @@
-• Through the magic of video encoding, a video call with another iPhone user will now use less battery.
-• Improved error information if your monthly badge subscription fails to renew. Thanks for supporting Signal!
+• Olemme tuunanneet videoenkoodausta: nyt videopuhelu toisen iPhone-käyttäjän kanssa syö vähemmän akkua.
+• Selvemmät virheilmoitukset, mikäli kuukausilahjoituksen veloitus epäonnistuu. Kiitos kun tuet Signalia!

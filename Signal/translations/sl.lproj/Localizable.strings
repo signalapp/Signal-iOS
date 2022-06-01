@@ -98,7 +98,7 @@
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problem pri dostavi";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Sporočila, nalepke, odziva, potrdila o branju ali vsebine vam v tem pogovoru ni bilo mogoče dostaviti od %@. Morda je šlo za poskus neposrednega pošiljanja ali pošiljanja v skupino.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Zavrzi";
@@ -134,10 +134,10 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Napaka";
 
 /* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
+"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Zažani preverjanje integritete podatkovne baze";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "Open Signal Instead";
+"APP_LAUNCH_FAILURE_CONTINUE" = "Namesto tega odpri Signal";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Ni mogoče naložiti podatkovne zbirke";
@@ -149,10 +149,10 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Neznana različica podatkovne zbirke.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal had a problem while trying to open. Please send a debug log to support@signal.org to help troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal ima težavo z zagonom. Pošljite dnevnik razhroščevanja na support@signal.org, da pomagate pri odpravi te težave.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Ne morem odpreti signala";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Podatkov prenesenih iz vaše stare naprave ne moremo obnoviti. Prosimo, pošljite sistemsko zabeležbo na support@signal.org, da vam momo lahko pomagali odpraviti težavo. Če boste ponovno namestili aplikacijo Signal, bo zgodovina vaših sporočil izgubljena.";
@@ -368,10 +368,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Daj Signalu spodbudo";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer visible on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Vaša izpostavljena značka je potekla in ni več vidna na profilu.\n\nSignal lahko še naprej uporabljate, a razmislite o tem, da podprete razvoj tehnologije, ki je narejena za vas, tako da mesečno darujete.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Vaša izpostavljena značja je potekla in ni več vidna na profilu.\n\nLahko jo reaktivirate za naslednjih 30 dni z enkratno donacijo.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Postanite podpornik/ca";
@@ -392,28 +392,28 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Mesečne donacije so bile preklicane.";
 
 /* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Za prejem daril je potrebno posodobiti Signal";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Podarite nekomu značko z doniranjem Signalu v njihovem imenu. Dobili bodo značko, ki jo lahko prikažejo na svoji profilni fotografiji.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Podari bedž";
 
 /* Title on the screen where you choose a gift badge's recipient */
-"BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
+"BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Izberite prejemnika";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Pošlji darilno značko";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "Trajanje %@";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Vaša ponavljajoča se mesečna donacija je bila samodejno preklicana. %@ vaša %@ značka ni več vidna na profilu.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Vaša ponavljajoča se mesečna donacija je bila samodejno preklicana, ker ste bili predolgo neaktivni. Vaša %@ značka ni več vidna na profilu.\n\nŠe vedno lahko uporabljate Signal, vendar morate samodejno doniranje obnoviti, če želite podpirati Signal in ponovno aktivirati vašo značko.";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Hvala za Boost!";
@@ -431,7 +431,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "Če imate več kot en bedž, lahko enega izberete za prikaz na vašem profilu.";
 
 /* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Prislužili ste si %@ značko. Prikažite jo na svojem profilu in s tem pomagajte pridobivati donacije za Signal.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Zapri pasico";
@@ -509,7 +509,7 @@
 "BLUR_TOOLTIP" = "Novo: zabrišite obraze ali s potegom prsta katerikoli del slike.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Prispevajte enkratni znesek in si prislužite značko podpore za 30 dni.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Izpostavljena značka bo potekla %@.";
@@ -599,16 +599,16 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Dohodni zvočni klic…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call at %@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞Zgrešen zvočni klic ob %@";
 
 /* notification body for a call that was just missed */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "Zgrešen zvočni klic";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞Zgrešen zvočni klic na %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞Zgrešen zvočni klic na %@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Za klicanje in snemanje zvočnih posnetkov z aplikacijo Signal je potrebno omogočiti dostop do mikrofona. To lahko storite v Nastavitvah iOS.";
@@ -641,16 +641,16 @@
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Dohodni video klic...";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call at %@";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Zgrešen video klic ob %@";
 
 /* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "Zgrešen video klic";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Zgrešen video klic na %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞Zgrešen video klic na %@";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Odgovori brez videa";
@@ -923,10 +923,10 @@
 "CONTACT_SUPPORT" = "Stopi v stik s pomočjo uporabnikom/cam";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donacije in značke";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donacije in značke";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Rad bi predlagal novo funkcijo";
@@ -1088,7 +1088,7 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "zvok";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Podprite Signal in si pridobite značko za vaš profil. Tapnite na značko in izvejte več.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Značke";
@@ -1304,19 +1304,19 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Potegnite za spremembo smeri preliva";
 
 /* Button to run the database integrity check */
-"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Run";
+"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Zaženi";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "To lahko traja nekaj časa (nekaj minut ali več), odvisno od tega koliko ste Signal uporabljali. Če traja predolgo lahko Signal varno zaprete.";
 
 /* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
+"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Dodaj v beležko razhroščevanja";
 
 /* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Integrity check results";
+"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Rezultati preverjanja integritete";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database integrity check?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Zaženem preverjanje integritete podatkovne baze?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "To lahko traja nekaj minut.";
@@ -5486,7 +5486,7 @@
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "Send Payment";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Choose Recipient";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Izberite prejemnika";
 
 /* Title for the 'set currency' view in the app settings. */
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";

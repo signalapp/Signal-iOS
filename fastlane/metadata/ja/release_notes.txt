@@ -1,2 +1,2 @@
-• Through the magic of video encoding, a video call with another iPhone user will now use less battery.
-• Improved error information if your monthly badge subscription fails to renew. Thanks for supporting Signal!
+ビデオエンコードの魔法のおかげで、他のiPhoneユーザーとのビデオ通話をしたときの、バッテリー消費が少なくなりました。
+月々の寄付のサブスクリプションの更新に失敗した場合の、エラー表示を改善しました。いつもSignalをご支援いただき、ありがとうございます。

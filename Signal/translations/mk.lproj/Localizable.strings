@@ -5906,7 +5906,7 @@
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "Станете поддржувач";
 
 /* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Идентификацискиот број на претплатникот е копиран на таблата со исечоци";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Вашиот безбедносен број се совпаѓа со %@. Можете да го означите овој контакт како верификуван. ";

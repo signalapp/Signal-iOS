@@ -392,10 +392,10 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Doação mensal cancelada";
 
 /* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Deverá atualizar o Signal de forma a poder receber ofertas";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Presenteie alguém com um crachá ao fazer uma doação para o Signal em nome dessa pessoa. Essa pessoa obterá um crachá para exibir no seu perfil de fotografia.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Oferta de 'Crachá'";
@@ -404,13 +404,13 @@
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Escolher destinatário";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Enviar um 'Crachá de oferta'";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "Durante %@";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "A sua doação mensal recorrente foi cancelada automaticamente. %@ O seu crachá %@ deixou de estar visível no seu perfil.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "A sua doação mensal recorrente foi cancelada automaticamente porque você se encontra inativo à muito tempo. O seu crachá de %@ deixou de estar visível no seu perfil.\n\nPode continuar a utilizar o Signal mas para apoiar a aplicação e reativar o seu crachá, apoie agora.";
@@ -1598,25 +1598,25 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Tente outro método de pagamento ou contacte o seu banco para mais informações.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Verifique se o seu método de pagamento se encontra atualizado na Apple Pay. Se não estiver, atualize-o e tente novamente. Se o problema continuar, entre em contacto com o seu banco.";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "O seu cartão não aceita este tipo de compra. Tente outra forma de pagamento ou entre em contacto com seu banco para mais detalhes.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "O seu cartão expirou. Verifique se o seu método de pagamento se encontra atualizado na Apple Pay. Se não estiver, atualize-o e tente novamente.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "O número do seu cartão está incorreto. Verifique se o seu método de pagamento está inserido corretamente na Apple Pay. Se não estiver, atualize-o e tente novamente.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "O número de verificação CVC está incorreto. Certifique-se de que o seu CVC está inserido corretamente na Apple Pay. Se não estiver, atualize-o e tente novamente.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "O seu cartão não tem saldo suficiente para completar esta compra. Tente outra forma de pagamento ou entre em contacto com seu banco para mais detalhes.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "O mês da validade da sua forma de pagamento encontra-se incorreto. Atualize-o na Apple Pay e tente novamente. ";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
@@ -3212,7 +3212,7 @@
 "MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Áudio FaceTime";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime - Vídeo";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Enviar mensagem de texto";
@@ -4871,10 +4871,10 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Desativar";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "Você perderá quaisquer fotografias ou vídeos feitos.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Desligar o modo múltiplo?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Convidar um amigo por SMS inseguro?";

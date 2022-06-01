@@ -217,10 +217,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d заједничке групе</string>
 			<key>one</key>
-			<string>1 Group in Common</string>
+			<string>1 заједничка група</string>
 			<key>other</key>
-			<string>%d Groups in Common</string>
+			<string>%d заједничке групе</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -249,10 +251,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Пре %d минута</string>
 			<key>one</key>
-			<string>1 minute ago</string>
+			<string>Пре 1 минут</string>
 			<key>other</key>
-			<string>%d minutes ago</string>
+			<string>Пре %d минута</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -265,10 +269,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Обрисати %d поруке?</string>
 			<key>one</key>
-			<string>Delete Message?</string>
+			<string>Обрисати поруку?</string>
 			<key>other</key>
-			<string>Delete %d Messages?</string>
+			<string>Обрисати %d поруке?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -313,10 +319,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Послати %d поруке</string>
 			<key>one</key>
-			<string>Send message</string>
+			<string>Послати поруку</string>
 			<key>other</key>
-			<string>Send %d messages</string>
+			<string>Послати %d поруке</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
@@ -537,10 +545,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d члана</string>
 			<key>one</key>
-			<string>1 member</string>
+			<string>1 члан</string>
 			<key>other</key>
-			<string>%d members</string>
+			<string>%d члана</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>

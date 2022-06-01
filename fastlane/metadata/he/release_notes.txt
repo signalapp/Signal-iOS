@@ -1,2 +1,2 @@
-• Through the magic of video encoding, a video call with another iPhone user will now use less battery.
-• Improved error information if your monthly badge subscription fails to renew. Thanks for supporting Signal!
+• באמצעות הקסם של קידוד וידאו, שיחת וידאו עם משתמש iPhone אחר תצרוך פחות סוללה עכשיו.
+• מידע שגיאה שופר במקרה של כישלון בחידוש של המינוי החודשי שלך. תודה על תמיכה ב־Signal!

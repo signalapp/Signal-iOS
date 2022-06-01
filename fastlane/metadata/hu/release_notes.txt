@@ -1,2 +1,2 @@
-• Through the magic of video encoding, a video call with another iPhone user will now use less battery.
-• Improved error information if your monthly badge subscription fails to renew. Thanks for supporting Signal!
+• A videókódolás csodáit alkalmazva telefonod mostantól kevésbé meríti az akkumulátort videóhívás közben.
+• Beszédesebb információk a havi kitűzőre feliratkozás és annak megújításának hibája esetén. Köszönjük, hogy támogatod a Signalt!

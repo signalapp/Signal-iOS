@@ -134,10 +134,10 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Σφάλμα";
 
 /* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
+"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Έλεγχος ακεραιότητας βάσης δεδομένων";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "Open Signal Instead";
+"APP_LAUNCH_FAILURE_CONTINUE" = "Άνοιγμα του Signal αντ'αυτού";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Δεν φορτώθηκε η βάση δεδομένων";
@@ -149,10 +149,10 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Άγνωστη έκδοση βάσης δεδομένων";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal had a problem while trying to open. Please send a debug log to support@signal.org to help troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Το Signal αντιμετώπισε ένα πρόβλημα καθώς προσπαθούσε να ανοίξει. Παρακαλούμε στείλε ένα αρχείο καταγραφής αποσφαλμάτωσης στο support@signal.org για να βοηθήσεις με την αποσφαλμάτωση του προβλήματος.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Αδυναμία ανοίγματος του Signal";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Η επαναφορά των δεδομένων που μεταφέρθηκαν από την παλιά σου συσκευή ήταν αδύνατη. Παρακαλώ να στείλεις το αρχείο καταγραφής στο support@signal.org ώστε να επιλύσουμε το πρόβλημα. Εάν επανεγκαταστήσεις το Signal πιθανόν να χαθεί το ιστορικό μηνυμάτων σου.";
@@ -368,10 +368,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Δώσε Ενίσχυση στο Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer visible on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Το έμβλημα Ενίσχυσης έληξε και δεν φαίνεται πλέον στο προφίλ σου.\n\nΜπορείς να συνεχίσεις να χρησιμοποιείς το Signal, αλλά για να υποστηρίξεις τη τεχνολογία που φτιάχνεται για σένα, σκέψου να γίνεις υποστηρικτής, κάνοντας μια μηνιαία δωρεά.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Το έμβλημα Ενίσχυσης έληξε και δεν φαίνεται πλέον στο προφίλ σου.\n\nΜπορείς να επανενεργοποιήσεις το έμβλημα Ενίσχυσης για άλλες 30 ημέρες, με μια συνεισφορά μια μόνο φορά.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Γίνε υποστηρικτής/τρια";
@@ -392,10 +392,10 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Η μηνιαία δωρεά ακυρώθηκε";
 
 /* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Πρέπει να αναβαθμίσεις το Signal για να λάβεις δώρα";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Κάνε δώρο ένα έμβλημα σε κάποιον/α, κάνοντας μια δωρεά στο Signal στο όνομά του/της. Θα λάβει το έμβλημα για να το δείξει στην εικόνα προφίλ του/της.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Κάνε δώρο ένα έμβλημα";
@@ -404,16 +404,16 @@
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Επιλογή παραλήπτη";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Αποστολή εμβλήματος δώρου";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "Διαρκεί %@";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Η επαναλαμβανόμενη μηνιαία δωρεά σου ακυρώθηκε αυτόματα. %@ Το έμβλημα %@ σου δεν είναι πλέον ορατό στο προφίλ σου.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Η επαναλαμβανόμενη μηνιαία δωρεά σου ακυρώθηκε αυτόματα επειδή ήσουν ανενεργός/ή για πολύ καιρό. Το έμβλημα %@ σου δεν είναι πλέον ορατό στο προφίλ σου.\n\nΜπορείς να συνεχίσεις να χρησιμοποιείς το Signal, αλλά για να υποστηρίξεις την εφαρμογή και να επανενεργοποιήσεις το έμβλημά σου, ανανέωσέ την τώρα.";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Ευχαριστούμε για την ενίσχυση!";
@@ -710,19 +710,19 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "Επεξεργασία φωτογραφίας";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Ο νέος αριθμός δεν μπορεί να είναι ο ίδιος με τον παλιό αριθμό. Παρακαλούμε γράψε έναν νέο αριθμό τηλεφώνου για να αλλάξεις τον αριθμό σου.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Ο αριθμός τηλεφώνου που έγραψες δεν αντιστοιχεί στο λογαριασμό σου.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Invalid new phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Μη έγκυρος νέος αριθμός τηλεφώνου. Παρακαλώ γράψε έναν έγκυρο αριθμό τηλεφώνου για να αλλάξεις τον αριθμό σου.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Invalid old phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Μη έγκυρος παλιός αριθμός τηλεφώνου. Παρακαλώ γράψε έναν έγκυρο αριθμό τηλεφώνου για να αλλάξεις τον αριθμό σου.";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Γράψε το PIN για τον νέο αριθμό τηλεφώνου. Αυτό είναι διαφορετικό από τον κωδικό επαλήθευσης που έλαβες μέσω SMS.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Να μια προεπισκόπηση του χρώματος της συνομιλίας.";
@@ -788,7 +788,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Μπορείς να ενεργοποιήσεις την πρόσβαση στις επαφές στην εφαρμογή Ρυθμίσεις του iOS για να δεις ποιές από τις επαφές σου χρησιμοποιούν το Signal.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "Configure Reactions";
+"CONFIGURE_REACTIONS" = "Προσαρμογή Αντιδράσεων";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "Αυτό θα επαναφέρει την εφαρμογή διαγράφοντας τα μηνύματά σου. Η εφαρμογή θα κλείσει αφού ολοκληρωθεί αυτή η διαδικασία.";
@@ -1307,16 +1307,16 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Εκτέλεση";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Αυτό μπορεί να διαρκέσει αρκετά (μερικά λεπτά ή παραπάνω), ανάλογα με τη προηγούμενη χρήση που έχεις κάνει στο Signal. Μπορείς να κλείσεις το Signal αν αυτό διαρκεί πάρα πολύ.";
 
 /* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
+"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Προσθήκη στο αρχείο αποσφαλμάτωσης";
 
 /* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Integrity check results";
+"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Αποτελέσματα ελέγχου ακεραιότητας";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database integrity check?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Έλεγχος ακεραιότητας βάσης δεδομένων;";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Αυτό μπορεί να πάρει μερικά λεπτά.";
@@ -3209,10 +3209,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Κλήση";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Κλήση FaceTime";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Βιντεοκλήση FaceTime";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Αποστολή μηνύματος κειμένου";
@@ -3731,10 +3731,10 @@
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Εισαγωγή αριθμού τηλεφώνου";
 
 /* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Ο Αριθμός Σας";
+"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Ο αριθμός τηλεφώνου σου";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Άκυροος αριθμός τηλεφώνου. Παρακαλώ γράψε έναν έγκυρο αριθμό τηλεφώνου για να εγγραφτείς.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Μη έγκυρος αριθμός τηλεφώνου. Παρακαλώ γράψε έναν έγκυρο αριθμό τηλεφώνου για να εγγραφτείς.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Σου τέλειωσαν οι απόπειρες για το PIN, αλλά μπορείς να αποκτήσεις πρόσβαση στο λογαριασμό Signal σου δημιουργώντας νέο PIN. Για την ιδιωτικότητα και την ασφάλειά σου ο λογαριασμός δεν θα έχει προϋπάρχουσες πληροφορίες προφίλ και ρυθμίσεις.";

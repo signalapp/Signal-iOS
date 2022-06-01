@@ -1700,7 +1700,7 @@
 "DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "別の方法";
 
 /* Title for the 'receipts' section on the donation screen */
-"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "受領書";
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "領収書";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "サブスクリプションのよくある質問";
