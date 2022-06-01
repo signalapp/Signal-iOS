@@ -819,6 +819,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         presentAlert(alert)
     }
     
+    func showReactionList(_ viewItem: ConversationViewItem) {
+        guard let message = viewItem.interaction as? TSMessage, message.reactions.count > 0 else { return }
+        let reactionListSheet = ReactionListSheet(for: message.reactions as! [ReactMessage])
+        reactionListSheet.modalPresentationStyle = .overFullScreen
+        present(reactionListSheet, animated: true, completion: nil)
+    }
+    
     func react(_ viewItem: ConversationViewItem, with emoji: String) {
         UserDefaults.standard.addNewRecentlyUsedEmoji(emoji)
         react(viewItem, with: emoji, cancel: false)
@@ -856,6 +863,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     func showFullEmojiKeyboard(_ viewItem: ConversationViewItem) {
         // TODO: to be implemented
+        
     }
     
     func contextMenuDismissed() {

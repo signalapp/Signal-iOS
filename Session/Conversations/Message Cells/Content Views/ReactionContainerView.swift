@@ -21,7 +21,7 @@ final class ReactionContainerView : UIView {
     private var maxEmojisPerLine = isIPhone6OrSmaller ? 5 : 6
     
     var reactions: [(String, (Int, Bool))] = []
-    var reactionViews: [ReactionView] = []
+    var reactionViews: [ReactionButton] = []
     var expandButton: ExpandingReactionButton?
     var collapseButton: UIStackView = {
         let arrow = UIImageView(image: UIImage(named: "ic_chevron_up")?.resizedImage(to: CGSize(width: 15, height: 13))?.withRenderingMode(.alwaysTemplate))
@@ -93,7 +93,7 @@ final class ReactionContainerView : UIView {
         }
         
         for reaction in displayedReactions {
-            let reactionView = ReactionView(emoji: reaction.0, value: reaction.1)
+            let reactionView = ReactionButton(emoji: reaction.0, value: reaction.1.0, showBorder: reaction.1.1)
             stackView.addArrangedSubview(reactionView)
             reactionViews.append(reactionView)
         }

@@ -157,6 +157,7 @@
 		7B93D07127CF194000811CB6 /* MessageRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B93D06F27CF194000811CB6 /* MessageRequestResponse.swift */; };
 		7B93D07327CF19C800811CB6 /* MessageRequestsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B93D07227CF19C800811CB6 /* MessageRequestsMigration.swift */; };
 		7B93D07727CF1A8A00811CB6 /* MockDataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B93D07527CF1A8900811CB6 /* MockDataGenerator.swift */; };
+		7B9F71C928470667006DFE7B /* ReactionListSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F71C828470667006DFE7B /* ReactionListSheet.swift */; };
 		7BA68909272A27BE00EFC32F /* SessionCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA68908272A27BE00EFC32F /* SessionCall.swift */; };
 		7BA6890D27325CCC00EFC32F /* SessionCallManager+CXCallController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA6890C27325CCC00EFC32F /* SessionCallManager+CXCallController.swift */; };
 		7BA6890F27325CE300EFC32F /* SessionCallManager+CXProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA6890E27325CE300EFC32F /* SessionCallManager+CXProvider.swift */; };
@@ -1153,6 +1154,7 @@
 		7B93D06F27CF194000811CB6 /* MessageRequestResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRequestResponse.swift; sourceTree = "<group>"; };
 		7B93D07227CF19C800811CB6 /* MessageRequestsMigration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRequestsMigration.swift; sourceTree = "<group>"; };
 		7B93D07527CF1A8900811CB6 /* MockDataGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockDataGenerator.swift; sourceTree = "<group>"; };
+		7B9F71C828470667006DFE7B /* ReactionListSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionListSheet.swift; sourceTree = "<group>"; };
 		7BA68908272A27BE00EFC32F /* SessionCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCall.swift; sourceTree = "<group>"; };
 		7BA6890C27325CCC00EFC32F /* SessionCallManager+CXCallController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionCallManager+CXCallController.swift"; sourceTree = "<group>"; };
 		7BA6890E27325CE300EFC32F /* SessionCallManager+CXProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionCallManager+CXProvider.swift"; sourceTree = "<group>"; };
@@ -2278,6 +2280,7 @@
 				B848A4C4269EAAA200617031 /* UserDetailsSheet.swift */,
 				7B1581E3271FC59C00848B49 /* CallModal.swift */,
 				7BFFB33B27D02F5800BEA04E /* CallPermissionRequestModal.swift */,
+				7B9F71C828470667006DFE7B /* ReactionListSheet.swift */,
 			);
 			path = "Views & Modals";
 			sourceTree = "<group>";
@@ -4990,6 +4993,7 @@
 				34ABC0E421DD20C500ED9469 /* ConversationMessageMapping.swift in Sources */,
 				B85357C323A1BD1200AAF6CD /* SeedVC.swift in Sources */,
 				45B5360E206DD8BB00D61655 /* UIResponder+OWS.swift in Sources */,
+				7B9F71C928470667006DFE7B /* ReactionListSheet.swift in Sources */,
 				7B7037452834BCC0000DCF35 /* ReactionView.swift in Sources */,
 				B8D84ECF25E3108A005A043E /* ExpandingAttachmentsButton.swift in Sources */,
 				7B7CB190270FB2150079FF93 /* MiniCallView.swift in Sources */,

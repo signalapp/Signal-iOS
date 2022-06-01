@@ -1,18 +1,29 @@
 import UIKit
 
-final class ReactionView : UIView {
+final class ReactionButton : UIView {
     let emoji: String
     let number: Int
-    let hasCurrentUser: Bool
+    let showBorder: Bool
+    let largeSize: Bool
     
     // MARK: Settings
-    private static let height: CGFloat = 22
+    private var height: CGFloat {
+        return largeSize ? 32 : 22
+    }
+    private var fontSize: CGFloat {
+        return largeSize ? Values.mediumFontSize : Values.verySmallFontSize
+    }
+    
+    private var spacing: CGFloat {
+        return largeSize ? Values.mediumSpacing : Values.verySmallSpacing
+    }
     
     // MARK: Lifecycle
-    init(emoji: String, value: (Int, Bool)) {
+    init(emoji: String, value: Int, showBorder: Bool = false, largeSize: Bool = false) {
         self.emoji = emoji
-        self.number = value.0
-        self.hasCurrentUser = value.1
+        self.number = value
+        self.showBorder = showBorder
+        self.largeSize = largeSize
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
@@ -28,27 +39,27 @@ final class ReactionView : UIView {
     private func setUpViewHierarchy() {
         let emojiLabel = UILabel()
         emojiLabel.text = emoji
-        emojiLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
+        emojiLabel.font = .systemFont(ofSize: fontSize)
         
         let numberLabel = UILabel()
         numberLabel.text = self.number < 1000 ? "\(number)" : String(format: "%.1f", Float(number) / 1000) + "k"
-        numberLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
+        numberLabel.font = .systemFont(ofSize: fontSize)
         numberLabel.textColor = Colors.text
         
         let stackView = UIStackView(arrangedSubviews: [ emojiLabel, numberLabel ])
         stackView.axis = .horizontal
-        stackView.spacing = Values.verySmallSpacing
+        stackView.spacing = spacing
         stackView.alignment = .center
         stackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.smallSpacing, bottom: 0, right: Values.smallSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         addSubview(stackView)
         stackView.pin(to: self)
         
-        set(.height, to: ReactionView.height)
+        set(.height, to: self.height)
         backgroundColor = Colors.receivedMessageBackground
-        layer.cornerRadius = ReactionView.height / 2
+        layer.cornerRadius = self.height / 2
         
-        if hasCurrentUser {
+        if showBorder {
             layer.borderWidth = 1
             layer.borderColor = Colors.accent.cgColor
         }
