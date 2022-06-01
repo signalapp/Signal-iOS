@@ -244,8 +244,14 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
         return;
     }
 
+    // We may get multiple updates for the same change.
+    BOOL isSystemDarkThemeEnabled = self.isSystemDarkThemeEnabled;
+    if (self.isDarkThemeEnabledNumber.boolValue == isSystemDarkThemeEnabled) {
+        return;
+    }
+
     // The system theme has changed since the user was last in the app.
-    self.isDarkThemeEnabledNumber = @(self.isSystemDarkThemeEnabled);
+    self.isDarkThemeEnabledNumber = @(isSystemDarkThemeEnabled);
     [self themeDidChange];
 }
 
