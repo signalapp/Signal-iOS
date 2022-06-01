@@ -170,8 +170,8 @@ final class SeedVC: BaseVC {
             self.seedReminderView.subtitle = NSLocalizedString("view_seed_reminder_subtitle_3", comment: "")
         }, completion: nil)
         seedReminderView.setProgress(1, animated: true)
-        UserDefaults.standard[.hasViewedSeed] = true
-        NotificationCenter.default.post(name: .seedViewed, object: nil)
+        
+        GRDBStorage.shared.write { db in db[.hasViewedSeed] = true }
     }
     
     @objc private func copyMnemonic() {

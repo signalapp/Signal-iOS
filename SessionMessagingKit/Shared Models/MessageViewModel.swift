@@ -75,8 +75,8 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     public let state: RecipientState.State
     public let hasAtLeastOneReadReceipt: Bool
     public let mostRecentFailureText: String?
-    public let isTypingIndicator: Bool
     public let isSenderOpenGroupModerator: Bool
+    public let isTypingIndicator: Bool?
     public let profile: Profile?
     public let quote: Quote?
     public let quoteAttachment: Attachment?
@@ -169,7 +169,7 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
         isLast: Bool
     ) -> MessageViewModel {
         let cellType: CellType = {
-            guard !self.isTypingIndicator else { return .typingIndicator }
+            guard self.isTypingIndicator != true else { return .typingIndicator }
             guard self.variant != .standardIncomingDeleted else { return .textOnlyMessage }
             guard let attachment: Attachment = self.attachments?.first else { return .textOnlyMessage }
 
@@ -208,7 +208,7 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
             nickname: nil  // Folded into 'authorName' within the Query
         )
         let shouldShowDateOnThisModel: Bool = {
-            guard !self.isTypingIndicator else { return false }
+            guard self.isTypingIndicator != true else { return false }
             guard let prevModel: ViewModel = prevModel else { return true }
             
             return MessageViewModel.shouldShowDateBreak(
@@ -218,7 +218,7 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
         }()
         let shouldShowDateOnNextModel: Bool = {
             // Should be nothing after a typing indicator
-            guard !self.isTypingIndicator else { return false }
+            guard self.isTypingIndicator != true else { return false }
             guard let nextModel: ViewModel = nextModel else { return false }
 
             return MessageViewModel.shouldShowDateBreak(
@@ -404,18 +404,21 @@ public extension MessageViewModel {
 // MARK: - Convenience Initialization
 
 public extension MessageViewModel {
-    public static let genericId: Int64 = -2
-    public static let typingIndicatorId: Int64 = -2
+    static let genericId: Int64 = -2
+    static let typingIndicatorId: Int64 = -2
     
     // Note: This init method is only used system-created cells or empty states
-    init(isTypingIndicator: Bool = false) {
+    init(isTypingIndicator: Bool? = nil) {
         self.threadVariant = .contact
         self.threadIsTrusted = false
         self.threadHasDisappearingMessagesEnabled = false
         
         // Interaction Info
         
-        let targetId: Int64 = (isTypingIndicator ? MessageViewModel.typingIndicatorId : MessageViewModel.genericId)
+        let targetId: Int64 = (isTypingIndicator == true ?
+            MessageViewModel.typingIndicatorId :
+            MessageViewModel.genericId
+        )
         self.rowId = targetId
         self.id = targetId
         self.variant = .standardOutgoing
@@ -513,7 +516,7 @@ public extension MessageViewModel {
         return { additionalFilters, limitSQL -> AdaptedFetchRequest<SQLRequest<ViewModel>> in
             let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
             let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
-            let typingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias()
+            let recipientState: TypedTableAlias<RecipientState> = TypedTableAlias()
             let contact: TypedTableAlias<Contact> = TypedTableAlias()
             let disappearingMessagesConfig: TypedTableAlias<DisappearingMessagesConfiguration> = TypedTableAlias()
             let profile: TypedTableAlias<Profile> = TypedTableAlias()
@@ -522,7 +525,6 @@ public extension MessageViewModel {
             
             let interactionStateTableLiteral: SQL = SQL(stringLiteral: "interactionState")
             let interactionStateInteractionIdColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.interactionId.name)
-            let interactionStateStateColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.state.name)
             let interactionStateMostRecentFailureTextColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.mostRecentFailureText.name)
             let readReceiptTableLiteral: SQL = SQL(stringLiteral: "readReceipt")
             let readReceiptReadTimestampMsColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.readTimestampMs.name)
@@ -543,7 +545,7 @@ public extension MessageViewModel {
                 """
             }()
             let finalLimitSQL: SQL = (limitSQL ?? SQL(stringLiteral: ""))
-            let numColumnsBeforeLinkedRecords: Int = 17
+            let numColumnsBeforeLinkedRecords: Int = 16
             let request: SQLRequest<ViewModel> = """
                 SELECT
                     \(thread[.variant]) AS \(ViewModel.threadVariantKey),
@@ -563,11 +565,10 @@ public extension MessageViewModel {
                     \(interaction[.expiresInSeconds]),
             
                     -- Default to 'sending' assuming non-processed interaction when null
-                    IFNULL(\(interactionStateTableLiteral).\(interactionStateStateColumnLiteral), \(SQL("\(RecipientState.State.sending)"))) AS \(ViewModel.stateKey),
+                    IFNULL(MIN(\(recipientState[.state])), \(SQL("\(RecipientState.State.sending)"))) AS \(ViewModel.stateKey),
                     (\(readReceiptTableLiteral).\(readReceiptReadTimestampMsColumnLiteral) IS NOT NULL) AS \(ViewModel.hasAtLeastOneReadReceiptKey),
-                    \(interactionStateTableLiteral).\(interactionStateMostRecentFailureTextColumnLiteral) AS \(ViewModel.mostRecentFailureTextKey),
-                        
-                    (\(typingIndicator[.threadId]) IS NOT NULL) AS \(ViewModel.isTypingIndicatorKey),
+                    \(recipientState[.mostRecentFailureText]) AS \(ViewModel.mostRecentFailureTextKey),
+                    
                     false AS \(ViewModel.isSenderOpenGroupModeratorKey),
             
                     \(ViewModel.profileKey).*,
@@ -587,7 +588,6 @@ public extension MessageViewModel {
                 
                 FROM \(Interaction.self)
                 JOIN \(SessionThread.self) ON \(thread[.id]) = \(interaction[.threadId])
-                LEFT JOIN \(ThreadTypingIndicator.self) ON \(typingIndicator[.threadId]) = \(thread[.id])
                 LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(interaction[.threadId])
                 LEFT JOIN \(DisappearingMessagesConfiguration.self) ON \(disappearingMessagesConfig[.threadId]) = \(interaction[.threadId])
                 LEFT JOIN \(Profile.self) ON \(profile[.id]) = \(interaction[.authorId])
@@ -595,20 +595,20 @@ public extension MessageViewModel {
                 LEFT JOIN \(Attachment.self) AS \(ViewModel.quoteAttachmentKey) ON \(ViewModel.quoteAttachmentKey).\(attachmentIdColumnLiteral) = \(quote[.attachmentId])
                 LEFT JOIN \(LinkPreview.self) ON (
                     \(linkPreview[.url]) = \(interaction[.linkPreviewUrl]) AND
-                    \(Interaction.linkPreviewFilterLiteral)
+                    \(Interaction.linkPreviewFilterLiteral())
                 )
                 LEFT JOIN \(Attachment.self) AS \(ViewModel.linkPreviewAttachmentKey) ON \(ViewModel.linkPreviewAttachmentKey).\(attachmentIdColumnLiteral) = \(linkPreview[.attachmentId])
-                LEFT JOIN (
-                    \(RecipientState.selectInteractionState(
-                        tableLiteral: interactionStateTableLiteral,
-                        idColumnLiteral: interactionStateInteractionIdColumnLiteral
-                    ))
-                ) AS \(interactionStateTableLiteral) ON \(interactionStateTableLiteral).\(interactionStateInteractionIdColumnLiteral) = \(interaction[.id])
+                LEFT JOIN \(RecipientState.self) ON (
+                    -- Ignore 'skipped' states
+                    \(SQL("\(recipientState[.state]) != \(RecipientState.State.skipped)")) AND
+                    \(recipientState[.interactionId]) = \(interaction[.id])
+                )
                 LEFT JOIN \(RecipientState.self) AS \(readReceiptTableLiteral) ON (
                     \(readReceiptTableLiteral).\(readReceiptReadTimestampMsColumnLiteral) IS NOT NULL AND
                     \(interaction[.id]) = \(readReceiptTableLiteral).\(interactionStateInteractionIdColumnLiteral)
                 )
                 \(finalFilterSQL)
+                GROUP BY \(interaction[.id])
                 ORDER BY \(orderSQL)
                 \(finalLimitSQL)
             """

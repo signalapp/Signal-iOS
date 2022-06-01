@@ -51,5 +51,7 @@ enum _001_InitialSetupMigration: Migration {
             
             t.uniqueKey([.key, .hash])
         }
+        
+        GRDBStorage.shared.update(progress: 1, for: self, in: target) // In case this is the last migration
     }
 }

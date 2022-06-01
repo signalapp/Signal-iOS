@@ -75,6 +75,7 @@ public enum SMKLegacy {
     internal static let soundsGlobalNotificationKey = "kOWSSoundsStorageGlobalNotificationKey"
     
     internal static let userDefaultsHasHiddenMessageRequests = "hasHiddenMessageRequests"
+    internal static let userDefaultsHasViewedSeedKey = "hasViewedSeed"
     
     // MARK: - DatabaseMigration
     

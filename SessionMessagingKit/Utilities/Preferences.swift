@@ -44,6 +44,9 @@ public extension Setting.BoolKey {
     /// Controls whether the notification sound should play while the app is in the foreground
     static let playNotificationSoundInForeground: Setting.BoolKey = "playNotificationSoundInForeground"
     
+    /// A flag indicating whether the user has ever viewed their seed
+    static let hasViewedSeed: Setting.BoolKey = "hasViewedSeed"
+    
     /// A flag indicating whether the user has ever saved a thread
     static let hasSavedThread: Setting.BoolKey = "hasSavedThread"
     

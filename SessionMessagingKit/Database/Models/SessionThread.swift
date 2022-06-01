@@ -185,17 +185,6 @@ public extension SessionThread {
         return existingThread
     }
     
-    static func messageRequestThreads(_ db: Database) -> QueryInterfaceRequest<SessionThread> {
-        return SessionThread
-            .filter(Columns.shouldBeVisible == true)
-            .filter(Columns.variant == Variant.contact)
-            .filter(Columns.id != getUserHexEncodedPublicKey(db))
-            .joining(
-                optional: contact
-                    .filter(Contact.Columns.isApproved == false)
-            )
-    }
-    
     func isMessageRequest(_ db: Database) -> Bool {
         return (
             shouldBeVisible &&
@@ -209,23 +198,38 @@ public extension SessionThread {
 // MARK: - Convenience
 
 public extension SessionThread {
+    static func messageRequestsCountQuery(userPublicKey: String) -> SQLRequest<Int> {
+        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let contact: TypedTableAlias<Contact> = TypedTableAlias()
+        
+        return """
+            SELECT COUNT(\(thread[.id]))
+            FROM \(SessionThread.self)
+            LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
+            WHERE (
+                \(SessionThread.isMessageRequest(userPublicKey: userPublicKey))
+            )
+        """
+    }
+    
     static func unreadMessageRequestsCountQuery(userPublicKey: String) -> SQLRequest<Int> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
-        let unreadInteractionLiteral: SQL = SQL(stringLiteral: "unreadInteraction")
-        let interactionThreadIdColumnLiteral: SQL = SQL(stringLiteral: Interaction.Columns.threadId.name)
-        
         return """
             SELECT COUNT(\(thread[.id]))
             FROM \(SessionThread.self)
             JOIN (
-                SELECT \(interaction[.threadId])
+                SELECT
+                    \(interaction[.threadId]),
+                    MIN(\(interaction[.wasRead])) AS \(SQL(stringLiteral: "\(Interaction.Columns.wasRead.name)"))
                 FROM \(Interaction.self)
-                WHERE \(interaction[.wasRead]) = false
                 GROUP BY \(interaction[.threadId])
-            ) AS \(unreadInteractionLiteral) ON \(unreadInteractionLiteral).\(interactionThreadIdColumnLiteral) = \(thread[.id])
+            ) AS \(Interaction.self) ON (
+                \(interaction[.threadId]) = \(thread[.id]) AND
+                \(interaction[.wasRead]) = false
+            )
             LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
             WHERE (
                 \(SessionThread.isMessageRequest(userPublicKey: userPublicKey))
@@ -244,29 +248,10 @@ public extension SessionThread {
         return SQL(
             """
                 \(thread[.shouldBeVisible]) = true AND
-                    \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND
-                    \(SQL("\(thread[.id]) != \(userPublicKey)")) AND (
-                        /* Note: A '!= true' check doesn't work properly so we need to be explicit */
-                        \(contact[.isApproved]) IS NULL OR
-                        \(contact[.isApproved]) = false
-                    )
+                \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND
+                \(SQL("\(thread[.id]) != \(userPublicKey)")) AND
+                IFNULL(\(contact[.isApproved]), false) = false
             """
-        )
-    }
-    
-    /// This method can be used to filter a thread query to exclude messages requests
-    ///
-    /// **Note:** In order to use this filter you **MUST** have a `joining(required/optional:)` to the
-    /// `SessionThread.contact` association or it won't work
-    static func isNotMessageRequest(userPublicKey: String) -> SQLSpecificExpressible {
-        let contactAlias: TypedTableAlias<Contact> = TypedTableAlias()
-        
-        return (
-            SessionThread.Columns.shouldBeVisible == true && (
-                SessionThread.Columns.variant != SessionThread.Variant.contact ||
-                SessionThread.Columns.id == userPublicKey ||     // Note to self
-                contactAlias[.isApproved] == true
-            )
         )
     }
     

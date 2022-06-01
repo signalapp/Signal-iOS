@@ -71,9 +71,9 @@ final class SeedModal: Modal {
         stackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
         contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.largeSpacing)
         contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.largeSpacing)
+        
         // Mark seed as viewed
-        UserDefaults.standard[.hasViewedSeed] = true
-        NotificationCenter.default.post(name: .seedViewed, object: nil)
+        GRDBStorage.shared.write { db in db[.hasViewedSeed] = true }
     }
     
     // MARK: Interaction

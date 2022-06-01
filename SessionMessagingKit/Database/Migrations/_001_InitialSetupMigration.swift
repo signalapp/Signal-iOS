@@ -335,8 +335,10 @@ enum _001_InitialSetupMigration: Migration {
         try db.create(table: ThreadTypingIndicator.self) { t in
             t.column(.threadId, .text)
                 .primaryKey()
-                .references(SessionThread.self, onDelete: .cascade)      // Delete if thread deleted
+                .references(SessionThread.self, onDelete: .cascade)   // Delete if thread deleted
             t.column(.timestampMs, .integer).notNull()
         }
+        
+        GRDBStorage.shared.update(progress: 1, for: self, in: target) // In case this is the last migration
     }
 }

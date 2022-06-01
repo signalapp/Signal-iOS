@@ -22,20 +22,34 @@ public struct RecipientState: Codable, Equatable, FetchableRecord, PersistableRe
     }
     
     public enum State: Int, Codable, Hashable, DatabaseValueConvertible {
-        case failed
+        /// These cases **MUST** remain in this order (even though having `failed` as `0` would be more logical) as the order
+        /// is optimised for the desired "interactionState" grouping behaviour we want which makes the query to retrieve the interaction
+        /// state run ~16 times than the alternate approach which required a sub-query (check git history to see the old approach at the
+        /// bottom of this file if desired)
+        ///
+        /// The expected behaviour of the grouped "interactionState" that both the `SessionThreadViewModel` and
+        /// `MessageViewModel` should use is `IFNULL(MIN("recipientState"."state"), 'sending')` (joining on the
+        /// `interaction.id` and `state != 'skipped'`):
+        ///  - The 'skipped' state should be ignored entirely
+        ///  - If there is no state (ie. interaction recipient records not yet created) then the interaction state should be 'sending'
+        ///  - If there is a single 'sending' state then the interaction state should be 'sending'
+        ///  - If there is a single 'failed' state and no 'sending' state then the interaction state should be 'failed'
+        ///  - If there are neither 'sending' or 'failed' states then the interaction state should be 'sent'
         case sending
+        case failed
         case skipped
         case sent
         
         func message(hasAttachments: Bool, hasAtLeastOneReadReceipt: Bool) -> String {
             switch self {
-                case .failed: return "MESSAGE_STATUS_FAILED".localized()
                 case .sending:
                     guard hasAttachments else {
                         return "MESSAGE_STATUS_SENDING".localized()
                     }
                     
                     return "MESSAGE_STATUS_UPLOADING".localized()
+                
+                case .failed: return "MESSAGE_STATUS_FAILED".localized()
                     
                 case .sent:
                     guard hasAtLeastOneReadReceipt else {
@@ -115,30 +129,5 @@ public extension RecipientState {
             readTimestampMs: (readTimestampMs ?? self.readTimestampMs),
             mostRecentFailureText: (mostRecentFailureText ?? self.mostRecentFailureText)
         )
-    }
-}
-
-// MARK: - GRDB Queries
-
-public extension RecipientState {
-    static func selectInteractionState(tableLiteral: SQL, idColumnLiteral: SQL) -> SQL {
-        let recipientState: TypedTableAlias<RecipientState> = TypedTableAlias()
-        
-        return """
-            SELECT * FROM (
-                SELECT
-                    \(recipientState[.interactionId]),
-                    \(recipientState[.state]),
-                    \(recipientState[.mostRecentFailureText])
-                FROM \(RecipientState.self)
-                WHERE \(SQL("\(recipientState[.state]) != \(RecipientState.State.skipped)"))  -- Ignore 'skipped'
-                ORDER BY
-                    -- If there is a single 'sending' then should be 'sending', otherwise if there is a single
-                    -- 'failed' and there is no 'sending' then it should be 'failed'
-                    \(SQL("\(recipientState[.state]) = \(RecipientState.State.sending)")) DESC,
-                    \(SQL("\(recipientState[.state]) = \(RecipientState.State.failed)")) DESC
-            ) AS \(tableLiteral)
-            GROUP BY \(tableLiteral).\(idColumnLiteral)
-        """
     }
 }

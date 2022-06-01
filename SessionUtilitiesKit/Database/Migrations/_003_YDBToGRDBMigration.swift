@@ -112,5 +112,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 data: userX25519KeyPair.publicKey
             ).insert(db)
         }
+        
+        GRDBStorage.shared.update(progress: 1, for: self, in: target) // In case this is the last migration
     }
 }

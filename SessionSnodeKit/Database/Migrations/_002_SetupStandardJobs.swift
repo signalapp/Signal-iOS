@@ -20,5 +20,7 @@ enum _002_SetupStandardJobs: Migration {
                 shouldBlockFirstRunEachSession: true
             ).inserted(db)
         }
+        
+        GRDBStorage.shared.update(progress: 1, for: self, in: target) // In case this is the last migration
     }
 }

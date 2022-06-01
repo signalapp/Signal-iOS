@@ -34,6 +34,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         result.subtitle = NSLocalizedString("view_seed_reminder_subtitle_1", comment: "")
         result.setProgress(0.8, animated: false)
         result.delegate = self
+        result.isHidden = !self.viewModel.state.showViewedSeedBanner
         
         return result
     }()
@@ -131,13 +132,10 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         setUpNavBarSessionHeading()
         
         // Recovery phrase reminder
-        let hasViewedSeed = UserDefaults.standard[.hasViewedSeed]
-        if !hasViewedSeed {
-            view.addSubview(seedReminderView)
-            seedReminderView.pin(.leading, to: .leading, of: view)
-            seedReminderView.pin(.top, to: .top, of: view)
-            seedReminderView.pin(.trailing, to: .trailing, of: view)
-        }
+        view.addSubview(seedReminderView)
+        seedReminderView.pin(.leading, to: .leading, of: view)
+        seedReminderView.pin(.top, to: .top, of: view)
+        seedReminderView.pin(.trailing, to: .trailing, of: view)
         
         // Loading conversations label
         view.addSubview(loadingConversationsLabel)
@@ -149,9 +147,10 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         // Table view
         view.addSubview(tableView)
         tableView.pin(.leading, to: .leading, of: view)
-        if !hasViewedSeed {
+        if self.viewModel.state.showViewedSeedBanner {
             tableViewTopConstraint = tableView.pin(.top, to: .bottom, of: seedReminderView)
-        } else {
+        }
+        else {
             tableViewTopConstraint = tableView.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
         }
         tableView.pin(.trailing, to: .trailing, of: view)
@@ -186,11 +185,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
             selector: #selector(applicationDidResignActive(_:)),
             name: UIApplication.didEnterBackgroundNotification, object: nil
         )
-        
-        notificationCenter.addObserver(self, selector: #selector(handleProfileDidChangeNotification(_:)), name: .otherUsersProfileDidChange, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(handleLocalProfileDidChangeNotification(_:)), name: .localProfileDidChange, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(handleSeedViewedNotification(_:)), name: .seedViewed, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(handleBlockedContactsUpdatedNotification(_:)), name: .blockedContactsUpdated, object: nil)
         
         // Start polling if needed (i.e. if the user just created or restored their Session ID)
         if Identity.userExists(), let appDelegate: AppDelegate = UIApplication.shared.delegate as? AppDelegate {
@@ -235,21 +229,28 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     private func startObservingChanges() {
         // Start observing for data changes
         dataChangeObservable = GRDBStorage.shared.start(
-            viewModel.observableViewData,
+            viewModel.observableState,
+            // If we haven't done the initial load the trigger it immediately (blocking the main
+            // thread so we remain on the launch screen until it completes to be consistent with
+            // the old behaviour)
+            scheduling: (hasLoadedInitialData ?
+                .async(onQueue: .main) :
+                .immediate
+            ),
             onError: { _ in },
-            onChange: { [weak self] viewData in
+            onChange: { [weak self] state in
                 // The default scheduler emits changes on the main thread
-                self?.handleUpdates(viewData)
+                self?.handleUpdates(state)
             }
         )
     }
     
-    private func handleUpdates(_ updatedViewData: [ArraySection<Section, Item>]) {
+    private func handleUpdates(_ updatedState: HomeViewModel.State) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
         guard hasLoadedInitialData else {
             hasLoadedInitialData = true
-            UIView.performWithoutAnimation { handleUpdates(updatedViewData) }
+            UIView.performWithoutAnimation { handleUpdates(updatedState) }
             return
         }
         
@@ -258,48 +259,42 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         
         // Show the empty state if there is no data
         emptyStateView.isHidden = (
-            !updatedViewData.isEmpty &&
-            updatedViewData.contains(where: { !$0.elements.isEmpty })
+            !updatedState.sections.isEmpty &&
+            updatedState.sections.contains(where: { !$0.elements.isEmpty })
         )
+        
+        // Update the 'view seed' UI
+        if updatedState.showViewedSeedBanner != self.viewModel.state.showViewedSeedBanner {
+            tableViewTopConstraint.isActive = false
+            seedReminderView.isHidden = !updatedState.showViewedSeedBanner
+            
+            if updatedState.showViewedSeedBanner {
+                tableViewTopConstraint = tableView.pin(.top, to: .bottom, of: seedReminderView)
+            }
+            else {
+                tableViewTopConstraint = tableView.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
+            }
+        }
         
         // Reload the table content (animate changes after the first load)
         tableView.reload(
-            using: StagedChangeset(source: viewModel.viewData, target: updatedViewData),
+            using: StagedChangeset(source: viewModel.state.sections, target: updatedState.sections),
             deleteSectionsAnimation: .none,
             insertSectionsAnimation: .none,
             reloadSectionsAnimation: .none,
             deleteRowsAnimation: .bottom,
             insertRowsAnimation: .top,
             reloadRowsAnimation: .none,
-            interrupt: {
-                print("Interrupt change check: \($0.changeCount)")
-                return $0.changeCount > 100
-            }    // Prevent too many changes from causing performance issues
-        ) { [weak self] updatedData in
-            self?.viewModel.updateData(updatedData)
+            interrupt: { $0.changeCount > 100 }    // Prevent too many changes from causing performance issues
+        ) { [weak self] updatedSections in
+            guard let currentState: HomeViewModel.State = self?.viewModel.state else { return }
+            
+            self?.viewModel.updateState(currentState.with(sections: updatedSections))
         }
-    }
-    
-    @objc private func handleProfileDidChangeNotification(_ notification: Notification) {
-        DispatchQueue.main.async {
-            self.tableView.reloadData() // TODO: Just reload the affected cell
-        }
-    }
-    
-    @objc private func handleLocalProfileDidChangeNotification(_ notification: Notification) {
-        DispatchQueue.main.async {
-            self.updateNavBarButtons()
-        }
-    }
-    
-    @objc private func handleSeedViewedNotification(_ notification: Notification) {
-        tableViewTopConstraint.isActive = false
-        tableViewTopConstraint = tableView.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
-        seedReminderView.removeFromSuperview()
-    }
-
-    @objc private func handleBlockedContactsUpdatedNotification(_ notification: Notification) {
-        self.tableView.reloadData() // TODO: Just reload the affected cell
+        
+        self.viewModel.updateState(
+            self.viewModel.state.with(showViewedSeedBanner: updatedState.showViewedSeedBanner)
+        )
     }
     
     private func updateNavBarButtons() {
@@ -358,15 +353,15 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     // MARK: - UITableViewDataSource
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.viewData.count
+        return viewModel.state.sections.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.viewData[section].elements.count
+        return viewModel.state.sections[section].elements.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let section: ArraySection<Section, Item> = viewModel.viewData[indexPath.section]
+        let section: ArraySection<Section, Item> = viewModel.state.sections[indexPath.section]
         
         switch section.model {
             case .messageRequests:
@@ -386,7 +381,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let section: ArraySection<Section, Item> = viewModel.viewData[indexPath.section]
+        let section: ArraySection<Section, Item> = viewModel.state.sections[indexPath.section]
         
         switch section.model {
             case .messageRequests:
@@ -404,11 +399,11 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let section: ArraySection<Section, Item> = viewModel.viewData[indexPath.section]
+        let section: ArraySection<Section, Item> = viewModel.state.sections[indexPath.section]
         
         switch section.model {
             case .messageRequests:
-                let hide = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_HIDE_TITLE", comment: "")) { [weak self] _, _ in
+                let hide = UITableViewRowAction(style: .destructive, title: "TXT_HIDE_TITLE".localized()) { [weak self] _, _ in
                     GRDBStorage.shared.write { db in db[.hasHiddenMessageRequests] = true }
 
                     // Animate the row removal

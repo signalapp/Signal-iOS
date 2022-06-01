@@ -152,7 +152,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread, isBackgroundPoll: Bool) {
         guard Date().timeIntervalSince1970 < (thread.mutedUntilTimestamp ?? 0) else { return }
         
-        let isMessageRequest = thread.isMessageRequest(db)
+        let userPublicKey: String = getUserHexEncodedPublicKey(db)
+        let isMessageRequest: Bool = thread.isMessageRequest(db)
         
         // If the thread is a message request and the user hasn't hidden message requests then we need
         // to check if this is the only message request thread (group threads can't be message requests
@@ -160,8 +161,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // notification regardless of how many message requests there are)
         if thread.variant == .contact {
             if isMessageRequest && !db[.hasHiddenMessageRequests] {
-                let numMessageRequestThreads: Int? = try? SessionThread.messageRequestThreads(db)
-                    .fetchCount(db)
+                let numMessageRequestThreads: Int? = (try? SessionThread
+                    .messageRequestsCountQuery(userPublicKey: userPublicKey)
+                    .fetchOne(db))
+                    .defaulting(to: 0)
                 
                 // Allow this to show a notification if there are no message requests (ie. this is the first one)
                 guard (numMessageRequestThreads ?? 0) == 0 else { return }
@@ -244,7 +247,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationBody = "MESSAGE_REQUESTS_NOTIFICATION".localized()
         }
 
-        assert((notificationBody ?? notificationTitle) != nil)
+        guard notificationBody != nil || notificationTitle != nil else {
+            SNLog("AppNotifications error: No notification content")
+            return
+        }
 
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".

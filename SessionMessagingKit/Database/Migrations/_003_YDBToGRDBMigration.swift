@@ -1295,9 +1295,14 @@ enum _003_YDBToGRDBMigration: Migration {
         db[.areLinkPreviewsEnabled] = (legacyPreferences[SMKLegacy.preferencesKeyAreLinkPreviewsEnabled] as? Bool == true)
         db[.hasHiddenMessageRequests] = CurrentAppContext().appUserDefaults()
             .bool(forKey: SMKLegacy.userDefaultsHasHiddenMessageRequests)
+        
+        // Note: The 'hasViewedSeed' was originally stored on standard user defaults
+        db[.hasViewedSeed] = UserDefaults.standard.bool(forKey: SMKLegacy.userDefaultsHasViewedSeedKey)
         db[.hasSavedThread] = (legacyPreferences[SMKLegacy.preferencesKeyHasSavedThreadKey] as? Bool == true)
         db[.hasSentAMessage] = (legacyPreferences[SMKLegacy.preferencesKeyHasSentAMessageKey] as? Bool == true)
         db[.isReadyForAppExtensions] = CurrentAppContext().appUserDefaults().bool(forKey: SMKLegacy.preferencesKeyIsReadyForAppExtensions)
+        
+        GRDBStorage.shared.update(progress: 1, for: self, in: target) // In case this is the last migration
     }
     
     // MARK: - Convenience

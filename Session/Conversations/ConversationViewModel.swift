@@ -180,9 +180,9 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     public var onInteractionChange: (([SectionModel]) -> ())?
     
     private func process(data: [MessageViewModel], for pageInfo: PagedData.PageInfo) -> [SectionModel] {
-        let typingIndicator: MessageViewModel? = data.first(where: { $0.isTypingIndicator })
+        let typingIndicator: MessageViewModel? = data.first(where: { $0.isTypingIndicator == true })
         let sortedData: [MessageViewModel] = data
-            .filter { !$0.isTypingIndicator }
+            .filter { $0.isTypingIndicator != true }
             .sorted { lhs, rhs -> Bool in lhs.timestampMs < rhs.timestampMs }
         
         // We load messages from newest to oldest so having a pageOffset larger than zero means

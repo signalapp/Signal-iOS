@@ -4,7 +4,6 @@ public enum SNUserDefaults {
     
     public enum Bool : Swift.String {
         case hasSyncedInitialConfiguration = "hasSyncedConfiguration"
-        case hasViewedSeed
         case hasSeenLinkPreviewSuggestion
         case isUsingFullAPNs
         case wasUnlinked

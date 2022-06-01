@@ -47,6 +47,7 @@ public struct SessionThreadViewModel: FetchableRecord, Decodable, Equatable, Has
     public static let interactionVariantKey: SQL = SQL(stringLiteral: CodingKeys.interactionVariant.stringValue)
     public static let interactionTimestampMsKey: SQL = SQL(stringLiteral: CodingKeys.interactionTimestampMs.stringValue)
     public static let interactionBodyKey: SQL = SQL(stringLiteral: CodingKeys.interactionBody.stringValue)
+    public static let interactionStateKey: SQL = SQL(stringLiteral: CodingKeys.interactionState.stringValue)
     public static let interactionIsOpenGroupInvitationKey: SQL = SQL(stringLiteral: CodingKeys.interactionIsOpenGroupInvitation.stringValue)
     public static let interactionAttachmentDescriptionInfoKey: SQL = SQL(stringLiteral: CodingKeys.interactionAttachmentDescriptionInfo.stringValue)
     public static let interactionAttachmentCountKey: SQL = SQL(stringLiteral: CodingKeys.interactionAttachmentCount.stringValue)
@@ -262,27 +263,17 @@ public extension SessionThreadViewModel {
         let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
         let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        let recipientState: TypedTableAlias<RecipientState> = TypedTableAlias()
         let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
+        let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
         let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
+        let profile: TypedTableAlias<Profile> = TypedTableAlias()
         
-        let unreadCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadUnreadCountString)_table")
-        let unreadMentionCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadUnreadMentionCountString)_table")
-        let interactionThreadIdLiteral: SQL = SQL(stringLiteral: Interaction.Columns.threadId.name)
         let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
-        let profileNicknameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.nickname.name)
-        let profileNameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.name.name)
-        let authorProfileLiteral: SQL = SQL(stringLiteral: "authorProfile")
-        let attachmentIdColumnLiteral: SQL = SQL(stringLiteral: Attachment.Columns.id.name)
-        let attachmentVariantColumnLiteral: SQL = SQL(stringLiteral: Attachment.Columns.variant.name)
-        let attachmentContentTypeColumnLiteral: SQL = SQL(stringLiteral: Attachment.Columns.contentType.name)
-        let attachmentSourceFilenameColumnLiteral: SQL = SQL(stringLiteral: Attachment.Columns.sourceFilename.name)
         let firstInteractionAttachmentLiteral: SQL = SQL(stringLiteral: "firstInteractionAttachment")
         let interactionAttachmentAttachmentIdColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.attachmentId.name)
         let interactionAttachmentInteractionIdColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.interactionId.name)
         let interactionAttachmentAlbumIndexColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.albumIndex.name)
-        let interactionStateTableLiteral: SQL = SQL(stringLiteral: "interactionState")
-        let interactionStateInteractionIdColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.interactionId.name)
-        let interactionStateStateColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.state.name)
         
         /// **Note:** The `numColumnsBeforeProfiles` value **MUST** match the number of fields before
         /// the `ViewModel.contactProfileKey` entry below otherwise the query will fail to
@@ -291,7 +282,6 @@ public extension SessionThreadViewModel {
         /// Explicitly set default values for the fields ignored for search results
         let numColumnsBeforeProfiles: Int = 11
         let numColumnsBetweenProfilesAndAttachmentInfo: Int = 10 // The attachment info columns will be combined
-        // TODO: Some testing around the subqueries in the joins to see if they impact performance ('Simulator1' device takes ~125ms to complete this query)
         
         let request: SQLRequest<ViewModel> = """
             SELECT
@@ -306,8 +296,8 @@ public extension SessionThreadViewModel {
                 \(thread[.onlyNotifyForMentions]) AS \(ViewModel.threadOnlyNotifyForMentionsKey),
         
                 (\(typingIndicator[.threadId]) IS NOT NULL) AS \(ViewModel.threadContactIsTypingKey),
-                \(unreadCountTableLiteral).\(ViewModel.threadUnreadCountKey) AS \(ViewModel.threadUnreadCountKey),
-                \(unreadMentionCountTableLiteral).\(ViewModel.threadUnreadMentionCountKey) AS \(ViewModel.threadUnreadMentionCountKey),
+                \(Interaction.self).\(ViewModel.threadUnreadCountKey),
+                \(Interaction.self).\(ViewModel.threadUnreadMentionCountKey),
             
                 \(ViewModel.contactProfileKey).*,
                 \(ViewModel.closedGroupProfileFrontKey).*,
@@ -318,59 +308,75 @@ public extension SessionThreadViewModel {
                 \(openGroup[.name]) AS \(ViewModel.openGroupNameKey),
                 \(openGroup[.imageData]) AS \(ViewModel.openGroupProfilePictureDataKey),
             
-                \(interaction[.id]) AS \(ViewModel.interactionIdKey),
-                \(interaction[.variant]) AS \(ViewModel.interactionVariantKey),
-                \(interaction[.timestampMs]) AS \(ViewModel.interactionTimestampMsKey),
-                \(interaction[.body]) AS \(ViewModel.interactionBodyKey),
+                \(Interaction.self).\(ViewModel.interactionIdKey),
+                \(Interaction.self).\(ViewModel.interactionVariantKey),
+                \(Interaction.self).\(ViewModel.interactionTimestampMsKey),
+                \(Interaction.self).\(ViewModel.interactionBodyKey),
+                
                 -- Default to 'sending' assuming non-processed interaction when null
-                IFNULL(\(interactionStateTableLiteral).\(interactionStateStateColumnLiteral), \(SQL("\(RecipientState.State.sending)"))) AS \(interactionStateTableLiteral),
+                IFNULL(MIN(\(recipientState[.state])), \(SQL("\(RecipientState.State.sending)"))) AS \(ViewModel.interactionStateKey),
                 (\(linkPreview[.url]) IS NOT NULL) AS \(ViewModel.interactionIsOpenGroupInvitationKey),
-                \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentIdColumnLiteral),
-                \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentVariantColumnLiteral),
-                \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentContentTypeColumnLiteral),
-                \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentSourceFilenameColumnLiteral),
+        
+                -- These 4 properties will be combined into 'Attachment.DescriptionInfo'
+                \(attachment[.id]),
+                \(attachment[.variant]),
+                \(attachment[.contentType]),
+                \(attachment[.sourceFilename]),
                 COUNT(\(interactionAttachment[.interactionId])) AS \(ViewModel.interactionAttachmentCountKey),
         
                 \(interaction[.authorId]),
-                IFNULL(\(authorProfileLiteral).\(profileNicknameColumnLiteral), \(authorProfileLiteral).\(profileNameColumnLiteral)) AS \(ViewModel.authorNameInternalKey),
+                IFNULL(\(profile[.nickname]), \(profile[.name])) AS \(ViewModel.authorNameInternalKey),
                 \(SQL("\(userPublicKey)")) AS \(ViewModel.currentUserPublicKeyKey)
             
             FROM \(SessionThread.self)
             LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
             LEFT JOIN \(ThreadTypingIndicator.self) ON \(typingIndicator[.threadId]) = \(thread[.id])
             LEFT JOIN (
-                SELECT *, MAX(\(interaction[.timestampMs]))
+                -- Fetch all interaction-specific data in a subquery to be more efficient
+                SELECT
+                    \(interaction[.id]) AS \(ViewModel.interactionIdKey),
+                    \(interaction[.threadId]),
+                    \(interaction[.variant]) AS \(ViewModel.interactionVariantKey),
+                    MAX(\(interaction[.timestampMs])) AS \(ViewModel.interactionTimestampMsKey),
+                    \(interaction[.body]) AS \(ViewModel.interactionBodyKey),
+                    \(interaction[.authorId]),
+                    \(interaction[.linkPreviewUrl]),
+        
+                    SUM(\(interaction[.wasRead]) = false) AS \(ViewModel.threadUnreadCountKey),
+                    SUM(\(interaction[.wasRead]) = false AND \(interaction[.hasMention]) = true) AS \(ViewModel.threadUnreadMentionCountKey)
+                
                 FROM \(Interaction.self)
                 GROUP BY \(interaction[.threadId])
             ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
-            LEFT JOIN (
-                SELECT
-                    \(interaction[.threadId]),
-                    COUNT(*) AS \(ViewModel.threadUnreadCountKey)
-                FROM \(Interaction.self)
-                WHERE \(interaction[.wasRead]) = false
-                GROUP BY \(interaction[.threadId])
-            ) AS \(unreadCountTableLiteral) ON \(unreadCountTableLiteral).\(interactionThreadIdLiteral) = \(thread[.id])
-            LEFT JOIN (
-                SELECT
-                    \(interaction[.threadId]),
-                    COUNT(*) AS \(ViewModel.threadUnreadMentionCountKey)
-                FROM \(Interaction.self)
-                WHERE (
-                    \(interaction[.wasRead]) = false AND
-                    \(interaction[.hasMention]) = true
-                )
-                GROUP BY \(interaction[.threadId])
-            ) AS \(unreadMentionCountTableLiteral) ON \(unreadMentionCountTableLiteral).\(interactionThreadIdLiteral) = \(thread[.id])
+            
+            LEFT JOIN \(RecipientState.self) ON (
+                -- Ignore 'skipped' states
+                \(SQL("\(recipientState[.state]) != \(RecipientState.State.skipped)")) AND
+                \(recipientState[.interactionId]) = \(Interaction.self).\(ViewModel.interactionIdKey)
+            )
+            LEFT JOIN \(LinkPreview.self) ON (
+                \(linkPreview[.url]) = \(interaction[.linkPreviewUrl]) AND
+                \(SQL("\(linkPreview[.variant]) = \(LinkPreview.Variant.openGroupInvitation)")) AND
+                \(Interaction.linkPreviewFilterLiteral(timestampColumn: ViewModel.interactionTimestampMsKey))
+            )
+            LEFT JOIN \(InteractionAttachment.self) AS \(firstInteractionAttachmentLiteral) ON (
+                \(firstInteractionAttachmentLiteral).\(interactionAttachmentAlbumIndexColumnLiteral) = 0 AND
+                \(firstInteractionAttachmentLiteral).\(interactionAttachmentInteractionIdColumnLiteral) = \(Interaction.self).\(ViewModel.interactionIdKey)
+            )
+            LEFT JOIN \(Attachment.self) ON \(attachment[.id]) = \(firstInteractionAttachmentLiteral).\(interactionAttachmentAttachmentIdColumnLiteral)
+            LEFT JOIN \(InteractionAttachment.self) ON \(interactionAttachment[.interactionId]) = \(Interaction.self).\(ViewModel.interactionIdKey)
+            LEFT JOIN \(Profile.self) ON \(profile[.id]) = \(interaction[.authorId])
+        
+            -- Thread naming & avatar content
         
             LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
+            LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(thread[.id])
             LEFT JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
             LEFT JOIN \(GroupMember.self) ON (
                 \(SQL("\(groupMember[.role]) = \(GroupMember.Role.admin)")) AND
                 \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
                 \(SQL("\(groupMember[.profileId]) = \(userPublicKey)"))
             )
-            LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(thread[.id])
         
             LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON (
                 \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
@@ -400,25 +406,6 @@ public extension SessionThreadViewModel {
                 \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) IS NULL AND
                 \(ViewModel.closedGroupProfileBackFallbackKey).\(profileIdColumnLiteral) = \(SQL("\(userPublicKey)"))
             )
-        
-            LEFT JOIN \(Profile.self) AS \(authorProfileLiteral) ON \(authorProfileLiteral).\(profileIdColumnLiteral) = \(interaction[.authorId])
-            LEFT JOIN \(LinkPreview.self) ON (
-                \(linkPreview[.url]) = \(interaction[.linkPreviewUrl]) AND
-                \(SQL("\(linkPreview[.variant]) = \(LinkPreview.Variant.openGroupInvitation)")) AND
-                \(Interaction.linkPreviewFilterLiteral)
-            )
-            LEFT JOIN \(InteractionAttachment.self) ON \(interactionAttachment[.interactionId]) = \(interaction[.id])
-            LEFT JOIN \(InteractionAttachment.self) AS \(firstInteractionAttachmentLiteral) ON (
-                \(firstInteractionAttachmentLiteral).\(interactionAttachmentAlbumIndexColumnLiteral) = 0 AND
-                \(firstInteractionAttachmentLiteral).\(interactionAttachmentInteractionIdColumnLiteral) = \(interaction[.id])
-            )
-            LEFT JOIN \(Attachment.self) AS \(ViewModel.interactionAttachmentDescriptionInfoKey) ON \(ViewModel.interactionAttachmentDescriptionInfoKey).\(attachmentIdColumnLiteral) = \(firstInteractionAttachmentLiteral).\(interactionAttachmentAttachmentIdColumnLiteral)
-            LEFT JOIN (
-                \(RecipientState.selectInteractionState(
-                    tableLiteral: interactionStateTableLiteral,
-                    idColumnLiteral: interactionStateInteractionIdColumnLiteral
-                ))
-            ) AS \(interactionStateTableLiteral) ON \(interactionStateTableLiteral).\(interactionStateInteractionIdColumnLiteral) = \(interaction[.id])
             
             WHERE (
                 \(filters)
@@ -452,7 +439,6 @@ public extension SessionThreadViewModel {
     static func homeQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
-        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
         return baseQuery(
             userPublicKey: userPublicKey,
@@ -465,11 +451,11 @@ public extension SessionThreadViewModel {
                 ) AND (
                     -- Only show the 'Note to Self' thread if it has an interaction
                     \(SQL("\(thread[.id]) != \(userPublicKey)")) OR
-                    \(interaction[.id]) IS NOT NULL
+                    \(Interaction.self).\(ViewModel.interactionIdKey) IS NOT NULL
                 )
             """,
             ordering: """
-                \(thread[.isPinned]) DESC, IFNULL(\(interaction[.timestampMs]), \(thread[.creationDateTimestamp])) DESC
+                \(thread[.isPinned]) DESC, IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), \(thread[.creationDateTimestamp])) DESC
             """
         )
     }
@@ -477,7 +463,6 @@ public extension SessionThreadViewModel {
     static func messageRequestsQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
-        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
         return baseQuery(
             userPublicKey: userPublicKey,
@@ -493,7 +478,7 @@ public extension SessionThreadViewModel {
                 )
             """,
             ordering: """
-                IFNULL(\(interaction[.timestampMs]), \(thread[.creationDateTimestamp])) DESC
+                IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), \(thread[.creationDateTimestamp])) DESC
             """
         )
     }
@@ -510,8 +495,6 @@ public extension SessionThreadViewModel {
         let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
-        let unreadCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadUnreadCountString)_table")
-        let unreadMentionCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadUnreadMentionCountString)_table")
         let firstUnreadInteractionTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadFirstUnreadInteractionIdString)_table")
         let interactionIdLiteral: SQL = SQL(stringLiteral: Interaction.Columns.id.name)
         let interactionThreadIdLiteral: SQL = SQL(stringLiteral: Interaction.Columns.threadId.name)
@@ -555,8 +538,8 @@ public extension SessionThreadViewModel {
                 \(thread[.onlyNotifyForMentions]) AS \(ViewModel.threadOnlyNotifyForMentionsKey),
                 \(thread[.messageDraft]) AS \(ViewModel.threadMessageDraftKey),
         
-                \(unreadCountTableLiteral).\(ViewModel.threadUnreadCountKey) AS \(ViewModel.threadUnreadCountKey),
-                \(unreadMentionCountTableLiteral).\(ViewModel.threadUnreadMentionCountKey) AS \(ViewModel.threadUnreadMentionCountKey),
+                \(Interaction.self).\(ViewModel.threadUnreadCountKey),
+                \(Interaction.self).\(ViewModel.threadUnreadMentionCountKey),
                 \(firstUnreadInteractionTableLiteral).\(interactionIdLiteral) AS \(ViewModel.threadFirstUnreadInteractionIdKey),
             
                 \(ViewModel.contactProfileKey).*,
@@ -569,12 +552,25 @@ public extension SessionThreadViewModel {
                 \(openGroup[.imageData]) AS \(ViewModel.openGroupProfilePictureDataKey),
                 \(openGroup[.userCount]) AS \(ViewModel.openGroupUserCountKey),
         
-                \(interaction[.id]) AS \(ViewModel.interactionIdKey),
+                \(Interaction.self).\(ViewModel.interactionIdKey),
             
                 \(SQL("\(userPublicKey)")) AS \(ViewModel.currentUserPublicKeyKey)
             
             FROM \(SessionThread.self)
             LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
+            LEFT JOIN (
+                -- Fetch all interaction-specific data in a subquery to be more efficient
+                SELECT
+                    \(interaction[.id]) AS \(ViewModel.interactionIdKey),
+                    \(interaction[.threadId]),
+                    MAX(\(interaction[.timestampMs])),
+                    
+                    SUM(\(interaction[.wasRead]) = false) AS \(ViewModel.threadUnreadCountKey),
+                    SUM(\(interaction[.wasRead]) = false AND \(interaction[.hasMention]) = true) AS \(ViewModel.threadUnreadMentionCountKey)
+                
+                FROM \(Interaction.self)
+                GROUP BY \(interaction[.threadId])
+            ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
             LEFT JOIN (
                 SELECT
                     \(interaction[.id]),
@@ -586,36 +582,9 @@ public extension SessionThreadViewModel {
                     \(SQL("\(interaction[.threadId]) = \(threadId)"))
                 )
             ) AS \(firstUnreadInteractionTableLiteral) ON \(firstUnreadInteractionTableLiteral).\(interactionThreadIdLiteral) = \(thread[.id])
-            LEFT JOIN (
-                SELECT *, MAX(\(interaction[.timestampMs]))
-                FROM \(Interaction.self)
-                GROUP BY \(interaction[.threadId])
-            ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
-            LEFT JOIN (
-                SELECT
-                    \(interaction[.threadId]),
-                    COUNT(*) AS \(ViewModel.threadUnreadCountKey)
-                FROM \(Interaction.self)
-                WHERE (
-                    \(interaction[.wasRead]) = false AND
-                    \(SQL("\(interaction[.threadId]) = \(threadId)"))
-                )
-                GROUP BY \(interaction[.threadId])
-            ) AS \(unreadCountTableLiteral) ON \(unreadCountTableLiteral).\(interactionThreadIdLiteral) = \(thread[.id])
-            LEFT JOIN (
-                SELECT
-                    \(interaction[.threadId]),
-                    COUNT(*) AS \(ViewModel.threadUnreadMentionCountKey)
-                FROM \(Interaction.self)
-                WHERE (
-                    \(interaction[.wasRead]) = false AND
-                    \(interaction[.hasMention]) = true AND
-                    \(SQL("\(interaction[.threadId]) = \(threadId)"))
-                )
-                GROUP BY \(interaction[.threadId])
-            ) AS \(unreadMentionCountTableLiteral) ON \(unreadMentionCountTableLiteral).\(interactionThreadIdLiteral) = \(thread[.id])
         
             LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
+            LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(thread[.id])
             LEFT JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
             LEFT JOIN \(GroupMember.self) ON (
                 \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
@@ -633,7 +602,6 @@ public extension SessionThreadViewModel {
                 )
                 GROUP BY \(groupMember[.groupId])
             ) AS \(closedGroupUserCountTableLiteral) ON \(SQL("\(closedGroupUserCountTableLiteral).\(groupMemberGroupIdColumnLiteral) = \(threadId)"))
-            LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(thread[.id])
             
             WHERE \(SQL("\(thread[.id]) = \(threadId)"))
             GROUP BY \(thread[.id])

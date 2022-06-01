@@ -27,12 +27,13 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     /// Whenever using this `linkPreview` association make sure to filter the result using
     /// `.filter(literal: Interaction.linkPreviewFilterLiteral)` to ensure the correct LinkPreview is returned
     public static let linkPreview = hasOne(LinkPreview.self, using: LinkPreview.interactionForeignKey)
-    public static let linkPreviewFilterLiteral: SQL = {
-        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+    public static func linkPreviewFilterLiteral(
+        timestampColumn: SQL = SQL(stringLiteral: Interaction.Columns.timestampMs.name)
+    ) -> SQL {
         let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
         
-        return "(ROUND((\(interaction[.timestampMs]) / 1000 / 100000) - 0.5) * 100000) = \(linkPreview[.timestamp])"
-    }()
+        return "(ROUND((\(Interaction.self).\(timestampColumn) / 1000 / 100000) - 0.5) * 100000) = \(linkPreview[.timestamp])"
+    }
     public static let recipientStates = hasMany(RecipientState.self, using: RecipientState.interactionForeignKey)
     
     public typealias Columns = CodingKeys
@@ -354,7 +355,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
                 .aliased(interactionAlias)
                 .joining(
                     required: Interaction.linkPreview
-                        .filter(literal: Interaction.linkPreviewFilterLiteral)
+                        .filter(literal: Interaction.linkPreviewFilterLiteral())
                 )
                 .fetchCount(db)
             let tmp = try linkPreview.fetchAll(db)

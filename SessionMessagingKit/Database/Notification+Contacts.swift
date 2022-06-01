@@ -4,15 +4,11 @@ import SessionUtilitiesKit
 
 public extension Notification.Name {
 
-    static let profileUpdated = Notification.Name("profileUpdated")
-    static let localProfileDidChange = Notification.Name("localProfileDidChange")
     static let otherUsersProfileDidChange = Notification.Name("otherUsersProfileDidChange")
 }
 
 @objc public extension NSNotification {
 
-    @objc static let profileUpdated = Notification.Name.profileUpdated.rawValue as NSString
-    @objc static let localProfileDidChange = Notification.Name.localProfileDidChange.rawValue as NSString
     @objc static let otherUsersProfileDidChange = Notification.Name.otherUsersProfileDidChange.rawValue as NSString
 }
 

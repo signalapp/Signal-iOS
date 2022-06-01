@@ -27,7 +27,7 @@ PODS:
   - DifferenceKit/Core (1.2.0)
   - DifferenceKit/UIKitExtension (1.2.0):
     - DifferenceKit/Core
-  - GRDB.swift/SQLCipher (5.24.0):
+  - GRDB.swift/SQLCipher (5.24.1):
     - SQLCipher (>= 3.4.0)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
@@ -203,7 +203,7 @@ SPEC CHECKSUMS:
   CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   DifferenceKit: 5659c430bb7fe45876fa32ce5cba5d6167f0c805
-  GRDB.swift: 7ecc8799aaa97cf1fbbcfa9d75821aa920cb713f
+  GRDB.swift: b3180ce2135fc06a453297889b746b1478c4d8c7
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
   OpenSSL-Universal: e7311447fd2419f57420c79524b641537387eff2

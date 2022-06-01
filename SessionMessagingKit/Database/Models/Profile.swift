@@ -90,14 +90,8 @@ public struct Profile: Codable, Identifiable, Equatable, Hashable, FetchableReco
                 }
             }
             
-            // Since it's possible this profile is currently being displayed, send notifications
-            // indicating that it has been updated
-            NotificationCenter.default.post(name: .profileUpdated, object: id)
-            
-            if id == getUserHexEncodedPublicKey(db) {
-                NotificationCenter.default.post(name: .localProfileDidChange, object: nil)
-            }
-            else {
+            // FIXME: Remove this once the OWSConversationSettingsViewController has been refactored and is observing DB changes
+            if id != getUserHexEncodedPublicKey(db) {
                 let userInfo = [ Notification.Key.profileRecipientId.rawValue: id ]
                 NotificationCenter.default.post(name: .otherUsersProfileDidChange, object: nil, userInfo: userInfo)
             }
