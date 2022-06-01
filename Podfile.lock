@@ -29,9 +29,6 @@ PODS:
     - DifferenceKit/Core
   - GRDB.swift/SQLCipher (5.24.1):
     - SQLCipher (>= 3.4.0)
-  - Mantle (2.1.0):
-    - Mantle/extobjc (= 2.1.0)
-  - Mantle/extobjc (2.1.0)
   - NVActivityIndicatorView (5.1.1):
     - NVActivityIndicatorView/Base (= 5.1.1)
   - NVActivityIndicatorView/Base (5.1.1)
@@ -133,7 +130,6 @@ DEPENDENCIES:
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit.git`)
   - DifferenceKit
   - GRDB.swift/SQLCipher
-  - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - NVActivityIndicatorView
   - PromiseKit
   - PureLayout (~> 3.1.8)
@@ -168,9 +164,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Curve25519Kit:
     :git: https://github.com/signalapp/Curve25519Kit.git
-  Mantle:
-    :branch: signal-master
-    :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
     :branch: session-version
     :git: https://github.com/oxen-io/session-ios-core-kit
@@ -184,9 +177,6 @@ CHECKOUT OPTIONS:
   Curve25519Kit:
     :commit: 4fc1c10e98fff2534b5379a9bb587430fdb8e577
     :git: https://github.com/signalapp/Curve25519Kit.git
-  Mantle:
-    :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
-    :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
     :commit: 4590c2737a2b5dc0ef4ace9f9019b581caccc1de
     :git: https://github.com/oxen-io/session-ios-core-kit
@@ -204,7 +194,6 @@ SPEC CHECKSUMS:
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   DifferenceKit: 5659c430bb7fe45876fa32ce5cba5d6167f0c805
   GRDB.swift: b3180ce2135fc06a453297889b746b1478c4d8c7
-  Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
   OpenSSL-Universal: e7311447fd2419f57420c79524b641537387eff2
   PromiseKit: 3b2b6995e51a954c46dbc550ce3da44fbfb563c5
@@ -219,6 +208,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 9715c163fab54d487be0c32357d6d1729aa96a7b
+PODFILE CHECKSUM: 05dc0000aee6d863406fc684884935594fcf14fa
 
 COCOAPODS: 1.11.2

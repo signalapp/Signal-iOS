@@ -6,6 +6,7 @@ import Sodium
 import Curve25519Kit
 import SignalCoreKit
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 extension MessageReceiver {
 

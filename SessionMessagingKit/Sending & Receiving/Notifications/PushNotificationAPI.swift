@@ -3,6 +3,7 @@
 import GRDB
 import PromiseKit
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 @objc(LKPushNotificationAPI)
 public final class PushNotificationAPI : NSObject {

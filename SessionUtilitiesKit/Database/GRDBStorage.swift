@@ -257,7 +257,7 @@ public final class GRDBStorage {
     
     // MARK: - File Management
     
-    private static func resetAllStorage() {
+    public static func resetAllStorage() {
         NotificationCenter.default.post(name: .resetStorage, object: nil)
         
         // This might be redundant but in the spirit of thoroughness...

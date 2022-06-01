@@ -125,8 +125,6 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                 completion()
             }
         )
-
-        NotificationCenter.default.addObserver(self, selector: #selector(storageIsReady), name: .StorageIsReady, object: nil)
     }
     
     @objc
@@ -146,13 +144,6 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
     }
 
     @objc
-    private func storageIsReady() {
-        AssertIsOnMainThread()
-
-        checkIsAppReady()
-    }
-
-    @objc
     private func checkIsAppReady() {
         AssertIsOnMainThread()
 
@@ -160,7 +151,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         guard !AppReadiness.isAppReady() else { return }
 
         // App isn't ready until storage is ready AND all version migrations are complete.
-        guard OWSStorage.isStorageReady() && areVersionMigrationsComplete else { return }
+        guard GRDBStorage.shared.isValid && areVersionMigrationsComplete else { return }
 
         SignalUtilitiesKit.Configuration.performMainSetup()
 

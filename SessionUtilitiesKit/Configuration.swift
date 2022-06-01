@@ -1,13 +1,14 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 
 @objc
 public final class SNUtilitiesKitConfiguration : NSObject {
-    @objc public let owsPrimaryStorage: OWSPrimaryStorageProtocol
     public let maxFileSize: UInt
 
     @objc public static var shared: SNUtilitiesKitConfiguration!
 
-    fileprivate init(owsPrimaryStorage: OWSPrimaryStorageProtocol, maxFileSize: UInt) {
-        self.owsPrimaryStorage = owsPrimaryStorage
+    fileprivate init(maxFileSize: UInt) {
         self.maxFileSize = maxFileSize
     }
 }
@@ -29,7 +30,7 @@ public enum SNUtilitiesKit { // Just to make the external API nice
         )
     }
 
-    public static func configure(owsPrimaryStorage: OWSPrimaryStorageProtocol, maxFileSize: UInt) {
-        SNUtilitiesKitConfiguration.shared = SNUtilitiesKitConfiguration(owsPrimaryStorage: owsPrimaryStorage, maxFileSize: maxFileSize)
+    public static func configure(maxFileSize: UInt) {
+        SNUtilitiesKitConfiguration.shared = SNUtilitiesKitConfiguration(maxFileSize: maxFileSize)
     }
 }

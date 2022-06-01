@@ -4,6 +4,7 @@ import Foundation
 import GRDB
 import PromiseKit
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 @objc(LKClosedGroupPoller)
 public final class ClosedGroupPoller: NSObject {

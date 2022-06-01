@@ -25,13 +25,10 @@ public enum AppSetup {
             // All of these "singletons" should have any dependencies used in their
             // initializers injected.
             OWSBackgroundTaskManager.shared().observeNotifications()
-
-            let primaryStorage: OWSPrimaryStorage = OWSPrimaryStorage(storage: ())
-            OWSPrimaryStorage.protectFiles()
-
+            
             // AFNetworking (via CFNetworking) spools it's attachments to NSTemporaryDirectory().
-            // If you receive a media message while the device is locked, the download will fail if the temporary directory
-            // is NSFileProtectionComplete
+            // If you receive a media message while the device is locked, the download will fail if
+            // the temporary directory is NSFileProtectionComplete
             let success: Bool = OWSFileSystem.protectFileOrFolder(
                 atPath: NSTemporaryDirectory(),
                 fileProtectionType: .completeUntilFirstUserAuthentication
@@ -39,10 +36,8 @@ public enum AppSetup {
             assert(success)
 
             Environment.shared = Environment(
-                primaryStorage: primaryStorage,
                 reachabilityManager: SSKReachabilityManagerImpl(),
                 audioSession: OWSAudioSession(),
-                preferences: OWSPreferences(),
                 proximityMonitoringManager: OWSProximityMonitoringManagerImpl(),
                 windowManager: OWSWindowManager(default: ())
             )

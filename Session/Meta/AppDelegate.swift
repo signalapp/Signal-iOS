@@ -236,14 +236,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private func verifyDBKeysAvailableBeforeBackgroundLaunch() {
         guard UIApplication.shared.applicationState == .background else { return }
         
-        // Ensure both databases are accessible (as long as we are supporting the YDB migration
-        // we should keep this check)
-        let databasePasswordAccessible: Bool = (
-            GRDBStorage.isDatabasePasswordAccessible &&                      // GRDB password access
-            OWSStorage.isDatabasePasswordAccessible()                        // YapDatabase password access
-        )
-        
-        guard !databasePasswordAccessible else { return }    // All good
+        guard !GRDBStorage.isDatabasePasswordAccessible else { return }    // All good
         
         Logger.info("Exiting because we are in the background and the database password is not accessible.")
         

@@ -1,17 +1,6 @@
 import Foundation
 import SessionUtilitiesKit
 
-@objc
-public final class SNMessagingKitConfiguration : NSObject {
-    public let storage: SessionMessagingKitStorageProtocol
-
-    @objc public static var shared: SNMessagingKitConfiguration!
-
-    fileprivate init(storage: SessionMessagingKitStorageProtocol) {
-        self.storage = storage
-    }
-}
-
 public enum SNMessagingKit { // Just to make the external API nice
     public static func migrations() -> TargetMigrations {
         return TargetMigrations(
@@ -28,7 +17,7 @@ public enum SNMessagingKit { // Just to make the external API nice
         )
     }
     
-    public static func configure(storage: SessionMessagingKitStorageProtocol) {
+    public static func configure() {
         // Configure the job executors
         JobRunner.add(executor: DisappearingMessagesJob.self, for: .disappearingMessages)
         JobRunner.add(executor: FailedMessageSendsJob.self, for: .failedMessageSends)
@@ -42,7 +31,5 @@ public enum SNMessagingKit { // Just to make the external API nice
         JobRunner.add(executor: SendReadReceiptsJob.self, for: .sendReadReceipts)
         JobRunner.add(executor: AttachmentDownloadJob.self, for: .attachmentDownload)
         JobRunner.add(executor: AttachmentUploadJob.self, for: .attachmentUpload)
-        
-        SNMessagingKitConfiguration.shared = SNMessagingKitConfiguration(storage: storage)
     }
 }

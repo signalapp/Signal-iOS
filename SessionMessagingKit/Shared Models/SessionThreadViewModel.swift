@@ -3,6 +3,7 @@
 import Foundation
 import GRDB
 import DifferenceKit
+import SessionUtilitiesKit
 
 fileprivate typealias ViewModel = SessionThreadViewModel
 

@@ -21,7 +21,6 @@ abstract_target 'GlobalDependencies' do
     pod 'PureLayout', '~> 3.1.8'
     pod 'NVActivityIndicatorView'
     pod 'YYImage', git: 'https://github.com/signalapp/YYImage'
-    pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master'
     pod 'ZXingObjC'
     pod 'DifferenceKit'
   end
@@ -38,7 +37,6 @@ abstract_target 'GlobalDependencies' do
     abstract_target 'ExtendedDependencies' do
       pod 'AFNetworking'
       pod 'PureLayout', '~> 3.1.8'
-      pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master'
       
       target 'SessionShareExtension' do
         pod 'NVActivityIndicatorView'

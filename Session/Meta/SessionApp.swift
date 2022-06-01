@@ -57,9 +57,8 @@ public struct SessionApp {
         Logger.error("")
         DDLog.flushLog()
 
-        OWSStorage.resetAllStorage()
+        GRDBStorage.resetAllStorage()
         ProfileManager.resetProfileStorage()
-        Environment.shared.preferences.clear()
         AppEnvironment.shared.notificationPresenter.clearAllNotifications()
 
         onReset?()

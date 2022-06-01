@@ -56,13 +56,6 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         )
 
         // We don't need to use "screen protection" in the SAE.
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(storageIsReady),
-            name: .StorageIsReady,
-            object: nil
-        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applicationDidEnterBackground),
@@ -90,21 +83,12 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     }
 
     @objc
-    func storageIsReady() {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        checkIsAppReady()
-    }
-
-    @objc
     func checkIsAppReady() {
         AssertIsOnMainThread()
 
         // App isn't ready until storage is ready AND all version migrations are complete.
         guard areVersionMigrationsComplete else { return }
-        guard OWSStorage.isStorageReady() else { return }
+        guard GRDBStorage.shared.isValid else { return }
         guard !AppReadiness.isAppReady() else {
             // Only mark the app as ready once.
             return

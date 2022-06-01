@@ -2,6 +2,7 @@
 
 import Foundation
 import GRDB
+import YapDatabase
 
 enum _003_YDBToGRDBMigration: Migration {
     static let target: TargetMigrations.Identifier = .utilitiesKit

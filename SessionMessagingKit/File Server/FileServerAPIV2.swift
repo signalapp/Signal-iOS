@@ -1,5 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 import PromiseKit
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 @objc(SNFileServerAPIV2)
 public final class FileServerAPIV2 : NSObject {

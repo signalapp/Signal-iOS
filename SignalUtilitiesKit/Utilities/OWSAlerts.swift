@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SessionUtilitiesKit
 
 @objc public class OWSAlerts: NSObject {
 
@@ -92,33 +93,5 @@ import Foundation
         }
         action.accessibilityIdentifier = "OWSAlerts.\("cancel")"
         return action
-    }
-
-    @objc
-    public class func showIOSUpgradeNagIfNecessary() {
-        // Our min SDK is iOS9, so this will only show for iOS9 users
-        if #available(iOS 10.0, *) {
-            return
-        }
-
-        // Don't show the nag to users who have just launched
-        // the app for the first time.
-        guard AppVersion.sharedInstance().lastAppVersion != nil else {
-            return
-        }
-
-        if let iOSUpgradeNagDate = Environment.shared.preferences.iOSUpgradeNagDate() {
-            let kNagFrequencySeconds = 14 * kDayInterval
-            guard fabs(iOSUpgradeNagDate.timeIntervalSinceNow) > kNagFrequencySeconds else {
-                return
-            }
-        }
-
-        Environment.shared.preferences.setIOSUpgradeNagDate(Date())
-
-        OWSAlerts.showAlert(title: NSLocalizedString("UPGRADE_IOS_ALERT_TITLE",
-                                                        comment: "Title for the alert indicating that user should upgrade iOS."),
-                            message: NSLocalizedString("UPGRADE_IOS_ALERT_MESSAGE",
-                                                      comment: "Message for the alert indicating that user should upgrade iOS."))
     }
 }

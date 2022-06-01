@@ -2,6 +2,7 @@
 
 import Foundation
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 public extension SNProtoEnvelope {
     static func from(_ message: SnodeReceivedMessage) -> SNProtoEnvelope? {

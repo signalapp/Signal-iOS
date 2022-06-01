@@ -118,12 +118,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         SwiftSingletons.register(self)
     }
 
-    // MARK: - Dependencies
-
-    var preferences: OWSPreferences {
-        return Environment.shared.preferences
-    }
-
     // MARK: -
 
     @objc
@@ -378,10 +372,6 @@ class NotificationActionHandler {
 
     var notificationPresenter: NotificationPresenter {
         return AppEnvironment.shared.notificationPresenter
-    }
-
-    var dbConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadWriteConnection
     }
 
     // MARK: -

@@ -5,6 +5,7 @@ import GRDB
 import PromiseKit
 import Sodium
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 public final class Poller {
     private var isPolling: Atomic<Bool> = Atomic(false)

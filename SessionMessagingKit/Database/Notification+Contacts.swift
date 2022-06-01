@@ -1,7 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import SessionUtilitiesKit
-
+// FIXME: Remove these extensions once the OWSConversationSettingsViewModel is refactored to swift and uses proper database observation
 public extension Notification.Name {
 
     static let otherUsersProfileDidChange = Notification.Name("otherUsersProfileDidChange")

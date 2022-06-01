@@ -3,6 +3,7 @@
 import Foundation
 import AVFoundation
 import SignalCoreKit
+import SessionUtilitiesKit
 
 @objc(OWSAudioActivity)
 public class AudioActivity: NSObject {

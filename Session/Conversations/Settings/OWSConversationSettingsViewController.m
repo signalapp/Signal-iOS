@@ -11,7 +11,6 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
-#import <SessionMessagingKit/OWSPrimaryStorage.h>
 
 @import ContactsUI;
 @import PromiseKit;
@@ -27,8 +26,6 @@ CGFloat kIconViewLength = 24;
 @property (nonatomic) BOOL isNoteToSelf;
 @property (nonatomic) BOOL isClosedGroup;
 @property (nonatomic) BOOL isOpenGroup;
-@property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
-@property (nonatomic, readonly) YapDatabaseConnection *editingDatabaseConnection;
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 
 @property (nonatomic) BOOL originalIsDisappearingMessagesEnabled;
@@ -104,11 +101,6 @@ CGFloat kIconViewLength = 24;
                                              selector:@selector(otherUsersProfileDidChange:)
                                                  name:NSNotification.otherUsersProfileDidChange
                                                object:nil];
-}
-
-- (YapDatabaseConnection *)editingDatabaseConnection
-{
-    return [OWSPrimaryStorage sharedManager].dbReadWriteConnection;
 }
 
 - (void)configureWithThreadId:(NSString *)threadId threadName:(nullable NSString *)threadName isClosedGroup:(BOOL)isClosedGroup isOpenGroup:(BOOL)isOpenGroup isNoteToSelf:(BOOL)isNoteToSelf {

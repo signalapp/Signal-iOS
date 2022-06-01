@@ -2,6 +2,7 @@
 
 import Foundation
 import SignalCoreKit
+import SessionUtilitiesKit
 
 @objc
 public protocol OWSProximityMonitoringManager: AnyObject {

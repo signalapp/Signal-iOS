@@ -3,6 +3,7 @@
 import Foundation
 import AVKit
 import GRDB
+import YapDatabase
 import Curve25519Kit
 import SessionUtilitiesKit
 import SessionSnodeKit
@@ -278,38 +279,49 @@ enum _003_YDBToGRDBMigration: Migration {
             
             // Note: The 'int(forKey:inCollection:)' defaults to `0` which is an incorrect value
             // for the notification sound so catch it and default
-            let globalNotificationSoundValue: Int32 = transaction.int(
-                forKey: SMKLegacy.soundsGlobalNotificationKey,
-                inCollection: SMKLegacy.soundsStorageNotificationCollection
-            )
-            legacyPreferences[SMKLegacy.soundsGlobalNotificationKey] = (globalNotificationSoundValue > 0 ?
-                Int(globalNotificationSoundValue) :
-                Preferences.Sound.defaultNotificationSound.rawValue
-            )
+            legacyPreferences[SMKLegacy.soundsGlobalNotificationKey] = (transaction
+                .object(
+                    forKey: SMKLegacy.soundsGlobalNotificationKey,
+                    inCollection: SMKLegacy.soundsStorageNotificationCollection
+                )
+                .asType(NSNumber.self)?
+                .intValue)
+                .defaulting(to: Preferences.Sound.defaultNotificationSound.rawValue)
             
-            legacyPreferences[SMKLegacy.readReceiptManagerAreReadReceiptsEnabled] = transaction.bool(
-                forKey: SMKLegacy.readReceiptManagerAreReadReceiptsEnabled,
-                inCollection: SMKLegacy.readReceiptManagerCollection,
-                defaultValue: false
-            )
+            legacyPreferences[SMKLegacy.readReceiptManagerAreReadReceiptsEnabled] = (transaction
+                .object(
+                    forKey: SMKLegacy.readReceiptManagerAreReadReceiptsEnabled,
+                    inCollection: SMKLegacy.readReceiptManagerCollection
+                )
+                .asType(NSNumber.self)?
+                .boolValue)
+                .defaulting(to: false)
             
-            legacyPreferences[SMKLegacy.typingIndicatorsEnabledKey] = transaction.bool(
-                forKey: SMKLegacy.typingIndicatorsEnabledKey,
-                inCollection: SMKLegacy.typingIndicatorsCollection,
-                defaultValue: false
-            )
+            legacyPreferences[SMKLegacy.typingIndicatorsEnabledKey] = (transaction
+                .object(
+                    forKey: SMKLegacy.typingIndicatorsEnabledKey,
+                    inCollection: SMKLegacy.typingIndicatorsCollection
+                )
+                .asType(NSNumber.self)?
+                .boolValue)
+                .defaulting(to: false)
             
-            legacyPreferences[SMKLegacy.screenLockIsScreenLockEnabledKey] = transaction.bool(
-                forKey: SMKLegacy.screenLockIsScreenLockEnabledKey,
-                inCollection: SMKLegacy.screenLockCollection,
-                defaultValue: false
-            )
+            legacyPreferences[SMKLegacy.screenLockIsScreenLockEnabledKey] = (transaction
+                .object(
+                    forKey: SMKLegacy.screenLockIsScreenLockEnabledKey,
+                    inCollection: SMKLegacy.screenLockCollection
+                )
+                .asType(NSNumber.self)?
+                .boolValue)
+                .defaulting(to: false)
             
-            legacyPreferences[SMKLegacy.screenLockScreenLockTimeoutSecondsKey] = transaction.double(
-                forKey: SMKLegacy.screenLockScreenLockTimeoutSecondsKey,
-                inCollection: SMKLegacy.screenLockCollection,
-                defaultValue: (15 * 60)
-            )
+            legacyPreferences[SMKLegacy.screenLockScreenLockTimeoutSecondsKey] = (transaction
+                .object(
+                    forKey: SMKLegacy.screenLockScreenLockTimeoutSecondsKey,
+                    inCollection: SMKLegacy.screenLockCollection)
+                .asType(NSNumber.self)?
+                .doubleValue)
+                .defaulting(to: (15 * 60))
             GRDBStorage.shared.update(progress: 0.23, for: self, in: target)
         }
         

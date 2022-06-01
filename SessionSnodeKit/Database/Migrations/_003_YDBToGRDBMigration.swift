@@ -2,6 +2,7 @@
 
 import Foundation
 import GRDB
+import YapDatabase
 import SessionUtilitiesKit
 
 enum _003_YDBToGRDBMigration: Migration {
