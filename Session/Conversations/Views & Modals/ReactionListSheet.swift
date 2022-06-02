@@ -214,6 +214,15 @@ extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
         cell.update()
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let cell = tableView.cellForRow(at: indexPath) as? UserCell else { return }
+        let publicKey = reactionMap.value(forKey: selectedReaction!)![indexPath.row].sender!
+        if publicKey == getUserHexEncodedPublicKey() {
+            // TODO: cancel emoji react
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
 }
 
 // MARK: Cell
