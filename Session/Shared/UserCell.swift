@@ -4,12 +4,14 @@ final class UserCell : UITableViewCell {
     var accessory = Accessory.none
     var publicKey = ""
     var isZombie = false
+    var normalFont = false
 
     // MARK: Accessory
     enum Accessory {
         case none
         case lock
         case tick(isSelected: Bool)
+        case x
     }
 
     // MARK: Components
@@ -83,6 +85,7 @@ final class UserCell : UITableViewCell {
         profilePictureView.publicKey = publicKey
         profilePictureView.update()
         displayNameLabel.text = Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
+        if normalFont { displayNameLabel.font = .systemFont(ofSize: Values.mediumFontSize) }
         
         switch accessory {
             case .none: accessoryImageView.isHidden = true
@@ -96,6 +99,11 @@ final class UserCell : UITableViewCell {
                 let icon: UIImage = (isSelected ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle"))
                 accessoryImageView.isHidden = false
                 accessoryImageView.image = icon.withRenderingMode(.alwaysTemplate)
+                accessoryImageView.tintColor = Colors.text
+            case .x:
+                accessoryImageView.isHidden = false
+                accessoryImageView.image = #imageLiteral(resourceName: "X").withRenderingMode(.alwaysTemplate)
+                accessoryImageView.contentMode = .center
                 accessoryImageView.tintColor = Colors.text
         }
         

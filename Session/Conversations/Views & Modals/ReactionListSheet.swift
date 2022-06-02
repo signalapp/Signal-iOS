@@ -1,5 +1,5 @@
 
-final class ReactionListSheet : BaseVC, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+final class ReactionListSheet : BaseVC {
     private let reactions: [ReactMessage]
     private var reactionMap: OrderedDictionary<String, [ReactMessage]> = OrderedDictionary()
     var selectedReaction: String?
@@ -39,6 +39,19 @@ final class ReactionListSheet : BaseVC, UICollectionViewDataSource, UICollection
         let result = UILabel()
         result.font = .systemFont(ofSize: Values.mediumFontSize)
         result.textColor = Colors.grey.withAlphaComponent(0.8)
+        result.set(.height, to: 32)
+        return result
+    }()
+    
+    private lazy var userListView: UITableView = {
+        let result = UITableView()
+        result.dataSource = self
+        result.delegate = self
+        result.register(UserCell.self, forCellReuseIdentifier: "UserCell")
+        result.backgroundColor = .clear
+        result.showsVerticalScrollIndicator = false
+        result.layer.borderWidth = 0.5
+        result.layer.borderColor = Colors.border.withAlphaComponent(0.5).cgColor
         return result
     }()
     
@@ -101,7 +114,10 @@ final class ReactionListSheet : BaseVC, UICollectionViewDataSource, UICollection
         contentView.addSubview(detailInfoLabel)
         detailInfoLabel.pin(.top, to: .bottom, of: lineView, withInset: Values.smallSpacing)
         detailInfoLabel.pin(.leading, to: .leading, of: contentView, withInset: Values.mediumSpacing)
-        
+        // Reactor list
+        contentView.addSubview(userListView)
+        userListView.pin([ UIView.HorizontalEdge.trailing, UIView.HorizontalEdge.leading, UIView.VerticalEdge.bottom ], to: contentView)
+        userListView.pin(.top, to: .bottom, of: detailInfoLabel, withInset: Values.smallSpacing)
     }
     
     private func populateData() {
@@ -109,7 +125,11 @@ final class ReactionListSheet : BaseVC, UICollectionViewDataSource, UICollection
             if let emoji = reaction.emoji {
                 if !reactionMap.hasValue(forKey: emoji) { reactionMap.append(key: emoji, value: []) }
                 var value = reactionMap.value(forKey: emoji)!
-                value.append(reaction)
+                if reaction.sender == getUserHexEncodedPublicKey() {
+                    value.insert(reaction, at: 0)
+                } else {
+                    value.append(reaction)
+                }
                 reactionMap.replace(key: emoji, value: value)
             }
         }
@@ -121,30 +141,7 @@ final class ReactionListSheet : BaseVC, UICollectionViewDataSource, UICollection
     private func update() {
         let seletedData = reactionMap.value(forKey: selectedReaction!)!
         detailInfoLabel.text = "\(selectedReaction!) · \(seletedData.count)"
-    }
-    
-    // MARK: Layout
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 0, leading: Values.smallSpacing, bottom: 0, trailing: Values.smallSpacing)
-    }
-    
-    // MARK: Data Source
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return reactionMap.orderedKeys.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.identifier, for: indexPath) as! Cell
-        let item = reactionMap.orderedItems[indexPath.item]
-        cell.data = (item.0, item.1.count)
-        cell.isSelected = item.0 == selectedReaction!
-        return cell
-    }
-    
-    // MARK: Interaction
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        selectedReaction = reactionMap.orderedKeys[indexPath.item]
-        update()
+        userListView.reloadData()
     }
     
     // MARK: Interaction
@@ -164,6 +161,60 @@ final class ReactionListSheet : BaseVC, UICollectionViewDataSource, UICollection
     }
 }
 
+// MARK: UICollectionView
+
+extension ReactionListSheet: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    // MARK: Layout
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 0, leading: Values.smallSpacing, bottom: 0, trailing: Values.smallSpacing)
+    }
+    
+    // MARK: Data Source
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return reactionMap.orderedKeys.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.identifier, for: indexPath) as! Cell
+        let item = reactionMap.orderedItems[indexPath.item]
+        cell.data = (item.0, item.1.count)
+        cell.isSelected = item.0 == selectedReaction!
+        return cell
+    }
+    
+    // MARK: Interaction
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        selectedReaction = reactionMap.orderedKeys[indexPath.item]
+        update()
+    }
+}
+
+// MARK: UITableView
+
+extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
+    // MARK: Table View Data Source
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return reactionMap.value(forKey: selectedReaction!)?.count ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell") as! UserCell
+        let publicKey = reactionMap.value(forKey: selectedReaction!)![indexPath.row].sender!
+        cell.publicKey = publicKey
+        cell.normalFont = true
+        if publicKey == getUserHexEncodedPublicKey() {
+            cell.accessory = .x
+        } else {
+            cell.accessory = .none
+        }
+        cell.update()
+        return cell
+    }
+}
 
 // MARK: Cell
 
