@@ -1,12 +1,13 @@
 import UIKit
 
-final class ReactionListSheet : BaseVC {
+final class ReactionListSheet : BaseVC, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     private let reactions: [ReactMessage]
     private var reactionMap: OrderedDictionary<String, [ReactMessage]> = OrderedDictionary()
+    var selectedReaction: String?
     
     // MARK: Components
     
-    lazy var contentView: UIView = {
+    private lazy var contentView: UIView = {
         let result = UIView()
         result.layer.borderWidth = 0.5
         result.layer.borderColor = Colors.border.withAlphaComponent(0.5).cgColor
@@ -14,12 +15,24 @@ final class ReactionListSheet : BaseVC {
         return result
     }()
     
-    lazy var reactionContainer: UIStackView = {
-        let result = UIStackView()
-        let spacing = Values.smallSpacing
-        result.spacing = spacing
-        result.layoutMargins = UIEdgeInsets(top: spacing, leading: spacing, bottom: spacing, trailing: spacing)
-        result.isLayoutMarginsRelativeArrangement = true
+    private lazy var layout: UICollectionViewFlowLayout = {
+        let result = UICollectionViewFlowLayout()
+        result.scrollDirection = .horizontal
+        result.minimumLineSpacing = Values.smallSpacing
+        result.minimumInteritemSpacing = Values.smallSpacing
+        result.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        return result
+    }()
+    
+    private lazy var reactionContainer: UICollectionView = {
+        let result = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
+        result.register(Cell.self, forCellWithReuseIdentifier: Cell.identifier)
+        result.set(.height, to: 48)
+        result.backgroundColor = .clear
+        result.isScrollEnabled = true
+        result.showsHorizontalScrollIndicator = false
+        result.dataSource = self
+        result.delegate = self
         return result
     }()
     
@@ -46,6 +59,7 @@ final class ReactionListSheet : BaseVC {
         view.addGestureRecognizer(swipeGestureRecognizer)
         populateData()
         setUpViewHierarchy()
+        reactionContainer.reloadData()
     }
 
     private func setUpViewHierarchy() {
@@ -57,23 +71,18 @@ final class ReactionListSheet : BaseVC {
     
     private func populateContentView() {
         // Reactions container
-        let scrollableContainer = UIScrollView(wrapping: reactionContainer, withInsets: .zero)
-        scrollableContainer.showsVerticalScrollIndicator = false
-        scrollableContainer.showsHorizontalScrollIndicator = false
-        scrollableContainer.set(.height, to: 48)
-        for reaction in reactionMap.orderedItems {
-            let reactionView = ReactionButton(emoji: reaction.0, value: reaction.1.count, largeSize: true)
-            reactionContainer.addArrangedSubview(reactionView)
-        }
-        contentView.addSubview(scrollableContainer)
-        scrollableContainer.pin([ UIView.VerticalEdge.top, UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: contentView)
+        contentView.addSubview(reactionContainer)
+        reactionContainer.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: contentView)
+        reactionContainer.pin(.top, to: .top, of: contentView, withInset: Values.verySmallSpacing)
+        // Reactions
+
         // Line
         let lineView = UIView()
         lineView.backgroundColor = Colors.border.withAlphaComponent(0.5)
         lineView.set(.height, to: 0.5)
         contentView.addSubview(lineView)
         lineView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: contentView)
-        lineView.pin(.top, to: .bottom, of: scrollableContainer)
+        lineView.pin(.top, to: .bottom, of: reactionContainer, withInset: Values.verySmallSpacing)
         
     }
     
@@ -86,6 +95,30 @@ final class ReactionListSheet : BaseVC {
                 reactionMap.replace(key: emoji, value: value)
             }
         }
+        if selectedReaction == nil {
+            selectedReaction = reactionMap.orderedKeys[0]
+        }
+    }
+    
+    // MARK: Layout
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 0, leading: Values.smallSpacing, bottom: 0, trailing: Values.smallSpacing)
+    }
+    
+    // MARK: Data Source
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return reactionMap.orderedKeys.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.identifier, for: indexPath) as! Cell
+        let item = reactionMap.orderedItems[indexPath.item]
+        cell.data = (item.0, item.1.count)
+        return cell
+    }
+    
+    // MARK: Interaction
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     }
     
     // MARK: Interaction
@@ -102,5 +135,80 @@ final class ReactionListSheet : BaseVC {
 
     @objc func close() {
         dismiss(animated: true, completion: nil)
+    }
+}
+
+
+// MARK: Cell
+
+extension ReactionListSheet {
+    
+    fileprivate final class Cell : UICollectionViewCell {
+        var data: (String, Int)? { didSet { update() } }
+        override var isSelected: Bool { didSet { updateBorder() } }
+        
+        static let identifier = "ReactionListSheetCell"
+        
+        private lazy var snContentView: UIView = {
+            let result = UIView()
+            result.backgroundColor = Colors.receivedMessageBackground
+            result.set(.height, to: Cell.contentViewHeight)
+            result.layer.cornerRadius = Cell.contentViewCornerRadius
+            return result
+        }()
+        
+        private lazy var emojiLabel: UILabel = {
+            let result = UILabel()
+            result.font = .systemFont(ofSize: Values.mediumFontSize)
+            return result
+        }()
+        
+        private lazy var numberLabel: UILabel = {
+            let result = UILabel()
+            result.textColor = Colors.text
+            result.font = .systemFont(ofSize: Values.mediumFontSize)
+            return result
+        }()
+        
+        private static var contentViewHeight: CGFloat = 32
+        private static var contentViewCornerRadius: CGFloat { contentViewHeight / 2 }
+        
+        override init(frame: CGRect) {
+            super.init(frame: frame)
+            setUpViewHierarchy()
+        }
+        
+        required init?(coder: NSCoder) {
+            super.init(coder: coder)
+            setUpViewHierarchy()
+        }
+        
+        private func setUpViewHierarchy() {
+            addSubview(snContentView)
+            let stackView = UIStackView(arrangedSubviews: [ emojiLabel, numberLabel ])
+            stackView.axis = .horizontal
+            stackView.alignment = .center
+            let spacing = Values.smallSpacing + 2
+            stackView.spacing = spacing
+            stackView.layoutMargins = UIEdgeInsets(top: 0, left: spacing, bottom: 0, right: spacing)
+            stackView.isLayoutMarginsRelativeArrangement = true
+            snContentView.addSubview(stackView)
+            stackView.pin(to: snContentView)
+            snContentView.pin(to: self)
+        }
+        
+        private func update() {
+            guard let data = data else { return }
+            emojiLabel.text = data.0
+            numberLabel.text = data.1 < 1000 ? "\(data.1)" : String(format: "%.1f", Float(data.1) / 1000) + "k"
+        }
+        
+        private func updateBorder() {
+            if isSelected {
+                snContentView.addBorder(with: Colors.accent)
+            } else {
+                snContentView.addBorder(with: .clear)
+            }
+        }
     }
 }

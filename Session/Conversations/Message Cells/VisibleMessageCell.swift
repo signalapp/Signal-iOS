@@ -539,7 +539,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             let convertedLocation = reactionContainerView.convert(location, from: self)
             for reactionView in reactionContainerView.reactionViews {
                 if reactionView.frame.contains(convertedLocation) {
-                    delegate?.showReactionList(viewItem)
+                    delegate?.showReactionList(viewItem, selectedReaction: reactionView.emoji)
                     break
                 }
             }

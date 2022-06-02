@@ -819,9 +819,10 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         presentAlert(alert)
     }
     
-    func showReactionList(_ viewItem: ConversationViewItem) {
+    func showReactionList(_ viewItem: ConversationViewItem, selectedReaction: String?) {
         guard let message = viewItem.interaction as? TSMessage, message.reactions.count > 0 else { return }
         let reactionListSheet = ReactionListSheet(for: message.reactions as! [ReactMessage])
+        reactionListSheet.selectedReaction = selectedReaction
         reactionListSheet.modalPresentationStyle = .overFullScreen
         present(reactionListSheet, animated: true, completion: nil)
     }

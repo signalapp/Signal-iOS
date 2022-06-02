@@ -4,26 +4,18 @@ final class ReactionButton : UIView {
     let emoji: String
     let number: Int
     let showBorder: Bool
-    let largeSize: Bool
     
     // MARK: Settings
-    private var height: CGFloat {
-        return largeSize ? 32 : 22
-    }
-    private var fontSize: CGFloat {
-        return largeSize ? Values.mediumFontSize : Values.verySmallFontSize
-    }
+    private var height: CGFloat = 22
+    private var fontSize: CGFloat = Values.verySmallFontSize
     
-    private var spacing: CGFloat {
-        return largeSize ? Values.mediumSpacing : Values.verySmallSpacing
-    }
+    private var spacing: CGFloat = Values.verySmallSpacing
     
     // MARK: Lifecycle
-    init(emoji: String, value: Int, showBorder: Bool = false, largeSize: Bool = false) {
+    init(emoji: String, value: Int, showBorder: Bool = false) {
         self.emoji = emoji
         self.number = value
         self.showBorder = showBorder
-        self.largeSize = largeSize
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
@@ -60,8 +52,7 @@ final class ReactionButton : UIView {
         layer.cornerRadius = self.height / 2
         
         if showBorder {
-            layer.borderWidth = 1
-            layer.borderColor = Colors.accent.cgColor
+            self.addBorder(with: Colors.accent)
         }
     }
 }
