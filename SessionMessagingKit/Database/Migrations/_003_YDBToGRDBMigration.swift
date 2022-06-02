@@ -1207,12 +1207,12 @@ enum _003_YDBToGRDBMigration: Migration {
                     SNLog("[Migration Error] attachmentUpload job missing associated MessageSendJob")
                     throw StorageError.migrationFailed
                 }
-
+                
                 let uploadJob: Job? = try Job(
                     failureCount: legacyJob.failureCount,
                     variant: .attachmentUpload,
                     behaviour: .runOnce,
-                    threadId: legacyJob.threadID,
+                    threadId: sendJob.threadId,
                     interactionId: sendJob.interactionId,
                     details: AttachmentUploadJob.Details(
                         messageSendJobId: sendJobId,

@@ -72,27 +72,6 @@ public struct LinkPreview: Codable, Equatable, Hashable, FetchableRecord, Persis
         self.title = title
         self.attachmentId = attachmentId
     }
-    
-    // MARK: - Custom Database Interaction
-    
-    public func delete(_ db: Database) throws -> Bool {
-        // If we have an Attachment then check if this is the only type that is referencing it
-        // and delete the Attachment if so
-        if let attachmentId: String = attachmentId {
-            let interactionUses: Int? = try? InteractionAttachment
-                .filter(InteractionAttachment.Columns.attachmentId == attachmentId)
-                .fetchCount(db)
-            let quoteUses: Int? = try? Quote
-                .filter(Quote.Columns.attachmentId == attachmentId)
-                .fetchCount(db)
-            
-            if (interactionUses ?? 0) == 0 && (quoteUses ?? 0) == 0 {
-                try attachment.deleteAll(db)
-            }
-        }
-        
-        return try performDelete(db)
-    }
 }
 
 // MARK: - Protobuf

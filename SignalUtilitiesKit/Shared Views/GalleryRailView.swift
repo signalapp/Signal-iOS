@@ -205,7 +205,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
                 completion: { [weak self] _ in
                     self?.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
                     self?.stackView.frame = oldFrame
-                    self?.stackClippingView.isHidden = true
+                    self?.isHidden = true
                     self?.cellViews = []
                 }
             )
@@ -249,11 +249,11 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
                 
                 self?.updateFocusedItem(focusedItem)
                 self?.stackView.layoutIfNeeded()
-                self?.stackClippingView.isHidden = false
+                self?.isHidden = false
                 
                 updatedOldFrame = (self?.stackView.frame)
                     .defaulting(to: oldFrame)
-                self?.stackView.frame = oldFrame.offsetBy(
+                self?.stackView.frame = updatedOldFrame.offsetBy(
                     dx: 0,
                     dy: oldFrame.height
                 )
@@ -324,6 +324,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         selectedCellView?.setIsSelected(true)
 
         self.layoutIfNeeded()
+        self.stackView.layoutIfNeeded()
         
         switch scrollFocusMode {
             case .keepCentered:

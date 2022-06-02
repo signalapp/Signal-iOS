@@ -76,16 +76,6 @@ public struct ClosedGroup: Codable, Identifiable, FetchableRecord, PersistableRe
         self.name = name
         self.formationTimestamp = formationTimestamp
     }
-    
-    // MARK: - Custom Database Interaction
-    
-    public func delete(_ db: Database) throws -> Bool {
-        // Delete all 'GroupMember' records associated with this ClosedGroup (can't
-        // have a proper ForeignKey constraint as 'GroupMember' is reused for the
-        // 'OpenGroup' table as well)
-        try request(for: ClosedGroup.members).deleteAll(db)
-        return try performDelete(db)
-    }
 }
 
 // MARK: - Mutation

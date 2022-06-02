@@ -82,7 +82,7 @@ public struct ProfileManager {
     
     // MARK: - File Paths
     
-    private static let sharedDataProfileAvatarsDirPath: String = {
+    public static let sharedDataProfileAvatarsDirPath: String = {
         URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
             .appendingPathComponent("ProfileAvatars")
             .path

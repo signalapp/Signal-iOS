@@ -104,16 +104,6 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         self.userCount = userCount
         self.infoUpdates = infoUpdates
     }
-    
-    // MARK: - Custom Database Interaction
-    
-    public func delete(_ db: Database) throws -> Bool {
-        // Delete all 'GroupMember' records associated with this OpenGroup (can't
-        // have a proper ForeignKey constraint as 'GroupMember' is reused for the
-        // 'ClosedGroup' table as well)
-        try request(for: OpenGroup.members).deleteAll(db)
-        return try performDelete(db)
-    }
 }
 
 // MARK: - Convenience

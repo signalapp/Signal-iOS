@@ -200,20 +200,11 @@ public final class GRDBStorage {
             return keySpec
         }
         catch {
-            print("RAWR \(error.localizedDescription), \((error as? KeychainStorageError)?.code), \(errSecItemNotFound)")
-            
             switch (error, (error as? KeychainStorageError)?.code) {
-                // TODO: Are there other errors we know about that indicate an invalid keychain?
-//                errSecNotAvailable: OSStatus { get } /* No keychain is available. You may need to restart your computer. */
-//                public var errSecNoSuchKeychain
-                    
-                    //errSecInteractionNotAllowed
-                    
                 case (StorageError.invalidKeySpec, _):
                     // For these cases it means either the keySpec or the keychain has become corrupt so in order to
                     // get back to a "known good state" and behave like a new install we need to reset the storage
                     // and regenerate the key
-                    // TODO: Check what this 'isRunningTests' does (use the approach to check if XCTTestCase exists instead?)
                     if !CurrentAppContext().isRunningTests {
                         // Try to reset app by deleting database.
                         resetAllStorage()

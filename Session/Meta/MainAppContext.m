@@ -245,7 +245,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 - (BOOL)isRunningTests
 {
-    return getenv("runningTests_dontStartApp");
+    return (NSProcessInfo.processInfo.environment[@"XCInjectBundleInto"] != nil);
 }
 
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value

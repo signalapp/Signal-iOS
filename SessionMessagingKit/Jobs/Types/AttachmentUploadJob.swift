@@ -33,21 +33,21 @@ public enum AttachmentUploadJob: JobExecutor {
             return
         }
         
-        GRDBStorage.shared.writeAsync { db in
-            attachment.upload(
-                db,
-                using: { data in
-                    if let openGroup: OpenGroup = openGroup {
-                        return OpenGroupAPIV2.upload(data, to: openGroup.room, on: openGroup.server)
-                    }
-                    
-                    return FileServerAPIV2.upload(data)
-                },
-                encrypt: (openGroup == nil),
-                success: { success(job, false) },
-                failure: { error in failure(job, error, false) }
-            )
-        }
+        // Note: In the AttachmentUploadJob we intentionally don't provide our own db instance to prevent reentrancy
+        // issues when the success/failure closures get called before the upload as the JobRunner will attempt to
+        // update the state of the job immediately
+        attachment.upload(
+            using: { data in
+                if let openGroup: OpenGroup = openGroup {
+                    return OpenGroupAPIV2.upload(data, to: openGroup.room, on: openGroup.server)
+                }
+                
+                return FileServerAPIV2.upload(data)
+            },
+            encrypt: (openGroup == nil),
+            success: { success(job, false) },
+            failure: { error in failure(job, error, false) }
+        )
     }
 }
 

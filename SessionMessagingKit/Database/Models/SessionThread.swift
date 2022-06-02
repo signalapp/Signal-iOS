@@ -129,22 +129,6 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
         
         db[.hasSavedThread] = true
     }
-    
-    public func delete(_ db: Database) throws -> Bool {
-        // Delete any jobs associated to this thread
-        try Job
-            .filter(Job.Columns.threadId == id)
-            .deleteAll(db)
-        
-        // Delete any GroupMembers associated to this thread
-        if variant == .closedGroup || variant == .openGroup {
-            try GroupMember
-                .filter(GroupMember.Columns.groupId == id)
-                .deleteAll(db)
-        }
-        
-        return try performDelete(db)
-    }
 }
 
 // MARK: - Mutation

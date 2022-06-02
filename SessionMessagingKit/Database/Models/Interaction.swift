@@ -345,33 +345,6 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
             default: break
         }
     }
-    
-    public func delete(_ db: Database) throws -> Bool {
-        // If we have a LinkPreview then check if this is the only interaction that has it
-        // and delete the LinkPreview if so
-        if linkPreviewUrl != nil {
-            let interactionAlias: TableAlias = TableAlias()
-            let numInteractions: Int? = try? Interaction
-                .aliased(interactionAlias)
-                .joining(
-                    required: Interaction.linkPreview
-                        .filter(literal: Interaction.linkPreviewFilterLiteral())
-                )
-                .fetchCount(db)
-            let tmp = try linkPreview.fetchAll(db)
-            
-            if numInteractions == 1 {
-                try linkPreview.deleteAll(db)
-            }
-        }
-        
-        // Delete any jobs associated to this interaction
-        try Job
-            .filter(Job.Columns.interactionId == id)
-            .deleteAll(db)
-        
-        return try performDelete(db)
-    }
 }
 
 // MARK: - Mutation

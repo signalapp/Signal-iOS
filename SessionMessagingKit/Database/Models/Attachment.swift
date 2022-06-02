@@ -219,28 +219,6 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
         self.digest = nil
         self.caption = caption
     }
-    
-    // MARK: - Custom Database Interaction
-    
-    public func delete(_ db: Database) throws -> Bool {
-        // Delete all associated files
-        if FileManager.default.fileExists(atPath: thumbnailsDirPath) {
-            try? FileManager.default.removeItem(atPath: thumbnailsDirPath)
-        }
-        
-        if
-            let legacyThumbnailPath: String = legacyThumbnailPath,
-            FileManager.default.fileExists(atPath: legacyThumbnailPath)
-        {
-            try? FileManager.default.removeItem(atPath: legacyThumbnailPath)
-        }
-        
-        if let originalFilePath: String = originalFilePath {
-            try? FileManager.default.removeItem(atPath: originalFilePath)
-        }
-        
-        return try performDelete(db)
-    }
 }
 
 // MARK: - CustomStringConvertible
@@ -941,7 +919,7 @@ extension Attachment {
 
 extension Attachment {
     internal func upload(
-        _ db: Database,
+        _ db: Database? = nil,
         using upload: (Data) -> Promise<UInt64>,
         encrypt: Bool,
         success: (() -> Void)?,
@@ -977,9 +955,19 @@ extension Attachment {
             digest == nil
         else {
             // Save the final upload info
-            let uploadedAttachment: Attachment? = try? self
-                .with(state: .uploaded)
-                .saved(db)
+            let uploadedAttachment: Attachment? = {
+                guard let db: Database = db else {
+                    return GRDBStorage.shared.write { db in
+                        try? self
+                            .with(state: .uploaded)
+                            .saved(db)
+                    }
+                }
+                
+                return try? self
+                    .with(state: .uploaded)
+                    .saved(db)
+            }()
             
             guard uploadedAttachment != nil else {
                 SNLog("Couldn't update attachmentUpload job.")
@@ -1019,9 +1007,19 @@ extension Attachment {
         }
         
         // Update the attachment to the 'uploading' state
-        let updatedAttachment: Attachment? = try? processedAttachment
-            .with(state: .uploading)
-            .saved(db)
+        let updatedAttachment: Attachment? = {
+            guard let db: Database = db else {
+                return GRDBStorage.shared.write { db in
+                    try? processedAttachment
+                        .with(state: .uploading)
+                        .saved(db)
+                }
+            }
+            
+            return try? processedAttachment
+                .with(state: .uploading)
+                .saved(db)
+        }()
         
         guard updatedAttachment != nil else {
             SNLog("Couldn't update attachmentUpload job.")
@@ -1061,6 +1059,7 @@ extension Attachment {
                         .with(state: .failedUpload)
                         .saved(db)
                 }
+                
                 failure?(error)
             }
     }

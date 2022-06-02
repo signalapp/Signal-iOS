@@ -846,9 +846,10 @@ private final class JobQueue {
         
         GRDBStorage.shared.write { db in
             guard
-                !permanentFailure &&
-                maxFailureCount >= 0 &&
-                job.failureCount + 1 < maxFailureCount
+                !permanentFailure && (
+                    maxFailureCount < 0 ||
+                    job.failureCount + 1 < maxFailureCount
+                )
             else {
                 SNLog("[JobRunner] \(queueContext) \(job.variant) failed permanently\(maxFailureCount >= 0 ? "; too many retries" : "")")
                 

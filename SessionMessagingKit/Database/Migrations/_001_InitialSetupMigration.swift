@@ -152,11 +152,13 @@ enum _001_InitialSetupMigration: Migration {
         }
         
         try db.create(table: GroupMember.self) { t in
-            // Note: Not adding a "proper" foreign key constraint as this
-            // table gets used by both 'OpenGroup' and 'ClosedGroup' types
+            // Note: Since we don't know whether this will be stored against a 'ClosedGroup' or
+            // an 'OpenGroup' we add the foreign key constraint against the thread itself (which
+            // shares the same 'id' as the 'groupId') so we can cascade delete automatically
             t.column(.groupId, .text)
                 .notNull()
                 .indexed()                                            // Quicker querying
+                .references(SessionThread.self, onDelete: .cascade)   // Delete if Thread deleted
             t.column(.profileId, .text).notNull()
             t.column(.role, .integer).notNull()
         }
@@ -316,7 +318,7 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.variant, .integer).notNull()
             t.column(.title, .text)
             t.column(.attachmentId, .text)
-                .references(Attachment.self, onDelete: .setNull)      // Clear if attachment deleted
+                .references(Attachment.self)                          // Managed via garbage collection
             
             t.primaryKey([.url, .timestamp])
         }
