@@ -311,3 +311,20 @@ extension AeadXChaCha20Poly1305IetfType {
         return authenticatedCipherText
     }
 }
+
+// MARK: - Objective-C Support
+
+@objc public class SNBlindingUtils: NSObject {
+    @objc public static func userBlindedId(for openGroupPublicKey: String) -> String? {
+        let sodium: Sodium = Sodium()
+        
+        guard let userEd25519KeyPair = Storage.shared.getUserED25519KeyPair() else {
+            return nil
+        }
+        guard let blindedKeyPair = sodium.blindedKeyPair(serverPublicKey: openGroupPublicKey, edKeyPair: userEd25519KeyPair, genericHash: sodium.genericHash) else {
+            return nil
+        }
+        
+        return SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString
+    }
+}

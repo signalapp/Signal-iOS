@@ -215,4 +215,14 @@ class MockStorage: Mock<SessionMessagingKitStorageProtocol>, SessionMessagingKit
     func persist(_ stream: TSAttachmentStream, associatedWith tsIncomingMessageID: String, using transaction: Any) {
         accept(args: [stream, tsIncomingMessageID, transaction])
     }
+    
+    // MARK: - Calls
+    
+    func getReceivedCalls(for publicKey: String, using transaction: Any) -> Set<String> {
+        return accept(args: [publicKey, transaction]) as! Set<String>
+    }
+    
+    func setReceivedCalls(to receivedCalls: Set<String>, for publicKey: String, using transaction: Any) {
+        accept(args: [receivedCalls, publicKey, transaction])
+    }
 }

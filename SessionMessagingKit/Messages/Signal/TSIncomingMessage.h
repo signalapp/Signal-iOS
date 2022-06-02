@@ -14,8 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL wasReceivedByUD;
 
-@property (nonatomic, readonly) BOOL isUserMentioned;
-
 @property (nonatomic, readonly, nullable) NSString *notificationIdentifier;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
@@ -90,6 +88,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setNotificationIdentifier:(NSString * _Nullable)notificationIdentifier
                       transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+- (BOOL)isUserMentionedWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

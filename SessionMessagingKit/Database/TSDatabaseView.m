@@ -140,7 +140,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
         if ([object isKindOfClass:[TSIncomingMessage class]]) {
             TSIncomingMessage *message = (TSIncomingMessage *)object;
-            if (!message.wasRead && message.isUserMentioned) {
+            if (!message.wasRead && [message isUserMentionedWithTransaction: transaction]) {
                 return message.uniqueThreadId;
             }
         }

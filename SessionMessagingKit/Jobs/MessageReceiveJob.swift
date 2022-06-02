@@ -31,13 +31,12 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
     // MARK: Coding
     public init?(coder: NSCoder) {
         guard let data = coder.decodeObject(forKey: "data") as! Data?,
-            let id = coder.decodeObject(forKey: "id") as! String?,
-            let isBackgroundPoll = coder.decodeObject(forKey: "isBackgroundPoll") as! Bool? else { return nil }
+            let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
         self.data = data
         self.serverHash = coder.decodeObject(forKey: "serverHash") as! String?
         self.openGroupMessageServerID = coder.decodeObject(forKey: "openGroupMessageServerID") as! UInt64?
         self.openGroupID = coder.decodeObject(forKey: "openGroupID") as! String?
-        self.isBackgroundPoll = isBackgroundPoll
+        self.isBackgroundPoll = ((coder.decodeObject(forKey: "isBackgroundPoll") as? Bool) ?? false)
         self.id = id
         self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
     }

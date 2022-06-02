@@ -46,7 +46,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         
         var notificationTitle = senderName
         if let group = thread as? TSGroupThread {
-            if group.isOnlyNotifyingForMentions && !incomingMessage.isUserMentioned {
+            if group.isOnlyNotifyingForMentions && !incomingMessage.isUserMentioned(with: transaction) {
                 // Ignore PNs if the group is set to only notify for mentions
                 return
             }

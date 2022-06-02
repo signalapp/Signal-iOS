@@ -121,10 +121,42 @@ NS_ASSUME_NONNULL_BEGIN
     return self.isExpiringMessage;
 }
 
-- (BOOL)isUserMentioned
+- (BOOL)isUserMentionedWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
-    return (self.body != nil && [self.body containsString:[NSString stringWithFormat:@"@%@", userPublicKey]]) || (self.quotedMessage != nil && [self.quotedMessage.authorId isEqualToString:userPublicKey]);
+    NSArray *publicKeysToCheck = @[userPublicKey];
+    TSThread *thread = [self threadWithTransaction:transaction];
+    
+    if (thread != nil) {
+        BOOL isOpenGroupThread = (thread.isGroupThread && ((TSGroupThread *)thread).isOpenGroup);
+        
+        if (isOpenGroupThread) {
+            SNOpenGroupV2 *openGroup = [[LKStorage shared] getOpenGroupForThreadID:self.uniqueThreadId];
+            
+            if (openGroup != nil) {
+                NSString *openGroupPublicKey = [SNBlindingUtils userBlindedIdFor:openGroup.publicKey];
+            
+                if (openGroupPublicKey != nil) {
+                    publicKeysToCheck = [publicKeysToCheck arrayByAddingObject:openGroupPublicKey];
+                }
+            }
+        }
+    }
+    
+    BOOL userMentioned = false;
+    
+    for (NSString *publicKey in publicKeysToCheck) {
+        userMentioned = (
+             (self.body != nil && [self.body containsString:[NSString stringWithFormat:@"@%@", publicKey]]) ||
+             (self.quotedMessage != nil && [self.quotedMessage.authorId isEqualToString:publicKey])
+        );
+        
+        if (userMentioned == true) {
+            break;
+        }
+    }
+    
+    return userMentioned;
 }
 
 - (void)setNotificationIdentifier:(NSString * _Nullable)notificationIdentifier transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction
