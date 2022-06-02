@@ -327,7 +327,7 @@ CGFloat kIconViewLength = 24;
     }]];
     
     // Disappearing messages
-    if (![self isOpenGroup]) {
+    if (![self isOpenGroup] && !self.thread.isBlocked) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell = [OWSTableItem newCell];
             OWSConversationSettingsViewController *strongSelf = weakSelf;

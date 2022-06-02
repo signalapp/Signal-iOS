@@ -12,6 +12,13 @@ public final class ClosedGroupControlMessage : ControlMessage {
     
     public override var isSelfSendValid: Bool { true }
     
+    public override var shouldBeRetryable: Bool {
+        switch kind {
+        case .new, .encryptionKeyPair: return true
+        default: return false
+        }
+    }
+    
     // MARK: Kind
     public enum Kind : CustomStringConvertible {
         case new(publicKey: Data, name: String, encryptionKeyPair: ECKeyPair, members: [Data], admins: [Data], expirationTimer: UInt32)

@@ -1,31 +1,31 @@
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Not Now";
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Không phải bây giờ";
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ is now available in the App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Phiên bản %@ đã có trên App Store.";
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Session Is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Một phiên bản mới của Session đã sẵn có để sử dụng";
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Update";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Cập nhật";
 /* No comment provided by engineer. */
-"ATTACHMENT" = "Attachment";
+"ATTACHMENT" = "Tệp đính kèm";
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Đã đạt đến giới hạn.";
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Add a caption…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Thêm mô tả…";
 /* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Caption";
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Mô tả";
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "File type: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Loại tệp tin: %@";
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Size: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Dung lượng: %@";
 /* One-line label indicating the user can add no more text to the media message field. */
-"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Message limit reached";
+"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Đã đạt đến mức giới hạn ký tự";
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Gửi";
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "Attachment";
+"ATTACHMENT_DEFAULT_FILENAME" = "Tệp đính kèm";
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Error Sending Attachment";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Lỗi khi gửi tệp";
 /* Attachment error message for image attachments which could not be converted to JPEG */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Unable to convert image.";
 /* Attachment error message for video attachments which could not be converted to MP4 */
@@ -45,101 +45,101 @@
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Failed to choose document.";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Không thể chọn tệp tin.";
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Không thể gửi thư mục. Hãy nén thư mục và gửi đi bằng tập tin nén đó.";
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Tập tin không được hỗ trợ";
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Voice Message";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Tin nhắn thoại";
 /* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could not be exported.";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Không thể trích xuất dữ liệu sao lưu.";
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Phản hồi không hợp lệ";
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning Up Backup";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Đang dọn dẹp bản sao lưu";
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Đang bắt đầu sao lưu";
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Đang xuất dữ liệu";
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";
+"BACKUP_EXPORT_PHASE_EXPORT" = "Đang xuất bản sao lưu";
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading Backup";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Đang tải lên bản sao lưu";
 /* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Không thể nhập bản sao lưu.";
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Tuỳ chỉnh sao lưu";
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloading Backup Data";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Tải xuống bản sao lưu";
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Quá trình sao lưu sắp hoàn tất";
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Importing backup.";
+"BACKUP_IMPORT_PHASE_IMPORT" = "Đang nhập bản sao lưu.";
 /* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Restoring Database";
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Đang khôi phục cơ sở dữ liệu";
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restoring Files";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Đang khôi phục tập tin";
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup Available";
+"BACKUP_RESTORE_DECISION_TITLE" = "Bản sao lưu khả dụng";
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+"BACKUP_RESTORE_DESCRIPTION" = "Đang khôi phục bản sao lưu";
 /* Label for the backup restore progress. */
-"BACKUP_RESTORE_PROGRESS" = "Progress";
+"BACKUP_RESTORE_PROGRESS" = "Đang khôi phục";
 /* Label for the backup restore status. */
-"BACKUP_RESTORE_STATUS" = "Status";
+"BACKUP_RESTORE_STATUS" = "Trạng thái";
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+"BACKUP_UNEXPECTED_ERROR" = "Lỗi sao lưu";
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "Block";
+"BLOCK_LIST_BLOCK_BUTTON" = "Chặn";
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Block %@?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Chặn %@?";
 /* A format for the 'unblock user' action sheet title. Embeds {{the unblocked user's name or phone number}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Bỏ chặn";
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "Đã bỏ chặn %@.";
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "User Blocked";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Người dùng bị chặn";
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ has been unblocked.";
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Người dùng bị chặn sẽ không thể gọi hoặc gửi tin nhắn cho bạn.";
 /* Label for generic done button. */
-"BUTTON_DONE" = "Done";
+"BUTTON_DONE" = "Xong";
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "Select";
+"BUTTON_SELECT" = "Chọn";
 /* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Không khôi phục";
 /* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "Restore";
+"CHECK_FOR_BACKUP_RESTORE" = "Khôi phục";
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Session could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Session data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Session không thể xác định trạng thái của tài khoản iCloud. Đăng nhập vào tài khoản iCloud trong phần cài đặt để sao lưu dữ liệu Session.";
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Session data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Chưa đăng nhập tài khoản iCloud. Đăng nhập vào tài khoản iCloud trong phần cài đặt để sao lưu dữ liệu Session.";
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Session was denied access your iCloud account for backups. Grant Session access to your iCloud Account in the iOS settings app to backup your Session data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Session không được quyền truy cập vào tài khoản iCloud. Hãy cấp quyền truy cập trong phần cài đặt để có thể sao lưu dữ liệu Session.";
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Bạn sẽ không thể gửi hoặc nhận tin nhắn trong nhóm này nữa.";
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Do you really want to leave?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Bạn thực sự muốn rời khỏi nhóm?";
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tác vụ này không thể hoàn tất.";
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Xóa cuộc hội thoại?";
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
+"CONVERSATION_SEARCH_NO_RESULTS" = "Không trùng khớp";
 /* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 match";
+"CONVERSATION_SEARCH_ONE_RESULT" = "Trùng khớp";
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d trên %d phù hợp";
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Conversation Settings";
+"CONVERSATION_SETTINGS" = "Thiết đặt chuyện trò";
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block This User";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Chặn Người dùng này";
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute";
 /* label for 'mute thread' cell in conversation settings */
@@ -241,61 +241,61 @@
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
 "MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Xóa tin nhắn";
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ on %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ lúc %@";
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 /* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "Bạn";
 /* Section header in media gallery collection view */
-"MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Tháng này";
 /* message status for message delivered to their recipient. */
-"MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_STATUS_DELIVERED" = "Đã gửi";
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Gửi thất bại.";
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+"MESSAGE_STATUS_FAILED_SHORT" = "Không thành công";
 /* status message for read messages */
-"MESSAGE_STATUS_READ" = "Read";
+"MESSAGE_STATUS_READ" = "Đã đọc";
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Session account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Đã bỏ qua";
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending…";
+"MESSAGE_STATUS_SENDING" = "Đang gửi…";
 /* status message for sent messages */
-"MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_STATUS_SENT" = "Đã gửi";
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading…";
+"MESSAGE_STATUS_UPLOADING" = "Đang tải lên…";
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Bạn có thể cấp quyền truy cập trong phần cài đặt ứng dụng.";
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Session requires access to your photos for this feature.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Session yêu cầu quyền truy cập vào ảnh để sử dụng tính năng này.";
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Bạn sẽ không nhận được thông báo cho các cuộc hội thoại bị tắt tiếng.";
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ đến %@";
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Gửi lời nhắc cho chính mình";
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Bạn có thể nhận được tin nhắn trong khi %@ của bạn đang được khởi động lại.";
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Due to known bugs in Apple's push framework, message previews will only be shown if the message is retrieved within 30 seconds after being sent. The application badge might be inaccurate as a result.";
 /* Table cell switch label. When disabled, Session will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
 /* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "Sounds";
+"NOTIFICATIONS_SECTION_SOUNDS" = "Âm thanh";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name and Content";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Tên và Nội dung";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Name Only";
+"NOTIFICATIONS_SENDER_ONLY" = "Chỉ tên người gửi";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "No Name or Content";
+"NOTIFICATIONS_NONE" = "Không hiện tên cũng như tin nhắn";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SHOW" = "Show";
+"NOTIFICATIONS_SHOW" = "Hiển thị";
 /* No comment provided by engineer. */
 "BUTTON_OK" = "OK";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ disabled disappearing messages.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ đã vô hiệu hóa tin nhắn tự huỷ.";
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ set disappearing message time to %@";
 /* alert title, generic error preventing user from capturing a photo */
@@ -374,6 +374,12 @@
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for most urls.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+/* Setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS" = "Voice and video calls";
+/* Footer for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_FOOTER" = "Allow access to accept voice and video calls from other users.";
+/* Header for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_HEADER" = "Calls";
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
 /* Label for the 'read receipts' setting. */
@@ -562,6 +568,8 @@
 "modal_link_previews_title" = "Enable Link Previews?";
 "modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
 "modal_link_previews_button_title" = "Enable";
+"modal_call_title" = "Voice / video calls";
+"modal_call_explanation" = "The current implementation of voice / video calls will expose your IP address to the Oxen Foundation servers and the calling / called user.";
 "modal_share_logs_title" = "Share Logs";
 "modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
 "vc_share_title" = "Share to Session";
@@ -598,15 +606,33 @@
 "accessibility_camera_button" = "Camera";
 "accessibility_main_button_collapse" = "Collapse attachment options";
 "invalid_recovery_phrase" = "Invalid Recovery Phrase";
+"invalid_recovery_phrase" = "Invalid Recovery Phrase";
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Settings";
+"call_outgoing" = "You called %@";
+"call_incoming" = "%@ called you";
+"call_missed" = "Missed Call from %@";
+"call_rejected" = "Rejected Call";
+"call_cancelled" = "Cancelled Call";
+"call_timeout" = "Unanswered Call";
 "voice_call" = "Voice Call";
 "video_call" = "Video Call";
-"APN_Message" = "You've got a new message";
+"APN_Message" = "You've got a new message.";
+"APN_Collapsed_Messages" = "You've got %@ new messages.";
 "system_mode_theme" = "System";
 "dark_mode_theme" = "Dark";
 "light_mode_theme" = "Light";
+"PIN_BUTTON_TEXT" = "Pin";
+"UNPIN_BUTTON_TEXT" = "Unpin";
+"modal_call_missed_tips_title" = "Call missed";
+"modal_call_missed_tips_explanation" = "Call missed from '%@' because you needed to enable the 'Voice and video calls' permission in the Privacy Settings.";
+"meida_saved" = "Media saved by %@.";
+"screenshot_taken" = "%@ took a screenshot.";
+"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_RECENT" = "Recent";
+"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";
 "MESSAGE_REQUESTS_TITLE" = "Message Requests";
 "MESSAGE_REQUESTS_EMPTY_TEXT" = "No pending message requests";
 "MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";

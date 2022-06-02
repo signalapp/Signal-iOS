@@ -564,6 +564,11 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                         return seal.reject(SnodeAPI.Error.clockOutOfSync)
                     }
                     
+                    if statusCode == 401 { // Signature verification failed
+                        SNLog("Failed to verify the signature.")
+                        return seal.reject(SnodeAPI.Error.signatureVerificationFailed)
+                    }
+                    
                     if let bodyAsString = json["body"] as? String {
                         guard let bodyAsData = bodyAsString.data(using: .utf8), let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else {
                             return seal.reject(HTTP.Error.invalidJSON)
@@ -623,6 +628,11 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                     guard responseInfo.code != 406 && responseInfo.code != 425 else {
                         SNLog("The user's clock is out of sync with the service node network.")
                         return seal.reject(SnodeAPI.Error.clockOutOfSync)
+                    }
+                    
+                    guard responseInfo.code != 401 else { // Signature verification failed
+                        SNLog("Failed to verify the signature.")
+                        return seal.reject(SnodeAPI.Error.signatureVerificationFailed)
                     }
                     
                     // Handle error status codes

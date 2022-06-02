@@ -22,6 +22,15 @@ public final class SnodeAPI : NSObject {
     public static var clockOffset: Int64 = 0
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     public static var swarmCache: [String:Set<Snode>] = [:]
+    
+    // MARK: Namespaces
+    public static let defaultNamespace = 0
+    public static let closedGroupNamespace = -10
+    public static let configNamespace = 5
+    
+    // MARK: Hardfork version
+    public static var hardfork = UserDefaults.standard[.hardfork]
+    public static var softfork = UserDefaults.standard[.softfork]
 
     // MARK: Settings
     private static let maxRetryCount: UInt = 8
@@ -39,6 +48,7 @@ public final class SnodeAPI : NSObject {
         case inconsistentSnodePools
         case noKeyPair
         case signingFailed
+        case signatureVerificationFailed
         // ONS
         case decryptionFailed
         case hashingFailed
@@ -52,6 +62,7 @@ public final class SnodeAPI : NSObject {
             case .inconsistentSnodePools: return "Received inconsistent Service Node pool information from the Service Node network."
             case .noKeyPair: return "Missing user key pair."
             case .signingFailed: return "Couldn't sign message."
+            case . signatureVerificationFailed: return "Failed to verify the signature."
             // ONS
             case .decryptionFailed: return "Couldn't decrypt ONS name."
             case .hashingFailed: return "Couldn't compute ONS name hash."
@@ -126,7 +137,35 @@ public final class SnodeAPI : NSObject {
     // MARK: Internal API
     internal static func invoke(_ method: Snode.Method, on snode: Snode, associatedWith publicKey: String? = nil, parameters: JSON) -> Promise<Data> {
         if Features.useOnionRequests {
-            return OnionRequestAPI.sendOnionRequest(to: snode, invoking: method, with: parameters, using: .v3, associatedWith: publicKey)
+            return OnionRequestAPI
+                .sendOnionRequest(
+                    to: snode,
+                    invoking: method,
+                    with: parameters,
+                    using: .v3,
+                    associatedWith: publicKey
+                )
+                .map2 { responseData in
+                    guard let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON else {
+                        throw HTTP.Error.invalidJSON
+                    }
+                    
+                    if let hf = responseJson["hf"] as? [Int] {
+                        if hf[1] > softfork {
+                            softfork = hf[1]
+                            UserDefaults.standard[.softfork] = softfork
+                        }
+                        
+                        if hf[0] > hardfork {
+                            hardfork = hf[0]
+                            UserDefaults.standard[.hardfork] = hardfork
+                            softfork = hf[1]
+                            UserDefaults.standard[.softfork] = softfork
+                        }
+                    }
+                    
+                    return responseData
+                }
         }
         else {
             let url = "\(snode.address):\(snode.port)/storage_rpc/v1"
@@ -402,59 +441,173 @@ public final class SnodeAPI : NSObject {
         }
     }
     
-    public static func getRawMessages(from snode: Snode, associatedWith publicKey: String) -> Promise<Data> {
+    // MARK: - Retrieve
+    
+    // Not in use until we can batch delete and store config messages
+    public static func getConfigMessages(from snode: Snode, associatedWith publicKey: String) -> Promise<Data> {
         let (promise, seal) = Promise<Data>.pending()
         Threading.workQueue.async {
-            getMessagesInternal(from: snode, associatedWith: publicKey).done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
+            getMessagesWithAuthentication(from: snode, associatedWith: publicKey, namespace: configNamespace)
+                .done2 {
+                    seal.fulfill($0)
+                }
+                .catch2 {
+                    seal.reject($0)
+                }
+        }
+        
+        return promise
+    }
+    
+    public static func getRawMessages(from snode: Snode, associatedWith publicKey: String, authenticated: Bool = true) -> Promise<Data> {
+        let (promise, seal) = Promise<Data>.pending()
+
+        Threading.workQueue.async {
+            let retrievePromise = (authenticated ?
+                getMessagesWithAuthentication(from: snode, associatedWith: publicKey, namespace: defaultNamespace) :
+                getMessagesUnauthenticated(from: snode, associatedWith: publicKey)
+            )
+            retrievePromise.done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
+        }
+        
+        return promise
+    }
+    
+    public static func getRawClosedGroupMessagesFromDefaultNamespace(from snode: Snode, associatedWith publicKey: String) -> Promise<Data> {
+        let (promise, seal) = Promise<Data>.pending()
+        Threading.workQueue.async {
+            getMessagesUnauthenticated(from: snode, associatedWith: publicKey, namespace: defaultNamespace).done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
         }
         return promise
     }
     
-    private static func getMessagesInternal(from snode: Snode, associatedWith publicKey: String) -> Promise<Data> {
+    private static func getMessagesWithAuthentication(from snode: Snode, associatedWith publicKey: String, namespace: Int) -> Promise<Data> {
         let storage = SNSnodeKitConfiguration.shared.storage
         
-        // NOTE: All authentication logic is currently commented out, the reason being that we can't currently support
-        // it yet for closed groups. The Storage Server requires an ed25519 key pair, but we don't have that for our
-        // closed groups.
+        /// **Note:** All authentication logic is only apply to 1-1 chats, the reason being that we can't currently support it yet for
+        /// closed groups. The Storage Server requires an ed25519 key pair, but we don't have that for our closed groups.
+        guard let userED25519KeyPair = storage.getUserED25519KeyPair() else {
+            return Promise(error: Error.noKeyPair)
+        }
         
-//        guard let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
         // Get last message hash
-        storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey)
-        let lastHash = storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
+        storage.pruneLastMessageHashInfoIfExpired(for: snode, namespace: namespace, associatedWith: publicKey)
+        let lastHash = (storage.getLastMessageHash(for: snode, namespace: namespace, associatedWith: publicKey) ?? "")
+        
         // Construct signature
-//        let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
-//        let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
-//        let verificationData = ("retrieve" + String(timestamp)).data(using: String.Encoding.utf8)!
-//        let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)!
+        let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
+        let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
+        let namespaceVerificationString = (namespace == defaultNamespace ? "" : String(namespace))
+        
+        guard
+            let verificationData = ("retrieve" + namespaceVerificationString + String(timestamp)).data(using: String.Encoding.utf8),
+            let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)
+        else { return Promise(error: Error.signingFailed) }
+        
         // Make the request
         let parameters: JSON = [
             "pubKey" : Features.useTestnet ? publicKey.removingIdPrefixIfNeeded() : publicKey,
+            "namespace": namespace,
             "lastHash" : lastHash,
-//            "timestamp" : timestamp,
-//            "pubkey_ed25519" : ed25519PublicKey,
-//            "signature" : signature.toBase64()!
+            "timestamp" : timestamp,
+            "pubkey_ed25519" : ed25519PublicKey,
+            "signature" : signature.toBase64()
         ]
+        
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
+        
+    private static func getMessagesUnauthenticated(
+        from snode: Snode,
+        associatedWith publicKey: String,
+        namespace: Int = closedGroupNamespace
+    ) -> Promise<Data> {
+        let storage = SNSnodeKitConfiguration.shared.storage
+        
+        // Get last message hash
+        storage.pruneLastMessageHashInfoIfExpired(for: snode, namespace: namespace, associatedWith: publicKey)
+        let lastHash = storage.getLastMessageHash(for: snode, namespace: namespace, associatedWith: publicKey) ?? ""
 
-    public static func sendMessage(_ message: SnodeMessage) -> Promise<Set<Promise<Data>>> {
+        // Make the request
+        var parameters: JSON = [
+            "pubKey" : (Features.useTestnet ? publicKey.removingIdPrefixIfNeeded() : publicKey),
+            "lastHash" : lastHash,
+        ]
+        
+        // Don't include namespace if polling for 0 with no authentication
+        if namespace != defaultNamespace {
+            parameters["namespace"] = namespace
+        }
+        
+        return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
+    }
+    
+    // MARK: Store
+    
+    public static func sendMessage(_ message: SnodeMessage, isClosedGroupMessage: Bool, isConfigMessage: Bool) -> Promise<Set<Promise<Data>>> {
+        let namespace = isClosedGroupMessage ? closedGroupNamespace : defaultNamespace
+        return sendMessageUnauthenticated(message, namespace: namespace)
+    }
+    
+    // Not in use until we can batch delete and store config messages
+    private static func sendMessageWithAuthentication(_ message: SnodeMessage, namespace: Int) -> Promise<Set<Promise<Data>>> {
+        let storage = SNSnodeKitConfiguration.shared.storage
+        
+        guard let userED25519KeyPair = storage.getUserED25519KeyPair() else {
+            return Promise(error: Error.noKeyPair)
+        }
+        
+        // Construct signature
+        let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
+        let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
+        
+        guard
+            let verificationData = ("store" + String(namespace) + String(timestamp)).data(using: String.Encoding.utf8),
+            let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)
+        else { return Promise(error: Error.signingFailed) }
+        
+        // Make the request
         let (promise, seal) = Promise<Set<Promise<Data>>>.pending()
         let publicKey = Features.useTestnet ? message.recipient.removingIdPrefixIfNeeded() : message.recipient
+        
         Threading.workQueue.async {
-            getTargetSnodes(for: publicKey)
-                .map2 { targetSnodes in
-                    let parameters = message.toJSON()
-                    return Set(targetSnodes.map { targetSnode in
-                        attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
-                            invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
-                        }
-                    })
-                }
-                .done2 { seal.fulfill($0) }
-                .catch2 { seal.reject($0) }
+            getTargetSnodes(for: publicKey).map2 { targetSnodes in
+                var parameters = message.toJSON()
+                parameters["namespace"] = namespace
+                parameters["sig_timestamp"] = timestamp
+                parameters["pubkey_ed25519"] = ed25519PublicKey
+                parameters["signature"] = signature.toBase64()
+                return Set(targetSnodes.map { targetSnode in
+                    attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                        invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
+                    }
+                })
+            }.done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
         }
+        
         return promise
     }
+    
+    private static func sendMessageUnauthenticated(_ message: SnodeMessage, namespace: Int) -> Promise<Set<Promise<Data>>> {
+        let (promise, seal) = Promise<Set<Promise<Data>>>.pending()
+        let publicKey = Features.useTestnet ? message.recipient.removingIdPrefixIfNeeded() : message.recipient
+        
+        Threading.workQueue.async {
+            getTargetSnodes(for: publicKey).map2 { targetSnodes in
+                var parameters = message.toJSON()
+                parameters["namespace"] = namespace
+                return Set(targetSnodes.map { targetSnode in
+                    attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                        invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
+                    }
+                })
+            }.done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
+        }
+        
+        return promise
+    }
+    
+    // MARK: Delete
     
     @objc(deleteMessageForPublickKey:serverHashes:)
     public static func objc_deleteMessage(publicKey: String, serverHashes: [String]) -> AnyPromise {
@@ -602,10 +755,10 @@ public final class SnodeAPI : NSObject {
         )
     }
     
-    public static func updateLastMessageHashValueIfPossible(for snode: Snode, associatedWith publicKey: String, from lastRawMessage: JSON?) {
+    public static func updateLastMessageHashValueIfPossible(for snode: Snode, namespace: Int, associatedWith publicKey: String, from lastRawMessage: JSON?) {
         if let lastMessage = lastRawMessage, let lastHash = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? UInt64 {
             SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
-                SNSnodeKitConfiguration.shared.storage.setLastMessageHashInfo(for: snode, associatedWith: publicKey,
+                SNSnodeKitConfiguration.shared.storage.setLastMessageHashInfo(for: snode, namespace: namespace, associatedWith: publicKey,
                     to: [ "hash" : lastHash, "expirationDate" : NSNumber(value: expirationDate) ], using: transaction)
             }
         } else if (lastRawMessage != nil) {

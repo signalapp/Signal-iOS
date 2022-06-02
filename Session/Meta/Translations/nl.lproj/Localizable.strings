@@ -27,21 +27,21 @@
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Versturen bijlage mislukt";
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Kan afbeelding niet naar JPEG converteren.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Afbeelding converteren mislukt.";
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Kan video niet verwerken.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Video converteren mislukt.";
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Kan afbeelding niet verwerken.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Afbeelding verwerken mislukt.";
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Kan metagegevens niet uit afbeelding verwijderen.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Metadata van afbeelding verwijderen mislukt.";
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Afbeelding verkleinen mislukt.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Aanpassen formaat afbeelding mislukt.";
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Bijlage is te groot.";
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Bijlage bevat inhoud die niet wordt ondersteund of niet correct is geformatteerd.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Bijlage bevat ongeldige inhoud.";
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Bijlage is een bestandstype welke niet wordt ondersteund.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Bijlage heeft een ongeldig bestandsformaat.";
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Bijlage is leeg.";
 /* Alert title when picking a document fails for an unknown reason */
@@ -93,11 +93,11 @@
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokkeren";
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ blokkeren?";
-/* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@ deblokkeren?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blokkeer %@?";
+/* A format for the 'unblock user' action sheet title. Embeds {{the unblocked user's name or phone number}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Deblokkeer %@?";
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "Deblokkeren";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Blokkering opheffen";
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ is geblokkeerd.";
 /* The title of the 'user blocked' alert. */
@@ -307,9 +307,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Naamloze Album";
 /* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+"PUSH_MANAGER_MARKREAD" = "Markeer als gelezen";
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Reply";
+"PUSH_MANAGER_REPLY" = "Antwoord";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "We kunnen uw account pas activeren nadat u de code die we u hebben gestuurd verifieert.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
@@ -371,9 +371,15 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Link Previews verzenden";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Voorbeelden worden ondersteund van Imgur, Instagram, Pinterest Reddit, en YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Voorvertoningen worden ondersteund voor de meeste urls.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Link voorbeelden";
+/* Setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS" = "Spraak- en video-oproepen";
+/* Footer for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_FOOTER" = "Sta toegang toe tot het accepteren van spraak- en video-oproepen van andere gebruikers.";
+/* Header for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_HEADER" = "Bellen";
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notificatie Inhoud";
 /* Label for the 'read receipts' setting. */
@@ -518,11 +524,11 @@
 "modal_seed_explanation" = "Dit is uw herstel zin, Hiermee kun je je sessie-ID herstellen of migreren naar een nieuw apparaat.";
 "modal_clear_all_data_title" = "Wis alle gegevens";
 "modal_clear_all_data_explanation" = "Hiermee worden uw berichten, sessies en contacten permanent verwijderd.";
-"modal_clear_all_data_explanation_2" = "Would you like to clear only this device, or delete your entire account?";
-"dialog_clear_all_data_deletion_failed_1" = "Data not deleted by 1 Service Node. Service Node ID: %@.";
-"dialog_clear_all_data_deletion_failed_2" = "Data not deleted by %@ Service Nodes. Service Node IDs: %@.";
-"modal_clear_all_data_device_only_button_title" = "Device Only";
-"modal_clear_all_data_entire_account_button_title" = "Entire Account";
+"modal_clear_all_data_explanation_2" = "Wilt u alleen de data op dit apparaat verwijderen, of wilt u uw hele account verwijderen?";
+"dialog_clear_all_data_deletion_failed_1" = "Gegevens niet verwijderd door 1 Service Node. Service Node ID: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Gegevens niet verwijderd door %@ Service Nodes. Service Node IDs: %@.";
+"modal_clear_all_data_device_only_button_title" = "Alleen apparaat";
+"modal_clear_all_data_entire_account_button_title" = "Gehele account";
 "vc_qr_code_title" = "QR-code";
 "vc_qr_code_view_my_qr_code_tab_title" = "Bekijk mijn QR-code";
 "vc_qr_code_view_scan_qr_code_tab_title" = "QR-code scannen";
@@ -555,15 +561,17 @@
 "modal_open_url_title" = "URL openen?";
 "modal_open_url_explanation" = "Weet u zeker dat u %@ wilt openen?";
 "modal_open_url_button_title" = "Openen";
-"modal_copy_url_button_title" = "Copy Link";
+"modal_copy_url_button_title" = "Kopieer link";
 "modal_blocked_title" = "Blokkering opheffen voor %@?";
 "modal_blocked_explanation" = "Weet je zeker dat je %@ weer wilt toelaten?";
 "modal_blocked_button_title" = "Deblokkeren";
 "modal_link_previews_title" = "Linkvoorbeeld inschakelen?";
 "modal_link_previews_explanation" = "Link previews inschakelen zal previews tonen voor URLs die u verstuurt en ontvangt. Dit kan nuttig zijn, maar Session moet contact opnemen met gekoppelde websites om previews te genereren. U kunt links altijd uitschakelen in de Session’s-instellingen.";
 "modal_link_previews_button_title" = "Inschakelen";
-"modal_share_logs_title" = "Share Logs";
-"modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
+"modal_call_title" = "Spraak / video-oproepen";
+"modal_call_explanation" = "De huidige implementatie van spraak / video-oproepen zal uw IP-adres blootstellen aan de Oxen Foundation servers en de bel/gebelde gebruiker.";
+"modal_share_logs_title" = "Deel logs";
+"modal_share_logs_explanation" = "Wil je je applicatie logboeken exporteren om te kunnen delen bij het oplossen van problemen?";
 "vc_share_title" = "Delen naar de Session";
 "vc_share_loading_message" = "Bijlagen voorbereiden...";
 "vc_share_sending_message" = "Aan het verzenden...";
@@ -573,40 +581,58 @@
 "vc_share_link_previews_disabled_explanation" = "Enabling link previews will show previews for URLs you share. This can be useful, but Session will need to contact linked websites to generate previews.\n\nYou can enable link previews in Session's settings.";
 "view_open_group_invitation_description" = "Open groepsuitnodiging";
 "vc_conversation_settings_invite_button_title" = "Voeg deelnemers toe";
-"vc_settings_faq_button_title" = "FAQ";
-"vc_settings_survey_button_title" = "Feedback / Survey";
-"vc_settings_support_button_title" = "Debug Log";
-"modal_send_seed_title" = "Warning";
-"modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
-"modal_send_seed_send_button_title" = "Send";
-"vc_conversation_settings_notify_for_mentions_only_title" = "Notify for Mentions Only";
-"vc_conversation_settings_notify_for_mentions_only_explanation" = "When enabled, you'll only be notified for messages mentioning you.";
-"view_conversation_title_notify_for_mentions_only" = "Notifying for Mentions Only";
-"message_deleted" = "This message has been deleted";
-"delete_message_for_me" = "Delete just for me";
-"delete_message_for_everyone" = "Delete for everyone";
-"delete_message_for_me_and_recipient" = "Delete for me and %@";
-"context_menu_reply" = "Reply";
-"context_menu_save" = "Save";
-"context_menu_ban_user" = "Ban User";
-"context_menu_ban_and_delete_all" = "Ban and Delete All";
+"vc_settings_faq_button_title" = "Veelgestelde vragen (FAQ)";
+"vc_settings_survey_button_title" = "Tips / Vragen";
+"vc_settings_support_button_title" = "Foutopsporingslogboek";
+"modal_send_seed_title" = "Waarschuwing";
+"modal_send_seed_explanation" = "Dit is je herstelzin. Als je het naar iemand stuurt hebben ze volledige toegang tot je account.";
+"modal_send_seed_send_button_title" = "Verzenden";
+"vc_conversation_settings_notify_for_mentions_only_title" = "Alleen melding bij vermeldingen";
+"vc_conversation_settings_notify_for_mentions_only_explanation" = "Wanneer ingeschakeld, wordt u alleen op de hoogte gesteld voor berichten die u vermelden.";
+"view_conversation_title_notify_for_mentions_only" = "Melding alleen voor vermeldingen";
+"message_deleted" = "Dit bericht is verwijderd";
+"delete_message_for_me" = "Verwijder alleen voor mij";
+"delete_message_for_everyone" = "Verwijder voor iedereen";
+"delete_message_for_me_and_recipient" = "Verwijderen voor mij en %@";
+"context_menu_reply" = "Antwoord";
+"context_menu_save" = "Opslaan";
+"context_menu_ban_user" = "Gebruiker verbannen";
+"context_menu_ban_and_delete_all" = "Blokkeer en verwijder alles";
 "context_menu_ban_user_error_alert_message" = "Unable to ban user";
-"accessibility_expanding_attachments_button" = "Add attachments";
+"accessibility_expanding_attachments_button" = "Bijlage toevoegen";
 "accessibility_gif_button" = "Gif";
 "accessibility_document_button" = "Document";
-"accessibility_library_button" = "Photo library";
+"accessibility_library_button" = "Fotobibliotheek";
 "accessibility_camera_button" = "Camera";
-"accessibility_main_button_collapse" = "Collapse attachment options";
-"invalid_recovery_phrase" = "Invalid Recovery Phrase";
-"DISMISS_BUTTON_TEXT" = "Dismiss";
+"accessibility_main_button_collapse" = "Bijlage-opties inklappen";
+"invalid_recovery_phrase" = "Ongeldig Herstelzin";
+"invalid_recovery_phrase" = "Ongeldig Herstelzin";
+"DISMISS_BUTTON_TEXT" = "Negeren";
 /* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Settings";
-"voice_call" = "Voice Call";
-"video_call" = "Video Call";
-"APN_Message" = "You've got a new message";
-"system_mode_theme" = "System";
-"dark_mode_theme" = "Dark";
-"light_mode_theme" = "Light";
+"OPEN_SETTINGS_BUTTON" = "Instellingen";
+"call_outgoing" = "Je belde %@";
+"call_incoming" = "%@ heeft je gebeld";
+"call_missed" = "Gemiste oproep van %@";
+"call_rejected" = "Gesprek afwijzen";
+"call_cancelled" = "Oproep geannuleerd";
+"call_timeout" = "Onbeantwoorde oproep";
+"voice_call" = "Spraak gesprek";
+"video_call" = "Videogesprek";
+"APN_Message" = "Je hebt een nieuw bericht.";
+"APN_Collapsed_Messages" = "Je hebt een %@ nieuw bericht.";
+"system_mode_theme" = "Systeem";
+"dark_mode_theme" = "Donker";
+"light_mode_theme" = "Licht";
+"PIN_BUTTON_TEXT" = "Vastzetten";
+"UNPIN_BUTTON_TEXT" = "Losmaken";
+"modal_call_missed_tips_title" = "Oproep gemist";
+"modal_call_missed_tips_explanation" = "Oproep gemist van '%@' omdat je de 'Spraak- en video-oproep' permissie nodig hebt in de privacy-instellingen.";
+"meida_saved" = "Media opgeslagen door %@.";
+"screenshot_taken" = "%@ heeft een schermafbeelding genomen.";
+"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_RECENT" = "Recent";
+"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";
 "MESSAGE_REQUESTS_TITLE" = "Message Requests";
 "MESSAGE_REQUESTS_EMPTY_TEXT" = "No pending message requests";
 "MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";

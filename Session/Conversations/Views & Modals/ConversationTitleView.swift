@@ -50,6 +50,10 @@ final class ConversationTitleView : UIView {
     private func initialize() {
         addSubview(stackView)
         stackView.pin(to: self)
+        let shouldShowCallButton = SessionCall.isEnabled && !thread.isNoteToSelf() && !thread.isGroupThread()
+        let leftMargin: CGFloat = shouldShowCallButton ? 54 : 8 // Contact threads also have the call button to compensate for
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: leftMargin, bottom: 0, right: 0)
+        
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         addGestureRecognizer(tapGestureRecognizer)
         let notificationCenter = NotificationCenter.default
@@ -70,11 +74,6 @@ final class ConversationTitleView : UIView {
         subtitleLabel.attributedText = subtitle
         let titleFontSize = (subtitle != nil) ? Values.mediumFontSize : Values.veryLargeFontSize
         titleLabel.font = .boldSystemFont(ofSize: titleFontSize)
-        
-        // Update title left margin
-        let shouldShowCallButton = SessionCall.isEnabled && !thread.isNoteToSelf() && !thread.isGroupThread() && !thread.isMessageRequest()
-        let leftMargin: CGFloat = shouldShowCallButton ? 54 : 8 // Contact threads also have the call button to compensate for
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: leftMargin, bottom: 0, right: 0)
     }
 
     // MARK: General

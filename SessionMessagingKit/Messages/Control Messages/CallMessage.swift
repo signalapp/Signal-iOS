@@ -9,10 +9,13 @@ public final class CallMessage : ControlMessage {
     public var sdps: [String]?
         
     public override var isSelfSendValid: Bool {
-        if case .answer = kind { return true }
-        if case .endCall = kind { return true }
-        return false
+        switch kind {
+        case .answer, .endCall: return true
+        default: return false
+        }
     }
+    
+    public override var shouldBeRetryable: Bool { true }
     
     // NOTE: Multiple ICE candidates may be batched together for performance
     

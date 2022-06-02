@@ -424,7 +424,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         highlightFocusedMessageIfNeeded()
         didFinishInitialLayout = true
         markAllAsRead()
-        self.becomeFirstResponder()
+        recoverInputView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -447,9 +447,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     override func appDidBecomeActive(_ notification: Notification) {
-        // This is a workaround for an issue where the textview is not scrollable
-        // after the app goes into background and goes back in foreground.
-        self.snInputView.text = self.snInputView.text
+        recoverInputView()
     }
     
     deinit {
@@ -504,9 +502,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                     }
                 }
                 else {
-                    // Note: Adding an empty button because without it the title alignment is busted (Note: The size was
+                    // Note: Adding 2 empty buttons because without it the title alignment is busted (Note: The size was
                     // taken from the layout inspector for the back button in Xcode
-                    rightBarButtonItems.append(UIBarButtonItem(customView: UIView(frame: CGRect(x: 0, y: 0, width: 37, height: 44))))
+                    rightBarButtonItems.append(UIBarButtonItem(customView: UIView(frame: CGRect(x: 0, y: 0, width: Values.verySmallProfilePictureSize, height: 44))))
+                    rightBarButtonItems.append(UIBarButtonItem(customView: UIView(frame: CGRect(x: 0, y: 0, width: 44, height: 44))))
                 }
             }
             else {
@@ -827,6 +826,14 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         }
         else {
             detach()
+        }
+    }
+    
+    func recoverInputView() {
+        // This is a workaround for an issue where the textview is not scrollable
+        // after the app goes into background and goes back in foreground.
+        DispatchQueue.main.async {
+            self.snInputView.text = self.snInputView.text
         }
     }
     

@@ -114,7 +114,7 @@ public final class Poller : NSObject {
             }
             
             // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
-            SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, associatedWith: userPublicKey, from: lastRawMessage)
+            SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, namespace: SnodeAPI.defaultNamespace, associatedWith: userPublicKey, from: lastRawMessage)
             
             strongSelf.pollCount += 1
             if strongSelf.pollCount == Poller.maxPollCount {
