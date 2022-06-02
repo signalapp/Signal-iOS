@@ -122,6 +122,7 @@ public final class ClosedGroupPoller : NSObject {
             if !rawMessages.isEmpty {
                 SNLog("Received \(rawMessages.count) new message(s) in closed group with public key: \(groupPublicKey).")
             }
+            var processedMessages: [JSON] = []
             rawMessages.forEach { json in
                 guard let envelope = SNProtoEnvelope.from(json) else { return }
                 do {
@@ -130,13 +131,15 @@ public final class ClosedGroupPoller : NSObject {
                     SNMessagingKitConfiguration.shared.storage.write { transaction in
                         SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
                     }
+                    processedMessages.append(json)
                 } catch {
                     SNLog("Failed to deserialize envelope due to error: \(error).")
                 }
             }
             
-            // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
+            // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value & `receivedMessageHashes`
             SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, namespace: SnodeAPI.closedGroupNamespace, associatedWith: groupPublicKey, from: lastRawMessage)
+            SnodeAPI.updateReceivedMessages(from: processedMessages, associatedWith: groupPublicKey)
         }
         promise.catch2 { error in
             SNLog("Polling failed for closed group with public key: \(groupPublicKey) due to error: \(error).")

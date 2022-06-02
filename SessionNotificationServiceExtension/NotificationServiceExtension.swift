@@ -78,9 +78,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         guard case .preOffer = callMessage.kind else { return self.completeSilenty() }
                         if !SSKPreferences.areCallsEnabled {
                             if let sender = callMessage.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), !thread.isMessageRequest(using: transaction) {
-                                let infoMessage = TSInfoMessage.from(callMessage, associatedWith: thread)
-                                infoMessage.updateCallInfoMessage(.permissionDenied, using: transaction)
-                                SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
+                                self.insertCallInfoMessage(for: callMessage, in: thread, reason: .permissionDenied, using: transaction)
                             }
                             break
                         }
@@ -92,9 +90,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                                 message.kind = .endCall
                                 SNLog("[Calls] Sending end call message because there is an ongoing call.")
                                 MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
-                                let infoMessage = TSInfoMessage.from(callMessage, associatedWith: thread)
-                                infoMessage.updateCallInfoMessage(.missed, using: transaction)
-                                SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
+                                self.insertCallInfoMessage(for: callMessage, in: thread, reason: .missed, using: transaction)
                             }
                             break
                         }
@@ -110,6 +106,18 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                     }
                 }
             }
+        }
+    }
+    
+    private func insertCallInfoMessage(for message: CallMessage, in thread: TSThread, reason: TSInfoMessageCallState, using transaction: YapDatabaseReadWriteTransaction) {
+        guard let sender = message.sender, let uuid = message.uuid else { return }
+        var receivedCalls = Storage.shared.getReceivedCalls(for: sender, using: transaction)
+        if !receivedCalls.contains(uuid) {
+            let infoMessage = TSInfoMessage.from(message, associatedWith: thread)
+            infoMessage.updateCallInfoMessage(reason, using: transaction)
+            SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
+            receivedCalls.insert(uuid)
+            Storage.shared.setReceivedCalls(to: receivedCalls, for: sender, using: transaction)
         }
     }
 
@@ -263,6 +271,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
     }
     
     // MARK: Poll for open groups
+    
     private func pollForOpenGroups() -> [Promise<Void>] {
         var promises: [Promise<Void>] = []
         let servers = Set(Storage.shared.getAllOpenGroups().values.map { $0.server })

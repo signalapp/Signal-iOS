@@ -21,7 +21,6 @@ PODS:
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
-  - GoogleWebRTC (1.1.31999)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
@@ -40,7 +39,7 @@ PODS:
   - PromiseKit/UIKit (6.15.3):
     - PromiseKit/CorePromise
   - PureLayout (3.1.9)
-  - Quick (4.0.0)
+  - Quick (5.0.1)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
   - SignalCoreKit (1.0.0):
@@ -54,6 +53,7 @@ PODS:
   - SQLCipher/standard (4.5.0):
     - SQLCipher/common
   - SwiftProtobuf (1.5.0)
+  - WebRTC-lib (96.0.0)
   - YapDatabase/SQLCipher (3.1.1):
     - YapDatabase/SQLCipher/Core (= 3.1.1)
     - YapDatabase/SQLCipher/Extensions (= 3.1.1)
@@ -127,7 +127,6 @@ DEPENDENCIES:
   - AFNetworking
   - CryptoSwift
   - Curve25519Kit (from `https://github.com/oxen-io/session-ios-curve-25519-kit.git`, branch `session-version`)
-  - GoogleWebRTC
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - Nimble
   - NVActivityIndicatorView
@@ -140,6 +139,7 @@ DEPENDENCIES:
   - SocketRocket (~> 0.5.1)
   - Sodium (from `https://github.com/oxen-io/session-ios-swift-sodium.git`, branch `session-build`)
   - SwiftProtobuf (~> 1.5.0)
+  - WebRTC-lib
   - YapDatabase/SQLCipher (from `https://github.com/oxen-io/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - ZXingObjC
@@ -149,7 +149,6 @@ SPEC REPOS:
     - AFNetworking
     - CocoaLumberjack
     - CryptoSwift
-    - GoogleWebRTC
     - Nimble
     - NVActivityIndicatorView
     - OpenSSL-Universal
@@ -161,6 +160,7 @@ SPEC REPOS:
     - SocketRocket
     - SQLCipher
     - SwiftProtobuf
+    - WebRTC-lib
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -207,14 +207,13 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
-  GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
   OpenSSL-Universal: e7311447fd2419f57420c79524b641537387eff2
   PromiseKit: 3b2b6995e51a954c46dbc550ce3da44fbfb563c5
   PureLayout: 5fb5e5429519627d60d079ccb1eaa7265ce7cf88
-  Quick: 6473349e43b9271a8d43839d9ba1c442ed1b7ac4
+  Quick: 749aa754fd1e7d984f2000fe051e18a3a9809179
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: 1fbd8732163ef76de16cd1107d1fa3684b607e5d
@@ -222,10 +221,11 @@ SPEC CHECKSUMS:
   Sodium: a7d42cb46e789d2630fa552d35870b416ed055ae
   SQLCipher: 98dc22f27c0b1790d39e710d440f22a466ebdb59
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
+  WebRTC-lib: 508fe02efa0c1a3a8867082a77d24c9be5d29aeb
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: e4f78b5555c81d9dc1377a9462bacc8bd662684e
+PODFILE CHECKSUM: 6edcaf484d4a1c402ab1d46770bbeda6982519f4
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

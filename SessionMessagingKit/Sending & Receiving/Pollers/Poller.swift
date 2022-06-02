@@ -100,6 +100,7 @@ public final class Poller : NSObject {
             if !messages.isEmpty {
                 SNLog("Received \(messages.count) new message(s).")
             }
+            var processedMessages: [JSON] = []
             messages.forEach { json in
                 guard let envelope = SNProtoEnvelope.from(json) else { return }
                 do {
@@ -108,13 +109,15 @@ public final class Poller : NSObject {
                     SNMessagingKitConfiguration.shared.storage.write { transaction in
                         SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
                     }
+                    processedMessages.append(json)
                 } catch {
                     SNLog("Failed to deserialize envelope due to error: \(error).")
                 }
             }
             
-            // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
+            // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value & `receivedMessageHashes`
             SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, namespace: SnodeAPI.defaultNamespace, associatedWith: userPublicKey, from: lastRawMessage)
+            SnodeAPI.updateReceivedMessages(from: processedMessages, associatedWith: userPublicKey)
             
             strongSelf.pollCount += 1
             if strongSelf.pollCount == Poller.maxPollCount {

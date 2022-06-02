@@ -545,8 +545,7 @@ public final class SnodeAPI : NSObject {
     // MARK: Store
     
     public static func sendMessage(_ message: SnodeMessage, isClosedGroupMessage: Bool, isConfigMessage: Bool) -> Promise<Set<Promise<Data>>> {
-        let namespace = isClosedGroupMessage ? closedGroupNamespace : defaultNamespace
-        return sendMessageUnauthenticated(message, namespace: namespace)
+        return sendMessageUnauthenticated(message, isClosedGroupMessage: isClosedGroupMessage)
     }
     
     // Not in use until we can batch delete and store config messages
@@ -588,19 +587,35 @@ public final class SnodeAPI : NSObject {
         return promise
     }
     
-    private static func sendMessageUnauthenticated(_ message: SnodeMessage, namespace: Int) -> Promise<Set<Promise<Data>>> {
+    private static func sendMessageUnauthenticated(_ message: SnodeMessage, isClosedGroupMessage: Bool) -> Promise<Set<Promise<Data>>> {
         let (promise, seal) = Promise<Set<Promise<Data>>>.pending()
         let publicKey = Features.useTestnet ? message.recipient.removingIdPrefixIfNeeded() : message.recipient
         
         Threading.workQueue.async {
             getTargetSnodes(for: publicKey).map2 { targetSnodes in
+                var rawResponsePromises: Set<Promise<Data>> = Set()
                 var parameters = message.toJSON()
-                parameters["namespace"] = namespace
-                return Set(targetSnodes.map { targetSnode in
-                    attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                parameters["namespace"] = (isClosedGroupMessage ? closedGroupNamespace : defaultNamespace)
+                
+                for targetSnode in targetSnodes {
+                    let rawResponsePromise = attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                         invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
                     }
-                })
+                    rawResponsePromises.insert(rawResponsePromise)
+                }
+                
+                // Send closed group messages to default namespace as well
+                if hardfork == 19 && softfork == 0 && isClosedGroupMessage {
+                    parameters["namespace"] = defaultNamespace
+                    for targetSnode in targetSnodes {
+                        let rawResponsePromise = attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                            invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
+                        }
+                        rawResponsePromises.insert(rawResponsePromise)
+                    }
+                }
+                
+                return rawResponsePromises
             }.done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
         }
         
@@ -766,6 +781,20 @@ public final class SnodeAPI : NSObject {
         }
     }
     
+    public static func updateReceivedMessages(from messages: [JSON], associatedWith publicKey: String) {
+        let oldReceivedMessages = SNSnodeKitConfiguration.shared.storage.getReceivedMessages(for: publicKey)
+        var newReceivedMessages = oldReceivedMessages
+        for message in messages {
+            guard let hash = message["hash"] as? String else { continue }
+            newReceivedMessages.insert(hash)
+        }
+        if oldReceivedMessages != newReceivedMessages {
+            SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
+                SNSnodeKitConfiguration.shared.storage.setReceivedMessages(to: newReceivedMessages, for: publicKey, using: transaction)
+            }
+        }
+    }
+    
     private static func removeDuplicates(from rawMessages: [JSON], associatedWith publicKey: String) -> [JSON] {
         let oldReceivedMessages = SNSnodeKitConfiguration.shared.storage.getReceivedMessages(for: publicKey)
         var newReceivedMessages = oldReceivedMessages
@@ -777,12 +806,6 @@ public final class SnodeAPI : NSObject {
             let isDuplicate = newReceivedMessages.contains(hash)
             newReceivedMessages.insert(hash)
             return !isDuplicate
-        }
-        // Avoid the sync write transaction if possible
-        if oldReceivedMessages != newReceivedMessages {
-            SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
-                SNSnodeKitConfiguration.shared.storage.setReceivedMessages(to: newReceivedMessages, for: publicKey, using: transaction)
-            }
         }
         return result
     }
@@ -814,6 +837,10 @@ public final class SnodeAPI : NSObject {
             case 500, 502, 503:
                 // The snode is unreachable
                 handleBadSnode()
+                
+            case 404:
+                // May caused by invalid open groups
+                SNLog("Can't reach the server.")
                 
             case 406:
                 SNLog("The user's clock is out of sync with the service node network.")

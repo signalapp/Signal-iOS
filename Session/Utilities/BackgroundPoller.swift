@@ -51,6 +51,7 @@ public final class BackgroundPoller: NSObject {
                     return SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey)
                         .then(on: DispatchQueue.main) { rawResponse -> Promise<Void> in
                             let (messages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
+                            var processedMessages: [JSON] = []
                             let promises = messages
                                 .compactMap { json -> Promise<Void>? in
                                     // Use a best attempt approach here; we don't want to fail
@@ -60,6 +61,7 @@ public final class BackgroundPoller: NSObject {
                                     }
                         
                                     let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: true)
+                                    processedMessages.append(json)
                         
                                     return job.execute()
                                 }
@@ -72,10 +74,15 @@ public final class BackgroundPoller: NSObject {
                                 associatedWith: publicKey,
                                 from: lastRawMessage
                             )
+                            SnodeAPI.updateReceivedMessages(
+                                from: processedMessages,
+                                associatedWith: publicKey
+                            )
                     
                             return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects
                         }
                 }
+            }
     }
     
     private static func getClosedGroupMessages(for publicKey: String) -> Promise<Void> {
@@ -84,7 +91,7 @@ public final class BackgroundPoller: NSObject {
                 guard let snode = swarm.randomElement() else { throw SnodeAPI.Error.generic }
             
                 return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
-                    var promises: [SnodeAPI.RawResponsePromise] = []
+                    var promises: [Promise<Data>] = []
                     var namespaces: [Int] = []
                 
                     // We have to poll for both namespace 0 and -10 when hardfork == 19 && softfork == 0
@@ -108,6 +115,7 @@ public final class BackgroundPoller: NSObject {
                             for result in results {
                                 if case .fulfilled(let rawResponse) = result {
                                     let (messages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
+                                    var processedMessages: [JSON] = []
                                     let jobPromises = messages.compactMap { json -> Promise<Void>? in
                                 
                                         // Use a best attempt approach here; we don't want to fail
@@ -117,6 +125,7 @@ public final class BackgroundPoller: NSObject {
                                         }
                                 
                                         let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: true)
+                                        processedMessages.append(json)
                                 
                                         return job.execute()
                                     }
@@ -128,6 +137,10 @@ public final class BackgroundPoller: NSObject {
                                         namespace: namespaces[index],
                                         associatedWith: publicKey,
                                         from: lastRawMessage
+                                    )
+                                    SnodeAPI.updateReceivedMessages(
+                                        from: processedMessages,
+                                        associatedWith: publicKey
                                     )
                             
                                     promises += jobPromises
