@@ -1,4 +1,3 @@
-import UIKit
 
 final class ReactionListSheet : BaseVC, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     private let reactions: [ReactMessage]
@@ -36,6 +35,13 @@ final class ReactionListSheet : BaseVC, UICollectionViewDataSource, UICollection
         return result
     }()
     
+    private lazy var detailInfoLabel: UILabel = {
+        let result = UILabel()
+        result.font = .systemFont(ofSize: Values.mediumFontSize)
+        result.textColor = Colors.grey.withAlphaComponent(0.8)
+        return result
+    }()
+    
     // MARK: Lifecycle
     
     init(for reactions: [ReactMessage]) {
@@ -60,6 +66,15 @@ final class ReactionListSheet : BaseVC, UICollectionViewDataSource, UICollection
         populateData()
         setUpViewHierarchy()
         reactionContainer.reloadData()
+        update()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if let index = reactionMap.orderedKeys.firstIndex(of: selectedReaction!) {
+            let indexPath = IndexPath(item: index, section: 0)
+            reactionContainer.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+        }
     }
 
     private func setUpViewHierarchy() {
@@ -74,15 +89,18 @@ final class ReactionListSheet : BaseVC, UICollectionViewDataSource, UICollection
         contentView.addSubview(reactionContainer)
         reactionContainer.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: contentView)
         reactionContainer.pin(.top, to: .top, of: contentView, withInset: Values.verySmallSpacing)
-        // Reactions
-
         // Line
         let lineView = UIView()
-        lineView.backgroundColor = Colors.border.withAlphaComponent(0.5)
+        lineView.backgroundColor = Colors.border.withAlphaComponent(0.1)
         lineView.set(.height, to: 0.5)
         contentView.addSubview(lineView)
-        lineView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: contentView)
+        lineView.pin(.leading, to: .leading, of: contentView, withInset: Values.smallSpacing)
+        lineView.pin(.trailing, to: .trailing, of: contentView, withInset: -Values.smallSpacing)
         lineView.pin(.top, to: .bottom, of: reactionContainer, withInset: Values.verySmallSpacing)
+        // Detail info label
+        contentView.addSubview(detailInfoLabel)
+        detailInfoLabel.pin(.top, to: .bottom, of: lineView, withInset: Values.smallSpacing)
+        detailInfoLabel.pin(.leading, to: .leading, of: contentView, withInset: Values.mediumSpacing)
         
     }
     
@@ -100,6 +118,11 @@ final class ReactionListSheet : BaseVC, UICollectionViewDataSource, UICollection
         }
     }
     
+    private func update() {
+        let seletedData = reactionMap.value(forKey: selectedReaction!)!
+        detailInfoLabel.text = "\(selectedReaction!) · \(seletedData.count)"
+    }
+    
     // MARK: Layout
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, leading: Values.smallSpacing, bottom: 0, trailing: Values.smallSpacing)
@@ -114,11 +137,14 @@ final class ReactionListSheet : BaseVC, UICollectionViewDataSource, UICollection
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.identifier, for: indexPath) as! Cell
         let item = reactionMap.orderedItems[indexPath.item]
         cell.data = (item.0, item.1.count)
+        cell.isSelected = item.0 == selectedReaction!
         return cell
     }
     
     // MARK: Interaction
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        selectedReaction = reactionMap.orderedKeys[indexPath.item]
+        update()
     }
     
     // MARK: Interaction
