@@ -56,10 +56,15 @@ extension AppDelegate {
         }
     }
     
-    private func insertCallInfoMessage(for message: CallMessage, using transaction: YapDatabaseReadWriteTransaction) -> TSInfoMessage {
+    private func insertCallInfoMessage(for message: CallMessage, using transaction: YapDatabaseReadWriteTransaction) -> TSInfoMessage? {
+        guard let sender = message.sender, let uuid = message.uuid else { return nil }
+        var receivedCalls = Storage.shared.getReceivedCalls(for: sender, using: transaction)
+        guard !receivedCalls.contains(uuid) else { return nil }
         let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
         let infoMessage = TSInfoMessage.from(message, associatedWith: thread)
         infoMessage.save(with: transaction)
+        receivedCalls.insert(uuid)
+        Storage.shared.setReceivedCalls(to: receivedCalls, for: sender, using: transaction)
         return infoMessage
     }
     
@@ -78,20 +83,22 @@ extension AppDelegate {
             guard CurrentAppContext().isMainApp else { return }
             guard let timestamp = message.sentTimestamp, TimestampUtils.isWithinOneMinute(timestamp: timestamp) else {
                 // Add missed call message for call offer messages from more than one minute
-                let infoMessage = self.insertCallInfoMessage(for: message, using: transaction)
-                infoMessage.updateCallInfoMessage(.missed, using: transaction)
-                let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
-                SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
+                if let infoMessage = self.insertCallInfoMessage(for: message, using: transaction) {
+                    infoMessage.updateCallInfoMessage(.missed, using: transaction)
+                    let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
+                    SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
+                }
                 return
             }
             guard SSKPreferences.areCallsEnabled else {
-                let infoMessage = self.insertCallInfoMessage(for: message, using: transaction)
-                infoMessage.updateCallInfoMessage(.permissionDenied, using: transaction)
-                let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
-                SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
-                let contactName = Storage.shared.getContact(with: message.sender!, using: transaction)?.displayName(for: Contact.Context.regular) ?? message.sender!
-                DispatchQueue.main.async {
-                    self.showMissedCallTipsIfNeeded(caller: contactName)
+                if let infoMessage = self.insertCallInfoMessage(for: message, using: transaction) {
+                    infoMessage.updateCallInfoMessage(.permissionDenied, using: transaction)
+                    let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
+                    SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
+                    let contactName = Storage.shared.getContact(with: message.sender!, using: transaction)?.displayName(for: Contact.Context.regular) ?? message.sender!
+                    DispatchQueue.main.async {
+                        self.showMissedCallTipsIfNeeded(caller: contactName)
+                    }
                 }
                 return
             }
@@ -106,7 +113,7 @@ extension AppDelegate {
             // Handle UI
             if let caller = message.sender, let uuid = message.uuid {
                 let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
-                call.callMessageID = infoMessage.uniqueId
+                call.callMessageID = infoMessage?.uniqueId
                 self.showCallUIForCall(call)
             }
         }

@@ -32,6 +32,8 @@ public class ConversationSearchController : NSObject {
 
     @objc
     public let resultsBar: SearchResultsBar = SearchResultsBar()
+    
+    private var lastSearchText: String?
 
     // MARK: Initializer
 
@@ -88,8 +90,10 @@ extension ConversationSearchController : UISearchResultsUpdating {
             return
         }
         let searchText = FullTextSearchFinder.normalize(text: rawSearchText)
+        lastSearchText = searchText
 
         guard searchText.count >= ConversationSearchController.kMinimumSearchTextLength else {
+            lastSearchText = nil
             self.resultsBar.updateResults(resultSet: nil)
             self.delegate?.conversationSearchController(self, didUpdateSearchResults: nil)
             return
@@ -102,7 +106,7 @@ extension ConversationSearchController : UISearchResultsUpdating {
             }
             resultSet = self.dbSearcher.searchWithinConversation(thread: self.thread, searchText: searchText, transaction: transaction)
         }, completionBlock: { [weak self] in
-            guard let self = self else {
+            guard let self = self, searchText == self.lastSearchText else {
                 return
             }
             self.resultsBar.updateResults(resultSet: resultSet)
@@ -121,7 +125,6 @@ extension ConversationSearchController : SearchResultsBarDelegate {
             return
         }
 
-        BenchEventStart(title: "Conversation Search Nav", eventId: "Conversation Search Nav: \(searchResult.messageId)")
         self.delegate?.conversationSearchController(self, didSelectMessageId: searchResult.messageId)
     }
 }
