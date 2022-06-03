@@ -1475,39 +1475,7 @@ struct SignalServiceProtos_DataMessage {
       /// Clears the value of `thumbnail`. Subsequent reads from it will return its default value.
       mutating func clearThumbnail() {_uniqueStorage()._thumbnail = nil}
 
-      var flags: UInt32 {
-        get {return _storage._flags ?? 0}
-        set {_uniqueStorage()._flags = newValue}
-      }
-      /// Returns true if `flags` has been explicitly set.
-      var hasFlags: Bool {return _storage._flags != nil}
-      /// Clears the value of `flags`. Subsequent reads from it will return its default value.
-      mutating func clearFlags() {_uniqueStorage()._flags = nil}
-
       var unknownFields = SwiftProtobuf.UnknownStorage()
-
-      enum Flags: SwiftProtobuf.Enum {
-        typealias RawValue = Int
-        case voiceMessage // = 1
-
-        init() {
-          self = .voiceMessage
-        }
-
-        init?(rawValue: Int) {
-          switch rawValue {
-          case 1: self = .voiceMessage
-          default: return nil
-          }
-        }
-
-        var rawValue: Int {
-          switch self {
-          case .voiceMessage: return 1
-          }
-        }
-
-      }
 
       init() {}
 
@@ -2473,10 +2441,6 @@ extension SignalServiceProtos_DataMessage.Flags: CaseIterable {
 }
 
 extension SignalServiceProtos_DataMessage.ProtocolVersion: CaseIterable {
-  // Support synthesized by the compiler.
-}
-
-extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment.Flags: CaseIterable {
   // Support synthesized by the compiler.
 }
 
@@ -4584,7 +4548,6 @@ extension SignalServiceProtos_DataMessage.Flags: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.ProtocolVersion: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Quote: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: @unchecked Sendable {}
-extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment.Flags: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Contact: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Contact.Name: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Contact.Phone: @unchecked Sendable {}
@@ -6017,14 +5980,12 @@ extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.
     1: .same(proto: "contentType"),
     2: .same(proto: "fileName"),
     3: .same(proto: "thumbnail"),
-    4: .same(proto: "flags"),
   ]
 
   fileprivate class _StorageClass {
     var _contentType: String? = nil
     var _fileName: String? = nil
     var _thumbnail: SignalServiceProtos_AttachmentPointer? = nil
-    var _flags: UInt32? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -6034,7 +5995,6 @@ extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.
       _contentType = source._contentType
       _fileName = source._fileName
       _thumbnail = source._thumbnail
-      _flags = source._flags
     }
   }
 
@@ -6056,7 +6016,6 @@ extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.
         case 1: try { try decoder.decodeSingularStringField(value: &_storage._contentType) }()
         case 2: try { try decoder.decodeSingularStringField(value: &_storage._fileName) }()
         case 3: try { try decoder.decodeSingularMessageField(value: &_storage._thumbnail) }()
-        case 4: try { try decoder.decodeSingularUInt32Field(value: &_storage._flags) }()
         default: break
         }
       }
@@ -6078,9 +6037,6 @@ extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.
       try { if let v = _storage._thumbnail {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
       } }()
-      try { if let v = _storage._flags {
-        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 4)
-      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6093,7 +6049,6 @@ extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.
         if _storage._contentType != rhs_storage._contentType {return false}
         if _storage._fileName != rhs_storage._fileName {return false}
         if _storage._thumbnail != rhs_storage._thumbnail {return false}
-        if _storage._flags != rhs_storage._flags {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -6101,12 +6056,6 @@ extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
-}
-
-extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment.Flags: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "VOICE_MESSAGE"),
-  ]
 }
 
 extension SignalServiceProtos_DataMessage.Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

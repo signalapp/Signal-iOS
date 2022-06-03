@@ -3795,25 +3795,6 @@ extension SSKProtoCallMessageBuilder {
 
 #endif
 
-// MARK: - SSKProtoDataMessageQuoteQuotedAttachmentFlags
-
-@objc
-public enum SSKProtoDataMessageQuoteQuotedAttachmentFlags: Int32 {
-    case voiceMessage = 1
-}
-
-private func SSKProtoDataMessageQuoteQuotedAttachmentFlagsWrap(_ value: SignalServiceProtos_DataMessage.Quote.QuotedAttachment.Flags) -> SSKProtoDataMessageQuoteQuotedAttachmentFlags {
-    switch value {
-    case .voiceMessage: return .voiceMessage
-    }
-}
-
-private func SSKProtoDataMessageQuoteQuotedAttachmentFlagsUnwrap(_ value: SSKProtoDataMessageQuoteQuotedAttachmentFlags) -> SignalServiceProtos_DataMessage.Quote.QuotedAttachment.Flags {
-    switch value {
-    case .voiceMessage: return .voiceMessage
-    }
-}
-
 // MARK: - SSKProtoDataMessageQuoteQuotedAttachment
 
 @objc
@@ -3846,15 +3827,6 @@ public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject, Codable, NSSecu
     @objc
     public var hasFileName: Bool {
         return proto.hasFileName
-    }
-
-    @objc
-    public var flags: UInt32 {
-        return proto.flags
-    }
-    @objc
-    public var hasFlags: Bool {
-        return proto.hasFlags
     }
 
     public var hasUnknownFields: Bool {
@@ -3951,9 +3923,6 @@ extension SSKProtoDataMessageQuoteQuotedAttachment {
         if let _value = thumbnail {
             builder.setThumbnail(_value)
         }
-        if hasFlags {
-            builder.setFlags(flags)
-        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -4000,11 +3969,6 @@ public class SSKProtoDataMessageQuoteQuotedAttachmentBuilder: NSObject {
 
     public func setThumbnail(_ valueParam: SSKProtoAttachmentPointer) {
         proto.thumbnail = valueParam.proto
-    }
-
-    @objc
-    public func setFlags(_ valueParam: UInt32) {
-        proto.flags = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

@@ -202,14 +202,9 @@ message DataMessage {
 
   message Quote {
     message QuotedAttachment {
-      enum Flags {
-        VOICE_MESSAGE = 1;
-      }
-
       optional string            contentType = 1;
       optional string            fileName    = 2;
       optional AttachmentPointer thumbnail   = 3;
-      optional uint32            flags       = 4;
     }
 
     // @required
