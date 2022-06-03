@@ -68,7 +68,7 @@ class MessageCell : UITableViewCell {
     }
 }
 
-protocol MessageCellDelegate : AnyObject {
+protocol MessageCellDelegate : ReactionDelegate {
     var lastSearchedText: String? { get }
     
     func getMediaCache() -> NSCache<NSString, AnyObject>
@@ -81,7 +81,5 @@ protocol MessageCellDelegate : AnyObject {
     func handleReplyButtonTapped(for viewItem: ConversationViewItem)
     func showUserDetails(for sessionID: String)
     func showReactionList(_ viewItem: ConversationViewItem, selectedReaction: String?)
-    func quickReact(_ viewItem: ConversationViewItem, with emoji: String)
-    func cancelReact(_ viewItem: ConversationViewItem, for emoji: String)
     func needsLayout()
 }

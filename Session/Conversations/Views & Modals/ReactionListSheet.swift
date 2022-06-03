@@ -1,8 +1,11 @@
 
 final class ReactionListSheet : BaseVC {
+    private let thread: TSGroupThread
+    private let viewItem: ConversationViewItem
     private let reactions: [ReactMessage]
     private var reactionMap: OrderedDictionary<String, [ReactMessage]> = OrderedDictionary()
     var selectedReaction: String?
+    var delegate: ReactionDelegate?
     
     // MARK: Components
     
@@ -43,6 +46,15 @@ final class ReactionListSheet : BaseVC {
         return result
     }()
     
+    private lazy var clearAllButton: Button = {
+        let result = Button(style: .destructiveOutline, size: .small)
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.setTitle(NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL", comment: ""), for: .normal)
+        result.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
+        result.layer.borderWidth = 0
+        return result
+    }()
+    
     private lazy var userListView: UITableView = {
         let result = UITableView()
         result.dataSource = self
@@ -57,8 +69,14 @@ final class ReactionListSheet : BaseVC {
     
     // MARK: Lifecycle
     
-    init(for reactions: [ReactMessage]) {
-        self.reactions = reactions
+    init(for viewItem: ConversationViewItem, thread: TSGroupThread) {
+        self.viewItem = viewItem
+        self.thread = thread
+        if let message = viewItem.interaction as? TSMessage {
+            self.reactions = message.reactions as! [ReactMessage]
+        } else {
+            self.reactions = []
+        }
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -110,14 +128,16 @@ final class ReactionListSheet : BaseVC {
         lineView.pin(.leading, to: .leading, of: contentView, withInset: Values.smallSpacing)
         lineView.pin(.trailing, to: .trailing, of: contentView, withInset: -Values.smallSpacing)
         lineView.pin(.top, to: .bottom, of: reactionContainer, withInset: Values.verySmallSpacing)
-        // Detail info label
-        contentView.addSubview(detailInfoLabel)
-        detailInfoLabel.pin(.top, to: .bottom, of: lineView, withInset: Values.smallSpacing)
-        detailInfoLabel.pin(.leading, to: .leading, of: contentView, withInset: Values.mediumSpacing)
+        // Detail info & clear all
+        let stackView = UIStackView(arrangedSubviews: [ detailInfoLabel, clearAllButton ])
+        contentView.addSubview(stackView)
+        stackView.pin(.top, to: .bottom, of: lineView, withInset: Values.smallSpacing)
+        stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.mediumSpacing)
+        stackView.pin(.trailing, to: .trailing, of: contentView, withInset: -Values.mediumSpacing)
         // Reactor list
         contentView.addSubview(userListView)
         userListView.pin([ UIView.HorizontalEdge.trailing, UIView.HorizontalEdge.leading, UIView.VerticalEdge.bottom ], to: contentView)
-        userListView.pin(.top, to: .bottom, of: detailInfoLabel, withInset: Values.smallSpacing)
+        userListView.pin(.top, to: .bottom, of: stackView, withInset: Values.smallSpacing)
     }
     
     private func populateData() {
@@ -158,6 +178,11 @@ final class ReactionListSheet : BaseVC {
 
     @objc func close() {
         dismiss(animated: true, completion: nil)
+    }
+    
+    @objc private func clearAllTapped() {
+        guard let reactMessages = reactionMap.value(forKey: selectedReaction!) else { return }
+        delegate?.cancelAllReact(reactMessages: reactMessages)
     }
 }
 
@@ -216,10 +241,9 @@ extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let cell = tableView.cellForRow(at: indexPath) as? UserCell else { return }
-        let publicKey = reactionMap.value(forKey: selectedReaction!)![indexPath.row].sender!
+        guard let reactMessage = reactionMap.value(forKey: selectedReaction!)?[indexPath.row], let publicKey = reactMessage.sender else { return }
         if publicKey == getUserHexEncodedPublicKey() {
-            // TODO: cancel emoji react
+            delegate?.cancelReact(viewItem, for: selectedReaction!)
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -298,3 +322,14 @@ extension ReactionListSheet {
         }
     }
 }
+
+// MARK: Delegate
+
+protocol ReactionDelegate : AnyObject {
+    
+    func quickReact(_ viewItem: ConversationViewItem, with emoji: String)
+    func cancelReact(_ viewItem: ConversationViewItem, for emoji: String)
+    func cancelAllReact(reactMessages: [ReactMessage])
+    
+}
+

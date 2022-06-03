@@ -820,8 +820,10 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func showReactionList(_ viewItem: ConversationViewItem, selectedReaction: String?) {
+        guard let thread = thread as? TSGroupThread else { return }
         guard let message = viewItem.interaction as? TSMessage, message.reactions.count > 0 else { return }
-        let reactionListSheet = ReactionListSheet(for: message.reactions as! [ReactMessage])
+        let reactionListSheet = ReactionListSheet(for: viewItem, thread: thread)
+        reactionListSheet.delegate = self
         reactionListSheet.selectedReaction = selectedReaction
         reactionListSheet.modalPresentationStyle = .overFullScreen
         present(reactionListSheet, animated: true, completion: nil)
@@ -838,6 +840,10 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     func cancelReact(_ viewItem: ConversationViewItem, for emoji: String) {
         react(viewItem, with: emoji, cancel: true)
+    }
+    
+    func cancelAllReact(reactMessages: [ReactMessage]) {
+        
     }
     
     private func react(_ viewItem: ConversationViewItem, with emoji: String, cancel: Bool) {
