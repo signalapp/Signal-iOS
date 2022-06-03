@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,7 +8,7 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
     var interactionInProgress = false
 
     weak var interactiveDismissDelegate: InteractiveDismissDelegate?
-    let handlesAnimation : Bool
+    let handlesAnimation: Bool
 
     init(viewController: UIViewController, handlesAnimation: Bool = true) {
         self.viewController = viewController
@@ -25,7 +25,7 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
 
     // MARK: - Private
 
-    private var initialDimissFrame : CGRect?
+    private var initialDimissFrame: CGRect?
     private weak var viewController: UIViewController?
     private var farEnoughToCompleteTransition = false
 
@@ -102,7 +102,7 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             break
         }
     }
-    
+
     private func constainSwipe(offset: CGPoint) -> CGPoint {
         // Don't allow the swipe to move the view upwards off the screen
         var y = offset.y
