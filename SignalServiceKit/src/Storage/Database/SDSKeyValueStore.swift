@@ -156,7 +156,7 @@ public class SDSKeyValueStore: NSObject {
 
     @objc
     public func setBool(_ value: Bool, key: String, transaction: SDSAnyWriteTransaction) {
-        write(NSNumber(booleanLiteral: value), forKey: key, transaction: transaction)
+        write(NSNumber(value: value), forKey: key, transaction: transaction)
     }
 
     @objc
