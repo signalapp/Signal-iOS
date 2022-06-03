@@ -461,7 +461,6 @@ extension StoriesViewController: ContextMenuInteractionDelegate {
                 appendShareAction()
             case .missing:
                 owsFailDebug("Unexpectedly missing attachment for story.")
-                break
             }
 
             actions.append(.init(

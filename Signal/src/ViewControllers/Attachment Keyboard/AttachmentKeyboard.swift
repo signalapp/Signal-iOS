@@ -195,7 +195,6 @@ class AttachmentKeyboard: CustomKeyboard {
             }
         @unknown default:
             showRecentPhotosError()
-            break
         }
 
         completion()

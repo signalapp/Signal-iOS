@@ -371,11 +371,9 @@ public class MobileCoinAPI: Dependencies {
                 switch result {
                 case .success(let transactions):
                     future.resolve(transactions)
-                    break
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
                     future.reject(error)
-                    break
                 }
             }
             return promise
@@ -402,11 +400,9 @@ public class MobileCoinAPI: Dependencies {
                 switch result {
                 case .success:
                     future.resolve()
-                    break
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
                     future.reject(error)
-                    break
                 }
             }
             return promise
@@ -443,11 +439,9 @@ public class MobileCoinAPI: Dependencies {
                 switch result {
                 case .success(let transactionStatus):
                     future.resolve(MCOutgoingTransactionStatus(transactionStatus: transactionStatus))
-                    break
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
                     future.reject(error)
-                    break
                 }
             }
             return promise

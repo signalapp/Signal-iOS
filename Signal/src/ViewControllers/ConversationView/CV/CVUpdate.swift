@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -182,7 +182,6 @@ extension CVUpdate {
                     if newIndex < previousItemCount - 1 {
                         shouldAnimateUpdate = false
                     }
-                    break
                 case .unreadIndicator:
                     break
                 default:

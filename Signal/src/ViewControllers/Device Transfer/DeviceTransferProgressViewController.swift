@@ -104,7 +104,6 @@ extension DeviceTransferProgressViewController: DeviceTransferServiceObserver {
                 text: NSLocalizedString("DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION",
                                         comment: "An error indicating the user must update their device before trying to transfer.")
             )
-            break
         case .modeMismatch:
             owsFailDebug("this should never happen")
         }

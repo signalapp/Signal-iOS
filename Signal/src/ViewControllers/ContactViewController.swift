@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -314,7 +314,6 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             activityIndicator.autoPinEdge(.top, to: .bottom, of: lastView, withOffset: 10)
             activityIndicator.autoHCenterInSuperview()
             lastView = activityIndicator
-            break
         }
 
         // Always show "add to contacts" button.

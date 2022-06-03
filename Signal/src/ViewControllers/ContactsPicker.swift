@@ -196,7 +196,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
             }
         @unknown default:
             errorHandler(OWSAssertionError("Unexpected enum value"))
-            break
         }
     }
 

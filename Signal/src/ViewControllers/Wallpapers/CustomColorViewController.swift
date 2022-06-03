@@ -1246,7 +1246,6 @@ private class CustomColorPreviewView: UIView {
             dismissTooltip()
         default:
             gestureMode = .none
-            break
         }
     }
 

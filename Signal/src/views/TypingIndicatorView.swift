@@ -210,7 +210,6 @@ class TypingIndicatorView: ManualStackView {
                 addDotKeyFrame(5 * timeIncrement, 0.0)
                 addDotKeyFrame(6 * timeIncrement, 0.0)
                 addDotKeyFrame(10 * timeIncrement, 0.0)
-                break
             case .dotType2:
                 addDotKeyFrame(0 * timeIncrement, 0.0)
                 addDotKeyFrame(1 * timeIncrement, 0.0)
@@ -220,7 +219,6 @@ class TypingIndicatorView: ManualStackView {
                 addDotKeyFrame(5 * timeIncrement, 0.0)
                 addDotKeyFrame(6 * timeIncrement, 0.0)
                 addDotKeyFrame(10 * timeIncrement, 0.0)
-                break
             case .dotType3:
                 addDotKeyFrame(0 * timeIncrement, 0.0)
                 addDotKeyFrame(1 * timeIncrement, 0.0)
@@ -230,7 +228,6 @@ class TypingIndicatorView: ManualStackView {
                 addDotKeyFrame(5 * timeIncrement, 0.5)
                 addDotKeyFrame(6 * timeIncrement, 0.0)
                 addDotKeyFrame(10 * timeIncrement, 0.0)
-                break
             }
 
             let makeAnimation: (String, [Any]) -> CAKeyframeAnimation = { (keyPath, values) in

@@ -106,7 +106,6 @@ class ContactCell: UITableViewCell {
         switch subtitleType {
         case .none:
             assert(self.subtitleLabel.superview == nil)
-            break
         case .phoneNumber:
             self.textStackView.addArrangedSubview(self.subtitleLabel)
 

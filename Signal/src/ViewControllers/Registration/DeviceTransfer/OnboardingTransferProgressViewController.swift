@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -136,13 +136,11 @@ extension OnboardingTransferProgressViewController: DeviceTransferServiceObserve
                 text: NSLocalizedString("DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE",
                                         comment: "An error indicating that the user does not have enough free space on their device to complete the transfer")
             )
-            break
         case .unsupportedVersion:
             progressView.renderError(
                 text: NSLocalizedString("DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION",
                                         comment: "An error indicating the user must update their device before trying to transfer.")
             )
-            break
         case .modeMismatch:
             owsFailDebug("This should never happen on the new device")
         }

@@ -85,10 +85,8 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             case .restoring:
                 // TODO: We could easily show progress for restores.
                 owsFailDebug("Restoring progress type.")
-                break
             case .unknown:
                 owsFailDebug("Unknown progress type.")
-                break
             }
         } else if let attachmentPointer = self.attachmentPointer {
             let placeholderView = UIView()

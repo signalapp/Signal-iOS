@@ -466,7 +466,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 return UIFont.ows_regularFont(withSize: basePointSize * 2.25)
             default:
                 owsFailDebug("Unexpected jumbomoji count: \(jumbomojiCount)")
-                break
             }
         }
 

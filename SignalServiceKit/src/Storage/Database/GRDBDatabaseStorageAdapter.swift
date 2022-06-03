@@ -1165,11 +1165,9 @@ extension GRDBDatabaseStorageAdapter {
                     if mode != .passive {
                         Logger.info("Checkpoint succeeded: \(mode).")
                     }
-                    break
                 case SQLITE_BUSY:
                     // Busy is not an error.
                     Logger.info("Checkpoint \(mode) failed due to busy.")
-                    break
                 default:
                     throw OWSAssertionError("checkpoint sql error with code: \(code)")
                 }

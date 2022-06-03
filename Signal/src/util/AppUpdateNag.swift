@@ -121,7 +121,6 @@ class AppUpdateNag: NSObject {
             presentUpgradeNag(appStoreRecord: appStoreRecord)
         default:
             Logger.debug("not presenting alert due to frontmostViewController: \(frontmostViewController)")
-            break
         }
     }
 

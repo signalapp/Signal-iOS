@@ -349,7 +349,6 @@ class CropScaleImageViewController: OWSViewController {
             lastPinchLocation =
                 sender.location(in: sender.view)
             lastPinchScale = sender.scale
-            break
         case .changed, .ended:
             if sender.numberOfTouches > 1 {
                 let location =
@@ -383,16 +382,13 @@ class CropScaleImageViewController: OWSViewController {
                 lastPinchLocation = location
                 lastPinchScale = sender.scale
             }
-            break
         case .cancelled, .failed:
             srcTranslation = srcTranslationAtPinchStart
             imageScale = imageScaleAtPinchStart
-            break
         @unknown default:
             owsFailDebug("Unexpected enum value.")
             srcTranslation = srcTranslationAtPinchStart
             imageScale = imageScaleAtPinchStart
-            break
         }
 
         updateImageLayout()
@@ -407,7 +403,6 @@ class CropScaleImageViewController: OWSViewController {
             break
         case .began:
             srcTranslationAtPanStart = srcTranslation
-            break
         case .changed, .ended:
             let viewSizePoints = imageView.frame.size
             let srcCropSizePoints = CGSize(width: srcDefaultCropSizePoints.width / imageScale,
@@ -421,16 +416,13 @@ class CropScaleImageViewController: OWSViewController {
             // Update translation.
             srcTranslation = CGPoint(x: srcTranslationAtPanStart.x + gestureTranslation.x * -viewToSrcRatio,
                                      y: srcTranslationAtPanStart.y + gestureTranslation.y * -viewToSrcRatio)
-            break
         case .cancelled, .failed:
             srcTranslation
                 = srcTranslationAtPanStart
-            break
         @unknown default:
             owsFailDebug("Unexpected enum value.")
             srcTranslation
                 = srcTranslationAtPanStart
-            break
         }
 
         updateImageLayout()

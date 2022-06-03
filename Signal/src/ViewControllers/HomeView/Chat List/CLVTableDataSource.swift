@@ -371,7 +371,6 @@ extension CLVTableDataSource: UITableViewDelegate {
         switch section {
         case .reminders:
             tableView.deselectRow(at: indexPath, animated: false)
-            break
         case .pinned, .unpinned:
             guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
                 owsFailDebug("Missing threadViewModel.")
