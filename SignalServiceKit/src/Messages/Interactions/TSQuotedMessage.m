@@ -385,20 +385,22 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     }
 
     // We're only interested in the first attachment
-    SSKProtoAttachmentPointer *thumbnailProto = proto.attachments.firstObject.thumbnail;
+    SSKProtoDataMessageQuoteQuotedAttachment *_Nullable attachmentProto = proto.attachments.firstObject;
+    SSKProtoAttachmentPointer *_Nullable thumbnailProto = attachmentProto.thumbnail;
     if (thumbnailProto) {
-        TSAttachmentPointer *_Nullable attachment = [TSAttachmentPointer attachmentPointerFromProto:thumbnailProto
-                                                                                       albumMessage:nil];
-        if (attachment) {
-            [attachment anyInsertWithTransaction:transaction];
-            attachmentInfo = [[OWSAttachmentInfo alloc] initWithAttachmentId:attachment.uniqueId
+        TSAttachmentPointer *_Nullable thumbnailAttachment =
+            [TSAttachmentPointer attachmentPointerFromProto:thumbnailProto albumMessage:nil];
+        if (thumbnailAttachment) {
+            [thumbnailAttachment anyInsertWithTransaction:transaction];
+            attachmentInfo = [[OWSAttachmentInfo alloc] initWithAttachmentId:thumbnailAttachment.uniqueId
                                                                       ofType:OWSAttachmentInfoReferenceUntrustedPointer
-                                                                 contentType:thumbnailProto.contentType
-                                                              sourceFilename:thumbnailProto.fileName];
-        } else {
-            attachmentInfo = [[OWSAttachmentInfo alloc] initWithoutThumbnailWithContentType:thumbnailProto.contentType
-                                                                             sourceFilename:thumbnailProto.fileName];
+                                                                 contentType:attachmentProto.contentType
+                                                              sourceFilename:attachmentProto.fileName];
         }
+    }
+    if (!attachmentInfo && attachmentProto) {
+        attachmentInfo = [[OWSAttachmentInfo alloc] initWithoutThumbnailWithContentType:attachmentProto.contentType
+                                                                         sourceFilename:attachmentProto.fileName];
     }
 
     if (body.length > 0 || attachmentInfo) {
