@@ -468,8 +468,7 @@ public final class MessageSender {
                 }
             }(),
             message: message,
-            serverExpirationTimestamp: (Date().timeIntervalSince1970 + ControlMessageProcessRecord.defaultExpirationSeconds),
-            isRetry: false
+            serverExpirationTimestamp: (Date().timeIntervalSince1970 + ControlMessageProcessRecord.defaultExpirationSeconds)
         )?.insert(db)
         
         // Sync the message if:

@@ -63,7 +63,12 @@ public final class JobRunner {
         )
         let messageReceiveQueue: JobQueue = JobQueue(
             type: .messageReceive,
-            executionType: .concurrent, // Allow as many jobs to run at once as supported by the device
+            // Explicitly serial as executing concurrently means message receives getting processed at
+            // different speeds which can result in:
+            // • Small batches of messages appearing in the UI before larger batches
+            // • Closed group messages encrypted with updated keys could start parsing before it's key
+            //   update message has been processed (ie. guaranteed to fail)
+            executionType: .serial,
             qos: .default,
             jobVariants: [
                 jobVariants.remove(.messageReceive)

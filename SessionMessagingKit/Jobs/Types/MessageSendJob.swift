@@ -170,31 +170,15 @@ public enum MessageSendJob: JobExecutor {
 
 extension MessageSendJob {
     public struct Details: Codable {
-        // Note: This approach is less than ideal (since it needs to be manually maintained) but
-        // I couldn't think of an easy way to support a generic decoded type for the 'message'
-        // value in the database while using Codable
-        private static let supportedMessageTypes: [String: Message.Type] = [
-            "VisibleMessage": VisibleMessage.self,
-            
-            "ReadReceipt": ReadReceipt.self,
-            "TypingIndicator": TypingIndicator.self,
-            "ClosedGroupControlMessage": ClosedGroupControlMessage.self,
-            "DataExtractionNotification": DataExtractionNotification.self,
-            "ExpirationTimerUpdate": ExpirationTimerUpdate.self,
-            "ConfigurationMessage": ConfigurationMessage.self,
-            "UnsendRequest": UnsendRequest.self,
-            "MessageRequestResponse": MessageRequestResponse.self
-        ]
-        
         private enum CodingKeys: String, CodingKey {
-            case interactionId
             case destination
-            case messageType
             case message
+            case variant
         }
         
         public let destination: Message.Destination
         public let message: Message
+        public let variant: Message.Variant?
         
         // MARK: - Initialization
         
@@ -204,49 +188,36 @@ extension MessageSendJob {
         ) {
             self.destination = destination
             self.message = message
+            self.variant = Message.Variant(from: message)
         }
+        
+        // MARK: - Codable
         
         public init(from decoder: Decoder) throws {
             let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
             
-            guard let messageType: String = try? container.decode(String.self, forKey: .messageType) else {
-                Logger.error("Unable to decode messageSend job due to missing messageType")
+            guard let variant: Message.Variant = try? container.decode(Message.Variant.self, forKey: .variant) else {
+                SNLog("Unable to decode messageSend job due to missing variant")
                 throw StorageError.decodingFailed
             }
             
-            /// Note: This **MUST** be a `Codable.Type` rather than a `Message.Type` otherwise the decoding will result
-            /// in a `Message` object being returned rather than the desired subclass
-            guard let MessageType: Codable.Type = MessageSendJob.Details.supportedMessageTypes[messageType] else {
-                Logger.error("Unable to decode messageSend job due to unsupported messageType")
-                throw StorageError.decodingFailed
-            }
-            guard let message: Message = try MessageType.decoded(with: container, forKey: .message) as? Message else {
-                Logger.error("Unable to decode messageSend job due to message conversion issue")
-                throw StorageError.decodingFailed
-            }
-
             self = Details(
                 destination: try container.decode(Message.Destination.self, forKey: .destination),
-                message: message
+                message: try variant.decode(from: container, forKey: .message)
             )
         }
         
         public func encode(to encoder: Encoder) throws {
             var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
             
-            let messageType: Codable.Type = type(of: message)
-            let maybeMessageTypeString: String? = MessageSendJob.Details.supportedMessageTypes
-                .first(where: { _, type in messageType == type })?
-                .key
-            
-            guard let messageTypeString: String = maybeMessageTypeString else {
-                Logger.error("Unable to encode messageSend job due to unsupported messageType")
+            guard let variant: Message.Variant = Message.Variant(from: message) else {
+                SNLog("Unable to encode messageSend job due to unsupported variant")
                 throw StorageError.objectNotFound
             }
 
             try container.encode(destination, forKey: .destination)
-            try container.encode(messageTypeString, forKey: .messageType)
             try container.encode(message, forKey: .message)
+            try container.encode(variant, forKey: .variant)
         }
     }
 }

@@ -4,6 +4,7 @@ import Foundation
 
 public enum MessageReceiverError: LocalizedError {
     case duplicateMessage
+    case duplicateControlMessage
     case invalidMessage
     case unknownMessage
     case unknownEnvelopeType
@@ -20,7 +21,7 @@ public enum MessageReceiverError: LocalizedError {
 
     public var isRetryable: Bool {
         switch self {
-            case .duplicateMessage, .invalidMessage, .unknownMessage, .unknownEnvelopeType,
+            case .duplicateMessage, .duplicateControlMessage, .invalidMessage, .unknownMessage, .unknownEnvelopeType,
                 .invalidSignature, .noData, .senderBlocked, .noThread, .selfSend, .decryptionFailed:
                 return false
                 
@@ -31,6 +32,7 @@ public enum MessageReceiverError: LocalizedError {
     public var errorDescription: String? {
         switch self {
             case .duplicateMessage: return "Duplicate message."
+            case .duplicateControlMessage: return "Duplicate control message."
             case .invalidMessage: return "Invalid message."
             case .unknownMessage: return "Unknown message type."
             case .unknownEnvelopeType: return "Unknown envelope type."

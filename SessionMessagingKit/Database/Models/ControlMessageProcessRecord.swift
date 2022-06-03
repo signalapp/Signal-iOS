@@ -64,19 +64,12 @@ public struct ControlMessageProcessRecord: Codable, FetchableRecord, Persistable
     public init?(
         threadId: String,
         message: Message,
-        serverExpirationTimestamp: TimeInterval?,
-        isRetry: Bool = false
+        serverExpirationTimestamp: TimeInterval?
     ) {
         // All `VisibleMessage` values will have an associated `Interaction` so just let
         // the unique constraints on that table prevent duplicate messages
         if message is VisibleMessage { return nil }
         
-        // TODO: Need to allow duplicates for call messages
-        
-        // If the message failed to process and we are retrying then there will already
-        // be a `ControlMessageProcessRecord`, so return nil to prevent the insertion
-        // causing a unique constraint violation
-        if isRetry { return nil }
         
         // Allow '.new' and 'encryptionKeyPair' closed group control message duplicates to avoid
         // the following situation:

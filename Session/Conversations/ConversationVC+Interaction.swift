@@ -713,15 +713,34 @@ extension ConversationVC:
                 guard let mediaView = albumView.mediaView(forLocation: locationInAlbumView) else { return }
                 
                 switch mediaView.attachment.state {
-                    case .pendingDownload, .downloading, .uploading:
-                        // TODO: Tapped a failed incoming attachment
-                        break
+                    case .pendingDownload, .downloading, .uploading: break
+                    
+                    // Failed uploads should be handled via the "resend" process instead
+                    case .failedUpload: break
                         
-                    case .failedDownload, .failedUpload:
-                        // TODO: Tapped a failed incoming attachment
+                    case .failedDownload:
+                        let threadId: String = self.viewModel.threadData.threadId
+                        
+                        // Retry downloading the failed attachment
+                        GRDBStorage.shared.writeAsync { db in
+                            JobRunner.add(
+                                db,
+                                job: Job(
+                                    variant: .attachmentDownload,
+                                    threadId: threadId,
+                                    interactionId: cellViewModel.id,
+                                    details: AttachmentDownloadJob.Details(
+                                        attachmentId: mediaView.attachment.id
+                                    )
+                                )
+                            )
+                        }
                         break
                         
                     default:
+                        // Ignore invalid media
+                        guard mediaView.attachment.isValid else { return }
+                        
                         let viewController: UIViewController? = MediaGalleryViewModel.createDetailViewController(
                             for: self.viewModel.threadData.threadId,
                             threadVariant: self.viewModel.threadData.threadVariant,

@@ -924,7 +924,11 @@ extension MessageReceiver {
             ).insert(db)
         }
         catch {
-            return SNLog("Ignoring duplicate closed group encryption key pair.")
+            if case DatabaseError.SQLITE_CONSTRAINT_UNIQUE = error {
+                return SNLog("Ignoring duplicate closed group encryption key pair.")
+            }
+            
+            throw error
         }
         
         SNLog("Received a new closed group encryption key pair.")

@@ -142,7 +142,6 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         let result: Result<[SectionModel], Error>? = GRDBStorage.shared.read { db -> Result<[SectionModel], Error> in
             do {
                 let userPublicKey: String = getUserHexEncodedPublicKey(db)
-                
                 let contactsAndGroupsResults: [SessionThreadViewModel] = try SessionThreadViewModel
                     .contactsAndGroupsQuery(
                         userPublicKey: userPublicKey,
@@ -150,7 +149,6 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
                         searchTerm: searchText
                     )
                     .fetchAll(db)
-                
                 let messageResults: [SessionThreadViewModel] = try SessionThreadViewModel
                     .messagesQuery(
                         userPublicKey: userPublicKey,

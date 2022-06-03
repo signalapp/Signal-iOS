@@ -32,46 +32,27 @@ public enum MessageReceiveJob: JobExecutor {
             
             for messageInfo in details.messages {
                 do {
-                    // Note: It generally shouldn't be possible for 'MessageReceiver.parse' to fail
-                    // the main situation where this can happen is when the jobs run out of order (eg.
-                    // a closed group message encrypted with a new key gets processed before the key
-                    // gets added - this shouldn't be as possible with the updated JobRunner)
-                    let isRetry: Bool = (job.failureCount > 0)
-                    let (message, proto) = try MessageReceiver.parse(
-                        db,
-                        data: messageInfo.data,
-                        serverExpirationTimestamp: messageInfo.serverExpirationTimestamp,
-                        isRetry: isRetry
-                    )
-                    message.serverHash = messageInfo.serverHash
-                    
                     try MessageReceiver.handle(
                         db,
-                        message: message,
-                        associatedWithProto: proto,
+                        message: messageInfo.message,
+                        associatedWithProto: try SNProtoContent.parseData(messageInfo.serializedProtoData),
                         openGroupId: nil,
                         isBackgroundPoll: details.isBackgroundPoll
                     )
                 }
                 catch {
-                    switch error {
-                        // Note: This is the same as the 'MessageReceiverError.duplicateMessage'
-                        // which is not retryable so just skip to the next message to process (no
-                        // longer logging this because all de-duping happens here now rather than
-                        // when parsing as it did previously - this change results in excessive
-                        // logging which isn't useful)
-                        case DatabaseError.SQLITE_CONSTRAINT_UNIQUE: continue
-                            
-                        default: break
-                    }
-                    
                     // If the current message is a permanent failure then override it with the
                     // new error (we want to retry if there is a single non-permanent error)
                     switch error {
-                        // Ignore self-send errors (they will be permanently failed but no need
-                        // to log since we are going to have a lot of the due to the change to the
-                        // de-duping logic)
-                        case MessageReceiverError.selfSend: continue
+                        // Ignore duplicate and self-send errors (these will usually be caught during
+                        // parsing but sometimes can get past and conflict at database insertion - eg.
+                        // for open group messages) we also don't bother logging as it results in
+                        // excessive logging which isn't useful)
+                        case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
+                            MessageReceiverError.duplicateMessage,
+                            MessageReceiverError.duplicateControlMessage,
+                            MessageReceiverError.selfSend:
+                            break
                         
                         case let receiverError as MessageReceiverError where !receiverError.isRetryable:
                             SNLog("MessageReceiveJob permanently failed message due to error: \(error)")
@@ -107,7 +88,7 @@ public enum MessageReceiveJob: JobExecutor {
                 failure(updatedJob, error, true)
                 
             case .some(let error):
-                failure(updatedJob, error, false)
+                failure(updatedJob, error, false) // TODO: Confirm the 'noKeyPair' errors here aren't an issue
                 
             case .none:
                 success(updatedJob, false)
@@ -120,18 +101,64 @@ public enum MessageReceiveJob: JobExecutor {
 extension MessageReceiveJob {
     public struct Details: Codable {
         public struct MessageInfo: Codable {
-            public let data: Data
-            public let serverHash: String?
-            public let serverExpirationTimestamp: TimeInterval?
+            private enum CodingKeys: String, CodingKey {
+                case message
+                case variant
+                case serializedProtoData
+            }
+            
+            public let message: Message
+            public let variant: Message.Variant
+            public let serializedProtoData: Data
             
             public init(
-                data: Data,
-                serverHash: String?,
-                serverExpirationTimestamp: TimeInterval?
+                message: Message,
+                variant: Message.Variant,
+                proto: SNProtoContent
+            ) throws {
+                self.message = message
+                self.variant = variant
+                self.serializedProtoData = try proto.serializedData()
+            }
+            
+            private init(
+                message: Message,
+                variant: Message.Variant,
+                serializedProtoData: Data
             ) {
-                self.data = data
-                self.serverHash = serverHash
-                self.serverExpirationTimestamp = serverExpirationTimestamp
+                self.message = message
+                self.variant = variant
+                self.serializedProtoData = serializedProtoData
+            }
+            
+            // MARK: - Codable
+            
+            public init(from decoder: Decoder) throws {
+                let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+                
+                guard let variant: Message.Variant = try? container.decode(Message.Variant.self, forKey: .variant) else {
+                    SNLog("Unable to decode messageReceive job due to missing variant")
+                    throw StorageError.decodingFailed
+                }
+                
+                self = MessageInfo(
+                    message: try variant.decode(from: container, forKey: .message),
+                    variant: variant,
+                    serializedProtoData: try container.decode(Data.self, forKey: .serializedProtoData)
+                )
+            }
+            
+            public func encode(to encoder: Encoder) throws {
+                var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
+                
+                guard let variant: Message.Variant = Message.Variant(from: message) else {
+                    SNLog("Unable to encode messageReceive job due to unsupported variant")
+                    throw StorageError.objectNotFound
+                }
+
+                try container.encode(message, forKey: .message)
+                try container.encode(variant, forKey: .variant)
+                try container.encode(serializedProtoData, forKey: .serializedProtoData)
             }
         }
         

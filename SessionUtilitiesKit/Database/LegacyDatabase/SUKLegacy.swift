@@ -25,7 +25,7 @@ public enum SUKLegacy {
     
     // MARK: - Database Functions
     
-    private static var legacyDatabaseFilepath: String {
+    public static var legacyDatabaseFilepath: String {
         let sharedDirUrl: URL = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
         
         return sharedDirUrl

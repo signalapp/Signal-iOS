@@ -125,15 +125,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         AssertIsOnMainThread()
 
         switch notification.object {
-        case let incomingMessage as TSIncomingMessage:
-            Logger.debug("canceled notification for message: \(incomingMessage)")
-            if let identifier = incomingMessage.notificationIdentifier {
-                cancelNotification(identifier)
-            } else {
-                cancelNotifications(threadId: incomingMessage.uniqueThreadId)
-            }
-        default:
-            break
+            case let interaction as Interaction:
+                guard interaction.variant == .standardIncoming else { return }
+        
+                Logger.debug("canceled notification for message: \(interaction)")
+                cancelNotifications(identifiers: interaction.notificationIdentifiers)
+            
+            default: break
         }
     }
 

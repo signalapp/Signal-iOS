@@ -188,6 +188,20 @@ enum _003_YDBToGRDBMigration: Migration {
             
             SNLog("[Migration Info] \(target.key(with: self)) - Processing Interactions")
             
+            /// **Note:** There is no index on the collection column so unfortunately it takes the same amount of time to enumerate through all
+            /// collections as it does to just get the count of collections, due to this, if the database is very large, importing thecollections can be
+            /// very slow (~15s with 2,000,000 rows) - we want to show some kind of progress while enumerating so the below code creates a
+            /// very rought guess of the number of collections based on the file size of the database (this shouldn't affect most users at all)
+            let roughKbPerRow: CGFloat = 2.25
+            let oldDatabaseSizeBytes: CGFloat = (try? FileManager.default
+                .attributesOfItem(atPath: SUKLegacy.legacyDatabaseFilepath)[.size]
+                .asType(CGFloat.self))
+                .defaulting(to: 0)
+            let roughNumRows: CGFloat = ((oldDatabaseSizeBytes / 1024) / roughKbPerRow)
+            let startProgress: CGFloat = 0.04
+            let interactionsCompleteProgress: CGFloat = 0.19
+            var rowIndex: CGFloat = 0
+            
             transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.interactionCollection) { _, object, _ in
                 guard let interaction: SMKLegacy._DBInteraction = object as? SMKLegacy._DBInteraction else {
                     SNLog("[Migration Error] Unable to process interaction")
@@ -197,8 +211,19 @@ enum _003_YDBToGRDBMigration: Migration {
                 
                 interactions[interaction.uniqueThreadId] = (interactions[interaction.uniqueThreadId] ?? [])
                     .appending(interaction)
+                
+                rowIndex += 1
+                
+                GRDBStorage.shared.update(
+                    progress: min(
+                        interactionsCompleteProgress,
+                        ((rowIndex / roughNumRows) * (interactionsCompleteProgress - startProgress))
+                    ),
+                    for: self,
+                    in: target
+                )
             }
-            GRDBStorage.shared.update(progress: 0.19, for: self, in: target)
+            GRDBStorage.shared.update(progress: interactionsCompleteProgress, for: self, in: target)
             
             // MARK: --Attachments
             
@@ -1066,39 +1091,21 @@ enum _003_YDBToGRDBMigration: Migration {
                     return
                 }
                 
-                // We need to extract the `threadId` from the legacyJob data as the new
-                // MessageReceiveJob requires it for multi-threading and garbage collection purposes
-                guard let envelope: SNProtoEnvelope = try? SNProtoEnvelope.parseData(legacyJob.data) else {
+                // We have changed how messageReceive jobs work - we now parse the message upon receipt and
+                // the MessageReceiveJob only does the handling - as a result we need to do the same behaviour
+                // here so we don't need to support the legacy behaviour
+                guard let processedMessage: ProcessedMessage = try? Message.processRawReceivedMessage(db, serializedData: legacyJob.data, serverHash: legacyJob.serverHash) else {
                     return
                 }
                 
-                let threadId: String?
-
-                switch envelope.type {
-                    // For closed group messages the 'groupPublicKey' is stored in the
-                    // 'envelope.source' value and that should be used for the 'threadId'
-                    case .closedGroupMessage:
-                        threadId = envelope.source
-                        break
-                        
-                    default:
-                        threadId = MessageReceiver.extractSenderPublicKey(db, from: envelope)
-                }
-
                 _ = try Job(
                     failureCount: legacyJob.failureCount,
                     variant: .messageReceive,
                     behaviour: .runOnce,
                     nextRunTimestamp: 0,
-                    threadId: threadId,
+                    threadId: processedMessage.threadId,
                     details: MessageReceiveJob.Details(
-                        messages: [
-                            MessageReceiveJob.Details.MessageInfo(
-                                data: legacyJob.data,
-                                serverHash: legacyJob.serverHash,
-                                serverExpirationTimestamp: (Date().timeIntervalSince1970 + ControlMessageProcessRecord.defaultExpirationSeconds)
-                            )
-                        ],
+                        messages: [processedMessage.messageInfo],
                         isBackgroundPoll: legacyJob.isBackgroundPoll
                     )
                 )?.inserted(db)
@@ -1238,8 +1245,8 @@ enum _003_YDBToGRDBMigration: Migration {
         try autoreleasepool {
             try attachmentDownloadJobs.forEach { legacyJob in
                 guard let interactionId: Int64 = legacyInteractionToIdMap[legacyJob.tsMessageID] else {
-                    SNLog("[Migration Error] attachmentDownload job unable to find interaction")
-                    throw StorageError.migrationFailed
+                    SNLog("[Migration Warning] attachmentDownload job with no interaction found - ignoring")
+                    return
                 }
                 guard processedAttachmentIds.contains(legacyJob.attachmentID) else {
                     SNLog("[Migration Error] attachmentDownload job unable to find attachment")
@@ -1422,7 +1429,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 return (attachmentVailidityInfo.isValid, attachmentVailidityInfo.duration)
             }
             
-            if stream.isVideo {
+            if stream.isVisualMedia {
                 let attachmentVailidityInfo = Attachment.determineValidityAndDuration(
                     contentType: stream.contentType,
                     localRelativeFilePath: processedLocalRelativeFilePath,
@@ -1430,10 +1437,6 @@ enum _003_YDBToGRDBMigration: Migration {
                 )
                 
                 return (attachmentVailidityInfo.isValid, attachmentVailidityInfo.duration)
-            }
-            
-            if stream.isVisualMedia {
-                return (stream.isValidVisualMedia, nil)
             }
             
             return (true, nil)
@@ -1460,7 +1463,13 @@ enum _003_YDBToGRDBMigration: Migration {
             duration: duration,
             isValid: isValid,
             encryptionKey: legacyAttachment.encryptionKey,
-            digest: (legacyAttachment as? SMKLegacy._AttachmentStream)?.digest,
+            digest: {
+                switch legacyAttachment {
+                    case let stream as SMKLegacy._AttachmentStream: return stream.digest
+                    case let pointer as SMKLegacy._AttachmentPointer: return pointer.digest
+                    default: return nil
+                }
+            }(),
             caption: legacyAttachment.caption
         ).inserted(db)
         

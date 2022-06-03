@@ -322,13 +322,17 @@ public class MediaGalleryViewModel {
             .trackingConstantRegion { db -> [Item] in
                 guard let interactionId: Int64 = interactionId else { return [] }
                 
+                let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
                 let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
                 let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
                 
                 return try Item
                     .baseQuery(
                         orderSQL: SQL(interactionAttachment[.albumIndex]),
-                        baseFilterSQL: SQL("\(interaction[.id]) = \(interactionId)")
+                        baseFilterSQL: SQL("""
+                            \(attachment[.isValid]) = true AND
+                            \(interaction[.id]) = \(interactionId)
+                        """)
                     )
                     .fetchAll(db)
             }
@@ -342,13 +346,17 @@ public class MediaGalleryViewModel {
         // but to avoid displaying stale data we re-fetch from the database anyway
         let maybeAlbumInfo: AlbumInfo? = GRDBStorage.shared
             .read { db -> AlbumInfo in
+                let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
                 let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
                 let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
                 
                 let newAlbumData: [Item] = try Item
                     .baseQuery(
                         orderSQL: SQL(interactionAttachment[.albumIndex]),
-                        baseFilterSQL: SQL("\(interaction[.id]) = \(interactionId)")
+                        baseFilterSQL: SQL("""
+                            \(attachment[.isValid]) = true AND
+                            \(interaction[.id]) = \(interactionId)
+                        """)
                     )
                     .fetchAll(db)
                 

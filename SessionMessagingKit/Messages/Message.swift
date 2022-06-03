@@ -2,6 +2,7 @@
 
 import Foundation
 import GRDB
+import SessionSnodeKit
 
 /// Abstract base class for `VisibleMessage` and `ControlMessage`.
 public class Message: Codable {
@@ -73,6 +74,258 @@ public class Message: Codable {
         // Android needs a group context or it'll interpret the message as a one-to-one message
         let groupProto = SNProtoGroupContext.builder(id: legacyGroupId, type: .deliver)
         dataMessage.setGroup(try groupProto.build())
+    }
+}
+
+// MARK: - Message Parsing/Processing
+
+public typealias ProcessedMessage = (
+    threadId: String?,
+    proto: SNProtoContent,
+    messageInfo: MessageReceiveJob.Details.MessageInfo
+)
+
+public extension Message {
+    static let nonThreadMessageId: String = "NON_THREAD_MESSAGE"
+    
+    enum Variant: String, Codable {
+        case readReceipt
+        case typingIndicator
+        case closedGroupControlMessage
+        case dataExtractionNotification
+        case expirationTimerUpdate
+        case configurationMessage
+        case unsendRequest
+        case messageRequestResponse
+        case visibleMessage
+        
+        init?(from type: Message) {
+            switch type {
+                case is ReadReceipt: self = .readReceipt
+                case is TypingIndicator: self = .typingIndicator
+                case is ClosedGroupControlMessage: self = .closedGroupControlMessage
+                case is DataExtractionNotification: self = .dataExtractionNotification
+                case is ExpirationTimerUpdate: self = .expirationTimerUpdate
+                case is ConfigurationMessage: self = .configurationMessage
+                case is UnsendRequest: self = .unsendRequest
+                case is MessageRequestResponse: self = .messageRequestResponse
+                case is VisibleMessage: self = .visibleMessage
+                default: return nil
+            }
+        }
+        
+        var messageType: Message.Type {
+            switch self {
+                case .readReceipt: return ReadReceipt.self
+                case .typingIndicator: return TypingIndicator.self
+                case .closedGroupControlMessage: return ClosedGroupControlMessage.self
+                case .dataExtractionNotification: return DataExtractionNotification.self
+                case .expirationTimerUpdate: return ExpirationTimerUpdate.self
+                case .configurationMessage: return ConfigurationMessage.self
+                case .unsendRequest: return UnsendRequest.self
+                case .messageRequestResponse: return MessageRequestResponse.self
+                case .visibleMessage: return VisibleMessage.self
+            }
+        }
+
+        func decode<CodingKeys: CodingKey>(from container: KeyedDecodingContainer<CodingKeys>, forKey key: CodingKeys) throws -> Message {
+            switch self {
+                case .readReceipt: return try container.decode(ReadReceipt.self, forKey: key)
+                case .typingIndicator: return try container.decode(TypingIndicator.self, forKey: key)
+                
+                case .closedGroupControlMessage:
+                    return try container.decode(ClosedGroupControlMessage.self, forKey: key)
+                    
+                case .dataExtractionNotification:
+                    return try container.decode(DataExtractionNotification.self, forKey: key)
+                    
+                case .expirationTimerUpdate: return try container.decode(ExpirationTimerUpdate.self, forKey: key)
+                case .configurationMessage: return try container.decode(ConfigurationMessage.self, forKey: key)
+                case .unsendRequest: return try container.decode(UnsendRequest.self, forKey: key)
+                case .messageRequestResponse: return try container.decode(MessageRequestResponse.self, forKey: key)
+                case .visibleMessage: return try container.decode(VisibleMessage.self, forKey: key)
+            }
+        }
+    }
+    
+    static func createMessageFrom(_ proto: SNProtoContent, sender: String) -> Message? {
+        // Note: This array is ordered intentionally to ensure the correct types are processed
+        // and aren't parsed as the wrong type
+        let prioritisedVariants: [Variant] = [
+            .readReceipt,
+            .typingIndicator,
+            .closedGroupControlMessage,
+            .dataExtractionNotification,
+            .expirationTimerUpdate,
+            .configurationMessage,
+            .unsendRequest,
+            .messageRequestResponse,
+            .visibleMessage
+        ]
+        
+        return prioritisedVariants
+            .reduce(nil) { prev, variant in
+                guard prev == nil else { return prev }
+                
+                return variant.messageType.fromProto(proto, sender: sender)
+            }
+    }
+    
+    static func processRawReceivedMessage(
+        _ db: Database,
+        rawMessage: SnodeReceivedMessage
+    ) throws -> ProcessedMessage? {
+        guard let envelope = SNProtoEnvelope.from(rawMessage) else {
+            throw MessageReceiverError.invalidMessage
+        }
+        
+        do {
+            let processedMessage: ProcessedMessage? = try processRawReceivedMessage(
+                db,
+                envelope: envelope,
+                serverExpirationTimestamp: (TimeInterval(rawMessage.info.expirationDateMs) / 1000),
+                serverHash: rawMessage.info.hash,
+                handleClosedGroupKeyUpdateMessages: true
+            )
+            
+            // Retrieve the number of entries we have for the hash of this message
+            let numExistingHashes: Int = (try? SnodeReceivedMessageInfo
+                .filter(SnodeReceivedMessageInfo.Columns.hash == rawMessage.info.hash)
+                .fetchCount(db))
+                .defaulting(to: 0)
+            
+            // Try to insert the raw message info into the database (used for both request paging and
+            // de-duping purposes)
+            _ = try rawMessage.info.inserted(db)
+            
+            // If the above insertion worked then we hadn't processed this message for this specific
+            // service node, but may have done so for another node - if the hash already existed in
+            // the database before we inserted it for this node then we can ignore this message as a
+            // duplicate
+            guard numExistingHashes == 0 else { throw MessageReceiverError.duplicateMessage }
+            
+            return processedMessage
+        }
+        catch {
+            // If we get 'selfSend' or 'duplicateControlMessage' errors then we still want to insert
+            // the SnodeReceivedMessageInfo to prevent retrieving and attempting to process the same
+            // message again (as well as ensure the next poll doesn't retrieve the same message)
+            switch error {
+                case MessageReceiverError.selfSend, MessageReceiverError.duplicateControlMessage:
+                    _ = try? rawMessage.info.inserted(db)
+                    break
+                
+                default: break
+            }
+            
+            throw error
+        }
+    }
+    
+    static func processRawReceivedMessage(
+        _ db: Database,
+        serializedData: Data,
+        serverHash: String?
+    ) throws -> ProcessedMessage? {
+        guard let envelope = try? SNProtoEnvelope.parseData(serializedData) else {
+            throw MessageReceiverError.invalidMessage
+        }
+        
+        return try processRawReceivedMessage(
+            db,
+            envelope: envelope,
+            serverExpirationTimestamp: (Date().timeIntervalSince1970 + ControlMessageProcessRecord.defaultExpirationSeconds),
+            serverHash: serverHash,
+            handleClosedGroupKeyUpdateMessages: true
+        )
+    }
+    
+    /// This method behaves slightly differently from the other `processRawReceivedMessage` methods as it doesn't
+    /// insert the "message info" for deduping (we want the poller to re-process the message) and also avoids handling any
+    /// closed group key update messages (the `NotificationServiceExtension` does this itself)
+    static func processRawReceivedMessageAsNotification(
+        _ db: Database,
+        envelope: SNProtoEnvelope
+    ) throws -> ProcessedMessage? {
+        let processedMessage: ProcessedMessage? = try processRawReceivedMessage(
+            db,
+            envelope: envelope,
+            serverExpirationTimestamp: (Date().timeIntervalSince1970 + ControlMessageProcessRecord.defaultExpirationSeconds),
+            serverHash: nil,
+            handleClosedGroupKeyUpdateMessages: false
+        )
+        
+        return processedMessage
+    }
+    
+    private static func processRawReceivedMessage(
+        _ db: Database,
+        envelope: SNProtoEnvelope,
+        serverExpirationTimestamp: TimeInterval,
+        serverHash: String?,
+        // TODO: These
+        openGroupId: String? = nil,
+        openGroupMessageServerId: UInt64? = nil,
+        handleClosedGroupKeyUpdateMessages: Bool
+    ) throws -> ProcessedMessage? {
+        let (message, proto, threadId) = try MessageReceiver.parse(
+            db,
+            envelope: envelope,
+            serverExpirationTimestamp: serverExpirationTimestamp,
+            openGroupId: openGroupId,
+            openGroupMessageServerId: openGroupMessageServerId
+        )
+        message.serverHash = serverHash
+        
+        // Ignore invalid messages and hashes for messages we have previously handled
+        guard let variant: Message.Variant = Message.Variant(from: message) else {
+            throw MessageReceiverError.invalidMessage
+        }
+        
+        /// **Note:** We want to immediately handle any `ClosedGroupControlMessage` with the kind `encryptionKeyPair` as
+        /// we need the keyPair in storage in order to be able to parse and messages which were signed with the new key (also no need to add
+        /// these as jobs as they will be fully handled in here)
+        if handleClosedGroupKeyUpdateMessages {
+            switch message {
+                case let closedGroupControlMessage as ClosedGroupControlMessage:
+                    switch closedGroupControlMessage.kind {
+                        case .encryptionKeyPair:
+                            try MessageReceiver.handleClosedGroupControlMessage(db, closedGroupControlMessage)
+                            return nil
+                            
+                        default: break
+                    }
+                
+                default: break
+            }
+        }
+        
+        // Prevent ControlMessages from being handled multiple times if not supported
+        do {
+            try ControlMessageProcessRecord(
+                threadId: threadId,
+                message: message,
+                serverExpirationTimestamp: serverExpirationTimestamp
+            )?.insert(db)
+        }
+        catch {
+            // We want to custom handle this 
+            if case DatabaseError.SQLITE_CONSTRAINT_UNIQUE = error {
+                throw MessageReceiverError.duplicateControlMessage
+            }
+            
+            throw error
+        }
+        
+        return (
+            threadId,
+            proto,
+            try MessageReceiveJob.Details.MessageInfo(
+                message: message,
+                variant: variant,
+                proto: proto
+            )
+        )
     }
 }
 

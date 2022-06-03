@@ -73,27 +73,27 @@ public final class BackgroundPoller : NSObject {
                             var threadMessages: [String: [MessageReceiveJob.Details.MessageInfo]] = [:]
                             
                             messages.forEach { message in
-                                guard let envelope = SNProtoEnvelope.from(message) else { return }
-                                
-                                // Extract the threadId and add that to the messageReceive job for
-                                // multi-threading and garbage collection purposes
-                                let threadId: String? = MessageReceiver.extractSenderPublicKey(db, from: envelope)
-                                
                                 do {
-                                    threadMessages[threadId ?? ""] = (threadMessages[threadId ?? ""] ?? [])
-                                        .appending(
-                                            MessageReceiveJob.Details.MessageInfo(
-                                                data: try envelope.serializedData(),
-                                                serverHash: message.info.hash,
-                                                serverExpirationTimestamp: (TimeInterval(message.info.expirationDateMs) / 1000)
-                                            )
-                                        )
+                                    let processedMessage: ProcessedMessage? = try Message.processRawReceivedMessage(db, rawMessage: message)
+                                    let key: String = (processedMessage?.threadId ?? Message.nonThreadMessageId)
                                     
                                     // Persist the received message after the MessageReceiveJob is created
                                     _ = try message.info.saved(db)
+                                    threadMessages[key] = (threadMessages[key] ?? [])
+                                        .appending(processedMessage?.messageInfo)
                                 }
                                 catch {
-                                    SNLog("Failed to deserialize envelope due to error: \(error).")
+                                    switch error {
+                                        // Ignore duplicate & selfSend message errors (and don't bother logging
+                                        // them as there will be a lot since we each service node duplicates messages)
+                                        case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
+                                            MessageReceiverError.duplicateMessage,
+                                            MessageReceiverError.duplicateControlMessage,
+                                            MessageReceiverError.selfSend:
+                                            break
+                                        
+                                        default: SNLog("Failed to deserialize envelope due to error: \(error).")
+                                    }
                                 }
                             }
                             
@@ -105,7 +105,7 @@ public final class BackgroundPoller : NSObject {
                                         threadId: threadId,
                                         details: MessageReceiveJob.Details(
                                             messages: threadMessages,
-                                            isBackgroundPoll: false
+                                            isBackgroundPoll: true
                                         )
                                     )
                                     

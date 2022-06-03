@@ -174,29 +174,22 @@ public final class ClosedGroupPoller: NSObject {
                         var jobDetailMessages: [MessageReceiveJob.Details.MessageInfo] = []
                         
                         messages.forEach { message in
-                            guard let envelope = SNProtoEnvelope.from(message) else { return }
-                            
                             do {
-                                let serialisedData: Data = try envelope.serializedData()
-                                _ = try message.info.inserted(db)
+                                let processedMessage: ProcessedMessage? = try Message.processRawReceivedMessage(db, rawMessage: message)
                                 
-                                // Ignore hashes for messages we have previously handled
-                                guard try SnodeReceivedMessageInfo.filter(SnodeReceivedMessageInfo.Columns.hash == message.info.hash).fetchCount(db) == 1 else {
-                                    throw MessageReceiverError.duplicateMessage
-                                }
-                                
-                                jobDetailMessages.append(
-                                    MessageReceiveJob.Details.MessageInfo(
-                                        data: serialisedData,
-                                        serverHash: message.info.hash,
-                                        serverExpirationTimestamp: (TimeInterval(message.info.expirationDateMs) / 1000)
-                                    )
-                                )
+                                jobDetailMessages = jobDetailMessages
+                                    .appending(processedMessage?.messageInfo)
                             }
                             catch {
                                 switch error {
-                                    // Ignore duplicate messages
-                                    case .SQLITE_CONSTRAINT_UNIQUE, MessageReceiverError.duplicateMessage: break
+                                    // Ignore duplicate & selfSend message errors (and don't bother logging
+                                    // them as there will be a lot since we each service node duplicates messages)
+                                    case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
+                                        MessageReceiverError.duplicateMessage,
+                                        MessageReceiverError.duplicateControlMessage,
+                                        MessageReceiverError.selfSend:
+                                        break
+                                    
                                     default: SNLog("Failed to deserialize envelope due to error: \(error).")
                                 }
                             }
@@ -218,7 +211,7 @@ public final class ClosedGroupPoller: NSObject {
                         )
                     }
                     
-                    SNLog("Received \(messageCount) new message\(messageCount == 1 ? "" : "s") in closed group with public key: \(groupPublicKey) (\(messages.count - messageCount) duplicates)")
+                    SNLog("Received \(messageCount) new message\(messageCount == 1 ? "" : "s") in closed group with public key: \(groupPublicKey) (duplicates: \(messages.count - messageCount))")
                 }
             }
             .map { _ in }

@@ -35,8 +35,11 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                 }
             }
             let notificationContent = self.notificationContent!
-            guard let base64EncodedData = notificationContent.userInfo["ENCRYPTED_DATA"] as! String?, let data = Data(base64Encoded: base64EncodedData),
-                let envelope = try? MessageWrapper.unwrap(data: data), let envelopeAsData = try? envelope.serializedData() else {
+            guard
+                let base64EncodedData: String = notificationContent.userInfo["ENCRYPTED_DATA"] as? String,
+                let data: Data = Data(base64Encoded: base64EncodedData),
+                let envelope = try? MessageWrapper.unwrap(data: data)
+            else {
                 return self.handleFailure(for: notificationContent)
             }
             
@@ -45,14 +48,20 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
             // is added to notification center
             GRDBStorage.shared.write { db in
                 do {
-                    let (message, proto) = try MessageReceiver.parse(
-                        db,
-                        data: envelopeAsData,
-                        serverExpirationTimestamp: (Date().timeIntervalSince1970 + ControlMessageProcessRecord.defaultExpirationSeconds)
-                    )
-                    switch message {
+                    guard let processedMessage: ProcessedMessage = try Message.processRawReceivedMessageAsNotification(db, envelope: envelope) else {
+                        self.handleFailure(for: notificationContent)
+                        return
+                    }
+                    
+                    switch processedMessage.messageInfo.message {
                         case let visibleMessage as VisibleMessage:
-                            let interactionId: Int64 = try MessageReceiver.handleVisibleMessage(db, message: visibleMessage, associatedWithProto: proto, openGroupId: nil, isBackgroundPoll: false)
+                            let interactionId: Int64 = try MessageReceiver.handleVisibleMessage(
+                                db,
+                                message: visibleMessage,
+                                associatedWithProto: processedMessage.proto,
+                                openGroupId: nil,
+                                isBackgroundPoll: false
+                            )
                         
                             // Remove the notifications if there is an outgoing messages from a linked device
                             if

@@ -109,6 +109,9 @@ public final class Poller {
                 if let error = error as? Error, error == .pollLimitReached {
                     self?.pollCount = 0
                 }
+                else if UserDefaults.sharedLokiProject?[.isMainAppActive] != true {
+                    // Do nothing when an error gets throws right after returning from the background (happens frequently)
+                }
                 else {
                     SNLog("Polling \(nextSnode) failed; dropping it and switching to next snode.")
                     SnodeAPI.dropSnodeFromSwarmIfNeeded(nextSnode, publicKey: userPublicKey)
@@ -123,7 +126,7 @@ public final class Poller {
     private func poll(_ snode: Snode, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
         guard isPolling.wrappedValue else { return Promise { $0.fulfill(()) } }
         
-        let userPublicKey = getUserHexEncodedPublicKey()
+        let userPublicKey: String = getUserHexEncodedPublicKey()
         
         return SnodeAPI.getMessages(from: snode, associatedWith: userPublicKey)
             .then(on: Threading.pollerQueue) { [weak self] messages -> Promise<Void> in
@@ -136,43 +139,26 @@ public final class Poller {
                         var threadMessages: [String: [MessageReceiveJob.Details.MessageInfo]] = [:]
                         
                         messages.forEach { message in
-                            guard let envelope = SNProtoEnvelope.from(message) else { return }
-                            
-                            // Extract the threadId and add that to the messageReceive job for
-                            // multi-threading and garbage collection purposes
-                            let threadId: String? = MessageReceiver.extractSenderPublicKey(db, from: envelope)
-                            
-                            if threadId == nil {
-                                // TODO: I assume a configuration message doesn't need a 'threadId' (confirm this and set the 'requiresThreadId' requirement accordingly)
-                                // TODO: Does the configuration message come through here????
-                                print("RAWR WHAT CASES LETS THIS BE NIL????")
-                            }
-                            
                             do {
-                                let serialisedData: Data = try envelope.serializedData()
-                                _ = try message.info.inserted(db)
+                                let processedMessage: ProcessedMessage? = try Message.processRawReceivedMessage(db, rawMessage: message)
+                                let key: String = (processedMessage?.threadId ?? Message.nonThreadMessageId)
                                 
-                                // Ignore hashes for messages we have previously handled
-                                guard try SnodeReceivedMessageInfo.filter(SnodeReceivedMessageInfo.Columns.hash == message.info.hash).fetchCount(db) == 1 else {
-                                    throw MessageReceiverError.duplicateMessage
                                 }
                                 
-                                threadMessages[threadId ?? ""] = (threadMessages[threadId ?? ""] ?? [])
-                                    .appending(
-                                        MessageReceiveJob.Details.MessageInfo(
-                                            data: serialisedData,
-                                            serverHash: message.info.hash,
-                                            serverExpirationTimestamp: (TimeInterval(message.info.expirationDateMs) / 1000)
-                                        )
-                                    )
+                                threadMessages[key] = (threadMessages[key] ?? [])
+                                    .appending(processedMessage?.messageInfo)
                             }
                             catch {
                                 switch error {
-                                    // Ignore duplicate messages
-                                    case .SQLITE_CONSTRAINT_UNIQUE, MessageReceiverError.duplicateMessage: break
-                                        
-                                    default:
-                                        SNLog("Failed to deserialize envelope due to error: \(error).")
+                                    // Ignore duplicate & selfSend message errors (and don't bother logging
+                                    // them as there will be a lot since we each service node duplicates messages)
+                                    case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
+                                        MessageReceiverError.duplicateMessage,
+                                        MessageReceiverError.duplicateControlMessage,
+                                        MessageReceiverError.selfSend:
+                                        break
+                                    
+                                    default: SNLog("Failed to deserialize envelope due to error: \(error).")
                                 }
                             }
                         }
@@ -197,7 +183,7 @@ public final class Poller {
                         }
                     }
                     
-                    SNLog("Received \(messageCount) new message\(messageCount == 1 ? "" : "s") (\(messages.count - messageCount) duplicates)")
+                    SNLog("Received \(messageCount) new message\(messageCount == 1 ? "" : "s") (duplicates:  \(messages.count - messageCount))")
                 }
                 
                 self?.pollCount += 1

@@ -25,7 +25,7 @@ public enum FailedMessageSendsJob: JobExecutor {
                 .filter(Attachment.Columns.state == Attachment.State.uploading)
                 .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.failedUpload))
             
-            Logger.debug("Marked \(changeCount) message\(changeCount == 1 ? "" : "s") as failed (\(attachmentChangeCount) upload\(attachmentChangeCount == 1 ? "" : "s") cancelled)")
+            SNLog("Marked \(changeCount) message\(changeCount == 1 ? "" : "s") as failed (\(attachmentChangeCount) upload\(attachmentChangeCount == 1 ? "" : "s") cancelled)")
         }
         
         success(job, false)

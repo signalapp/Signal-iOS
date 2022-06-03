@@ -710,6 +710,8 @@ public extension SessionThreadViewModel {
 // MARK: - Search Queries
 
 public extension SessionThreadViewModel {
+    fileprivate static let searchResultsLimit: Int = 500
+    
     static func searchTermParts(_ searchTerm: String) -> [String] {
         /// Process the search term in order to extract the parts of the search pattern we want
         ///
@@ -836,6 +838,7 @@ public extension SessionThreadViewModel {
             )
         
             ORDER BY \(Column.rank), \(interaction[.timestampMs].desc)
+            LIMIT \(SQL("\(SessionThreadViewModel.searchResultsLimit)"))
         """
         
         return request.adapted { db in
@@ -1194,6 +1197,7 @@ public extension SessionThreadViewModel {
                 \(ViewModel.closedGroupNameKey),
                 \(ViewModel.openGroupNameKey),
                 \(ViewModel.threadIdKey)
+            LIMIT \(SQL("\(SessionThreadViewModel.searchResultsLimit)"))
         """
         
         // Construct the actual request

@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Bmp,
 };
 
+// FIXME: Refactor all of these to be in Swift against 'Data'
 @implementation NSData (Image)
 
 + (BOOL)ows_isValidImageAtPath:(NSString *)filePath

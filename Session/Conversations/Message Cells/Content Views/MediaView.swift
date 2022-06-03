@@ -86,6 +86,10 @@ public class MediaView: UIView {
             configure(forError: .failed)
             return
         }
+        guard attachment.isValid else {
+            configure(forError: .invalid)
+            return
+        }
         
         if attachment.isAnimated {
             configureForAnimatedImage(attachment: attachment)
@@ -144,6 +148,7 @@ public class MediaView: UIView {
         animatedImageView.layer.minificationFilter = .trilinear
         animatedImageView.layer.magnificationFilter = .trilinear
         animatedImageView.backgroundColor = Colors.unimportant
+        animatedImageView.isHidden = !attachment.isValid
         addSubview(animatedImageView)
         animatedImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(animatedImageView)
@@ -159,10 +164,7 @@ public class MediaView: UIView {
             }
             strongSelf.tryToLoadMedia(
                 loadMediaBlock: { applyMediaBlock in
-                    guard attachment.isValid else {
-                        Logger.warn("Ignoring invalid attachment.")
-                        return
-                    }
+                    guard attachment.isValid else { return }
                     guard let filePath: String = attachment.originalFilePath else {
                         owsFailDebug("Attachment stream missing original file path.")
                         return
@@ -200,6 +202,7 @@ public class MediaView: UIView {
         stillImageView.layer.minificationFilter = .trilinear
         stillImageView.layer.magnificationFilter = .trilinear
         stillImageView.backgroundColor = Colors.unimportant
+        stillImageView.isHidden = !attachment.isValid
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(stillImageView)
@@ -213,10 +216,7 @@ public class MediaView: UIView {
             }
             self?.tryToLoadMedia(
                 loadMediaBlock: { applyMediaBlock in
-                    guard attachment.isValid else {
-                        Logger.warn("Ignoring invalid attachment.")
-                        return
-                    }
+                    guard attachment.isValid else { return }
                     
                     attachment.thumbnail(
                         size: .large,
@@ -254,6 +254,7 @@ public class MediaView: UIView {
         stillImageView.layer.minificationFilter = .trilinear
         stillImageView.layer.magnificationFilter = .trilinear
         stillImageView.backgroundColor = Colors.unimportant
+        stillImageView.isHidden = !attachment.isValid
 
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
@@ -276,10 +277,7 @@ public class MediaView: UIView {
             }
             self?.tryToLoadMedia(
                 loadMediaBlock: { applyMediaBlock in
-                    guard attachment.isValid else {
-                        Logger.warn("Ignoring invalid attachment.")
-                        return
-                    }
+                    guard attachment.isValid else { return }
                     
                     attachment.thumbnail(
                         size: .medium,

@@ -10,17 +10,13 @@ public enum MessageReceiver {
 
     public static func parse(
         _ db: Database,
-        data: Data,
+        envelope: SNProtoEnvelope,
         serverExpirationTimestamp: TimeInterval?,
-        openGroupId: String? = nil,
-        openGroupMessageServerId: UInt64? = nil,
-        isRetry: Bool = false
-    ) throws -> (Message, SNProtoContent) {
+        openGroupId: String?,
+        openGroupMessageServerId: UInt64?
+    ) throws -> (Message, SNProtoContent, String) {
         let userPublicKey: String = getUserHexEncodedPublicKey()
         let isOpenGroupMessage: Bool = (openGroupMessageServerId != nil)
-        
-        // Parse the envelope
-        let envelope = try SNProtoEnvelope.parseData(data)
         
         // Decrypt the contents
         guard let ciphertext = envelope.content else { throw MessageReceiverError.noData }
@@ -118,69 +114,50 @@ public enum MessageReceiver {
         }
         
         // Parse the message
-        let message: Message? = {
-            if let readReceipt = ReadReceipt.fromProto(proto, sender: sender) { return readReceipt }
-            if let typingIndicator = TypingIndicator.fromProto(proto, sender: sender) { return typingIndicator }
-            if let closedGroupControlMessage = ClosedGroupControlMessage.fromProto(proto, sender: sender) { return closedGroupControlMessage }
-            if let dataExtractionNotification = DataExtractionNotification.fromProto(proto, sender: sender) { return dataExtractionNotification }
-            if let expirationTimerUpdate = ExpirationTimerUpdate.fromProto(proto, sender: sender) { return expirationTimerUpdate }
-            if let configurationMessage = ConfigurationMessage.fromProto(proto, sender: sender) { return configurationMessage }
-            if let unsendRequest = UnsendRequest.fromProto(proto, sender: sender) { return unsendRequest }
-            if let messageRequestResponse = MessageRequestResponse.fromProto(proto, sender: sender) { return messageRequestResponse }
-            if let visibleMessage = VisibleMessage.fromProto(proto, sender: sender) { return visibleMessage }
-            return nil
-        }()
-        
-        if let message = message {
-            // Ignore self sends if needed
-            if !message.isSelfSendValid {
-                guard sender != userPublicKey else { throw MessageReceiverError.selfSend }
-            }
-            
-            // Guard against control messages in open groups
-            if isOpenGroupMessage {
-                guard message is VisibleMessage else { throw MessageReceiverError.invalidMessage }
-            }
-            
-            // Finish parsing
-            message.sender = sender
-            message.recipient = userPublicKey
-            message.sentTimestamp = envelope.timestamp
-            message.receivedTimestamp = UInt64((Date().timeIntervalSince1970) * 1000)
-            message.groupPublicKey = groupPublicKey
-            message.openGroupServerMessageId = openGroupMessageServerId
-            
-            // Validate
-            var isValid: Bool = message.isValid
-            if message is VisibleMessage && !isValid && proto.dataMessage?.attachments.isEmpty == false {
-                isValid = true
-            }
-            
-            guard isValid else {
-                throw MessageReceiverError.invalidMessage
-            }
-            
-            // Prevent ControlMessages from being handled multiple times if not supported
-            try ControlMessageProcessRecord(
-                threadId: {
-                    if let groupPublicKey: String = groupPublicKey { return groupPublicKey }
-                    if let openGroupId: String = openGroupId { return openGroupId }
-                    
-                    switch message {
-                        case let message as VisibleMessage: return (message.syncTarget ?? sender)
-                        case let message as ExpirationTimerUpdate: return (message.syncTarget ?? sender)
-                        default: return sender
-                    }
-                }(),
-                message: message,
-                serverExpirationTimestamp: serverExpirationTimestamp,
-                isRetry: false
-            )?.insert(db)
-            
-            // Return
-            return (message, proto)
+        guard let message: Message = Message.createMessageFrom(proto, sender: sender) else {
+            throw MessageReceiverError.unknownMessage
         }
         
-        throw MessageReceiverError.unknownMessage
+        // Ignore self sends if needed
+        guard message.isSelfSendValid || sender != userPublicKey else {
+            throw MessageReceiverError.selfSend
+        }
+        
+        // Guard against control messages in open groups
+        guard !isOpenGroupMessage || message is VisibleMessage else {
+            throw MessageReceiverError.invalidMessage
+        }
+        
+        // Finish parsing
+        message.sender = sender
+        message.recipient = userPublicKey
+        message.sentTimestamp = envelope.timestamp
+        message.receivedTimestamp = UInt64((Date().timeIntervalSince1970) * 1000)
+        message.groupPublicKey = groupPublicKey
+        message.openGroupServerMessageId = openGroupMessageServerId
+        
+        // Validate
+        var isValid: Bool = message.isValid
+        if message is VisibleMessage && !isValid && proto.dataMessage?.attachments.isEmpty == false {
+            isValid = true
+        }
+        
+        guard isValid else {
+            throw MessageReceiverError.invalidMessage
+        }
+        
+        // Extract the proper threadId for the message
+        let threadId: String = {
+            if let groupPublicKey: String = groupPublicKey { return groupPublicKey }
+            if let openGroupId: String = openGroupId { return openGroupId }
+            
+            switch message {
+                case let message as VisibleMessage: return (message.syncTarget ?? sender)
+                case let message as ExpirationTimerUpdate: return (message.syncTarget ?? sender)
+                default: return sender
+            }
+        }()
+        
+        return (message, proto, threadId)
     }
 }

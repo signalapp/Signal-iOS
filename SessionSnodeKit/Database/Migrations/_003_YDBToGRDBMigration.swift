@@ -78,20 +78,21 @@ enum _003_YDBToGRDBMigration: Migration {
             
             // MARK: --Swarms
             
-            // Note: There is no index on the collection column so unfortunately it takes the same amount of
-            // time to enumerate through all collections as it does to just get the count of collections, as
-            // a result if the database is very large this part can be slow (~15s with 2,000,000 rows) - we
-            // want to show some kind of progress while doing this enumeration so the below code includes a
-            // number of rough values to show some kind of progression while the enumeration occurs (most users
-            // won't run into issues with this at all)
-            var swarmCollections: Set<String> = []
+            /// **Note:** There is no index on the collection column so unfortunately it takes the same amount of time to enumerate through all
+            /// collections as it does to just get the count of collections, due to this, if the database is very large, importing thecollections can be
+            /// very slow (~15s with 2,000,000 rows) - we want to show some kind of progress while enumerating so the below code creates a
+            /// very rought guess of the number of collections based on the file size of the database (this shouldn't affect most users at all)
+            let roughMbPerCollection: CGFloat = 2.5
+            let oldDatabaseSizeBytes: CGFloat = (try? FileManager.default
+                .attributesOfItem(atPath: SUKLegacy.legacyDatabaseFilepath)[.size]
+                .asType(CGFloat.self))
+                .defaulting(to: 0)
+            let roughNumCollections: CGFloat = (((oldDatabaseSizeBytes / 1024) / 1024) / roughMbPerCollection)
             let startProgress: CGFloat = 0.02
             let swarmCompleteProgress: CGFloat = 0.90
-            let interEnumerationMaxProgress: CGFloat = ((swarmCompleteProgress - startProgress) * 0.8)
-            let maxCollectionsEstimate: CGFloat = 1000
-            let numCollectionsToTriggerProgressUpdate: CGFloat = 20
+            var swarmCollections: Set<String> = []
             var collectionIndex: CGFloat = 0
-            var oldProgress: CGFloat = startProgress
+            
             transaction.enumerateCollections { collectionName, _ in
                 if collectionName.starts(with: SSKLegacy.swarmCollectionPrefix) {
                     swarmCollections.insert(collectionName.substring(from: SSKLegacy.swarmCollectionPrefix.count))
@@ -99,10 +100,14 @@ enum _003_YDBToGRDBMigration: Migration {
                 
                 collectionIndex += 1
                 
-                if collectionIndex.truncatingRemainder(dividingBy: numCollectionsToTriggerProgressUpdate) == 0 {
-                    oldProgress = (startProgress + (interEnumerationMaxProgress * (collectionIndex / maxCollectionsEstimate)))
-                    GRDBStorage.shared.update(progress: oldProgress, for: self, in: target)
-                }
+                GRDBStorage.shared.update(
+                    progress: min(
+                        swarmCompleteProgress,
+                        ((collectionIndex / roughNumCollections) * (swarmCompleteProgress - startProgress))
+                    ),
+                    for: self,
+                    in: target
+                )
             }
             GRDBStorage.shared.update(progress: swarmCompleteProgress, for: self, in: target)
             

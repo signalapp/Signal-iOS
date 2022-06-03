@@ -662,7 +662,7 @@ extension Attachment {
         }
         
         // Process image attachments
-        if MIMETypeUtil.isImage(contentType) {
+        if MIMETypeUtil.isImage(contentType) || MIMETypeUtil.isAnimated(contentType) {
             return (
                 NSData.ows_isValidImage(atPath: targetPath, mimeType: contentType),
                 nil
