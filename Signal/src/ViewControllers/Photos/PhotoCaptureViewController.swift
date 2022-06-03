@@ -55,7 +55,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     public lazy var photoCapture = PhotoCapture()
 
     deinit {
-        UIDevice.current.endGeneratingDeviceOrientationNotifications()
+        photoCapture.stopOrientationUpdates()
         photoCapture.stopCapture().done {
             Logger.debug("stopCapture completed")
         }

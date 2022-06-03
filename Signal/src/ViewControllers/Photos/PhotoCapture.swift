@@ -7,6 +7,7 @@ import CoreServices
 import Foundation
 import SignalCoreKit
 import UIKit
+import CoreMotion
 
 protocol PhotoCaptureDelegate: AnyObject {
 
@@ -152,12 +153,86 @@ class PhotoCapture: NSObject {
         }
     }
 
+    public func orientationDidChange(orientation: UIDeviceOrientation) {
+        AssertIsOnMainThread()
+        guard let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: orientation) else {
+            return
+        }
+
+        sessionQueue.async {
+            guard captureOrientation != self.captureOrientation else {
+                return
+            }
+            self.captureOrientation = captureOrientation
+
+            DispatchQueue.main.async {
+                self.delegate?.photoCapture(self, didChangeOrientation: captureOrientation)
+            }
+        }
+    }
+
     func updateVideoPreviewConnection(toOrientation orientation: AVCaptureVideoOrientation) {
         guard let videoConnection = previewView.previewLayer.connection else {
             Logger.info("previewView hasn't completed setup yet.")
             return
         }
         videoConnection.videoOrientation = orientation
+    }
+
+    private var motionManager : CMMotionManager!
+    func startOrientationUpdates() {
+        motionManager = CMMotionManager()
+        // Try using the CoreMotion accelerometer for orientation updates
+        // first since it is not dependent on the rotation lock being disabled.
+        // https://stackoverflow.com/questions/49164302/get-current-ios-device-orientation-even-if-devices-orientation-locked
+        if motionManager.isDeviceMotionAvailable && motionManager.isAccelerometerAvailable {
+            let splitAngle:Double = 0.75
+            let updateTimer:TimeInterval = 0.5
+            motionManager?.gyroUpdateInterval = updateTimer
+            motionManager?.accelerometerUpdateInterval = updateTimer
+
+            var orientationLast = UIDeviceOrientation(rawValue: 0)!
+
+            motionManager?.startAccelerometerUpdates(to: (OperationQueue.current)!, withHandler: {
+                (acceleroMeterData, error) -> Void in
+                if error == nil {
+                    let acceleration = (acceleroMeterData?.acceleration)!
+                    var orientationNew = UIDeviceOrientation(rawValue: 0)!
+
+                    if acceleration.x >= splitAngle {
+                        orientationNew = .landscapeRight
+                    } else if acceleration.x <= -(splitAngle) {
+                        orientationNew = .landscapeLeft
+                    } else if acceleration.y <= -(splitAngle) {
+                        orientationNew = .portrait
+                    } else if acceleration.y >= splitAngle {
+                        orientationNew = .portraitUpsideDown
+                    }
+
+                    if orientationNew != orientationLast && orientationNew != .unknown {
+                        orientationLast = orientationNew
+                        self.orientationDidChange(orientation: orientationNew)
+                    }
+                } else {
+                    Logger.warn("CoreMotion error : \(error!)")
+                }
+            })
+        } else {
+            UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(orientationDidChange(notification:)),
+                                                   name: UIDevice.orientationDidChangeNotification,
+                                                   object: UIDevice.current)
+        }
+    }
+
+    func stopOrientationUpdates() {
+        if motionManager.isAccelerometerActive {
+            motionManager.stopAccelerometerUpdates()
+        }
+        if UIDevice.current.isGeneratingDeviceOrientationNotifications {
+            UIDevice.current.endGeneratingDeviceOrientationNotifications()
+        }
     }
 
     public func prepareVideoCapture() -> Promise<Void> {
@@ -172,11 +247,7 @@ class PhotoCapture: NSObject {
         // If the session is already running, no need to do anything.
         guard !self.session.isRunning else { return Promise.value(()) }
 
-        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(orientationDidChange),
-                                               name: UIDevice.orientationDidChangeNotification,
-                                               object: UIDevice.current)
+        self.startOrientationUpdates()
         let initialCaptureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) ?? .portrait
 
         return sessionQueue.async(.promise) { [weak self] in
