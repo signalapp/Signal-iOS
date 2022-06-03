@@ -5,6 +5,7 @@ import GRDB
 import PromiseKit
 import SessionSnodeKit
 import SessionMessagingKit
+import SessionUtilitiesKit
 
 @objc(LKBackgroundPoller)
 public final class BackgroundPoller : NSObject {
@@ -77,8 +78,6 @@ public final class BackgroundPoller : NSObject {
                                     let processedMessage: ProcessedMessage? = try Message.processRawReceivedMessage(db, rawMessage: message)
                                     let key: String = (processedMessage?.threadId ?? Message.nonThreadMessageId)
                                     
-                                    // Persist the received message after the MessageReceiveJob is created
-                                    _ = try message.info.saved(db)
                                     threadMessages[key] = (threadMessages[key] ?? [])
                                         .appending(processedMessage?.messageInfo)
                                 }

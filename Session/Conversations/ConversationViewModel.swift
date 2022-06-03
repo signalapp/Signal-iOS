@@ -33,21 +33,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     // MARK: - Initialization
     
     init?(threadId: String, focusedInteractionId: Int64?) {
-        let maybeThreadData: SessionThreadViewModel? = GRDBStorage.shared.read { db in
-            let userPublicKey: String = getUserHexEncodedPublicKey(db)
-            
-            return try SessionThreadViewModel
-                .conversationQuery(
-                    threadId: threadId,
-                    userPublicKey: userPublicKey
-                )
-                .fetchOne(db)
-        }
-        
-        guard let threadData: SessionThreadViewModel = maybeThreadData else { return nil }
-        
         self.threadId = threadId
-        self.threadData = threadData
         self.focusedInteractionId = focusedInteractionId
         self.pagedDataObserver = nil
         
@@ -147,7 +133,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     // MARK: - Thread Data
     
     /// This value is the current state of the view
-    public private(set) var threadData: SessionThreadViewModel
+    public private(set) var threadData: SessionThreadViewModel = SessionThreadViewModel()
     
     /// This is all the data the screen needs to populate itself, please see the following link for tips to help optimise
     /// performance https://github.com/groue/GRDB.swift#valueobservation-performance

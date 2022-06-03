@@ -1245,6 +1245,7 @@ enum _003_YDBToGRDBMigration: Migration {
         try autoreleasepool {
             try attachmentDownloadJobs.forEach { legacyJob in
                 guard let interactionId: Int64 = legacyInteractionToIdMap[legacyJob.tsMessageID] else {
+                    // This can happen if an UnsendRequest came before an AttachmentDownloadJob completed
                     SNLog("[Migration Warning] attachmentDownload job with no interaction found - ignoring")
                     return
                 }

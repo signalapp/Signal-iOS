@@ -336,20 +336,15 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         setUpNavBarStyle()
         navigationItem.titleView = titleView
         
-        titleView.update(
-            with: viewModel.threadData.displayName,
-            mutedUntilTimestamp: viewModel.threadData.threadMutedUntilTimestamp,
-            onlyNotifyForMentions: (viewModel.threadData.threadOnlyNotifyForMentions == true),
-            userCount: viewModel.threadData.userCount
-        )
-        updateNavBarButtons(threadData: viewModel.threadData)
+        // Note: We need to update the nav bar buttons here (with invalid data) because if we don't the
+        // nav will be offset incorrectly during the push animation (unfortunately the profile icon still
+        // doesn't appear until after the animation, I assume it's taking a snapshot or something, but
+        // there isn't much we can do about that unfortunately)
+        updateNavBarButtons(threadData: nil)
         
         // Constraints
         view.addSubview(tableView)
         tableView.pin(to: view)
-
-        // Blocked banner
-        addOrRemoveBlockedBanner(threadIsBlocked: (viewModel.threadData.threadIsBlocked == true))
 
         // Message requests view & scroll to bottom
         view.addSubview(scrollButton)
@@ -366,8 +361,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         self.scrollButtonBottomConstraint = scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -16)
         self.scrollButtonBottomConstraint?.isActive = false // Note: Need to disable this to avoid a conflict with the other bottom constraint
         self.scrollButtonMessageRequestsBottomConstraint = scrollButton.pin(.bottom, to: .top, of: messageRequestView, withInset: -16)
-        self.scrollButtonMessageRequestsBottomConstraint?.isActive = (viewModel.threadData.threadIsMessageRequest == true)
-        self.scrollButtonBottomConstraint?.isActive = (viewModel.threadData.threadIsMessageRequest == false)
         
         messageRequestDescriptionLabel.pin(.top, to: .top, of: messageRequestView, withInset: 10)
         messageRequestDescriptionLabel.pin(.left, to: .left, of: messageRequestView, withInset: 40)
@@ -399,7 +392,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         unreadCountView.pin(.trailing, to: .trailing, of: unreadCountLabel, withInset: 4)
         unreadCountView.centerYAnchor.constraint(equalTo: scrollButton.topAnchor).isActive = true
         unreadCountView.center(.horizontal, in: scrollButton)
-        updateUnreadCountView(unreadCount: viewModel.threadData.threadUnreadCount)
 
         // Notifications
         NotificationCenter.default.addObserver(
@@ -425,14 +417,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
-        
-        // Draft
-        if let draft: String = viewModel.threadData.threadMessageDraft, !draft.isEmpty {
-            snInputView.text = draft
-        }
-
-        // Update the input state
-        snInputView.setEnabledMessageTypes(viewModel.threadData.enabledMessageTypes, message: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -555,8 +539,17 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             updateNavBarButtons(threadData: updatedThreadData)
         }
         
-        if viewModel.threadData.currentUserIsClosedGroupMember != updatedThreadData.currentUserIsClosedGroupMember {
-            reloadInputViews()
+        if initialLoad || viewModel.threadData.threadIsBlocked != updatedThreadData.threadIsBlocked {
+            addOrRemoveBlockedBanner(threadIsBlocked: (updatedThreadData.threadIsBlocked == true))
+        }
+        
+        if initialLoad || viewModel.threadData.threadIsMessageRequest != updatedThreadData.threadIsMessageRequest {
+            scrollButtonMessageRequestsBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == true)
+            scrollButtonBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == false)
+        }
+        
+        if initialLoad || viewModel.threadData.threadUnreadCount != updatedThreadData.threadUnreadCount {
+            updateUnreadCountView(unreadCount: updatedThreadData.threadUnreadCount)
         }
         
         if initialLoad || viewModel.threadData.enabledMessageTypes != updatedThreadData.enabledMessageTypes {
@@ -566,12 +559,13 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             )
         }
         
-        if initialLoad || viewModel.threadData.threadIsBlocked != updatedThreadData.threadIsBlocked {
-            addOrRemoveBlockedBanner(threadIsBlocked: (updatedThreadData.threadIsBlocked == true))
+        // Only set the draft content on the initial load
+        if initialLoad, let draft: String = updatedThreadData.threadMessageDraft, !draft.isEmpty {
+            snInputView.text = draft
         }
         
-        if initialLoad || viewModel.threadData.threadUnreadCount != updatedThreadData.threadUnreadCount {
-            updateUnreadCountView(unreadCount: updatedThreadData.threadUnreadCount)
+        if viewModel.threadData.currentUserIsClosedGroupMember != updatedThreadData.currentUserIsClosedGroupMember {
+            reloadInputViews()
         }
         
         // Now we have done all the needed diffs, update the viewModel with the latest data
@@ -638,7 +632,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         let numItemsInUpdatedData: [Int] = updatedData.map { $0.elements.count }
         let itemChangeInfo: ItemChangeInfo = {
             guard
-                changeset.map { $0.elementInserted.count }.reduce(0, +) > 0,
+                changeset.map({ $0.elementInserted.count }).reduce(0, +) > 0,
                 let oldSectionIndex: Int = self.viewModel.interactionData.firstIndex(where: { $0.model == .messages }),
                 let newSectionIndex: Int = updatedData.firstIndex(where: { $0.model == .messages }),
                 let newFirstItemIndex: Int = updatedData[newSectionIndex].elements
@@ -843,27 +837,25 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         // Scroll to the last unread message if possible; otherwise scroll to the bottom.
         // When the unread message count is more than the number of view items of a page,
         // the screen will scroll to the bottom instead of the first unread message
-        DispatchQueue.main.async {
-            if let focusedInteractionId: Int64 = self.viewModel.focusedInteractionId {
-                self.scrollToInteractionIfNeeded(with: focusedInteractionId, isAnimated: false, highlight: true)
-            }
-            else if let firstUnreadInteractionId: Int64 = self.viewModel.threadData.threadFirstUnreadInteractionId {
-                self.scrollToInteractionIfNeeded(with: firstUnreadInteractionId, position: .top, isAnimated: false)
-                self.unreadCountView.alpha = self.scrollButton.alpha
-            }
-            else {
-                self.scrollToBottom(isAnimated: false)
-            }
-
-            self.scrollButton.alpha = self.getScrollButtonOpacity()
-            
-            // Now that the data has loaded we need to check if either of the "load more" sections are
-            // visible and trigger them if so
-            //
-            // Note: We do it this way as we want to trigger the load behaviour for the first section
-            // if it has one before trying to trigger the load behaviour for the last section
-            self.autoLoadNextPageIfNeeded()
+        if let focusedInteractionId: Int64 = self.viewModel.focusedInteractionId {
+            self.scrollToInteractionIfNeeded(with: focusedInteractionId, isAnimated: false, highlight: true)
         }
+        else if let firstUnreadInteractionId: Int64 = self.viewModel.threadData.threadFirstUnreadInteractionId {
+            self.scrollToInteractionIfNeeded(with: firstUnreadInteractionId, position: .top, isAnimated: false)
+            self.unreadCountView.alpha = self.scrollButton.alpha
+        }
+        else {
+            self.scrollToBottom(isAnimated: false)
+        }
+
+        self.scrollButton.alpha = self.getScrollButtonOpacity()
+        
+        // Now that the data has loaded we need to check if either of the "load more" sections are
+        // visible and trigger them if so
+        //
+        // Note: We do it this way as we want to trigger the load behaviour for the first section
+        // if it has one before trying to trigger the load behaviour for the last section
+        self.autoLoadNextPageIfNeeded()
     }
     
     private func autoLoadNextPageIfNeeded() {
@@ -907,7 +899,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
     }
     
-    func updateNavBarButtons(threadData: SessionThreadViewModel) {
+    func updateNavBarButtons(threadData: SessionThreadViewModel?) {
         navigationItem.hidesBackButton = isShowingSearchUI
 
         if isShowingSearchUI {
@@ -915,7 +907,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             navigationItem.rightBarButtonItems = []
         }
         else {
-            guard threadData.threadRequiresApproval == false else {
+            guard let threadData: SessionThreadViewModel = threadData, threadData.threadRequiresApproval == false else {
                 // Note: Adding an empty button because without it the title alignment is
                 // busted (Note: The size was taken from the layout inspector for the back
                 // button in Xcode
@@ -950,7 +942,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                     let rightBarButtonItem: UIBarButtonItem = UIBarButtonItem(customView: profilePictureView)
                     rightBarButtonItem.accessibilityLabel = "Settings button"
                     rightBarButtonItem.isAccessibilityElement = true
-
+                    
                     navigationItem.rightBarButtonItem = rightBarButtonItem
                     
                 default:
