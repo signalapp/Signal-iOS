@@ -751,8 +751,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let contentSections = buildContentSections()
 
             var contentSubviews = [UIView]()
-            enumerate(contentSections: contentSections) { (contentSection: ContentSection,
-                                                           stackConfig: CVStackViewConfig) in
+            enumerate(contentSections: contentSections) { (contentSection: ContentSection, stackConfig: CVStackViewConfig) in
                 guard let stackView = contentSection.stackView(componentView: componentView),
                       let stackMeasurementKey = contentSection.stackMeasurementKey else {
                     owsFailDebug("Missing stackView or stackMeasurementKey.")
@@ -1480,8 +1479,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let contentSections = buildContentSections()
 
             var subviewSizes = [CGSize]()
-            enumerate(contentSections: contentSections) { (contentSection: ContentSection,
-                                                           stackConfig: CVStackViewConfig) in
+            enumerate(contentSections: contentSections) { (contentSection: ContentSection, stackConfig: CVStackViewConfig) in
                 guard let stackMeasurementKey = contentSection.stackMeasurementKey else {
                     owsFailDebug("Missing stackMeasurementKey.")
                     return

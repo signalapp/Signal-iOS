@@ -677,8 +677,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                 earlyEnd = nil
             }
             return (try GroupsProtoGroupChanges(serializedData: groupChangesProtoData), earlyEnd)
-        }.then(on: .global()) { (groupChangesProto: GroupsProtoGroupChanges,
-                                 earlyEnd: UInt32?) -> Promise<GroupChangePage> in
+        }.then(on: .global()) { (groupChangesProto: GroupsProtoGroupChanges, earlyEnd: UInt32?) -> Promise<GroupChangePage> in
             return firstly {
                 // We can ignoreSignature; these protos came from the service.
                 self.fetchAllAvatarData(groupChangesProto: groupChangesProto,

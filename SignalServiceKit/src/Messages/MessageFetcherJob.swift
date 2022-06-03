@@ -323,10 +323,7 @@ public class MessageFetcherJob: NSObject {
             return (envelopeJobs: envelopeJobs,
                     serverDeliveryTimestamp: batch.serverDeliveryTimestamp,
                     hasMore: batch.hasMore)
-        }.then(on: .global()) { (envelopeJobs: [EnvelopeJob],
-                                 serverDeliveryTimestamp: UInt64,
-                                 hasMore: Bool) -> Promise<Void> in
-
+        }.then(on: .global()) { (envelopeJobs: [EnvelopeJob], serverDeliveryTimestamp: UInt64, hasMore: Bool) -> Promise<Void> in
             let queuedContentCountOld = Self.messageProcessor.queuedContentCount
             for job in envelopeJobs {
                 Self.messageProcessor.processEncryptedEnvelope(

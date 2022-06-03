@@ -1846,8 +1846,7 @@ public class GRDBSchemaMigrator: NSObject {
             // cannot be repeated.
             guard !hasRunMigration("indexSignalRecipients", transaction: transaction) else { return }
 
-            SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient,
-                _: UnsafeMutablePointer<ObjCBool>) in
+            SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient, _: UnsafeMutablePointer<ObjCBool>) in
                 GRDBFullTextSearchFinder.modelWasInserted(model: signalRecipient, transaction: transaction)
             }
         }
@@ -1889,8 +1888,7 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
-            TSThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread: TSThread,
-                _: UnsafeMutablePointer<ObjCBool>) in
+            TSThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread: TSThread, _: UnsafeMutablePointer<ObjCBool>) in
                 guard let groupThread = thread as? TSGroupThread else {
                     return
                 }

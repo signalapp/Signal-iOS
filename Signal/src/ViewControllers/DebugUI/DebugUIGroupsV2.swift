@@ -600,8 +600,7 @@ class DebugUIGroupsV2: DebugUIPage {
                 }
                 return (validGroupModelV2, missingOtherUserGroupModelV2)
             }
-        }.then(on: .global()) { (validGroupModelV2: TSGroupModelV2,
-            missingOtherUserGroupModelV2: TSGroupModelV2)
+        }.then(on: .global()) { (validGroupModelV2: TSGroupModelV2, missingOtherUserGroupModelV2: TSGroupModelV2)
             -> Promise<(TSGroupModelV2, TSGroupModelV2, TSGroupModelV2)> in
             // Make a real v2 group on the service.
             // "Other user" is a member but local user is not.
@@ -630,9 +629,7 @@ class DebugUIGroupsV2: DebugUIPage {
                 }
                 return (validGroupModelV2, missingOtherUserGroupModelV2, missingLocalUserGroupModelV2)
             }
-        }.map(on: .global()) { (validGroupModelV2: TSGroupModelV2,
-            missingOtherUserGroupModelV2: TSGroupModelV2,
-            missingLocalUserGroupModelV2: TSGroupModelV2) in
+        }.map(on: .global()) { (validGroupModelV2: TSGroupModelV2, missingOtherUserGroupModelV2: TSGroupModelV2, missingLocalUserGroupModelV2: TSGroupModelV2) in
             self.sendInvalidGroupMessages(contactThread: contactThread,
                                           validGroupModelV2: validGroupModelV2,
                                           missingOtherUserGroupModelV2: missingOtherUserGroupModelV2,

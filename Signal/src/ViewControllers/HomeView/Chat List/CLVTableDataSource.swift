@@ -918,8 +918,7 @@ extension CLVTableDataSource {
                                                             isSplitViewControllerExpanded: viewController.hasExpandedSplitViewController)
             let contentToken = ChatListCell.buildCellContentToken(forConfiguration: configuration)
             return (threadViewModel, contentToken)
-        }.done(on: .main) { (threadViewModel: ThreadViewModel,
-                             contentToken: CLVCellContentToken) in
+        }.done(on: .main) { (threadViewModel: ThreadViewModel, contentToken: CLVCellContentToken) in
             // Commit the preloaded values to their respective caches.
             guard cellContentCacheResetCount == cellContentCache.resetCount else {
                 Logger.info("cellContentCache was reset.")
