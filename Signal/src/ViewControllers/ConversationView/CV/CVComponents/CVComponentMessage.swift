@@ -1836,6 +1836,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 viewOnceView,
                 quotedReplyView,
                 linkPreviewView,
+                giftBadgeView,
                 reactionsView,
                 audioAttachmentView,
                 genericAttachmentView,
