@@ -738,12 +738,13 @@ extension MessageSender {
 
 @objc
 public extension TSMessage {
-    var isSyncMessage: Bool {
-        nil != self as? OWSOutgoingSyncMessage
-    }
+    var isSyncMessage: Bool { self is OWSOutgoingSyncMessage }
 
-    var isCallMessage: Bool {
-        nil != self as? OWSOutgoingCallMessage
+    var canSendToLocalAddress: Bool {
+        return (isSyncMessage ||
+                self is OWSOutgoingCallMessage ||
+                self is OWSOutgoingResendRequest ||
+                self is OWSOutgoingResendResponse)
     }
 }
 
@@ -1030,8 +1031,7 @@ public extension MessageSender {
 
         Logger.verbose("Unregistered recipient: \(address)")
 
-        let isSyncMessage = nil != message as? OWSOutgoingSyncMessage
-        if !isSyncMessage {
+        if !message.isSyncMessage {
             databaseStorage.write { writeTx in
                 markAddressAsUnregistered(address, message: message, thread: messageSend.thread, transaction: writeTx)
             }

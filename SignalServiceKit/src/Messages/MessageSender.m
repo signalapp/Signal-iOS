@@ -762,11 +762,12 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        // In the "self-send" aka "Note to Self" special case, we only
-        // need to send a sync message with a delivery receipt.
-        if (contactThread.contactAddress.isLocalAddress && !message.isSyncMessage && !message.isCallMessage) {
+        // In the "self-send" aka "Note to Self" special case, we only need to send certain kinds of messages.
+        // (In particular, regular data messages are sent via their implicit sync message only.)
+        if (contactThread.contactAddress.isLocalAddress && !message.canSendToLocalAddress) {
             // Send to self.
             OWSAssertDebug(sendInfo.recipients.count == 1);
+            OWSLogInfo(@"dropping %@ sent to local address (expected to be sent by sync message)", [message class]);
             // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
             successHandler();
             return;
@@ -897,8 +898,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
     // For some legacy sync messages, thread may be nil.
     // In this case, we should try to use the "local" thread.
-    BOOL isSyncMessage = [message isKindOfClass:[OWSOutgoingSyncMessage class]];
-    if (thread == nil && isSyncMessage) {
+    if (thread == nil && message.isSyncMessage) {
         thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
         if (thread == nil) {
             OWSFailDebug(@"Could not restore thread for sync message.");
@@ -1012,8 +1012,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     // We need to disable UD for sync messages before we build the device messages,
     // since we don't want to build a device message for the local device in the
     // non-UD auth case.
-    if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]
-        && ![message isKindOfClass:[OWSOutgoingSentMessageTranscript class]]) {
+    if (message.isSyncMessage && ![message isKindOfClass:[OWSOutgoingSentMessageTranscript class]]) {
         [messageSend disableUD];
     } else if (SSKDebugFlags.disableUD.value) {
         OWSLogDebug(@"Disabling UD because of testable flag");
@@ -1029,9 +1028,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     }
 
     if (messageSend.isLocalAddress) {
-        OWSAssertDebug(message.isSyncMessage || message.isCallMessage);
-        // Messages sent to the "local number" should be sync messages or call messages.
-        //
+        OWSAssertDebug(message.canSendToLocalAddress);
         // We can skip sending sync messages if we know that we have no linked
         // devices. However, we need to be sure to handle the case where the
         // linked device list has just changed.
@@ -1058,14 +1055,6 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             if (!destination) {
                 OWSFailDebug(@"Sync device message missing destination: %@", deviceMessage);
                 continue;
-            }
-
-            SignalServiceAddress *destinationAddress;
-            NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:destination];
-            if (uuid) {
-                destinationAddress = [[SignalServiceAddress alloc] initWithUuid:uuid];
-            } else {
-                destinationAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:destination];
             }
 
             NSNumber *_Nullable destinationDeviceId = deviceMessage[@"destinationDeviceId"];
@@ -1146,8 +1135,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             contactThread = (TSContactThread *)thread;
         }
 
-        BOOL isSyncMessage = [message isKindOfClass:[OWSOutgoingSyncMessage class]];
-        if (contactThread && contactThread.contactAddress.isLocalAddress && !isSyncMessage) {
+        if (contactThread && contactThread.contactAddress.isLocalAddress && !message.isSyncMessage) {
             OWSAssertDebug(message.recipientAddresses.count == 1);
             // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
             //
