@@ -11,14 +11,12 @@ public enum GalleryDirection {
 class MediaGalleryAlbum {
     private var originalItems: [MediaGalleryItem]
     var items: [MediaGalleryItem] {
-        get {
-            guard let mediaGallery = self.mediaGallery else {
-                owsFailDebug("mediaGallery was unexpectedly nil")
-                return originalItems
-            }
-
-            return originalItems.filter { !mediaGallery.deletedGalleryItems.contains($0) }
+        guard let mediaGallery = self.mediaGallery else {
+            owsFailDebug("mediaGallery was unexpectedly nil")
+            return originalItems
         }
+
+        return originalItems.filter { !mediaGallery.deletedGalleryItems.contains($0) }
     }
 
     weak var mediaGallery: MediaGallery?

@@ -127,11 +127,7 @@ public class ApprovalFooterView: UIView {
 
     // MARK: public
 
-    private var namesText: String? {
-        get {
-            return namesLabel.text
-        }
-    }
+    private var namesText: String? { namesLabel.text }
 
     public func setNamesText(_ newValue: String?, animated: Bool) {
         let changes = {

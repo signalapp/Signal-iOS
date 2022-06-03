@@ -111,7 +111,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
     public var cellViews: [GalleryRailCellView] = []
 
     var cellViewItems: [GalleryRailItem] {
-        get { return cellViews.compactMap { $0.item } }
+        cellViews.compactMap { $0.item }
     }
 
     // MARK: Initializers

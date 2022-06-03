@@ -116,11 +116,7 @@ public final class CallService: LightweightCallManager {
     /// meanwhile, we still want to track that calls are in-play so we can prevent the user from
     /// placing an outgoing call.
     private let _calls = AtomicSet<SignalCall>()
-    private var calls: Set<SignalCall> {
-        get {
-            _calls.allValues
-        }
-    }
+    private var calls: Set<SignalCall> { _calls.allValues }
 
     private func addCall(_ call: SignalCall) {
         _calls.insert(call)

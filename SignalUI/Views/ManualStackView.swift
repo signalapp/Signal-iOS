@@ -447,22 +447,18 @@ open class ManualStackView: ManualLayoutView {
         var measuredSize: CGSize { subviewInfo.measuredSize }
 
         var onAxisMeasuredSize: CGFloat {
-            get {
-                if isHorizontal {
-                    return measuredSize.width
-                } else {
-                    return measuredSize.height
-                }
+            if isHorizontal {
+                return measuredSize.width
+            } else {
+                return measuredSize.height
             }
         }
 
         var offAxisMeasuredSize: CGFloat {
-            get {
-                if isHorizontal {
-                    return measuredSize.height
-                } else {
-                    return measuredSize.width
-                }
+            if isHorizontal {
+                return measuredSize.height
+            } else {
+                return measuredSize.width
             }
         }
 

@@ -23,15 +23,13 @@ struct CVUpdate {
         // MARK: -
 
         public var debugName: String {
-            get {
-                switch self {
-                case .minor:
-                    return "minor"
-                case .reloadAll:
-                    return "reloadAll"
-                case .diff:
-                    return "diff"
-                }
+            switch self {
+            case .minor:
+                return "minor"
+            case .reloadAll:
+                return "reloadAll"
+            case .diff:
+                return "diff"
             }
         }
     }

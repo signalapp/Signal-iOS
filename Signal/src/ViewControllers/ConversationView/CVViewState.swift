@@ -300,16 +300,12 @@ public extension ConversationViewController {
         set { viewState.collectionViewActiveContextMenuInteraction = newValue }
     }
 
-    var backgroundContainer: CVBackgroundContainer {
-        get { viewState.backgroundContainer }
-    }
+    var backgroundContainer: CVBackgroundContainer { viewState.backgroundContainer }
     internal var reactionsDetailSheet: ReactionsDetailSheet? {
         get { viewState.reactionsDetailSheet }
         set { viewState.reactionsDetailSheet = newValue }
     }
-    var contactShareViewHelper: ContactShareViewHelper {
-        get { viewState.contactShareViewHelper }
-    }
+    var contactShareViewHelper: ContactShareViewHelper { viewState.contactShareViewHelper }
 
     // MARK: -
 

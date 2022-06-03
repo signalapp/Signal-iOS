@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -45,19 +45,17 @@ public enum GroupV2Access: UInt, Codable, CustomStringConvertible {
     // MARK: - CustomStringConvertible
 
     public var description: String {
-        get {
-            switch self {
-            case .unknown:
-                return "unknown"
-            case .any:
-                return "any"
-            case .member:
-                return "member"
-            case .administrator:
-                return "administrator"
-            case .unsatisfiable:
-                return "unsatisfiable"
-            }
+        switch self {
+        case .unknown:
+            return "unknown"
+        case .any:
+            return "any"
+        case .member:
+            return "member"
+        case .administrator:
+            return "administrator"
+        case .unsatisfiable:
+            return "unsatisfiable"
         }
     }
 }

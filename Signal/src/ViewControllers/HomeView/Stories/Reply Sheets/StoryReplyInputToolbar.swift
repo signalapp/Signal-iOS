@@ -134,13 +134,9 @@ class StoryReplyInputToolbar: UIView {
 
     // MARK: - UIView Overrides
 
-    override var intrinsicContentSize: CGSize {
-        get {
-            // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, we must specify
-            // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
-            return CGSize.zero
-        }
-    }
+    // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, we must specify
+    // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
+    override var intrinsicContentSize: CGSize { .zero }
 
     // MARK: - Subviews
 

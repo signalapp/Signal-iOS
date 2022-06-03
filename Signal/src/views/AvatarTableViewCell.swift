@@ -12,18 +12,10 @@ public class AvatarTableViewCell: UITableViewCell {
     private let avatarView: AvatarImageView
 
     private let _textLabel: UILabel
-    override public var textLabel: UILabel? {
-        get {
-            return _textLabel
-        }
-    }
+    override public var textLabel: UILabel? { _textLabel }
 
     private let _detailTextLabel: UILabel
-    override public var detailTextLabel: UILabel? {
-        get {
-            return _detailTextLabel
-        }
-    }
+    override public var detailTextLabel: UILabel? { _detailTextLabel }
 
     @objc
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

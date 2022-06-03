@@ -30,26 +30,24 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
     // MARK: - CustomStringConvertible
 
     public var description: String {
-        get {
-            switch self {
-            case .unknown: return "unknown"
-            case .textOnlyMessage: return "textOnlyMessage"
-            case .quoteOnlyMessage: return "quoteOnlyMessage"
-            case .audio: return "audio"
-            case .genericAttachment: return "genericAttachment"
-            case .contactShare: return "contactShare"
-            case .bodyMedia: return "bodyMedia"
-            case .viewOnce: return "viewOnce"
-            case .stickerMessage: return "stickerMessage"
-            case .giftBadge: return "giftBadge"
-            case .dateHeader: return "dateHeader"
-            case .unreadIndicator: return "unreadIndicator"
-            case .typingIndicator: return "typingIndicator"
-            case .threadDetails: return "threadDetails"
-            case .systemMessage: return "systemMessage"
-            case .unknownThreadWarning: return "unknownThreadWarning"
-            case .defaultDisappearingMessageTimer: return "defaultDisappearingMessageTimer"
-            }
+        switch self {
+        case .unknown: return "unknown"
+        case .textOnlyMessage: return "textOnlyMessage"
+        case .quoteOnlyMessage: return "quoteOnlyMessage"
+        case .audio: return "audio"
+        case .genericAttachment: return "genericAttachment"
+        case .contactShare: return "contactShare"
+        case .bodyMedia: return "bodyMedia"
+        case .viewOnce: return "viewOnce"
+        case .stickerMessage: return "stickerMessage"
+        case .giftBadge: return "giftBadge"
+        case .dateHeader: return "dateHeader"
+        case .unreadIndicator: return "unreadIndicator"
+        case .typingIndicator: return "typingIndicator"
+        case .threadDetails: return "threadDetails"
+        case .systemMessage: return "systemMessage"
+        case .unknownThreadWarning: return "unknownThreadWarning"
+        case .defaultDisappearingMessageTimer: return "defaultDisappearingMessageTimer"
         }
     }
 }

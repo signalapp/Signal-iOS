@@ -27,25 +27,17 @@ class CompareSafetyNumbersActivity: UIActivity {
 
     // MARK: UIActivity
 
-    override class var activityCategory: UIActivity.Category {
-        get { return .action }
-    }
+    override class var activityCategory: UIActivity.Category { .action }
 
     override var activityType: UIActivity.ActivityType? {
-        get { return UIActivity.ActivityType(rawValue: CompareSafetyNumbersActivityType) }
+        UIActivity.ActivityType(rawValue: CompareSafetyNumbersActivityType)
     }
 
     override var activityTitle: String? {
-        get {
-            return NSLocalizedString("COMPARE_SAFETY_NUMBER_ACTION", comment: "Activity Sheet label")
-        }
+        NSLocalizedString("COMPARE_SAFETY_NUMBER_ACTION", comment: "Activity Sheet label")
     }
 
-    override var activityImage: UIImage? {
-        get {
-            return  #imageLiteral(resourceName: "ic_lock_outline")
-        }
-    }
+    override var activityImage: UIImage? { #imageLiteral(resourceName: "ic_lock_outline") }
 
     override func canPerform(withActivityItems activityItems: [Any]) -> Bool {
         return stringsFrom(activityItems: activityItems).count > 0
