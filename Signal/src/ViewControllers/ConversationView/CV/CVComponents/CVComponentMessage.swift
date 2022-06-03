@@ -1827,7 +1827,21 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         var bottomButtonsView: CVComponentView?
 
         private var allSubcomponentViews: [CVComponentView] {
-            [senderNameView, bodyTextView, bodyMediaView, footerView, stickerView, quotedReplyView, linkPreviewView, reactionsView, viewOnceView, audioAttachmentView, genericAttachmentView, contactShareView, bottomButtonsView].compactMap { $0 }
+            [
+                senderNameView,
+                bodyTextView,
+                bodyMediaView,
+                footerView,
+                stickerView,
+                quotedReplyView,
+                linkPreviewView,
+                reactionsView,
+                viewOnceView,
+                audioAttachmentView,
+                genericAttachmentView,
+                contactShareView,
+                bottomButtonsView
+            ].compactMap { $0 }
         }
 
         fileprivate func subcomponentView(key: CVComponentKey) -> CVComponentView? {
