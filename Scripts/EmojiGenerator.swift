@@ -247,8 +247,9 @@ extension EmojiGenerator {
         // Main enum: Create a string enum defining our enumNames equal to the baseEmoji string
         // e.g. case grinning = "😀"
         writeBlock(fileName: "Emoji.swift") { fileHandle in
-            fileHandle.writeLine("/// A sorted representation of all available emoji")
             fileHandle.writeLine("// swiftlint:disable all")
+            fileHandle.writeLine("")
+            fileHandle.writeLine("/// A sorted representation of all available emoji")
             fileHandle.writeLine("enum Emoji: String, CaseIterable, Equatable {")
             fileHandle.indent {
                 emojiModel.definitions.forEach {
