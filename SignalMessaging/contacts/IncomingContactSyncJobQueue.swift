@@ -4,12 +4,6 @@
 
 import Foundation
 
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
-
-import Foundation
-
 public extension Notification.Name {
     static let IncomingContactSyncDidComplete = Notification.Name("IncomingContactSyncDidComplete")
 }
