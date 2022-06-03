@@ -98,10 +98,10 @@ public class ContactDiscoveryTask: NSObject {
     // MARK: - Private
 
     private func createContactDiscoveryOperation() -> ContactDiscovering {
-        if TSConstants.isUsingProductionService {
-            return SGXContactDiscoveryOperation(e164sToLookup: e164FetchSet)
-        } else {
+        if FeatureFlags.hsmContactDiscovery {
             return HSMContactDiscoveryOperation(e164sToLookup: e164FetchSet)
+        } else {
+            return SGXContactDiscoveryOperation(e164sToLookup: e164FetchSet)
         }
     }
 
