@@ -51,7 +51,7 @@ class NotificationService: UNNotificationServiceExtension {
                 }
             }
 
-            _nseCounter = _nseCounter + 1
+            _nseCounter += 1
             return _nseCounter
         }
     }

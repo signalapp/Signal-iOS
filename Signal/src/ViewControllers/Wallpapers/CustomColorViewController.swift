@@ -1234,7 +1234,7 @@ private class CustomColorPreviewView: UIView {
             case .knob2:
                 // To simplify the math, pretend we're manipulating the first knob
                 // by inverting the vector.
-                touchVector = touchVector * -1
+                touchVector *= -1
             case .none:
                 return
             }

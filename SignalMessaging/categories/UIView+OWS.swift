@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -137,12 +137,22 @@ public extension CGPoint {
         left.plus(right)
     }
 
+    static func += (left: inout CGPoint, right: CGPoint) {
+        left.x += right.x
+        left.y += right.y
+    }
+
     static func - (left: CGPoint, right: CGPoint) -> CGPoint {
         CGPoint(x: left.x - right.x, y: left.y - right.y)
     }
 
     static func * (left: CGPoint, right: CGFloat) -> CGPoint {
         CGPoint(x: left.x * right, y: left.y * right)
+    }
+
+    static func *= (left: inout CGPoint, right: CGFloat) {
+        left.x *= right
+        left.y *= right
     }
 }
 

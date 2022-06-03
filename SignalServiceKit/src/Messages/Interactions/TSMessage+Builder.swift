@@ -118,7 +118,7 @@ public class TSMessageBuilder: NSObject {
     #if TESTABLE_BUILD
     @objc
     public func addAttachmentId(_ attachmentId: String) {
-        attachmentIds = attachmentIds + [attachmentId ]
+        attachmentIds.append(attachmentId)
     }
     #endif
 }

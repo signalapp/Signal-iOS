@@ -739,7 +739,7 @@ class DebugUIGroupsV2: DebugUIPage {
             // Real and valid group id/master key/secret params.
             var masterKeyData = validGroupContextInfo.masterKeyData
             // Append garbage to the master key.
-            masterKeyData = masterKeyData + Randomness.generateRandomBytes(1)
+            masterKeyData += Randomness.generateRandomBytes(1)
             // Real revision.
             let revision: UInt32 = 0
 

@@ -552,7 +552,7 @@ public extension StickerPack {
                 return
             }
             let uniqueId = uniqueIds[index]
-            index = index + 1
+            index += 1
             guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
                 owsFailDebug("Missing instance.")
                 return

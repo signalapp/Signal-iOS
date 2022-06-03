@@ -45,7 +45,7 @@ public class ReverseDispatchQueue: NSObject {
     @objc
     public func async(workBlock : @escaping WorkBlock) {
         serialQueue.async {
-            self.indexCounter = self.indexCounter + 1
+            self.indexCounter += 1
             let index = self.indexCounter
             let item = Item(workBlock: workBlock, index: index )
             self.items.append(item)
