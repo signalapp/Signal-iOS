@@ -229,7 +229,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
 extension TextApprovalViewController: ApprovalFooterDelegate {
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
         let linkPreviewDraft: OWSLinkPreviewDraft?
-        if let draftState = linkPreviewView.state as? LinkPreviewDraft {
+        if !wasLinkPreviewCancelled, let draftState = linkPreviewView.state as? LinkPreviewDraft {
             linkPreviewDraft = draftState.linkPreviewDraft
         } else {
             linkPreviewDraft = nil
