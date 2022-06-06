@@ -228,7 +228,7 @@ extension ReactionListSheet: UICollectionViewDataSource, UICollectionViewDelegat
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.identifier, for: indexPath) as! Cell
         let item = reactionMap.orderedItems[indexPath.item]
         cell.data = (item.0, item.1.count)
-        cell.isSelected = item.0 == selectedReaction!
+        cell.isCurrentSelection = item.0 == selectedReaction!
         return cell
     }
     
@@ -278,7 +278,7 @@ extension ReactionListSheet {
     
     fileprivate final class Cell : UICollectionViewCell {
         var data: (String, Int)? { didSet { update() } }
-        override var isSelected: Bool { didSet { updateBorder() } }
+        var isCurrentSelection: Bool? { didSet { updateBorder() } }
         
         static let identifier = "ReactionListSheetCell"
         
@@ -337,7 +337,7 @@ extension ReactionListSheet {
         }
         
         private func updateBorder() {
-            if isSelected {
+            if isCurrentSelection == true {
                 snContentView.addBorder(with: Colors.accent)
             } else {
                 snContentView.addBorder(with: .clear)
