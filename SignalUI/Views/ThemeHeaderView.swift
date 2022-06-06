@@ -16,8 +16,6 @@ public class ThemeHeaderView: UIView {
 
     let label: UILabel
 
-    override public class var layerClass: AnyClass { super.layerClass }
-
     static var labelFont: UIFont {
         return UIFont.ows_dynamicTypeBodyClamped.ows_semibold
     }
