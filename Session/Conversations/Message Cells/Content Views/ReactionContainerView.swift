@@ -18,6 +18,7 @@ final class ReactionContainerView : UIView {
     
     private var showingAllReactions = false
     private var isOutgoingMessage = false
+    private var showNumbers = true
     private var maxEmojisPerLine = isIPhone6OrSmaller ? 5 : 6
     
     var reactions: [(String, (Int, Bool))] = []
@@ -57,9 +58,10 @@ final class ReactionContainerView : UIView {
         mainStackView.pin(to: self)
     }
     
-    public func update(_ reactions: [(String, (Int, Bool))], isOutgoingMessage: Bool) {
+    public func update(_ reactions: [(String, (Int, Bool))], isOutgoingMessage: Bool, showNumbers: Bool) {
         self.reactions = reactions
         self.isOutgoingMessage = isOutgoingMessage
+        self.showNumbers = showNumbers
         prepareForUpdate()
         if showingAllReactions {
             updateAllReactions()
@@ -93,7 +95,7 @@ final class ReactionContainerView : UIView {
         }
         
         for reaction in displayedReactions {
-            let reactionView = ReactionButton(emoji: reaction.0, value: reaction.1.0, showBorder: reaction.1.1)
+            let reactionView = ReactionButton(emoji: reaction.0, value: reaction.1.0, showBorder: reaction.1.1, showNumber: showNumbers)
             stackView.addArrangedSubview(reactionView)
             reactionViews.append(reactionView)
         }
@@ -131,13 +133,13 @@ final class ReactionContainerView : UIView {
     public func showAllEmojis() {
         guard !showingAllReactions else { return }
         showingAllReactions = true
-        update(reactions, isOutgoingMessage: isOutgoingMessage)
+        update(reactions, isOutgoingMessage: isOutgoingMessage, showNumbers: showNumbers)
     }
     
     public func showLessEmojis() {
         guard showingAllReactions else { return }
         showingAllReactions = false
-        update(reactions, isOutgoingMessage: isOutgoingMessage)
+        update(reactions, isOutgoingMessage: isOutgoingMessage, showNumbers: showNumbers)
     }
 }
 

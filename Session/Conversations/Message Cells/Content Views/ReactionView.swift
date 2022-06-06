@@ -4,6 +4,7 @@ final class ReactionButton : UIView {
     let emoji: String
     let number: Int
     let showBorder: Bool
+    let showNumber: Bool
     
     // MARK: Settings
     private var height: CGFloat = 22
@@ -12,10 +13,11 @@ final class ReactionButton : UIView {
     private var spacing: CGFloat = Values.verySmallSpacing
     
     // MARK: Lifecycle
-    init(emoji: String, value: Int, showBorder: Bool = false) {
+    init(emoji: String, value: Int, showBorder: Bool = false, showNumber: Bool = true) {
         self.emoji = emoji
         self.number = value
         self.showBorder = showBorder
+        self.showNumber = showNumber
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
@@ -33,12 +35,7 @@ final class ReactionButton : UIView {
         emojiLabel.text = emoji
         emojiLabel.font = .systemFont(ofSize: fontSize)
         
-        let numberLabel = UILabel()
-        numberLabel.text = self.number < 1000 ? "\(number)" : String(format: "%.1f", Float(number) / 1000) + "k"
-        numberLabel.font = .systemFont(ofSize: fontSize)
-        numberLabel.textColor = Colors.text
-        
-        let stackView = UIStackView(arrangedSubviews: [ emojiLabel, numberLabel ])
+        let stackView = UIStackView(arrangedSubviews: [ emojiLabel ])
         stackView.axis = .horizontal
         stackView.spacing = spacing
         stackView.alignment = .center
@@ -53,6 +50,14 @@ final class ReactionButton : UIView {
         
         if showBorder {
             self.addBorder(with: Colors.accent)
+        }
+        
+        if showNumber || self.number > 1 {
+            let numberLabel = UILabel()
+            numberLabel.text = self.number < 1000 ? "\(number)" : String(format: "%.1f", Float(number) / 1000) + "k"
+            numberLabel.font = .systemFont(ofSize: fontSize)
+            numberLabel.textColor = Colors.text
+            stackView.addArrangedSubview(numberLabel)
         }
     }
 }

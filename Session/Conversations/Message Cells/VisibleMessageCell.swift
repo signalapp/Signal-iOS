@@ -467,7 +467,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 }
             }
         }
-        reactionContainerView.update(reactions.orderedItems, isOutgoingMessage: direction == .outgoing)
+        reactionContainerView.update(reactions.orderedItems, isOutgoingMessage: direction == .outgoing, showNumbers: thread!.isGroupThread())
     }
     
     override func layoutSubviews() {
