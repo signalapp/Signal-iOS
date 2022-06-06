@@ -6,6 +6,7 @@ public extension Notification.Name {
     static let contactOnlineStatusChanged = Notification.Name("contactOnlineStatusChanged")
     static let threadDeleted = Notification.Name("threadDeleted")
     static let threadSessionRestoreDevicesChanged = Notification.Name("threadSessionRestoreDevicesChanged")
+    static let emojiReactsUpdated = Notification.Name("emojiReactsUpdated")
     // Onboarding
     static let seedViewed = Notification.Name("seedViewed")
     // Interaction

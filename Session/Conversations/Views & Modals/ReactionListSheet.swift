@@ -2,7 +2,7 @@
 final class ReactionListSheet : BaseVC {
     private let thread: TSGroupThread
     private let viewItem: ConversationViewItem
-    private let reactions: [ReactMessage]
+    private var reactions: [ReactMessage] = []
     private var reactionMap: OrderedDictionary<String, [ReactMessage]> = OrderedDictionary()
     var selectedReaction: String?
     var delegate: ReactionDelegate?
@@ -11,8 +11,11 @@ final class ReactionListSheet : BaseVC {
     
     private lazy var contentView: UIView = {
         let result = UIView()
-        result.layer.borderWidth = 0.5
-        result.layer.borderColor = Colors.border.withAlphaComponent(0.5).cgColor
+        let line = UIView()
+        line.set(.height, to: 0.5)
+        line.backgroundColor = Colors.border.withAlphaComponent(0.5)
+        result.addSubview(line)
+        line.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.top ], to: result)
         result.backgroundColor = Colors.modalBackground
         return result
     }()
@@ -52,6 +55,7 @@ final class ReactionListSheet : BaseVC {
         result.setTitle(NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL", comment: ""), for: .normal)
         result.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
         result.layer.borderWidth = 0
+        result.isHidden = true
         return result
     }()
     
@@ -60,10 +64,9 @@ final class ReactionListSheet : BaseVC {
         result.dataSource = self
         result.delegate = self
         result.register(UserCell.self, forCellReuseIdentifier: "UserCell")
+        result.separatorStyle = .none
         result.backgroundColor = .clear
         result.showsVerticalScrollIndicator = false
-        result.layer.borderWidth = 0.5
-        result.layer.borderColor = Colors.border.withAlphaComponent(0.5).cgColor
         return result
     }()
     
@@ -72,11 +75,6 @@ final class ReactionListSheet : BaseVC {
     init(for viewItem: ConversationViewItem, thread: TSGroupThread) {
         self.viewItem = viewItem
         self.thread = thread
-        if let message = viewItem.interaction as? TSMessage {
-            self.reactions = message.reactions as! [ReactMessage]
-        } else {
-            self.reactions = []
-        }
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -94,9 +92,8 @@ final class ReactionListSheet : BaseVC {
         let swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(close))
         swipeGestureRecognizer.direction = .down
         view.addGestureRecognizer(swipeGestureRecognizer)
-        populateData()
+        NotificationCenter.default.addObserver(self, selector: #selector(update), name: .emojiReactsUpdated, object: nil)
         setUpViewHierarchy()
-        reactionContainer.reloadData()
         update()
     }
     
@@ -120,27 +117,39 @@ final class ReactionListSheet : BaseVC {
         contentView.addSubview(reactionContainer)
         reactionContainer.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: contentView)
         reactionContainer.pin(.top, to: .top, of: contentView, withInset: Values.verySmallSpacing)
-        // Line
-        let lineView = UIView()
-        lineView.backgroundColor = Colors.border.withAlphaComponent(0.1)
-        lineView.set(.height, to: 0.5)
-        contentView.addSubview(lineView)
-        lineView.pin(.leading, to: .leading, of: contentView, withInset: Values.smallSpacing)
-        lineView.pin(.trailing, to: .trailing, of: contentView, withInset: -Values.smallSpacing)
-        lineView.pin(.top, to: .bottom, of: reactionContainer, withInset: Values.verySmallSpacing)
+        // Seperator
+        let seperator = UIView()
+        seperator.backgroundColor = Colors.border.withAlphaComponent(0.1)
+        seperator.set(.height, to: 0.5)
+        contentView.addSubview(seperator)
+        seperator.pin(.leading, to: .leading, of: contentView, withInset: Values.smallSpacing)
+        seperator.pin(.trailing, to: .trailing, of: contentView, withInset: -Values.smallSpacing)
+        seperator.pin(.top, to: .bottom, of: reactionContainer, withInset: Values.verySmallSpacing)
         // Detail info & clear all
         let stackView = UIStackView(arrangedSubviews: [ detailInfoLabel, clearAllButton ])
         contentView.addSubview(stackView)
-        stackView.pin(.top, to: .bottom, of: lineView, withInset: Values.smallSpacing)
+        stackView.pin(.top, to: .bottom, of: seperator, withInset: Values.smallSpacing)
         stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.mediumSpacing)
         stackView.pin(.trailing, to: .trailing, of: contentView, withInset: -Values.mediumSpacing)
+        // Line
+        let line = UIView()
+        line.set(.height, to: 0.5)
+        line.backgroundColor = Colors.border.withAlphaComponent(0.5)
+        contentView.addSubview(line)
+        line.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: contentView)
+        line.pin(.top, to: .bottom, of: stackView, withInset: Values.smallSpacing)
         // Reactor list
         contentView.addSubview(userListView)
         userListView.pin([ UIView.HorizontalEdge.trailing, UIView.HorizontalEdge.leading, UIView.VerticalEdge.bottom ], to: contentView)
-        userListView.pin(.top, to: .bottom, of: stackView, withInset: Values.smallSpacing)
+        userListView.pin(.top, to: .bottom, of: line, withInset: 0)
     }
     
     private func populateData() {
+        self.reactions = []
+        self.reactionMap = OrderedDictionary()
+        if let messageId = viewItem.interaction.uniqueId, let message = TSMessage.fetch(uniqueId: messageId) {
+            self.reactions = message.reactions as! [ReactMessage]
+        }
         for reaction in reactions {
             if let emoji = reaction.emoji {
                 if !reactionMap.hasValue(forKey: emoji) { reactionMap.append(key: emoji, value: []) }
@@ -153,15 +162,29 @@ final class ReactionListSheet : BaseVC {
                 reactionMap.replace(key: emoji, value: value)
             }
         }
-        if selectedReaction == nil {
+        if (selectedReaction == nil || reactionMap.value(forKey: selectedReaction!) == nil) && reactionMap.orderedKeys.count > 0 {
             selectedReaction = reactionMap.orderedKeys[0]
         }
     }
     
-    private func update() {
+    private func reloadData() {
+        reactionContainer.reloadData()
         let seletedData = reactionMap.value(forKey: selectedReaction!)!
         detailInfoLabel.text = "\(selectedReaction!) · \(seletedData.count)"
+        if thread.isOpenGroup, let threadId = thread.uniqueId, let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadId) {
+            let isUserModerator = OpenGroupAPIV2.isUserModerator(getUserHexEncodedPublicKey(), for: openGroupV2.room, on: openGroupV2.server)
+            clearAllButton.isHidden = !isUserModerator
+        }
         userListView.reloadData()
+    }
+    
+    @objc private func update() {
+        populateData()
+        if reactions.isEmpty {
+            close()
+            return
+        }
+        reloadData()
     }
     
     // MARK: Interaction
@@ -213,7 +236,7 @@ extension ReactionListSheet: UICollectionViewDataSource, UICollectionViewDelegat
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selectedReaction = reactionMap.orderedKeys[indexPath.item]
-        update()
+        reloadData()
     }
 }
 
@@ -241,11 +264,11 @@ extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         guard let reactMessage = reactionMap.value(forKey: selectedReaction!)?[indexPath.row], let publicKey = reactMessage.sender else { return }
         if publicKey == getUserHexEncodedPublicKey() {
             delegate?.cancelReact(viewItem, for: selectedReaction!)
         }
-        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 

@@ -823,6 +823,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         guard let thread = thread as? TSGroupThread else { return }
         guard let message = viewItem.interaction as? TSMessage, message.reactions.count > 0 else { return }
         let reactionListSheet = ReactionListSheet(for: viewItem, thread: thread)
+        showingReactionListForMessageId = viewItem.interaction.uniqueId
         reactionListSheet.delegate = self
         reactionListSheet.selectedReaction = selectedReaction
         reactionListSheet.modalPresentationStyle = .overFullScreen
@@ -858,14 +859,20 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         visibleMessage.sentTimestamp = sentTimestamp
         visibleMessage.reaction = .from(reactMessage)
         visibleMessage.reaction?.kind = cancel ? .remove : .react
-        Storage.write { transaction in
-            if cancel {
-                message.removeReaction(reactMessage, transaction: transaction) }
-            else {
-                message.addReaction(reactMessage, transaction: transaction)
+        Storage.write(
+            with: { transaction in
+                if cancel {
+                    message.removeReaction(reactMessage, transaction: transaction) }
+                else {
+                    message.addReaction(reactMessage, transaction: transaction)
+                }
+            },
+            completion: {
+                Storage.write { transaction in
+                    MessageSender.send(visibleMessage, in: thread, using: transaction)
+                }
             }
-            MessageSender.send(visibleMessage, in: thread, using: transaction)
-        }
+        )
     }
     
     func showFullEmojiKeyboard(_ viewItem: ConversationViewItem) {
