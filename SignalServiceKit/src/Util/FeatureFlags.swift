@@ -101,7 +101,7 @@ public class FeatureFlags: BaseFlags {
     public static let giftBadgeReceiving = false
 
     @objc
-    public static let giftBadgeSending = false
+    public static let giftBadgeSending = build.includes(.qa)
 
     @objc
     public static var notificationServiceExtension: Bool {
