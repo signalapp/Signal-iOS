@@ -72,7 +72,7 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        canSelectRecipient recipient: PickedRecipient
+        getRecipientState recipient: PickedRecipient
     ) -> RecipientPickerRecipientState {
         switch recipient.identifier {
         case .address(let address):

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,7 +17,7 @@ public enum RecipientPickerRecipientState: Int {
 @objc
 protocol RecipientPickerDelegate: AnyObject {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         canSelectRecipient recipient: PickedRecipient) -> RecipientPickerRecipientState
+                         getRecipientState recipient: PickedRecipient) -> RecipientPickerRecipientState
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          didSelectRecipient recipient: PickedRecipient)
@@ -112,7 +112,7 @@ extension RecipientPickerViewController {
         guard showUseAsyncSelection else {
             AssertIsOnMainThread()
 
-            let recipientPickerRecipientState = delegate.recipientPicker(self, canSelectRecipient: recipient)
+            let recipientPickerRecipientState = delegate.recipientPicker(self, getRecipientState: recipient)
             guard recipientPickerRecipientState == .canBeSelected else {
                 showErrorAlert(recipientPickerRecipientState: recipientPickerRecipientState)
                 return
@@ -132,7 +132,7 @@ extension RecipientPickerViewController {
                 AssertIsOnMainThread()
                 modalActivityIndicator.dismiss {
                     AssertIsOnMainThread()
-                    let recipientPickerRecipientState = delegate.recipientPicker(self, canSelectRecipient: recipient)
+                    let recipientPickerRecipientState = delegate.recipientPicker(self, getRecipientState: recipient)
                     guard recipientPickerRecipientState == .canBeSelected else {
                         self.showErrorAlert(recipientPickerRecipientState: recipientPickerRecipientState)
                         return
@@ -187,7 +187,7 @@ extension RecipientPickerViewController {
                     }
 
                     if let delegate = self.delegate,
-                       delegate.recipientPicker(self, canSelectRecipient: recipient) != .canBeSelected {
+                       delegate.recipientPicker(self, getRecipientState: recipient) != .canBeSelected {
                         cell.selectionStyle = .none
                     }
 
@@ -230,7 +230,7 @@ extension RecipientPickerViewController {
                     guard let self = self else { return cell }
 
                     if let delegate = self.delegate {
-                        if delegate.recipientPicker(self, canSelectRecipient: recipient) != .canBeSelected {
+                        if delegate.recipientPicker(self, getRecipientState: recipient) != .canBeSelected {
                             cell.selectionStyle = .none
                         }
 

@@ -339,7 +339,7 @@ public class BaseGroupMemberViewController: OWSViewController {
 extension BaseGroupMemberViewController: RecipientPickerDelegate {
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         canSelectRecipient recipient: PickedRecipient) -> RecipientPickerRecipientState {
+                         getRecipientState recipient: PickedRecipient) -> RecipientPickerRecipientState {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return .unknownError

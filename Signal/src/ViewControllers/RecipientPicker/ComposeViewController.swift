@@ -75,7 +75,7 @@ extension ComposeViewController: RecipientPickerDelegate {
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        canSelectRecipient recipient: PickedRecipient
+        getRecipientState recipient: PickedRecipient
     ) -> RecipientPickerRecipientState {
         return .canBeSelected
     }

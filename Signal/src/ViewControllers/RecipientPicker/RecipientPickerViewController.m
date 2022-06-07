@@ -730,7 +730,7 @@ const NSUInteger kMinimumSearchLength = 1;
                                     return cell;
                                 }
 
-                                if (![strongSelf.delegate recipientPicker:strongSelf canSelectRecipient:recipient]) {
+                                if (![strongSelf.delegate recipientPicker:strongSelf getRecipientState:recipient]) {
                                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
                                 }
 

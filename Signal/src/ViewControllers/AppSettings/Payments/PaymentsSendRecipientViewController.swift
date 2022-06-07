@@ -100,7 +100,7 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        canSelectRecipient recipient: PickedRecipient
+        getRecipientState recipient: PickedRecipient
     ) -> RecipientPickerRecipientState {
         // TODO: Nice-to-have: filter out recipients that do not support payments.
         return .canBeSelected

@@ -79,7 +79,7 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         canSelectRecipient recipient: PickedRecipient) -> RecipientPickerRecipientState {
+                         getRecipientState recipient: PickedRecipient) -> RecipientPickerRecipientState {
         switch getRecipientGiftMode(recipient) {
         case .invalidRecipient:
             return .unknownError
