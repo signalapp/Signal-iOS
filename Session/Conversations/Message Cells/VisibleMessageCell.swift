@@ -1,5 +1,6 @@
 
 final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
+    private var isHandlingLongPress: Bool = false
     private var unloadContent: (() -> Void)?
     private var previousX: CGFloat = 0
     var albumView: MediaAlbumView?
@@ -533,6 +534,11 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     }
     
     @objc func handleLongPress(_ gestureRecognizer: UITapGestureRecognizer) {
+        if [ .ended, .cancelled, .failed ].contains(gestureRecognizer.state) {
+            isHandlingLongPress = false
+            return
+        }
+        guard !isHandlingLongPress else { return }
         guard let viewItem = viewItem else { return }
         let location = gestureRecognizer.location(in: self)
         if reactionContainerView.frame.contains(location) {
@@ -546,6 +552,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         } else {
             delegate?.handleViewItemLongPressed(viewItem)
         }
+        isHandlingLongPress = true
     }
 
     @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
