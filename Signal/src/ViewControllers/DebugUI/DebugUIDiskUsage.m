@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIDiskUsage.h"
@@ -24,25 +24,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
-    return [OWSTableSection sectionWithTitle:self.name
-                                       items:@[
-                                           [OWSTableItem itemWithTitle:@"Audit & Log"
-                                                           actionBlock:^{
-                                                               [OWSOrphanDataCleaner auditAndCleanup:NO];
-                                                           }],
-                                           [OWSTableItem itemWithTitle:@"Audit & Clean Up"
-                                                           actionBlock:^{
-                                                               [OWSOrphanDataCleaner auditAndCleanup:YES];
-                                                           }],
-                                           [OWSTableItem itemWithTitle:@"Save All Attachments"
-                                                           actionBlock:^{
-                                                               [DebugUIDiskUsage saveAllAttachments];
-                                                           }],
-                                           [OWSTableItem itemWithTitle:@"Delete Messages older than 3 Months"
-                                                           actionBlock:^{
-                                                               [DebugUIDiskUsage deleteOldMessages_3Months];
-                                                           }],
-                                       ]];
+    return [OWSTableSection
+        sectionWithTitle:self.name
+                   items:@[
+                       [OWSTableItem itemWithTitle:@"Audit & Log"
+                                       actionBlock:^{ [OWSOrphanDataCleaner auditAndCleanup:NO]; }],
+                       [OWSTableItem itemWithTitle:@"Audit & Clean Up"
+                                       actionBlock:^{ [OWSOrphanDataCleaner auditAndCleanup:YES]; }],
+                       [OWSTableItem itemWithTitle:@"Save All Attachments"
+                                       actionBlock:^{ [DebugUIDiskUsage saveAllAttachments]; }],
+                       [OWSTableItem itemWithTitle:@"Clear All Attachment Thumbnails"
+                                       actionBlock:^{ [DebugUIDiskUsage clearAllAttachmentThumbnails]; }],
+                       [OWSTableItem itemWithTitle:@"Delete Messages older than 3 Months"
+                                       actionBlock:^{ [DebugUIDiskUsage deleteOldMessages_3Months]; }],
+                   ]];
 }
 
 + (void)saveAllAttachments
@@ -70,6 +65,35 @@ NS_ASSUME_NONNULL_BEGIN
                                                  }];
         }
     });
+}
+
++ (void)clearAllAttachmentThumbnails
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSDirectoryEnumerator<NSURL *> *cachesContents =
+        [fileManager enumeratorAtURL:[NSURL fileURLWithPath:OWSFileSystem.cachesDirectoryPath]
+            includingPropertiesForKeys:@[]
+                               options:NSDirectoryEnumerationSkipsSubdirectoryDescendants
+                          errorHandler:^BOOL(NSURL *url, NSError *error) {
+                              OWSLogWarn(@"could not visit %@: %@", url, error);
+                              return YES;
+                          }];
+
+    NSUInteger removedCount = 0;
+    for (NSURL *cacheItem in cachesContents) {
+        NSString *itemName = [cacheItem lastPathComponent];
+        if (!([itemName hasSuffix:@"-thumbnails"] || [itemName hasSuffix:@"-signal-ios-thumbnail.jpg"])) {
+            continue;
+        }
+        NSError *error;
+        if ([fileManager removeItemAtURL:cacheItem error:&error]) {
+            removedCount += 1;
+        } else {
+            OWSLogWarn(@"could not remove %@: %@", itemName, error);
+        }
+    }
+
+    OWSLogInfo(@"removed thumbnails for %ld attachments", removedCount);
 }
 
 + (void)deleteOldMessages_3Months
