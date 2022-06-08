@@ -291,6 +291,8 @@ public class PlayerProgressBar: UIView {
         positionLabel.font = kLabelFont
         remainingLabel.font = kLabelFont
 
+        slider.semanticContentAttribute = .playback
+
         // We use a smaller thumb for the progress slider.
         slider.setThumbImage(#imageLiteral(resourceName: "sliderProgressThumb"), for: .normal)
         slider.maximumTrackTintColor = UIColor.ows_black
@@ -313,16 +315,16 @@ public class PlayerProgressBar: UIView {
         addSubview(remainingLabel)
         addSubview(slider)
 
-        positionLabel.autoPinEdge(toSuperviewMargin: .leading)
+        positionLabel.autoPinEdge(toSuperviewMargin: .left)
         positionLabel.autoVCenterInSuperview()
 
         let kSliderMargin: CGFloat = 8
 
-        slider.autoPinEdge(.leading, to: .trailing, of: positionLabel, withOffset: kSliderMargin)
+        slider.autoPinEdge(.left, to: .right, of: positionLabel, withOffset: kSliderMargin)
         slider.autoVCenterInSuperview()
 
-        remainingLabel.autoPinEdge(.leading, to: .trailing, of: slider, withOffset: kSliderMargin)
-        remainingLabel.autoPinEdge(toSuperviewMargin: .trailing)
+        remainingLabel.autoPinEdge(.left, to: .right, of: slider, withOffset: kSliderMargin)
+        remainingLabel.autoPinEdge(toSuperviewMargin: .right)
         remainingLabel.autoVCenterInSuperview()
     }
 
