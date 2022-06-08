@@ -368,6 +368,12 @@ public final class OpenGroupAPIV2 : NSObject {
         }
     }
     
+    public static func batchDeleteMessages(for room: String, on server: String, messageIds: [String]) -> Promise<Void> {
+        let json: JSON = ["ids": messageIds.compactMap{ Int($0) }]
+        let request = Request(verb: .post, room: room, server: server, endpoint: "delete_messages", parameters: json)
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
+    }
+    
     private static func parseDeletions(from rawDeletions: [JSON], for room: String, on server: String) -> Promise<[Deletion]> {
         let storage = SNMessagingKitConfiguration.shared.storage
         let deletions = rawDeletions.compactMap { Deletion.from($0) }

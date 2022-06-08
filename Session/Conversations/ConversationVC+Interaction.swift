@@ -844,7 +844,9 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func cancelAllReact(reactMessages: [ReactMessage]) {
-        
+        guard let groupThread = thread as? TSGroupThread, groupThread.isOpenGroup else { return }
+        guard let threadId = groupThread.uniqueId, let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadId) else { return }
+        OpenGroupAPIV2.batchDeleteMessages(for: openGroupV2.room, on: openGroupV2.server, messageIds: reactMessages.compactMap{ $0.messageId })
     }
     
     private func react(_ viewItem: ConversationViewItem, with emoji: String, cancel: Bool) {
