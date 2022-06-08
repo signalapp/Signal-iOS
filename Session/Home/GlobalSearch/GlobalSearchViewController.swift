@@ -109,8 +109,24 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         searchBarContainer.set(.height, to: 44)
         searchBarContainer.set(.width, to: UIScreen.main.bounds.width - 32)
         searchBarContainer.addSubview(searchBar)
-        searchBar.autoPinEdgesToSuperviewMargins()
         navigationItem.titleView = searchBarContainer
+        
+        // On iPad, the cancel button won't show
+        // See more https://developer.apple.com/documentation/uikit/uisearchbar/1624283-showscancelbutton?language=objc
+        if UIDevice.current.isIPad {
+            let ipadCancelButton = UIButton()
+            ipadCancelButton.setTitle("Cancel", for: .normal)
+            ipadCancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
+            ipadCancelButton.setTitleColor(Colors.text, for: .normal)
+            searchBarContainer.addSubview(ipadCancelButton)
+            ipadCancelButton.pin(.trailing, to: .trailing, of: searchBarContainer)
+            ipadCancelButton.autoVCenterInSuperview()
+            searchBar.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .trailing)
+            searchBar.pin(.trailing, to: .leading, of: ipadCancelButton, withInset: -Values.smallSpacing)
+        }
+        else {
+            searchBar.autoPinEdgesToSuperviewMargins()
+        }
     }
 
     private func reloadTableData() {
@@ -186,6 +202,10 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
                 
             default: break
         }
+    }
+    
+    @objc func cancel() {
+        self.navigationController?.popViewController(animated: true)
     }
 }
 

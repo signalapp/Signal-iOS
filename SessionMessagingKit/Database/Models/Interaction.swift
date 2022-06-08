@@ -78,13 +78,15 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
         
         case infoMessageRequestAccepted = 4000
         
+        case infoMessageCall = 5000
+        
         // MARK: - Convenience
         
         public var isInfoMessage: Bool {
             switch self {
                 case .infoClosedGroupCreated, .infoClosedGroupUpdated, .infoClosedGroupCurrentUserLeft,
                     .infoDisappearingMessagesUpdate, .infoScreenshotNotification, .infoMediaSavedNotification,
-                    .infoMessageRequestAccepted:
+                    .infoMessageRequestAccepted, .infoMessageCall:
                     return true
                     
                 case .standardIncoming, .standardOutgoing, .standardIncomingDeleted:

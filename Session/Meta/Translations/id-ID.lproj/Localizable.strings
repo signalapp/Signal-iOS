@@ -243,7 +243,7 @@
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Hapus Pesan";
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ on %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ pada %@";
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 /* Short sender label for media sent by you */
@@ -273,7 +273,7 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Anda tidak akan menerima pemberitahuan untuk percakapan yang disenyapkan.";
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ ke %@";
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Catatan Pribadi";
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
@@ -341,11 +341,11 @@
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Memulihkan cadangan gagal";
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Cadangkan dan Pulihkan diam";
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Cadangkan dan Pulihkan sedang dalam proses";
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Cadangkan dan Pulihkan berhasil";
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "Fase";
 /* Label for phase row in the in the backup settings view. */
@@ -369,11 +369,17 @@
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Suara Pesan";
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Kirim pratinjau tautan";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for most urls.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Mendukung pratinjau disebagian besar url.";
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Pratinjau tautan";
+/* Setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS" = "Voice and video calls";
+/* Footer for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_FOOTER" = "Allow access to accept voice and video calls from other users.";
+/* Header for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_HEADER" = "Calls";
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Isi Pemberitahuan";
 /* Label for the 'read receipts' setting. */
@@ -391,17 +397,17 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Layar Aman";
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "Indikator mengetik";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "Tidak ada";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@hari";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@h";
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@jam";
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@j";
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@menit";
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
@@ -409,7 +415,7 @@
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ detik";
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@d";
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_DAY" = "%@hari";
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
@@ -421,7 +427,7 @@
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@minggu";
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@mgg";
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Batal";
 /* No comment provided by engineer. */
@@ -518,11 +524,11 @@
 "modal_seed_explanation" = "Ini adalah kata pemulihan anda. Gunakan untuk mengembalikan atau memindahkan Session ID anda ke perangkat lain";
 "modal_clear_all_data_title" = "Hapus semua data";
 "modal_clear_all_data_explanation" = "Pesan, Session, dan kontak anda akan dihapus secara permanen";
-"modal_clear_all_data_explanation_2" = "Would you like to clear only this device, or delete your entire account?";
-"dialog_clear_all_data_deletion_failed_1" = "Data not deleted by 1 Service Node. Service Node ID: %@.";
-"dialog_clear_all_data_deletion_failed_2" = "Data not deleted by %@ Service Nodes. Service Node IDs: %@.";
-"modal_clear_all_data_device_only_button_title" = "Device Only";
-"modal_clear_all_data_entire_account_button_title" = "Entire Account";
+"modal_clear_all_data_explanation_2" = "Apakah anda ingin menghapus di perangkat ini, atau menghapus akun anda seutuhnya?";
+"dialog_clear_all_data_deletion_failed_1" = "Data tidak dihapus oleh 1 Service Node. Service Node ID: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Data tidak dihapus oleh %@ Service Nodes. Service Node IDs: %@.";
+"modal_clear_all_data_device_only_button_title" = "Perangkat saja";
+"modal_clear_all_data_entire_account_button_title" = "Seluruh akun";
 "vc_qr_code_title" = "Kode QR";
 "vc_qr_code_view_my_qr_code_tab_title" = "Lihat kode QR saya";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Pindai kode QR";
@@ -562,6 +568,8 @@
 "modal_link_previews_title" = "Enable Link Previews?";
 "modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
 "modal_link_previews_button_title" = "Enable";
+"modal_call_title" = "Voice / video calls";
+"modal_call_explanation" = "The current implementation of voice / video calls will expose your IP address to the Oxen Foundation servers and the calling / called user.";
 "modal_share_logs_title" = "Share Logs";
 "modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
 "vc_share_title" = "Share to Session";
@@ -590,19 +598,41 @@
 "context_menu_save" = "Save";
 "context_menu_ban_user" = "Ban User";
 "context_menu_ban_and_delete_all" = "Ban and Delete All";
+"context_menu_ban_user_error_alert_message" = "Unable to ban user";
 "accessibility_expanding_attachments_button" = "Add attachments";
 "accessibility_gif_button" = "Gif";
 "accessibility_document_button" = "Document";
 "accessibility_library_button" = "Photo library";
 "accessibility_camera_button" = "Camera";
 "accessibility_main_button_collapse" = "Collapse attachment options";
+"invalid_recovery_phrase" = "Invalid Recovery Phrase";
+"invalid_recovery_phrase" = "Invalid Recovery Phrase";
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Settings";
-"APN_Message" = "You've got a new message";
+"call_outgoing" = "You called %@";
+"call_incoming" = "%@ called you";
+"call_missed" = "Missed Call from %@";
+"call_rejected" = "Rejected Call";
+"call_cancelled" = "Cancelled Call";
+"call_timeout" = "Unanswered Call";
+"voice_call" = "Voice Call";
+"video_call" = "Video Call";
+"APN_Message" = "You've got a new message.";
+"APN_Collapsed_Messages" = "You've got %@ new messages.";
 "system_mode_theme" = "System";
 "dark_mode_theme" = "Dark";
 "light_mode_theme" = "Light";
+"PIN_BUTTON_TEXT" = "Pin";
+"UNPIN_BUTTON_TEXT" = "Unpin";
+"modal_call_missed_tips_title" = "Call missed";
+"modal_call_missed_tips_explanation" = "Call missed from '%@' because you needed to enable the 'Voice and video calls' permission in the Privacy Settings.";
+"meida_saved" = "Media saved by %@.";
+"screenshot_taken" = "%@ took a screenshot.";
+"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_RECENT" = "Recent";
+"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";
 "MESSAGE_REQUESTS_TITLE" = "Message Requests";
 "MESSAGE_REQUESTS_EMPTY_TEXT" = "No pending message requests";
 "MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";
@@ -615,9 +645,12 @@
 "MESSAGE_REQUESTS_NOTIFICATION" = "You have a new message request";
 "TXT_HIDE_TITLE" = "Hide";
 "TXT_DELETE_ACCEPT" = "Accept";
+"ALERT_ERROR_TITLE" = "Galat";
 "NEW_CONVERSATION_MENU_OPEN_GROUP" = "Open Group";
 "NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Direct Message";
 "NEW_CONVERSATION_MENU_CLOSED_GROUP" = "Closed Group";
+"modal_call_permission_request_title" = "Call Permissions Required";
+"modal_call_permission_request_explanation" = "You can enable the 'Voice and video calls' permission in the Privacy Settings.";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
 "ALERT_ERROR_TITLE" = "Galat";

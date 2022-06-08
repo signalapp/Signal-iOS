@@ -1,3 +1,5 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import PromiseKit
 import SessionUtilitiesKit
 
@@ -52,7 +54,7 @@ extension SnodeMessage {
         var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
 
         try container.encode(
-            (Features.useTestnet ? recipient.removing05PrefixIfNeeded() : recipient),
+            (Features.useTestnet ? recipient.removingIdPrefixIfNeeded() : recipient),
             forKey: .recipient
         )
         try container.encode(data, forKey: .data)

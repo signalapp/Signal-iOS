@@ -1,15 +1,15 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
 import GRDB
 import SessionMessagingKit
 
-@objc
-public class NoopNotificationsManager: NSObject, NotificationsProtocol {
-
+public class NoopNotificationsManager, NotificationsProtocol {
     public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread, isBackgroundPoll: Bool) {
+        owsFailDebug("")
+    }
+    
+    public func notifyUser(_ db: Database, forIncomingCall callInfoMessage: Interaction, in thread: SessionThread) {
         owsFailDebug("")
     }
     

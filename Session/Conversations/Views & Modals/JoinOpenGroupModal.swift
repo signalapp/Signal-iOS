@@ -30,7 +30,7 @@ final class JoinOpenGroupModal: Modal {
         // Title
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         titleLabel.text = "Join \(name)?"
         titleLabel.textAlignment = .center
         
@@ -62,32 +62,44 @@ final class JoinOpenGroupModal: Modal {
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually
         
+        // Content stack view
+        let contentStackView = UIStackView(arrangedSubviews: [ titleLabel, messageLabel ])
+        contentStackView.axis = .vertical
+        contentStackView.spacing = Values.largeSpacing
+        
         // Main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ titleLabel, messageLabel, buttonStackView ])
+        let spacing = Values.largeSpacing - Values.smallFontSize / 2
+        let mainStackView = UIStackView(arrangedSubviews: [ contentStackView, buttonStackView ])
         mainStackView.axis = .vertical
-        mainStackView.spacing = Values.largeSpacing
+        mainStackView.spacing = spacing
         contentView.addSubview(mainStackView)
         mainStackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
         mainStackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
         contentView.pin(.trailing, to: .trailing, of: mainStackView, withInset: Values.largeSpacing)
-        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: Values.largeSpacing)
+        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: spacing)
     }
     
     // MARK: - Interaction
     
     @objc private func joinOpenGroup() {
         guard let presentingViewController: UIViewController = self.presentingViewController else { return }
-        guard let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: url) else {
+        guard let (room, server, publicKey) = OpenGroupManager.parseOpenGroup(from: url) else {
             let alert = UIAlertController(title: "Couldn't Join", message: nil, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
+            
             return presentingViewController.present(alert, animated: true, completion: nil)
         }
         
         presentingViewController.dismiss(animated: true, completion: nil)
         
         GRDBStorage.shared.write { db in
-            OpenGroupManagerV2.shared
-                .add(db, room: room, server: server, publicKey: publicKey)
+            OpenGroupManager.shared.add(
+                db,
+                roomToken: room,
+                server: server,
+                publicKey: publicKey,
+                isConfigMessage: false
+            )
         }
         .done(on: DispatchQueue.main) { _ in
             GRDBStorage.shared.write { db in
@@ -96,7 +108,7 @@ final class JoinOpenGroupModal: Modal {
         }
         .catch(on: DispatchQueue.main) { error in
             let alert = UIAlertController(title: "Couldn't Join", message: error.localizedDescription, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
             presentingViewController.present(alert, animated: true, completion: nil)
         }
     }

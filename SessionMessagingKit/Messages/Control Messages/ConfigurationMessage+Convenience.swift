@@ -5,7 +5,6 @@ import GRDB
 import SessionUtilitiesKit
 
 extension ConfigurationMessage {
-
     public static func getCurrent(_ db: Database) throws -> ConfigurationMessage {
         let currentUserProfile: Profile = Profile.fetchOrCreateCurrentUser(db)
         let displayName: String = currentUserProfile.name

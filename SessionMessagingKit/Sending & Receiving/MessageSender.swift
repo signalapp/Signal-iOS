@@ -5,6 +5,7 @@ import GRDB
 import PromiseKit
 import SessionSnodeKit
 import SessionUtilitiesKit
+import Sodium
 
 public final class MessageSender {
     // MARK: - Preparation
@@ -43,11 +44,14 @@ public final class MessageSender {
     
     public static func sendImmediate(_ db: Database, message: Message, to destination: Message.Destination, interactionId: Int64?) throws -> Promise<Void> {
         switch destination {
-            case .contact(_), .closedGroup(_):
+            case .contact, .closedGroup:
                 return try sendToSnodeDestination(db, message: message, to: destination, interactionId: interactionId)
 
-            case .openGroup(_, _), .openGroupV2(_, _):
+            case .openGroup:
                 return sendToOpenGroupDestination(db, message: message, to: destination, interactionId: interactionId)
+                
+            case .openGroupInbox:
+                return sendToOpenGroupInboxDestination(db, message: message, to: destination, interactionId: interactionId)
         }
     }
 
@@ -74,7 +78,7 @@ public final class MessageSender {
             switch destination {
                 case .contact(let publicKey): return publicKey
                 case .closedGroup(let groupPublicKey): return groupPublicKey
-                case .openGroup(_, _), .openGroupV2(_, _): preconditionFailure()
+                case .openGroup, .openGroupInbox: preconditionFailure()
             }
         }()
         
@@ -90,25 +94,13 @@ public final class MessageSender {
             return promise
         }
         
-        // Stop here if this is a self-send, unless it's:
-        // • a configuration message
-        // • a sync message
-        // • a closed group control message of type `new`
-        // • an unsend request
+        // Stop here if this is a self-send, unless we should sync the message
         let isSelfSend: Bool = (message.recipient == userPublicKey)
-        let isNewClosedGroupControlMessage: Bool = {
-            switch (message as? ClosedGroupControlMessage)?.kind {
-                case .new: return true
-                default: return false
-            }
-        }()
 
         guard
             !isSelfSend ||
-            message is ConfigurationMessage ||
             isSyncMessage ||
-            isNewClosedGroupControlMessage ||
-            message is UnsendRequest
+            Message.shouldSync(message: message)
         else {
             try MessageSender.handleSuccessfulMessageSend(db, message: message, to: destination, interactionId: interactionId)
             seal.fulfill(())
@@ -162,10 +154,10 @@ public final class MessageSender {
                     
                     ciphertext = try encryptWithSessionProtocol(
                         plaintext,
-                        for: "05\(encryptionKeyPair.publicKey.toHexString())"
+                        for: SessionId(.standard, publicKey: encryptionKeyPair.publicKey.bytes).hexString
                     )
                     
-                case .openGroup(_, _), .openGroupV2(_, _): preconditionFailure()
+                case .openGroup, .openGroupInbox: preconditionFailure()
             }
         }
         catch {
@@ -179,15 +171,15 @@ public final class MessageSender {
         let senderPublicKey: String
         
         switch destination {
-            case .contact(_):
+            case .contact:
                 kind = .sessionMessage
                 senderPublicKey = ""
                 
             case .closedGroup(let groupPublicKey):
                 kind = .closedGroupMessage
                 senderPublicKey = groupPublicKey
-                
-            case .openGroup(_, _), .openGroupV2(_, _): preconditionFailure()
+            
+            case .openGroup, .openGroupInbox: preconditionFailure()
         }
         
         let wrappedMessage: Data
@@ -204,6 +196,7 @@ public final class MessageSender {
         // Send the result
         let base64EncodedData = wrappedMessage.base64EncodedString()
         let timestamp = UInt64(Int64(message.sentTimestamp!) + SnodeAPI.clockOffset)
+
         let snodeMessage = SnodeMessage(
             recipient: message.recipient!,
             data: base64EncodedData,
@@ -211,19 +204,24 @@ public final class MessageSender {
             timestampMs: timestamp
         )
         
-        SnodeAPI.sendMessage(snodeMessage)
+        SnodeAPI
+            .sendMessage(
+                snodeMessage,
+                isClosedGroupMessage: (kind == .closedGroupMessage),
+                isConfigMessage: message.isKind(of: ConfigurationMessage.self)
+            )
             .done(on: DispatchQueue.global(qos: .userInitiated)) { promises in
                 let promiseCount = promises.count
                 var isSuccess = false
                 var errorCount = 0
-                
+
                 promises.forEach {
-                    let _ = $0.done(on: DispatchQueue.global(qos: .userInitiated)) { rawResponse in
+                    let _ = $0.done(on: DispatchQueue.global(qos: .userInitiated)) { responseData in
                         guard !isSuccess else { return } // Succeed as soon as the first promise succeeds
                         isSuccess = true
-                        
+
                         GRDBStorage.shared.write { db in
-                            let json = rawResponse as? JSON
+                            let responseJson: JSON? = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON
                             let hash = json?["hash"] as? String
                             message.serverHash = hash
                             
@@ -307,28 +305,61 @@ public final class MessageSender {
         _ db: Database,
         message: Message,
         to destination: Message.Destination,
-        interactionId: Int64?
+        interactionId: Int64?,
+        dependencies: Dependencies = Dependencies()
     ) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
+        let threadId: String
         
         // Set the timestamp, sender and recipient
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = UInt64(floor(Date().timeIntervalSince1970 * 1000))
         }
-        message.sender = getUserHexEncodedPublicKey()
         
         switch destination {
-            case .contact(_): preconditionFailure()
-            case .closedGroup(_): preconditionFailure()
-            case .openGroup(let channel, let server): message.recipient = "\(server).\(channel)"
-            case .openGroupV2(let room, let server): message.recipient = "\(server).\(room)"
+            case .contact, .closedGroup, .openGroupInbox: preconditionFailure()
+            case .openGroup(let roomToken, let server, let whisperTo, let whisperMods, _):
+                threadId = OpenGroup.idFor(roomToken: roomToken, server: server)
+                message.recipient = [
+                    server,
+                    roomToken,
+                    whisperTo,
+                    (whisperMods ? "mods" : nil)
+                ]
+                .compactMap { $0 }
+                .joined(separator: ".")
         }
+        
+        guard
+            let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: threadId),
+            let userEdKeyPair: Box.KeyPair = try? Identity.fetchUserEd25519KeyPair(db)
+        else { preconditionFailure() }
+        
+        message.sender = {
+            let capabilities: [Capability.Variant] = Capability
+                .select(.variant)
+                .filter(Capability.Columns.openGroupId == threadId)
+                .filter(Capability.Columns.isMissing == false)
+                .asRequest(of: Capability.Variant.self)
+                .fetchAll(db)
+            
+            // If the server doesn't support blinding then go with an unblinded id
+            guard capabilities.contains(.blind) else {
+                return SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString
+            }
+            guard let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: openGroup.publicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
+                preconditionFailure()
+            }
+            
+            return SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString
+        }()
         
         // Set the failure handler (need it here already for precondition failure handling)
         func handleFailure(_ db: Database, with error: MessageSenderError) {
             MessageSender.handleFailedMessageSend(db, message: message, with: error, interactionId: interactionId)
             seal.reject(error)
         }
+        
         // Validate the message
         guard let message = message as? VisibleMessage else {
             #if DEBUG
@@ -361,6 +392,7 @@ public final class MessageSender {
         
         // Serialize the protobuf
         let plaintext: Data
+        
         do {
             plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
         }
@@ -371,38 +403,140 @@ public final class MessageSender {
         }
         
         // Send the result
-        guard case .openGroupV2(let room, let server) = destination else { preconditionFailure() }
-        
-        let openGroupMessage = OpenGroupMessageV2(
-            serverID: nil,
-            sender: nil,
-            sentTimestamp: message.sentTimestamp!,
-            base64EncodedData: plaintext.base64EncodedString(),
-            base64EncodedSignature: nil
-        )
-        
-        OpenGroupAPIV2
+        OpenGroupAPI
             .send(
-                openGroupMessage,
+                plaintext,
                 to: room,
-                on: server
+                on: server,
+                whisperTo: whisperTo,
+                whisperMods: whisperMods,
+                fileIds: fileIds,
+                using: dependencies
             )
-            .done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
-                message.openGroupServerMessageId = given(openGroupMessage.serverID) { UInt64($0) }
+            .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
+                message.openGroupServerMessageID = UInt64(data.id)
 
-                GRDBStorage.shared.write { db in
+                dependencies.storage.write { db in
+                    // The `posted` value is in seconds but we sent it in ms so need that for de-duping
                     try MessageSender.handleSuccessfulMessageSend(
                         db,
                         message: message,
                         to: destination,
                         interactionId: interactionId,
-                        serverTimestampMs: openGroupMessage.sentTimestamp
+                        serverTimestampMs: UInt64(floor(data.posted * 1000))
                     )
                     seal.fulfill(())
                 }
             }
             .catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-                GRDBStorage.shared.write { db in
+                dependencies.storage.write { db in
+                    handleFailure(db, with: .other(error))
+                }
+            }
+        
+        return promise
+    }
+
+    internal static func sendToOpenGroupInboxDestination(
+        _ db: Database,
+        message: Message,
+        to destination: Message.Destination,
+        interactionId: Int64?,
+        dependencies: Dependencies = Dependencies()
+    ) -> Promise<Void> {
+        let (promise, seal) = Promise<Void>.pending()
+        let userPublicKey: String = getUserHexEncodedPublicKey(db)
+        
+        guard case .openGroupInbox(let server, let openGroupPublicKey, let recipientBlindedPublicKey) = destination else {
+            preconditionFailure()
+        }
+        
+        // Set the timestamp, sender and recipient
+        if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
+            message.sentTimestamp = UInt64(floor(Date().timeIntervalSince1970 * 1000))
+        }
+        
+        message.sender = userPublicKey
+        message.recipient = recipientBlindedPublicKey
+        
+        // Set the failure handler (need it here already for precondition failure handling)
+        func handleFailure(_ db: Database, with error: MessageSenderError) {
+            MessageSender.handleFailedMessageSend(db, message: message, with: error, interactionId: interactionId)
+            seal.reject(error)
+        }
+        
+        // Attach the user's profile if needed
+        if let message: VisibleMessage = message as? VisibleMessage {
+            let profile: Profile = Profile.fetchOrCreateCurrentUser(db)
+            
+            if let profileKey: Data = profile.profileEncryptionKey?.keyData, let profilePictureUrl: String = profile.profilePictureUrl {
+                message.profile = VisibleMessage.VMProfile(
+                    displayName: profile.name,
+                    profileKey: profileKey,
+                    profilePictureUrl: profilePictureUrl
+                )
+            }
+            else {
+                message.profile = VisibleMessage.VMProfile(displayName: profile.name)
+            }
+        }
+        
+        // Convert it to protobuf
+        guard let proto = message.toProto(db) else {
+            handleFailure(db, with: .protoConversionFailed)
+            return promise
+        }
+        
+        // Serialize the protobuf
+        let plaintext: Data
+        
+        do {
+            plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
+        }
+        catch {
+            SNLog("Couldn't serialize proto due to error: \(error).")
+            handleFailure(db, with: .other(error))
+            return promise
+        }
+        
+        // Encrypt the serialized protobuf
+        let ciphertext: Data
+        
+        do {
+            ciphertext = try encryptWithSessionBlindingProtocol(
+                plaintext,
+                for: recipientBlindedPublicKey,
+                openGroupPublicKey: openGroupPublicKey,
+                using: dependencies
+            )
+        }
+        catch {
+            SNLog("Couldn't encrypt message for destination: \(destination) due to error: \(error).")
+            handleFailure(db, with: .other(error))
+            return promise
+        }
+        
+        // Send the result
+        OpenGroupAPI
+            .send(
+                ciphertext,
+                toInboxFor: recipientBlindedPublicKey,
+                on: server,
+                using: dependencies
+            )
+            .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
+                dependencies.storage.write { transaction in
+                    try MessageSender.handleSuccessfulMessageSend(
+                        db,
+                        message: message,
+                        to: destination,
+                        interactionId: interactionId
+                    )
+                    seal.fulfill(())
+                }
+            }
+            .catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+                dependencies.storage.write { db in
                     handleFailure(db, with: .other(error))
                 }
             }
@@ -461,10 +595,8 @@ public final class MessageSender {
                 switch destination {
                     case .contact(let publicKey): return publicKey
                     case .closedGroup(let groupPublicKey): return groupPublicKey
-                    case .openGroupV2(let room, let server):
+                    case .openGroup(let room, let server, _, _, _):
                         return OpenGroup.idFor(room: room, server: server)
-                        
-                    case .openGroup(_, _): return ""    // TODO: Remove this after merge
                 }
             }(),
             message: message,

@@ -504,18 +504,22 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
         
         let shareVC = UIActivityViewController(activityItems: [ URL(fileURLWithPath: originalFilePath) ], applicationActivities: nil)
+        
         if UIDevice.current.isIPad {
             shareVC.excludedActivityTypes = []
             shareVC.popoverPresentationController?.permittedArrowDirections = []
             shareVC.popoverPresentationController?.sourceView = self.view
             shareVC.popoverPresentationController?.sourceRect = self.view.bounds
         }
+        
         shareVC.completionWithItemsHandler = { activityType, completed, returnedItems, activityError in
             if let activityError = activityError {
                 SNLog("Failed to share with activityError: \(activityError)")
-            } else if completed {
+            }
+            else if completed {
                 SNLog("Did share with activityType: \(activityType.debugDescription)")
             }
+            
             guard
                 let activityType = activityType,
                 activityType == .saveToCameraRoll,

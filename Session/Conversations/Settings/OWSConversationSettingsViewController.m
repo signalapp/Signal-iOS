@@ -103,7 +103,7 @@ CGFloat kIconViewLength = 24;
                                                object:nil];
 }
 
-- (void)configureWithThreadId:(NSString *)threadId threadName:(nullable NSString *)threadName isClosedGroup:(BOOL)isClosedGroup isOpenGroup:(BOOL)isOpenGroup isNoteToSelf:(BOOL)isNoteToSelf {
+- (void)configureWithThreadId:(NSString *)threadId threadName:(NSString *)threadName isClosedGroup:(BOOL)isClosedGroup isOpenGroup:(BOOL)isOpenGroup isNoteToSelf:(BOOL)isNoteToSelf {
     self.threadId = threadId;
     self.threadName = threadName;
     self.isClosedGroup = isClosedGroup;
@@ -114,7 +114,7 @@ CGFloat kIconViewLength = 24;
         self.threadName = [SMKProfile displayNameWithId:threadId customFallback:@"Anonymous"];
     }
     else {
-        self.threadName = (threadName ?: [MessageStrings newGroupDefaultTitle]);
+        self.threadName = threadName;
     }
 }
 
@@ -268,7 +268,7 @@ CGFloat kIconViewLength = 24;
     }]];
 
     // Disappearing messages
-    if (![self isOpenGroup]) {
+    if (![self isOpenGroup] && !self.thread.isBlocked) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell = [OWSTableItem newCell];
             OWSConversationSettingsViewController *strongSelf = weakSelf;

@@ -144,6 +144,8 @@ public extension UIViewController {
             return
         }
         
+        setupForIPadIfNeeded(alert: alert)
+        
         self.present(alert, animated: animated) {
             alert.applyAccessibilityIdentifiers()
         }
@@ -157,9 +159,19 @@ public extension UIViewController {
             return
         }
         
+        setupForIPadIfNeeded(alert: alert)
+        
         self.present(alert, animated: true) {
             alert.applyAccessibilityIdentifiers()
             completion()
+        }
+    }
+    
+    private func setupForIPadIfNeeded(alert: UIAlertController) {
+        if UIDevice.current.isIPad {
+            alert.popoverPresentationController?.permittedArrowDirections = []
+            alert.popoverPresentationController?.sourceView = self.view
+            alert.popoverPresentationController?.sourceRect = self.view.bounds
         }
     }
 }

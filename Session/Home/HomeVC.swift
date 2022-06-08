@@ -100,7 +100,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
         createNewPrivateChatButton.setTitle(NSLocalizedString("vc_home_empty_state_button_title", comment: ""), for: UIControl.State.normal)
         createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: UIControl.Event.touchUpInside)
-        createNewPrivateChatButton.set(.width, to: 196)
+        createNewPrivateChatButton.set(.width, to: Values.iPadButtonWidth)
         let result = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
         result.axis = .vertical
         result.spacing = Values.mediumSpacing
@@ -200,6 +200,9 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         DispatchQueue.global(qos: .utility).sync {
             let _ = IP2Country.shared.populateCacheIfNeeded()
         }
+        
+        // Get default open group rooms if needed
+//        OpenGroupManager.getDefaultRoomsIfNeeded()    // TODO: Needed???
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -443,7 +446,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                                         .retainUntilComplete()
                                     
                                 case .openGroup:
-                                    OpenGroupManagerV2.shared.delete(db, openGroupId: cellViewModel.threadId)
+                                    OpenGroupManager.shared.delete(db, openGroupId: cellViewModel.threadId)
                                     
                                 default: break
                             }
@@ -530,6 +533,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         if let presentedVC = self.presentedViewController {
             presentedVC.dismiss(animated: false, completion: nil)
         }
+        
         self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
     }
     
@@ -551,12 +555,20 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     @objc func joinOpenGroup() {
         let joinOpenGroupVC: JoinOpenGroupVC = JoinOpenGroupVC()
         let navigationController: OWSNavigationController = OWSNavigationController(rootViewController: joinOpenGroupVC)
+        
+        if UIDevice.current.isIPad {
+            navigationController.modalPresentationStyle = .fullScreen
+        }
+        
         present(navigationController, animated: true, completion: nil)
     }
     
     @objc func createNewDM() {
         let newDMVC = NewDMVC()
         let navigationController = OWSNavigationController(rootViewController: newDMVC)
+        if UIDevice.current.isIPad {
+            navigationController.modalPresentationStyle = .fullScreen
+        }
         present(navigationController, animated: true, completion: nil)
     }
     
@@ -564,12 +576,18 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     func createNewDMFromDeepLink(sessionID: String) {
         let newDMVC = NewDMVC(sessionID: sessionID)
         let navigationController = OWSNavigationController(rootViewController: newDMVC)
+        if UIDevice.current.isIPad {
+            navigationController.modalPresentationStyle = .fullScreen
+        }
         present(navigationController, animated: true, completion: nil)
     }
     
     @objc func createClosedGroup() {
         let newClosedGroupVC = NewClosedGroupVC()
         let navigationController = OWSNavigationController(rootViewController: newClosedGroupVC)
+        if UIDevice.current.isIPad {
+            navigationController.modalPresentationStyle = .fullScreen
+        }
         present(navigationController, animated: true, completion: nil)
     }
 }

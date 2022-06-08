@@ -29,6 +29,14 @@ final class ConversationTitleView: UIView {
         
         return result
     }()
+    
+    private lazy var stackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
+        result.axis = .vertical
+        result.alignment = .center
+        result.isLayoutMarginsRelativeArrangement = true
+        return result
+    }()
 
     // MARK: - Initialization
     
@@ -42,6 +50,22 @@ final class ConversationTitleView: UIView {
         addSubview(stackView)
         
         stackView.pin(to: self)
+        
+        let shouldShowCallButton = SessionCall.isEnabled && !thread.isNoteToSelf() && !thread.isGroupThread()
+        let leftMargin: CGFloat = shouldShowCallButton ? 54 : 8 // Contact threads also have the call button to compensate for
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: leftMargin, bottom: 0, right: 0)
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        addGestureRecognizer(tapGestureRecognizer)
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.groupThreadUpdated, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.muteSettingUpdated, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.contactUpdated, object: nil)
+        update()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     required init?(coder: NSCoder) {

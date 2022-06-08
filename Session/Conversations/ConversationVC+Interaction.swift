@@ -4,8 +4,10 @@ import UIKit
 import CoreServices
 import Photos
 import PhotosUI
+import Sodium
 import PromiseKit
 import GRDB
+import SessionMessagingKit
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
@@ -46,6 +48,30 @@ extension ConversationVC:
         // so the result may be inaccurate before all the cells are loaded. Use this
         // to scroll to the last row instead.
         scrollToBottom(isAnimated: true)
+    }
+    
+    // MARK: Call
+    @objc func startCall(_ sender: Any?) {
+        guard SessionCall.isEnabled else { return }
+        guard SSKPreferences.areCallsEnabled else {
+            let callPermissionRequestModal = CallPermissionRequestModal()
+            self.navigationController?.present(callPermissionRequestModal, animated: true, completion: nil)
+            return
+        }
+        
+        requestMicrophonePermissionIfNeeded { }
+        
+        guard AVAudioSession.sharedInstance().recordPermission == .granted else { return }
+        guard self.viewModel.threadData.threadVariant == .contact else { return }
+        guard AppEnvironment.shared.callManager.currentCall == nil else { return }
+        
+        let call = SessionCall(for: self.viewModel.threadId, uuid: UUID().uuidString.lowercased(), mode: .offer, outgoing: true)
+        let callVC = CallVC(for: call)
+        callVC.conversationVC = self
+        self.inputAccessoryView?.isHidden = true
+        self.inputAccessoryView?.alpha = 0
+        
+        present(callVC, animated: true, completion: nil)
     }
 
     // MARK: - Blocking
@@ -695,6 +721,10 @@ extension ConversationVC:
         switch cellViewModel.cellType {
             case .audio: viewModel.playOrPauseAudio(for: cellViewModel)
             
+            case .call:
+                let callMissedTipsModal: CallMissedTipsModal = CallMissedTipsModal(caller: cellViewModel.authorName)
+                present(callMissedTipsModal, animated: true, completion: nil)
+            
             case .mediaMessage:
                 guard
                     let sectionIndex: Int = self.viewModel.interactionData
@@ -794,6 +824,14 @@ extension ConversationVC:
                 
                 // Otherwise share the file
                 let shareVC = UIActivityViewController(activityItems: [ fileUrl ], applicationActivities: nil)
+                
+                if UIDevice.current.isIPad {
+                    shareVC.excludedActivityTypes = []
+                    shareVC.popoverPresentationController?.permittedArrowDirections = []
+                    shareVC.popoverPresentationController?.sourceView = self.view
+                    shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+                }
+                
                 navigationController?.present(shareVC, animated: true, completion: nil)
                 
             case .textOnlyMessage:
@@ -872,8 +910,32 @@ extension ConversationVC:
         present(userDetailsSheet, animated: true, completion: nil)
     }
     
-    // MARK: --action handling
+    func startThread(with sessionId: String, openGroupServer: String, openGroupPublicKey: String) {
+        // If the sessionId is blinded then check if there is an existing un-blinded thread with the contact
+        if SessionId.Prefix(from: sessionId) == .blinded, let mapping: BlindedIdMapping = ContactUtilities.mapping(for: sessionId, serverPublicKey: openGroupPublicKey) {
+            let thread: TSContactThread = TSContactThread.getOrCreateThread(contactSessionID: mapping.sessionId)
+            let conversationVC: ConversationVC = ConversationVC(thread: thread)
+            
+            self.navigationController?.pushViewController(conversationVC, animated: true)
+            return
+        }
+        
+        // Just create a new thread with the provided sessionId
+        let thread = TSContactThread.getOrCreateThread(
+            contactSessionID: sessionId,
+            openGroupServer: openGroupServer,
+            openGroupPublicKey: openGroupPublicKey
+        )
+        let conversationVC: ConversationVC = ConversationVC(thread: thread)
+        
+        self.navigationController?.pushViewController(conversationVC, animated: true)
+    }
     
+    func contextMenuDismissed() {
+        recoverInputView()
+    }
+    
+    // MARK: --action handling
     
     func showFailedMessageSheet(for cellViewModel: MessageViewModel) {
         let sheet = UIAlertController(title: cellViewModel.mostRecentFailureText, message: nil, preferredStyle: .actionSheet)
@@ -1228,16 +1290,23 @@ extension ConversationVC:
             message: "This will ban the selected user from this room. It won't ban them from other rooms.",
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
             guard let openGroup: OpenGroup = GRDBStorage.shared.read({ db in try OpenGroup.fetchOne(db, id: threadId) }) else {
                 return
             }
             
-            OpenGroupAPIV2
-                .ban(cellViewModel.authorId, from: openGroup.room, on: openGroup.server)
+            OpenGroupAPI
+                .userBan(cellViewModel.authorId, from: [openGroup.room], on: openGroup.server)
+                .catch(on: DispatchQueue.main) { _ in
+                    OWSAlerts.showErrorAlert(message: "context_menu_ban_user_error_alert_message".localized())
+                }
                 .retainUntilComplete()
+            
+            self?.becomeFirstResponder()
         }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { [weak self] _ in
+            self?.becomeFirstResponder()
+        }))
         
         present(alert, animated: true, completion: nil)
     }
@@ -1251,16 +1320,23 @@ extension ConversationVC:
             message: "This will ban the selected user from this room and delete all messages sent by them. It won't ban them from other rooms or delete the messages they sent there.",
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
             guard let openGroup: OpenGroup = GRDBStorage.shared.read({ db in try OpenGroup.fetchOne(db, id: threadId) }) else {
                 return
             }
             
-            OpenGroupAPIV2
-                .banAndDeleteAllMessages(cellViewModel.authorId, from: openGroup.room, on: openGroup.server)
+            OpenGroupAPI
+                .userBanAndDeleteAllMessages(cellViewModel.authorId, in: openGroup.room, on: openGroup.server)
+                .catch(on: DispatchQueue.main) { _ in
+                    OWSAlerts.showErrorAlert(message: "context_menu_ban_user_error_alert_message".localized())
+                }
                 .retainUntilComplete()
+            
+            self?.becomeFirstResponder()
         }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { [weak self] _ in
+            self?.becomeFirstResponder()
+        }))
         
         present(alert, animated: true, completion: nil)
     }
@@ -1486,7 +1562,7 @@ extension ConversationVC:
     }
 
     // MARK: - Convenience
-
+    
     func showErrorAlert(for attachment: SignalAttachment, onDismiss: (() -> ())?) {
         OWSAlerts.showAlert(
             title: "ATTACHMENT_ERROR_ALERT_TITLE".localized(),
@@ -1684,6 +1760,7 @@ extension ConversationVC {
             )
         })
         alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
+        
         self.present(alertVC, animated: true, completion: nil)
     }
 }

@@ -6,11 +6,9 @@ import PromiseKit
 import SessionSnodeKit
 import SessionUtilitiesKit
 
-@objc(LKClosedGroupPoller)
-public final class ClosedGroupPoller: NSObject {
+public final class ClosedGroupPoller {
     private var isPolling: Atomic<[String: Bool]> = Atomic([:])
     private var timers: [String: Timer] = [:]
-    private let internalQueue: DispatchQueue = DispatchQueue(label: "isPollingQueue")
 
     // MARK: - Settings
     
@@ -40,10 +38,6 @@ public final class ClosedGroupPoller: NSObject {
     // MARK: - Public API
     
     @objc public func start() {
-        #if DEBUG
-        assert(Thread.current.isMainThread) // Timers don't do well on background queues
-        #endif
-        
         // Fetch all closed groups (excluding any don't contain the current user as a
         // GroupMemeber as the user is no longer a member of those)
         GRDBStorage.shared
@@ -131,26 +125,40 @@ public final class ClosedGroupPoller: NSObject {
                 return Date(timeIntervalSince1970: (TimeInterval(receivedAtTimestampMs) / 1000))
             }
             .defaulting(to: Date().addingTimeInterval(-5 * 60))
+        
         let timeSinceLastMessage: TimeInterval = Date().timeIntervalSince(lastMessageDate)
         let minPollInterval: Double = ClosedGroupPoller.minPollInterval
         let limit: Double = (12 * 60 * 60)
         let a = (ClosedGroupPoller.maxPollInterval - minPollInterval) / limit
         let nextPollInterval = a * min(timeSinceLastMessage, limit) + minPollInterval
         SNLog("Next poll interval for closed group with public key: \(groupPublicKey) is \(nextPollInterval) s.")
+        
         timers[groupPublicKey] = Timer.scheduledTimerOnMainThread(withTimeInterval: nextPollInterval, repeats: false) { [weak self] timer in
             timer.invalidate()
+            
             Threading.pollerQueue.async {
-                self?.poll(groupPublicKey).done(on: Threading.pollerQueue) { _ in
-                    self?.pollRecursively(groupPublicKey)
-                }.catch(on: Threading.pollerQueue) { error in
-                    // The error is logged in poll(_:)
-                    self?.pollRecursively(groupPublicKey)
+                var promises: [Promise<Void>] = []
+                if SnodeAPI.hardfork <= 19, SnodeAPI.softfork == 0, let promise = self?.poll(groupPublicKey, defaultInbox: true) {
+                    promises.append(promise)
                 }
+                
+                if SnodeAPI.hardfork >= 19, SnodeAPI.softfork >= 0,let promise = self?.poll(groupPublicKey) {
+                    promises.append(promise)
+                }
+                
+                when(resolved: promises)
+                    .done(on: Threading.pollerQueue) { _ in
+                        self?.pollRecursively(groupPublicKey)
+                    }
+                    .catch(on: Threading.pollerQueue) { error in
+                        // The error is logged in poll(_:)
+                        self?.pollRecursively(groupPublicKey)
+                    }
             }
         }
     }
-
-    private func poll(_ groupPublicKey: String) -> Promise<Void> {
+    
+    private func poll(_ groupPublicKey: String, defaultInbox: Bool = false) -> Promise<Void> {
         guard isPolling.wrappedValue[groupPublicKey] == true else { return Promise.value(()) }
         
         let promise: Promise<Void> = SnodeAPI.getSwarm(for: groupPublicKey)
@@ -161,8 +169,13 @@ public final class ClosedGroupPoller: NSObject {
                     return Promise(error: Error.pollingCanceled)
                 }
                 
-                return SnodeAPI.getMessages(from: snode, associatedWith: groupPublicKey)
-                    .map2 { messages in (snode, messages) }
+                let getMessagesPromise: Promise<[SnodeReceivedMessage]> = (defaultInbox ?
+                    SnodeAPI.getClosedGroupMessagesFromDefaultNamespace(from: snode, associatedWith: groupPublicKey) :
+                    SnodeAPI.getMessages(from: snode, associatedWith: groupPublicKey, authenticated: false)
+                )
+                
+                return getMessagesPromise
+                    .map { messages in (snode, messages) }
             }
             .done2 { [weak self] snode, messages in
                 guard self?.isPolling.wrappedValue[groupPublicKey] == true else { return }

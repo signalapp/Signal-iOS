@@ -12,9 +12,7 @@ final class MentionSelectionView: UIView, UITableViewDataSource, UITableViewDele
             tableView.reloadData()
         }
     }
-    var openGroupServer: String?
-    var openGroupChannel: UInt64?
-    var openGroupRoom: String?
+    
     weak var delegate: MentionSelectionViewDelegate?
     
     var contentOffset: CGPoint {
@@ -86,7 +84,7 @@ final class MentionSelectionView: UIView, UITableViewDataSource, UITableViewDele
         cell.update(
             with: candidates[indexPath.row].profile,
             threadVariant: candidates[indexPath.row].threadVariant,
-            isUserModerator: OpenGroupAPIV2.isUserModerator(
+            isUserModeratorOrAdmin: OpenGroupAPIV2.isUserModerator( // TODO: This
                 candidates[indexPath.row].profile.id,
                 for: (candidates[indexPath.row].openGroupRoom ?? ""),
                 on: (candidates[indexPath.row].openGroupServer ?? "")
@@ -194,7 +192,7 @@ private extension MentionSelectionView {
         fileprivate func update(
             with profile: Profile,
             threadVariant: SessionThread.Variant,
-            isUserModerator: Bool,
+            isUserModeratorOrAdmin: Bool,
             isLast: Bool
         ) {
             displayNameLabel.text = profile.displayName(for: threadVariant)
@@ -203,7 +201,7 @@ private extension MentionSelectionView {
                 profile: profile,
                 threadVariant: threadVariant
             )
-            moderatorIconImageView.isHidden = !isUserModerator
+            moderatorIconImageView.isHidden = !isUserModeratorOrAdmin
             separator.isHidden = isLast
         }
     }

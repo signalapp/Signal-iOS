@@ -4,30 +4,30 @@ import Foundation
 import GRDB
 import Curve25519Kit
 
+public protocol GeneralCacheType {
+    var encodedPublicKey: String? { get set }
+}
+
 public enum General {
-    public enum Cache {
-        public static var cachedEncodedPublicKey: Atomic<String?> = Atomic(nil)
+    public class Cache: GeneralCacheType {
+        public var encodedPublicKey: String? = nil
     }
+    
+    public static var cache: Atomic<GeneralCacheType> = Atomic(Cache())
 }
 
 public enum GeneralError: Error {
     case keyGenerationFailed
 }
 
-@objc(SNGeneralUtilities)
-public class GeneralUtilities: NSObject {
-    @objc public static func getUserPublicKey() -> String {
-        return getUserHexEncodedPublicKey()
-    }
-}
-
 public func getUserHexEncodedPublicKey(_ db: Database? = nil) -> String {
-    if let cachedKey: String = General.Cache.cachedEncodedPublicKey.wrappedValue { return cachedKey }
+    if let cachedKey: String = General.cache.wrappedValue.encodedPublicKey { return cachedKey }
     
-    // TODO: Refactor this to be a sessionId instead of custom creating it
     if let publicKey: Data = Identity.fetchUserPublicKey(db) { // Can be nil under some circumstances
-        General.Cache.cachedEncodedPublicKey.mutate { $0 = "05\(publicKey.toHexString())" }
-        return "05\(publicKey.toHexString())"
+        let sessionId: SessionId = SessionId(.standard, publicKey: publicKey.bytes)
+        
+        General.cache.mutate { $0.encodedPublicKey = sessionId.hexString }
+        return sessionId.hexString
     }
     
     return ""

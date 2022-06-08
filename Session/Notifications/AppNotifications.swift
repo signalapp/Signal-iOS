@@ -183,9 +183,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         
         // Don't fire the notification if the current user isn't mentioned
         // and isOnlyNotifyingForMentions is on.
-        if thread.onlyNotifyForMentions && !interaction.isUserMentioned(db) {
-            return
-        }
+        guard !thread.onlyNotifyForMentions || interaction.isUserMentioned(db) else { return }
 
         let notificationTitle: String?
         var notificationBody: String?
@@ -266,6 +264,57 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 userInfo: userInfo,
                 sound: sound,
                 replacingIdentifier: identifier
+            )
+        }
+    }
+    
+    public func notifyUser(_ db: Database, forIncomingCall interaction: Interaction, in thread: SessionThread) {
+        // No call notifications for muted or group threads
+        guard Date().timeIntervalSince1970 > (thread.mutedUntilTimestamp ?? 0) else { return }
+        guard thread.variant != .closedGroup && thread.variant != .openGroup else { return }
+        guard
+            interaction.variant == .infoMessageCall,
+            let infoMessageData: Data = (interaction.body ?? "").data(using: .utf8),
+            let messageInfo: CallMessage.MessageInfo = try? JSONDecoder().decode(
+                CallMessage.MessageInfo.self,
+                from: infoMessageData
+            )
+        else { return }
+        
+        // Only notify missed calls
+        guard messageInfo.state == .missed || messageInfo.state == .permissionDenied else { return }
+        
+        let category = AppNotificationCategory.errorMessage
+
+        let userInfo = [
+            AppNotificationUserInfoKey.threadId: thread.id
+        ]
+        
+        let notificationTitle = interaction.previewText(db)
+        var notificationBody: String?
+        
+        if messageInfo.state == .permissionDenied {
+            notificationBody = String(
+                format: "modal_call_missed_tips_explanation".localized(),
+                SessionThread.displayName(
+                    threadId: thread.id,
+                    variant: thread.variant,
+                    closedGroupName: nil,       // Not supported
+                    openGroupName: nil          // Not supported
+                )
+            )
+        }
+        
+        DispatchQueue.main.async {
+            let sound = self.requestSound(thread: thread)
+            
+            self.adaptee.notify(
+                category: category,
+                title: notificationTitle,
+                body: notificationBody ?? "",
+                userInfo: userInfo,
+                sound: sound,
+                replacingIdentifier: UUID().uuidString
             )
         }
     }

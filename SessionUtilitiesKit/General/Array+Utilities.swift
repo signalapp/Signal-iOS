@@ -1,7 +1,8 @@
-import UIKit
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-public extension Array where Element : CustomStringConvertible {
+import Foundation
 
+public extension Array where Element: CustomStringConvertible {
     var prettifiedDescription: String {
         return "[ " + map { $0.description }.joined(separator: ", ") + " ]"
     }
@@ -43,9 +44,7 @@ public extension Array {
         updatedArray.insert(other, at: index)
         return updatedArray
     }
-}
-
-public extension Array {
+    
     func grouped<Key: Hashable>(by keyForValue: (Element) throws -> Key) -> [Key: [Element]] {
         return ((try? Dictionary(grouping: self, by: keyForValue)) ?? [:])
     }

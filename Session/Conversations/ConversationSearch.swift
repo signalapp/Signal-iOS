@@ -10,6 +10,8 @@ public class ConversationSearchController: NSObject {
     public weak var delegate: ConversationSearchControllerDelegate?
     public let uiSearchController: UISearchController = UISearchController(searchResultsController: nil)
     public let resultsBar: SearchResultsBar = SearchResultsBar()
+    
+    private var lastSearchText: String?
 
     // MARK: Initializer
 

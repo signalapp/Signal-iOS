@@ -34,7 +34,7 @@ final class DownloadAttachmentModal: Modal {
         // Title
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         titleLabel.text = String(format: NSLocalizedString("modal_download_attachment_title", comment: ""), name)
         titleLabel.textAlignment = .center
         
@@ -57,7 +57,6 @@ final class DownloadAttachmentModal: Modal {
         let downloadButton = UIButton()
         downloadButton.set(.height, to: Values.mediumButtonHeight)
         downloadButton.layer.cornerRadius = Modal.buttonCornerRadius
-        downloadButton.backgroundColor = Colors.buttonBackground
         downloadButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         downloadButton.setTitleColor(Colors.text, for: UIControl.State.normal)
         downloadButton.setTitle(NSLocalizedString("modal_download_button_title", comment: ""), for: UIControl.State.normal)
@@ -69,15 +68,21 @@ final class DownloadAttachmentModal: Modal {
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually
         
+        // Content stack view
+        let contentStackView = UIStackView(arrangedSubviews: [ titleLabel, messageLabel ])
+        contentStackView.axis = .vertical
+        contentStackView.spacing = Values.largeSpacing
+        
         // Main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ titleLabel, messageLabel, buttonStackView ])
+        let spacing = Values.largeSpacing - Values.smallFontSize / 2
+        let mainStackView = UIStackView(arrangedSubviews: [ contentStackView, buttonStackView ])
         mainStackView.axis = .vertical
-        mainStackView.spacing = Values.largeSpacing
+        mainStackView.spacing = spacing
         contentView.addSubview(mainStackView)
         mainStackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
         mainStackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
         contentView.pin(.trailing, to: .trailing, of: mainStackView, withInset: Values.largeSpacing)
-        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: Values.largeSpacing)
+        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: spacing)
     }
 
     // MARK: - Interaction

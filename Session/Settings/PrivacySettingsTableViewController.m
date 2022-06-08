@@ -29,6 +29,14 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     
     [LKViewControllerUtilities setUpDefaultSessionStyleForVC:self withTitle:NSLocalizedString(@"vc_privacy_settings_title", @"") customBackButton:NO];
     self.tableView.backgroundColor = UIColor.clearColor;
+    
+    if (self.shouldShowCloseButton) {
+        UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"X"]
+                                                                        style:UIBarButtonItemStylePlain
+                                                                       target:self
+                                                                       action:@selector(close:)];
+        [[self navigationItem] setLeftBarButtonItem:closeButton];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -177,6 +185,24 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     linkPreviewsSection.footerTitle = NSLocalizedString(
         @"SETTINGS_LINK_PREVIEWS_FOOTER", @"Footer for setting for enabling & disabling link previews.");
     [contents addSection:linkPreviewsSection];
+    
+    OWSTableSection *callsSection = [OWSTableSection new];
+    [callsSection
+        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_CALLS",
+                                                     @"Setting for enabling & disabling voice & video calls.")
+                    accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"calls"]
+                    isOnBlock:^{
+                        return [SSKPreferences areCallsEnabled];
+                    }
+                    isEnabledBlock:^{
+                        return YES;
+                    }
+                    target:weakSelf
+                    selector:@selector(didToggleCallsEnabled:)]];
+    callsSection.headerTitle = [NSString stringWithFormat:@"%@ (BETA)", NSLocalizedString( @"SETTINGS_CALLS_HEADER", @"Header for setting for enabling & disabling voice & video calls.")];
+    callsSection.footerTitle = NSLocalizedString(
+        @"SETTINGS_CALLS_FOOTER", @"Footer for setting for enabling & disabling voice & video calls.");
+    [contents addSection:callsSection];
 
     self.contents = contents;
 }
@@ -240,6 +266,23 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [SMKPreferences setLinkPreviewsEnabled:enabled];
 }
 
+- (void)didToggleCallsEnabled:(UISwitch *)sender
+{
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    BOOL enabled = sender.isOn;
+    if (enabled && ![userDefaults boolForKey:@"hasSeenCallIPExposureWarning"]) {
+        [userDefaults setBool:YES forKey:@"hasSeenCallIPExposureWarning"];
+        CallModal *modal = [[CallModal alloc] initOnCallEnabled:^{
+            OWSLogInfo(@"toggled to: %@", (enabled ? @"ON" : @"OFF"));
+            [self objc_requestMicrophonePermissionIfNeeded];
+        }];
+        [self presentViewController:modal animated:YES completion:nil];
+    } else {
+        OWSLogInfo(@"toggled to: %@", (enabled ? @"ON" : @"OFF"));
+        SSKPreferences.areCallsEnabled = enabled;
+    }
+}
+
 - (void)isScreenLockEnabledDidChange:(UISwitch *)sender
 {
     BOOL shouldBeEnabled = sender.isOn;
@@ -295,6 +338,11 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
             @"Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately.");
     }
     return [NSString formatDurationSeconds:(uint32_t)value useShortFormat:useShortFormat];
+}
+
+- (void)close: (UIBarButtonItem *)sender
+{
+    [[self navigationController] dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

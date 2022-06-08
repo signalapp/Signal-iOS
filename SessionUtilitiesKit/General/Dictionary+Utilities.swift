@@ -1,3 +1,6 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 
 public extension Dictionary {
     
@@ -16,6 +19,14 @@ public extension Dictionary {
     }
 }
 
+public extension Dictionary.Values {
+    func asArray() -> [Value] {
+        return Array(self)
+    }
+}
+
+// MARK: - Functional Convenience
+
 public extension Dictionary {
     func setting(_ key: Key, _ value: Value?) -> [Key: Value] {
         var updatedDictionary: [Key: Value] = self
@@ -23,10 +34,21 @@ public extension Dictionary {
 
         return updatedDictionary
     }
-}
+    
+    func updated(with other: [Key: Value]) -> [Key: Value] {
+        var updatedDictionary: [Key: Value] = self
+        
+        other.forEach { key, value in
+            updatedDictionary[key] = value
+        }
 
-public extension Dictionary.Values {
-    func asArray() -> [Value] {
-        return Array(self)
+        return updatedDictionary
+    }
+    
+    func removingValue(forKey key: Key) -> [Key: Value] {
+        var updatedDictionary: [Key: Value] = self
+        updatedDictionary.removeValue(forKey: key)
+
+        return updatedDictionary
     }
 }

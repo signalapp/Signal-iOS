@@ -1,13 +1,17 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import SessionUtilitiesKit
 
 @objc(LKIdenticon)
-public final class Identicon : NSObject {
+public final class Identicon: NSObject {
     
     @objc public static func generatePlaceholderIcon(seed: String, text: String, size: CGFloat) -> UIImage {
         let icon = PlaceholderIcon(seed: seed)
         
         var content = text
-        
-        if content.count > 2 && content.hasPrefix("05") {
+
+        if content.count > 2 && SessionId.Prefix(from: content) != nil {
             content.removeFirst(2)
         }
         

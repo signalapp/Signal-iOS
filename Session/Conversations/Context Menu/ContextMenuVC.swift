@@ -176,6 +176,7 @@ final class ContextMenuVC: UIViewController {
             },
             completion: { [weak self] _ in
                 self?.dismiss()
+                self.delegate?.contextMenuDismissed()
             }
         )
     }

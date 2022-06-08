@@ -25,6 +25,7 @@ class BaseVC : UIViewController {
     override func viewDidLoad() {
         setNeedsStatusBarAppearanceUpdate()
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeChangedNotification(_:)), name: .appModeChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
     }
     
     internal func ensureWindowBackground() {
@@ -61,10 +62,7 @@ class BaseVC : UIViewController {
             navigationBar.barTintColor = Colors.navigationBarBackground
         }
         
-        // Back button (to appear on pushed screen)
-        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        backButton.tintColor = Colors.text
-        navigationItem.backBarButtonItem = backButton
+        navigationItem.backButtonTitle = ""
     }
 
     internal func setNavBarTitle(_ title: String, customFontSize: CGFloat? = nil) {
@@ -103,6 +101,10 @@ class BaseVC : UIViewController {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc func appDidBecomeActive(_ notification: Notification) {
+        // To be implemented by child class
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

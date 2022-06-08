@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PrivacySettingsTableViewController : OWSTableViewController
 
+@property (nonatomic) BOOL shouldShowCloseButton;
+
 @end
 
 NS_ASSUME_NONNULL_END

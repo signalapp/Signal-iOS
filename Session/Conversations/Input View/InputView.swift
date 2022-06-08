@@ -30,8 +30,15 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         get { inputTextView.text ?? "" }
         set { inputTextView.text = newValue }
     }
-
-    var enabledMessageTypes: MessageInputTypes = .all {
+    
+    var selectedRange: NSRange {
+        get { inputTextView.selectedRange }
+        set { inputTextView.selectedRange = newValue }
+    }
+    
+    var inputTextViewIsFirstResponder: Bool { inputTextView.isFirstResponder }
+    
+    var enabledMessageTypes: MessageTypes = .all {
         didSet {
             setEnabledMessageTypes(enabledMessageTypes, message: nil)
         }
@@ -382,6 +389,10 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
 
     override func resignFirstResponder() -> Bool {
         inputTextView.resignFirstResponder()
+    }
+    
+    func inputTextViewBecomeFirstResponder() {
+        inputTextView.becomeFirstResponder()
     }
 
     func handleLongPress() {

@@ -8,12 +8,15 @@ inhibit_all_warnings!
 abstract_target 'GlobalDependencies' do
   pod 'PromiseKit'
   pod 'CryptoSwift'
-  pod 'Sodium', '~> 0.9.1'
+  # FIXME: If https://github.com/jedisct1/swift-sodium/pull/249 gets resolved then revert this back to the standard pod
+  pod 'Sodium', :git => 'https://github.com/oxen-io/session-ios-swift-sodium.git', branch: 'session-build'
   pod 'GRDB.swift/SQLCipher'
   pod 'SQLCipher', '~> 4.0'
 
   # FIXME: We want to remove this once it's been long enough since the migration to GRDB
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/oxen-io/session-ios-yap-database.git', branch: 'signal-release'
+  pod 'WebRTC-lib'
+  pod 'SocketRocket', '~> 0.5.1'
   
   target 'Session' do
     pod 'AFNetworking'
@@ -27,7 +30,7 @@ abstract_target 'GlobalDependencies' do
   
   # Dependencies to be included only in all extensions/frameworks
   abstract_target 'FrameworkAndExtensionDependencies' do
-    pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git'
+    pod 'Curve25519Kit', git: 'https://github.com/oxen-io/session-ios-curve-25519-kit.git', branch: 'session-version'
     pod 'SignalCoreKit', git: 'https://github.com/oxen-io/session-ios-core-kit', branch: 'session-version'
     
     target 'SessionNotificationServiceExtension'
@@ -57,10 +60,24 @@ abstract_target 'GlobalDependencies' do
         pod 'SAMKeychain'
         pod 'SwiftProtobuf', '~> 1.5.0'
         pod 'DifferenceKit'
+        
+        target 'SessionMessagingKitTests' do
+          inherit! :complete
+          
+          pod 'Quick'
+          pod 'Nimble'
+        end
       end
       
       target 'SessionUtilitiesKit' do
         pod 'SAMKeychain'
+        
+        target 'SessionUtilitiesKitTests' do
+          inherit! :complete
+          
+          pod 'Quick'
+          pod 'Nimble'
+        end
       end
     end
   end

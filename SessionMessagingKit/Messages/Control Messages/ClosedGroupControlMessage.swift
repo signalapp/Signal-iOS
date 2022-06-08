@@ -38,6 +38,7 @@ public final class ClosedGroupControlMessage: ControlMessage {
         }
         
         case new(publicKey: Data, name: String, encryptionKeyPair: Box.KeyPair, members: [Data], admins: [Data], expirationTimer: UInt32)
+
         /// An encryption key pair encrypted for each member individually.
         ///
         /// - Note: `publicKey` is only set when an encryption key pair is sent in a one-to-one context (i.e. not in a group).

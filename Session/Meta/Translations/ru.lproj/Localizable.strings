@@ -27,23 +27,23 @@
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Ошибка отправки вложения";
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Unable to convert image.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Невозможно конвертировать изображение.";
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Невозможно обработать видео.";
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Unable to parse image.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Невозможно распознать изображение.";
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Unable to remove metadata from image.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Не удается удалить метаданные из изображения.";
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Unable to resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Невозможно изменить размер изображения.";
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Вложение слишком большое.";
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Вложение содержит неподдерживаемое содержимое.";
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Вложение имеет неверный формат файла.";
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "Вложение без содержимого.";
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Не удалось выбрать документ.";
 /* Alert body when picking a document fails because user picked a directory/bundle */
@@ -105,7 +105,7 @@
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ был(-a) разблокирован(-a).";
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Теперь участники группы могут снова добавить вас в группу.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Существующие члены группы теперь могут снова вас добавить.";
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Заблокированные пользователи не смогут звонить или отправлять сообщения Вам.";
 /* Label for generic done button. */
@@ -307,9 +307,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Безымянный альбом";
 /* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+"PUSH_MANAGER_MARKREAD" = "Отметить как прочтенное";
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Reply";
+"PUSH_MANAGER_REPLY" = "Ответить";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Невозможно активировать аккаунт до подтверждения отправленного вам кода.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
@@ -371,9 +371,15 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Отправлять предпросмотр ссылки";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Предварительный просмотр поддерживается для ссылок Imgur, Instagram, Pinterest, Reddit и YouTube.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Предпросмотр поддерживается для большинства ссылок.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Предпросмотры ссылок";
+/* Setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS" = "Голосовые и видео вызовы";
+/* Footer for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_FOOTER" = "Разрешить принимать голосовые и видео вызовы от других пользователей.";
+/* Header for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_HEADER" = "Вызовы";
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Содержимое уведомления";
 /* Label for the 'read receipts' setting. */
@@ -472,7 +478,7 @@
 "vc_home_empty_state_button_title" = "Начать Сессию";
 "vc_seed_title" = "Ваша секретная фраза для восстановления";
 "vc_seed_title_2" = "А вот и ваша секретная фраза для восстановления";
-"vc_seed_explanation" = "Ваша секретная фраза является главным ключом к вашему Session ID. Вы можете использовать ее для восстановления Session ID, если потеряете доступ к своему устройству. Сохраните свою секретную фразу в безопасном месте, и никому её не передавайте.";
+"vc_seed_explanation" = "Ваша фраза восстановления является главным ключом к вашему Session ID. Храните свою фразу восстановления в надежном месте и никому ее не передавайте.";
 "vc_seed_reveal_button_title" = "Удерживайте, чтобы показать";
 "view_seed_reminder_subtitle_1" = "Защитите свой аккаунт, сохранив секретную фразу";
 "view_seed_reminder_subtitle_2" = "Нажмите и удерживайте сокращенные слова, чтобы открыть секретную фразу, а затем сохраните ее в надежном месте, чтобы защитить свой Session ID.";
@@ -518,11 +524,11 @@
 "modal_seed_explanation" = "Это ваша секретная фраза. С ее помощью вы можете восстановить или перенести свой Session ID на новое устройство.";
 "modal_clear_all_data_title" = "Очистить все данные";
 "modal_clear_all_data_explanation" = "Это навсегда удалит ваши сообщения, сессии и контакты.";
-"modal_clear_all_data_explanation_2" = "Would you like to clear only this device, or delete your entire account?";
-"dialog_clear_all_data_deletion_failed_1" = "Data not deleted by 1 Service Node. Service Node ID: %@.";
-"dialog_clear_all_data_deletion_failed_2" = "Data not deleted by %@ Service Nodes. Service Node IDs: %@.";
-"modal_clear_all_data_device_only_button_title" = "Device Only";
-"modal_clear_all_data_entire_account_button_title" = "Entire Account";
+"modal_clear_all_data_explanation_2" = "Вы хотите очистить только это устройство или полностью удалить ваш аккаунт?";
+"dialog_clear_all_data_deletion_failed_1" = "Данные не удалены 1 узлом сервиса. Номер узла: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Данные не удалены %@ узлами сервиса. Номера узлов: %@.";
+"modal_clear_all_data_device_only_button_title" = "Только устройство";
+"modal_clear_all_data_entire_account_button_title" = "Полностью аккаунт";
 "vc_qr_code_title" = "QR-код";
 "vc_qr_code_view_my_qr_code_tab_title" = "Посмотреть мой QR-код";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Сканировать QR-код";
@@ -555,69 +561,96 @@
 "modal_open_url_title" = "Открыть ссылку?";
 "modal_open_url_explanation" = "Вы уверены, что хотите открыть %@?";
 "modal_open_url_button_title" = "Открыть";
-"modal_copy_url_button_title" = "Copy Link";
+"modal_copy_url_button_title" = "Копировать ссылку";
 "modal_blocked_title" = "Разблокировать %@?";
 "modal_blocked_explanation" = "Вы уверены, что хотите разблокировать %@?";
 "modal_blocked_button_title" = "Разблокировать";
 "modal_link_previews_title" = "Включить предварительный просмотр ссылок?";
 "modal_link_previews_explanation" = "Включение предпросмотра ссылок покажет превью для отправляемых и получаемых ссылок. Это может быть полезно, но Session нужно будет соединиться с сайтами, связанными с ссылками, чтобы сгенерировать предпросмотр. Вы всегда можете отключить предпросмотр ссылок в настройках Session.";
 "modal_link_previews_button_title" = "Включить";
-"modal_share_logs_title" = "Share Logs";
-"modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
+"modal_call_title" = "Голосовые / видео вызовы";
+"modal_call_explanation" = "Текущая реализация голосовых / видео вызовов предоставит ваш IP-адрес серверам Oxen Foundation и вызывающему / вызываемому пользователю.";
+"modal_share_logs_title" = "Отправить журнал";
+"modal_share_logs_explanation" = "Вы хотите экспортировать журналы приложения, чтобы иметь возможность поделиться ими для устранения неполадок?";
 "vc_share_title" = "Поделиться в Session";
 "vc_share_loading_message" = "Подготовка вложений...";
 "vc_share_sending_message" = "Отправка...";
-"vc_share_link_previews_unsecure" = "Preview not loaded for unsecure link";
-"vc_share_link_previews_error" = "Unable to load preview";
-"vc_share_link_previews_disabled_title" = "Link Previews Disabled";
+"vc_share_link_previews_unsecure" = "Предпросмотр не загружен для небезопасных ссылок";
+"vc_share_link_previews_error" = "Невозможно загрузить предпросмотр";
+"vc_share_link_previews_disabled_title" = "Ссылка предпросмотра выключена";
 "vc_share_link_previews_disabled_explanation" = "Enabling link previews will show previews for URLs you share. This can be useful, but Session will need to contact linked websites to generate previews.\n\nYou can enable link previews in Session's settings.";
 "view_open_group_invitation_description" = "Открыть приглашение в группу";
 "vc_conversation_settings_invite_button_title" = "Добавить участников";
-"vc_settings_faq_button_title" = "FAQ";
-"vc_settings_survey_button_title" = "Feedback / Survey";
-"vc_settings_support_button_title" = "Debug Log";
-"modal_send_seed_title" = "Warning";
-"modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
-"modal_send_seed_send_button_title" = "Send";
-"vc_conversation_settings_notify_for_mentions_only_title" = "Notify for Mentions Only";
-"vc_conversation_settings_notify_for_mentions_only_explanation" = "When enabled, you'll only be notified for messages mentioning you.";
-"view_conversation_title_notify_for_mentions_only" = "Notifying for Mentions Only";
-"message_deleted" = "This message has been deleted";
-"delete_message_for_me" = "Delete just for me";
-"delete_message_for_everyone" = "Delete for everyone";
-"delete_message_for_me_and_recipient" = "Delete for me and %@";
-"context_menu_reply" = "Reply";
-"context_menu_save" = "Save";
-"context_menu_ban_user" = "Ban User";
-"context_menu_ban_and_delete_all" = "Ban and Delete All";
-"accessibility_expanding_attachments_button" = "Add attachments";
+"vc_settings_faq_button_title" = "Часто задаваемые вопросы";
+"vc_settings_survey_button_title" = "Обратная связь / Опрос";
+"vc_settings_support_button_title" = "Журнал отладки";
+"modal_send_seed_title" = "Предупреждение";
+"modal_send_seed_explanation" = "Это ваша фраза для восстановления. Если вы отправите ее кому-то, он получит полный доступ к вашей учетной записи.";
+"modal_send_seed_send_button_title" = "Отправить";
+"vc_conversation_settings_notify_for_mentions_only_title" = "Уведомлять только об упоминаниях";
+"vc_conversation_settings_notify_for_mentions_only_explanation" = "Когда включено, вы будете уведомлены только о сообщениях, упоминающих вас.";
+"view_conversation_title_notify_for_mentions_only" = "Уведомления только для упоминаний";
+"message_deleted" = "Это сообщение было удалено";
+"delete_message_for_me" = "Удалить только для меня";
+"delete_message_for_everyone" = "Удалить для всех";
+"delete_message_for_me_and_recipient" = "Удалить для меня и %@";
+"context_menu_reply" = "Ответить";
+"context_menu_save" = "Сохранить";
+"context_menu_ban_user" = "Заблокировать пользователя";
+"context_menu_ban_and_delete_all" = "Забанить и удалить все";
+"context_menu_ban_user_error_alert_message" = "Unable to ban user";
+"accessibility_expanding_attachments_button" = "Добавить вложения";
 "accessibility_gif_button" = "Gif";
-"accessibility_document_button" = "Document";
-"accessibility_library_button" = "Photo library";
-"accessibility_camera_button" = "Camera";
-"accessibility_main_button_collapse" = "Collapse attachment options";
-"DISMISS_BUTTON_TEXT" = "Dismiss";
+"accessibility_document_button" = "Документ";
+"accessibility_library_button" = "Библиотека фотографий";
+"accessibility_camera_button" = "Камера";
+"accessibility_main_button_collapse" = "Свернуть параметры вложений";
+"invalid_recovery_phrase" = "Неверная секретная фраза";
+"invalid_recovery_phrase" = "Неверная секретная фраза";
+"DISMISS_BUTTON_TEXT" = "Закрыть";
 /* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Settings";
-"APN_Message" = "You've got a new message";
-"system_mode_theme" = "System";
-"dark_mode_theme" = "Dark";
-"light_mode_theme" = "Light";
-"MESSAGE_REQUESTS_TITLE" = "Message Requests";
-"MESSAGE_REQUESTS_EMPTY_TEXT" = "No pending message requests";
-"MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";
-"MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "Are you sure you want to clear all message requests?";
-"MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "Clear";
-"MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "Are you sure you want to delete this message request?";
+"OPEN_SETTINGS_BUTTON" = "Настройки";
+"call_outgoing" = "Вы позвонили %@";
+"call_incoming" = "%@ звонил(а) вам";
+"call_missed" = "Пропущенный звонок от %@";
+"call_rejected" = "Отклоненный вызов";
+"call_cancelled" = "Отмененный вызов";
+"call_timeout" = "Пропущенные вызовы";
+"voice_call" = "Голосовой вызов";
+"video_call" = "Видеовызов";
+"APN_Message" = "Вы получили новое сообщение";
+"APN_Collapsed_Messages" = "Вы получили %@ новых сообщений.";
+"system_mode_theme" = "Системная";
+"dark_mode_theme" = "Темная";
+"light_mode_theme" = "Светлая";
+"PIN_BUTTON_TEXT" = "Закрепить";
+"UNPIN_BUTTON_TEXT" = "Открепить";
+"modal_call_missed_tips_title" = "Пропущен вызов";
+"modal_call_missed_tips_explanation" = "Вызов от '%@' пропущен, вам необходимо включить разрешение 'Голосовые и видео вызовы' в настройках Конфиденциальности.";
+"meida_saved" = "%@ сохранил(а) медиафайл.";
+"screenshot_taken" = "%@ сделал(а) снимок экрана.";
+"SEARCH_SECTION_CONTACTS" = "Контакты и группы";
+"SEARCH_SECTION_MESSAGES" = "Сообщения";
+"SEARCH_SECTION_RECENT" = "Недавние";
+"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "последнее сообщение: %@";
+"MESSAGE_REQUESTS_TITLE" = "Запросы Сообщений";
+"MESSAGE_REQUESTS_EMPTY_TEXT" = "Нет ожидающих запросов";
+"MESSAGE_REQUESTS_CLEAR_ALL" = "Очистить всё";
+"MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "Вы уверены, что хотите очистить все запросы сообщений?";
+"MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "Очистить";
+"MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "Вы уверены, что хотите удалить это сообщение?";
 "MESSAGE_REQUESTS_APPROVAL_ERROR_MESSAGE" = "An error occurred when trying to accept this message request";
 "MESSAGE_REQUESTS_INFO" = "Sending a message to this user will automatically accept their message request.";
 "MESSAGE_REQUESTS_ACCEPTED" = "Your message request has been accepted.";
 "MESSAGE_REQUESTS_NOTIFICATION" = "You have a new message request";
-"TXT_HIDE_TITLE" = "Hide";
+"TXT_HIDE_TITLE" = "Скрыть";
 "TXT_DELETE_ACCEPT" = "Accept";
+"ALERT_ERROR_TITLE" = "Ошибка";
 "NEW_CONVERSATION_MENU_OPEN_GROUP" = "Open Group";
 "NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Direct Message";
 "NEW_CONVERSATION_MENU_CLOSED_GROUP" = "Closed Group";
+"modal_call_permission_request_title" = "Call Permissions Required";
+"modal_call_permission_request_explanation" = "You can enable the 'Voice and video calls' permission in the Privacy Settings.";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
 "ALERT_ERROR_TITLE" = "Ошибка";

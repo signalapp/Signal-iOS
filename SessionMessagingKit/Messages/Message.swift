@@ -19,6 +19,8 @@ public class Message: Codable {
 
     public var ttl: UInt64 { 14 * 24 * 60 * 60 * 1000 }
     public var isSelfSendValid: Bool { false }
+    
+    public var shouldBeRetryable: Bool { false }
 
     // MARK: - Validation
     

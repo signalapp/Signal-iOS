@@ -16,7 +16,9 @@ final class LinkPreviewView: UIView {
     
     private lazy var imageViewContainerWidthConstraint = imageView.set(.width, to: 100)
     private lazy var imageViewContainerHeightConstraint = imageView.set(.height, to: 100)
-    
+
+    // MARK: UI Components
+
     private lazy var imageView: UIImageView = {
         let result: UIImageView = UIImageView()
         result.contentMode = .scaleAspectFill
@@ -192,6 +194,7 @@ final class LinkPreviewView: UIView {
                 searchText: lastSearchText,
                 delegate: delegate
             )
+            
             self.bodyTextView = bodyTextView
             bodyTextViewContainer.addSubview(bodyTextView)
             bodyTextView.pin(to: bodyTextViewContainer, withInset: 12)

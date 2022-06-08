@@ -7,9 +7,10 @@ import SignalUtilitiesKit
 import SessionMessagingKit
 
 public class NSENotificationPresenter: NSObject, NotificationsProtocol {
+    private var notifications: [String: UNNotificationRequest] = [:]
      
     public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread, isBackgroundPoll: Bool) {
-        guard Date().timeIntervalSince1970 < (thread.mutedUntilTimestamp ?? 0) else { return }
+        guard Date().timeIntervalSince1970 > (thread.mutedUntilTimestamp ?? 0) else { return }
         
         let userPublicKey: String = getUserHexEncodedPublicKey(db)
         let isMessageRequest: Bool = thread.isMessageRequest(db)
@@ -45,9 +46,8 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
         
-        let senderName = Profile.displayName(db, id: senderPublicKey, threadVariant: thread.variant)
-        
-        var notificationTitle = senderName
+        let senderName: String = Profile.displayName(db, id: senderPublicKey, threadVariant: thread.variant)
+        var notificationTitle: String = senderName
         
         if thread.variant == .closedGroup || thread.variant == .openGroup {
             if thread.onlyNotifyForMentions && !interaction.isUserMentioned(db) {
@@ -55,22 +55,28 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
                 return
             }
             
-            notificationTitle = String(
-                format: NotificationStrings.incomingGroupMessageTitleFormat,
-                senderName,
-                SessionThread.displayName(
+            notificationTitle = {
+                let groupName: String = SessionThread.displayName(
                     threadId: thread.id,
                     variant: thread.variant,
                     closedGroupName: (try? thread.closedGroup.fetchOne(db))?.name,
                     openGroupName: (try? thread.openGroup.fetchOne(db))?.name
                 )
-            )
+                
+                guard !isBackgroundPoll else { return groupName }
+                
+                return String(
+                    format: NotificationStrings.incomingGroupMessageTitleFormat,
+                    senderName,
+                    groupName
+                )
+            }()
         }
         
-        
-        let snippet = interaction.previewText(db)
+        let snippet: String = (interaction.previewText(db)
             .filterForDisplay?
-            .replacingMentions(for: thread.id) ?? "APN_Message".localized()
+            .replacingMentions(for: thread.id))
+            .defaulting(to: "APN_Message".localized())
         
         var userInfo: [String: Any] = [ NotificationServiceExtension.isFromRemoteKey: true ]
         userInfo[NotificationServiceExtension.threadIdKey] = thread.id
@@ -113,6 +119,94 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         
         // Add request
         let identifier = interaction.notificationIdentifier(isBackgroundPoll: isBackgroundPoll)
+        var trigger: UNNotificationTrigger?
+        
+        if isBackgroundPoll {
+            trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+            
+            var numberOfNotifications: Int = (notifications[identifier]?
+                .content
+                .userInfo[NotificationServiceExtension.threadNotificationCounter]
+                .asType(Int.self))
+                .defaulting(to: 1)
+            
+            if numberOfNotifications > 1 {
+                numberOfNotifications += 1  // Add one for the current notification
+                notificationContent.body = String(
+                    format: NotificationStrings.incomingCollapsedMessagesBody,
+                    "\(numberOfNotifications)"
+                )
+            }
+            
+            notificationContent.userInfo[NotificationServiceExtension.threadNotificationCounter] = numberOfNotifications
+        }
+        
+        let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: trigger)
+        
+        SNLog("Add remote notification request: \(notificationContent.body)")
+        let semaphore = DispatchSemaphore(value: 0)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                SNLog("Failed to add notification request due to error:\(error)")
+            }
+            
+            self.notifications[identifier] = request
+            semaphore.signal()
+        }
+        semaphore.wait()
+        SNLog("Finish adding remote notification request")
+    }
+    
+    public func notifyUser(_ db: Database, forIncomingCall interaction: Interaction, in thread: SessionThread) {
+        // No call notifications for muted or group threads
+        guard Date().timeIntervalSince1970 > (thread.mutedUntilTimestamp ?? 0) else { return }
+        guard thread.variant != .closedGroup && thread.variant != .openGroup else { return }
+        guard
+            interaction.variant == .infoMessageCall,
+            let infoMessageData: Data = (interaction.body ?? "").data(using: .utf8),
+            let messageInfo: CallMessage.MessageInfo = try? JSONDecoder().decode(
+                CallMessage.MessageInfo.self,
+                from: infoMessageData
+            )
+        else { return }
+        
+        // Only notify missed calls
+        guard messageInfo.state == .missed || messageInfo.state == .permissionDenied else { return }
+        
+        var userInfo: [String: Any] = [ NotificationServiceExtension.isFromRemoteKey: true ]
+        userInfo[NotificationServiceExtension.threadIdKey] = thread.id
+        
+        let notificationContent = UNMutableNotificationContent()
+        notificationContent.userInfo = userInfo
+        notificationContent.sound = thread.notificationSound
+            .defaulting(
+                to: db[.defaultNotificationSound]
+                    .defaulting(to: Preferences.Sound.defaultNotificationSound)
+            )
+            .notificationSound(isQuiet: false)
+        
+        // Badge Number
+        let newBadgeNumber = CurrentAppContext().appUserDefaults().integer(forKey: "currentBadgeNumber") + 1
+        notificationContent.badge = NSNumber(value: newBadgeNumber)
+        CurrentAppContext().appUserDefaults().set(newBadgeNumber, forKey: "currentBadgeNumber")
+        
+        notificationContent.title = interaction.previewText(db)
+        notificationContent.body = ""
+        
+        if messageInfo.state == .permissionDenied {
+            notificationContent.body = String(
+                format: "modal_call_missed_tips_explanation".localized(),
+                SessionThread.displayName(
+                    threadId: thread.id,
+                    variant: thread.variant,
+                    closedGroupName: nil,       // Not supported
+                    openGroupName: nil          // Not supported
+                )
+            )
+        }
+        
+        // Add request
+        let identifier = UUID().uuidString
         let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: nil)
         
         SNLog("Add remote notification request: \(notificationContent.body)")

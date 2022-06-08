@@ -15,7 +15,8 @@ final class SeedModal: Modal {
         return Mnemonic.encode(hexEncodedString: Identity.fetchUserPrivateKey()!.toHexString())
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func populateContentView() {
         // Set up title label
         let titleLabel = UILabel()
@@ -25,6 +26,7 @@ final class SeedModal: Modal {
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
+        
         // Set up mnemonic label
         let mnemonicLabel = UILabel()
         mnemonicLabel.textColor = Colors.text
@@ -33,6 +35,7 @@ final class SeedModal: Modal {
         mnemonicLabel.numberOfLines = 0
         mnemonicLabel.lineBreakMode = .byWordWrapping
         mnemonicLabel.textAlignment = .center
+        
         // Set up mnemonic label container
         let mnemonicLabelContainer = UIView()
         mnemonicLabelContainer.addSubview(mnemonicLabel)
@@ -40,6 +43,7 @@ final class SeedModal: Modal {
         mnemonicLabelContainer.layer.cornerRadius = TextField.cornerRadius
         mnemonicLabelContainer.layer.borderWidth = 1
         mnemonicLabelContainer.layer.borderColor = Colors.text.cgColor
+        
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
@@ -48,6 +52,7 @@ final class SeedModal: Modal {
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.textAlignment = .center
+        
         // Set up copy button
         let copyButton = UIButton()
         copyButton.set(.height, to: Values.mediumButtonHeight)
@@ -57,26 +62,35 @@ final class SeedModal: Modal {
         copyButton.setTitleColor(Colors.text, for: UIControl.State.normal)
         copyButton.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
         copyButton.addTarget(self, action: #selector(copySeed), for: UIControl.Event.touchUpInside)
+        
         // Set up button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, copyButton ])
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually
+        
+        // Content stack view
+        let contentStackView = UIStackView(arrangedSubviews: [ titleLabel, mnemonicLabelContainer, explanationLabel ])
+        contentStackView.axis = .vertical
+        contentStackView.spacing = Values.largeSpacing
+        
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ titleLabel, mnemonicLabelContainer, explanationLabel, buttonStackView ])
+        let spacing = Values.largeSpacing - Values.smallFontSize / 2
+        let stackView = UIStackView(arrangedSubviews: [ contentStackView, buttonStackView ])
         stackView.axis = .vertical
-        stackView.spacing = Values.largeSpacing
+        stackView.spacing = spacing
         contentView.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
         stackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
         contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.largeSpacing)
-        contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.largeSpacing)
+        contentView.pin(.bottom, to: .bottom, of: stackView, withInset: spacing)
         
         // Mark seed as viewed
         GRDBStorage.shared.write { db in db[.hasViewedSeed] = true }
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func copySeed() {
         UIPasteboard.general.string = mnemonic
         dismiss(animated: true, completion: nil)

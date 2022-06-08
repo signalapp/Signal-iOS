@@ -151,8 +151,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor,
                 constant: -Values.largeSpacing
             ),
-            // Note: The '182' is to match the 'Next' button on the New DM page (which doesn't have a fixed width)
-            clearAllButton.widthAnchor.constraint(equalToConstant: 182),
+            clearAllButton.widthAnchor.constraint(equalToConstant: Values.iPadButtonWidth),
             clearAllButton.heightAnchor.constraint(equalToConstant: NewConversationButtonSet.collapsedButtonSize)
         ])
     }
@@ -249,7 +248,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     }
 
     // MARK: - Interaction
-
+    
     @objc private func clearAllTapped() {
         guard !viewModel.viewData.isEmpty else { return }
         

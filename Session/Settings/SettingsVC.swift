@@ -1,12 +1,18 @@
-import UIKit
-import SessionMessagingKit
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
+import UIKit
+import SessionUIKit
+import SessionUtilitiesKit
+import SessionMessagingKit
+import SignalUtilitiesKit
+
+final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     private var profilePictureToBeUploaded: UIImage?
     private var displayNameToBeUploaded: String?
     private var isEditingDisplayName = false { didSet { handleIsEditingDisplayNameChanged() } }
     
-    // MARK: Components
+    // MARK: - Components
+    
     private lazy var profilePictureView: ProfilePictureView = {
         let result = ProfilePictureView()
         let size = Values.largeProfilePictureSize
@@ -15,12 +21,14 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         result.set(.height, to: size)
         result.accessibilityLabel = "Edit profile picture button"
         result.isAccessibilityElement = true
+        
         return result
     }()
     
     private lazy var profilePictureUtilities: AvatarViewHelper = {
         let result = AvatarViewHelper()
         result.delegate = self
+        
         return result
     }()
     
@@ -30,6 +38,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         result.lineBreakMode = .byTruncatingTail
         result.textAlignment = .center
+        
         return result
     }()
     
@@ -37,6 +46,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let result = TextField(placeholder: NSLocalizedString("vc_settings_display_name_text_field_hint", comment: ""), usesDefaultHeight: false)
         result.textAlignment = .center
         result.accessibilityLabel = "Edit display name text field"
+        
         return result
     }()
     
@@ -48,6 +58,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         result.textAlignment = .center
         result.lineBreakMode = .byCharWrapping
         result.text = getUserHexEncodedPublicKey()
+        
         return result
     }()
     
@@ -55,6 +66,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let result = Button(style: .prominentOutline, size: .medium)
         result.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
+        
         return result
     }()
 
@@ -62,6 +74,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let result = UIStackView()
         result.axis = .vertical
         result.alignment = .fill
+        
         return result
     }()
     
@@ -71,6 +84,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         result.setTitleColor(Colors.text, for: UIControl.State.normal)
         result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
         result.addTarget(self, action: #selector(sendInvitation), for: UIControl.Event.touchUpInside)
+        
         return result
     }()
     
@@ -80,6 +94,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         result.setTitleColor(Colors.text, for: UIControl.State.normal)
         result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
         result.addTarget(self, action: #selector(openFAQ), for: UIControl.Event.touchUpInside)
+        
         return result
     }()
     
@@ -87,8 +102,9 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let result = UIButton()
         result.setTitle(NSLocalizedString("vc_settings_survey_button_title", comment: ""), for: UIControl.State.normal)
         result.setTitleColor(Colors.text, for: UIControl.State.normal)
-        result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        result.titleLabel?.font = .boldSystemFont(ofSize: Values.smallFontSize)
         result.addTarget(self, action: #selector(openSurvey), for: UIControl.Event.touchUpInside)
+        
         return result
     }()
     
@@ -98,6 +114,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         result.setTitleColor(Colors.text, for: UIControl.State.normal)
         result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
         result.addTarget(self, action: #selector(shareLogs), for: UIControl.Event.touchUpInside)
+        
         return result
     }()
     
@@ -107,6 +124,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         result.setTitleColor(Colors.text, for: UIControl.State.normal)
         result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
         result.addTarget(self, action: #selector(helpTranslate), for: UIControl.Event.touchUpInside)
+        
         return result
     }()
     
@@ -114,6 +132,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let result = UIImageView()
         result.set(.height, to: 24)
         result.contentMode = .scaleAspectFit
+        
         return result
     }()
     
@@ -127,15 +146,19 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"]!
         let buildNumber = Bundle.main.infoDictionary!["CFBundleVersion"]!
         result.text = "Version \(version) (\(buildNumber))"
+        
         return result
     }()
     
-    // MARK: Settings
+    // MARK: - Settings
+    
     private static let buttonHeight = isIPhone5OrSmaller ? CGFloat(52) : CGFloat(75)
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setUpGradientBackground()
         setUpNavBarStyle()
         setNavBarTitle(NSLocalizedString("vc_settings_title", comment: ""))
@@ -186,11 +209,18 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         // Button container
         let buttonContainer = UIStackView(arrangedSubviews: [ copyButton, shareButton ])
         buttonContainer.axis = .horizontal
-        buttonContainer.spacing = Values.mediumSpacing
+        buttonContainer.spacing = UIDevice.current.isIPad ? Values.iPadButtonSpacing : Values.mediumSpacing
         buttonContainer.distribution = .fillEqually
         
+        if (UIDevice.current.isIPad) {
+            buttonContainer.layoutMargins = UIEdgeInsets(top: 0, left: Values.iPadButtonContainerMargin, bottom: 0, right: Values.iPadButtonContainerMargin)
+            buttonContainer.isLayoutMarginsRelativeArrangement = true
+        }
+        // User session id container
+        let userPublicKeyContainer = UIView(wrapping: publicKeyLabel, withInsets: .zero, shouldAdaptForIPadWithWidth: Values.iPadUserSessionIdContainerWidth)
+        
         // Top stack view
-        let topStackView = UIStackView(arrangedSubviews: [ headerStackView, separator, publicKeyLabel, buttonContainer ])
+        let topStackView = UIStackView(arrangedSubviews: [ headerStackView, separator, userPublicKeyContainer, buttonContainer ])
         topStackView.axis = .vertical
         topStackView.spacing = Values.largeSpacing
         topStackView.alignment = .fill
@@ -233,30 +263,39 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             let result = UIView()
             result.backgroundColor = Colors.separator
             result.set(.height, to: Values.separatorThickness)
+            
             return result
         }
+        
         func getSettingButton(withTitle title: String, color: UIColor, action selector: Selector) -> UIButton {
             let button = UIButton()
             button.setTitle(title, for: UIControl.State.normal)
             button.setTitleColor(color, for: UIControl.State.normal)
             button.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
             button.titleLabel!.textAlignment = .center
+            
             func getImage(withColor color: UIColor) -> UIImage {
                 let rect = CGRect(origin: CGPoint.zero, size: CGSize(width: 1, height: 1))
                 UIGraphicsBeginImageContext(rect.size)
+                
                 let context = UIGraphicsGetCurrentContext()!
                 context.setFillColor(color.cgColor)
                 context.fill(rect)
+                
                 let image = UIGraphicsGetImageFromCurrentImageContext()
                 UIGraphicsEndImageContext()
+                
                 return image!
             }
+            
             let backgroundColor = isLightMode ? UIColor(hex: 0xFCFCFC) : UIColor(hex: 0x1B1B1B)
             button.setBackgroundImage(getImage(withColor: backgroundColor), for: UIControl.State.normal)
+            
             let selectedColor = isLightMode ? UIColor(hex: 0xDFDFDF) : UIColor(hex: 0x0C0C0C)
             button.setBackgroundImage(getImage(withColor: selectedColor), for: UIControl.State.highlighted)
             button.addTarget(self, action: selector, for: UIControl.Event.touchUpInside)
             button.set(.height, to: SettingsVC.buttonHeight)
+            
             return button
         }
         
@@ -286,12 +325,20 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         ]
     }
     
-    // MARK: General
+    // MARK: - General
+    
     @objc private func enableCopyButton() {
         copyButton.isUserInteractionEnabled = true
-        UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
-        }, completion: nil)
+        
+        UIView.transition(
+            with: copyButton,
+            duration: 0.25,
+            options: .transitionCrossDissolve,
+            animations: {
+                self.copyButton.setTitle("copy".localized(), for: .normal)
+            },
+            completion: nil
+        )
     }
     
     func avatarActionSheetTitle() -> String? { return "Update Profile Picture" }
@@ -299,16 +346,20 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     func hasClearAvatarAction() -> Bool { return false }
     func clearAvatarActionLabel() -> String { return "Clear" }
     
-    // MARK: Updating
+    // MARK: - Updating
+    
     private func handleIsEditingDisplayNameChanged() {
         updateNavigationBarButtons()
+        
         UIView.animate(withDuration: 0.25) {
             self.displayNameLabel.alpha = self.isEditingDisplayName ? 0 : 1
             self.displayNameTextField.alpha = self.isEditingDisplayName ? 1 : 0
         }
+        
         if isEditingDisplayName {
             displayNameTextField.becomeFirstResponder()
-        } else {
+        }
+        else {
             displayNameTextField.resignFirstResponder()
         }
     }
@@ -320,40 +371,48 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             cancelButton.accessibilityLabel = "Cancel button"
             cancelButton.isAccessibilityElement = true
             navigationItem.leftBarButtonItem = cancelButton
+            
             let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(handleSaveDisplayNameButtonTapped))
             doneButton.tintColor = Colors.text
             doneButton.accessibilityLabel = "Done button"
             doneButton.isAccessibilityElement = true
             navigationItem.rightBarButtonItem = doneButton
-        } else {
+        }
+        else {
             let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
             closeButton.tintColor = Colors.text
             closeButton.accessibilityLabel = "Close button"
             closeButton.isAccessibilityElement = true
             navigationItem.leftBarButtonItem = closeButton
+            
             if #available(iOS 13, *) { // Pre iOS 13 the user can't switch actively but the app still responds to system changes
                 let appModeIcon: UIImage
                 if isSystemDefault {
                     appModeIcon = isDarkMode ? #imageLiteral(resourceName: "ic_theme_auto").withTintColor(.white) : #imageLiteral(resourceName: "ic_theme_auto").withTintColor(.black)
-                } else {
+                }
+                else {
                     appModeIcon = isDarkMode ? #imageLiteral(resourceName: "ic_dark_theme_on").withTintColor(.white) : #imageLiteral(resourceName: "ic_dark_theme_off").withTintColor(.black)
                 }
+                
                 let appModeButton = UIButton()
                 appModeButton.setImage(appModeIcon, for: UIControl.State.normal)
                 appModeButton.tintColor = Colors.text
                 appModeButton.addTarget(self, action: #selector(switchAppMode), for: UIControl.Event.touchUpInside)
                 appModeButton.accessibilityLabel = "Switch app mode button"
+                
                 let qrCodeIcon = isDarkMode ? #imageLiteral(resourceName: "QRCode").withTintColor(.white) : #imageLiteral(resourceName: "QRCode").withTintColor(.black)
                 let qrCodeButton = UIButton()
                 qrCodeButton.setImage(qrCodeIcon, for: UIControl.State.normal)
                 qrCodeButton.tintColor = Colors.text
                 qrCodeButton.addTarget(self, action: #selector(showQRCode), for: UIControl.Event.touchUpInside)
                 qrCodeButton.accessibilityLabel = "Show QR code button"
+                
                 let stackView = UIStackView(arrangedSubviews: [ appModeButton, qrCodeButton ])
                 stackView.axis = .horizontal
                 stackView.spacing = Values.mediumSpacing
                 navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
-            } else {
+            }
+            else {
                 let qrCodeIcon = isDarkMode ? #imageLiteral(resourceName: "QRCode").asTintedImage(color: .white) : #imageLiteral(resourceName: "QRCode").asTintedImage(color: .black)
                 let qrCodeButton = UIBarButtonItem(image: qrCodeIcon, style: .plain, target: self, action: #selector(showQRCode))
                 qrCodeButton.tintColor = Colors.text
@@ -377,6 +436,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let userDefaults = UserDefaults.standard
         let name: String? = (displayNameToBeUploaded ?? Profile.fetchOrCreateCurrentUser().name)
         let profilePicture: UIImage? = (profilePictureToBeUploaded ?? ProfileManager.profileAvatar(id: getUserHexEncodedPublicKey()))
+        
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self, displayNameToBeUploaded, profilePictureToBeUploaded] modalActivityIndicator in
             ProfileManager.updateLocal(
                 profileName: (name ?? ""),
@@ -386,6 +446,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                     if displayNameToBeUploaded != nil {
                         userDefaults[.lastDisplayNameUpdate] = Date()
                     }
+                    
                     if profilePictureToBeUploaded != nil {
                         userDefaults[.lastProfilePictureUpdate] = Date()
                     }
@@ -415,7 +476,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                             let title = isMaxFileSizeExceeded ? "Maximum File Size Exceeded" : "Couldn't Update Profile"
                             let message = isMaxFileSizeExceeded ? "Please select a smaller photo and try again" : "Please check your internet connection and try again"
                             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-                            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+                            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
                             self?.present(alert, animated: true, completion: nil)
                         }
                     }
@@ -426,6 +487,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
 
     @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
         super.handleAppModeChangedNotification(notification)
+        
         updateNavigationBarButtons()
         settingButtonsStackView.arrangedSubviews.forEach { settingButton in
             settingButtonsStackView.removeArrangedSubview(settingButton)
@@ -442,7 +504,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         logoImageView.image = UIImage(named: logoName)!
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func close() {
         dismiss(animated: true, completion: nil)
     }
@@ -516,6 +579,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     
     @objc private func sharePublicKey() {
         let shareVC = UIActivityViewController(activityItems: [ getUserHexEncodedPublicKey() ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
         navigationController!.present(shareVC, animated: true, completion: nil)
     }
     
@@ -556,6 +625,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func sendInvitation() {
         let invitation = "Hey, I've been using Session to chat with complete privacy and security. Come join me! Download it at https://getsession.org/. My Session ID is \(getUserHexEncodedPublicKey()) !"
         let shareVC = UIActivityViewController(activityItems: [ invitation ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
         navigationController!.present(shareVC, animated: true, completion: nil)
     }
     

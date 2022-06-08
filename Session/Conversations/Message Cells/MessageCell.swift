@@ -66,6 +66,9 @@ public class MessageCell: UITableViewCell {
                 .infoDisappearingMessagesUpdate, .infoScreenshotNotification, .infoMediaSavedNotification,
                 .infoMessageRequestAccepted:
                 return InfoMessageCell.self
+                
+            case .infoMessageCall:
+                return CallMessageCell.self
         }
     }
 }
@@ -80,4 +83,5 @@ protocol MessageCellDelegate: AnyObject {
     func openUrl(_ urlString: String)
     func handleReplyButtonTapped(for cellViewModel: MessageViewModel)
     func showUserDetails(for profile: Profile)
+    func startThread(with sessionId: String, openGroupServer: String, openGroupPublicKey: String)
 }

@@ -307,9 +307,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Namnlöst Album";
 /* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+"PUSH_MANAGER_MARKREAD" = "Markera som läst";
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Reply";
+"PUSH_MANAGER_REPLY" = "Svara";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Vi kan inte aktivera ditt konto förrän du verifierar koden vi skickade till dig.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
@@ -371,9 +371,15 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Länkförhandsvisningar";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Förhandsvisningar stöds för Imgur-, Instagram-, Pinterest-, Reddit- och YouTube-länkar.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for most urls.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Förhandsgranskning av länkar";
+/* Setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS" = "Röst- och videosamtal";
+/* Footer for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_FOOTER" = "Allow access to accept voice and video calls from other users.";
+/* Header for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_HEADER" = "Calls";
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Aviseringsljud";
 /* Label for the 'read receipts' setting. */
@@ -562,6 +568,8 @@
 "modal_link_previews_title" = "Aktivera förhandsgranskningar av länkar?";
 "modal_link_previews_explanation" = "Om du aktiverar länkförhandsvisningar visas förhandsvisningar för URL: er du skickar och tar emot. Detta kan vara användbart, men sessionen måste kontakta länkade webbplatser för att generera förhandsvisningar. Du kan alltid inaktivera länkförhandsvisningar i sessionsinställningarna.";
 "modal_link_previews_button_title" = "Aktivera";
+"modal_call_title" = "Voice / video calls";
+"modal_call_explanation" = "The current implementation of voice / video calls will expose your IP address to the Oxen Foundation servers and the calling / called user.";
 "modal_share_logs_title" = "Share Logs";
 "modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
 "vc_share_title" = "Dela i Session";
@@ -576,7 +584,7 @@
 "vc_settings_faq_button_title" = "FAQ";
 "vc_settings_survey_button_title" = "Feedback / Survey";
 "vc_settings_support_button_title" = "Debug Log";
-"modal_send_seed_title" = "Warning";
+"modal_send_seed_title" = "Varning";
 "modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
 "modal_send_seed_send_button_title" = "Send";
 "vc_conversation_settings_notify_for_mentions_only_title" = "Notify for Mentions Only";
@@ -587,22 +595,44 @@
 "delete_message_for_everyone" = "Delete for everyone";
 "delete_message_for_me_and_recipient" = "Delete for me and %@";
 "context_menu_reply" = "Reply";
-"context_menu_save" = "Save";
+"context_menu_save" = "Spara";
 "context_menu_ban_user" = "Ban User";
 "context_menu_ban_and_delete_all" = "Ban and Delete All";
+"context_menu_ban_user_error_alert_message" = "Unable to ban user";
 "accessibility_expanding_attachments_button" = "Add attachments";
 "accessibility_gif_button" = "Gif";
 "accessibility_document_button" = "Document";
 "accessibility_library_button" = "Photo library";
-"accessibility_camera_button" = "Camera";
+"accessibility_camera_button" = "Kamera";
 "accessibility_main_button_collapse" = "Collapse attachment options";
+"invalid_recovery_phrase" = "Invalid Recovery Phrase";
+"invalid_recovery_phrase" = "Invalid Recovery Phrase";
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 /* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Settings";
-"APN_Message" = "You've got a new message";
+"OPEN_SETTINGS_BUTTON" = "Inställningar";
+"call_outgoing" = "Du ringde %@";
+"call_incoming" = "%@ ringde dig";
+"call_missed" = "Missat samtal från %@";
+"call_rejected" = "Rejected Call";
+"call_cancelled" = "Cancelled Call";
+"call_timeout" = "Unanswered Call";
+"voice_call" = "Voice Call";
+"video_call" = "Video Call";
+"APN_Message" = "You've got a new message.";
+"APN_Collapsed_Messages" = "You've got %@ new messages.";
 "system_mode_theme" = "System";
 "dark_mode_theme" = "Dark";
 "light_mode_theme" = "Light";
+"PIN_BUTTON_TEXT" = "Pin";
+"UNPIN_BUTTON_TEXT" = "Unpin";
+"modal_call_missed_tips_title" = "Call missed";
+"modal_call_missed_tips_explanation" = "Call missed from '%@' because you needed to enable the 'Voice and video calls' permission in the Privacy Settings.";
+"meida_saved" = "Media saved by %@.";
+"screenshot_taken" = "%@ took a screenshot.";
+"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_RECENT" = "Recent";
+"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";
 "MESSAGE_REQUESTS_TITLE" = "Message Requests";
 "MESSAGE_REQUESTS_EMPTY_TEXT" = "No pending message requests";
 "MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";
@@ -615,9 +645,12 @@
 "MESSAGE_REQUESTS_NOTIFICATION" = "You have a new message request";
 "TXT_HIDE_TITLE" = "Hide";
 "TXT_DELETE_ACCEPT" = "Accept";
+"ALERT_ERROR_TITLE" = "Fel";
 "NEW_CONVERSATION_MENU_OPEN_GROUP" = "Open Group";
 "NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Direct Message";
 "NEW_CONVERSATION_MENU_CLOSED_GROUP" = "Closed Group";
+"modal_call_permission_request_title" = "Call Permissions Required";
+"modal_call_permission_request_explanation" = "You can enable the 'Voice and video calls' permission in the Privacy Settings.";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
 "ALERT_ERROR_TITLE" = "Error";

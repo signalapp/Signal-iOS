@@ -1,7 +1,7 @@
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "稍後";
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "版本：%@ 現在已經可以下載。";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "版本 %@ 現在已經可以下載。";
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "更新版本的 Session 已推出";
 /* Label for the 'update' button in the 'new app version available' alert. */
@@ -27,23 +27,23 @@
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "寄送附件時發生錯誤";
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Unable to convert image.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "無法讀取圖片。";
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "無法處理影片";
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Unable to parse image.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "無法解析圖片";
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Unable to remove metadata from image.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "無法移除圖片資訊";
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Unable to resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "無法修改圖片大小";
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "附件過大";
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "附件包含無效內容";
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "附件有無效檔案格式";
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "附件不存在";
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "選取檔案時發生錯誤";
 /* Alert body when picking a document fails because user picked a directory/bundle */
@@ -89,13 +89,13 @@
 /* Label for the backup restore status. */
 "BACKUP_RESTORE_STATUS" = "狀態";
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "不明的錯誤，請聯繫開發者";
+"BACKUP_UNEXPECTED_ERROR" = "不明的備份錯誤";
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "封鎖";
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "封鎖 %@？";
 /* A format for the 'unblock user' action sheet title. Embeds {{the unblocked user's name or phone number}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "取消封鎖 %@？";
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "解除封鎖";
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
@@ -103,9 +103,9 @@
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "使用者已封鎖";
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ has been unblocked.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ 已被封鎖";
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "現有成員現已可以再次將你加入群組";
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "被您封鎖的使用者將無法傳送訊息與撥打電話給您";
 /* Label for generic done button. */
@@ -121,21 +121,21 @@
 /* Error indicating that user does not have an iCloud account. */
 "CLOUDKIT_STATUS_NO_ACCOUNT" = "沒有偵測到 iCloud 帳戶，請進入設定登入您的 iCloud 帳號。";
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Session 因為您的 iCloud 帳號設定並沒有將 Session 的備份選項開啟，請進入設定並打開您iCloud 的設定開啟 Session 的備份功能。";
+"CLOUDKIT_STATUS_RESTRICTED" = "您的 iCloud 設定未允許 Session 進行備份。請進入設定並授權 Session 存取您的 iCloud 以啟動 Session 的備份功能。";
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "您已經無法再於此群組傳送訊息或撥打電話。";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "您已經無法再於此群組傳送或接收訊息。";
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "您真的想要離開嗎？";
+"CONFIRM_LEAVE_GROUP_TITLE" = "確定要離開嗎？";
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "這個動作無法被撤銷。";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "此操作無法復原。";
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "刪除對話？";
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "沒有結果。";
+"CONVERSATION_SEARCH_NO_RESULTS" = "沒有相符項目";
 /* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "一個結果。";
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 個相符項目";
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "（%d/%d) 符合。";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d 中的 %d 個項目相符";
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "對話設定";
 /* table cell label in conversation settings */
@@ -153,11 +153,11 @@
 /* Label for button to mute a thread for a minute. */
 "CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "靜音一分鐘";
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "靜音一個禮拜";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "靜音一星期";
 /* Label for button to mute a thread for a year. */
 "CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "靜音一年";
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "直到：%@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "直到 %@";
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "搜尋對話";
 /* Label for button to unmute a thread. */
@@ -165,7 +165,7 @@
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "移動與裁切";
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "這會花上幾分鐘。";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "這可能需要幾分鐘的時間。";
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "最佳化資料庫中";
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
@@ -179,7 +179,7 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "昨天";
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "消失的訊息";
+"DISAPPEARING_MESSAGES" = "自動銷毀訊息";
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "在這則對話的訊息將於 %@ 後消失";
 /* table cell label in conversation settings */
@@ -191,35 +191,35 @@
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "讀取舊媒體中⋯";
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "無法讀取此 GIF。請驗證您是否連結到網路。";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "無法讀取此 GIF。請確認您是否已連接到網路。";
 /* Generic error displayed when picking a GIF */
-"GIF_PICKER_ERROR_GENERIC" = "發生不知名的錯誤。";
+"GIF_PICKER_ERROR_GENERIC" = "發生不明錯誤。";
 /* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "無法選取此 GIF。";
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "請輸入您的搜尋內容";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "請輸入搜尋內容";
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "錯誤，請重試。";
+"GIF_VIEW_SEARCH_ERROR" = "錯誤。請輕點重試。";
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "沒有結果";
 /* No comment provided by engineer. */
-"GROUP_CREATED" = "已創立群組";
+"GROUP_CREATED" = "已建立群組";
 /* No comment provided by engineer. */
 "GROUP_MEMBER_JOINED" = "%@ 已加入群組。 ";
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ 已離開群組。 ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = "%@ 被踢出群組。 ";
+"GROUP_MEMBER_REMOVED" = " %@ 已從群組中移除。 ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = "%@ 已被群組踢出 ";
+"GROUP_MEMBERS_REMOVED" = " %@ 已從群組中移除。 ";
 /* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "標題已更改為 ‘%@‘ ";
+"GROUP_TITLE_CHANGED" = "標題已更改為「%@」 ";
 /* No comment provided by engineer. */
 "GROUP_UPDATED" = "群組已更新";
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "您已離開群組";
 /* No comment provided by engineer. */
-"YOU_WERE_REMOVED" = " 您已被群組踢出 ";
+"YOU_WERE_REMOVED" = " 你已從群組中移除。 ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "無法分享超過 %@ 個項目。";
 /* alert title */
@@ -293,7 +293,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "顯示";
 /* No comment provided by engineer. */
-"BUTTON_OK" = "OK";
+"BUTTON_OK" = "好";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ 取消了閱後即焚模式";
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
@@ -307,9 +307,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "未命名相簿";
 /* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+"PUSH_MANAGER_MARKREAD" = "標記為已讀";
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Reply";
+"PUSH_MANAGER_REPLY" = "回覆";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "我們無法為您啟用帳號，直到您驗證了傳送給您的代碼。";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
@@ -371,9 +371,15 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "送出的連結預覽";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "預覽功能支援 Imgur, Instagram, Pinterest, Reddit, 跟 YouTube 連結。";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "大部分網址都支援預覽功能。";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "連結預覽";
+/* Setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS" = "語音和視頻通話";
+/* Footer for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_FOOTER" = "允許訪問以接受來自其他用戶的語音和視頻通話";
+/* Header for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_HEADER" = "通話";
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "通知內容";
 /* Label for the 'read receipts' setting. */
@@ -518,11 +524,11 @@
 "modal_seed_explanation" = "這是您的回復用字句，您可以利用此字句來回復或轉移您的帳號至新的裝置上。";
 "modal_clear_all_data_title" = "清除所有資料";
 "modal_clear_all_data_explanation" = "這樣做將永久清除您的訊息，帳號與聯絡人。";
-"modal_clear_all_data_explanation_2" = "Would you like to clear only this device, or delete your entire account?";
-"dialog_clear_all_data_deletion_failed_1" = "Data not deleted by 1 Service Node. Service Node ID: %@.";
-"dialog_clear_all_data_deletion_failed_2" = "Data not deleted by %@ Service Nodes. Service Node IDs: %@.";
-"modal_clear_all_data_device_only_button_title" = "Device Only";
-"modal_clear_all_data_entire_account_button_title" = "Entire Account";
+"modal_clear_all_data_explanation_2" = "你要清附這部裝置的資料，還是你整個賬戶的資料？";
+"dialog_clear_all_data_deletion_failed_1" = "數據已被1個服務節點刪除。節點ID: %@";
+"dialog_clear_all_data_deletion_failed_2" = "數據沒有被%@個服務節點刪除。節點ID: %@";
+"modal_clear_all_data_device_only_button_title" = "僅限裝置";
+"modal_clear_all_data_entire_account_button_title" = "整個賬戶";
 "vc_qr_code_title" = "QR Code";
 "vc_qr_code_view_my_qr_code_tab_title" = "查看我的 QR Code";
 "vc_qr_code_view_scan_qr_code_tab_title" = "掃描 QR Code";
@@ -555,54 +561,78 @@
 "modal_open_url_title" = "打開連結？";
 "modal_open_url_explanation" = "您確定要打開 %@ 嗎？";
 "modal_open_url_button_title" = "打開";
-"modal_copy_url_button_title" = "Copy Link";
+"modal_copy_url_button_title" = "複製鏈結";
 "modal_blocked_title" = "解除封鎖 %@ 嗎？";
 "modal_blocked_explanation" = "您確定要解除封鎖 %@ 嗎？";
 "modal_blocked_button_title" = "解除封鎖";
 "modal_link_previews_title" = "是否要啟用連結預覽？";
 "modal_link_previews_explanation" = "啟用連結預覽將會讓您送出與接收的 URLs 啟用預覽，這是一項好用的功能，但是 Session 會需要連結這些網站來產生預覽，您可以隨時關閉連結預覽功能。";
 "modal_link_previews_button_title" = "啟用";
-"modal_share_logs_title" = "Share Logs";
-"modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
+"modal_call_title" = "語音和視頻通話";
+"modal_call_explanation" = "當前的語音/視頻通話機制會將 IP 地址暴露給 Oxen Foundation 服務器以及與您通話的用戶。";
+"modal_share_logs_title" = "分享歷史紀錄";
+"modal_share_logs_explanation" = "您想輸出及分享應用程式的歷史紀錄以供我們做故障檢修嗎？";
 "vc_share_title" = "分享至 Session";
 "vc_share_loading_message" = "準備附件中⋯";
 "vc_share_sending_message" = "傳送中⋯";
-"vc_share_link_previews_unsecure" = "Preview not loaded for unsecure link";
-"vc_share_link_previews_error" = "Unable to load preview";
-"vc_share_link_previews_disabled_title" = "Link Previews Disabled";
+"vc_share_link_previews_unsecure" = "無法載入不安全連結的預覽";
+"vc_share_link_previews_error" = "無法載入預覽";
+"vc_share_link_previews_disabled_title" = "已停用預覽連結";
 "vc_share_link_previews_disabled_explanation" = "Enabling link previews will show previews for URLs you share. This can be useful, but Session will need to contact linked websites to generate previews.\n\nYou can enable link previews in Session's settings.";
 "view_open_group_invitation_description" = "打開群組邀請";
 "vc_conversation_settings_invite_button_title" = "新增成員";
 "vc_settings_faq_button_title" = "FAQ";
-"vc_settings_survey_button_title" = "Feedback / Survey";
-"vc_settings_support_button_title" = "Debug Log";
-"modal_send_seed_title" = "Warning";
-"modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
-"modal_send_seed_send_button_title" = "Send";
-"vc_conversation_settings_notify_for_mentions_only_title" = "Notify for Mentions Only";
-"vc_conversation_settings_notify_for_mentions_only_explanation" = "When enabled, you'll only be notified for messages mentioning you.";
-"view_conversation_title_notify_for_mentions_only" = "Notifying for Mentions Only";
-"message_deleted" = "This message has been deleted";
-"delete_message_for_me" = "Delete just for me";
-"delete_message_for_everyone" = "Delete for everyone";
-"delete_message_for_me_and_recipient" = "Delete for me and %@";
-"context_menu_reply" = "Reply";
-"context_menu_save" = "Save";
-"context_menu_ban_user" = "Ban User";
-"context_menu_ban_and_delete_all" = "Ban and Delete All";
-"accessibility_expanding_attachments_button" = "Add attachments";
+"vc_settings_survey_button_title" = "回饋 / 意見調查";
+"vc_settings_support_button_title" = "除錯紀錄";
+"modal_send_seed_title" = "警告";
+"modal_send_seed_explanation" = "這是你的復原密碼。獲得這段復原密碼的任何人都可以全權存取你的帳戶。";
+"modal_send_seed_send_button_title" = "發送";
+"vc_conversation_settings_notify_for_mentions_only_title" = "提及我時才通知";
+"vc_conversation_settings_notify_for_mentions_only_explanation" = "啟用後，你將只會收到提及你的訊息之通知。";
+"view_conversation_title_notify_for_mentions_only" = "目前啟用提及我時才通知";
+"message_deleted" = "此段訊息經已刪除";
+"delete_message_for_me" = "只為我自己刪除";
+"delete_message_for_everyone" = "從所有人的裝置上刪除";
+"delete_message_for_me_and_recipient" = "為我和 %@ 刪除";
+"context_menu_reply" = "回覆";
+"context_menu_save" = "儲存";
+"context_menu_ban_user" = "封鎖用戶";
+"context_menu_ban_and_delete_all" = "封鎖並刪除所有";
+"context_menu_ban_user_error_alert_message" = "Unable to ban user";
+"accessibility_expanding_attachments_button" = "增加附件檔案";
 "accessibility_gif_button" = "Gif";
-"accessibility_document_button" = "Document";
-"accessibility_library_button" = "Photo library";
-"accessibility_camera_button" = "Camera";
-"accessibility_main_button_collapse" = "Collapse attachment options";
-"DISMISS_BUTTON_TEXT" = "Dismiss";
+"accessibility_document_button" = "文件";
+"accessibility_library_button" = "前往照片圖庫";
+"accessibility_camera_button" = "相機";
+"accessibility_main_button_collapse" = "摺疊附件選項";
+"invalid_recovery_phrase" = "備援暗語無效";
+"invalid_recovery_phrase" = "恢復短語無效";
+"DISMISS_BUTTON_TEXT" = "關閉";
 /* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Settings";
-"APN_Message" = "You've got a new message";
-"system_mode_theme" = "System";
-"dark_mode_theme" = "Dark";
-"light_mode_theme" = "Light";
+"OPEN_SETTINGS_BUTTON" = "設定";
+"call_outgoing" = "You called %@";
+"call_incoming" = "%@ 來電";
+"call_missed" = "錯過 %@ 的來電";
+"call_rejected" = "通話被拒絕";
+"call_cancelled" = "通話被取消";
+"call_timeout" = "未接電話";
+"voice_call" = "語音通話";
+"video_call" = "視頻通話";
+"APN_Message" = "你有一條新訊息。";
+"APN_Collapsed_Messages" = "你有 %@ 條新訊息。";
+"system_mode_theme" = "按系統設定變更";
+"dark_mode_theme" = "深色風格";
+"light_mode_theme" = "明亮風格";
+"PIN_BUTTON_TEXT" = "置頂";
+"UNPIN_BUTTON_TEXT" = "取消置頂";
+"modal_call_missed_tips_title" = "未接來電";
+"modal_call_missed_tips_explanation" = "Call missed from '%@' because you needed to enable the 'Voice and video calls' permission in the Privacy Settings.";
+"meida_saved" = "%@ 儲存了媒體";
+"screenshot_taken" = "%@ 擷取了螢幕畫面";
+"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_RECENT" = "Recent";
+"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";
 "MESSAGE_REQUESTS_TITLE" = "Message Requests";
 "MESSAGE_REQUESTS_EMPTY_TEXT" = "No pending message requests";
 "MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";
@@ -615,9 +645,12 @@
 "MESSAGE_REQUESTS_NOTIFICATION" = "You have a new message request";
 "TXT_HIDE_TITLE" = "Hide";
 "TXT_DELETE_ACCEPT" = "Accept";
+"ALERT_ERROR_TITLE" = "Error";
 "NEW_CONVERSATION_MENU_OPEN_GROUP" = "Open Group";
 "NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Direct Message";
 "NEW_CONVERSATION_MENU_CLOSED_GROUP" = "Closed Group";
+"modal_call_permission_request_title" = "Call Permissions Required";
+"modal_call_permission_request_explanation" = "You can enable the 'Voice and video calls' permission in the Privacy Settings.";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
 "ALERT_ERROR_TITLE" = "Error";

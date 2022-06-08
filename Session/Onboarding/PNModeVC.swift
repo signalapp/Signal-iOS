@@ -57,7 +57,7 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         registerButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
         // Set up register button container
-        let registerButtonContainer = UIView(wrapping: registerButton, withInsets: UIEdgeInsets(top: 0, leading: Values.massiveSpacing, bottom: 0, trailing: Values.massiveSpacing))
+        let registerButtonContainer = UIView(wrapping: registerButton, withInsets: UIEdgeInsets(top: 0, leading: Values.massiveSpacing, bottom: 0, trailing: Values.massiveSpacing), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
         // Set up options stack view
         let optionsStackView = UIStackView(arrangedSubviews: optionViews)
         optionsStackView.axis = .vertical
@@ -96,7 +96,7 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
             let title = NSLocalizedString("vc_pn_mode_no_option_picked_modal_title", comment: "")
             let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-            return present(alert, animated: true, completion: nil)
+            return presentAlert(alert)
         }
         UserDefaults.standard[.isUsingFullAPNs] = (selectedOptionView == apnsOptionView)
         

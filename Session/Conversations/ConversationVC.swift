@@ -8,11 +8,6 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
-// TODO:
-// • Slight paging glitch when scrolling up and loading more content
-// • Photo rounding (the small corners don't have the correct rounding)
-// • Remaining search glitchiness
-
 final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     private static let loadingHeaderHeight: CGFloat = 20
     
@@ -23,6 +18,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     private var currentTargetOffset: CGPoint?
     private var isAutoLoadingNextPage: Bool = false
     private var isLoadingMore: Bool = false
+    var isReplacingThread: Bool = false
     
     /// This flag indicates whether the thread data has been reloaded after a disappearance (it defaults to true as it will
     /// never have disappeared before - this is only needed for value observers since they run asynchronously)
@@ -61,7 +57,12 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     /// This flag is used to temporarily prevent the ConversationVC from becoming the first responder (primarily used with
     /// custom transitions from preventing them from being buggy
     var delayFirstResponder: Bool = false
-    override var canBecomeFirstResponder: Bool { !delayFirstResponder }
+    override var canBecomeFirstResponder: Bool {
+        !delayFirstResponder &&
+        
+        // Need to return false during the swap between threads to prevent keyboard dismissal
+        !isReplacingThread
+    }
 
     override var inputAccessoryView: UIView? {
         guard
@@ -120,7 +121,11 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     // MARK: - UI
 
     private static let messageRequestButtonHeight: CGFloat = 34
-
+    
+    var scrollButtonBottomConstraint: NSLayoutConstraint?
+    var scrollButtonMessageRequestsBottomConstraint: NSLayoutConstraint?
+    var messageRequestsViewBotomConstraint: NSLayoutConstraint?
+    
     lazy var titleView: ConversationTitleView = {
         let result: ConversationTitleView = ConversationTitleView()
         let tapGestureRecognizer = UITapGestureRecognizer(
@@ -149,6 +154,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         result.register(view: VisibleMessageCell.self)
         result.register(view: InfoMessageCell.self)
         result.register(view: TypingIndicatorCell.self)
+        register(CallMessageCell.self, forCellReuseIdentifier: CallMessageCell.identifier)
         result.dataSource = self
         result.delegate = self
 
@@ -370,14 +376,9 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         messageRequestAcceptButton.pin(.left, to: .left, of: messageRequestView, withInset: 20)
         messageRequestAcceptButton.pin(.bottom, to: .bottom, of: messageRequestView)
         messageRequestAcceptButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
-
-        messageRequestAcceptButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
-        messageRequestAcceptButton.pin(.left, to: .left, of: messageRequestView, withInset: 20)
-        messageRequestAcceptButton.pin(.bottom, to: .bottom, of: messageRequestView)
-        messageRequestAcceptButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
-
+        
         messageRequestDeleteButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
-        messageRequestDeleteButton.pin(.left, to: .right, of: messageRequestAcceptButton, withInset: 20)
+        messageRequestDeleteButton.pin(.left, to: .right, of: messageRequestAcceptButton, withInset: UIDevice.current.isIPad ? Values.iPadButtonSpacing : 20)
         messageRequestDeleteButton.pin(.right, to: .right, of: messageRequestView, withInset: -20)
         messageRequestDeleteButton.pin(.bottom, to: .bottom, of: messageRequestView)
         messageRequestDeleteButton.set(.width, to: .width, of: messageRequestAcceptButton)
@@ -417,6 +418,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
+        
+        notificationCenter.addObserver(self, selector: #selector(handleContactThreadReplaced(_:)), name: .contactThreadReplaced, object: nil)   // TODO: Is this needed???
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -452,10 +455,15 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
         
         viewModel.markAllAsRead()
+        recoverInputView()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
+        // Don't set the draft or resign the first responder if we are replacing the thread (want the keyboard
+        // to appear to remain focussed)
+        guard !isReplacingThread else { return }
         
         stopObservingChanges()
         viewModel.updateDraft(to: snInputView.text)
@@ -471,6 +479,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     
     @objc func applicationDidBecomeActive(_ notification: Notification) {
         startObservingChanges()
+        recoverInputView()
     }
     
     @objc func applicationDidResignActive(_ notification: Notification) {
@@ -908,19 +917,21 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
         else {
             guard let threadData: SessionThreadViewModel = threadData, threadData.threadRequiresApproval == false else {
-                // Note: Adding an empty button because without it the title alignment is
-                // busted (Note: The size was taken from the layout inspector for the back
-                // button in Xcode
-                navigationItem.rightBarButtonItem = UIBarButtonItem(
-                    customView: UIView(
-                        frame: CGRect(
-                            x: 0,
-                            y: 0,
-                            width: (44 - 16), // Width of the standard back button
-                            height: 44
+                // Note: Adding empty buttons because without it the title alignment is busted (Note: The size was
+                // taken from the layout inspector for the back button in Xcode
+                navigationItem.rightBarButtonItems = [
+                    UIBarButtonItem(
+                        customView: UIView(
+                            frame: CGRect(
+                                x: 0,
+                                y: 0,
+                                width: (44 - 16), // Width of the standard back button
+                                height: 44
+                            )
                         )
-                    )
-                )
+                    ),
+                    UIBarButtonItem(customView: UIView(frame: CGRect(x: 0, y: 0, width: 44, height: 44)))
+                ]
                 return
             }
             
@@ -939,11 +950,28 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                     let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
                     profilePictureView.addGestureRecognizer(tapGestureRecognizer)
 
-                    let rightBarButtonItem: UIBarButtonItem = UIBarButtonItem(customView: profilePictureView)
-                    rightBarButtonItem.accessibilityLabel = "Settings button"
-                    rightBarButtonItem.isAccessibilityElement = true
+                    let settingsButtonItem: UIBarButtonItem = UIBarButtonItem(customView: profilePictureView)
+                    settingsButtonItem.accessibilityLabel = "Settings button"
+                    settingsButtonItem.isAccessibilityElement = true
                     
-                    navigationItem.rightBarButtonItem = rightBarButtonItem
+                    if SessionCall.isEnabled && !threadData.threadIsNoteToSelf && !threadData.threadIsMessageRequest {
+                        let callButton = UIBarButtonItem(
+                            image: UIImage(named: "Phone"),
+                            style: .plain,
+                            target: self,
+                            action: #selector(startCall)
+                        )
+                        
+                        navigationItem.rightBarButtonItems = [settingsButtonItem, callButton]
+                    }
+                    else {
+                        navigationItem.rightBarButtonItem = rightBarButtonItem
+                    }
+                    let shouldShowCallButton = SessionCall.isEnabled && !thread.isNoteToSelf() && !thread.isMessageRequest()
+                    if shouldShowCallButton {
+                        let callButton = UIBarButtonItem(image: UIImage(named: "Phone")!, style: .plain, target: self, action: #selector(startCall))
+                        rightBarButtonItems.append(callButton)
+                    }
                     
                 default:
                     let rightBarButtonItem: UIBarButtonItem = UIBarButtonItem(image: UIImage(named: "Gear"), style: .plain, target: self, action: #selector(openSettings))
@@ -1060,6 +1088,98 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
 
         self.view.addSubview(self.blockedBanner)
         self.blockedBanner.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.HorizontalEdge.right ], to: self.view)
+    }
+    
+    func recoverInputView() {
+        // This is a workaround for an issue where the textview is not scrollable
+        // after the app goes into background and goes back in foreground.
+        DispatchQueue.main.async {
+            self.snInputView.text = self.snInputView.text
+        }
+    }
+    
+    @objc private func handleContactThreadReplaced(_ notification: Notification) {
+        // Ensure the current thread is one of the removed ones
+        guard let newThreadId: String = notification.userInfo?[NotificationUserInfoKey.threadId] as? String else { return }
+        guard let removedThreadIds: [String] = notification.userInfo?[NotificationUserInfoKey.removedThreadIds] as? [String] else {
+            return
+        }
+        guard let threadId: String = thread.uniqueId, removedThreadIds.contains(threadId) else { return }
+        
+        // Then look to swap the current ConversationVC with a replacement one with the new thread
+        DispatchQueue.main.async {
+            guard let navController: UINavigationController = self.navigationController else { return }
+            guard let viewControllerIndex: Int = navController.viewControllers.firstIndex(of: self) else { return }
+            guard let newThread: TSContactThread = TSContactThread.fetch(uniqueId: newThreadId) else { return }
+            
+            // Let the view controller know we are replacing the thread
+            self.isReplacingThread = true
+            
+            // Create the new ConversationVC and swap the old one out for it
+            let conversationVC: ConversationVC = ConversationVC(thread: newThread)
+            let currentlyOnThisScreen: Bool = (navController.topViewController == self)
+            
+            navController.viewControllers = [
+                (viewControllerIndex == 0 ?
+                    [] :
+                    navController.viewControllers[0..<viewControllerIndex]
+                ),
+                [conversationVC],
+                (viewControllerIndex == (navController.viewControllers.count - 1) ?
+                    [] :
+                    navController.viewControllers[(viewControllerIndex + 1)..<navController.viewControllers.count]
+                )
+            ].flatMap { $0 }
+            
+            // If the top vew controller isn't the current one then we need to make sure to swap out child ones as well
+            if !currentlyOnThisScreen {
+                let maybeSettingsViewController: UIViewController? = navController
+                    .viewControllers[viewControllerIndex..<navController.viewControllers.count]
+                    .first(where: { $0 is OWSConversationSettingsViewController })
+                
+                // Update the settings screen (if there is one)
+                if let settingsViewController: OWSConversationSettingsViewController = maybeSettingsViewController as? OWSConversationSettingsViewController {
+                    settingsViewController.configure(with: newThread, uiDatabaseConnection: OWSPrimaryStorage.shared().uiDatabaseConnection)
+                }
+            }
+            
+            // Try to minimise painful UX issues by keeping the 'first responder' state, current input text and
+            // cursor position (Unfortunately there doesn't seem to be a way to prevent the keyboard from
+            // flickering during the swap but other than that it's relatively seamless)
+            if self.snInputView.inputTextViewIsFirstResponder {
+                conversationVC.isReplacingThread = true
+                conversationVC.snInputView.frame = self.snInputView.frame
+                conversationVC.snInputView.text = self.snInputView.text
+                conversationVC.snInputView.selectedRange = self.snInputView.selectedRange
+                
+                // Make the current snInputView invisible and add the new one the the UI
+                self.snInputView.alpha = 0
+                self.snInputView.superview?.addSubview(conversationVC.snInputView)
+                
+                // Add the old first responder to the window so it the keyboard won't get dismissed when the
+                // OS removes it's parent view from the view hierarchy due to the view controller swap
+                var maybeOldFirstResponderView: UIView?
+                
+                if let oldFirstResponderView: UIView = UIResponder.currentFirstResponder() as? UIView {
+                    maybeOldFirstResponderView = oldFirstResponderView
+                    self.view.window?.addSubview(oldFirstResponderView)
+                }
+                
+                // On the next run loop setup the first responder state for the new screen and remove the
+                // old first responder from the window
+                DispatchQueue.main.async {
+                    UIView.performWithoutAnimation {
+                        conversationVC.isReplacingThread = false
+                        maybeOldFirstResponderView?.resignFirstResponder()
+                        maybeOldFirstResponderView?.removeFromSuperview()
+                        conversationVC.snInputView.removeFromSuperview()
+                        
+                        _ = conversationVC.becomeFirstResponder()
+                        conversationVC.snInputView.inputTextViewBecomeFirstResponder()
+                    }
+                }
+            }
+        }
     }
 
     // MARK: - UITableViewDataSource
@@ -1265,7 +1385,31 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         // Search bar
         let searchBar = searchController.uiSearchController.searchBar
         searchBar.setUpSessionStyle()
-        navigationItem.titleView = searchBar
+        
+        let searchBarContainer = UIView()
+        searchBarContainer.layoutMargins = UIEdgeInsets.zero
+        searchBar.sizeToFit()
+        searchBar.layoutMargins = UIEdgeInsets.zero
+        searchBarContainer.set(.height, to: 44)
+        searchBarContainer.set(.width, to: UIScreen.main.bounds.width - 32)
+        searchBarContainer.addSubview(searchBar)
+        navigationItem.titleView = searchBarContainer
+        
+        // On iPad, the cancel button won't show
+        // See more https://developer.apple.com/documentation/uikit/uisearchbar/1624283-showscancelbutton?language=objc
+        if UIDevice.current.isIPad {
+            let ipadCancelButton = UIButton()
+            ipadCancelButton.setTitle("Cancel", for: .normal)
+            ipadCancelButton.addTarget(self, action: #selector(hideSearchUI), for: .touchUpInside)
+            ipadCancelButton.setTitleColor(Colors.text, for: .normal)
+            searchBarContainer.addSubview(ipadCancelButton)
+            ipadCancelButton.pin(.trailing, to: .trailing, of: searchBarContainer)
+            ipadCancelButton.autoVCenterInSuperview()
+            searchBar.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .trailing)
+            searchBar.pin(.trailing, to: .leading, of: ipadCancelButton, withInset: -Values.smallSpacing)
+        } else {
+            searchBar.autoPinEdgesToSuperviewMargins()
+        }
         
         // Nav bar buttons
         updateNavBarButtons(threadData: self.viewModel.threadData)
@@ -1301,7 +1445,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         navBar.stubbedNextResponder = self
     }
 
-    func hideSearchUI() {
+    @objc func hideSearchUI() {
         isShowingSearchUI = false
         navigationItem.titleView = titleView
         updateNavBarButtons(threadData: self.viewModel.threadData)

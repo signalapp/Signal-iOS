@@ -5,7 +5,6 @@ import SessionUIKit
 
 @objc(LKModal)
 class Modal: BaseVC, UIGestureRecognizerDelegate {
-    private(set) var verticalCenteringConstraint: NSLayoutConstraint!
     
     // MARK: Components
     lazy var contentView: UIView = {
@@ -56,9 +55,14 @@ class Modal: BaseVC, UIGestureRecognizerDelegate {
     
     private func setUpViewHierarchy() {
         view.addSubview(contentView)
-        contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Values.veryLargeSpacing).isActive = true
-        view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Values.veryLargeSpacing).isActive = true
-        verticalCenteringConstraint = contentView.center(.vertical, in: view)
+        if UIDevice.current.isIPad {
+            contentView.set(.width, to: Values.iPadModalWidth)
+            contentView.center(in: view)
+        } else {
+            contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Values.veryLargeSpacing).isActive = true
+            view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Values.veryLargeSpacing).isActive = true
+            contentView.center(.vertical, in: view)
+        }
         populateContentView()
     }
     

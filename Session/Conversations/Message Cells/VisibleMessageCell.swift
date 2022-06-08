@@ -118,8 +118,16 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     static let largeCornerRadius: CGFloat = 18
     static let contactThreadHSpacing = Values.mediumSpacing
 
-    static var gutterSize: CGFloat { groupThreadHSpacing + profilePictureSize + groupThreadHSpacing }
-
+    static var gutterSize: CGFloat = {
+        var result = groupThreadHSpacing + profilePictureSize + groupThreadHSpacing
+        
+        if UIDevice.current.isIPad {
+            result += CGFloat(UIScreen.main.bounds.width / 2 - 88)
+        }
+        
+        return result
+    }()
+    
     // MARK: Direction & Position
     
     enum Direction { case incoming, outgoing }
@@ -232,8 +240,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
             profile: cellViewModel.profile,
             threadVariant: cellViewModel.threadVariant
         )
-        moderatorIconImageView.isHidden = !cellViewModel.isSenderOpenGroupModerator
-        
+        moderatorIconImageView.isHidden = (!cellViewModel.isSenderOpenGroupModerator || !cellViewModel.shouldShowProfile)
+       
         // Bubble view
         bubbleViewLeftConstraint1.isActive = (
             cellViewModel.variant == .standardIncoming ||
@@ -284,6 +292,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         messageStatusImageView.backgroundColor = backgroundColor
         messageStatusImageView.isHidden = (
             cellViewModel.variant != .standardOutgoing ||
+            cellViewModel.variant == .infoMessageCall ||
             (
                 cellViewModel.state == .sent &&
                 !cellViewModel.isLast
@@ -320,7 +329,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         )
         
         // Swipe to reply
-        if cellViewModel.variant == .standardIncomingDeleted {
+        if cellViewModel.variant == .standardIncomingDeleted || cellViewModel.variant == .infoMessageCall {
             removeGestureRecognizer(panGestureRecognizer)
         }
         else {
@@ -494,7 +503,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 // Body text view
                 if let body: String = cellViewModel.body, !body.isEmpty {
                     let inset: CGFloat = 12
-                    let maxWidth = size.width - 2 * inset
+                    let maxWidth: CGFloat = (size.width - (2 * inset))
                     let bodyTextView = VisibleMessageCell.getBodyTextView(
                         for: cellViewModel,
                         with: maxWidth,
@@ -502,6 +511,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                         searchText: lastSearchText,
                         delegate: self
                     )
+
                     self.bodyTextView = bodyTextView
                     stackView.addArrangedSubview(UIView(wrapping: bodyTextView, withInsets: UIEdgeInsets(top: 0, left: inset, bottom: inset, right: inset)))
                 }
@@ -553,6 +563,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                         searchText: lastSearchText,
                         delegate: self
                     )
+                    
                     self.bodyTextView = bodyTextView
                     stackView.addArrangedSubview(bodyTextView)
                 }
@@ -677,8 +688,21 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         
         let location = gestureRecognizer.location(in: self)
         
-        if profilePictureView.frame.contains(location), let profile: Profile = cellViewModel.profile, cellViewModel.threadVariant != .openGroup {
-            delegate?.showUserDetails(for: profile)
+        if profilePictureView.frame.contains(location), let profile: Profile = cellViewModel.profile, cellViewModel.shouldShowProfile {
+            // For open groups only attempt to start a conversation if the author has a blinded id
+            if cellViewModel.threadVariant != .openGroup {
+                guard let openGroup: OpenGroup = Storage.shared.getOpenGroup(for: message.uniqueThreadId) else { return }
+                guard SessionId.Prefix(from: cellViewModel.authorId) == .blinded else { return }
+                
+                delegate?.startThread(
+                    with: cellViewModel.authorId,
+                    openGroupServer: openGroup.server,
+                    openGroupPublicKey: openGroup.publicKey
+                )
+            }
+            else {
+                delegate?.showUserDetails(for: profile)
+            }
         }
         else if replyButton.alpha > 0 && replyButton.frame.contains(location) {
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()

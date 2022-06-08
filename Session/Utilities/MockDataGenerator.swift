@@ -80,7 +80,8 @@ enum MockDataGenerator {
             return
         }
         
-        /// The mock data generation is quite slow, there are 3 parts which take a decent amount of time (deleting the account afterwards will also take a long time):
+        /// The mock data generation is quite slow, there are 3 parts which take a decent amount of time (deleting the account afterwards will
+        /// also take a long time):
         ///     Generating the threads & content - ~3s per 100
         ///     Writing to the database - ~10s per 1000
         ///     Updating the UI - ~10s per 1000
@@ -92,13 +93,14 @@ enum MockDataGenerator {
         let cgRandomSeed: Int = 2222
         let ogRandomSeed: Int = 3333
         let chunkSize: Int = 1000    // Chunk up the thread writing to prevent memory issues
+        let openGroupBaseUrl: String = "https://chat.lokinet.dev"
         let stringContent: [String] = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 ".map { String($0) }
         let wordContent: [String] = ["alias", "consequatur", "aut", "perferendis", "sit", "voluptatem", "accusantium", "doloremque", "aperiam", "eaque", "ipsa", "quae", "ab", "illo", "inventore", "veritatis", "et", "quasi", "architecto", "beatae", "vitae", "dicta", "sunt", "explicabo", "aspernatur", "aut", "odit", "aut", "fugit", "sed", "quia", "consequuntur", "magni", "dolores", "eos", "qui", "ratione", "voluptatem", "sequi", "nesciunt", "neque", "dolorem", "ipsum", "quia", "dolor", "sit", "amet", "consectetur", "adipisci", "velit", "sed", "quia", "non", "numquam", "eius", "modi", "tempora", "incidunt", "ut", "labore", "et", "dolore", "magnam", "aliquam", "quaerat", "voluptatem", "ut", "enim", "ad", "minima", "veniam", "quis", "nostrum", "exercitationem", "ullam", "corporis", "nemo", "enim", "ipsam", "voluptatem", "quia", "voluptas", "sit", "suscipit", "laboriosam", "nisi", "ut", "aliquid", "ex", "ea", "commodi", "consequatur", "quis", "autem", "vel", "eum", "iure", "reprehenderit", "qui", "in", "ea", "voluptate", "velit", "esse", "quam", "nihil", "molestiae", "et", "iusto", "odio", "dignissimos", "ducimus", "qui", "blanditiis", "praesentium", "laudantium", "totam", "rem", "voluptatum", "deleniti", "atque", "corrupti", "quos", "dolores", "et", "quas", "molestias", "excepturi", "sint", "occaecati", "cupiditate", "non", "provident", "sed", "ut", "perspiciatis", "unde", "omnis", "iste", "natus", "error", "similique", "sunt", "in", "culpa", "qui", "officia", "deserunt", "mollitia", "animi", "id", "est", "laborum", "et", "dolorum", "fuga", "et", "harum", "quidem", "rerum", "facilis", "est", "et", "expedita", "distinctio", "nam", "libero", "tempore", "cum", "soluta", "nobis", "est", "eligendi", "optio", "cumque", "nihil", "impedit", "quo", "porro", "quisquam", "est", "qui", "minus", "id", "quod", "maxime", "placeat", "facere", "possimus", "omnis", "voluptas", "assumenda", "est", "omnis", "dolor", "repellendus", "temporibus", "autem", "quibusdam", "et", "aut", "consequatur", "vel", "illum", "qui", "dolorem", "eum", "fugiat", "quo", "voluptas", "nulla", "pariatur", "at", "vero", "eos", "et", "accusamus", "officiis", "debitis", "aut", "rerum", "necessitatibus", "saepe", "eveniet", "ut", "et", "voluptates", "repudiandae", "sint", "et", "molestiae", "non", "recusandae", "itaque", "earum", "rerum", "hic", "tenetur", "a", "sapiente", "delectus", "ut", "aut", "reiciendis", "voluptatibus", "maiores", "doloribus", "asperiores", "repellat"]
         let timestampNow: TimeInterval = Date().timeIntervalSince1970
         let userSessionId: String = getUserHexEncodedPublicKey(db)
         let logProgress: (String, String) -> () = { title, event in
             guard printProgress else { return }
-
+            
             print("[MockDataGenerator] (\(Date().timeIntervalSince1970)) \(title) - \(event)")
         }
         
@@ -181,6 +183,7 @@ enum MockDataGenerator {
                 
                 logProgress("DM Thread \(threadIndex)", "Done")
             }
+            logProgress("DM Threads", "Done")
             
             dmThreadIndex += chunkSize
         }
@@ -197,7 +200,7 @@ enum MockDataGenerator {
             
             (0..<min(chunkSize, remainingThreads)).forEach { index in
                 let threadIndex: Int = (cgThreadIndex + index)
-                    
+                
                 logProgress("Closed Group Thread \(threadIndex)", "Start")
                 
                 let data = Data((0..<16).map { _ in UInt8.random(in: (UInt8.min...UInt8.max), using: &cgThreadRandomGenerator) })
@@ -249,6 +252,7 @@ enum MockDataGenerator {
                     formationTimestamp: timestampNow
                 )
                 .saved(db)
+                
                 members.forEach { memberId in
                     _ = try! GroupMember(
                         groupId: randomGroupPublicKey,
@@ -315,20 +319,24 @@ enum MockDataGenerator {
                 let threadIndex: Int = (ogThreadIndex + index)
                     
                 logProgress("Open Group Thread \(threadIndex)", "Start")
-            
+                
                 let randomGroupPublicKey: String = ((0..<32).map { _ in UInt8.random(in: UInt8.min...UInt8.max, using: &dmThreadRandomGenerator) }).toHexString()
                 let serverNameLength: Int = ((5..<20).randomElement(using: &ogThreadRandomGenerator) ?? 0)
                 let roomNameLength: Int = ((5..<20).randomElement(using: &ogThreadRandomGenerator) ?? 0)
+                let groupDescriptionLength: Int = ((10..<50).randomElement(using: &ogThreadRandomGenerator) ?? 0)
                 let serverName: String = (0..<serverNameLength)
                     .compactMap { _ in stringContent.randomElement(using: &ogThreadRandomGenerator) }
                     .joined()
                 let roomName: String = (0..<roomNameLength)
                     .compactMap { _ in stringContent.randomElement(using: &ogThreadRandomGenerator) }
                     .joined()
+                let groupDescription: String = (0..<groupDescriptionLength)
+                    .compactMap { _ in stringContent.randomElement(using: &ogThreadRandomGenerator) }
+                    .joined()
                 let numGroupMembers: Int = ((0..<250).randomElement(using: &ogThreadRandomGenerator) ?? 0)
                 let numMessages: Int = (messageRangePerThread[threadIndex % messageRangePerThread.count]
                     .randomElement(using: &ogThreadRandomGenerator) ?? 0)
-    
+                
                 // Generate the Contacts in the group
                 var members: [String] = [userSessionId]
                 logProgress("Open Group Thread \(threadIndex)", "Generate \(numGroupMembers) Contacts")
@@ -371,6 +379,20 @@ enum MockDataGenerator {
                     infoUpdates: 0
                 )
                 .saved(db)
+                
+                // Generate the 'Server' object
+                let hasBlinding: Bool = Bool.random(using: &dmThreadRandomGenerator)
+                
+                let server: OpenGroupAPI.Server = OpenGroupAPI.Server(
+                    name: serverName,
+                    capabilities: OpenGroupAPI.Capabilities(
+                        capabilities: [.sogs]
+                            .appending(hasBlinding ? [.blind] : []),
+                        missing: nil
+                    )
+                )
+                
+                Storage.shared.setOpenGroupServer(server, using: transaction)
                 
                 // Generate the message history (Note: Unapproved message requests will only include incoming messages)
                 logProgress("Open Group Thread \(threadIndex)", "Generate \(numMessages) Messages")

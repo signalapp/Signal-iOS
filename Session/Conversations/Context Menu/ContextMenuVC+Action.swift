@@ -132,4 +132,5 @@ protocol ContextMenuActionDelegate {
     func save(_ cellViewModel: MessageViewModel)
     func ban(_ cellViewModel: MessageViewModel)
     func banAndDeleteAllMessages(_ cellViewModel: MessageViewModel)
+    func contextMenuDismissed()
 }

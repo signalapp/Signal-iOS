@@ -1,7 +1,9 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import Foundation
 
 // MARK: - Atomic<Value>
+
 /// The `Atomic<Value>` wrapper is a generic wrapper providing a thread-safe way to get and set a value
 ///
 /// A write-up on the need for this class and it's approach can be found here:
@@ -22,12 +24,13 @@ public class Atomic<Value> {
     public var projectedValue: Atomic<Value> {
         return self
     }
-
+    
     // MARK: - Initialization
+
     public init(_ initialValue: Value) {
         self.value = initialValue
     }
-
+    
     // MARK: - Functions
 
     @discardableResult public func mutate<T>(_ mutation: (inout Value) -> T) -> T {

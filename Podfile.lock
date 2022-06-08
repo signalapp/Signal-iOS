@@ -29,6 +29,7 @@ PODS:
     - DifferenceKit/Core
   - GRDB.swift/SQLCipher (5.24.1):
     - SQLCipher (>= 3.4.0)
+  - Nimble (10.0.0)
   - NVActivityIndicatorView (5.1.1):
     - NVActivityIndicatorView/Base (= 5.1.1)
   - NVActivityIndicatorView/Base (5.1.1)
@@ -43,11 +44,13 @@ PODS:
   - PromiseKit/UIKit (6.15.3):
     - PromiseKit/CorePromise
   - PureLayout (3.1.9)
+  - Quick (5.0.1)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack
     - OpenSSL-Universal
+  - SocketRocket (0.5.1)
   - Sodium (0.9.1)
   - SQLCipher (4.5.0):
     - SQLCipher/standard (= 4.5.0)
@@ -55,6 +58,7 @@ PODS:
   - SQLCipher/standard (4.5.0):
     - SQLCipher/common
   - SwiftProtobuf (1.5.0)
+  - WebRTC-lib (96.0.0)
   - YapDatabase/SQLCipher (3.1.1):
     - YapDatabase/SQLCipher/Core (= 3.1.1)
     - YapDatabase/SQLCipher/Extensions (= 3.1.1)
@@ -127,18 +131,22 @@ PODS:
 DEPENDENCIES:
   - AFNetworking
   - CryptoSwift
-  - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit.git`)
+  - Curve25519Kit (from `https://github.com/oxen-io/session-ios-curve-25519-kit.git`, branch `session-version`)
   - DifferenceKit
   - GRDB.swift/SQLCipher
+  - Nimble
   - NVActivityIndicatorView
   - PromiseKit
   - PureLayout (~> 3.1.8)
+  - Quick
   - Reachability
   - SAMKeychain
   - SignalCoreKit (from `https://github.com/oxen-io/session-ios-core-kit`, branch `session-version`)
-  - Sodium (~> 0.9.1)
+  - SocketRocket (~> 0.5.1)
+  - Sodium (from `https://github.com/oxen-io/session-ios-swift-sodium.git`, branch `session-build`)
   - SQLCipher (~> 4.0)
   - SwiftProtobuf (~> 1.5.0)
+  - WebRTC-lib
   - YapDatabase/SQLCipher (from `https://github.com/oxen-io/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - ZXingObjC
@@ -150,23 +158,30 @@ SPEC REPOS:
     - CryptoSwift
     - DifferenceKit
     - GRDB.swift
+    - Nimble
     - NVActivityIndicatorView
     - OpenSSL-Universal
     - PromiseKit
     - PureLayout
+    - Quick
     - Reachability
     - SAMKeychain
-    - Sodium
+    - SocketRocket
     - SQLCipher
     - SwiftProtobuf
+    - WebRTC-lib
     - ZXingObjC
 
 EXTERNAL SOURCES:
   Curve25519Kit:
-    :git: https://github.com/signalapp/Curve25519Kit.git
+    :branch: session-version
+    :git: https://github.com/oxen-io/session-ios-curve-25519-kit.git
   SignalCoreKit:
     :branch: session-version
     :git: https://github.com/oxen-io/session-ios-core-kit
+  Sodium:
+    :branch: session-build
+    :git: https://github.com/oxen-io/session-ios-swift-sodium.git
   YapDatabase:
     :branch: signal-release
     :git: https://github.com/oxen-io/session-ios-yap-database.git
@@ -175,11 +190,14 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Curve25519Kit:
-    :commit: 4fc1c10e98fff2534b5379a9bb587430fdb8e577
-    :git: https://github.com/signalapp/Curve25519Kit.git
+    :commit: b79c2ace600bfd3784e9c33cf1f254b121312edc
+    :git: https://github.com/oxen-io/session-ios-curve-25519-kit.git
   SignalCoreKit:
     :commit: 4590c2737a2b5dc0ef4ace9f9019b581caccc1de
     :git: https://github.com/oxen-io/session-ios-core-kit
+  Sodium:
+    :commit: 6d4317cd4c67e7a617d474d7c5bf20d319aa4536
+    :git: https://github.com/oxen-io/session-ios-swift-sodium.git
   YapDatabase:
     :commit: d84069e25e12a16ab4422e5258127a04b70489ad
     :git: https://github.com/oxen-io/session-ios-yap-database.git
@@ -194,20 +212,24 @@ SPEC CHECKSUMS:
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   DifferenceKit: 5659c430bb7fe45876fa32ce5cba5d6167f0c805
   GRDB.swift: b3180ce2135fc06a453297889b746b1478c4d8c7
+  Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
   OpenSSL-Universal: e7311447fd2419f57420c79524b641537387eff2
   PromiseKit: 3b2b6995e51a954c46dbc550ce3da44fbfb563c5
   PureLayout: 5fb5e5429519627d60d079ccb1eaa7265ce7cf88
+  Quick: 749aa754fd1e7d984f2000fe051e18a3a9809179
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: 1fbd8732163ef76de16cd1107d1fa3684b607e5d
-  Sodium: 23d11554ecd556196d313cf6130d406dfe7ac6da
+  SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
+  Sodium: a7d42cb46e789d2630fa552d35870b416ed055ae
   SQLCipher: 98dc22f27c0b1790d39e710d440f22a466ebdb59
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
+  WebRTC-lib: 508fe02efa0c1a3a8867082a77d24c9be5d29aeb
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 05dc0000aee6d863406fc684884935594fcf14fa
+PODFILE CHECKSUM: 834c7307b7e53560d3b40bb4d54d789739efcd88
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

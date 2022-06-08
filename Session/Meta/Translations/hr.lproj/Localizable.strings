@@ -337,7 +337,7 @@
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Sigurnosno kopiranje omogućeno";
 /* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud status";
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud stanje";
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Vraćanje sigurnosne kopije nije uspjelo";
 /* Indicates that app is not restoring up. */
@@ -371,9 +371,15 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Pošaljite preglede poveznica";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Pregledi su podržani za poveznice Imgur, Instagram, Pinterest, Reddit i YouTube.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Pregledi su podržani za većinu Url -ova.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Pregledi poveznica";
+/* Setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS" = "Audio i video pozivi";
+/* Footer for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_FOOTER" = "Dopusti pristup da se prihvate audio i video pozivi od drugih korisnika.";
+/* Header for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_HEADER" = "Pozivi";
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Sadržaj obavijesti";
 /* Label for the 'read receipts' setting. */
@@ -399,7 +405,7 @@
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ dana";
+"TIME_AMOUNT_HOURS" = "%@ sati";
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
@@ -452,7 +458,7 @@
 "view_fake_chat_bubble_1" = "Što je Session?";
 "view_fake_chat_bubble_2" = "To je decentralizirana aplikacija za razmjenu šifriranih poruka";
 "view_fake_chat_bubble_3" = "Dakle, ne prikuplja moje osobne podatke ili metapodatke razgovora? Kako to radi?";
-"view_fake_chat_bubble_4" = "Koristeći kombinacije naprednih anonimnih usmjeravanja i end-to-end tehnologija šifriranja.";
+"view_fake_chat_bubble_4" = "Koristeći kombinacije naprednih anonimnih usmjeravanja i end-to-end tehnologiju šifriranja.";
 "view_fake_chat_bubble_5" = "Prijatelji ne dopuštaju prijateljima da koriste kompromitirane aplikacije za dopisivanje. Nema na čemu.";
 "vc_register_title" = "Pozdravite svoj Session ID";
 "vc_register_explanation" = "Vaš Session ID jedinstvena je adresa koju ljudi mogu koristiti da bi vas kontaktirali na Session-u. Bez povezivanja sa vašim stvarnim identitetom, vaš Session ID je potpuno anoniman i dizajniran privatno.";
@@ -462,7 +468,7 @@
 "vc_link_device_title" = "Poveži uređaj";
 "vc_link_device_scan_qr_code_tab_title" = "Skeniraj QR kôd";
 "vc_display_name_title_2" = "Odaberite svoje ime za prikaz";
-"vc_display_name_explanation" = "To će biti vaše ime dok ćete koristiti Session. To može biti vaše pravo ime, lažno ime ili bilo što drugo što želite.";
+"vc_display_name_explanation" = "To će biti vaše ime dok ćete koristiti Session. To može biti vaše pravo ime, lažno ime ili bilo što drugo, što želite.";
 "vc_display_name_text_field_hint" = "Unesite ime za prikaz";
 "vc_display_name_display_name_missing_error" = "Molimo odaberite svoje ime za prikaz";
 "vc_display_name_display_name_too_long_error" = "Odaberite kraće ime za prikaz";
@@ -470,8 +476,8 @@
 "vc_pn_mode_no_option_picked_modal_title" = "Odaberite opciju";
 "vc_home_empty_state_message" = "Nemate kontakata";
 "vc_home_empty_state_button_title" = "Pokreni Session razgovor";
-"vc_seed_title" = "Fraza za oporavak";
-"vc_seed_title_2" = "Fraza za oporavak";
+"vc_seed_title" = "Vaša fraza za oporavak";
+"vc_seed_title_2" = "Upoznajte Vašu frazu za oporavak";
 "vc_seed_explanation" = "Fraza za oporavak je glavni ključ vašeg Session ID-a - pomoću njega možete vratiti svoj Session ID ako izgubite pristup uređaju. Spremite frazu za oporavak na sigurno mjesto i nedajte je nikome.";
 "vc_seed_reveal_button_title" = "Drži za otkrivanje";
 "view_seed_reminder_subtitle_1" = "Osigurajte svoj račun spremanjem fraze za oporavak";
@@ -488,8 +494,8 @@
 "vc_create_private_chat_enter_session_id_tab_title" = "Unesite Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "Skeniraj QR kôd";
 "vc_create_private_chat_scan_qr_code_explanation" = "Skenirajte korisnikov QR kôd da biste započeli sesiju. QR kodovi se mogu pronaći dodirom ikone QR koda u postavkama računa.";
-"vc_enter_public_key_explanation" = "Korisnici mogu podijeliti svoj Session ID tako da uđu u postavke računa i dodirnu \"Dijeli Session ID\" ili dijeljenjem svog QR koda.";
-"vc_scan_qr_code_camera_access_explanation" = "Session treba pristup kameri za skeniranje QR kodova";
+"vc_enter_public_key_explanation" = "Korisnici mogu podijeliti svoj Session ID tako da uđu u postavke računa i dodirnu \"Dijeli Session ID\" ili dijeljenjem svog QR kôda.";
+"vc_scan_qr_code_camera_access_explanation" = "Session treba pristup kameri za skeniranje QR kôdova";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Odobri pristup kameri";
 "vc_create_closed_group_title" = "Nova zatvorena grupa";
 "vc_create_closed_group_text_field_hint" = "Unesite naziv grupe";
@@ -517,12 +523,12 @@
 "modal_seed_title" = "Fraza za oporavak";
 "modal_seed_explanation" = "Ovo je vaša fraza za oporavak. Pomoću nje možete vratiti ili migrirati svoj Session ID na novi uređaj.";
 "modal_clear_all_data_title" = "Obriši sve podatke";
-"modal_clear_all_data_explanation" = "Ovo će trajno izbrisati vaše poruke, sesije i kontakte.";
-"modal_clear_all_data_explanation_2" = "Would you like to clear only this device, or delete your entire account?";
-"dialog_clear_all_data_deletion_failed_1" = "Data not deleted by 1 Service Node. Service Node ID: %@.";
-"dialog_clear_all_data_deletion_failed_2" = "Data not deleted by %@ Service Nodes. Service Node IDs: %@.";
-"modal_clear_all_data_device_only_button_title" = "Device Only";
-"modal_clear_all_data_entire_account_button_title" = "Entire Account";
+"modal_clear_all_data_explanation" = "Ovo će trajno izbrisati vaše poruke, sesije razgovora i kontakte.";
+"modal_clear_all_data_explanation_2" = "Želite li izbrisati samo ovaj uređaj ili želite izbrisati cijeli račun?";
+"dialog_clear_all_data_deletion_failed_1" = "Podatke nije izbrisao 1 uslužni čvor. ID uslužnog čvora: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Podatke nije izbrisao %@ uslužni čvor. ID uslužnog čvora: %@.";
+"modal_clear_all_data_device_only_button_title" = "Samo uređaj";
+"modal_clear_all_data_entire_account_button_title" = "Cijeli račun";
 "vc_qr_code_title" = "QR kôd";
 "vc_qr_code_view_my_qr_code_tab_title" = "Pogledaj moj QR kôd";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Skeniraj QR kôd";
@@ -555,15 +561,17 @@
 "modal_open_url_title" = "Otvori poveznicu?";
 "modal_open_url_explanation" = "Jeste li sigurni da želite otvoriti %@?";
 "modal_open_url_button_title" = "Otvori";
-"modal_copy_url_button_title" = "Copy Link";
+"modal_copy_url_button_title" = "Kopiraj poveznicu";
 "modal_blocked_title" = "Deblokiraj %@?";
 "modal_blocked_explanation" = "Jeste li sigurni da želite deblokirati %@?";
 "modal_blocked_button_title" = "Deblokiraj";
 "modal_link_previews_title" = "Omogući preglede poveznica?";
 "modal_link_previews_explanation" = "Omogućavanjem pregleda poveznica prikazat će se pregledi za URL-ove koje šaljete i primate. To može biti korisno, ali Session će trebati kontaktirati povezane web stranice kako bi generirao preglede. Uvijek možete onemogućiti preglede poveznica u postavkama Session-a.";
 "modal_link_previews_button_title" = "Uključi";
-"modal_share_logs_title" = "Share Logs";
-"modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
+"modal_call_title" = "Audio / video pozivi";
+"modal_call_explanation" = "Trenutna će implementacija sustava poziva Vašu IP adresu učiniti vidljivom serverima Oxen Foundationa te korisniku kojem se poziv upućuje.";
+"modal_share_logs_title" = "Podijeli zapisnik";
+"modal_share_logs_explanation" = "Želite li izvesti zapisnik koji se može podijeliti za oporavak aplikacije?";
 "vc_share_title" = "Podijeli sa Session-om";
 "vc_share_loading_message" = "Priprema privitaka...";
 "vc_share_sending_message" = "Slanje...";
@@ -574,35 +582,57 @@
 "view_open_group_invitation_description" = "Otvori pozivnicu za grupu";
 "vc_conversation_settings_invite_button_title" = "Dodaj članove";
 "vc_settings_faq_button_title" = "FAQ";
-"vc_settings_survey_button_title" = "Feedback / Survey";
-"vc_settings_support_button_title" = "Debug Log";
-"modal_send_seed_title" = "Warning";
-"modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
-"modal_send_seed_send_button_title" = "Send";
-"vc_conversation_settings_notify_for_mentions_only_title" = "Notify for Mentions Only";
-"vc_conversation_settings_notify_for_mentions_only_explanation" = "When enabled, you'll only be notified for messages mentioning you.";
-"view_conversation_title_notify_for_mentions_only" = "Notifying for Mentions Only";
-"message_deleted" = "This message has been deleted";
-"delete_message_for_me" = "Delete just for me";
-"delete_message_for_everyone" = "Delete for everyone";
-"delete_message_for_me_and_recipient" = "Delete for me and %@";
-"context_menu_reply" = "Reply";
-"context_menu_save" = "Save";
-"context_menu_ban_user" = "Ban User";
-"context_menu_ban_and_delete_all" = "Ban and Delete All";
-"accessibility_expanding_attachments_button" = "Add attachments";
+"vc_settings_survey_button_title" = "Povratne informacije / anketa";
+"vc_settings_support_button_title" = "Evidencija o otklanjanju grešaka";
+"modal_send_seed_title" = "Upozorenje";
+"modal_send_seed_explanation" = "Ovo je vaša fraza za oporavak. Ako ju pošaljete nekome, imat će puni pristup vašem računu.";
+"modal_send_seed_send_button_title" = "Pošalji";
+"vc_conversation_settings_notify_for_mentions_only_title" = "Obavijesti samo kod spominjanja";
+"vc_conversation_settings_notify_for_mentions_only_explanation" = "Kad je omogućeno, bit ćete obaviješteni samo o porukama koje vas spominju.";
+"view_conversation_title_notify_for_mentions_only" = "Obavijesti samo kod spominjanja";
+"message_deleted" = "Ova poruka je izbrisana";
+"delete_message_for_me" = "Izbriši samo za mene";
+"delete_message_for_everyone" = "Izbriši za sve";
+"delete_message_for_me_and_recipient" = "Izbriši za mene i %@";
+"context_menu_reply" = "Odgovori";
+"context_menu_save" = "Spremi";
+"context_menu_ban_user" = "Zabrani korisnik";
+"context_menu_ban_and_delete_all" = "Zabrani i izbriši sve";
+"context_menu_ban_user_error_alert_message" = "Unable to ban user";
+"accessibility_expanding_attachments_button" = "Dodaj privitak";
 "accessibility_gif_button" = "Gif";
-"accessibility_document_button" = "Document";
-"accessibility_library_button" = "Photo library";
-"accessibility_camera_button" = "Camera";
-"accessibility_main_button_collapse" = "Collapse attachment options";
-"DISMISS_BUTTON_TEXT" = "Dismiss";
+"accessibility_document_button" = "Dokument";
+"accessibility_library_button" = "Galerija slika";
+"accessibility_camera_button" = "Kamera";
+"accessibility_main_button_collapse" = "Sažmi opcije privitka";
+"invalid_recovery_phrase" = "Nevažeća fraza za oporavak";
+"invalid_recovery_phrase" = "Nevažeća fraza za oporavak";
+"DISMISS_BUTTON_TEXT" = "Odbaci";
 /* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Settings";
-"APN_Message" = "You've got a new message";
-"system_mode_theme" = "System";
-"dark_mode_theme" = "Dark";
-"light_mode_theme" = "Light";
+"OPEN_SETTINGS_BUTTON" = "Postavke";
+"call_outgoing" = "Zvali ste %@";
+"call_incoming" = "zvao vas je %@";
+"call_missed" = "Propušten poziv od %@";
+"call_rejected" = "Poziv odbijen";
+"call_cancelled" = "Poziv odbačen";
+"call_timeout" = "Neodgovoreni poziv";
+"voice_call" = "Glasovni poziv";
+"video_call" = "Video poziv";
+"APN_Message" = "Imate novu poruku!";
+"APN_Collapsed_Messages" = "Imate %@ novih poruka!";
+"system_mode_theme" = "Sustav";
+"dark_mode_theme" = "Tamno";
+"light_mode_theme" = "Svijetlo";
+"PIN_BUTTON_TEXT" = "Prikvači";
+"UNPIN_BUTTON_TEXT" = "Otkvači";
+"modal_call_missed_tips_title" = "Propušten poziv";
+"modal_call_missed_tips_explanation" = "Propušten poziv od '%@' jer 'Audio i video pozivi' nemaju dopuštenje u Postavkama privatnosti.";
+"meida_saved" = "%@ je spremio/la medij.";
+"screenshot_taken" = "%@ je napravio/la snimku zaslona.";
+"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_RECENT" = "Recent";
+"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";
 "MESSAGE_REQUESTS_TITLE" = "Message Requests";
 "MESSAGE_REQUESTS_EMPTY_TEXT" = "No pending message requests";
 "MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";
@@ -615,9 +645,12 @@
 "MESSAGE_REQUESTS_NOTIFICATION" = "You have a new message request";
 "TXT_HIDE_TITLE" = "Hide";
 "TXT_DELETE_ACCEPT" = "Accept";
+"ALERT_ERROR_TITLE" = "Greška";
 "NEW_CONVERSATION_MENU_OPEN_GROUP" = "Open Group";
 "NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Direct Message";
 "NEW_CONVERSATION_MENU_CLOSED_GROUP" = "Closed Group";
+"modal_call_permission_request_title" = "Call Permissions Required";
+"modal_call_permission_request_explanation" = "You can enable the 'Voice and video calls' permission in the Privacy Settings.";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
 "ALERT_ERROR_TITLE" = "Error";

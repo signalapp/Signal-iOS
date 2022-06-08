@@ -374,6 +374,12 @@
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for most urls.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+/* Setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS" = "Voice and video calls";
+/* Footer for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_FOOTER" = "Allow access to accept voice and video calls from other users.";
+/* Header for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_HEADER" = "Calls";
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
 /* Label for the 'read receipts' setting. */
@@ -562,6 +568,8 @@
 "modal_link_previews_title" = "Enable Link Previews?";
 "modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
 "modal_link_previews_button_title" = "Enable";
+"modal_call_title" = "Voice / video calls";
+"modal_call_explanation" = "The current implementation of voice / video calls will expose your IP address to the Oxen Foundation servers and the calling / called user.";
 "modal_share_logs_title" = "Share Logs";
 "modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
 "vc_share_title" = "Share to Session";
@@ -590,6 +598,7 @@
 "context_menu_save" = "Save";
 "context_menu_ban_user" = "Ban User";
 "context_menu_ban_and_delete_all" = "Ban and Delete All";
+"context_menu_ban_user_error_alert_message" = "Unable to ban user";
 "accessibility_expanding_attachments_button" = "Add attachments";
 "accessibility_gif_button" = "Gif";
 "accessibility_document_button" = "Document";
@@ -597,9 +606,18 @@
 "accessibility_camera_button" = "Camera";
 "accessibility_main_button_collapse" = "Collapse attachment options";
 "invalid_recovery_phrase" = "Invalid Recovery Phrase";
+"invalid_recovery_phrase" = "Invalid Recovery Phrase";
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Settings";
+"call_outgoing" = "You called %@";
+"call_incoming" = "%@ called you";
+"call_missed" = "Missed Call from %@";
+"call_rejected" = "Rejected Call";
+"call_cancelled" = "Cancelled Call";
+"call_timeout" = "Unanswered Call";
+"voice_call" = "Voice Call";
+"video_call" = "Video Call";
 "APN_Message" = "You've got a new message.";
 "APN_Collapsed_Messages" = "You've got %@ new messages.";
 "system_mode_theme" = "System";
@@ -607,7 +625,9 @@
 "light_mode_theme" = "Light";
 "PIN_BUTTON_TEXT" = "Pin";
 "UNPIN_BUTTON_TEXT" = "Unpin";
-"media_saved" = "Media saved by %@.";
+"modal_call_missed_tips_title" = "Call missed";
+"modal_call_missed_tips_explanation" = "Call missed from '%@' because you needed to enable the 'Voice and video calls' permission in the Privacy Settings.";
+"meida_saved" = "Media saved by %@.";
 "screenshot_taken" = "%@ took a screenshot.";
 "SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
 "SEARCH_SECTION_MESSAGES" = "Messages";
@@ -625,9 +645,12 @@
 "MESSAGE_REQUESTS_NOTIFICATION" = "You have a new message request";
 "TXT_HIDE_TITLE" = "Hide";
 "TXT_DELETE_ACCEPT" = "Accept";
+"ALERT_ERROR_TITLE" = "Error";
 "NEW_CONVERSATION_MENU_OPEN_GROUP" = "Open Group";
 "NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Direct Message";
 "NEW_CONVERSATION_MENU_CLOSED_GROUP" = "Closed Group";
+"modal_call_permission_request_title" = "Call Permissions Required";
+"modal_call_permission_request_explanation" = "You can enable the 'Voice and video calls' permission in the Privacy Settings.";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
 "ALERT_ERROR_TITLE" = "Error";

@@ -23,8 +23,20 @@ public final class SnodeAPI : NSObject {
     public static var clockOffset: Int64 = 0
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     public static var swarmCache: [String: Set<Snode>] = [:]
+    
+    // MARK: - Namespaces
+    
+    public static let defaultNamespace = 0
+    public static let closedGroupNamespace = -10
+    public static let configNamespace = 5
+    
+    // MARK: - Hardfork version
+    
+    public static var hardfork = UserDefaults.standard[.hardfork]
+    public static var softfork = UserDefaults.standard[.softfork]
 
-    // MARK: Settings
+    // MARK: - Settings
+    
     private static let maxRetryCount: UInt = 8
     private static let minSwarmSnodeCount = 3
     private static let seedNodePool: Set<String> = Features.useTestnet ? [ "http://public.loki.foundation:38157" ] : [ "https://storage.seed1.loki.network:4433", "https://storage.seed3.loki.network:4433", "https://public.loki.foundation:4433" ]
@@ -32,11 +44,6 @@ public final class SnodeAPI : NSObject {
     private static let targetSwarmSnodeCount = 2
     private static let minSnodePoolCount = 12
 
-    // MARK: Type Aliases
-    public typealias MessageListPromise = Promise<[JSON]>
-    public typealias RawResponse = Any
-    public typealias RawResponsePromise = Promise<RawResponse>
-    
     // MARK: Snode Pool Interaction
     
     private static var hasInsufficientSnodes: Bool { snodePool.count < minSnodePoolCount }
@@ -117,24 +124,55 @@ public final class SnodeAPI : NSObject {
     }
     
     // MARK: Internal API
-    internal static func invoke(_ method: Endpoint, on snode: Snode, associatedWith publicKey: String? = nil, parameters: JSON) -> RawResponsePromise {
+    
+    internal static func invoke(_ method: Snode.Method, on snode: Snode, associatedWith publicKey: String? = nil, parameters: JSON) -> Promise<Data> {
         if Features.useOnionRequests {
-            return OnionRequestAPI.sendOnionRequest(to: snode, invoking: method, with: parameters, associatedWith: publicKey).map2 { $0 as Any }
+            return OnionRequestAPI
+                .sendOnionRequest(
+                    to: snode,
+                    invoking: method,
+                    with: parameters,
+                    using: .v3,
+                    associatedWith: publicKey
+                )
+                .map2 { responseData in
+                    guard let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON else {
+                        throw HTTP.Error.invalidJSON
+                    }
+                    
+                    if let hf = responseJson["hf"] as? [Int] {
+                        if hf[1] > softfork {
+                            softfork = hf[1]
+                            UserDefaults.standard[.softfork] = softfork
+                        }
+                        
+                        if hf[0] > hardfork {
+                            hardfork = hf[0]
+                            UserDefaults.standard[.hardfork] = hardfork
+                            softfork = hf[1]
+                            UserDefaults.standard[.softfork] = softfork
+                        }
+                    }
+                    
+                    return responseData
+                }
         }
         else {
             let url = "\(snode.address):\(snode.port)/storage_rpc/v1"
-            return HTTP.execute(.post, url, parameters: parameters).map2 { $0 as Any }.recover2 { error -> Promise<Any> in
-                guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error else { throw error }
-                
-                throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
-            }
+            return HTTP.execute(.post, url, parameters: parameters)
+                .recover2 { error -> Promise<Data> in
+                    guard case HTTP.Error.httpRequestFailed(let statusCode, let data) = error else { throw error }
+                    throw SnodeAPI.handleError(withStatusCode: statusCode, data: data, forSnode: snode, associatedWith: publicKey) ?? error
+                }
         }
     }
     
     private static func getNetworkTime(from snode: Snode) -> Promise<UInt64> {
-        return invoke(.getInfo, on: snode, parameters: [:]).map2 { rawResponse in
-            guard let json = rawResponse as? JSON,
-                let timestamp = json["timestamp"] as? UInt64 else { throw HTTP.Error.invalidJSON }
+        return invoke(.getInfo, on: snode, parameters: [:]).map2 { responseData in
+            guard let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON else {
+                throw HTTP.Error.invalidJSON
+            }
+            guard let timestamp = responseJson["timestamp"] as? UInt64 else { throw HTTP.Error.invalidJSON }
             return timestamp
         }
     }
@@ -166,16 +204,14 @@ public final class SnodeAPI : NSObject {
         Threading.workQueue.async {
             attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
                 HTTP.execute(.post, url, parameters: parameters, useSeedNodeURLSession: true)
-                    .map2 { json -> Set<Snode> in
-                        guard
-                            let intermediate = json["result"] as? JSON,
-                            let rawSnodes = intermediate["service_node_states"] as? [JSON],
-                            let snodeData: Data = try? JSONSerialization.data(withJSONObject: rawSnodes, options: [])
-                        else {
+                    .map2 { responseData -> Set<Snode> in
+                        // TODO: Validate this works
+                        guard let snodePool: SnodePoolResponse = try? JSONDecoder().decode(SnodePoolResponse.self, from: responseData) else {
                             throw Error.snodePoolUpdatingFailed
                         }
                         
-                        return ((try? JSONDecoder().decode([Failable<Snode>].self, from: snodeData)) ?? [])
+                        return snodePool.result
+                            .serviceNodeStates
                             .compactMap { $0.value }
                             .asSet()
                     }
@@ -220,20 +256,19 @@ public final class SnodeAPI : NSObject {
                         ]
                     ]
                 ]
-                return invoke(.oxenDaemonRPCCall, on: snode, parameters: parameters).map2 { rawResponse in
-                    guard
-                        let json = rawResponse as? JSON,
-                        let intermediate = json["result"] as? JSON,
-                        let rawSnodes = intermediate["service_node_states"] as? [JSON],
-                        let snodeData: Data = try? JSONSerialization.data(withJSONObject: rawSnodes, options: [])
-                    else {
-                        throw Error.snodePoolUpdatingFailed
+                
+                return invoke(.oxenDaemonRPCCall, on: snode, parameters: parameters)
+                    .map2 { responseData in
+                        // TODO: Validate this works
+                        guard let snodePool: SnodePoolResponse = try? JSONDecoder().decode(SnodePoolResponse.self, from: responseData) else {
+                            throw Error.snodePoolUpdatingFailed
+                        }
+                        
+                        return snodePool.result
+                            .serviceNodeStates
+                            .compactMap { $0.value }
+                            .asSet()
                     }
-                    
-                    return ((try? JSONDecoder().decode([Failable<Snode>].self, from: snodeData)) ?? [])
-                        .compactMap { $0.value }
-                        .asSet()
-                }
             }
         }
         
@@ -346,8 +381,11 @@ public final class SnodeAPI : NSObject {
             for result in results {
                 switch result {
                 case .rejected(let error): return seal.reject(error)
-                case .fulfilled(let rawResponse):
-                    guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON,
+                case .fulfilled(let responseData):
+                    guard let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON else {
+                        throw HTTP.Error.invalidJSON
+                    }
+                    guard let intermediate = responseJson["result"] as? JSON,
                         let hexEncodedCiphertext = intermediate["encrypted_value"] as? String else { return seal.reject(HTTP.Error.invalidJSON) }
                     let ciphertext = [UInt8](Data(hex: hexEncodedCiphertext))
                     let isArgon2Based = (intermediate["nonce"] == nil)
@@ -398,7 +436,7 @@ public final class SnodeAPI : NSObject {
         
         SNLog("Getting swarm for: \((publicKey == getUserHexEncodedPublicKey()) ? "self" : publicKey).")
         let parameters: [String: Any] = [
-            "pubKey": Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey
+            "pubKey": (Features.useTestnet ? publicKey.removingIdPrefixIfNeeded() : publicKey)
         ]
         
         return getRandomSnode()
@@ -408,97 +446,181 @@ public final class SnodeAPI : NSObject {
                 }
             }
             .map2 { rawSnodes in
-                let swarm = parseSnodes(from: rawSnodes)
+                let swarm = parseSnodes(from: responseData)
+                
                 setSwarm(to: swarm, for: publicKey)
                 return swarm
             }
+    }
+
+    // MARK: - Retrieve
+    
+    // Not in use until we can batch delete and store config messages
+    public static func getConfigMessages(from snode: Snode, associatedWith publicKey: String) -> Promise<Data> {
+        let (promise, seal) = Promise<Data>.pending()
+        Threading.workQueue.async {
+            getMessagesWithAuthentication(from: snode, associatedWith: publicKey, namespace: configNamespace)
+                .done2 {
+                    seal.fulfill($0)
+                }
+                .catch2 {
+                    seal.reject($0)
+                }
+        }
+        
+        return promise
     }
     
     public static func getMessages(from snode: Snode, associatedWith publicKey: String) -> Promise<[SnodeReceivedMessage]> {
         let (promise, seal) = Promise<[SnodeReceivedMessage]>.pending()
         Threading.workQueue.async {
-            getMessagesInternal(from: snode, associatedWith: publicKey)
-                .done2 { rawResponse in
-                    guard
-                        let json: JSON = rawResponse as? JSON,
-                        let rawMessages: [JSON] = json["messages"] as? [JSON]
-                    else {
-                        seal.fulfill([])
-                        return
-                    }
-                    
-                    let messages: [SnodeReceivedMessage] = rawMessages
-                        .compactMap { rawMessage -> SnodeReceivedMessage? in
-                            SnodeReceivedMessage(
-                                snode: snode,
-                                publicKey: publicKey,
-                                rawMessage: rawMessage
-                            )
-                        }
-                    
-                    seal.fulfill(messages)
-                }
+            let retrievePromise = (authenticated ?
+                getMessagesWithAuthentication(from: snode, associatedWith: publicKey, namespace: defaultNamespace) :
+                getMessagesUnauthenticated(from: snode, associatedWith: publicKey)
+            )
+            
+            retrievePromise
+                .done2 { seal.fulfill($0) }
                 .catch2 { seal.reject($0) }
+//            getMessagesInternal(from: snode, associatedWith: publicKey)
+//                .done2 { rawResponse in
+//                    guard
+//                        let json: JSON = rawResponse as? JSON,
+//                        let rawMessages: [JSON] = json["messages"] as? [JSON]
+//                    else {
+//                        seal.fulfill([])
+//                        return
+//                    }
+//
+//                    let messages: [SnodeReceivedMessage] = rawMessages
+//                        .compactMap { rawMessage -> SnodeReceivedMessage? in
+//                            SnodeReceivedMessage(
+//                                snode: snode,
+//                                publicKey: publicKey,
+//                                rawMessage: rawMessage
+//                            )
+//                        }
+//
+//                    seal.fulfill(messages)
+//                }
+//                .catch2 { seal.reject($0) }
         }
         
         return promise
     }
-
-    private static func getMessagesInternal(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
-        // NOTE: All authentication logic is currently commented out, the reason being that we can't currently support
-        // it yet for closed groups. The Storage Server requires an ed25519 key pair, but we don't have that for our
-        // closed groups.
+    
+    public static func getClosedGroupMessagesFromDefaultNamespace(from snode: Snode, associatedWith publicKey: String) -> Promise<[SnodeReceivedMessage]> {
+        let (promise, seal) = Promise<Data>.pending()
+        Threading.workQueue.async {
+            getMessagesUnauthenticated(from: snode, associatedWith: publicKey, namespace: defaultNamespace)
+                .done2 { seal.fulfill($0) }
+                .catch2 { seal.reject($0) }
+        }
+        return promise
+    }
+    
+    private static func getMessagesWithAuthentication(from snode: Snode, associatedWith publicKey: String, namespace: Int) -> Promise<Data> {
+        let storage = SNSnodeKitConfiguration.shared.storage
         
-//        guard let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
+        /// **Note:** All authentication logic is only apply to 1-1 chats, the reason being that we can't currently support it yet for
+        /// closed groups. The Storage Server requires an ed25519 key pair, but we don't have that for our closed groups.
+        guard let userED25519KeyPair: Box.KeyPair = GRDBStorage.shared.read { db in try Identity.fetchUserEd25519KeyPair(db) } else {
+            return Promise(error: Error.noKeyPair)
+        }
+        
         // Get last message hash
-        SnodeReceivedMessageInfo.pruneExpiredMessageHashInfo(for: snode, associatedWith: publicKey)
-        let lastHash = SnodeReceivedMessageInfo.fetchLastNotExpired(for: snode, associatedWith: publicKey)?.hash ?? ""
+        SnodeReceivedMessageInfo.pruneExpiredMessageHashInfo(for: snode, namespace: namespace, associatedWith: publicKey)
+        let lastHash = SnodeReceivedMessageInfo.fetchLastNotExpired(for: snode, namespace: namespace, associatedWith: publicKey)?.hash ?? ""
+
         // Construct signature
-//        let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
-//        let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
-//        let verificationData = ("retrieve" + String(timestamp)).data(using: String.Encoding.utf8)!
-//        let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)!
+        let timestamp = UInt64(Int64(floor(Date().timeIntervalSince1970 * 1000)) + SnodeAPI.clockOffset)
+        let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
+        let namespaceVerificationString = (namespace == defaultNamespace ? "" : String(namespace))
+        
+        guard
+            let verificationData = ("retrieve" + namespaceVerificationString + String(timestamp)).data(using: String.Encoding.utf8),
+            let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)
+        else { return Promise(error: Error.signingFailed) }
+        
         // Make the request
         let parameters: JSON = [
-            "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey,
-            "lastHash" : lastHash,
-//            "timestamp" : timestamp,
-//            "pubkey_ed25519" : ed25519PublicKey,
-//            "signature" : signature.toBase64()!
+            "pubKey": Features.useTestnet ? publicKey.removingIdPrefixIfNeeded() : publicKey,
+            "namespace": namespace,
+            "lastHash": lastHash,
+            "timestamp": timestamp,
+            "pubkey_ed25519": ed25519PublicKey,
+            "signature": signature.toBase64()
         ]
         
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
-
-    public static func sendMessage(_ message: SnodeMessage) -> Promise<Set<RawResponsePromise>> {
-        let (promise, seal) = Promise<Set<RawResponsePromise>>.pending()
-        let publicKey = (Features.useTestnet ?
-            message.recipient.removing05PrefixIfNeeded() :
-            message.recipient
-        )
+        
+    private static func getMessagesUnauthenticated(
+        from snode: Snode,
+        associatedWith publicKey: String,
+        namespace: Int = closedGroupNamespace
+    ) -> Promise<Data> {
+        let storage = SNSnodeKitConfiguration.shared.storage
+        
+        // Get last message hash
+        SnodeReceivedMessageInfo.pruneLastMessageHashInfoIfExpired(for: snode, namespace: namespace, associatedWith: publicKey)
+        let lastHash = SnodeReceivedMessageInfo.fetchLastNotExpired(for: snode, namespace: namespace, associatedWith: publicKey)?.hash ?? ""
+        
+        // Make the request
+        var parameters: JSON = [
+            "pubKey": (Features.useTestnet ? publicKey.removingIdPrefixIfNeeded() : publicKey),
+            "lastHash": lastHash,
+        ]
+        
+        // Don't include namespace if polling for 0 with no authentication
+        if namespace != defaultNamespace {
+            parameters["namespace"] = namespace
+        }
+        
+        return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
+    }
+    
+    // MARK: Store
+    
+    public static func sendMessage(_ message: SnodeMessage, isClosedGroupMessage: Bool, isConfigMessage: Bool) -> Promise<Set<Promise<Data>>> {
+        return sendMessageUnauthenticated(message, isClosedGroupMessage: isClosedGroupMessage)
+    }
+    
+    // Not in use until we can batch delete and store config messages
+    private static func sendMessageWithAuthentication(_ message: SnodeMessage, namespace: Int) -> Promise<Set<Promise<Data>>> {
+        let storage = SNSnodeKitConfiguration.shared.storage
+        
+        guard let userED25519KeyPair: Box.KeyPair = GRDBStorage.shared.read { db in try Identity.fetchUserEd25519KeyPair(db) } else {
+            return Promise(error: Error.noKeyPair)
+        }
+        
+        // Construct signature
+        let timestamp = UInt64(Int64(floor(Date().timeIntervalSince1970 * 1000)) + SnodeAPI.clockOffset)
+        let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
+        
+        guard
+            let verificationData = ("store" + String(namespace) + String(timestamp)).data(using: String.Encoding.utf8),
+            let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)
+        else { return Promise(error: Error.signingFailed) }
+        
+        // Make the request
+        let (promise, seal) = Promise<Set<Promise<Data>>>.pending()
+        let publicKey = (Features.useTestnet ? message.recipient.removingIdPrefixIfNeeded() : message.recipient)
         
         Threading.workQueue.async {
             getTargetSnodes(for: publicKey)
                 .map2 { targetSnodes in
-                    // TODO: This as standard JSONEncoder (id blinding should mostly do this anyway???)
-                    let parameters: JSON = [
-                        "pubKey": (Features.useTestnet ?
-                            message.recipient.removing05PrefixIfNeeded() :
-                            message.recipient
-                        ),
-                        "data" : message.data,
-                        "ttl" : String(message.ttl),
-                        "timestamp" : String(message.timestampMs),
-                        "nonce" : ""
-                    ]
+                    var parameters = message.toJSON()
+                    parameters["namespace"] = namespace
+                    parameters["sig_timestamp"] = timestamp
+                    parameters["pubkey_ed25519"] = ed25519PublicKey
+                    parameters["signature"] = signature.toBase64()
                     
-                    return targetSnodes
-                        .map { targetSnode in
-                            attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
-                                invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
-                            }
+                    return Set(targetSnodes.map { targetSnode in
+                        attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                            invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
                         }
-                        .asSet()
+                    })
                 }
                 .done2 { seal.fulfill($0) }
                 .catch2 { seal.reject($0) }
@@ -507,17 +629,52 @@ public final class SnodeAPI : NSObject {
         return promise
     }
     
-    @objc(deleteMessageForPublickKey:serverHashes:)
-    public static func objc_deleteMessage(publicKey: String, serverHashes: [String]) -> AnyPromise {
-        AnyPromise.from(deleteMessage(publicKey: publicKey, serverHashes: serverHashes))
+    private static func sendMessageUnauthenticated(_ message: SnodeMessage, isClosedGroupMessage: Bool) -> Promise<Set<Promise<Data>>> {
+        let (promise, seal) = Promise<Set<Promise<Data>>>.pending()
+        let publicKey = Features.useTestnet ? message.recipient.removingIdPrefixIfNeeded() : message.recipient
+        
+        Threading.workQueue.async {
+            getTargetSnodes(for: publicKey)
+                .map2 { targetSnodes in
+                    var rawResponsePromises: Set<Promise<Data>> = Set()
+                    var parameters = message.toJSON()
+                    parameters["namespace"] = (isClosedGroupMessage ? closedGroupNamespace : defaultNamespace)
+                    
+                    for targetSnode in targetSnodes {
+                        let rawResponsePromise = attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                            invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
+                        }
+                        rawResponsePromises.insert(rawResponsePromise)
+                    }
+                    
+                    // Send closed group messages to default namespace as well
+                    if hardfork == 19 && softfork == 0 && isClosedGroupMessage {
+                        parameters["namespace"] = defaultNamespace
+                        for targetSnode in targetSnodes {
+                            let rawResponsePromise = attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                                invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
+                            }
+                            rawResponsePromises.insert(rawResponsePromise)
+                        }
+                    }
+                    
+                    return rawResponsePromises
+                }
+                .done2 { seal.fulfill($0) }
+                .catch2 { seal.reject($0) }
+        }
+        
+        return promise
     }
+    
+    // MARK: Delete
     
     public static func deleteMessage(publicKey: String, serverHashes: [String]) -> Promise<[String: Bool]> {
         guard let userED25519KeyPair = Identity.fetchUserEd25519KeyPair() else {
             return Promise(error: Error.noKeyPair)
         }
         
-        let publicKey = (Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey)
+        let publicKey = (Features.useTestnet ? publicKey.removingIdPrefixIfNeeded() : publicKey)
         let userX25519PublicKey: String = getUserHexEncodedPublicKey()
         
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
@@ -540,53 +697,56 @@ public final class SnodeAPI : NSObject {
                     
                     return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                         invoke(.deleteMessage, on: snode, associatedWith: publicKey, parameters: parameters)
-                            .map2 { rawResponse -> [String: Bool] in
-                            guard let json = rawResponse as? JSON, let swarm = json["swarm"] as? JSON else {
-                                throw HTTP.Error.invalidJSON
-                            }
+                            .map2 { responseData -> [String: Bool] in
+                                guard let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON else {
+                                    throw HTTP.Error.invalidJSON
+                                }
+                                guard let swarm = responseJson["swarm"] as? JSON else { throw HTTP.Error.invalidJSON }
                                 
-                            var result: [String: Bool] = [:]
-                                
-                            for (snodePublicKey, rawJSON) in swarm {
-                                guard let json = rawJSON as? JSON else { throw HTTP.Error.invalidJSON }
-                                
-                                let isFailed = (json["failed"] as? Bool ?? false)
-                                
-                                if !isFailed {
-                                    guard
-                                        let hashes = json["deleted"] as? [String],
-                                        let signature = json["signature"] as? String
-                                    else {
-                                        throw HTTP.Error.invalidJSON
-                                    }
+                                var result: [String: Bool] = [:]
                                     
-                                    // The signature format is ( PUBKEY_HEX || RMSG[0] || ... || RMSG[N] || DMSG[0] || ... || DMSG[M] )
-                                    let verificationData = [
-                                        userX25519PublicKey,
-                                        serverHashes.joined(),
-                                        hashes.joined()
-                                    ]
-                                    .joined()
-                                    .data(using: String.Encoding.utf8)!
-                                    let isValid = sodium.sign.verify(
-                                        message: Bytes(verificationData),
-                                        publicKey: Bytes(Data(hex: snodePublicKey)),
-                                        signature: Bytes(Data(base64Encoded: signature)!)
-                                    )
-                                    result[snodePublicKey] = isValid
-                                }
-                                else {
-                                    if let reason = json["reason"] as? String, let statusCode = json["code"] as? String {
-                                        SNLog("Couldn't delete data from: \(snodePublicKey) due to error: \(reason) (\(statusCode)).")
-                                    } else {
-                                        SNLog("Couldn't delete data from: \(snodePublicKey).")
+                                for (snodePublicKey, rawJSON) in swarm {
+                                    guard let json = rawJSON as? JSON else { throw HTTP.Error.invalidJSON }
+                                    
+                                    let isFailed = (json["failed"] as? Bool ?? false)
+                                    
+                                    if !isFailed {
+                                        guard
+                                            let hashes = json["deleted"] as? [String],
+                                            let signature = json["signature"] as? String
+                                        else {
+                                            throw HTTP.Error.invalidJSON
+                                        }
+                                        
+                                        // The signature format is ( PUBKEY_HEX || RMSG[0] || ... || RMSG[N] || DMSG[0] || ... || DMSG[M] )
+                                        let verificationData = [
+                                            userX25519PublicKey,
+                                            serverHashes.joined(),
+                                            hashes.joined()
+                                        ]
+                                        .joined()
+                                        .data(using: String.Encoding.utf8)!
+                                        let isValid = sodium.sign.verify(
+                                            message: Bytes(verificationData),
+                                            publicKey: Bytes(Data(hex: snodePublicKey)),
+                                            signature: Bytes(Data(base64Encoded: signature)!)
+                                        )
+                                        
+                                        result[snodePublicKey] = isValid
                                     }
-                                    result[snodePublicKey] = false
+                                    else {
+                                        if let reason = json["reason"] as? String, let statusCode = json["code"] as? String {
+                                            SNLog("Couldn't delete data from: \(snodePublicKey) due to error: \(reason) (\(statusCode)).")
+                                        }
+                                        else {
+                                            SNLog("Couldn't delete data from: \(snodePublicKey).")
+                                        }
+                                        result[snodePublicKey] = false
+                                    }
                                 }
-                            }
                                 
-                            return result
-                        }
+                                return result
+                            }
                     }
                 }
         }
@@ -601,54 +761,74 @@ public final class SnodeAPI : NSObject {
         let userX25519PublicKey: String = getUserHexEncodedPublicKey()
         
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
-            getSwarm(for: userX25519PublicKey).then2 { swarm -> Promise<[String:Bool]> in
-                let snode = swarm.randomElement()!
-                return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
-                    getNetworkTime(from: snode).then2 { timestamp -> Promise<[String:Bool]> in
-                        let verificationData = (Endpoint.clearAllData.rawValue + String(timestamp)).data(using: String.Encoding.utf8)!
-                        guard let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey) else {
-                            throw Error.signingFailed
-                        }
-                        
-                        let parameters: JSON = [
-                            "pubkey": userX25519PublicKey,
-                            "pubkey_ed25519": userED25519KeyPair.publicKey.toHexString(),
-                            "timestamp": timestamp,
-                            "signature": signature.toBase64()
-                        ]
-                        
-                        return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
-                            invoke(.clearAllData, on: snode, parameters: parameters).map2 { rawResponse -> [String: Bool] in
-                                guard
-                                    let json = rawResponse as? JSON,
-                                    let swarm = json["swarm"] as? JSON
-                                else { throw HTTP.Error.invalidJSON }
-                                
-                                var result: [String: Bool] = [:]
-                                
-                                for (snodePublicKey, rawJSON) in swarm {
-                                    guard let json = rawJSON as? JSON else { throw HTTP.Error.invalidJSON }
-                                    
-                                    let isFailed = json["failed"] as? Bool ?? false
-                                    if !isFailed {
-                                        guard let hashes = json["deleted"] as? [String], let signature = json["signature"] as? String else { throw HTTP.Error.invalidJSON }
-                                        // The signature format is ( PUBKEY_HEX || TIMESTAMP || DELETEDHASH[0] || ... || DELETEDHASH[N] )
-                                        let verificationData = (userX25519PublicKey + String(timestamp) + hashes.joined(separator: "")).data(using: String.Encoding.utf8)!
-                                        let isValid = sodium.sign.verify(message: Bytes(verificationData), publicKey: Bytes(Data(hex: snodePublicKey)), signature: Bytes(Data(base64Encoded: signature)!))
-                                        result[snodePublicKey] = isValid
-                                    } else {
-                                        if let reason = json["reason"] as? String, let statusCode = json["code"] as? String {
-                                            SNLog("Couldn't delete data from: \(snodePublicKey) due to error: \(reason) (\(statusCode)).")
-                                        } else {
-                                            SNLog("Couldn't delete data from: \(snodePublicKey).")
-                                        }
-                                        result[snodePublicKey] = false
-                                    }
-                                }
-                                
-                                return result
+            getSwarm(for: userX25519PublicKey)
+                .then2 { swarm -> Promise<[String:Bool]> in
+                    let snode = swarm.randomElement()!
+                    
+                    return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                        getNetworkTime(from: snode).then2 { timestamp -> Promise<[String: Bool]> in
+                            let verificationData = (Endpoint.clearAllData.rawValue + String(timestamp)).data(using: String.Encoding.utf8)!
+                            
+                            guard let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey) else {
+                                throw Error.signingFailed
                             }
-                        }
+                            
+                            let parameters: JSON = [
+                                "pubkey": userX25519PublicKey,
+                                "pubkey_ed25519": userED25519KeyPair.publicKey.toHexString(),
+                                "timestamp": timestamp,
+                                "signature": signature.toBase64()
+                            ]
+                            
+                            return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                                invoke(.clearAllData, on: snode, parameters: parameters)
+                                    .map2 { responseData -> [String: Bool] in
+                                        guard let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON else {
+                                            throw HTTP.Error.invalidJSON
+                                        }
+                                        guard let swarm = responseJson["swarm"] as? JSON else { throw HTTP.Error.invalidJSON }
+                                    
+                                        var result: [String: Bool] = [:]
+                                        
+                                        for (snodePublicKey, rawJSON) in swarm {
+                                            guard let json = rawJSON as? JSON else { throw HTTP.Error.invalidJSON }
+                                            
+                                            let isFailed = json["failed"] as? Bool ?? false
+                                            
+                                            if !isFailed {
+                                                guard
+                                                    let hashes = json["deleted"] as? [String],
+                                                    let signature = json["signature"] as? String
+                                                else { throw HTTP.Error.invalidJSON }
+                                                
+                                                // The signature format is ( PUBKEY_HEX || TIMESTAMP || DELETEDHASH[0] || ... || DELETEDHASH[N] )
+                                                let verificationData = [
+                                                    userX25519PublicKey,
+                                                    String(timestamp),
+                                                    hashes.joined()
+                                                ].data(using: String.Encoding.utf8)!
+                                                let isValid = sodium.sign.verify(
+                                                    message: Bytes(verificationData),
+                                                    publicKey: Bytes(Data(hex: snodePublicKey)),
+                                                    signature: Bytes(Data(base64Encoded: signature)!)
+                                                )
+                                                
+                                                result[snodePublicKey] = isValid
+                                            }
+                                            else {
+                                                if let reason = json["reason"] as? String, let statusCode = json["code"] as? String {
+                                                    SNLog("Couldn't delete data from: \(snodePublicKey) due to error: \(reason) (\(statusCode)).")
+                                                } else {
+                                                    SNLog("Couldn't delete data from: \(snodePublicKey).")
+                                                }
+                                                
+                                                result[snodePublicKey] = false
+                                            }
+                                        }
+                                    
+                                        return result
+                                    }
+                            }
                     }
                 }
             }
@@ -659,9 +839,13 @@ public final class SnodeAPI : NSObject {
     
     // The parsing utilities below use a best attempt approach to parsing; they warn for parsing failures but don't throw exceptions.
 
-    private static func parseSnodes(from rawResponse: Any) -> Set<Snode> {
-        guard let json = rawResponse as? JSON, let rawSnodes = json["snodes"] as? [JSON] else {
-            SNLog("Failed to parse snodes from: \(rawResponse).")
+    private static func parseSnodes(from responseData: Data) -> Set<Snode> {
+        guard let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON else {
+            SNLog("Failed to parse snodes from response data.")
+            return []
+        }
+        guard let rawSnodes = responseJson["snodes"] as? [JSON] else {
+            SNLog("Failed to parse snodes from: \(responseJson).")
             return []
         }
         
@@ -682,48 +866,11 @@ public final class SnodeAPI : NSObject {
             .asSet()
     }
 
-    public static func parseRawMessagesResponse(_ rawResponse: Any, from snode: Snode, associatedWith publicKey: String) -> [SnodeReceivedMessage] {
-        guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else {
-            return []
-        }
-
-        return removeDuplicates(from: rawMessages, associatedWith: publicKey)
-            .compactMap { rawMessage -> SnodeReceivedMessage? in
-                return SnodeReceivedMessage(
-                    snode: snode,
-                    publicKey: publicKey,
-                    rawMessage: rawMessage
-                )
-            }
-    }
-    
-    private static func removeDuplicates(from rawMessages: [JSON], associatedWith publicKey: String) -> [JSON] {
-        let oldMessageHashes: Set<String> = GRDBStorage.shared
-            .read { db in
-                try SnodeReceivedMessageInfo
-                    .select(.hash)
-                    .filter(SnodeReceivedMessageInfo.Columns.key == publicKey)
-                    .asRequest(of: String.self)
-                    .fetchAll(db)
-            }
-            .defaulting(to: [])
-            .asSet()
-        return rawMessages
-            .compactMap { rawMessage -> JSON? in
-                guard let hash: String = rawMessage["hash"] as? String else {
-                    SNLog("Missing hash value for message: \(rawMessage).")
-                    return nil
-                }
-                guard !oldMessageHashes.contains(hash) else { return nil }
-                
-                return rawMessage
-            }
-    }
-
     // MARK: Error Handling
+    
     /// - Note: Should only be invoked from `Threading.workQueue` to avoid race conditions.
     @discardableResult
-    internal static func handleError(withStatusCode statusCode: UInt, json: JSON?, forSnode snode: Snode, associatedWith publicKey: String? = nil) -> Error? {
+    internal static func handleError(withStatusCode statusCode: UInt, data: Data?, forSnode snode: Snode, associatedWith publicKey: String? = nil) -> Error? {
         #if DEBUG
         dispatchPrecondition(condition: .onQueue(Threading.workQueue))
         #endif
@@ -742,37 +889,51 @@ public final class SnodeAPI : NSObject {
                 SnodeAPI.snodeFailureCount[snode] = 0
             }
         }
+        
         switch statusCode {
-        case 500, 502, 503:
-            // The snode is unreachable
-            handleBadSnode()
-        case 406:
-            SNLog("The user's clock is out of sync with the service node network.")
-            return Error.clockOutOfSync
-        case 421:
-            // The snode isn't associated with the given public key anymore
-            if let publicKey = publicKey {
-                func invalidateSwarm() {
-                    SNLog("Invalidating swarm for: \(publicKey).")
-                    SnodeAPI.dropSnodeFromSwarmIfNeeded(snode, publicKey: publicKey)
-                }
-                if let json = json {
-                    let snodes = parseSnodes(from: json)
-                    if !snodes.isEmpty {
-                        setSwarm(to: snodes, for: publicKey)
-                    } else {
+            case 500, 502, 503:
+                // The snode is unreachable
+                handleBadSnode()
+                
+            case 404:
+                // May caused by invalid open groups
+                SNLog("Can't reach the server.")
+                
+            case 406:
+                SNLog("The user's clock is out of sync with the service node network.")
+                return Error.clockOutOfSync
+                
+            case 421:
+                // The snode isn't associated with the given public key anymore
+                if let publicKey = publicKey {
+                    func invalidateSwarm() {
+                        SNLog("Invalidating swarm for: \(publicKey).")
+                        SnodeAPI.dropSnodeFromSwarmIfNeeded(snode, publicKey: publicKey)
+                    }
+                    
+                    if let data: Data = data {
+                        let snodes = parseSnodes(from: data)
+                        
+                        if !snodes.isEmpty {
+                            setSwarm(to: snodes, for: publicKey)
+                        }
+                        else {
+                            invalidateSwarm()
+                        }
+                    }
+                    else {
                         invalidateSwarm()
                     }
-                } else {
-                    invalidateSwarm()
                 }
-            } else {
-                SNLog("Got a 421 without an associated public key.")
-            }
-        default:
-            handleBadSnode()
-            SNLog("Unhandled response code: \(statusCode).")
+                else {
+                    SNLog("Got a 421 without an associated public key.")
+                }
+                
+            default:
+                handleBadSnode()
+                SNLog("Unhandled response code: \(statusCode).")
         }
+        
         return nil
     }
 }

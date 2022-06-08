@@ -84,6 +84,11 @@ final class RegisterVC : BaseVC {
         buttonStackView.axis = .vertical
         buttonStackView.spacing = isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing
         buttonStackView.alignment = .fill
+        if UIDevice.current.isIPad {
+            registerButton.set(.width, to: Values.iPadButtonWidth)
+            copyPublicKeyButton.set(.width, to: Values.iPadButtonWidth)
+            buttonStackView.alignment = .center
+        }
         // Set up button stack view container
         let buttonStackViewContainer = UIView()
         buttonStackViewContainer.addSubview(buttonStackView)

@@ -94,6 +94,19 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         selectionPanGesture.delegate = self
         self.selectionPanGesture = selectionPanGesture
         collectionView.addGestureRecognizer(selectionPanGesture)
+        
+        if #available(iOS 14, *) {
+            if PHPhotoLibrary.authorizationStatus(for: .readWrite) == .limited {
+                let addSeletedPhotoButton = UIBarButtonItem.init(barButtonSystemItem: .add, target: self, action: #selector(addSelectedPhoto))
+                self.navigationItem.rightBarButtonItem = addSeletedPhotoButton
+            }
+        }
+    }
+    
+    @objc func addSelectedPhoto(_ sender: Any) {
+        if #available(iOS 14, *) {
+            PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: self)
+        }
     }
 
     var selectionPanGesture: UIPanGestureRecognizer?
@@ -380,7 +393,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         collectionView.allowsMultipleSelection = delegate.isInBatchSelectMode
-        collectionView.reloadData()
+        reloadDataAndRestoreSelection()
     }
 
     func clearCollectionViewSelection() {
@@ -550,12 +563,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
         cell.configure(item: assetItem)
 
-        let isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
-        if isSelected {
-            cell.isSelected = isSelected
-        } else {
-            cell.isSelected = isSelected
-        }
+        cell.isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
 
         return cell
     }
