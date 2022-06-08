@@ -358,7 +358,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
                 // Re-fetch profile for this user.
                 ProfileFetcherJob.fetchProfile(address: address, ignoreThrottling: true)
 
-                return .memberHasOutdatedClient
+                return .userLacksGroupCapability
             }
             return .canBeSelected
         }

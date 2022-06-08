@@ -84,8 +84,7 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
         case .invalidRecipient:
             return .unknownError
         case .cannotReceiveGifts:
-            // TODO (GB): Return a better error here.
-            return .unknownError
+            return .userLacksGiftBadgeCapability
         case .canReceiveGifts:
             return .canBeSelected
         }
