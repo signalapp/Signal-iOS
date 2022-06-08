@@ -418,7 +418,7 @@
 /* Text telling the user that their gift is a one-time donation */
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "One-time Donation";
 
-/* Text in the action sheet when you try to send a gift badge but the payment failed */
+/* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
 "BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
