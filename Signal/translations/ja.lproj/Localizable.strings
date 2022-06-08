@@ -391,6 +391,12 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "月々の寄付をキャンセル";
 
+/* Text telling the user that they can add a message along with their gift badge */
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
+
+/* Placeholder in the text field where you can add text for a message along with your gift */
+"BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "メッセージを追加してください";
+
 /* Indicates that a contact cannot receive badges because they need to update Signal */
 "BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
 
@@ -403,14 +409,26 @@
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "送信先の選択";
 
+/* Title on the screen where you confirm sending of a gift badge, and can write a message */
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+
+/* Text telling the user that their gift is a one-time donation */
+"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "1回限りの寄付";
+
+/* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+
+/* Title for the action sheet when you try to send a gift badge but the payment failed */
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "月々の定期的な寄付が自動的にキャンセルされました。%@ %@バッジはプロフィールに表示されなくなりました。";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "長い間Signalを使用しなかったため、あなたのサポーターサブスクリプションは自動で解除されました。あなたの%@バッジは、プロフィールに表示されなくなっています。\n\nこのままでもSignalを使い続けることはできますが、Signal寄付をしていただける場合は、ぜひサブスクリプションを再開してください。";
@@ -1307,7 +1325,7 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "実行";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Signalの使用状況によっては、しばらく（数分以上）かかる場合があります。あまりに時間がかかる場合は、Signalを終了していただくと安全です。";
 
 /* Button to save database integrity check results to the debug log */
 "DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
@@ -1598,40 +1616,40 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "別の決済方法をお試しいただくか、取引先の銀行にお問い合わせください。";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Apple Payで決済方法が最新になっているか確認します。最新の情報に更新されていない場合は、更新してからもう一度お試しください。それでも問題がある場合は、カード会社にお問い合わせください。";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "このカードはこの支払いに対応していません。別の決済方法を試すか、カード会社にお問い合わせください。";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "カード番号が間違っています。Apple Payでカード番号を正しく入力してから、もう一度お試しください。";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "カード番号が間違っています。Apple Payでカード番号を正しく入力してから、もう一度お試しください。";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "カードのセキュリティーコードが間違っています。Apple Payでセキュリティーコード正しく入力してから、もう一度お試しください。";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "カードの残高が足りません。別の決済方法を試すか、カード会社にお問い合わせください。";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "決済方法の有効期限の月が間違っています。Apple Payで有効期限の月を正しく入力してから、もう一度お試しください。";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "決済方法の有効期限が間違っています。Apple Payで更新してからもう一度お試しください。";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "カード番号が間違っています。Apple Payでカード番号を正しく入力してから、もう一度お試しください。";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "再度、決済をお試しいただくか、取引先の銀行にお問い合わせください。";
+"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "もう一度お試しいただくか、カード会社にお問い合わせください。";
 
 /* Donation payment error for unspecified decline failures. */
-"DONATION_PAYMENT_ERROR_OTHER" = "別の決済方法をお試しいただくか、取引先の銀行にお問い合わせください。";
+"DONATION_PAYMENT_ERROR_OTHER" = "別の決済方法をお試しいただくか、カード会社にお問い合わせください。";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Apple Payで決済方法が最新になっているか確認します。最新の情報に更新されていない場合は、更新してからもう一度お試しください。";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "寄付額";
@@ -1649,7 +1667,7 @@
 "DONATION_RECEIPT_FOOTER" = "Signalをサポートいただき、ありがとうございます。皆様のご寄付は、表現の自由を守り、世界中の何百万人もの人々に安全なグローバルコミュニケーションを可能にするオープンソースのプライバシー技術の開発というミッションの推進に役立っています。米国にお住まいの方は、この領収書を税務記録のために保管しておいてください。Signal Technology Foundationは、米国内国歳入法第501c3条に基づく非課税の非営利団体です。連邦税IDは82-4506840です。";
 
 /* Title for one-time donation receipts */
-"DONATION_RECEIPT_ONE_TIME" = "都度";
+"DONATION_RECEIPT_ONE_TIME" = "1回";
 
 /* Title for recurring donation receipts */
 "DONATION_RECEIPT_RECURRING" = "サブスクリプション";
@@ -1700,7 +1718,7 @@
 "DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "別の方法";
 
 /* Title for the 'receipts' section on the donation screen */
-"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "受領書";
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "領収書";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "サブスクリプションのよくある質問";
@@ -2968,8 +2986,11 @@
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "通話が終了しました。";
 
-/* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "これらのチャットはアーカイブされ、新しいメッセージを受信した場合のみ受信トレイに表示されます。";
+/* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+
+/* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "まだチャットがありません。\n友達にメッセージを送って始めましょう。";
@@ -3553,12 +3574,6 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "メンバーの選択";
 
-/* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "変更を破棄しますか？";
-
-/* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "未保存の変更";
-
 /* No comment provided by engineer. */
 "new_message" = "新規メッセージ";
 
@@ -4023,6 +4038,12 @@
 
 /* Label for unknown payments. */
 "PAYMENTS_UNKNOWN_PAYMENT" = "無効な決済";
+
+/* The alert message if user tries to exit a task without saving changes. */
+"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "変更を破棄しますか？";
+
+/* The alert title if user tries to exit a task without saving changes. */
+"PENDING_CHANGES_ACTION_SHEET_TITLE" = "未保存の変更";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "グループに追加する";
@@ -5119,6 +5140,12 @@
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "メッセージ着信音";
 
+/* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+
+/* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "利用規約とプライバシーポリシー";
 
@@ -5858,7 +5885,7 @@
 "STORIES_HIDE_STORY_ACTION" = "ストーリを非表示";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No recent updates to show right now.";
+"STORIES_NO_RECENT_MESSAGES" = "ストーリーがありません";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "返信 なし";
@@ -5906,7 +5933,7 @@
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "サポーターになりませんか";
 
 /* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "サブスクリプションのIDをクリップボードにコピーしました。";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ に対する安全番号が一致しました。この相手は検証済みにできます。";

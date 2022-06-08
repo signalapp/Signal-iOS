@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can’t select more than 1 chat.</string>
+			<string>1 konuşmadan daha fazlasını seçemezsiniz.</string>
 			<key>other</key>
-			<string>You can’t select more than %d chats.</string>
+			<string>%d konuşmadan daha fazlasını seçemezsiniz.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -648,9 +648,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can’t share more than 1 item.</string>
+			<string>1 ögeden daha fazlasını paylaşamazsınız.</string>
 			<key>other</key>
-			<string>You can’t share more than %d items.</string>
+			<string>%d ögeden daha fazlasını paylaşamazsınız.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -856,9 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoke group invite sent by “%2$@”?</string>
+			<string>"%2$@" tarafından gönderilen davet iptal edilsin mi?</string>
 			<key>other</key>
-			<string>Revoke %d invites sent by “%2$@”?</string>
+			<string>"%2$@" tarafından gönderilen %d davet iptal edilsin mi?</string>
 		</dict>
 	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>

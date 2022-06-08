@@ -383,7 +383,7 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "Abzeichen abgelaufen";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "Mehr erfahren";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "Mehr erfahren.";
 
 /* Button text when a badge expires, asking you to renew your subscription */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Regelmäßige Spende verlängern";
@@ -391,8 +391,14 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monatliche Spende abgebrochen";
 
+/* Text telling the user that they can add a message along with their gift badge */
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Dein Geschenk wird in einer Eins-zu-Eins-Nachricht an den Empfänger versendet. Füge deine eigene Nachricht unten hinzu.";
+
+/* Placeholder in the text field where you can add text for a message along with your gift */
+"BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Füge eine Nachricht hinzu";
+
 /* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Signal muss aktualisiert werden, um Geschenke zu empfangen";
 
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Schenke jemandem ein Abzeichen, indem du in seinem Namen an Signal spendest. Er wird dann ein Abzeichen zur Anzeige auf seinem Profilfoto erhalten.";
@@ -403,17 +409,29 @@
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Empfänger auswählen";
 
+/* Title on the screen where you confirm sending of a gift badge, and can write a message */
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Ein Geschenkabzeichen versenden";
+
+/* Text telling the user that their gift is a one-time donation */
+"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Einmalige Spende";
+
+/* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+
+/* Title for the action sheet when you try to send a gift badge but the payment failed */
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "Hält %@";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Deine regelmäßige monatliche Spende wurde automatisch gekündigt. %@ Dein %@-Abzeichen ist nicht mehr in deinem Profil sichtbar.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Deine wiederkehrende monatliche Spende wurde automatisch gekündigt, da du längere Zeit inaktiv warst. Dein %@-Abzeichen ist nicht mehr in deinem Profil sichtbar.\n\nDu kannst Signal weiterhin verwenden, aber um die App zu unterstützen und dein Abzeichen zu reaktivieren, verlängere jetzt deine monatliche Spende.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Deine regelmäßige monatliche Spende wurde automatisch gekündigt, da du längere Zeit inaktiv warst. Dein %@-Abzeichen ist nicht mehr in deinem Profil sichtbar.\n\nDu kannst Signal weiterhin verwenden, aber um die App zu unterstützen und dein Abzeichen zu reaktivieren, verlängere jetzt deine monatliche Spende.";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Danke für deine Spende!";
@@ -1598,31 +1616,31 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Versuche eine andere Zahlungsmethode oder kontaktiere für mehr Informationen deine Bank.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Überprüfe, ob deine Zahlungsmethode in Apple Pay aktuell ist. Falls nicht, aktualisiere sie und versuche es erneut. Falls das Problem weiterhin besteht, kontaktiere deine Bank.";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Deine Karte unterstützt diese Art von Kauf nicht. Versuche eine andere Zahlungsmethode oder kontaktiere deine Bank für mehr Informationen.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Deine Karte is abgelaufen. Überprüfe, ob deine Zahlungsmethode in Apple Pay aktuell ist. Falls nicht, aktualisiere sie und versuche es erneut.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Deine Kartennummer ist falsch. Überprüfe, ob deine Zahlungsmethode korrekt in Apple Pay hinterlegt ist. Falls nicht, aktualisiere sie und versuche es erneut.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Deine CVC-Nummer ist falsch. Überprüfe, ob deine CVC-Nummer korrekt in Apple Pay hinterlegt ist. Falls nicht, aktualisiere sie und versuche es erneut.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Deine Karte ist nicht ausreichend gedeckt, um den Kauf abzuschließen. Versuche eine andere Zahlungsmethode oder kontaktiere deine Bank für mehr Informationen.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Der Ablaufmonat für deine Zahlungsmethode ist falsch. Aktualisiere ihn in Apple Pay und versuche es erneut.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "Das Ablaufjahr für deine Zahlungsmethode ist falsch. Aktualisiere es in Apple Pay und versuche es erneut.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Deine Kartennummer ist falsch. Aktualisiere diese in Apple Pay und versuche es erneut.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
 "DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Versuche erneut, diesen Kauf abzuschließen, oder kontaktiere für mehr Informationen deine Bank.";
@@ -1631,7 +1649,7 @@
 "DONATION_PAYMENT_ERROR_OTHER" = "Versuche eine andere Zahlungsmethode oder kontaktiere für mehr Informationen deine Bank.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Überprüfe, ob deine Zahlungsmethode in Apple Pay aktuell ist. Falls nicht, aktualisiere sie und versuche es erneut.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Betrag";
@@ -1652,7 +1670,7 @@
 "DONATION_RECEIPT_ONE_TIME" = "Einmalig";
 
 /* Title for recurring donation receipts */
-"DONATION_RECEIPT_RECURRING" = "Wiederkehrend";
+"DONATION_RECEIPT_RECURRING" = "Regelmäßig";
 
 /* Title on donation receipts */
 "DONATION_RECEIPT_TITLE" = "Spendenbescheinigung";
@@ -2968,8 +2986,11 @@
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Anruf beendet.";
 
-/* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Diese Unterhaltungen sind archiviert und werden nur dann im Eingang erscheinen, falls neue Nachrichten empfangen werden.";
+/* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+
+/* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Erwecke deinen Posteingang zum Leben. Leg los und schreib einer Freundin oder einem Freund.";
@@ -3062,7 +3083,7 @@
 "KEY_COMMAND_STICKERS" = "Sticker anzeigen";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unterhaltung in Eingang verschieben";
+"KEY_COMMAND_UNARCHIVE" = "Unterhaltung dearchivieren";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Mehr erfahren";
@@ -3553,12 +3574,6 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Mitglieder auswählen";
 
-/* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Möchtest du diese Änderungen verwerfen?";
-
-/* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Ungespeicherte Änderungen";
-
 /* No comment provided by engineer. */
 "new_message" = "Neue Nachricht";
 
@@ -4023,6 +4038,12 @@
 
 /* Label for unknown payments. */
 "PAYMENTS_UNKNOWN_PAYMENT" = "Ungültige Zahlung";
+
+/* The alert message if user tries to exit a task without saving changes. */
+"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Möchtest du diese Änderungen verwerfen?";
+
+/* The alert title if user tries to exit a task without saving changes. */
+"PENDING_CHANGES_ACTION_SHEET_TITLE" = "Ungespeicherte Änderungen";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Zur Gruppe hinzufügen";
@@ -5119,6 +5140,12 @@
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Nachrichtenton";
 
+/* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+
+/* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Bedingungen & Datenschutzerklärung";
 
@@ -5966,7 +5993,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Wird geladen …";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal ist eine gemeinnützige Organisation ohne Werbekunden oder Investoren, die nur von Menschen getragen wird, die es nutzen und schätzen. Leiste eine wiederkehrende monatliche Spende und erhalte ein Profil-Abzeichen, das deine Unterstützung zeigt.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal ist eine gemeinnützige Organisation ohne Werbekunden oder Investoren, die nur von Menschen getragen wird, die es nutzen und schätzen. Leiste eine regelmäßige monatliche Spende und erhalte ein Profil-Abzeichen, das deine Unterstützung zeigt.";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal setzt sich für die Entwicklung einer quelloffenen Datenschutztechnologie ein, die die freie Meinungsäußerung schützt und eine sichere globale Kommunikation ermöglicht.\n\nDeine Spende unterstützt dieses Ziel und finanziert die Entwicklung und den Betrieb einer App, die von Millionen Menschen für die vertrauliche Kommunikation genutzt wird. Keine Werbung. Keine Tracker. Kein Scherz.";
@@ -6056,7 +6083,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Aktualisieren";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Mit einer wiederkehrenden monatlichen Spende an Signal unterstützt du eine Technologie, die für dich und nicht für deine Daten entwickelt wurde.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Mit einer regelmäßigen monatlichen Spende an Signal unterstützt du eine Technologie, die für dich und nicht für deine Daten entwickelt wurde.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Aus";
@@ -6149,7 +6176,7 @@
 "TXT_DELETE_TITLE" = "Löschen";
 
 /* Label for the unarchive button for conversations list view */
-"UNARCHIVE_ACTION" = "Rückgängig";
+"UNARCHIVE_ACTION" = "Dearchivieren";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Nutzer nicht in deinen Kontakten. Möchtest du diesen Nutzer blockieren?";

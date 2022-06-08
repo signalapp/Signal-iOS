@@ -391,6 +391,12 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
 
+/* Text telling the user that they can add a message along with their gift badge */
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
+
+/* Placeholder in the text field where you can add text for a message along with your gift */
+"BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Wedzera tsamba";
+
 /* Indicates that a contact cannot receive badges because they need to update Signal */
 "BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
 
@@ -403,8 +409,20 @@
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
 
+/* Title on the screen where you confirm sending of a gift badge, and can write a message */
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+
+/* Text telling the user that their gift is a one-time donation */
+"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "One-time Donation";
+
+/* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+
+/* Title for the action sheet when you try to send a gift badge but the payment failed */
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
@@ -2968,8 +2986,11 @@
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Runhare rwadzimwa.";
 
-/* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Nhaurwa idzi dzapfimbikwa uye anongooneka kana tsamba dzagamuchirwa.";
+/* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+
+/* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
@@ -3553,12 +3574,6 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Sarudza Nhengo";
 
-/* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Ukuda kurasa shanduko iyi here?";
-
-/* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Shanduko isina kuchengetwa";
-
 /* No comment provided by engineer. */
 "new_message" = "Tsamba itsva";
 
@@ -4023,6 +4038,12 @@
 
 /* Label for unknown payments. */
 "PAYMENTS_UNKNOWN_PAYMENT" = "Invalid Payment";
+
+/* The alert message if user tries to exit a task without saving changes. */
+"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Ukuda kurasa shanduko iyi here?";
+
+/* The alert title if user tries to exit a task without saving changes. */
+"PENDING_CHANGES_ACTION_SHEET_TITLE" = "Shanduko isina kuchengetwa";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Wedzera ku Boka";
@@ -5118,6 +5139,12 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Toni ye Tsamba";
+
+/* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+
+/* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";

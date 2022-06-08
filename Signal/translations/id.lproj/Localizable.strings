@@ -137,7 +137,7 @@
 "APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Menjalankan Pengecekan Integritas Basis Data";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "Open Signal Instead";
+"APP_LAUNCH_FAILURE_CONTINUE" = "Buka Signal Sebagai Gantinya";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Tidak Dapat Memuat Basis Data";
@@ -391,29 +391,47 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Donasi bulanan dibatalkan";
 
+/* Text telling the user that they can add a message along with their gift badge */
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Hadiah Anda akan dikirim dalam pesan 1 dengan 1 ke penerima. Tambahkan pesan Anda di bawah.";
+
+/* Placeholder in the text field where you can add text for a message along with your gift */
+"BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Tambah pesan";
+
 /* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Harus memperbaharui Signal untuk menerima hadiah";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Hadiahkan seseorang sebuah lencana dengan membuat donasi ke Signal atas nama mereka. Mereka akan mendapatkan lencana untuk diperlihatkan pada foto profil mereka.";
 
 /* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Hadiahkan sebuah lencana";
 
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Pilih Penerima";
 
+/* Title on the screen where you confirm sending of a gift badge, and can write a message */
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Kirim sebuah lencana hadiah";
+
+/* Text telling the user that their gift is a one-time donation */
+"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Donasi satu kali";
+
+/* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+
+/* Title for the action sheet when you try to send a gift badge but the payment failed */
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "Terakhir %@";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Donasi bulanan berulang Anda telah dibatalkan secara otomatis. %@ Lencana %@ Anda tidak lagi terlihat pada profil Anda.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Langganan berulang bulanan Anda telah dibatalkan secara otomatis karena Anda tidak aktif terlalu lama. Lencana %@ Anda tidak lagi terlihat pada profil Anda.\n\nAnda bisa tetap menggunakan Signal tetapi untuk mendukung aplikasi dan mengaktivasi ulang lencana Anda, perbarui sekarang.";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Terima kasih untuk Penguatnya!";
@@ -923,10 +941,10 @@
 "CONTACT_SUPPORT" = "Hubungi Bantuan";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donasi & Lencana";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donasi & Lencana";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Saya ingin meminta fitur baru";
@@ -1307,7 +1325,7 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Jalankan";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Ini mungkin akan memakan waktu yang cukup lama (beberapa menit atau lebih) bergantung seberapa banyak Anda telah menggunakan Signal. Aman untuk menutup Signal jika memakan waktu terlalu lama.";
 
 /* Button to save database integrity check results to the debug log */
 "DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Tambahkan ke Catatan Awakutu";
@@ -1673,7 +1691,7 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Berdonasi ke Signal";
 
 /* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "Gift a Badge";
+"DONATION_VIEW_GIFT" = "Hadiahkan sebuah lencana";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "Galat jaringan. Periksa koneksi Anda dan coba lagi.";
@@ -2968,8 +2986,11 @@
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Panggilan Berakhir.";
 
-/* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Percakapan ini diarsipkan dan akan muncul di kotak masuk saat pesan baru diterima.";
+/* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+
+/* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Tidak ada pesan.\nMulailah dengan mengirim pesan kepada seorang teman.";
@@ -3553,12 +3574,6 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Pilih Anggota";
 
-/* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Anda ingin membatalkan perubahan ini?";
-
-/* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Perubahan Tak Tersimpan";
-
 /* No comment provided by engineer. */
 "new_message" = "Pesan Baru";
 
@@ -4023,6 +4038,12 @@
 
 /* Label for unknown payments. */
 "PAYMENTS_UNKNOWN_PAYMENT" = "Pembayaran Tidak Valid";
+
+/* The alert message if user tries to exit a task without saving changes. */
+"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Anda ingin membatalkan perubahan ini?";
+
+/* The alert title if user tries to exit a task without saving changes. */
+"PENDING_CHANGES_ACTION_SHEET_TITLE" = "Perubahan Tak Tersimpan";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Tambahkan ke Grup";
@@ -4493,7 +4514,7 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Pesan asli tidak ditemukan.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Bereaksi terhadap cerita Anda";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
@@ -5118,6 +5139,12 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Suara Pesan";
+
+/* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+
+/* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Syarat & Kebijakan Privasi";
@@ -6056,7 +6083,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Perbarui";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Buat donasi bulanan yang berulang ke Signal untuk mendukung teknologi yang dibangun untuk Anda, buka data Anda.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Buat donasi bulanan yang berulang ke Signal untuk mendukung teknologi yang dibangun untuk Anda, bukan data Anda.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Mati";

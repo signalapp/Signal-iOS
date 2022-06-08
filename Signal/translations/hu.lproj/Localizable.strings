@@ -391,8 +391,14 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Havi támogatás visszavonva";
 
+/* Text telling the user that they can add a message along with their gift badge */
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Az ajándékot közvetlen üzenetben adhatod át a címzett részére. Egészítsd ki saját üzeneteddel!";
+
+/* Placeholder in the text field where you can add text for a message along with your gift */
+"BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Szöveg hozzáadása";
+
 /* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Ajándék fogadásához frissítened kell a Signalt";
 
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Nevében tett Signal adománnyal ajándékozz kitűzőt ismerősödnek, aki aztán kiteheti azt profilképére.";
@@ -403,14 +409,26 @@
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Válassz címzettet";
 
+/* Title on the screen where you confirm sending of a gift badge, and can write a message */
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Ajándék kitűző küldése";
+
+/* Text telling the user that their gift is a one-time donation */
+"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Egyszeri adomány";
+
+/* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+
+/* Title for the action sheet when you try to send a gift badge but the payment failed */
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "Lejárat: %@";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "A havi adományodra vonatkozó megállapodást automatikusan töröltük. %@ A %@ kitűző már nem látható profilodon.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Rendszeres havi támogatásod automatikusan kikapcsolásra került, mert túl sokáig voltál inaktív. A %@ kitűződ már nem látható profilképeden.\n\nA Signal használata nem változik, de ha fenntartanád a támogatásod és újraaktiválnád a kitűződet, akkor előfizetésed megújítása szükséges.";
@@ -1598,31 +1616,31 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Próbáld újra egy másik fizetési eszközzel, vagy keresd fel bankodat további információért!";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Győződj meg róla, hogy fizetési eszközöd naprakész az Apple Payben, majd próbáld újra. Ha a probléma továbbra is fennáll, keresd fel bankod ügyfélszolgálatát.";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "A kártyádat nem lehet ilyen típusú fizetési tranzakcióra használni. Próbáld újra egy másik fizetési eszközzel vagy keresd fel bankod ügyfélszolgálatát!";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Bankkártyád lejárt. Ellenőrizd, hogy a fizetési beállításaid az Apple Payben aktuálisak -e. Ha nem, kérjük frissítsd és próbáld újra.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Bankkártyaszámod nem megfelelő. Ellenőrizd, hogy a fizetési beállításaid az Apple Payben aktuálisak -e. Ha nem, kérjük frissítsd és próbáld újra.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Bankkártyád CVC kódja nem megfelelő. Ellenőrizd, a CVC értékét az Apple Payben, majd ha kell, frissítsd a beállításokat és próbáld újra.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Bankkártyádon nincs elég fedezet a művelet végrehajtására. Próbálj már fizetési módot, vagy keresd fel bankod ügyfélszolgálatát.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "A kártyádhoz tartozó lejárati hónap helytelen. Frissítsd az Apple Payben, majd próbáld újra!";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "A kártyádhoz tartozó lejárati év helytelen. Frissítsd a Apple Payben, majd próbáld újra!";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Kártyaszámod helytelen. Frissítsd a Apple Payben, majd próbáld újra!";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
 "DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Próbáld meg újra végrehajtani a fizetési tranzakciót, vagy keresd fel bankodat további információért!";
@@ -1631,7 +1649,7 @@
 "DONATION_PAYMENT_ERROR_OTHER" = "Próbáld újra egy másik fizetési eszközzel, vagy keresd fel bankodat további információért!";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Ellenőrizd, hogy a fizetési beállításaid az Apple Payben aktuálisak -e. Ha nem, kérjük frissítsd és próbáld újra.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Összeg";
@@ -2968,8 +2986,11 @@
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Hívás vége";
 
-/* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ezek a beszélgetések archiválva vannak, ezért csak akkor jelennek meg újra a bejövő beszélgetések közt, ha részükre újabb üzenet érkezik.";
+/* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+
+/* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Még üres a beszélgetéslista.\nKezdésként üzenj egy barátodnak.";
@@ -3553,12 +3574,6 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Tagok kiválasztása";
 
-/* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Elveted a módosításokat?";
-
-/* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Mentetlen változtatások";
-
 /* No comment provided by engineer. */
 "new_message" = "Új üzenet";
 
@@ -4023,6 +4038,12 @@
 
 /* Label for unknown payments. */
 "PAYMENTS_UNKNOWN_PAYMENT" = "Érvénytelen fizetés";
+
+/* The alert message if user tries to exit a task without saving changes. */
+"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Elveted a módosításokat?";
+
+/* The alert title if user tries to exit a task without saving changes. */
+"PENDING_CHANGES_ACTION_SHEET_TITLE" = "Mentetlen változtatások";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Hozzáadás a csoporthoz";
@@ -5118,6 +5139,12 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Üzenet hang";
+
+/* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+
+/* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Adatvédelmi és Általános Szerződési Feltételek";

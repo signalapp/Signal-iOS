@@ -130,10 +130,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>You can’t select more than 1 chat.</string>
 			<key>other</key>
-			<string>You can’t select more than %d chats.</string>
+			<string>%d件以上はチャットを選択できません。</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -527,10 +525,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>Invitation to the group were revoked for 1 person.</string>
 			<key>other</key>
-			<string>Invitations to the group were revoked for %d people.</string>
+			<string>%d人に対するグループへの招待が取り消されました。</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -543,10 +539,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>%2$@ revoked an invitation to the group for 1 person.</string>
 			<key>other</key>
-			<string>%2$@ revoked an invitation to the group for %d people.</string>
+			<string>%2$@が%d人のユーザに対するグループへの招待を取り消しました。</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
