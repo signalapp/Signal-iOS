@@ -143,6 +143,7 @@ class AudioMessageView: ManualStackView {
         }
 
         let topInnerStack = ManualStackView(name: "playerStack")
+        topInnerStack.semanticContentAttribute = .playback
         topInnerStack.configure(config: Self.topInnerStackConfig,
                              cellMeasurement: cellMeasurement,
                              measurementKey: Self.measurementKey_topInnerStack,
@@ -224,13 +225,21 @@ class AudioMessageView: ManualStackView {
                                                                              conversationStyle: conversationStyle)
         let playbackTimeLabelSize = CVText.measureLabel(config: playbackTimeLabelConfig, maxWidth: maxWidth)
 
-        let leadingInset = CGSize(width: 44, height: 0)
-        let bottomInnerSubviewInfos: [ManualStackSubviewInfo] = [
-            leadingInset.asManualSubviewInfo(hasFixedWidth: true),
+        let leftInset = CGSize(width: 44, height: 0)
+        var bottomInnerSubviewInfos: [ManualStackSubviewInfo] = [
             playbackTimeLabelSize.asManualSubviewInfo(hasFixedSize: true),
-            dotSize.asManualSubviewInfo(hasFixedSize: true),
-            .empty
+            dotSize.asManualSubviewInfo(hasFixedSize: true)
         ]
+
+        // The playback controls are always rendered RTL, but the timestamps remain pinned to the
+        // trailing edge of the message bubble, as such we need to re-arrange the spacing to accommodate.
+        if CurrentAppContext().isRTL {
+            bottomInnerSubviewInfos.insert(leftInset.asManualSubviewInfo(hasFixedWidth: true), at: 0)
+            bottomInnerSubviewInfos.append(.empty)
+        } else {
+            bottomInnerSubviewInfos.insert(.empty, at: 0)
+            bottomInnerSubviewInfos.append(leftInset.asManualSubviewInfo(hasFixedWidth: true))
+        }
 
         let bottomInnerStackMeasurement = ManualStackView.measure(config: bottomInnerStackConfig,
                                                             measurementBuilder: measurementBuilder,
@@ -337,13 +346,7 @@ class AudioMessageView: ManualStackView {
 
     func progressForLocation(_ point: CGPoint) -> CGFloat {
         let sliderContainer = convert(waveformProgress.frame, from: waveformProgress.superview)
-        var newRatio = CGFloatInverseLerp(point.x, sliderContainer.minX, sliderContainer.maxX).clamp01()
-
-        // When in RTL mode, the slider moves in the opposite direction so inverse the ratio.
-        if CurrentAppContext().isRTL {
-            newRatio = 1 - newRatio
-        }
-
+        let newRatio = CGFloatInverseLerp(point.x, sliderContainer.minX, sliderContainer.maxX).clamp01()
         return newRatio.clamp01()
     }
 

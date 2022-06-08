@@ -157,8 +157,7 @@ class AudioWaveformProgressView: UIView {
         unplayedShapeLayer.frame = bounds
 
         let progress = self.value
-        var thumbXPos = width * progress
-        if CurrentAppContext().isRTL { thumbXPos = width - thumbXPos }
+        let thumbXPos = width * progress
 
         thumbView.frame.size = CGSize(width: sampleWidth, height: height)
         thumbView.layer.cornerRadius = sampleWidth / 2
@@ -183,8 +182,7 @@ class AudioWaveformProgressView: UIView {
             // Center the sample vertically.
             let yPos = bounds.center.y - sampleHeight / 2
 
-            var xPos = CGFloat(x) * (sampleWidth + sampleSpacing)
-            if CurrentAppContext().isRTL { xPos = width - xPos }
+            let xPos = CGFloat(x) * (sampleWidth + sampleSpacing)
 
             let sampleFrame = CGRect(
                 x: xPos,
