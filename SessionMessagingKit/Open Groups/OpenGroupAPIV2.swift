@@ -368,6 +368,7 @@ public final class OpenGroupAPIV2 : NSObject {
         }
     }
     
+    @discardableResult
     public static func batchDeleteMessages(for room: String, on server: String, messageIds: [String]) -> Promise<Void> {
         let json: JSON = ["ids": messageIds.compactMap{ Int($0) }]
         let request = Request(verb: .post, room: room, server: server, endpoint: "delete_messages", parameters: json)
