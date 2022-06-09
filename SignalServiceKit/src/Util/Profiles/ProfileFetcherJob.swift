@@ -594,6 +594,7 @@ public class ProfileFetcherJob: NSObject {
                     avatarUrlPath: profile.avatarUrlPath,
                     optionalAvatarFileUrl: avatarUrl,
                     profileBadges: profileBadgeMetadata,
+                    canReceiveGiftBadges: profile.canReceiveGiftBadges,
                     lastFetch: Date(),
                     userProfileWriter: .profileFetch,
                     transaction: writeTx
@@ -642,6 +643,7 @@ public class ProfileFetcherJob: NSObject {
             avatarUrlPath: nil,
             optionalAvatarFileUrl: nil,
             profileBadges: nil,
+            canReceiveGiftBadges: false,
             lastFetch: Date.distantPast,
             userProfileWriter: .profileFetch,
             transaction: transaction

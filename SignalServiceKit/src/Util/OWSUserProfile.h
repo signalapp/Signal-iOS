@@ -54,6 +54,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
 @property (atomic, readonly) BOOL isStoriesCapable;
 @property (atomic, readonly, nullable) OWSUserProfileBadgeInfo *primaryBadge;
 @property (atomic, readonly, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
+@property (atomic, readonly) BOOL canReceiveGiftBadges;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (atomic, readonly, nullable) NSString *avatarFileName;
@@ -86,6 +87,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                              bio:(nullable NSString *)bio
                         bioEmoji:(nullable NSString *)bioEmoji
+            canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
                       familyName:(nullable NSString *)familyName
                 isStoriesCapable:(BOOL)isStoriesCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
@@ -96,7 +98,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
                         username:(nullable NSString *)username
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:bio:bioEmoji:familyName:isStoriesCapable:lastFetchDate:lastMessagingDate:profileBadgeInfo:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:bio:bioEmoji:canReceiveGiftBadges:familyName:isStoriesCapable:lastFetchDate:lastMessagingDate:profileBadgeInfo:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
 
 // clang-format on
 

@@ -21,6 +21,7 @@ class OWSProfileManagerTest: SignalBaseTest {
         let profile = OWSUserProfile(address: SignalServiceAddress(uuid: UUID()))
         profile.update(username: username,
                        isStoriesCapable: true,
+                       canReceiveGiftBadges: true,
                        userProfileWriter: .tests,
                        transaction: transaction)
         return profile

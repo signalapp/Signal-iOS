@@ -44,6 +44,7 @@ public struct UserProfileRecord: SDSRecord {
     public let bioEmoji: String?
     public let profileBadgeInfo: Data?
     public let isStoriesCapable: Bool
+    public let canReceiveGiftBadges: Bool
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -63,6 +64,7 @@ public struct UserProfileRecord: SDSRecord {
         case bioEmoji
         case profileBadgeInfo
         case isStoriesCapable
+        case canReceiveGiftBadges
     }
 
     public static func columnName(_ column: UserProfileRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -103,6 +105,7 @@ public extension UserProfileRecord {
         bioEmoji = row[14]
         profileBadgeInfo = row[15]
         isStoriesCapable = row[16]
+        canReceiveGiftBadges = row[17]
     }
 }
 
@@ -138,6 +141,7 @@ extension OWSUserProfile {
             let avatarUrlPath: String? = record.avatarUrlPath
             let bio: String? = record.bio
             let bioEmoji: String? = record.bioEmoji
+            let canReceiveGiftBadges: Bool = record.canReceiveGiftBadges
             let familyName: String? = record.familyName
             let isStoriesCapable: Bool = record.isStoriesCapable
             let lastFetchDateInterval: Double? = record.lastFetchDate
@@ -159,6 +163,7 @@ extension OWSUserProfile {
                                   avatarUrlPath: avatarUrlPath,
                                   bio: bio,
                                   bioEmoji: bioEmoji,
+                                  canReceiveGiftBadges: canReceiveGiftBadges,
                                   familyName: familyName,
                                   isStoriesCapable: isStoriesCapable,
                                   lastFetchDate: lastFetchDate,
@@ -223,6 +228,7 @@ extension OWSUserProfile: DeepCopyable {
             let avatarUrlPath: String? = modelToCopy.avatarUrlPath
             let bio: String? = modelToCopy.bio
             let bioEmoji: String? = modelToCopy.bioEmoji
+            let canReceiveGiftBadges: Bool = modelToCopy.canReceiveGiftBadges
             let familyName: String? = modelToCopy.familyName
             let isStoriesCapable: Bool = modelToCopy.isStoriesCapable
             let lastFetchDate: Date? = modelToCopy.lastFetchDate
@@ -264,6 +270,7 @@ extension OWSUserProfile: DeepCopyable {
                                   avatarUrlPath: avatarUrlPath,
                                   bio: bio,
                                   bioEmoji: bioEmoji,
+                                  canReceiveGiftBadges: canReceiveGiftBadges,
                                   familyName: familyName,
                                   isStoriesCapable: isStoriesCapable,
                                   lastFetchDate: lastFetchDate,
@@ -303,6 +310,7 @@ extension OWSUserProfileSerializer {
     static var bioEmojiColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "bioEmoji", columnType: .unicodeString, isOptional: true) }
     static var profileBadgeInfoColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "profileBadgeInfo", columnType: .blob, isOptional: true) }
     static var isStoriesCapableColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isStoriesCapable", columnType: .int) }
+    static var canReceiveGiftBadgesColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "canReceiveGiftBadges", columnType: .int) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -326,7 +334,8 @@ extension OWSUserProfileSerializer {
         bioColumn,
         bioEmojiColumn,
         profileBadgeInfoColumn,
-        isStoriesCapableColumn
+        isStoriesCapableColumn,
+        canReceiveGiftBadgesColumn
         ])
     }
 }
@@ -733,8 +742,9 @@ class OWSUserProfileSerializer: SDSSerializer {
         let bioEmoji: String? = model.bioEmoji
         let profileBadgeInfo: Data? = optionalArchive(model.profileBadgeInfo)
         let isStoriesCapable: Bool = model.isStoriesCapable
+        let canReceiveGiftBadges: Bool = model.canReceiveGiftBadges
 
-        return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, username: username, familyName: familyName, lastFetchDate: lastFetchDate, lastMessagingDate: lastMessagingDate, bio: bio, bioEmoji: bioEmoji, profileBadgeInfo: profileBadgeInfo, isStoriesCapable: isStoriesCapable)
+        return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, username: username, familyName: familyName, lastFetchDate: lastFetchDate, lastMessagingDate: lastMessagingDate, bio: bio, bioEmoji: bioEmoji, profileBadgeInfo: profileBadgeInfo, isStoriesCapable: isStoriesCapable, canReceiveGiftBadges: canReceiveGiftBadges)
     }
 }
 

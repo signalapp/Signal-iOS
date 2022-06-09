@@ -124,6 +124,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 @property (atomic, nullable) NSString *username;
 @property (atomic) BOOL isStoriesCapable;
 @property (atomic, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
+@property (atomic) BOOL canReceiveGiftBadges;
 @property (atomic, nullable) NSDate *lastFetchDate;
 @property (atomic, nullable) NSDate *lastMessagingDate;
 
@@ -154,6 +155,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                              bio:(nullable NSString *)bio
                         bioEmoji:(nullable NSString *)bioEmoji
+            canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
                       familyName:(nullable NSString *)familyName
                 isStoriesCapable:(BOOL)isStoriesCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
@@ -176,6 +178,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     _avatarUrlPath = avatarUrlPath;
     _bio = bio;
     _bioEmoji = bioEmoji;
+    _canReceiveGiftBadges = canReceiveGiftBadges;
     _familyName = familyName;
     _isStoriesCapable = isStoriesCapable;
     _lastFetchDate = lastFetchDate;
@@ -558,6 +561,9 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     }
     if (changes.isStoriesCapable != nil) {
         profile.isStoriesCapable = changes.isStoriesCapable.value;
+    }
+    if (changes.canReceiveGiftBadges != nil) {
+        profile.canReceiveGiftBadges = changes.canReceiveGiftBadges.value;
     }
     if (changes.badges != nil) {
         profile.profileBadgeInfo = changes.badges;

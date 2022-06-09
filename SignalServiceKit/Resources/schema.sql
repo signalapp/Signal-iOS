@@ -367,6 +367,7 @@ CREATE
             ,"bioEmoji" TEXT
             ,"profileBadgeInfo" BLOB
             ,"isStoriesCapable" BOOLEAN NOT NULL DEFAULT 0
+            ,"canReceiveGiftBadges" BOOLEAN NOT NULL DEFAULT 0
         )
 ;
 

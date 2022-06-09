@@ -62,21 +62,30 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                                           value: identityKey?.hexadecimalString,
                                           accessibilityIdentifier: "identity_key"))
 
-                var capabilities = [String]()
+                var groupCapabilities = [String]()
                 if GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address,
                                                                         transaction: transaction) {
-                    capabilities.append("migration")
+                    groupCapabilities.append("migration")
                 }
                 if GroupManager.doesUserHaveAnnouncementOnlyGroupsCapability(address: address,
                                                                              transaction: transaction) {
-                    capabilities.append("announcementGroup")
+                    groupCapabilities.append("announcementGroup")
                 }
                 if GroupManager.doesUserHaveSenderKeyCapability(address: address,
                                                                 transaction: transaction) {
-                    capabilities.append("senderKey")
+                    groupCapabilities.append("senderKey")
                 }
-                section.add(.label(withText: String(format: "Capabilities: %@",
-                                                    capabilities.joined(separator: ", "))))
+                section.add(.label(withText: String(format: "Group Capabilities: %@",
+                                                    groupCapabilities.joined(separator: ", "))))
+
+                var canReceiveGiftBadgesString: String
+                if let profile = profileManager.getUserProfile(for: address, transaction: transaction) {
+                    canReceiveGiftBadgesString = profile.canReceiveGiftBadges ? "Yes" : "No"
+                } else {
+                    canReceiveGiftBadgesString = "Profile not found!"
+                }
+                section.add(.label(withText: String(format: "Can Receive Gift Badges? %@",
+                                                    canReceiveGiftBadgesString)))
 
                 let arePaymentsEnabled = paymentsHelper.arePaymentsEnabled(for: address,
                                                                      transaction: transaction)

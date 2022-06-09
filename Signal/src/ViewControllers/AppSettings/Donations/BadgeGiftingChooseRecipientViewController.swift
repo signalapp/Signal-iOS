@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 class BadgeGiftingChooseRecipientViewController: OWSViewController {
     private let badge: ProfileBadge
@@ -10,6 +11,8 @@ class BadgeGiftingChooseRecipientViewController: OWSViewController {
     private let currencyCode: Currency.Code
 
     private let recipientPicker = RecipientPickerViewController()
+
+    private var canReceiveGiftBadgesCache: [SignalServiceAddress: Bool] = [:]
 
     private lazy var threadFinder: AnyThreadFinder = AnyThreadFinder()
 
@@ -68,19 +71,42 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
         case canReceiveGifts
     }
 
-    private func getRecipientGiftMode(_ recipient: PickedRecipient) -> RecipientGiftMode {
+    private static func getRecipientAddress(_ recipient: PickedRecipient) -> SignalServiceAddress? {
         guard let address = recipient.address, address.isValid, !address.isLocalAddress else {
             owsFailDebug("Invalid recipient. Did a group make its way in?")
+            return nil
+        }
+        return address
+    }
+
+    private func getCachedGiftMode(_ address: SignalServiceAddress) -> RecipientGiftMode? {
+        guard let cached = canReceiveGiftBadgesCache[address] else { return nil }
+        return cached ? .canReceiveGifts : .cannotReceiveGifts
+    }
+
+    private func fetchGiftMode(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> RecipientGiftMode {
+        guard let profile = self.profileManager.getUserProfile(for: address, transaction: transaction) else {
+            owsFailDebug("Invalid recipient. I can't find a profile for this address")
             return .invalidRecipient
         }
+        let canReceiveGiftBadges = profile.canReceiveGiftBadges
+        canReceiveGiftBadgesCache[address] = canReceiveGiftBadges
+        return canReceiveGiftBadges ? .canReceiveGifts : .cannotReceiveGifts
+    }
 
-        // TODO (GB): Properly respect capabilities.
-        return .canReceiveGifts
+    private func getRecipientGiftMode(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> RecipientGiftMode {
+        guard let address = Self.getRecipientAddress(recipient) else { return .invalidRecipient }
+        return getCachedGiftMode(address) ?? fetchGiftMode(address, transaction: transaction)
+    }
+
+    private func getRecipientGiftModeWithSneakyTransaction(_ recipient: PickedRecipient) -> RecipientGiftMode {
+        guard let address = Self.getRecipientAddress(recipient) else { return .invalidRecipient }
+        return getCachedGiftMode(address) ?? self.databaseStorage.read { fetchGiftMode(address, transaction: $0) }
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          getRecipientState recipient: PickedRecipient) -> RecipientPickerRecipientState {
-        switch getRecipientGiftMode(recipient) {
+        switch getRecipientGiftModeWithSneakyTransaction(recipient) {
         case .invalidRecipient:
             return .unknownError
         case .cannotReceiveGifts:
@@ -92,7 +118,7 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          didSelectRecipient recipient: PickedRecipient) {
-        switch getRecipientGiftMode(recipient) {
+        switch getRecipientGiftModeWithSneakyTransaction(recipient) {
         case .invalidRecipient, .cannotReceiveGifts:
             owsFail("Invalid recipient. Can this recipient receive gifts?")
         case .canReceiveGifts:
@@ -130,7 +156,7 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient,
                          transaction: SDSAnyReadTransaction) -> NSAttributedString? {
-        switch getRecipientGiftMode(recipient) {
+        switch getRecipientGiftMode(recipient, transaction: transaction) {
         case .invalidRecipient, .cannotReceiveGifts:
             return NSLocalizedString("BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE",
                                      comment: "Indicates that a contact cannot receive badges because they need to update Signal").attributedString()

@@ -393,6 +393,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
     [userProfile updateWithUsername:username
                    isStoriesCapable:YES
+               canReceiveGiftBadges:SSKFeatureFlags.giftBadgeReceiving
                   userProfileWriter:userProfileWriter
                         transaction:transaction];
 }
@@ -1713,6 +1714,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
           optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
                   profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
+           canReceiveGiftBadges:(BOOL)canReceiveGiftBadges
                   lastFetchDate:(NSDate *)lastFetchDate
               userProfileWriter:(UserProfileWriter)userProfileWriter
                     transaction:(SDSAnyWriteTransaction *)writeTx
@@ -1737,6 +1739,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     if (!userProfile.profileKey) {
         [userProfile updateWithUsername:username
                        isStoriesCapable:isStoriesCapable
+                   canReceiveGiftBadges:canReceiveGiftBadges
                           lastFetchDate:lastFetchDate
                       userProfileWriter:userProfileWriter
                             transaction:writeTx];
@@ -1748,6 +1751,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                                 username:username
                         isStoriesCapable:isStoriesCapable
                                   badges:profileBadges
+                    canReceiveGiftBadges:canReceiveGiftBadges
                            avatarUrlPath:avatarUrlPath
                           avatarFileName:optionalAvatarFileUrl.lastPathComponent
                            lastFetchDate:lastFetchDate
@@ -1762,6 +1766,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                                 username:username
                         isStoriesCapable:isStoriesCapable
                                   badges:profileBadges
+                    canReceiveGiftBadges:canReceiveGiftBadges
                            avatarUrlPath:avatarUrlPath
                            lastFetchDate:lastFetchDate
                        userProfileWriter:userProfileWriter
