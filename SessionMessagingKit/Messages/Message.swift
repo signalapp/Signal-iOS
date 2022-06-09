@@ -100,6 +100,7 @@ public extension Message {
         case unsendRequest
         case messageRequestResponse
         case visibleMessage
+        case callMessage
         
         init?(from type: Message) {
             switch type {
@@ -112,6 +113,7 @@ public extension Message {
                 case is UnsendRequest: self = .unsendRequest
                 case is MessageRequestResponse: self = .messageRequestResponse
                 case is VisibleMessage: self = .visibleMessage
+                case is CallMessage: self = .callMessage
                 default: return nil
             }
         }
@@ -127,6 +129,7 @@ public extension Message {
                 case .unsendRequest: return UnsendRequest.self
                 case .messageRequestResponse: return MessageRequestResponse.self
                 case .visibleMessage: return VisibleMessage.self
+                case .callMessage: return CallMessage.self
             }
         }
 
@@ -146,6 +149,7 @@ public extension Message {
                 case .unsendRequest: return try container.decode(UnsendRequest.self, forKey: key)
                 case .messageRequestResponse: return try container.decode(MessageRequestResponse.self, forKey: key)
                 case .visibleMessage: return try container.decode(VisibleMessage.self, forKey: key)
+                case .callMessage: return try container.decode(CallMessage.self, forKey: key)
             }
         }
     }
@@ -162,7 +166,8 @@ public extension Message {
             .configurationMessage,
             .unsendRequest,
             .messageRequestResponse,
-            .visibleMessage
+            .visibleMessage,
+            .callMessage
         ]
         
         return prioritisedVariants
@@ -171,6 +176,26 @@ public extension Message {
                 
                 return variant.messageType.fromProto(proto, sender: sender)
             }
+    }
+    
+    static func shouldSync(message: Message) -> Bool {
+        switch message {
+            case let controlMessage as ClosedGroupControlMessage:
+                switch controlMessage.kind {
+                    case .new: return true
+                    default: return false
+                }
+                
+            case let callMessage as CallMessage:
+                switch callMessage.kind {
+                    case .answer, .endCall: return true
+                    default: return false
+                }
+                
+            case is ConfigurationMessage: return true
+            case is UnsendRequest: return true
+            default: return false
+        }
     }
     
     static func processRawReceivedMessage(
@@ -260,22 +285,95 @@ public extension Message {
         return processedMessage
     }
     
+    static func processReceivedOpenGroupMessage(
+        _ db: Database,
+        openGroupId: String,
+        openGroupServerPublicKey: String,
+        message: OpenGroupAPI.Message,
+        data: Data,
+        dependencies: Dependencies = Dependencies()
+    ) throws -> ProcessedMessage? {
+        // Need a sender in order to process the message
+        guard let sender: String = message.sender else { return nil }
+        
+        // Note: The `posted` value is in seconds but all messages in the database use milliseconds for timestamps
+        let envelopeBuilder = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(message.posted * 1000)))
+        envelopeBuilder.setContent(data)
+        envelopeBuilder.setSource(sender)
+        
+        guard let envelope = try? envelopeBuilder.build() else {
+            throw MessageReceiverError.invalidMessage
+        }
+        
+        return try processRawReceivedMessage(
+            db,
+            envelope: envelope,
+            serverExpirationTimestamp: nil,
+            serverHash: nil,
+            openGroupId: openGroupId,
+            openGroupMessageServerId: message.id,
+            openGroupServerPublicKey: openGroupServerPublicKey,
+            handleClosedGroupKeyUpdateMessages: false,
+            dependencies: dependencies
+        )
+    }
+    
+    static func processReceivedOpenGroupDirectMessage(
+        _ db: Database,
+        openGroupServerPublicKey: String,
+        message: OpenGroupAPI.DirectMessage,
+        data: Data,
+        isOutgoing: Bool? = nil,
+        otherBlindedPublicKey: String? = nil,
+        dependencies: Dependencies = Dependencies()
+    ) throws -> ProcessedMessage? {
+        // Note: The `posted` value is in seconds but all messages in the database use milliseconds for timestamps
+        let envelopeBuilder = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(message.posted * 1000)))
+        envelopeBuilder.setContent(data)
+        envelopeBuilder.setSource(message.sender)
+        
+        guard let envelope = try? envelopeBuilder.build() else {
+            throw MessageReceiverError.invalidMessage
+        }
+        
+        return try processRawReceivedMessage(
+            db,
+            envelope: envelope,
+            serverExpirationTimestamp: nil,
+            serverHash: nil,
+            openGroupId: nil,   // Explicitly null since it shouldn't be handled as an open group message
+            openGroupMessageServerId: message.id,
+            openGroupServerPublicKey: openGroupServerPublicKey,
+            isOutgoing: isOutgoing,
+            otherBlindedPublicKey: otherBlindedPublicKey,
+            handleClosedGroupKeyUpdateMessages: false,
+            dependencies: dependencies
+        )
+    }
+    
     private static func processRawReceivedMessage(
         _ db: Database,
         envelope: SNProtoEnvelope,
-        serverExpirationTimestamp: TimeInterval,
+        serverExpirationTimestamp: TimeInterval?,
         serverHash: String?,
-        // TODO: These
         openGroupId: String? = nil,
-        openGroupMessageServerId: UInt64? = nil,
-        handleClosedGroupKeyUpdateMessages: Bool
+        openGroupMessageServerId: Int64? = nil,
+        openGroupServerPublicKey: String? = nil,
+        isOutgoing: Bool? = nil,
+        otherBlindedPublicKey: String? = nil,
+        handleClosedGroupKeyUpdateMessages: Bool,
+        dependencies: Dependencies = Dependencies()
     ) throws -> ProcessedMessage? {
         let (message, proto, threadId) = try MessageReceiver.parse(
             db,
             envelope: envelope,
             serverExpirationTimestamp: serverExpirationTimestamp,
             openGroupId: openGroupId,
-            openGroupMessageServerId: openGroupMessageServerId
+            openGroupMessageServerId: openGroupMessageServerId,
+            openGroupServerPublicKey: openGroupServerPublicKey,
+            isOutgoing: isOutgoing,
+            otherBlindedPublicKey: otherBlindedPublicKey,
+            dependencies: dependencies
         )
         message.serverHash = serverHash
         

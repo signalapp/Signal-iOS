@@ -108,10 +108,10 @@ extension MessageSender {
                 switch destination {
                     case .contact(let publicKey): return publicKey
                     case .closedGroup(let groupPublicKey): return groupPublicKey
-                    case .openGroupV2(let room, let server):
-                        return OpenGroup.idFor(room: room, server: server)
-                    
-                    case .openGroup: return ""
+                    case .openGroup(let roomToken, let server, _, _, _):
+                        return OpenGroup.idFor(roomToken: roomToken, server: server)
+                        
+                    case .openGroupInbox(_, _, let blindedPublicKey): return blindedPublicKey
                 }
             }()
             let openGroup: OpenGroup? = try? OpenGroup.fetchOne(db, id: threadId)
@@ -129,12 +129,20 @@ extension MessageSender {
     
                     attachment.upload(
                         db,
-                        using: { data in
+                        using: { db, data in
                             if let openGroup: OpenGroup = openGroup {
-                                return OpenGroupAPIV2.upload(data, to: openGroup.room, on: openGroup.server)
+                                return OpenGroupAPI
+                                    .uploadFile(
+                                        db,
+                                        bytes: data.bytes,
+                                        to: openGroup.roomToken,
+                                        on: openGroup.server
+                                    )
+                                    .map { _, response -> String in response.id }
                             }
     
-                            return FileServerAPIV2.upload(data)
+                            return FileServerAPI.upload(data)
+                                .map { response -> String in response.id }
                         },
                         encrypt: (openGroup == nil),
                         success: { seal.fulfill(()) },

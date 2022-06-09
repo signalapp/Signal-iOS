@@ -323,17 +323,17 @@ enum MockDataGenerator {
                 let randomGroupPublicKey: String = ((0..<32).map { _ in UInt8.random(in: UInt8.min...UInt8.max, using: &dmThreadRandomGenerator) }).toHexString()
                 let serverNameLength: Int = ((5..<20).randomElement(using: &ogThreadRandomGenerator) ?? 0)
                 let roomNameLength: Int = ((5..<20).randomElement(using: &ogThreadRandomGenerator) ?? 0)
-                let groupDescriptionLength: Int = ((10..<50).randomElement(using: &ogThreadRandomGenerator) ?? 0)
+                let roomDescriptionLength: Int = ((10..<50).randomElement(using: &ogThreadRandomGenerator) ?? 0)
                 let serverName: String = (0..<serverNameLength)
                     .compactMap { _ in stringContent.randomElement(using: &ogThreadRandomGenerator) }
                     .joined()
                 let roomName: String = (0..<roomNameLength)
                     .compactMap { _ in stringContent.randomElement(using: &ogThreadRandomGenerator) }
                     .joined()
-                let groupDescription: String = (0..<groupDescriptionLength)
+                let roomDescription: String = (0..<roomDescriptionLength)
                     .compactMap { _ in stringContent.randomElement(using: &ogThreadRandomGenerator) }
                     .joined()
-                let numGroupMembers: Int = ((0..<250).randomElement(using: &ogThreadRandomGenerator) ?? 0)
+                let numGroupMembers: Int64 = ((0..<250).randomElement(using: &ogThreadRandomGenerator) ?? 0)
                 let numMessages: Int = (messageRangePerThread[threadIndex % messageRangePerThread.count]
                     .randomElement(using: &ogThreadRandomGenerator) ?? 0)
                 
@@ -372,27 +372,35 @@ enum MockDataGenerator {
                     .saved(db)
                 _ = try! OpenGroup(
                     server: serverName,
-                    room: roomName,
+                    roomToken: roomName,
                     publicKey: randomGroupPublicKey,
+                    isActive: true,
                     name: roomName,
+                    roomDescription: roomDescription,
                     userCount: numGroupMembers,
-                    infoUpdates: 0
+                    infoUpdates: 0,
+                    sequenceNumber: 0,
+                    inboxLatestMessageId: 0,
+                    outboxLatestMessageId: 0
                 )
                 .saved(db)
                 
-                // Generate the 'Server' object
+                // Generate the capabilities object
                 let hasBlinding: Bool = Bool.random(using: &dmThreadRandomGenerator)
                 
-                let server: OpenGroupAPI.Server = OpenGroupAPI.Server(
-                    name: serverName,
-                    capabilities: OpenGroupAPI.Capabilities(
-                        capabilities: [.sogs]
-                            .appending(hasBlinding ? [.blind] : []),
-                        missing: nil
-                    )
-                )
+                _ = try! Capability(
+                    openGroupServer: serverName.lowercased(),
+                    variant: .sogs,
+                    isMissing: false
+                ).saved(db)
                 
-                Storage.shared.setOpenGroupServer(server, using: transaction)
+                if hasBlinding {
+                    _ = try! Capability(
+                        openGroupServer: serverName.lowercased(),
+                        variant: .blind,
+                        isMissing: false
+                    ).saved(db)
+                }
                 
                 // Generate the message history (Note: Unapproved message requests will only include incoming messages)
                 logProgress("Open Group Thread \(threadIndex)", "Generate \(numMessages) Messages")

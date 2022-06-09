@@ -50,16 +50,24 @@ public enum AttachmentDownloadJob: JobExecutor {
             guard
                 let downloadUrl: String = attachment.downloadUrl,
                 let fileAsString: String = downloadUrl.split(separator: "/").last.map({ String($0) }),
-                let file: UInt64 = UInt64(fileAsString)
+                let file: Int64 = Int64(fileAsString)
             else {
                 return Promise(error: AttachmentDownloadError.invalidUrl)
             }
             
-            if let openGroup: OpenGroup = GRDBStorage.shared.read({ db in try OpenGroup.fetchOne(db, id: threadId) }) {
-                return OpenGroupAPIV2.download(file, from: openGroup.room, on: openGroup.server)
-            }
+            let maybeOpenGroupDownloadPromise: Promise<Data>? = GRDBStorage.shared.read({ db in
+                guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else {
+                    return nil  // Not an open group so just use standard FileServer upload
+                }
+                
+                return OpenGroupAPI.downloadFile(db, fileId: file, from: openGroup.roomToken, on: openGroup.server)
+                    .map { _, data in data }
+            })
             
-            return FileServerAPIV2.download(file, useOldServer: downloadUrl.contains(FileServerAPIV2.oldServer))
+            return (
+                maybeOpenGroupDownloadPromise ??
+                FileServerAPI.download(file, useOldServer: downloadUrl.contains(FileServerAPI.oldServer))
+            )
         }()
         
         downloadPromise
@@ -115,7 +123,7 @@ public enum AttachmentDownloadJob: JobExecutor {
                 OWSFileSystem.deleteFile(temporaryFileUrl.path)
                 
                 switch error {
-                    case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _, _) where statusCode == 400:
+                    case OnionRequestAPIError.httpRequestFailedAtDestination(let statusCode, _, _) where statusCode == 400:
                         /// Otherwise, the attachment will show a state of downloading forever, and the message
                         /// won't be able to be marked as read
                         ///

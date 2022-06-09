@@ -1,3 +1,7 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import PromiseKit
 import Sodium
 import Curve25519Kit
@@ -24,16 +28,30 @@ public enum OpenGroupAPI {
     /// - Inbox for the server
     /// - Outbox for the server
     public static func poll(
-        _ server: String,
+        _ db: Database,
+        server: String,
         hasPerformedInitialPoll: Bool,
         timeSinceLastPoll: TimeInterval,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
-        let maybeLastInboxMessageId: Int64? = dependencies.storage.getOpenGroupInboxLatestMessageId(for: server)
-        let maybeLastOutboxMessageId: Int64? = dependencies.storage.getOpenGroupOutboxLatestMessageId(for: server)
-        let lastInboxMessageId: Int64 = (maybeLastInboxMessageId ?? 0)
-        let lastOutboxMessageId: Int64 = (maybeLastOutboxMessageId ?? 0)
-        let serverConfig: Server? = dependencies.storage.getOpenGroupServer(name: server)
+        let lastInboxMessageId: Int64 = (try? OpenGroup
+            .select(.inboxLatestMessageId)
+            .filter(OpenGroup.Columns.server == server)
+            .asRequest(of: Int64.self)
+            .fetchOne(db))
+            .defaulting(to: 0)
+        let lastOutboxMessageId: Int64 = (try? OpenGroup
+            .select(.outboxLatestMessageId)
+            .filter(OpenGroup.Columns.server == server)
+            .asRequest(of: Int64.self)
+            .fetchOne(db))
+            .defaulting(to: 0)
+        let capabilities: Set<Capability.Variant> = (try? Capability
+            .select(.variant)
+            .filter(Capability.Columns.openGroupServer == server)
+            .asRequest(of: Capability.Variant.self)
+            .fetchSet(db))
+            .defaulting(to: [])
 
         // Generate the requests
         let requestResponseType: [BatchRequestInfoType] = [
@@ -47,13 +65,13 @@ public enum OpenGroupAPI {
         ]
         .appending(
             // Per-room requests
-            dependencies.storage.getAllOpenGroups().values
-                .filter { $0.server == server.lowercased() }    // Note: The `OpenGroup` type converts to lowercase in init
+            contentsOf: (try? OpenGroup
+                .filter(OpenGroup.Columns.server == server.lowercased()) // Note: The `OpenGroup` type converts to lowercase in init
+                .fetchAll(db))
+                .defaulting(to: [])
                 .flatMap { openGroup -> [BatchRequestInfoType] in
-                    let lastSeqNo: Int64? = dependencies.storage.getOpenGroupSequenceNumber(for: openGroup.room, on: server)
-                    let targetSeqNo: Int64 = (lastSeqNo ?? 0)
                     let shouldRetrieveRecentMessages: Bool = (
-                        lastSeqNo == nil || (
+                        openGroup.sequenceNumber == 0 || (
                             // If it's the first poll for this launch and it's been longer than
                             // 'maxInactivityPeriod' then just retrieve recent messages instead
                             // of trying to get all messages since the last one retrieved
@@ -66,7 +84,7 @@ public enum OpenGroupAPI {
                         BatchRequestInfo(
                             request: Request<NoBody, Endpoint>(
                                 server: server,
-                                endpoint: .roomPollInfo(openGroup.room, openGroup.infoUpdates)
+                                endpoint: .roomPollInfo(openGroup.roomToken, openGroup.infoUpdates)
                             ),
                             responseType: RoomPollInfo.self
                         ),
@@ -74,8 +92,8 @@ public enum OpenGroupAPI {
                             request: Request<NoBody, Endpoint>(
                                 server: server,
                                 endpoint: (shouldRetrieveRecentMessages ?
-                                    .roomMessagesRecent(openGroup.room) :
-                                    .roomMessagesSince(openGroup.room, seqNo: targetSeqNo)
+                                    .roomMessagesRecent(openGroup.roomToken) :
+                                    .roomMessagesSince(openGroup.roomToken, seqNo: openGroup.sequenceNumber)
                                 )
                             ),
                             responseType: [Failable<Message>].self
@@ -84,36 +102,38 @@ public enum OpenGroupAPI {
                 }
         )
         .appending(
-            // The 'inbox' and 'outbox' only work with blinded keys so don't bother polling them if not blinded
-            serverConfig?.capabilities.capabilities.contains(.blind) != true ? [] :
-            [
-                // Inbox
-                BatchRequestInfo(
-                    request: Request<NoBody, Endpoint>(
-                        server: server,
-                        endpoint: (maybeLastInboxMessageId == nil ?
-                            .inbox :
-                            .inboxSince(id: lastInboxMessageId)
-                       )
+            contentsOf: (
+                // The 'inbox' and 'outbox' only work with blinded keys so don't bother polling them if not blinded
+                !capabilities.contains(.blind) ? [] :
+                [
+                    // Inbox
+                    BatchRequestInfo(
+                        request: Request<NoBody, Endpoint>(
+                            server: server,
+                            endpoint: (lastInboxMessageId == 0 ?
+                                .inbox :
+                                .inboxSince(id: lastInboxMessageId)
+                           )
+                        ),
+                        responseType: [DirectMessage]?.self // 'inboxSince' will return a `304` with an empty response if no messages
                     ),
-                    responseType: [DirectMessage]?.self // 'inboxSince' will return a `304` with an empty response if no messages
-                ),
-                
-                // Outbox
-                BatchRequestInfo(
-                    request: Request<NoBody, Endpoint>(
-                        server: server,
-                        endpoint: (maybeLastOutboxMessageId == nil ?
-                            .outbox :
-                            .outboxSince(id: lastOutboxMessageId)
-                       )
-                    ),
-                    responseType: [DirectMessage]?.self // 'outboxSince' will return a `304` with an empty response if no messages
-                )
-            ]
+                    
+                    // Outbox
+                    BatchRequestInfo(
+                        request: Request<NoBody, Endpoint>(
+                            server: server,
+                            endpoint: (lastOutboxMessageId == 0 ?
+                                .outbox :
+                                .outboxSince(id: lastOutboxMessageId)
+                           )
+                        ),
+                        responseType: [DirectMessage]?.self // 'outboxSince' will return a `304` with an empty response if no messages
+                    )
+                ]
+            )
         )
         
-        return batch(server, requests: requestResponseType, using: dependencies)
+        return OpenGroupAPI.batch(db, server: server, requests: requestResponseType, using: dependencies)
     }
     
     /// Submits multiple requests wrapped up in a single request, runs them all, then returns the result of each one
@@ -122,18 +142,26 @@ public enum OpenGroupAPI {
     /// carried out (for sequential, related requests invoke via `/sequence` instead)
     ///
     /// For contained subrequests that specify a body (i.e. POST or PUT requests) exactly one of `json`, `b64`, or `bytes` must be provided with the request body.
-    private static func batch(_ server: String, requests: [BatchRequestInfoType], using dependencies: Dependencies = Dependencies()) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
+    private static func batch(
+        _ db: Database,
+        server: String,
+        requests: [BatchRequestInfoType],
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
         let requestBody: BatchRequest = requests.map { $0.toSubRequest() }
         let responseTypes = requests.map { $0.responseType }
         
-        let request: Request = Request(
-            method: .post,
-            server: server,
-            endpoint: Endpoint.batch,
-            body: requestBody
-        )
-        
-        return send(request, using: dependencies)
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request(
+                    method: .post,
+                    server: server,
+                    endpoint: Endpoint.batch,
+                    body: requestBody
+                ),
+                using: dependencies
+            )
             .decoded(as: responseTypes, on: OpenGroupAPI.workQueue, using: dependencies)
             .map { result in
                 result.enumerated()
@@ -152,18 +180,26 @@ public enum OpenGroupAPI {
     ///
     /// Like `/batch`, responses are returned in the same order as requests, but unlike `/batch` there may be fewer elements in the response list (if requests were
     /// stopped because of a non-2xx response) - In such a case, the final, non-2xx response is still included as the final response value
-    private static func sequence(_ server: String, requests: [BatchRequestInfoType], using dependencies: Dependencies = Dependencies()) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
+    private static func sequence(
+        _ db: Database,
+        server: String,
+        requests: [BatchRequestInfoType],
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
         let requestBody: BatchRequest = requests.map { $0.toSubRequest() }
         let responseTypes = requests.map { $0.responseType }
         
-        let request: Request = Request(
-            method: .post,
-            server: server,
-            endpoint: Endpoint.sequence,
-            body: requestBody
-        )
-        
-        return send(request, using: dependencies)
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request(
+                    method: .post,
+                    server: server,
+                    endpoint: Endpoint.sequence,
+                    body: requestBody
+                ),
+                using: dependencies
+            )
             .decoded(as: responseTypes, on: OpenGroupAPI.workQueue, using: dependencies)
             .map { result in
                 result.enumerated()
@@ -182,13 +218,20 @@ public enum OpenGroupAPI {
     ///
     /// Eg. `GET /capabilities` could return `{"capabilities": ["sogs", "batch"]}` `GET /capabilities?required=magic,batch`
     /// could return: `{"capabilities": ["sogs", "batch"], "missing": ["magic"]}`
-    public static func capabilities(on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Capabilities)> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .capabilities
-        )
-        
-        return send(request, using: dependencies)
+    public static func capabilities(
+        _ db: Database,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, Capabilities)> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .capabilities
+                ),
+                using: dependencies
+            )
             .decoded(as: Capabilities.self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
@@ -197,13 +240,20 @@ public enum OpenGroupAPI {
     /// Returns a list of available rooms on the server
     ///
     /// Rooms to which the user does not have access (e.g. because they are banned, or the room has restricted access permissions) are not included
-    public static func rooms(for server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [Room])> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .rooms
-        )
-        
-        return send(request, using: dependencies)
+    public static func rooms(
+        _ db: Database,
+        for server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, [Room])> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .rooms
+                ),
+                using: dependencies
+            )
             .decoded(as: [Room].self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
@@ -213,13 +263,21 @@ public enum OpenGroupAPI {
     /// this directly remove the `@available` line and make sure to route the response of this method to the `OpenGroupManager.handlePollInfo`
     /// method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
-    public static func room(for roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Room)> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .room(roomToken)
-        )
-        
-        return send(request, using: dependencies)
+    public static func room(
+        _ db: Database,
+        for roomToken: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, Room)> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .room(roomToken)
+                ),
+                using: dependencies
+            )
             .decoded(as: Room.self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
@@ -232,19 +290,29 @@ public enum OpenGroupAPI {
     /// this directly remove the `@available` line and make sure to route the response of this method to the `OpenGroupManager.handlePollInfo`
     /// method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
-    public static func roomPollInfo(lastUpdated: Int64, for roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, RoomPollInfo)> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .roomPollInfo(roomToken, lastUpdated)
-        )
-        
-        return send(request, using: dependencies)
+    public static func roomPollInfo(
+        _ db: Database,
+        lastUpdated: Int64,
+        for roomToken: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, RoomPollInfo)> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .roomPollInfo(roomToken, lastUpdated)
+                ),
+                using: dependencies
+            )
             .decoded(as: RoomPollInfo.self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
     /// This is a convenience method which constructs a `/sequence` of the `capabilities` and `room`  requests, refer to those
     /// methods for the documented behaviour of each method
     public static func capabilitiesAndRoom(
+        _ db: Database,
         for roomToken: String,
         on server: String,
         using dependencies: Dependencies = Dependencies()
@@ -269,7 +337,13 @@ public enum OpenGroupAPI {
             )
         ]
         
-        return sequence(server, requests: requestResponseType, using: dependencies)
+        return OpenGroupAPI
+            .sequence(
+                db,
+                server: server,
+                requests: requestResponseType,
+                using: dependencies
+            )
             .map { (response: [Endpoint: (OnionRequestResponseInfoType, Codable?)]) -> (capabilities: (OnionRequestResponseInfoType, Capabilities), room: (OnionRequestResponseInfoType, Room)) in
                 let maybeCapabilities: (info: OnionRequestResponseInfoType, data: Capabilities?)? = response[.capabilities]
                     .map { info, data in (info, (data as? BatchSubResponse<Capabilities>)?.body) }
@@ -304,7 +378,8 @@ public enum OpenGroupAPI {
     
     /// Posts a new message to a room
     public static func send(
-        _ plaintext: Data,
+        _ db: Database,
+        plaintext: Data,
         to roomToken: String,
         on server: String,
         whisperTo: String?,
@@ -312,46 +387,47 @@ public enum OpenGroupAPI {
         fileIds: [String]?,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Message)> {
-        guard let signResult: (publicKey: String, signature: Bytes) = sign(plaintext.bytes, for: server, fallbackSigningType: .standard, using: dependencies) else {
+        guard let signResult: (publicKey: String, signature: Bytes) = sign(db, messageBytes: plaintext.bytes, for: server, fallbackSigningType: .standard, using: dependencies) else {
             return Promise(error: Error.signingFailed)
         }
         
-        let requestBody: SendMessageRequest = SendMessageRequest(
-            data: plaintext,
-            signature: Data(signResult.signature),
-            whisperTo: whisperTo,
-            whisperMods: whisperMods,
-            fileIds: fileIds
-        )
-        
-        let request = Request(
-            method: .post,
-            server: server,
-            endpoint: Endpoint.roomMessage(roomToken),
-            body: requestBody
-        )
-        
-        return send(request, using: dependencies)
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request(
+                    method: .post,
+                    server: server,
+                    endpoint: Endpoint.roomMessage(roomToken),
+                    body: SendMessageRequest(
+                        data: plaintext,
+                        signature: Data(signResult.signature),
+                        whisperTo: whisperTo,
+                        whisperMods: whisperMods,
+                        fileIds: fileIds
+                    )
+                ),
+                using: dependencies
+            )
             .decoded(as: Message.self, on: OpenGroupAPI.workQueue, using: dependencies)
-            .map { response, message in
-                // Store the 'message.posted' timestamp to prevent the sent message getting duplicated when it is later retrieved
-                dependencies.storage.write { transaction in
-                    // The `posted` value is in seconds but we sent it in ms so need that for de-duping
-                    dependencies.storage.addReceivedMessageTimestamp(UInt64(floor(message.posted * 1000)), using: transaction)
-                }
-                
-                return (response, message)
-            }
     }
     
     /// Returns a single message by ID
-    public static func message(_ id: UInt64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Message)> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .roomMessageIndividual(roomToken, id: id)
-        )
-
-        return send(request, using: dependencies)
+    public static func message(
+        _ db: Database,
+        id: Int64,
+        in roomToken: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, Message)> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .roomMessageIndividual(roomToken, id: id)
+                ),
+                using: dependencies
+            )
             .decoded(as: Message.self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
@@ -359,59 +435,73 @@ public enum OpenGroupAPI {
     ///
     /// **Note:** This edit may only be initiated by the creator of the post, and the poster must currently have write permissions in the room
     public static func messageUpdate(
-        _ id: UInt64,
+        _ db: Database,
+        id: Int64,
         plaintext: Data,
         fileIds: [Int64]?,
         in roomToken: String,
         on server: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
-        guard let signResult: (publicKey: String, signature: Bytes) = sign(plaintext.bytes, for: server, fallbackSigningType: .standard, using: dependencies) else {
+        guard let signResult: (publicKey: String, signature: Bytes) = sign(db, messageBytes: plaintext.bytes, for: server, fallbackSigningType: .standard, using: dependencies) else {
             return Promise(error: Error.signingFailed)
         }
         
-        let requestBody: UpdateMessageRequest = UpdateMessageRequest(
-            data: plaintext,
-            signature: Data(signResult.signature),
-            fileIds: fileIds
-        )
-        
-        let request: Request = Request(
-            method: .put,
-            server: server,
-            endpoint: Endpoint.roomMessageIndividual(roomToken, id: id),
-            body: requestBody
-        )
-
-        return send(request, using: dependencies)
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request(
+                    method: .put,
+                    server: server,
+                    endpoint: Endpoint.roomMessageIndividual(roomToken, id: id),
+                    body: UpdateMessageRequest(
+                        data: plaintext,
+                        signature: Data(signResult.signature),
+                        fileIds: fileIds
+                    )
+                ),
+                using: dependencies
+            )
     }
     
     public static func messageDelete(
-        _ id: UInt64,
+        _ db: Database,
+        id: Int64,
         in roomToken: String,
         on server: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
-        let request: Request = Request<NoBody, Endpoint>(
-            method: .delete,
-            server: server,
-            endpoint: .roomMessageIndividual(roomToken, id: id)
-        )
-
-        return send(request, using: dependencies)
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    method: .delete,
+                    server: server,
+                    endpoint: .roomMessageIndividual(roomToken, id: id)
+                ),
+                using: dependencies
+            )
     }
     
     /// **Note:** This is the direct request to retrieve recent messages so should be retrieved automatically from the `poll()` method, in order to call
     /// this directly remove the `@available` line and make sure to route the response of this method to the `OpenGroupManager.handleMessages`
     /// method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
-    public static func recentMessages(in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [Message])> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .roomMessagesRecent(roomToken)
-        )
-
-        return send(request, using: dependencies)
+    public static func recentMessages(
+        _ db: Database,
+        in roomToken: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, [Message])> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .roomMessagesRecent(roomToken)
+                ),
+                using: dependencies
+            )
             .decoded(as: [Message].self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
@@ -419,13 +509,22 @@ public enum OpenGroupAPI {
     /// remove the `@available` line and make sure to route the response of this method to the `OpenGroupManager.handleMessages`
     /// method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
-    public static func messagesBefore(messageId: UInt64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [Message])> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .roomMessagesBefore(roomToken, id: messageId)
-        )
-
-        return send(request, using: dependencies)
+    public static func messagesBefore(
+        _ db: Database,
+        messageId: Int64,
+        in roomToken: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, [Message])> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .roomMessagesBefore(roomToken, id: messageId)
+                ),
+                using: dependencies
+            )
             .decoded(as: [Message].self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
@@ -433,13 +532,22 @@ public enum OpenGroupAPI {
     /// `poll()` method, in order to call this directly remove the `@available` line and make sure to route the response of this method to the
     /// `OpenGroupManager.handleMessages` method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
-    public static func messagesSince(seqNo: Int64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [Message])> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .roomMessagesSince(roomToken, seqNo: seqNo)
-        )
-
-        return send(request, using: dependencies)
+    public static func messagesSince(
+        _ db: Database,
+        seqNo: Int64,
+        in roomToken: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, [Message])> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .roomMessagesSince(roomToken, seqNo: seqNo)
+                ),
+                using: dependencies
+            )
             .decoded(as: [Message].self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
@@ -457,18 +565,22 @@ public enum OpenGroupAPI {
     ///
     ///   - dependencies: Injected dependencies (used for unit testing)
     public static func messagesDeleteAll(
-        _ sessionId: String,
+        _ db: Database,
+        sessionId: String,
         in roomToken: String,
         on server: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
-        let request: Request = Request<NoBody, Endpoint>(
-            method: .delete,
-            server: server,
-            endpoint: Endpoint.roomDeleteMessages(roomToken, sessionId: sessionId)
-        )
-        
-        return send(request, using: dependencies)
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    method: .delete,
+                    server: server,
+                    endpoint: Endpoint.roomDeleteMessages(roomToken, sessionId: sessionId)
+                ),
+                using: dependencies
+            )
     }
     
     // MARK: - Pinning
@@ -483,72 +595,117 @@ public enum OpenGroupAPI {
     /// Pinned messages that are already pinned will be re-pinned (that is, their pin timestamp and pinning admin user will be updated) - because pinned
     /// messages are returned in pinning-order this allows admins to order multiple pinned messages in a room by re-pinning (via this endpoint) in the
     /// order in which pinned messages should be displayed
-    public static func pinMessage(id: UInt64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<OnionRequestResponseInfoType> {
-        let request: Request = Request<NoBody, Endpoint>(
-            method: .post,
-            server: server,
-            endpoint: .roomPinMessage(roomToken, id: id)
-        )
-
-        return send(request, using: dependencies)
+    public static func pinMessage(
+        _ db: Database,
+        id: Int64,
+        in roomToken: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<OnionRequestResponseInfoType> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    method: .post,
+                    server: server,
+                    endpoint: .roomPinMessage(roomToken, id: id)
+                ),
+                using: dependencies
+            )
             .map { responseInfo, _ in responseInfo }
     }
     
     /// Remove a message from this room's pinned message list
     ///
     /// The user must have `admin` (not just `moderator`) permissions in the room
-    public static func unpinMessage(id: UInt64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<OnionRequestResponseInfoType> {
-        let request: Request = Request<NoBody, Endpoint>(
-            method: .post,
-            server: server,
-            endpoint: .roomUnpinMessage(roomToken, id: id)
-        )
-
-        return send(request, using: dependencies)
+    public static func unpinMessage(
+        _ db: Database,
+        id: Int64,
+        in roomToken: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<OnionRequestResponseInfoType> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    method: .post,
+                    server: server,
+                    endpoint: .roomUnpinMessage(roomToken, id: id)
+                ),
+                using: dependencies
+            )
             .map { responseInfo, _ in responseInfo }
     }
 
     /// Removes _all_ pinned messages from this room
     ///
     /// The user must have `admin` (not just `moderator`) permissions in the room
-    public static func unpinAll(in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<OnionRequestResponseInfoType> {
-        let request: Request = Request<NoBody, Endpoint>(
-            method: .post,
-            server: server,
-            endpoint: .roomUnpinAll(roomToken)
-        )
-
-        return send(request, using: dependencies)
+    public static func unpinAll(
+        _ db: Database,
+        in roomToken: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<OnionRequestResponseInfoType> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    method: .post,
+                    server: server,
+                    endpoint: .roomUnpinAll(roomToken)
+                ),
+                using: dependencies
+            )
             .map { responseInfo, _ in responseInfo }
     }
     
     // MARK: - Files
     
-    public static func uploadFile(_ bytes: [UInt8], fileName: String? = nil, to roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, FileUploadResponse)> {
-        let request: Request = Request(
-            method: .post,
-            server: server,
-            endpoint: Endpoint.roomFile(roomToken),
-            headers: [
-                .contentDisposition: [ "attachment", fileName.map { "filename=\"\($0)\"" } ]
-                    .compactMap{ $0 }
-                    .joined(separator: "; "),
-                .contentType: "application/octet-stream"
-            ],
-            body: bytes
-        )
-        
-        return send(request, using: dependencies)
+    public static func uploadFile(
+        _ db: Database,
+        bytes: [UInt8],
+        fileName: String? = nil,
+        to roomToken: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, FileUploadResponse)> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request(
+                    method: .post,
+                    server: server,
+                    endpoint: Endpoint.roomFile(roomToken),
+                    headers: [
+                        .contentDisposition: [ "attachment", fileName.map { "filename=\"\($0)\"" } ]
+                            .compactMap{ $0 }
+                            .joined(separator: "; "),
+                        .contentType: "application/octet-stream"
+                    ],
+                    body: bytes
+                ),
+                using: dependencies
+            )
             .decoded(as: FileUploadResponse.self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
-    public static func downloadFile(_ fileId: UInt64, from roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Data)> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .roomFileIndividual(roomToken, fileId)
-        )
-        
-        return send(request, using: dependencies)
+    public static func downloadFile(
+        _ db: Database,
+        fileId: Int64,
+        from roomToken: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, Data)> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .roomFileIndividual(roomToken, fileId)
+                ),
+                using: dependencies
+            )
             .map { responseInfo, maybeData in
                 guard let data: Data = maybeData else { throw HTTP.Error.parsingFailed }
                 
@@ -564,13 +721,20 @@ public enum OpenGroupAPI {
     /// method, in order to call this directly remove the `@available` line and make sure to route the response of this method to the
     /// `OpenGroupManager.handleDirectMessages` method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
-    public static func inbox(on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .inbox
-        )
-        
-        return send(request, using: dependencies)
+    public static func inbox(
+        _ db: Database,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .inbox
+                ),
+                using: dependencies
+            )
             .decoded(as: [DirectMessage]?.self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
@@ -580,42 +744,48 @@ public enum OpenGroupAPI {
     /// automatically from the `poll()` method, in order to call this directly remove the `@available` line and make sure to route the response
     /// of this method to the `OpenGroupManager.handleDirectMessages` method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
-    public static func inboxSince(id: Int64, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .inboxSince(id: id)
-        )
-        
-        return send(request, using: dependencies)
+    public static func inboxSince(
+        _ db: Database,
+        id: Int64,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .inboxSince(id: id)
+                ),
+                using: dependencies
+            )
             .decoded(as: [DirectMessage]?.self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
     /// Delivers a direct message to a user via their blinded Session ID
     ///
     /// The body of this request is a JSON object containing a message key with a value of the encrypted-then-base64-encoded message to deliver
-    public static func send(_ ciphertext: Data, toInboxFor blindedSessionId: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, SendDirectMessageResponse)> {
-        let requestBody: SendDirectMessageRequest = SendDirectMessageRequest(
-            message: ciphertext
-        )
-        
-        let request: Request = Request(
-            method: .post,
-            server: server,
-            endpoint: Endpoint.inboxFor(sessionId: blindedSessionId),
-            body: requestBody
-        )
-        
-        return send(request, using: dependencies)
+    public static func send(
+        _ db: Database,
+        ciphertext: Data,
+        toInboxFor blindedSessionId: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, SendDirectMessageResponse)> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request(
+                    method: .post,
+                    server: server,
+                    endpoint: Endpoint.inboxFor(sessionId: blindedSessionId),
+                    body: SendDirectMessageRequest(
+                        message: ciphertext
+                    )
+                ),
+                using: dependencies
+            )
             .decoded(as: SendDirectMessageResponse.self, on: OpenGroupAPI.workQueue, using: dependencies)
-            .map { response, message in
-                // Store the 'message.posted' timestamp to prevent the sent message getting duplicated when it is later retrieved
-                dependencies.storage.write { transaction in
-                    // The `posted` value is in seconds but we sent it in ms so need that for de-duping
-                    dependencies.storage.addReceivedMessageTimestamp(UInt64(floor(message.posted * 1000)), using: transaction)
-                }
-                
-                return (response, message)
-            }
     }
     
     /// Retrieves all of the user's sent DMs (up to limit)
@@ -624,13 +794,20 @@ public enum OpenGroupAPI {
     /// from the `poll()` method, in order to call this directly remove the `@available` line and make sure to route the response of
     /// this method to the `OpenGroupManager.handleDirectMessages` method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
-    public static func outbox(on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .outbox
-        )
-        
-        return send(request, using: dependencies)
+    public static func outbox(
+        _ db: Database,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .outbox
+                ),
+                using: dependencies
+            )
             .decoded(as: [DirectMessage]?.self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
@@ -640,13 +817,21 @@ public enum OpenGroupAPI {
     /// should be retrieved automatically from the `poll()` method, in order to call this directly remove the `@available` line and make sure
     /// to route the response of this method to the `OpenGroupManager.handleDirectMessages` method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
-    public static func outboxSince(id: Int64, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .outboxSince(id: id)
-        )
-        
-        return send(request, using: dependencies)
+    public static func outboxSince(
+        _ db: Database,
+        id: Int64,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .outboxSince(id: id)
+                ),
+                using: dependencies
+            )
             .decoded(as: [DirectMessage]?.self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
@@ -684,26 +869,28 @@ public enum OpenGroupAPI {
     ///
     ///   - dependencies: Injected dependencies (used for unit testing)
     public static func userBan(
-        _ sessionId: String,
+        _ db: Database,
+        sessionId: String,
         for timeout: TimeInterval? = nil,
         from roomTokens: [String]? = nil,
         on server: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
-        let requestBody: UserBanRequest = UserBanRequest(
-            rooms: roomTokens,
-            global: (roomTokens == nil ? true : nil),
-            timeout: timeout
-        )
-        
-        let request: Request = Request(
-            method: .post,
-            server: server,
-            endpoint: Endpoint.userBan(sessionId),
-            body: requestBody
-        )
-        
-        return send(request, using: dependencies)
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request(
+                    method: .post,
+                    server: server,
+                    endpoint: Endpoint.userBan(sessionId),
+                    body: UserBanRequest(
+                        rooms: roomTokens,
+                        global: (roomTokens == nil ? true : nil),
+                        timeout: timeout
+                    )
+                ),
+                using: dependencies
+            )
     }
     
     /// Removes a user ban from specific rooms, or from the server globally
@@ -731,24 +918,26 @@ public enum OpenGroupAPI {
     ///
     ///   - dependencies: Injected dependencies (used for unit testing)
     public static func userUnban(
-        _ sessionId: String,
+        _ db: Database,
+        sessionId: String,
         from roomTokens: [String]?,
         on server: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
-        let requestBody: UserUnbanRequest = UserUnbanRequest(
-            rooms: roomTokens,
-            global: (roomTokens == nil ? true : nil)
-        )
-        
-        let request: Request = Request(
-            method: .post,
-            server: server,
-            endpoint: Endpoint.userUnban(sessionId),
-            body: requestBody
-        )
-        
-        return send(request, using: dependencies)
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request(
+                    method: .post,
+                    server: server,
+                    endpoint: Endpoint.userUnban(sessionId),
+                    body: UserUnbanRequest(
+                        rooms: roomTokens,
+                        global: (roomTokens == nil ? true : nil)
+                    )
+                ),
+                using: dependencies
+            )
     }
     
     /// Appoints or removes a moderator or admin
@@ -803,7 +992,8 @@ public enum OpenGroupAPI {
     ///
     ///   - dependencies: Injected dependencies (used for unit testing)
     public static func userModeratorUpdate(
-        _ sessionId: String,
+        _ db: Database,
+        sessionId: String,
         moderator: Bool? = nil,
         admin: Bool? = nil,
         visible: Bool,
@@ -815,28 +1005,30 @@ public enum OpenGroupAPI {
             return Promise(error: HTTP.Error.generic)
         }
         
-        let requestBody: UserModeratorRequest = UserModeratorRequest(
-            rooms: roomTokens,
-            global: (roomTokens == nil ? true : nil),
-            moderator: moderator,
-            admin: admin,
-            visible: visible
-        )
-        
-        let request: Request = Request(
-            method: .post,
-            server: server,
-            endpoint: Endpoint.userModerator(sessionId),
-            body: requestBody
-        )
-        
-        return send(request, using: dependencies)
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request(
+                    method: .post,
+                    server: server,
+                    endpoint: Endpoint.userModerator(sessionId),
+                    body: UserModeratorRequest(
+                        rooms: roomTokens,
+                        global: (roomTokens == nil ? true : nil),
+                        moderator: moderator,
+                        admin: admin,
+                        visible: visible
+                    )
+                ),
+                using: dependencies
+            )
     }
     
     /// This is a convenience method which constructs a `/sequence` of the `userBan` and `userDeleteMessages`  requests, refer to those
     /// methods for the documented behaviour of each method
     public static func userBanAndDeleteAllMessages(
-        _ sessionId: String,
+        _ db: Database,
+        sessionId: String,
         in roomToken: String,
         on server: String,
         using dependencies: Dependencies = Dependencies()
@@ -866,23 +1058,44 @@ public enum OpenGroupAPI {
             )
         ]
         
-        return sequence(server, requests: requestResponseType, using: dependencies)
+        return OpenGroupAPI
+            .sequence(
+                db,
+                server: server,
+                requests: requestResponseType,
+                using: dependencies
+            )
             .map { $0.values.map { responseInfo, _ in responseInfo } }
     }
     
     // MARK: - Authentication
     
     /// Sign a message to be sent to SOGS (handles both un-blinded and blinded signing based on the server capabilities)
-    private static func sign(_ messageBytes: Bytes, for serverName: String, fallbackSigningType signingType: SessionId.Prefix, using dependencies: Dependencies = Dependencies()) -> (publicKey: String, signature: Bytes)? {
-        guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return nil }
-        guard let serverPublicKey: String = dependencies.storage.getOpenGroupPublicKey(for: serverName) else {
-            return nil
-        }
+    private static func sign(
+        _ db: Database,
+        messageBytes: Bytes,
+        for serverName: String,
+        fallbackSigningType signingType: SessionId.Prefix,
+        using dependencies: Dependencies = Dependencies()
+    ) -> (publicKey: String, signature: Bytes)? {
+        guard
+            let userEdKeyPair: Box.KeyPair = Identity.fetchUserEd25519KeyPair(db),
+            let serverPublicKey: String = try? OpenGroup
+                .select(.publicKey)
+                .filter(OpenGroup.Columns.server == serverName.lowercased())
+                .asRequest(of: String.self)
+                .fetchOne(db)
+        else { return nil }
         
-        let server: Server? = dependencies.storage.getOpenGroupServer(name: serverName)
+        let capabilities: Set<Capability.Variant> = (try? Capability
+            .select(.variant)
+            .filter(Capability.Columns.openGroupServer == serverName.lowercased())
+            .asRequest(of: Capability.Variant.self)
+            .fetchSet(db))
+            .defaulting(to: [])
 
         // Check if the server supports blinded keys, if so then sign using the blinded key
-        if server?.capabilities.capabilities.contains(.blind) == true {
+        if capabilities.contains(.blind) {
             guard let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
                 return nil
             }
@@ -911,20 +1124,26 @@ public enum OpenGroupAPI {
                 
             // Default to using the 'standard' key
             default:
-                guard let userKeyPair: ECKeyPair = dependencies.storage.getUserKeyPair() else { return nil }
+                guard let userKeyPair: Box.KeyPair = Identity.fetchUserKeyPair(db) else { return nil }
                 guard let signatureResult: Bytes = try? dependencies.ed25519.sign(data: messageBytes, keyPair: userKeyPair) else {
                     return nil
                 }
                 
                 return (
-                    publicKey: SessionId(.standard, publicKey: userKeyPair.publicKey.bytes).hexString,
+                    publicKey: SessionId(.standard, publicKey: userKeyPair.publicKey).hexString,
                     signature: signatureResult
                 )
         }
     }
     
     /// Sign a request to be sent to SOGS (handles both un-blinded and blinded signing based on the server capabilities)
-    private static func sign(_ request: URLRequest, for serverName: String, with serverPublicKey: String, using dependencies: Dependencies = Dependencies()) -> URLRequest? {
+    private static func sign(
+        _ db: Database,
+        request: URLRequest,
+        for serverName: String,
+        with serverPublicKey: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> URLRequest? {
         guard let url: URL = request.url else { return nil }
         
         var updatedRequest: URLRequest = request
@@ -953,14 +1172,14 @@ public enum OpenGroupAPI {
         ///     `Path`
         ///     `Body` is a Blake2b hash of the data (if there is a body)
         let messageBytes: Bytes = serverPublicKeyData.bytes
-            .appending(nonce.bytes)
-            .appending(timestampBytes)
-            .appending(method.bytes)
-            .appending(path.bytes)
-            .appending(bodyHash ?? [])
+            .appending(contentsOf: nonce.bytes)
+            .appending(contentsOf: timestampBytes)
+            .appending(contentsOf: method.bytes)
+            .appending(contentsOf: path.bytes)
+            .appending(contentsOf: bodyHash ?? [])
         
         /// Sign the above message
-        guard let signResult: (publicKey: String, signature: Bytes) = sign(messageBytes, for: serverName, fallbackSigningType: .unblinded, using: dependencies) else {
+        guard let signResult: (publicKey: String, signature: Bytes) = sign(db, messageBytes: messageBytes, for: serverName, fallbackSigningType: .unblinded, using: dependencies) else {
             return nil
         }
         
@@ -977,7 +1196,11 @@ public enum OpenGroupAPI {
     
     // MARK: - Convenience
     
-    private static func send<T: Encodable>(_ request: Request<T, Endpoint>, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Data?)> {
+    private static func send<T: Encodable>(
+        _ db: Database,
+        request: Request<T, Endpoint>,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         let urlRequest: URLRequest
         
         do {
@@ -987,12 +1210,16 @@ public enum OpenGroupAPI {
             return Promise(error: error)
         }
         
-        guard let publicKey = dependencies.storage.getOpenGroupPublicKey(for: request.server) else {
-            return Promise(error: Error.noPublicKey)
-        }
+        let maybePublicKey: String? = try? OpenGroup
+            .select(.publicKey)
+            .filter(OpenGroup.Columns.server == request.server.lowercased())
+            .asRequest(of: String.self)
+            .fetchOne(db)
+        
+        guard let publicKey: String = maybePublicKey else { return Promise(error: Error.noPublicKey) }
         
         // Attempt to sign the request with the new auth
-        guard let signedRequest: URLRequest = sign(urlRequest, for: request.server, with: publicKey, using: dependencies) else {
+        guard let signedRequest: URLRequest = sign(db, request: urlRequest, for: request.server, with: publicKey, using: dependencies) else {
             return Promise(error: Error.signingFailed)
         }
         

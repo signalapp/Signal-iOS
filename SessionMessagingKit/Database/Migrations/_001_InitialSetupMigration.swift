@@ -117,19 +117,27 @@ enum _001_InitialSetupMigration: Migration {
         }
         
         try db.create(table: OpenGroup.self) { t in
+            // Note: There is no foreign key constraint here because we need an OpenGroup entry to
+            // exist to be able to retrieve the default open group rooms - as a result we need to
+            // manually handle deletion of this object (in both OpenGroupManager and GarbageCollectionJob)
             t.column(.threadId, .text)
                 .notNull()
                 .primaryKey()
-                .references(SessionThread.self, onDelete: .cascade)   // Delete if Thread deleted
             t.column(.server, .text).notNull()
-            t.column(.room, .text).notNull()
+            t.column(.roomToken, .text).notNull()
             t.column(.publicKey, .text).notNull()
+            t.column(.isActive, .boolean)
+                .notNull()
+                .defaults(to: false)
             t.column(.name, .text).notNull()
-            t.column(.groupDescription, .text)
+            t.column(.roomDescription, .text)
             t.column(.imageId, .text)
             t.column(.imageData, .blob)
             t.column(.userCount, .integer).notNull()
             t.column(.infoUpdates, .integer).notNull()
+            t.column(.sequenceNumber, .integer).notNull()
+            t.column(.inboxLatestMessageId, .integer).notNull()
+            t.column(.outboxLatestMessageId, .integer).notNull()
         }
         
         /// Create a full-text search table synchronized with the OpenGroup table
@@ -141,14 +149,25 @@ enum _001_InitialSetupMigration: Migration {
         }
         
         try db.create(table: Capability.self) { t in
-            t.column(.openGroupId, .text)
+            t.column(.openGroupServer, .text)
                 .notNull()
                 .indexed()                                            // Quicker querying
-                .references(OpenGroup.self, onDelete: .cascade)       // Delete if OpenGroup deleted
-            t.column(.capability, .text).notNull()
+            t.column(.variant, .text).notNull()
             t.column(.isMissing, .boolean).notNull()
             
-            t.primaryKey([.openGroupId, .capability])
+            t.primaryKey([.openGroupServer, .variant])
+        }
+        
+        try db.create(table: BlindedIdLookup.self) { t in
+            t.column(.blindedId, .text)
+                .primaryKey()
+            t.column(.sessionId, .text)
+                .indexed()                                            // Quicker querying
+            t.column(.openGroupServer, .text)
+                .notNull()
+                .indexed()                                            // Quicker querying
+            t.column(.openGroupPublicKey, .text)
+                .notNull()
         }
         
         try db.create(table: GroupMember.self) { t in
@@ -159,7 +178,9 @@ enum _001_InitialSetupMigration: Migration {
                 .notNull()
                 .indexed()                                            // Quicker querying
                 .references(SessionThread.self, onDelete: .cascade)   // Delete if Thread deleted
-            t.column(.profileId, .text).notNull()
+            t.column(.profileId, .text)
+                .notNull()
+                .indexed()                                            // Quicker querying
             t.column(.role, .integer).notNull()
         }
         
@@ -168,6 +189,8 @@ enum _001_InitialSetupMigration: Migration {
                 .notNull()
                 .primaryKey(autoincrement: true)
             t.column(.serverHash, .text)
+            t.column(.messageUuid, .text)
+                .indexed()                                            // Quicker querying
             t.column(.threadId, .text)
                 .notNull()
                 .indexed()                                            // Quicker querying
@@ -212,15 +235,20 @@ enum _001_InitialSetupMigration: Migration {
             ///     `authorId`                    - Unique per user
             ///     `timestampMs`              - Very low chance of collision (especially combined with other two)
             ///
-            ///   Standard messages:
+            ///   Standard messages #1:
             ///     `threadId`                    - Unique per thread
             ///     `serverHash`                - Unique per message (deterministically generated)
+            ///
+            ///   Standard messages #1:
+            ///     `threadId`                    - Unique per thread
+            ///     `messageUuid`             - Very low chance of collision (especially combined with threadId)
             ///
             /// Threads with variants: [`openGroup`]:
             ///   `threadId`                                        - Unique per thread
             ///   `openGroupServerMessageId`     - Unique for VisibleMessage's on an OpenGroup server
             t.uniqueKey([.threadId, .authorId, .timestampMs])
             t.uniqueKey([.threadId, .serverHash])
+            t.uniqueKey([.threadId, .messageUuid])
             t.uniqueKey([.threadId, .openGroupServerMessageId])
         }
         

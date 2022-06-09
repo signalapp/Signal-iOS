@@ -16,9 +16,6 @@ public protocol OGMCacheType {
     var pollers: [String: OpenGroupAPI.Poller] { get set }
     var isPolling: Bool { get set }
     
-    var moderators: [String: [String: Set<String>]] { get set }
-    var admins: [String: [String: Set<String>]] { get set }
-    
     var hasPerformedInitialPoll: [String: Bool] { get set }
     var timeSinceLastPoll: [String: TimeInterval] { get set }
     
@@ -37,10 +34,6 @@ public final class OpenGroupManager: NSObject {
         
         public var pollers: [String: OpenGroupAPI.Poller] = [:] // One for each server
         public var isPolling: Bool = false
-        
-        /// Server URL to room ID to set of user IDs
-        public var moderators: [String: [String: Set<String>]] = [:]
-        public var admins: [String: [String: Set<String>]] = [:]
         
         /// Server URL to value
         public var hasPerformedInitialPoll: [String: Bool] = [:]
@@ -74,20 +67,24 @@ public final class OpenGroupManager: NSObject {
     public func startPolling(using dependencies: OGMDependencies = OGMDependencies()) {
         guard !dependencies.cache.isPolling else { return }
         
+        let servers: Set<String> = GRDBStorage.shared
+            .read { db in
+                // The default room promise creates an OpenGroup with an empty `roomToken` value,
+                // we don't want to start a poller for this as the user hasn't actually joined a room
+                try OpenGroup
+                    .select(.server)
+                    .filter(OpenGroup.Columns.roomToken != "")
+                    .filter(OpenGroup.Columns.isActive)
+                    .distinct()
+                    .asRequest(of: String.self)
+                    .fetchSet(db)
+            }
+            .defaulting(to: [])
+        
         dependencies.mutableCache.mutate { cache in
             cache.isPolling = true
-            
-            let servers: Set<String> = GRDBStorage.shared
-                .read { db in
-                    try OpenGroup
-                        .select(.server)
-                        .distinct()
-                        .asRequest(of: String.self)
-                        .fetchSet(db)
-                }
-                .defaulting(to: [])
             cache.pollers = servers
-                .reduce([:]) { result, server in
+                .reduce(into: [:]) { result, server in
                     result[server]?.stop() // Should never occur
                     
                     result[server] = OpenGroupAPI.Poller(for: server)
@@ -106,7 +103,7 @@ public final class OpenGroupManager: NSObject {
 
     // MARK: - Adding & Removing
     
-    public func hasExistingOpenGroup(roomToken: String, server: String, publicKey: String, using transaction: YapDatabaseReadWriteTransaction, dependencies: OGMDependencies = OGMDependencies()) -> Bool {
+    public func hasExistingOpenGroup(_ db: Database, roomToken: String, server: String, publicKey: String, dependencies: OGMDependencies = OGMDependencies()) -> Bool {
         guard let serverUrl: URL = URL(string: server) else { return false }
         
         let serverHost: String = (serverUrl.host ?? server)
@@ -143,50 +140,85 @@ public final class OpenGroupManager: NSObject {
         
         // Then check if there is an existing open group thread
         let hasExistingThread: Bool = serverOptions.contains(where: { serverName in
-            let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(serverName).\(roomToken)")
-            
-            return (TSGroupThread.fetch(groupId: groupId, transaction: transaction) != nil)
+            (try? SessionThread
+                .exists(
+                    db,
+                    id: OpenGroup.idFor(roomToken: roomToken, server: serverName)
+                ))
+                .defaulting(to: false)
         })
                                                                   
         return hasExistingThread
     }
     
-    public func add(roomToken: String, server: String, publicKey: String, isConfigMessage: Bool, using transaction: YapDatabaseReadWriteTransaction, dependencies: OGMDependencies = OGMDependencies()) -> Promise<Void> {
+    public func add(_ db: Database, roomToken: String, server: String, publicKey: String, isConfigMessage: Bool, dependencies: OGMDependencies = OGMDependencies()) -> Promise<Void> {
         // If we are currently polling for this server and already have a TSGroupThread for this room the do nothing
-        if hasExistingOpenGroup(roomToken: roomToken, server: server, publicKey: publicKey, using: transaction, dependencies: dependencies) {
+        if hasExistingOpenGroup(db, roomToken: roomToken, server: server, publicKey: publicKey, dependencies: dependencies) {
             SNLog("Ignoring join open group attempt (already joined), user initiated: \(!isConfigMessage)")
             return Promise.value(())
         }
         
-        // Clear any existing data if needed
-        dependencies.storage.removeOpenGroupSequenceNumber(for: roomToken, on: server, using: transaction)
+        // Store the open group information
+        let threadId: String = OpenGroup.idFor(roomToken: roomToken, server: server)
         
-        // Store the public key
-        dependencies.storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
+        _ = try? SessionThread.fetchOrCreate(db, id: threadId, variant: .openGroup)
+        _ = try? OpenGroup
+            .fetchOne(db, id: threadId)
+            .defaulting(
+                to: OpenGroup(
+                    server: server,
+                    roomToken: roomToken,
+                    publicKey: publicKey,
+                    isActive: true,
+                    name: "",
+                    roomDescription: nil,
+                    imageId: nil,
+                    imageData: nil,
+                    userCount: 0,
+                    infoUpdates: -1,
+                    sequenceNumber: 0,
+                    inboxLatestMessageId: 0,
+                    outboxLatestMessageId: 0
+                )
+            )
+            .with(
+                // Set the group to active and reset the sequenceNumber (handle groups which have
+                // been deactivated)
+                isActive: true,
+                sequenceNumber: 0
+            )
+            .saved(db)
         
         let (promise, seal) = Promise<Void>.pending()
         
-        transaction.addCompletionQueue(DispatchQueue.global(qos: .userInitiated)) {
-            OpenGroupAPI.capabilitiesAndRoom(for: roomToken, on: server, using: dependencies)
-                .done(on: DispatchQueue.global(qos: .userInitiated)) { response in
-                    dependencies.storage.write { anyTransaction in
-                        guard let transaction: YapDatabaseReadWriteTransaction = anyTransaction as? YapDatabaseReadWriteTransaction else { return }
-                        
+        // Note: We don't do this after the db commit as it can fail (resulting in endless loading)
+        OpenGroupAPI.workQueue.async {
+            dependencies.storage
+                .write { db in
+                    OpenGroupAPI
+                        .capabilitiesAndRoom(
+                            db,
+                            for: roomToken,
+                            on: server,
+                            using: dependencies
+                        )
+                }
+                .done(on: OpenGroupAPI.workQueue) { response in
+                    dependencies.storage.write { db in
                         // Store the capabilities first
                         OpenGroupManager.handleCapabilities(
-                            response.capabilities.data,
-                            on: server,
-                            using: transaction,
-                            dependencies: dependencies
+                            db,
+                            capabilities: response.capabilities.data,
+                            on: server
                         )
                         
                         // Then the room
-                        OpenGroupManager.handlePollInfo(
-                            OpenGroupAPI.RoomPollInfo(room: response.room.data),
+                        try OpenGroupManager.handlePollInfo(
+                            db,
+                            pollInfo: OpenGroupAPI.RoomPollInfo(room: response.room.data),
                             publicKey: publicKey,
                             for: roomToken,
                             on: server,
-                            using: transaction,
                             dependencies: dependencies
                         ) {
                             seal.fulfill(())
@@ -197,6 +229,7 @@ public final class OpenGroupManager: NSObject {
                     SNLog("Failed to join open group.")
                     seal.reject(error)
                 }
+                .retainUntilComplete()
         }
         
         return promise
@@ -210,19 +243,42 @@ public final class OpenGroupManager: NSObject {
             .fetchOne(db)
         
         // Stop the poller if needed
-        let numRooms: Int = (try? OpenGroup
+        //
+        // Note: The default room promise creates an OpenGroup with an empty `roomToken` value,
+        // we don't want to start a poller for this as the user hasn't actually joined a room
+        let numActiveRooms: Int = (try? OpenGroup
             .filter(OpenGroup.Columns.server == server)
+            .filter(OpenGroup.Columns.roomToken != "")
+            .filter(OpenGroup.Columns.isActive)
             .fetchCount(db))
             .defaulting(to: 1)
         
-        if numRooms == 1, let server: String = server {
+        if numActiveRooms == 1, let server: String = server {
             let poller = dependencies.cache.pollers[server]
             poller?.stop()
             dependencies.mutableCache.mutate { $0.pollers[server] = nil }
         }
         
-        // Remove all data
-        _ = SessionThread
+        // Remove all the data (everything should cascade delete)
+        _ = try? SessionThread
+            .filter(id: openGroupId)
+            .deleteAll(db)
+        
+        // Remove the open group (no foreign key to the thread so it won't auto-delete)
+        if server?.lowercased() != OpenGroupAPI.defaultServer.lowercased() {
+            _ = try? OpenGroup
+                .filter(id: openGroupId)
+                .deleteAll(db)
+        }
+        else {
+            // If it's a session-run room then just set it to inactive
+            _ = try? OpenGroup
+                .filter(id: openGroupId)
+                .updateAll(db, OpenGroup.Columns.isActive.set(to: false))
+        }
+        
+        // Remove the thread and associated data
+        _ = try? SessionThread
             .filter(id: openGroupId)
             .deleteAll(db)
     }
@@ -230,88 +286,83 @@ public final class OpenGroupManager: NSObject {
     // MARK: - Response Processing
     
     internal static func handleCapabilities(
-        _ capabilities: OpenGroupAPI.Capabilities,
-        on server: String,
-        using transaction: YapDatabaseReadWriteTransaction,
-        dependencies: OGMDependencies = OGMDependencies()
+        _ db: Database,
+        capabilities: OpenGroupAPI.Capabilities,
+        on server: String
     ) {
-        let updatedServer: OpenGroupAPI.Server = OpenGroupAPI.Server(
-            name: server,
-            capabilities: capabilities
-        )
+        // Remove old capabilities first
+        _ = try? Capability
+            .filter(Capability.Columns.openGroupServer == server)
+            .deleteAll(db)
         
-        dependencies.storage.setOpenGroupServer(updatedServer, using: transaction)
+        // Then insert the new capabilities (both present and missing)
+        capabilities.capabilities.forEach { capability in
+            _ = try? Capability(
+                openGroupServer: server,
+                variant: Capability.Variant(from: capability.rawValue),
+                isMissing: false
+            )
+            .saved(db)
+        }
+        capabilities.missing?.forEach { capability in
+            _ = try? Capability(
+                openGroupServer: server,
+                variant: Capability.Variant(from: capability.rawValue),
+                isMissing: true
+            )
+            .saved(db)
+        }
     }
     
     internal static func handlePollInfo(
-        _ pollInfo: OpenGroupAPI.RoomPollInfo,
+        _ db: Database,
+        pollInfo: OpenGroupAPI.RoomPollInfo,
         publicKey maybePublicKey: String?,
         for roomToken: String,
         on server: String,
         waitForImageToComplete: Bool = false,
-        using transaction: YapDatabaseReadWriteTransaction,
         dependencies: OGMDependencies = OGMDependencies(),
         completion: (() -> ())? = nil
-    ) {
+    ) throws {
         // Create the open group model and get or create the thread
-        let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(server).\(roomToken)")
-        let userPublicKey: String = getUserHexEncodedPublicKey(using: dependencies)
-        let initialModel: TSGroupModel = TSGroupModel(
-            title: (pollInfo.details?.name ?? ""),
-            memberIds: [ userPublicKey ],
-            image: nil,
-            groupId: groupId,
-            groupType: .openGroup,
-            adminIds: (pollInfo.details?.admins ?? []),
-            moderatorIds: (pollInfo.details?.moderators ?? [])
-        )
-        var maybeUpdatedModel: TSGroupModel? = nil
+        let threadId: String = OpenGroup.idFor(roomToken: roomToken, server: server)
         
-        // Store/Update everything
-        let thread = TSGroupThread.getOrCreateThread(with: initialModel, transaction: transaction)
-        let existingOpenGroup: OpenGroup? = thread.uniqueId.flatMap { uniqueId -> OpenGroup? in
-            dependencies.storage.getOpenGroup(for: uniqueId)
+        guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else { return }
+        
+        let updatedOpenGroup: OpenGroup = try openGroup
+            .with(
+                name: pollInfo.details?.name,
+                roomDescription: pollInfo.details?.roomDescription,
+                imageId: pollInfo.details?.imageId.map { "\($0)" },
+                userCount: pollInfo.activeUsers,
+                infoUpdates: pollInfo.details?.infoUpdates
+            )
+            .saved(db)
+        
+        // Update the admin/moderator group members
+        if let roomDetails: OpenGroupAPI.Room = pollInfo.details {
+            _ = try? GroupMember
+                .filter(GroupMember.Columns.groupId == threadId)
+                .deleteAll(db)
+            
+            try roomDetails.admins.forEach { adminId in
+                _ = try GroupMember(
+                    groupId: threadId,
+                    profileId: adminId,
+                    role: .admin
+                ).saved(db)
+            }
+            
+            try roomDetails.moderators.forEach { moderatorId in
+                _ = try GroupMember(
+                    groupId: threadId,
+                    profileId: moderatorId,
+                    role: .moderator
+                ).saved(db)
+            }
         }
-
-        guard let threadUniqueId: String = thread.uniqueId else { return }
-        guard let publicKey: String = (maybePublicKey ?? existingOpenGroup?.publicKey) else { return }
         
-        let updatedModel: TSGroupModel = TSGroupModel(
-            title: (pollInfo.details?.name ?? thread.groupModel.groupName),
-            memberIds: Array(Set(thread.groupModel.groupMemberIds).inserting(userPublicKey)),
-            image: thread.groupModel.groupImage,
-            groupId: groupId,
-            groupType: .openGroup,
-            adminIds: (pollInfo.details?.admins ?? thread.groupModel.groupAdminIds),
-            moderatorIds: (pollInfo.details?.moderators ?? thread.groupModel.groupModeratorIds)
-        )
-        maybeUpdatedModel = updatedModel
-        let updatedOpenGroup: OpenGroup = OpenGroup(
-            server: server,
-            room: pollInfo.token,
-            publicKey: publicKey,
-            name: (pollInfo.details?.name ?? thread.name()),
-            groupDescription: (pollInfo.details?.roomDescription ?? existingOpenGroup?.groupDescription),
-            imageID: (pollInfo.details?.imageId.map { "\($0)" } ?? existingOpenGroup?.imageID),
-            infoUpdates: ((pollInfo.details?.infoUpdates ?? existingOpenGroup?.infoUpdates) ?? 0)
-        )
-        
-        // - Thread changes
-        thread.shouldBeVisible = true
-        thread.groupModel = updatedModel
-        thread.save(with: transaction)
-        
-        // - Open Group changes
-        dependencies.storage.setOpenGroup(updatedOpenGroup, for: threadUniqueId, using: transaction)
-        
-        // - User Count
-        dependencies.storage.setUserCount(
-            to: UInt64(pollInfo.activeUsers),
-            forOpenGroupWithID: updatedOpenGroup.id,
-            using: transaction
-        )
-        
-        transaction.addCompletionQueue(DispatchQueue.global(qos: .userInitiated)) {
+        db.afterNextTransactionCommit { db in
             // Start the poller if needed
             if dependencies.cache.pollers[server] == nil {
                 dependencies.mutableCache.mutate {
@@ -320,30 +371,20 @@ public final class OpenGroupManager: NSObject {
                 }
             }
             
-            // - Moderators
-            if let moderators: [String] = (pollInfo.details?.moderators ?? maybeUpdatedModel?.groupModeratorIds) {
-                dependencies.mutableCache.mutate { cache in
-                    cache.moderators[server] = (cache.moderators[server] ?? [:]).setting(roomToken, Set(moderators))
-                }
-            }
-            
-            // - Admins
-            if let admins: [String] = (pollInfo.details?.admins ?? maybeUpdatedModel?.groupAdminIds) {
-                dependencies.mutableCache.mutate { cache in
-                    cache.admins[server] = (cache.admins[server] ?? [:]).setting(roomToken, Set(admins))
-                }
-            }
-
-            // - Room image (if there is one and it's different from the existing one, or we don't have the existing one)
-            if let imageId: UInt64 = UInt64(updatedOpenGroup.imageID ?? ""), (updatedModel.groupImage == nil || updatedOpenGroup.imageID != existingOpenGroup?.imageID) {
-                OpenGroupManager.roomImage(imageId, for: roomToken, on: server, using: dependencies)
+            /// Start downloading the room image (if we don't have one or it's been updated)
+            if
+                let imageId: Int64 = Int64(updatedOpenGroup.imageId ?? ""),
+                (
+                    updatedOpenGroup.imageData == nil ||
+                    updatedOpenGroup.imageId != openGroup.imageId
+                )
+            {
+                OpenGroupManager.roomImage(db, fileId: imageId, for: roomToken, on: server, using: dependencies)
                     .done { data in
-                        dependencies.storage.write { transaction in
-                            // Update the thread
-                            let transaction = transaction as! YapDatabaseReadWriteTransaction
-                            let thread = TSGroupThread.getOrCreateThread(with: initialModel, transaction: transaction)
-                            thread.groupModel.groupImage = UIImage(data: data)
-                            thread.save(with: transaction)
+                        dependencies.storage.write { db in
+                            _ = try OpenGroup
+                                .filter(id: threadId)
+                                .updateAll(db, OpenGroup.Columns.imageData.set(to: data))
                             
                             if waitForImageToComplete {
                                 completion?()
@@ -370,83 +411,98 @@ public final class OpenGroupManager: NSObject {
     }
     
     internal static func handleMessages(
-        _ messages: [OpenGroupAPI.Message],
+        _ db: Database,
+        messages: [OpenGroupAPI.Message],
         for roomToken: String,
         on server: String,
         isBackgroundPoll: Bool,
-        using transaction: YapDatabaseReadWriteTransaction,
         dependencies: OGMDependencies = OGMDependencies()
     ) {
         // Sorting the messages by server ID before importing them fixes an issue where messages
         // that quote older messages can't find those older messages
-        let openGroupID = "\(server).\(roomToken)"
+        guard let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: OpenGroup.idFor(roomToken: roomToken, server: server)) else {
+            SNLog("Couldn't handle open group messages.")
+            return
+        }
+        
         let sortedMessages: [OpenGroupAPI.Message] = messages
             .sorted { lhs, rhs in lhs.id < rhs.id }
         let seqNo: Int64? = sortedMessages.map { $0.seqNo }.max()
-        var messageServerIDsToRemove: [UInt64] = []
+        var messageServerIdsToRemove: [UInt64] = []
         
         // Update the 'openGroupSequenceNumber' value (Note: SOGS V4 uses the 'seqNo' instead of the 'serverId')
         if let seqNo: Int64 = seqNo {
-            dependencies.storage.setOpenGroupSequenceNumber(for: roomToken, on: server, to: seqNo, using: transaction)
+            _ = try? OpenGroup
+                .filter(id: openGroup.id)
+                .updateAll(db, OpenGroup.Columns.sequenceNumber.set(to: seqNo))
         }
         
         // Process the messages
         sortedMessages.forEach { message in
-            guard let base64EncodedString: String = message.base64EncodedData, let data = Data(base64Encoded: base64EncodedString) else {
+            guard
+                let base64EncodedString: String = message.base64EncodedData,
+                let data = Data(base64Encoded: base64EncodedString)
+            else {
                 // A message with no data has been deleted so add it to the list to remove
-                messageServerIDsToRemove.append(UInt64(message.id))
+                messageServerIdsToRemove.append(UInt64(message.id))
                 return
             }
-            guard let sender: String = message.sender else { return }   // Need a sender in order to process the message
-            
-            // Note: The `posted` value is in seconds but all messages in the database use milliseconds for timestamps
-            let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(message.posted * 1000)))
-            envelope.setContent(data)
-            envelope.setSource(sender)
             
             do {
-                let data = try envelope.buildSerializedData()
-                let (message, proto) = try MessageReceiver.parse(data, openGroupMessageServerID: UInt64(message.id), isRetry: false, using: transaction, dependencies: dependencies)
-                try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction, dependencies: dependencies)
+                let processedMessage: ProcessedMessage? = try Message.processReceivedOpenGroupMessage(
+                    db,
+                    openGroupId: openGroup.id,
+                    openGroupServerPublicKey: openGroup.publicKey,
+                    message: message,
+                    data: data,
+                    dependencies: dependencies
+                )
+                
+                if let messageInfo: MessageReceiveJob.Details.MessageInfo = processedMessage?.messageInfo {
+                    try MessageReceiver.handle(
+                        db,
+                        message: messageInfo.message,
+                        associatedWithProto: try SNProtoContent.parseData(messageInfo.serializedProtoData),
+                        openGroupId: openGroup.id,
+                        isBackgroundPoll: isBackgroundPoll,
+                        dependencies: dependencies
+                    )
+                }
             }
             catch {
-                SNLog("Couldn't receive open group message due to error: \(error).")
+                switch error {
+                    // Ignore duplicate & selfSend message errors (and don't bother logging
+                    // them as there will be a lot since we each service node duplicates messages)
+                    case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
+                        MessageReceiverError.duplicateMessage,
+                        MessageReceiverError.duplicateControlMessage,
+                        MessageReceiverError.selfSend:
+                        break
+                    
+                    default: SNLog("Couldn't receive open group message due to error: \(error).")
+                }
             }
         }
 
         // Handle any deletions that are needed
-        guard !messageServerIDsToRemove.isEmpty else { return }
+        guard !messageServerIdsToRemove.isEmpty else { return }
         
-        dependencies.storage.write { transaction in
-            guard let transaction: YapDatabaseReadWriteTransaction = transaction as? YapDatabaseReadWriteTransaction else {
-                return
-            }
-            
-            messageServerIDsToRemove.forEach { openGroupServerMessageId in
-                guard let messageLookup: OpenGroupServerIdLookup = dependencies.storage.getOpenGroupServerIdLookup(openGroupServerMessageId, in: roomToken, on: server, using: transaction) else {
-                    return
-                }
-                guard let tsMessage: TSMessage = TSMessage.fetch(uniqueId: messageLookup.tsMessageId, transaction: transaction) else {
-                    return
-                }
-                
-                tsMessage.remove(with: transaction)
-                dependencies.storage.removeOpenGroupServerIdLookup(openGroupServerMessageId, in: roomToken, on: server, using: transaction)
-            }
-        }
+        _ = try? Interaction
+            .filter(messageServerIdsToRemove.contains(Interaction.Columns.openGroupServerMessageId))
+            .deleteAll(db)
     }
     
     internal static func handleDirectMessages(
-        _ messages: [OpenGroupAPI.DirectMessage],
+        _ db: Database,
+        messages: [OpenGroupAPI.DirectMessage],
         fromOutbox: Bool,
         on server: String,
         isBackgroundPoll: Bool,
-        using transaction: YapDatabaseReadWriteTransaction,
         dependencies: OGMDependencies = OGMDependencies()
     ) {
         // Don't need to do anything if we have no messages (it's a valid case)
         guard !messages.isEmpty else { return }
-        guard let serverPublicKey: String = dependencies.storage.getOpenGroupPublicKey(for: server) else {
+        guard let openGroup: OpenGroup = try? OpenGroup.filter(OpenGroup.Columns.server == server).fetchOne(db) else {
             SNLog("Couldn't receive inbox message.")
             return
         }
@@ -456,14 +512,18 @@ public final class OpenGroupManager: NSObject {
         let sortedMessages: [OpenGroupAPI.DirectMessage] = messages
             .sorted { lhs, rhs in lhs.id < rhs.id }
         let latestMessageId: Int64 = sortedMessages[sortedMessages.count - 1].id
-        var mappingCache: [String: BlindedIdMapping] = [:]  // Only want this cache to exist for the current loop
+        var lookupCache: [String: BlindedIdLookup] = [:]  // Only want this cache to exist for the current loop
         
         // Update the 'latestMessageId' value
         if fromOutbox {
-            dependencies.storage.setOpenGroupOutboxLatestMessageId(for: server, to: latestMessageId, using: transaction)
+            _ = try? OpenGroup
+                .filter(OpenGroup.Columns.server == server)
+                .updateAll(db, OpenGroup.Columns.outboxLatestMessageId.set(to: latestMessageId))
         }
         else {
-            dependencies.storage.setOpenGroupInboxLatestMessageId(for: server, to: latestMessageId, using: transaction)
+            _ = try? OpenGroup
+                .filter(OpenGroup.Columns.server == server)
+                .updateAll(db, OpenGroup.Columns.inboxLatestMessageId.set(to: latestMessageId))
         }
 
         // Process the messages
@@ -473,21 +533,14 @@ public final class OpenGroupManager: NSObject {
                 return
             }
 
-            // Note: The `posted` value is in seconds but all messages in the database use milliseconds for timestamps
-            let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(message.posted * 1000)))
-            envelope.setContent(messageData)
-            envelope.setSource(message.sender)
-
             do {
-                let data = try envelope.buildSerializedData()
-                let (receivedMessage, proto) = try MessageReceiver.parse(
-                    data,
-                    openGroupMessageServerID: nil,
-                    openGroupServerPublicKey: serverPublicKey,
+                let processedMessage: ProcessedMessage? = try Message.processReceivedOpenGroupDirectMessage(
+                    db,
+                    openGroupServerPublicKey: openGroup.publicKey,
+                    message: message,
+                    data: messageData,
                     isOutgoing: fromOutbox,
                     otherBlindedPublicKey: (fromOutbox ? message.recipient : message.sender),
-                    isRetry: false,
-                    using: transaction,
                     dependencies: dependencies
                 )
                 
@@ -496,45 +549,45 @@ public final class OpenGroupManager: NSObject {
                 // during device sync'ing and restoration)
                 if fromOutbox {
                     // Attempt to un-blind the 'message.recipient'
-                    let mapping: BlindedIdMapping
-                    
-                    // Minor optimisation to avoid processing the same sender multiple times in the same
-                    // 'handleMessages' call (since the 'mapping' call is done within a transaction we
-                    // will never have a mapping come through part-way through processing these messages)
-                    if let result: BlindedIdMapping = mappingCache[message.recipient] {
-                        mapping = result
-                    }
-                    else if let result: BlindedIdMapping = ContactUtilities.mapping(for: message.recipient, serverPublicKey: serverPublicKey, using: transaction, dependencies: dependencies) {
-                        mapping = result
-                    }
-                    else {
-                        // Cache an "invalid" mapping that has the 'sessionId' set to the recipient so we don't
-                        // re-process this recipient if there is another message from them
-                        mapping = BlindedIdMapping(
-                            blindedId: "",
-                            sessionId: message.recipient,
-                            serverPublicKey: ""
+                    let lookup: BlindedIdLookup = try {
+                        // Minor optimisation to avoid processing the same sender multiple times in the same
+                        // 'handleMessages' call (since the 'mapping' call is done within a transaction we
+                        // will never have a mapping come through part-way through processing these messages)
+                        if let result: BlindedIdLookup = lookupCache[message.recipient] {
+                            return result
+                        }
+                        
+                        return try BlindedIdLookup.fetchOrCreate(
+                            db,
+                            blindedId: message.recipient,
+                            openGroupServer: server.lowercased(),
+                            openGroupPublicKey: openGroup.publicKey
                         )
-                    }
+                    }()
+                    let syncTarget: String = (lookup.sessionId ?? message.recipient)
                     
-                    switch receivedMessage {
-                        case let receivedMessage as VisibleMessage: receivedMessage.syncTarget = mapping.sessionId
-                        case let receivedMessage as ExpirationTimerUpdate: receivedMessage.syncTarget = mapping.sessionId
+                    switch processedMessage?.messageInfo.variant {
+                        case .visibleMessage:
+                            (processedMessage?.messageInfo.message as? VisibleMessage)?.syncTarget = syncTarget
+                            
+                        case .expirationTimerUpdate:
+                            (processedMessage?.messageInfo.message as? ExpirationTimerUpdate)?.syncTarget = syncTarget
+                            
                         default: break
                     }
                     
-                    mappingCache[message.recipient] = mapping
+                    lookupCache[message.recipient] = lookup
                 }
                 
-                try MessageReceiver.handle(receivedMessage, associatedWithProto: proto, openGroupID: nil, isBackgroundPoll: isBackgroundPoll, using: transaction, dependencies: dependencies)
-                
-                // If this message is from the outbox then we should add the open group details back to the
-                // thread just in case this is from a restore (otherwise the user won't be able to send a new
-                // message to the target inbox if they are still blinded)
-                if fromOutbox, let contactThread: TSContactThread = TSContactThread.fetch(uniqueId: TSContactThread.threadID(fromContactSessionID: message.recipient), transaction: transaction) {
-                    contactThread.originalOpenGroupServer = server
-                    contactThread.originalOpenGroupPublicKey = serverPublicKey
-                    contactThread.save(with: transaction)
+                if let messageInfo: MessageReceiveJob.Details.MessageInfo = processedMessage?.messageInfo {
+                    try MessageReceiver.handle(
+                        db,
+                        message: messageInfo.message,
+                        associatedWithProto: try SNProtoContent.parseData(messageInfo.serializedProtoData),
+                        openGroupId: nil,   // Intentionally nil as they are technically not open group messages
+                        isBackgroundPoll: isBackgroundPoll,
+                        dependencies: dependencies
+                    )
                 }
             }
             catch let error {
@@ -546,52 +599,87 @@ public final class OpenGroupManager: NSObject {
     // MARK: - Convenience
     
     /// This method specifies if the given publicKey is a moderator or an admin within a specified Open Group
-    public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String, using dependencies: OGMDependencies = OGMDependencies()) -> Bool {
-        let modAndAdminKeys: Set<String> = (dependencies.cache.moderators[server]?[room] ?? Set())
-            .union(dependencies.cache.admins[server]?[room] ?? Set())
+    public static func isUserModeratorOrAdmin(
+        _ publicKey: String,
+        for roomToken: String?,
+        on server: String?,
+        using dependencies: OGMDependencies = OGMDependencies()
+    ) -> Bool {
+        guard let roomToken: String = roomToken, let server: String = server else { return false }
 
-        // If the publicKey is in the set then return immediately, otherwise only continue if it's the
-        // current user
-        guard !modAndAdminKeys.contains(publicKey) else { return true }
-        guard let sessionId: SessionId = SessionId(from: publicKey) else { return false }
+        let groupId: String = OpenGroup.idFor(roomToken: roomToken, server: server)
+        let targetRoles: [GroupMember.Role] = [.moderator, .admin]
         
-        // Conveniently the logic for these different cases works in order so we can fallthrough each
-        // case with only minor efficiency losses
-        switch sessionId.prefix {
-            case .standard:
-                guard publicKey == getUserHexEncodedPublicKey(using: dependencies) else { return false }
-                fallthrough
+        return dependencies.storage
+            .read { db in
+                let isDirectModOrAdmin: Bool = (try? GroupMember
+                    .filter(GroupMember.Columns.groupId == groupId)
+                    .filter(GroupMember.Columns.profileId == publicKey)
+                    .filter(targetRoles.contains(GroupMember.Columns.role))
+                    .isNotEmpty(db))
+                    .defaulting(to: false)
                 
-            case .unblinded:
-                guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return false }
-                guard sessionId.prefix != .unblinded || publicKey == SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString else {
-                    return false
-                }
-                fallthrough
+                // If the publicKey provided matches a mod or admin directly then just return immediately
+                if isDirectModOrAdmin { return true }
                 
-            case .blinded:
-                guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return false }
-                guard let serverPublicKey: String = dependencies.storage.getOpenGroupPublicKey(for: server) else {
-                    return false
-                }
-                guard let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
-                    return false
-                }
-                guard sessionId.prefix != .blinded || publicKey == SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString else {
-                    return false
-                }
+                // Otherwise we need to check if it's a variant of the current users key and if so we want
+                // to check if any of those have mod/admin entries
+                guard let sessionId: SessionId = SessionId(from: publicKey) else { return false }
                 
-                // If we got to here that means that the 'publicKey' value matches one of the current
-                // users 'standard', 'unblinded' or 'blinded' keys and as such we should check if any
-                // of them exist in the `modsAndAminKeys` Set
-                let possibleKeys: Set<String> = Set([
-                    getUserHexEncodedPublicKey(using: dependencies),
-                    SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString,
-                    SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString
-                ])
+                // Conveniently the logic for these different cases works in order so we can fallthrough each
+                // case with only minor efficiency losses
+                let userPublicKey: String = getUserHexEncodedPublicKey(db)
                 
-                return !modAndAdminKeys.intersection(possibleKeys).isEmpty
-        }
+                switch sessionId.prefix {
+                    case .standard:
+                        guard publicKey == userPublicKey else { return false }
+                        fallthrough
+                        
+                    case .unblinded:
+                        guard let userEdKeyPair: Box.KeyPair = Identity.fetchUserEd25519KeyPair(db) else {
+                            return false
+                        }
+                        guard sessionId.prefix != .unblinded || publicKey == SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString else {
+                            return false
+                        }
+                        fallthrough
+                        
+                    case .blinded:
+                        guard
+                            let userEdKeyPair: Box.KeyPair = Identity.fetchUserEd25519KeyPair(db),
+                            let openGroupPublicKey: String = try? OpenGroup
+                                .select(.publicKey)
+                                .filter(id: groupId)
+                                .asRequest(of: String.self)
+                                .fetchOne(db),
+                            let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(
+                                serverPublicKey: openGroupPublicKey,
+                                edKeyPair: userEdKeyPair,
+                                genericHash: dependencies.genericHash
+                            )
+                        else { return false }
+                        guard sessionId.prefix != .blinded || publicKey == SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString else {
+                            return false
+                        }
+                        
+                        // If we got to here that means that the 'publicKey' value matches one of the current
+                        // users 'standard', 'unblinded' or 'blinded' keys and as such we should check if any
+                        // of them exist in the `modsAndAminKeys` Set
+                        let possibleKeys: Set<String> = Set([
+                            userPublicKey,
+                            SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString,
+                            SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString
+                        ])
+                        
+                        return (try? GroupMember
+                            .filter(GroupMember.Columns.groupId == groupId)
+                            .filter(possibleKeys.contains(GroupMember.Columns.profileId))
+                            .filter(targetRoles.contains(GroupMember.Columns.role))
+                            .isNotEmpty(db))
+                            .defaulting(to: false)
+                }
+            }
+            .defaulting(to: false)
     }
     
     @discardableResult public static func getDefaultRoomsIfNeeded(using dependencies: OGMDependencies = OGMDependencies()) -> Promise<[OpenGroupAPI.Room]> {
@@ -602,44 +690,65 @@ public final class OpenGroupManager: NSObject {
         
         let (promise, seal) = Promise<[OpenGroupAPI.Room]>.pending()
 
-        dependencies.storage.write(
-            with: { transaction in
-                dependencies.storage.setOpenGroupPublicKey(
-                    for: OpenGroupAPI.defaultServer,
-                    to: OpenGroupAPI.defaultServerPublicKey,
-                    using: transaction
-                )
-            },
-            completion: {
-                let internalPromise: Promise<[OpenGroupAPI.Room]> = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
-                    OpenGroupAPI.rooms(for: OpenGroupAPI.defaultServer, using: dependencies)
-                        .map { _, data in data }
-                }
-                internalPromise
-                    .done(on: OpenGroupAPI.workQueue) { items in
-                        items
-                            .compactMap { room -> (UInt64, String)? in
-                                guard let imageId: UInt64 = room.imageId else { return nil}
-                                
-                                return (imageId, room.token)
-                            }
-                            .forEach { imageId, roomToken in
-                                roomImage(imageId, for: roomToken, on: OpenGroupAPI.defaultServer, using: dependencies)
-                                    .retainUntilComplete()
-                            }
-                        seal.fulfill(items)
-                    }
-                    .retainUntilComplete()
-                
-                internalPromise
-                    .catch(on: OpenGroupAPI.workQueue) { error in
-                        dependencies.mutableCache.mutate { cache in
-                            cache.defaultRoomsPromise = nil
+        // Try to retrieve the default rooms 8 times
+        attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
+            dependencies.storage.read { db in
+                OpenGroupAPI.rooms(db, for: OpenGroupAPI.defaultServer, using: dependencies)
+            }
+            .map { _, data in data }
+        }
+        .done(on: OpenGroupAPI.workQueue) { items in
+            dependencies.storage.writeAsync { db in
+                items
+                    .compactMap { room -> (Int64, String)? in
+                        // Try to insert an inactive version of the OpenGroup (use 'insert' rather than 'save'
+                        // as we want it to fail if the room already exists)
+                        do {
+                            _ = try OpenGroup(
+                                server: OpenGroupAPI.defaultServer,
+                                roomToken: room.token,
+                                publicKey: OpenGroupAPI.defaultServerPublicKey,
+                                isActive: false,
+                                name: room.name,
+                                roomDescription: room.roomDescription,
+                                imageId: room.imageId.map { "\($0)" },
+                                imageData: nil,
+                                userCount: room.activeUsers,
+                                infoUpdates: room.infoUpdates,
+                                sequenceNumber: 0,
+                                inboxLatestMessageId: 0,
+                                outboxLatestMessageId: 0
+                            )
+                            .inserted(db)
                         }
-                        seal.reject(error)
+                        catch {}
+                        
+                        guard let imageId: Int64 = room.imageId else { return nil }
+                        
+                        return (imageId, room.token)
+                    }
+                    .forEach { imageId, roomToken in
+                        roomImage(
+                            db,
+                            fileId: imageId,
+                            for: roomToken,
+                            on: OpenGroupAPI.defaultServer,
+                            using: dependencies
+                        )
+                        .retainUntilComplete()
                     }
             }
-        )
+            
+            seal.fulfill(items)
+        }
+        .catch(on: OpenGroupAPI.workQueue) { error in
+            dependencies.mutableCache.mutate { cache in
+                cache.defaultRoomsPromise = nil
+            }
+            
+            seal.reject(error)
+        }
+        .retainUntilComplete()
         
         dependencies.mutableCache.mutate { cache in
             cache.defaultRoomsPromise = promise
@@ -649,7 +758,8 @@ public final class OpenGroupManager: NSObject {
     }
     
     public static func roomImage(
-        _ fileId: UInt64,
+        _ db: Database,
+        fileId: Int64,
         for roomToken: String,
         on server: String,
         using dependencies: OGMDependencies = OGMDependencies()
@@ -663,30 +773,56 @@ public final class OpenGroupManager: NSObject {
         // we only need to maintain one date in user defaults. On top of all of this we also
         // don't double up on fetch requests by storing the existing request as a promise if
         // there is one.
+        let threadId: String = OpenGroup.idFor(roomToken: roomToken, server: server)
         let lastOpenGroupImageUpdate: Date? = dependencies.standardUserDefaults[.lastOpenGroupImageUpdate]
         let now: Date = dependencies.date
         let timeSinceLastUpdate: TimeInterval = (lastOpenGroupImageUpdate.map { now.timeIntervalSince($0) } ?? .greatestFiniteMagnitude)
         let updateInterval: TimeInterval = (7 * 24 * 60 * 60)
         
-        if let data = dependencies.storage.getOpenGroupImage(for: roomToken, on: server), server == OpenGroupAPI.defaultServer, timeSinceLastUpdate < updateInterval {
-            return Promise.value(data)
-        }
+        if
+            server == OpenGroupAPI.defaultServer,
+            timeSinceLastUpdate < updateInterval,
+            let data = try? OpenGroup
+                .select(.imageData)
+                .filter(id: threadId)
+                .asRequest(of: Data.self)
+                .fetchOne(db)
+        { return Promise.value(data) }
         
         if let promise = dependencies.cache.groupImagePromises["\(server).\(roomToken)"] {
             return promise
         }
         
-        let promise: Promise<Data> = OpenGroupAPI
-            .downloadFile(fileId, from: roomToken, on: server, using: dependencies)
-            .map { _, data in data }
-        _ = promise.done(on: OpenGroupAPI.workQueue) { imageData in
-            if server == OpenGroupAPI.defaultServer {
-                dependencies.storage.write { transaction in
-                    dependencies.storage.setOpenGroupImage(to: imageData, for: roomToken, on: server, using: transaction)
+        let (promise, seal) = Promise<Data>.pending()
+        
+        // Trigger the download on a background queue
+        DispatchQueue.global(qos: .background).async {
+            dependencies.storage
+                .write { db in
+                    OpenGroupAPI
+                        .downloadFile(
+                            db,
+                            fileId: fileId,
+                            from: roomToken,
+                            on: server,
+                            using: dependencies
+                        )
                 }
-                dependencies.standardUserDefaults[.lastOpenGroupImageUpdate] = now
-            }
+                .done(on: OpenGroupAPI.workQueue) { _, imageData in
+                    if server == OpenGroupAPI.defaultServer {
+                        dependencies.storage.write { db in
+                            _ = try OpenGroup
+                                .filter(id: threadId)
+                                .updateAll(db, OpenGroup.Columns.imageData.set(to: imageData))
+                        }
+                        dependencies.standardUserDefaults[.lastOpenGroupImageUpdate] = now
+                    }
+                    
+                    seal.fulfill(imageData)
+                }
+                .catch { seal.reject($0) }
         }
+        
         dependencies.mutableCache.mutate { cache in
             cache.groupImagePromises["\(server).\(roomToken)"] = promise
         }
@@ -723,30 +859,6 @@ public final class OpenGroupManager: NSObject {
     }
 }
 
-// MARK: - Objective C Methods
-
-extension OpenGroupManager {
-    @objc(startPolling)
-    public func objc_startPolling() {
-        startPolling()
-    }
-    
-    @objc(stopPolling)
-    public func objc_stopPolling() {
-        stopPolling()
-    }
-    
-    @objc(getDefaultRoomsIfNeeded)
-    public static func objc_getDefaultRoomsIfNeeded() {
-        getDefaultRoomsIfNeeded()
-    }
-    
-    @objc(isUserModeratorOrAdmin:forRoom:onServer:)
-    public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String) -> Bool {
-        return isUserModeratorOrAdmin(publicKey, for: room, on: server, using: OGMDependencies())
-    }
-}
-
 
 // MARK: - OGMDependencies
 
@@ -763,9 +875,8 @@ extension OpenGroupManager {
         public init(
             cache: Atomic<OGMCacheType>? = nil,
             onionApi: OnionRequestAPIType.Type? = nil,
-            identityManager: IdentityManagerProtocol? = nil,
             generalCache: Atomic<GeneralCacheType>? = nil,
-            storage: SessionMessagingKitStorageProtocol? = nil,
+            storage: GRDBStorage? = nil,
             sodium: SodiumType? = nil,
             box: BoxType? = nil,
             genericHash: GenericHashType? = nil,
@@ -781,7 +892,6 @@ extension OpenGroupManager {
             
             super.init(
                 onionApi: onionApi,
-                identityManager: identityManager,
                 generalCache: generalCache,
                 storage: storage,
                 sodium: sodium,

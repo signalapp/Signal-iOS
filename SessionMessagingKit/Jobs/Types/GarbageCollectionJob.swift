@@ -39,20 +39,20 @@ public enum GarbageCollectionJob: JobExecutor {
         
         GRDBStorage.shared.writeAsync(
             updates: { db in
-                // Remove any expired controlMessageProcessRecords
+                /// Remove any expired controlMessageProcessRecords
                 if details.typesToCollect.contains(.expiredControlMessageProcessRecords) {
                     _ = try ControlMessageProcessRecord
                         .filter(ControlMessageProcessRecord.Columns.serverExpirationTimestamp <= timestampNow)
                         .deleteAll(db)
                 }
                 
-                // Remove any typing indicators
+                /// Remove any typing indicators
                 if details.typesToCollect.contains(.threadTypingIndicators) {
                     _ = try ThreadTypingIndicator
                         .deleteAll(db)
                 }
                 
-                // Remove any typing indicators
+                /// Remove any old open group messages - open group messages which are older than six months
                 if details.typesToCollect.contains(.oldOpenGroupMessages) {
                     let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
                     let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
@@ -71,7 +71,7 @@ public enum GarbageCollectionJob: JobExecutor {
                     """)
                 }
                 
-                // Orphaned jobs
+                /// Orphaned jobs - jobs which have had their threads or interactions removed
                 if details.typesToCollect.contains(.orphanedJobs) {
                     let job: TypedTableAlias<Job> = TypedTableAlias()
                     let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
@@ -97,7 +97,7 @@ public enum GarbageCollectionJob: JobExecutor {
                     """)
                 }
                 
-                // Orphaned link previews
+                /// Orphaned link previews - link previews which have no interactions with matching url & rounded timestamps
                 if details.typesToCollect.contains(.orphanedLinkPreviews) {
                     let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
                     let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
@@ -116,7 +116,70 @@ public enum GarbageCollectionJob: JobExecutor {
                     """)
                 }
                 
-                // Orphaned attachments
+                /// Orphaned open groups - open groups which are no longer associated to a thread (except for the session-run ones for which
+                /// we want cached image data even if the user isn't in the group)
+                if details.typesToCollect.contains(.orphanedOpenGroups) {
+                    let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
+                    let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+                    
+                    try db.execute(literal: """
+                        DELETE FROM \(OpenGroup.self)
+                        WHERE \(Column.rowID) IN (
+                            SELECT \(openGroup.alias[Column.rowID])
+                            FROM \(OpenGroup.self)
+                            LEFT JOIN \(SessionThread.self) ON \(thread[.id]) = \(openGroup[.threadId])
+                            WHERE (
+                                \(thread[.id]) IS NULL AND
+                                \(SQL("\(openGroup[.server]) != \(OpenGroupAPI.defaultServer.lowercased())"))
+                            )
+                        )
+                    """)
+                }
+                
+                /// Orphaned open group capabilities - capabilities which have no existing open groups with the same server
+                if details.typesToCollect.contains(.orphanedOpenGroupCapabilities) {
+                    let capability: TypedTableAlias<Capability> = TypedTableAlias()
+                    let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
+                    
+                    try db.execute(literal: """
+                        DELETE FROM \(Capability.self)
+                        WHERE \(Column.rowID) IN (
+                            SELECT \(capability.alias[Column.rowID])
+                            FROM \(Capability.self)
+                            LEFT JOIN \(OpenGroup.self) ON \(openGroup[.server]) = \(capability[.openGroupServer])
+                            WHERE \(openGroup[.threadId]) IS NULL
+                        )
+                    """)
+                }
+                
+                /// Orphaned blinded id lookups - lookups which have no existing threads or approval/block settings for either blinded/un-blinded id
+                if details.typesToCollect.contains(.orphanedBlindedIdLookups) {
+                    let blindedIdLookup: TypedTableAlias<BlindedIdLookup> = TypedTableAlias()
+                    let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+                    let contact: TypedTableAlias<Contact> = TypedTableAlias()
+                    
+                    try db.execute(literal: """
+                        DELETE FROM \(BlindedIdLookup.self)
+                        WHERE \(Column.rowID) IN (
+                            SELECT \(blindedIdLookup.alias[Column.rowID])
+                            FROM \(BlindedIdLookup.self)
+                            LEFT JOIN \(SessionThread.self) ON (
+                                \(thread[.id]) = \(blindedIdLookup[.blindedId]) OR
+                                \(thread[.id]) = \(blindedIdLookup[.sessionId])
+                            )
+                            LEFT JOIN \(Contact.self) ON (
+                                \(contact[.id]) = \(blindedIdLookup[.blindedId]) OR
+                                \(contact[.id]) = \(blindedIdLookup[.sessionId])
+                            )
+                            WHERE (
+                                \(thread[.id]) IS NULL AND
+                                \(contact[.id]) IS NULL
+                            )
+                        )
+                    """)
+                }
+                
+                /// Orphaned attachments - attachments which have no related interactions, quotes or link previews
                 if details.typesToCollect.contains(.orphanedAttachments) {
                     let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
                     let quote: TypedTableAlias<Quote> = TypedTableAlias()
@@ -140,7 +203,7 @@ public enum GarbageCollectionJob: JobExecutor {
                     """)
                 }
                 
-                // Orphaned attachment files
+                /// Orphaned attachment files - attachment files which don't have an associated record in the database
                 if details.typesToCollect.contains(.orphanedAttachmentFiles) {
                     /// **Note:** Thumbnails are stored in the `NSCachesDirectory` directory which should be automatically manage
                     /// it's own garbage collection so we can just ignore it according to the various comments in the following stack overflow
@@ -153,7 +216,7 @@ public enum GarbageCollectionJob: JobExecutor {
                         .fetchSet(db)
                 }
                 
-                // Orphaned profile avatar files
+                /// Orphaned profile avatar files - profile avatar files which don't have an associated record in the database
                 if details.typesToCollect.contains(.orphanedProfileAvatars) {
                     profileAvatarFilenames = try Profile
                         .select(.profilePictureFileName)
@@ -162,7 +225,14 @@ public enum GarbageCollectionJob: JobExecutor {
                         .fetchSet(db)
                 }
             },
-            completion: { _, _ in
+            completion: { _, result in
+                // If any of the above failed then we don't want to continue (we would end up deleting all files since
+                // neither of the arrays would have been populated correctly)
+                guard case .success = result else {
+                    SNLog("[GarbageCollectionJob] Database queries failed, skipping file cleanup")
+                    return
+                }
+                
                 var deletionErrors: [Error] = []
                 
                 // Orphaned attachment files (actual deletion)
@@ -249,6 +319,9 @@ extension GarbageCollectionJob {
         case oldOpenGroupMessages
         case orphanedJobs
         case orphanedLinkPreviews
+        case orphanedOpenGroups
+        case orphanedOpenGroupCapabilities
+        case orphanedBlindedIdLookups
         case orphanedAttachments
         case orphanedAttachmentFiles
         case orphanedProfileAvatars

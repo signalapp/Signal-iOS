@@ -27,23 +27,28 @@ public enum NotifyPushServerJob: JobExecutor {
             return
         }
         
-        let parameters: JSON = [
-            "data": details.message.data.description,
-            "send_to": details.message.recipient
-        ]
+        let requestBody: RequestBody = RequestBody(
+            data: details.message.data.description,
+            sendTo: details.message.recipient
+        )
         
-        let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        request.allHTTPHeaderFields = [
-            "Content-Type": "application/json"
-        ]
+        guard let body: Data = try? JSONEncoder().encode(requestBody) else {
+            failure(job, HTTP.Error.invalidJSON, true)
+            return
+        }
+        
+        var request: URLRequest = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.allHTTPHeaderFields = [ Header.contentType.rawValue: "application/json" ]
+        request.httpBody = body
         
         attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
             OnionRequestAPI
                 .sendOnionRequest(
                     request,
                     to: server,
-                    target: "/loki/v2/lsrpc",
-                    using: PushNotificationAPI.serverPublicKey
+                    using: .v2,
+                    with: PushNotificationAPI.serverPublicKey
                 )
                 .map { _ in }
         }
@@ -62,5 +67,15 @@ public enum NotifyPushServerJob: JobExecutor {
 extension NotifyPushServerJob {
     public struct Details: Codable {
         public let message: SnodeMessage
+    }
+    
+    struct RequestBody: Codable {
+        enum CodingKeys: String, CodingKey {
+            case data
+            case sendTo = "send_to"
+        }
+        
+        let data: String
+        let sendTo: String
     }
 }

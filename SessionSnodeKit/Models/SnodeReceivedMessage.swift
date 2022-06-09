@@ -11,7 +11,7 @@ public struct SnodeReceivedMessage: CustomDebugStringConvertible {
     public let info: SnodeReceivedMessageInfo
     public let data: Data
     
-    init?(snode: Snode, publicKey: String, rawMessage: JSON) {
+    init?(snode: Snode, publicKey: String, namespace: Int, rawMessage: JSON) {
         guard let hash: String = rawMessage["hash"] as? String else { return nil }
 
         guard
@@ -26,6 +26,7 @@ public struct SnodeReceivedMessage: CustomDebugStringConvertible {
         self.info = SnodeReceivedMessageInfo(
             snode: snode,
             publicKey: publicKey,
+            namespace: namespace,
             hash: hash,
             expirationDateMs: (expirationDateMs ?? SnodeReceivedMessage.defaultExpirationSeconds)
         )

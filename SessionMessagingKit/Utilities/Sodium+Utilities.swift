@@ -4,45 +4,7 @@ import Foundation
 import Clibsodium
 import Sodium
 import Curve25519Kit
-
-extension Sign {
-
-    /**
-     Converts an Ed25519 public key to an X25519 public key.
-     - Parameter ed25519PublicKey: The Ed25519 public key to convert.
-     - Returns: The X25519 public key if conversion is successful.
-     */
-    public func toX25519(ed25519PublicKey: PublicKey) -> PublicKey? {
-        var x25519PublicKey = PublicKey(repeating: 0, count: 32)
-
-        // FIXME: It'd be nice to check the exit code here, but all the properties of the object
-        // returned by the call below are internal.
-        let _ = crypto_sign_ed25519_pk_to_curve25519 (
-            &x25519PublicKey,
-            ed25519PublicKey
-        )
-        
-        return x25519PublicKey
-    }
-
-    /**
-     Converts an Ed25519 secret key to an X25519 secret key.
-     - Parameter ed25519SecretKey: The Ed25519 secret key to convert.
-     - Returns: The X25519 secret key if conversion is successful.
-     */
-    public func toX25519(ed25519SecretKey: SecretKey) -> SecretKey? {
-        var x25519SecretKey = SecretKey(repeating: 0, count: 32)
-
-        // FIXME: It'd be nice to check the exit code here, but all the properties of the object
-        // returned by the call below are internal.
-        let _ = crypto_sign_ed25519_sk_to_curve25519 (
-            &x25519SecretKey,
-            ed25519SecretKey
-        )
-
-        return x25519SecretKey
-    }
-}
+import SessionUtilitiesKit
 
 /// These extenion methods are used to generate a sign "blinded" messages
 ///
@@ -315,19 +277,11 @@ extension AeadXChaCha20Poly1305IetfType {
     }
 }
 
-// MARK: - Objective-C Support
-
-@objc public class SNBlindingUtils: NSObject {
-    @objc public static func userBlindedId(for openGroupPublicKey: String) -> String? {
-        let sodium: Sodium = Sodium()
-        
-        guard let userEd25519KeyPair = Storage.shared.getUserED25519KeyPair() else {
-            return nil
-        }
-        guard let blindedKeyPair = sodium.blindedKeyPair(serverPublicKey: openGroupPublicKey, edKeyPair: userEd25519KeyPair, genericHash: sodium.genericHash) else {
-            return nil
-        }
-        
-        return SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString
+extension Box.KeyPair: Equatable {
+    public static func == (lhs: Box.KeyPair, rhs: Box.KeyPair) -> Bool {
+        return (
+            lhs.publicKey == rhs.publicKey &&
+            lhs.secretKey == rhs.secretKey
+        )
     }
 }

@@ -7,7 +7,7 @@ import Sodium
 @testable import SessionMessagingKit
 
 class MockEd25519: Mock<Ed25519Type>, Ed25519Type {
-    func sign(data: Bytes, keyPair: ECKeyPair) throws -> Bytes? {
+    func sign(data: Bytes, keyPair: Box.KeyPair) throws -> Bytes? {
         return accept(args: [data, keyPair]) as? Bytes
     }
     

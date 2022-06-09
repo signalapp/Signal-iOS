@@ -2,16 +2,12 @@
 
 import Foundation
 import GRDB
-import WebRTC
 import Sodium
-import Curve25519Kit
-import SignalCoreKit
-import SessionSnodeKit
 import SessionUtilitiesKit
 
 extension MessageReceiver {
     public static func handleClosedGroupControlMessage(_ db: Database, _ message: ClosedGroupControlMessage) throws {
-        switch message.kind! {
+        switch message.kind {
             case .new: try handleNewClosedGroup(db, message: message)
             case .encryptionKeyPair: try handleClosedGroupEncryptionKeyPair(db, message: message)
             case .nameChange: try handleClosedGroupNameChanged(db, message: message)
@@ -20,8 +16,12 @@ extension MessageReceiver {
             case .memberLeft: try handleClosedGroupMemberLeft(db, message: message)
             case .encryptionKeyPairRequest:
                 handleClosedGroupEncryptionKeyPairRequest(db, message: message) // Currently not used
+            
+            default: throw MessageReceiverError.invalidMessage
         }
     }
+    
+    // MARK: - Specific Handling
     
     private static func handleNewClosedGroup(_ db: Database, message: ClosedGroupControlMessage) throws {
         guard case let .new(publicKeyAsData, name, encryptionKeyPair, membersAsData, adminsAsData, expirationTimer) = message.kind else {
@@ -41,7 +41,7 @@ extension MessageReceiver {
         )
     }
 
-    private static func handleNewClosedGroup(
+    internal static func handleNewClosedGroup(
         _ db: Database,
         groupPublicKey: String,
         name: String,
@@ -162,7 +162,7 @@ extension MessageReceiver {
             return SNLog("Ignoring closed group encryption key pair from non-admin.")
         }
         // Find our wrapper and decrypt it if possible
-        let userPublicKey: String = userKeyPair.publicKey.toHexString()
+        let userPublicKey: String = SessionId(.standard, publicKey: userKeyPair.publicKey).hexString
         
         guard
             let wrapper = wrappers.first(where: { $0.publicKey == userPublicKey }),
@@ -485,6 +485,8 @@ extension MessageReceiver {
         }
          */
     }
+    
+    // MARK: - Convenience
     
     private static func performIfValid(
         _ db: Database,

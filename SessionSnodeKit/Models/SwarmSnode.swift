@@ -29,7 +29,7 @@ extension SwarmSnode {
         do {
             let address: String = try container.decode(String.self, forKey: .address)
             
-            guard address != "0.0.0.0" else { throw SnodeAPI.Error.invalidIP }
+            guard address != "0.0.0.0" else { throw SnodeAPIError.invalidIP }
             
             self = SwarmSnode(
                 address: (address.starts(with: "https://") ? address : "https://\(address)"),

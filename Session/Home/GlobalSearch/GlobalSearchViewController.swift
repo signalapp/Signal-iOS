@@ -252,20 +252,17 @@ extension GlobalSearchViewController {
             case .contactsAndGroups, .messages:
                 show(
                     threadId: section.elements[indexPath.row].threadId,
+                    threadVariant: section.elements[indexPath.row].threadVariant,
                     focusedInteractionId: section.elements[indexPath.row].interactionId
                 )
         }
     }
 
-    private func show(threadId: String, focusedInteractionId: Int64? = nil, animated: Bool = true) {
+    private func show(threadId: String, threadVariant: SessionThread.Variant, focusedInteractionId: Int64? = nil, animated: Bool = true) {
         guard Thread.isMainThread else {
             DispatchQueue.main.async { [weak self] in
-                self?.show(threadId: threadId, focusedInteractionId: focusedInteractionId, animated: animated)
+                self?.show(threadId: threadId, threadVariant: threadVariant, focusedInteractionId: focusedInteractionId, animated: animated)
             }
-            return
-        }
-        
-        guard let conversationVC: ConversationVC = ConversationVC(threadId: threadId, focusedInteractionId: focusedInteractionId) else {
             return
         }
         
@@ -276,7 +273,9 @@ extension GlobalSearchViewController {
         let viewControllers: [UIViewController] = (self.navigationController?
             .viewControllers)
             .defaulting(to: [])
-            .appending(conversationVC)
+            .appending(
+                ConversationVC(threadId: threadId, threadVariant: threadVariant, focusedInteractionId: focusedInteractionId)
+            )
         
         self.navigationController?.setViewControllers(viewControllers, animated: true)
     }

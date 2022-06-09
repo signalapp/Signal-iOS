@@ -67,7 +67,7 @@ public class MessageCell: UITableViewCell {
                 .infoMessageRequestAccepted:
                 return InfoMessageCell.self
                 
-            case .infoMessageCall:
+            case .infoCall:
                 return CallMessageCell.self
         }
     }
@@ -83,5 +83,5 @@ protocol MessageCellDelegate: AnyObject {
     func openUrl(_ urlString: String)
     func handleReplyButtonTapped(for cellViewModel: MessageViewModel)
     func showUserDetails(for profile: Profile)
-    func startThread(with sessionId: String, openGroupServer: String, openGroupPublicKey: String)
+    func startThread(with sessionId: String, openGroupServer: String?, openGroupPublicKey: String?)
 }

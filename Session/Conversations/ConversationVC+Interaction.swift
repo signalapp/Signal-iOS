@@ -50,10 +50,11 @@ extension ConversationVC:
         scrollToBottom(isAnimated: true)
     }
     
-    // MARK: Call
+    // MARK: - Call
+    
     @objc func startCall(_ sender: Any?) {
         guard SessionCall.isEnabled else { return }
-        guard SSKPreferences.areCallsEnabled else {
+        guard GRDBStorage.shared[.areCallsEnabled] else {
             let callPermissionRequestModal = CallPermissionRequestModal()
             self.navigationController?.present(callPermissionRequestModal, animated: true, completion: nil)
             return
@@ -61,11 +62,15 @@ extension ConversationVC:
         
         requestMicrophonePermissionIfNeeded { }
         
+        let threadId: String = self.viewModel.threadData.threadId
+        
         guard AVAudioSession.sharedInstance().recordPermission == .granted else { return }
         guard self.viewModel.threadData.threadVariant == .contact else { return }
         guard AppEnvironment.shared.callManager.currentCall == nil else { return }
+        guard let call: SessionCall = GRDBStorage.shared.read({ db in SessionCall(db, for: threadId, uuid: UUID().uuidString.lowercased(), mode: .offer, outgoing: true) }) else {
+            return
+        }
         
-        let call = SessionCall(for: self.viewModel.threadId, uuid: UUID().uuidString.lowercased(), mode: .offer, outgoing: true)
         let callVC = CallVC(for: call)
         callVC.conversationVC = self
         self.inputAccessoryView?.isHidden = true
@@ -668,9 +673,9 @@ extension ConversationVC:
             contextMenuWindow == nil,
             let actions: [ContextMenuVC.Action] = ContextMenuVC.actions(
                 for: cellViewModel,
-                currentUserIsOpenGroupModerator: OpenGroupAPIV2.isUserModerator(
+                currentUserIsOpenGroupModerator: OpenGroupManager.isUserModeratorOrAdmin(
                     self.viewModel.threadData.currentUserPublicKey,
-                    for: self.viewModel.threadData.openGroupRoom,
+                    for: self.viewModel.threadData.openGroupRoomToken,
                     on: self.viewModel.threadData.openGroupServer
                 ),
                 delegate: self
@@ -708,6 +713,13 @@ extension ConversationVC:
             return
         }
         
+        // For call info messages show the "call missed" modal
+        guard cellViewModel.variant != .infoCall else {
+            let callMissedTipsModal: CallMissedTipsModal = CallMissedTipsModal(caller: cellViewModel.authorName)
+            present(callMissedTipsModal, animated: true, completion: nil)
+            return
+        }
+        
         // If it's an incoming media message and the thread isn't trusted then show the placeholder view
         if cellViewModel.cellType != .textOnlyMessage && cellViewModel.variant == .standardIncoming && !cellViewModel.threadIsTrusted {
             let modal = DownloadAttachmentModal(profile: cellViewModel.profile)
@@ -720,10 +732,6 @@ extension ConversationVC:
         
         switch cellViewModel.cellType {
             case .audio: viewModel.playOrPauseAudio(for: cellViewModel)
-            
-            case .call:
-                let callMissedTipsModal: CallMissedTipsModal = CallMissedTipsModal(caller: cellViewModel.authorName)
-                present(callMissedTipsModal, animated: true, completion: nil)
             
             case .mediaMessage:
                 guard
@@ -910,24 +918,42 @@ extension ConversationVC:
         present(userDetailsSheet, animated: true, completion: nil)
     }
     
-    func startThread(with sessionId: String, openGroupServer: String, openGroupPublicKey: String) {
-        // If the sessionId is blinded then check if there is an existing un-blinded thread with the contact
-        if SessionId.Prefix(from: sessionId) == .blinded, let mapping: BlindedIdMapping = ContactUtilities.mapping(for: sessionId, serverPublicKey: openGroupPublicKey) {
-            let thread: TSContactThread = TSContactThread.getOrCreateThread(contactSessionID: mapping.sessionId)
-            let conversationVC: ConversationVC = ConversationVC(thread: thread)
+    func startThread(with sessionId: String, openGroupServer: String?, openGroupPublicKey: String?) {
+        guard SessionId.Prefix(from: sessionId) == .blinded else {
+            GRDBStorage.shared.write { db in
+                try SessionThread.fetchOrCreate(db, id: sessionId, variant: .contact)
+            }
             
+            let conversationVC: ConversationVC = ConversationVC(threadId: sessionId, threadVariant: .contact)
+                
             self.navigationController?.pushViewController(conversationVC, animated: true)
             return
         }
         
-        // Just create a new thread with the provided sessionId
-        let thread = TSContactThread.getOrCreateThread(
-            contactSessionID: sessionId,
-            openGroupServer: openGroupServer,
-            openGroupPublicKey: openGroupPublicKey
-        )
-        let conversationVC: ConversationVC = ConversationVC(thread: thread)
+        // If the sessionId is blinded then check if there is an existing un-blinded thread with the contact
+        // and use that, otherwise just use the blinded id
+        guard let openGroupServer: String = openGroupServer, let openGroupPublicKey: String = openGroupPublicKey else {
+            return
+        }
         
+        let targetThreadId: String? = GRDBStorage.shared.write { db in
+            let lookup: BlindedIdLookup = try BlindedIdLookup
+                .fetchOrCreate(
+                    db,
+                    blindedId: sessionId,
+                    openGroupServer: openGroupServer,
+                    openGroupPublicKey: openGroupPublicKey
+                )
+            
+            return try SessionThread
+                .fetchOrCreate(db, id: (lookup.sessionId ?? lookup.blindedId), variant: .contact)
+                .id
+        }
+        
+        guard let threadId: String = targetThreadId else { return }
+        
+        let conversationVC: ConversationVC = ConversationVC(threadId: threadId, threadVariant: .contact)
+            
         self.navigationController?.pushViewController(conversationVC, animated: true)
     }
     
@@ -1105,18 +1131,26 @@ extension ConversationVC:
                     let openGroup: OpenGroup = result?.openGroup,
                     let openGroupServerMessageId: Int64 = result?.openGroupServerMessageId, (
                         cellViewModel.variant != .standardIncoming ||
-                        OpenGroupAPIV2.isUserModerator(userPublicKey, for: openGroup.room, on: openGroup.server)
+                        OpenGroupManager.isUserModeratorOrAdmin(
+                            userPublicKey,
+                            for: openGroup.roomToken,
+                            on: openGroup.server
+                        )
                     )
                 else { return }
                 
                 // Delete the message from the open group
                 deleteRemotely(
                     from: self,
-                    request: OpenGroupAPIV2.deleteMessage(
-                        with: openGroupServerMessageId,
-                        from: openGroup.room,
-                        on: openGroup.server
-                    )
+                    request: GRDBStorage.shared.read { db in
+                        OpenGroupAPI.messageDelete(
+                            db,
+                            id: openGroupServerMessageId,
+                            in: openGroup.roomToken,
+                            on: openGroup.server
+                        )
+                        .map { _ in () }
+                    }
                 ) { [weak self] in
                     self?.showInputAccessoryView()
                 }
@@ -1291,12 +1325,21 @@ extension ConversationVC:
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-            guard let openGroup: OpenGroup = GRDBStorage.shared.read({ db in try OpenGroup.fetchOne(db, id: threadId) }) else {
-                return
-            }
-            
-            OpenGroupAPI
-                .userBan(cellViewModel.authorId, from: [openGroup.room], on: openGroup.server)
+            GRDBStorage.shared
+                .read { db -> Promise<Void> in
+                    guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else {
+                        return Promise(error: StorageError.objectNotFound)
+                    }
+                    
+                    return OpenGroupAPI
+                        .userBan(
+                            db,
+                            sessionId: cellViewModel.authorId,
+                            from: [openGroup.roomToken],
+                            on: openGroup.server
+                        )
+                        .map { _ in () }
+                }
                 .catch(on: DispatchQueue.main) { _ in
                     OWSAlerts.showErrorAlert(message: "context_menu_ban_user_error_alert_message".localized())
                 }
@@ -1321,12 +1364,21 @@ extension ConversationVC:
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-            guard let openGroup: OpenGroup = GRDBStorage.shared.read({ db in try OpenGroup.fetchOne(db, id: threadId) }) else {
-                return
-            }
-            
-            OpenGroupAPI
-                .userBanAndDeleteAllMessages(cellViewModel.authorId, in: openGroup.room, on: openGroup.server)
+            GRDBStorage.shared
+                .read { db -> Promise<Void> in
+                    guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else {
+                        return Promise(error: StorageError.objectNotFound)
+                    }
+                
+                    return OpenGroupAPI
+                        .userBanAndDeleteAllMessages(
+                            db,
+                            sessionId: cellViewModel.authorId,
+                            in: openGroup.roomToken,
+                            on: openGroup.server
+                        )
+                        .map { _ in () }
+                }
                 .catch(on: DispatchQueue.main) { _ in
                     OWSAlerts.showErrorAlert(message: "context_menu_ban_user_error_alert_message".localized())
                 }

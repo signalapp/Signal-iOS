@@ -123,6 +123,9 @@ public enum MessageSendJob: JobExecutor {
             }
         }
         
+        // Store the sentTimestamp from the message in case it fails due to a clockOutOfSync error
+        let originalSentTimestamp: UInt64? = details.message.sentTimestamp
+        
         // Add the threadId to the message if there isn't one set
         details.message.threadId = (details.message.threadId ?? job.threadId)
         
@@ -143,8 +146,12 @@ public enum MessageSendJob: JobExecutor {
                 case let senderError as MessageSenderError where !senderError.isRetryable:
                     failure(job, error, true)
                     
-                case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _, _) where statusCode == 429: // Rate limited
+                case OnionRequestAPIError.httpRequestFailedAtDestination(let statusCode, _, _) where statusCode == 429: // Rate limited
                     failure(job, error, true)
+                    
+                case SnodeAPIError.clockOutOfSync:
+                    SNLog("\(originalSentTimestamp != nil ? "Permanently Failing" : "Failing") to send \(type(of: details.message)) due to clock out of sync issue.")
+                    failure(job, error, (originalSentTimestamp != nil))
                     
                 default:
                     SNLog("Failed to send \(type(of: details.message)).")

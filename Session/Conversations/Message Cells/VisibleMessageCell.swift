@@ -292,7 +292,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         messageStatusImageView.backgroundColor = backgroundColor
         messageStatusImageView.isHidden = (
             cellViewModel.variant != .standardOutgoing ||
-            cellViewModel.variant == .infoMessageCall ||
+            cellViewModel.variant == .infoCall ||
             (
                 cellViewModel.state == .sent &&
                 !cellViewModel.isLast
@@ -329,7 +329,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         )
         
         // Swipe to reply
-        if cellViewModel.variant == .standardIncomingDeleted || cellViewModel.variant == .infoMessageCall {
+        if cellViewModel.variant == .standardIncomingDeleted || cellViewModel.variant == .infoCall {
             removeGestureRecognizer(panGestureRecognizer)
         }
         else {
@@ -688,21 +688,24 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         
         let location = gestureRecognizer.location(in: self)
         
-        if profilePictureView.frame.contains(location), let profile: Profile = cellViewModel.profile, cellViewModel.shouldShowProfile {
+        if profilePictureView.frame.contains(location), cellViewModel.shouldShowProfile {
             // For open groups only attempt to start a conversation if the author has a blinded id
-            if cellViewModel.threadVariant != .openGroup {
-                guard let openGroup: OpenGroup = Storage.shared.getOpenGroup(for: message.uniqueThreadId) else { return }
+            guard cellViewModel.threadVariant != .openGroup else {
                 guard SessionId.Prefix(from: cellViewModel.authorId) == .blinded else { return }
                 
                 delegate?.startThread(
                     with: cellViewModel.authorId,
-                    openGroupServer: openGroup.server,
-                    openGroupPublicKey: openGroup.publicKey
+                    openGroupServer: cellViewModel.threadOpenGroupServer,
+                    openGroupPublicKey: cellViewModel.threadOpenGroupPublicKey
                 )
+                return
             }
-            else {
-                delegate?.showUserDetails(for: profile)
-            }
+            
+            delegate?.startThread(
+                with: cellViewModel.authorId,
+                openGroupServer: nil,
+                openGroupPublicKey: nil
+            )
         }
         else if replyButton.alpha > 0 && replyButton.frame.contains(location) {
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()

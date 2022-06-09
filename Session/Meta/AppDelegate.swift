@@ -145,6 +145,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             name: .dataNukeRequested,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(showMissedCallTipsIfNeeded(_:)),
+            name: .missedCall,
+            object: nil
+        )
         
         Logger.info("application: didFinishLaunchingWithOptions completed.")
 
@@ -284,6 +290,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         if CurrentAppContext().isMainApp {
             syncConfigurationIfNeeded()
+            handleAppActivatedWithOngoingCallIfNeeded()
         }
     }
     
@@ -442,12 +449,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
+    @objc public func showMissedCallTipsIfNeeded(_ notification: Notification) {
+        guard !UserDefaults.standard[.hasSeenCallMissedTips] else { return }
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async {
+                self.showMissedCallTipsIfNeeded(notification)
+            }
+            return
+        }
+        guard let callerId: String = notification.userInfo?[Notification.Key.senderId.rawValue] as? String else {
+            return
+        }
+        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() }
+        
+        let callMissedTipsModal: CallMissedTipsModal = CallMissedTipsModal(
+            caller: Profile.displayName(id: callerId)
+        )
+        presentingVC.present(callMissedTipsModal, animated: true, completion: nil)
+        
+        UserDefaults.standard[.hasSeenCallMissedTips] = true
+    }
+    
     // MARK: - Polling
     
-    public func startPollersIfNeeded() {
+    public func startPollersIfNeeded(shouldStartGroupPollers: Bool = true) {
         guard Identity.userExists() else { return }
         
         poller.startIfNeeded()
+        
+        guard shouldStartGroupPollers else { return }
+        
         ClosedGroupPoller.shared.start()
         OpenGroupManager.shared.startPolling()
     }
@@ -532,172 +563,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func handleAppActivatedWithOngoingCallIfNeeded() {
-        guard let call = AppEnvironment.shared.callManager.currentCall else { return }
-        guard MiniCallView.current == nil else { return }
+        guard
+            let call: SessionCall = (AppEnvironment.shared.callManager.currentCall as? SessionCall),
+            MiniCallView.current == nil
+        else { return }
         
-        if let callVC = CurrentAppContext().frontmostViewController() as? CallVC, callVC.call == call { return }
+        if let callVC = CurrentAppContext().frontmostViewController() as? CallVC, callVC.call.uuid == call.uuid {
+            return
+        }
         
         // FIXME: Handle more gracefully
         guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() }
         
-        let callVC = CallVC(for: call)
+        let callVC: CallVC = CallVC(for: call)
         
-        if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == call.sessionID {
+        if let conversationVC: ConversationVC = presentingVC as? ConversationVC, conversationVC.viewModel.threadData.threadId == call.sessionId {
             callVC.conversationVC = conversationVC
             conversationVC.inputAccessoryView?.isHidden = true
             conversationVC.inputAccessoryView?.alpha = 0
         }
         
         presentingVC.present(callVC, animated: true, completion: nil)
-    }
-    
-    private func dismissAllCallUI() {
-        if let currentBanner = IncomingCallBanner.current { currentBanner.dismiss() }
-        if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleEndCallMessage() }
-        if let miniCallView = MiniCallView.current { miniCallView.dismiss() }
-    }
-    
-    private func showCallUIForCall(_ call: SessionCall) {
-        DispatchQueue.main.async {
-            call.reportIncomingCallIfNeeded{ error in
-                if let error = error {
-                    SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
-                }
-                else {
-                    if CurrentAppContext().isMainAppAndActive {
-                        guard let presentingVC = CurrentAppContext().frontmostViewController() else {
-                            preconditionFailure()   // FIXME: Handle more gracefully
-                        }
-                        
-                        if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == call.sessionID {
-                            let callVC = CallVC(for: call)
-                            callVC.conversationVC = conversationVC
-                            conversationVC.inputAccessoryView?.isHidden = true
-                            conversationVC.inputAccessoryView?.alpha = 0
-                            presentingVC.present(callVC, animated: true, completion: nil)
-                        }
-                        else if !SSKPreferences.isCallKitSupported {
-                            let incomingCallBanner = IncomingCallBanner(for: call)
-                            incomingCallBanner.show()
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    private func insertCallInfoMessage(for message: CallMessage, using transaction: YapDatabaseReadWriteTransaction) -> TSInfoMessage? {
-        guard let sender = message.sender, let uuid = message.uuid else { return nil }
-        
-        var receivedCalls = Storage.shared.getReceivedCalls(for: sender, using: transaction)
-        
-        guard !receivedCalls.contains(uuid) else { return nil }
-        
-        let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
-        let infoMessage = TSInfoMessage.from(message, associatedWith: thread)
-        infoMessage.save(with: transaction)
-        receivedCalls.insert(uuid)
-        Storage.shared.setReceivedCalls(to: receivedCalls, for: sender, using: transaction)
-        
-        return infoMessage
-    }
-    
-    private func showMissedCallTipsIfNeeded(caller: String) {
-        guard !UserDefaults.standard[.hasSeenCallMissedTips] else { return }
-        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() }
-        
-        let callMissedTipsModal = CallMissedTipsModal(caller: caller)
-        presentingVC.present(callMissedTipsModal, animated: true, completion: nil)
-        
-        userDefaults[.hasSeenCallMissedTips] = true
-    }
-    
-    func setUpCallHandling() {
-        // Pre offer messages
-        MessageReceiver.handleNewCallOfferMessageIfNeeded = { (message, transaction) in
-            guard CurrentAppContext().isMainApp else { return }
-            guard let timestamp = message.sentTimestamp, TimestampUtils.isWithinOneMinute(timestamp: timestamp) else {
-                // Add missed call message for call offer messages from more than one minute
-                if let infoMessage = self.insertCallInfoMessage(for: message, using: transaction) {
-                    infoMessage.updateCallInfoMessage(.missed, using: transaction)
-                    let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
-                    SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
-                }
-                return
-            }
-            
-            guard SSKPreferences.areCallsEnabled else {
-                if let infoMessage = self.insertCallInfoMessage(for: message, using: transaction) {
-                    infoMessage.updateCallInfoMessage(.permissionDenied, using: transaction)
-                    let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
-                    SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
-                    let contactName = Storage.shared.getContact(with: message.sender!, using: transaction)?.displayName(for: Contact.Context.regular) ?? message.sender!
-                    DispatchQueue.main.async {
-                        self.showMissedCallTipsIfNeeded(caller: contactName)
-                    }
-                }
-                return
-            }
-            
-            let callManager = AppEnvironment.shared.callManager
-            
-            // Ignore pre offer message after the same call instance has been generated
-            if let currentCall = callManager.currentCall, currentCall.uuid == message.uuid! { return }
-            
-            guard callManager.currentCall == nil else {
-                callManager.handleIncomingCallOfferInBusyState(offerMessage: message, using: transaction)
-                return
-            }
-            
-            let infoMessage = self.insertCallInfoMessage(for: message, using: transaction)
-            
-            // Handle UI
-            if let caller = message.sender, let uuid = message.uuid {
-                let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
-                call.callMessageID = infoMessage?.uniqueId
-                self.showCallUIForCall(call)
-            }
-        }
-        
-        // Offer messages
-        MessageReceiver.handleOfferCallMessage = { message in
-            DispatchQueue.main.async {
-                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid! == call.uuid else { return }
-                let sdp = RTCSessionDescription(type: .offer, sdp: message.sdps![0])
-                call.didReceiveRemoteSDP(sdp: sdp)
-            }
-        }
-        
-        // Answer messages
-        MessageReceiver.handleAnswerCallMessage = { message in
-            DispatchQueue.main.async {
-                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid! == call.uuid else { return }
-                if message.sender! == getUserHexEncodedPublicKey() {
-                    guard !call.hasStartedConnecting else { return }
-                    self.dismissAllCallUI()
-                    AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .answeredElsewhere)
-                } else {
-                    call.hasStartedConnecting = true
-                    let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
-                    call.didReceiveRemoteSDP(sdp: sdp)
-                    guard let callVC = CurrentAppContext().frontmostViewController() as? CallVC else { return }
-                    callVC.handleAnswerMessage(message)
-                }
-            }
-        }
-        
-        // End call messages
-        MessageReceiver.handleEndCallMessage = { message in
-            DispatchQueue.main.async {
-                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid! == call.uuid else { return }
-                self.dismissAllCallUI()
-                if message.sender! == getUserHexEncodedPublicKey() {
-                    AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .declinedElsewhere)
-                } else {
-                    AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .remoteEnded)
-                }
-            }
-        }
     }
     
     // MARK: - Config Sync

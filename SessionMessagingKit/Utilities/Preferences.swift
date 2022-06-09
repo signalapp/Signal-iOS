@@ -38,6 +38,9 @@ public extension Setting.BoolKey {
     /// **Note:** Link Previews are only enabled for HTTPS urls
     static let areLinkPreviewsEnabled: Setting.BoolKey = "areLinkPreviewsEnabled"
     
+    /// Controls whether Calls are enabled
+    static let areCallsEnabled: Setting.BoolKey = "areCallsEnabled"
+    
     /// Controls whether the message requests item has been hidden on the home screen
     static let hasHiddenMessageRequests: Setting.BoolKey = "hasHiddenMessageRequests"
     
@@ -285,6 +288,13 @@ public enum Preferences {
             return player
         }
     }
+    
+    public static var isCallKitSupported: Bool {
+        guard let regionCode: String = NSLocale.current.regionCode else { return false }
+        guard !regionCode.contains("CN") && !regionCode.contains("CHN") else { return false }
+        
+        return true
+    }
 }
 
 // MARK: - Objective C Support
@@ -375,6 +385,16 @@ public class SMKPreferences: NSObject {
     @objc(areLinkPreviewsEnabled)
     static func objc_areLinkPreviewsEnabled() -> Bool {
         return GRDBStorage.shared[.areLinkPreviewsEnabled]
+    }
+    
+    @objc(setCallsEnabled:)
+    static func objc_setCallsEnabled(_ enabled: Bool) {
+        GRDBStorage.shared.write { db in db[.areCallsEnabled] = enabled }
+    }
+    
+    @objc(areCallsEnabled)
+    static func objc_areCallsEnabled() -> Bool {
+        return GRDBStorage.shared[.areCallsEnabled]
     }
 }
 

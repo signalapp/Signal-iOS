@@ -13,6 +13,8 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     public static let threadVariantKey: SQL = SQL(stringLiteral: CodingKeys.threadVariant.stringValue)
     public static let threadIsTrustedKey: SQL = SQL(stringLiteral: CodingKeys.threadIsTrusted.stringValue)
     public static let threadHasDisappearingMessagesEnabledKey: SQL = SQL(stringLiteral: CodingKeys.threadHasDisappearingMessagesEnabled.stringValue)
+    public static let threadOpenGroupServerKey: SQL = SQL(stringLiteral: CodingKeys.threadOpenGroupServer.stringValue)
+    public static let threadOpenGroupPublicKeyKey: SQL = SQL(stringLiteral: CodingKeys.threadOpenGroupPublicKey.stringValue)
     public static let rowIdKey: SQL = SQL(stringLiteral: CodingKeys.rowId.stringValue)
     public static let authorNameInternalKey: SQL = SQL(stringLiteral: CodingKeys.authorNameInternal.stringValue)
     public static let stateKey: SQL = SQL(stringLiteral: CodingKeys.state.stringValue)
@@ -59,6 +61,8 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     public let threadVariant: SessionThread.Variant
     public let threadIsTrusted: Bool
     public let threadHasDisappearingMessagesEnabled: Bool
+    public let threadOpenGroupServer: String?
+    public let threadOpenGroupPublicKey: String?
     
     // Interaction Info
     
@@ -69,6 +73,7 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     public let authorId: String
     private let authorNameInternal: String?
     public let body: String?
+    public let rawBody: String?
     public let expiresStartedAtMs: Double?
     public let expiresInSeconds: TimeInterval?
     
@@ -129,6 +134,8 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
             threadVariant: self.threadVariant,
             threadIsTrusted: self.threadIsTrusted,
             threadHasDisappearingMessagesEnabled: self.threadHasDisappearingMessagesEnabled,
+            threadOpenGroupServer: self.threadOpenGroupServer,
+            threadOpenGroupPublicKey: self.threadOpenGroupPublicKey,
             rowId: self.rowId,
             id: self.id,
             variant: self.variant,
@@ -136,13 +143,14 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
             authorId: self.authorId,
             authorNameInternal: self.authorNameInternal,
             body: self.body,
+            rawBody: self.rawBody,
             expiresStartedAtMs: self.expiresStartedAtMs,
             expiresInSeconds: self.expiresInSeconds,
             state: self.state,
             hasAtLeastOneReadReceipt: self.hasAtLeastOneReadReceipt,
             mostRecentFailureText: self.mostRecentFailureText,
-            isTypingIndicator: self.isTypingIndicator,
             isSenderOpenGroupModerator: self.isSenderOpenGroupModerator,
+            isTypingIndicator: self.isTypingIndicator,
             profile: self.profile,
             quote: self.quote,
             quoteAttachment: self.quoteAttachment,
@@ -209,6 +217,7 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
         )
         let shouldShowDateOnThisModel: Bool = {
             guard self.isTypingIndicator != true else { return false }
+            guard self.variant != .infoCall else { return true }    // Always show on calls
             guard let prevModel: ViewModel = prevModel else { return true }
             
             return MessageViewModel.shouldShowDateBreak(
@@ -273,6 +282,8 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
             threadVariant: self.threadVariant,
             threadIsTrusted: self.threadIsTrusted,
             threadHasDisappearingMessagesEnabled: self.threadHasDisappearingMessagesEnabled,
+            threadOpenGroupServer: self.threadOpenGroupServer,
+            threadOpenGroupPublicKey: self.threadOpenGroupPublicKey,
             rowId: self.rowId,
             id: self.id,
             variant: self.variant,
@@ -298,13 +309,14 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
                     isOpenGroupInvitation: (self.linkPreview?.variant == .openGroupInvitation)
                 )
             ),
+            rawBody: self.body,
             expiresStartedAtMs: self.expiresStartedAtMs,
             expiresInSeconds: self.expiresInSeconds,
             state: self.state,
             hasAtLeastOneReadReceipt: self.hasAtLeastOneReadReceipt,
             mostRecentFailureText: self.mostRecentFailureText,
-            isTypingIndicator: self.isTypingIndicator,
             isSenderOpenGroupModerator: self.isSenderOpenGroupModerator,
+            isTypingIndicator: self.isTypingIndicator,
             profile: self.profile,
             quote: self.quote,
             quoteAttachment: self.quoteAttachment,
@@ -412,6 +424,8 @@ public extension MessageViewModel {
         self.threadVariant = .contact
         self.threadIsTrusted = false
         self.threadHasDisappearingMessagesEnabled = false
+        self.threadOpenGroupServer = nil
+        self.threadOpenGroupPublicKey = nil
         
         // Interaction Info
         
@@ -426,14 +440,15 @@ public extension MessageViewModel {
         self.authorId = ""
         self.authorNameInternal = nil
         self.body = nil
+        self.rawBody = nil
         self.expiresStartedAtMs = nil
         self.expiresInSeconds = nil
         
         self.state = .sent
         self.hasAtLeastOneReadReceipt = false
         self.mostRecentFailureText = nil
-        self.isTypingIndicator = isTypingIndicator
         self.isSenderOpenGroupModerator = false
+        self.isTypingIndicator = isTypingIndicator
         self.profile = nil
         self.quote = nil
         self.quoteAttachment = nil
@@ -516,6 +531,7 @@ public extension MessageViewModel {
         return { additionalFilters, limitSQL -> AdaptedFetchRequest<SQLRequest<ViewModel>> in
             let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
             let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+            let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
             let recipientState: TypedTableAlias<RecipientState> = TypedTableAlias()
             let contact: TypedTableAlias<Contact> = TypedTableAlias()
             let disappearingMessagesConfig: TypedTableAlias<DisappearingMessagesConfiguration> = TypedTableAlias()
@@ -523,12 +539,14 @@ public extension MessageViewModel {
             let quote: TypedTableAlias<Quote> = TypedTableAlias()
             let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
             
-            let interactionStateTableLiteral: SQL = SQL(stringLiteral: "interactionState")
             let interactionStateInteractionIdColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.interactionId.name)
-            let interactionStateMostRecentFailureTextColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.mostRecentFailureText.name)
             let readReceiptTableLiteral: SQL = SQL(stringLiteral: "readReceipt")
             let readReceiptReadTimestampMsColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.readTimestampMs.name)
             let attachmentIdColumnLiteral: SQL = SQL(stringLiteral: Attachment.Columns.id.name)
+            let groupMemberModeratorTableLiteral: SQL = SQL(stringLiteral: "groupMemberModerator")
+            let groupMemberAdminTableLiteral: SQL = SQL(stringLiteral: "groupMemberAdmin")
+            let groupMemberProfileIdColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.profileId.name)
+            let groupMemberRoleColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.role.name)
             
             let finalFilterSQL: SQL = {
                 guard let additionalFilters: SQL = additionalFilters else {
@@ -545,7 +563,7 @@ public extension MessageViewModel {
                 """
             }()
             let finalLimitSQL: SQL = (limitSQL ?? SQL(stringLiteral: ""))
-            let numColumnsBeforeLinkedRecords: Int = 16
+            let numColumnsBeforeLinkedRecords: Int = 18
             let request: SQLRequest<ViewModel> = """
                 SELECT
                     \(thread[.variant]) AS \(ViewModel.threadVariantKey),
@@ -553,6 +571,8 @@ public extension MessageViewModel {
                     IFNULL(\(contact[.isTrusted]), true) AS \(ViewModel.threadIsTrustedKey),
                     -- Default to 'false' when no contact exists
                     IFNULL(\(disappearingMessagesConfig[.isEnabled]), false) AS \(ViewModel.threadHasDisappearingMessagesEnabledKey),
+                    \(openGroup[.server]) AS \(ViewModel.threadOpenGroupServerKey),
+                    \(openGroup[.publicKey]) AS \(ViewModel.threadOpenGroupPublicKeyKey),
             
                     \(interaction.alias[Column.rowID]) AS \(ViewModel.rowIdKey),
                     \(interaction[.id]),
@@ -569,7 +589,10 @@ public extension MessageViewModel {
                     (\(readReceiptTableLiteral).\(readReceiptReadTimestampMsColumnLiteral) IS NOT NULL) AS \(ViewModel.hasAtLeastOneReadReceiptKey),
                     \(recipientState[.mostRecentFailureText]) AS \(ViewModel.mostRecentFailureTextKey),
                     
-                    false AS \(ViewModel.isSenderOpenGroupModeratorKey),
+                    (
+                        \(groupMemberModeratorTableLiteral).\(groupMemberProfileIdColumnLiteral) IS NOT NULL OR
+                        \(groupMemberAdminTableLiteral).\(groupMemberProfileIdColumnLiteral) IS NOT NULL
+                    ) AS \(ViewModel.isSenderOpenGroupModeratorKey),
             
                     \(ViewModel.profileKey).*,
                     \(ViewModel.quoteKey).*,
@@ -590,6 +613,7 @@ public extension MessageViewModel {
                 JOIN \(SessionThread.self) ON \(thread[.id]) = \(interaction[.threadId])
                 LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(interaction[.threadId])
                 LEFT JOIN \(DisappearingMessagesConfiguration.self) ON \(disappearingMessagesConfig[.threadId]) = \(interaction[.threadId])
+                LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(interaction[.threadId])
                 LEFT JOIN \(Profile.self) ON \(profile[.id]) = \(interaction[.authorId])
                 LEFT JOIN \(Quote.self) ON \(quote[.interactionId]) = \(interaction[.id])
                 LEFT JOIN \(Attachment.self) AS \(ViewModel.quoteAttachmentKey) ON \(ViewModel.quoteAttachmentKey).\(attachmentIdColumnLiteral) = \(quote[.attachmentId])
@@ -606,6 +630,16 @@ public extension MessageViewModel {
                 LEFT JOIN \(RecipientState.self) AS \(readReceiptTableLiteral) ON (
                     \(readReceiptTableLiteral).\(readReceiptReadTimestampMsColumnLiteral) IS NOT NULL AND
                     \(interaction[.id]) = \(readReceiptTableLiteral).\(interactionStateInteractionIdColumnLiteral)
+                )
+                LEFT JOIN \(GroupMember.self) AS \(groupMemberModeratorTableLiteral) ON (
+                    \(SQL("\(thread[.variant]) = \(SessionThread.Variant.openGroup)")) AND
+                    \(groupMemberModeratorTableLiteral).\(groupMemberProfileIdColumnLiteral) = \(interaction[.authorId]) AND
+                    \(SQL("\(groupMemberModeratorTableLiteral).\(groupMemberRoleColumnLiteral) = \(GroupMember.Role.moderator)"))
+                )
+                LEFT JOIN \(GroupMember.self) AS \(groupMemberAdminTableLiteral) ON (
+                    \(SQL("\(thread[.variant]) = \(SessionThread.Variant.openGroup)")) AND
+                    \(groupMemberAdminTableLiteral).\(groupMemberProfileIdColumnLiteral) = \(interaction[.authorId]) AND
+                    \(SQL("\(groupMemberAdminTableLiteral).\(groupMemberRoleColumnLiteral) = \(GroupMember.Role.admin)"))
                 )
                 \(finalFilterSQL)
                 GROUP BY \(interaction[.id])

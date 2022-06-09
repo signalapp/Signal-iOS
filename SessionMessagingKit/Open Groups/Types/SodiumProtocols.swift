@@ -29,7 +29,7 @@ public protocol AeadXChaCha20Poly1305IetfType {
 }
 
 public protocol Ed25519Type {
-    func sign(data: Bytes, keyPair: ECKeyPair) throws -> Bytes?
+    func sign(data: Bytes, keyPair: Box.KeyPair) throws -> Bytes?
     func verifySignature(_ signature: Data, publicKey: Data, data: Data) throws -> Bool
 }
 
@@ -92,8 +92,13 @@ extension Sign: SignType {}
 extension Aead.XChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType {}
 
 struct Ed25519Wrapper: Ed25519Type {
-    func sign(data: Bytes, keyPair: ECKeyPair) throws -> Bytes? {
-        return try Ed25519.sign(Data(data), with: keyPair).bytes
+    func sign(data: Bytes, keyPair: Box.KeyPair) throws -> Bytes? {
+        let ecKeyPair: ECKeyPair = try ECKeyPair(
+            publicKeyData: Data(keyPair.publicKey),
+            privateKeyData: Data(keyPair.secretKey)
+        )
+        
+        return try Ed25519.sign(Data(data), with: ecKeyPair).bytes
     }
     
     func verifySignature(_ signature: Data, publicKey: Data, data: Data) throws -> Bool {

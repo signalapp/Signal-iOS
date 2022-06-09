@@ -84,10 +84,10 @@ final class MentionSelectionView: UIView, UITableViewDataSource, UITableViewDele
         cell.update(
             with: candidates[indexPath.row].profile,
             threadVariant: candidates[indexPath.row].threadVariant,
-            isUserModeratorOrAdmin: OpenGroupAPIV2.isUserModerator( // TODO: This
+            isUserModeratorOrAdmin: OpenGroupManager.isUserModeratorOrAdmin(
                 candidates[indexPath.row].profile.id,
-                for: (candidates[indexPath.row].openGroupRoom ?? ""),
-                on: (candidates[indexPath.row].openGroupServer ?? "")
+                for: candidates[indexPath.row].openGroupRoomToken,
+                on: candidates[indexPath.row].openGroupServer
             ),
             isLast: (indexPath.row == (candidates.count - 1))
         )

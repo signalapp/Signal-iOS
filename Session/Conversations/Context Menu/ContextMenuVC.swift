@@ -111,6 +111,7 @@ final class ContextMenuVC: UIViewController {
         
         let menuStackView = UIStackView(
             arrangedSubviews: actions
+                .filter { !$0.isDismissAction }
                 .map { action -> ActionView in ActionView(for: action, dismiss: snDismiss) }
         )
         menuStackView.axis = .vertical
@@ -176,7 +177,7 @@ final class ContextMenuVC: UIViewController {
             },
             completion: { [weak self] _ in
                 self?.dismiss()
-                self.delegate?.contextMenuDismissed()
+                self?.actions.first(where: { $0.isDismissAction })?.work()
             }
         )
     }

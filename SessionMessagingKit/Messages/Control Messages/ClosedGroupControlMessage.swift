@@ -254,7 +254,7 @@ public final class ClosedGroupControlMessage: ControlMessage {
                         publicKey: publicKey,
                         name: name,
                         encryptionKeyPair: Box.KeyPair(
-                            publicKey: encryptionKeyPairAsProto.publicKey.removing05PrefixIfNeeded().bytes,
+                            publicKey: encryptionKeyPairAsProto.publicKey.removingIdPrefixIfNeeded().bytes,
                             secretKey: encryptionKeyPairAsProto.privateKey.bytes
                         ),
                         members: closedGroupControlMessageProto.members,

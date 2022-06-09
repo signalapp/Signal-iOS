@@ -7,55 +7,71 @@ extension ContextMenuVC {
     struct Action {
         let icon: UIImage?
         let title: String
+        let isDismissAction: Bool
         let work: () -> Void
 
         static func reply(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_reply"),
-                title: "context_menu_reply".localized()
+                title: "context_menu_reply".localized(),
+                isDismissAction: false
             ) { delegate?.reply(cellViewModel) }
         }
 
         static func copy(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_copy"),
-                title: "copy".localized()
+                title: "copy".localized(),
+                isDismissAction: false
             ) { delegate?.copy(cellViewModel) }
         }
 
         static func copySessionID(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_copy"),
-                title: "vc_conversation_settings_copy_session_id_button_title".localized()
+                title: "vc_conversation_settings_copy_session_id_button_title".localized(),
+                isDismissAction: false
             ) { delegate?.copySessionID(cellViewModel) }
         }
 
         static func delete(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_trash"),
-                title: "TXT_DELETE_TITLE".localized()
+                title: "TXT_DELETE_TITLE".localized(),
+                isDismissAction: false
             ) { delegate?.delete(cellViewModel) }
         }
 
         static func save(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_download"),
-                title: "context_menu_save".localized()
+                title: "context_menu_save".localized(),
+                isDismissAction: false
             ) { delegate?.save(cellViewModel) }
         }
 
         static func ban(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_block"),
-                title: "context_menu_ban_user".localized()
+                title: "context_menu_ban_user".localized(),
+                isDismissAction: false
             ) { delegate?.ban(cellViewModel) }
         }
         
         static func banAndDeleteAllMessages(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
             return Action(
                 icon: UIImage(named: "ic_block"),
-                title: "context_menu_ban_and_delete_all".localized()
+                title: "context_menu_ban_and_delete_all".localized(),
+                isDismissAction: false
             ) { delegate?.banAndDeleteAllMessages(cellViewModel) }
+        }
+        
+        static func dismiss(_ delegate: ContextMenuActionDelegate?) -> Action {
+            return Action(
+                icon: nil,
+                title: "",
+                isDismissAction: true
+            ) { delegate?.contextMenuDismissed() }
         }
     }
 
@@ -109,7 +125,7 @@ extension ContextMenuVC {
             currentUserIsOpenGroupModerator
         )
         
-        return [
+        let generatedActions: [Action] = [
             (canReply ? Action.reply(cellViewModel, delegate) : nil),
             (canCopy ? Action.copy(cellViewModel, delegate) : nil),
             (canSave ? Action.save(cellViewModel, delegate) : nil),
@@ -119,6 +135,10 @@ extension ContextMenuVC {
             (canBan ? Action.banAndDeleteAllMessages(cellViewModel, delegate) : nil)
         ]
         .compactMap { $0 }
+        
+        guard !generatedActions.isEmpty else { return [] }
+        
+        return generatedActions.appending(Action.dismiss(delegate))
     }
 }
 

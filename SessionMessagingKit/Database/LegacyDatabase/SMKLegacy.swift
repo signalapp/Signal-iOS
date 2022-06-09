@@ -37,6 +37,7 @@ public enum SMKLegacy {
     internal static let outgoingReadReceiptManagerCollection = "kOutgoingReadReceiptManagerCollection"
     internal static let receivedMessageTimestampsCollection = "ReceivedMessageTimestampsCollection"
     internal static let receivedMessageTimestampsKey = "receivedMessageTimestamps"
+    internal static let receivedCallsCollection = "LokiReceivedCallsCollection"
 
     internal static let notifyPushServerJobCollection = "NotifyPNServerJobCollection"
     internal static let messageReceiveJobCollection = "MessageReceiveJobCollection"
@@ -84,6 +85,7 @@ public enum SMKLegacy {
         case messageRequestsMigration = "002"           // Handled during contact migration
         case openGroupServerIdLookupMigration = "003"   // Ignored (creates a lookup table, replaced with an index)
         case blockingManagerRemovalMigration = "004"    // Handled during contact migration
+        case sogsV4Migration = "005"                    // Ignored (deletes unused data, replaced by not migrating)
     }
     
     // MARK: - Contact
@@ -852,6 +854,68 @@ public enum SMKLegacy {
         }
     }
     
+    // MARK: - Call Message
+    
+    /// See https://developer.mozilla.org/en-US/docs/Web/API/RTCSessionDescription for more information.
+    @objc(SNCallMessage)
+    internal final class _CallMessage: _ControlMessage {
+        internal var uuid: String
+        internal var rawKind: String
+        internal var sdpMLineIndexes: [UInt32]?
+        internal var sdpMids: [String]?
+        
+        /// See https://developer.mozilla.org/en-US/docs/Glossary/SDP for more information.
+        internal var sdps: [String]
+        
+        // MARK: - NSCoding
+        
+        public required init?(coder: NSCoder) {
+            self.uuid = coder.decodeObject(forKey: "uuid") as! String
+            self.rawKind = coder.decodeObject(forKey: "kind") as! String
+            self.sdps = (coder.decodeObject(forKey: "sdps") as? [String])
+                .defaulting(to: [])
+            
+            // These two values only exist for kind of type 'iceCandidates'
+            self.sdpMLineIndexes = coder.decodeObject(forKey: "sdpMLineIndexes") as? [UInt32]
+            self.sdpMids = coder.decodeObject(forKey: "sdpMids") as? [String]
+            
+            super.init(coder: coder)
+        }
+
+        public override func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+        
+        // MARK: Non-Legacy Conversion
+        
+        override internal func toNonLegacy(_ instance: Message? = nil) throws -> Message {
+            return try super.toNonLegacy(
+                CallMessage(
+                    uuid: self.uuid,
+                    kind: {
+                        switch self.rawKind {
+                            case "preOffer": return .preOffer
+                            case "offer": return .offer
+                            case "answer": return .answer
+                            case "provisionalAnswer": return .provisionalAnswer
+                            case "iceCandidates":
+                                return .iceCandidates(
+                                    sdpMLineIndexes: self.sdpMLineIndexes
+                                        .defaulting(to: []),
+                                    sdpMids: self.sdpMids
+                                        .defaulting(to: [])
+                                )
+                                
+                            case "endCall": return .endCall
+                            default: throw StorageError.migrationFailed
+                        }
+                    }(),
+                    sdps: self.sdps
+                )
+            )
+        }
+    }
+    
     // MARK: - Thread
     
     @objc(TSThread)
@@ -961,6 +1025,34 @@ public enum SMKLegacy {
             self.groupName = ((coder.decodeObject(forKey: "groupName") as? String) ?? "Group")
             self.groupMemberIds = coder.decodeObject(forKey: "groupMemberIds") as! [String]
             self.groupAdminIds = coder.decodeObject(forKey: "groupAdminIds") as! [String]
+        }
+        
+        public func encode(with coder: NSCoder) {
+            fatalError("encode(with:) should never be called for legacy types")
+        }
+    }
+    
+    // MARK: - Group Model
+    
+    @objc(SNOpenGroupV2)
+    internal class _OpenGroup: NSObject, NSCoding {
+        internal let server: String
+        internal let room: String
+        internal let id: String
+        internal let name: String
+        internal let publicKey: String
+        internal let imageID: String?
+
+        // MARK: NSCoder
+        
+        public required init(coder: NSCoder) {
+            self.server = coder.decodeObject(forKey: "server") as! String
+            self.room = coder.decodeObject(forKey: "room") as! String
+            self.id = "\(self.server).\(self.room)"
+            
+            self.name = coder.decodeObject(forKey: "name") as! String
+            self.publicKey = coder.decodeObject(forKey: "publicKey") as! String
+            self.imageID = coder.decodeObject(forKey: "imageID") as? String
         }
         
         public func encode(with coder: NSCoder) {
@@ -1220,6 +1312,7 @@ public enum SMKLegacy {
             case disappearingMessagesUpdate
             case screenshotNotification
             case mediaSavedNotification
+            case call
             case messageRequestAccepted = 99
         }
         
@@ -1258,6 +1351,12 @@ public enum SMKLegacy {
             
             super.init(coder: coder)
         }
+    }
+    
+    // MARK: - Data Extraction Info Message
+    
+    @objc(SNDataExtractionNotificationInfoMessage)
+    public final class _DataExtractionNotificationInfoMessage: _DBInfoMessage {
     }
 
     // MARK: - Attachments
@@ -1505,15 +1604,10 @@ public enum SMKLegacy {
             else if let destString: String = _MessageSendJob.process(rawDestination, type: "closedGroup") {
                 destination = .closedGroup(groupPublicKey: destString)
             }
-            else if let destString: String = _MessageSendJob.process(rawDestination, type: "openGroup") {
-                let components = destString
-                    .split(separator: ",")
-                    .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
-                
-                guard components.count == 2, let channel = UInt64(components[0]) else { return nil }
-                
-                let server = components[1]
-                destination = .openGroup(channel: channel, server: server)
+            else if _MessageSendJob.process(rawDestination, type: "openGroup") != nil {
+                // We can no longer support sending messages to legacy open groups
+                SNLog("[Migration Warning] Ignoring pending messageSend job for V1 OpenGroup")
+                return nil
             }
             else if let destString: String = _MessageSendJob.process(rawDestination, type: "openGroupV2") {
                 let components = destString
@@ -1524,7 +1618,13 @@ public enum SMKLegacy {
                 
                 let room = components[0]
                 let server = components[1]
-                destination = .openGroupV2(room: room, server: server)
+                destination = .openGroup(
+                    roomToken: room,
+                    server: server,
+                    whisperTo: nil,
+                    whisperMods: false,
+                    fileIds: nil
+                )
             }
             else {
                 return nil

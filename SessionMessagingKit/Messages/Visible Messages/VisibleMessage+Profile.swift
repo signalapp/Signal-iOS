@@ -12,9 +12,11 @@ public extension VisibleMessage {
         // MARK: - Initialization
 
         internal init(displayName: String, profileKey: Data? = nil, profilePictureUrl: String? = nil) {
+            let hasUrlAndKey: Bool = (profileKey != nil && profilePictureUrl != nil)
+            
             self.displayName = displayName
-            self.profileKey = profileKey
-            self.profilePictureUrl = profilePictureUrl
+            self.profileKey = (hasUrlAndKey ? profileKey : nil)
+            self.profilePictureUrl = (hasUrlAndKey ? profilePictureUrl : nil)
         }
 
         // MARK: - Proto Conversion

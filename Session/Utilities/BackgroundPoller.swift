@@ -17,13 +17,21 @@ public final class BackgroundPoller: NSObject {
     public static func poll(completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         promises = []
             .appending(pollForMessages())
-            .appending(pollForClosedGroupMessages())
+            .appending(contentsOf: pollForClosedGroupMessages())
             .appending(
-                GRDBStorage.shared
-                    .read { db in try OpenGroup.fetchAll(db) }
+                contentsOf: GRDBStorage.shared
+                    .read { db in
+                        // The default room promise creates an OpenGroup with an empty `roomToken` value,
+                        // we don't want to start a poller for this as the user hasn't actually joined a room
+                        try OpenGroup
+                            .select(.server)
+                            .filter(OpenGroup.Columns.roomToken != "")
+                            .filter(OpenGroup.Columns.isActive)
+                            .distinct()
+                            .asRequest(of: String.self)
+                            .fetchSet(db)
+                    }
                     .defaulting(to: [])
-                    .map { openGroup -> String in openGroup.server }
-                    .asSet()
                     .map { server in
                         let poller: OpenGroupAPI.Poller = OpenGroupAPI.Poller(for: server)
                         poller.stop()
@@ -63,14 +71,19 @@ public final class BackgroundPoller: NSObject {
             }
             .defaulting(to: [])
             .map { groupPublicKey in
-                getClosedGroupMessages(for: groupPublicKey)
+                ClosedGroupPoller.poll(
+                    groupPublicKey,
+                    on: DispatchQueue.main,
+                    maxRetryCount: 4,
+                    isBackgroundPoll: true
+                )
             }
     }
     
     private static func getMessages(for publicKey: String) -> Promise<Void> {
         return SnodeAPI.getSwarm(for: publicKey)
             .then(on: DispatchQueue.main) { swarm -> Promise<Void> in
-                guard let snode = swarm.randomElement() else { throw SnodeAPI.Error.generic }
+                guard let snode = swarm.randomElement() else { throw SnodeAPIError.generic }
                 
                 return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
                     return SnodeAPI.getMessages(from: snode, associatedWith: publicKey)
@@ -119,12 +132,14 @@ public final class BackgroundPoller: NSObject {
                                         
                                         guard let job: Job = maybeJob else { return }
                                         
-                                        JobRunner.add(db, job: job)
+                                        // Add to the JobRunner so they are persistent and will retry on
+                                        // the next app run if they fail
+                                        JobRunner.add(db, job: job, canStartJob: false)
                                         jobsToRun.append(job)
                                     }
                             }
                             
-                            let promises = jobsToRun.compactMap { job -> Promise<Void>? in
+                            let promises: [Promise<Void>] = jobsToRun.map { job -> Promise<Void> in
                                 let (promise, seal) = Promise<Void>.pending()
                                 
                                 // Note: In the background we just want jobs to fail silently
@@ -139,102 +154,6 @@ public final class BackgroundPoller: NSObject {
                             }
 
                             return when(fulfilled: promises)
-                        }
-                }
-            }
-    }
-    
-    private static func getClosedGroupMessages(for publicKey: String) -> Promise<Void> {
-        return SnodeAPI.getSwarm(for: publicKey)
-            .then(on: DispatchQueue.main) { swarm -> Promise<Void> in
-                guard let snode = swarm.randomElement() else { throw SnodeAPI.Error.generic }
-            
-                return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
-                    var promises: [Promise<Data>] = []
-                    var namespaces: [Int] = []
-                
-                    // We have to poll for both namespace 0 and -10 when hardfork == 19 && softfork == 0
-                    if SnodeAPI.hardfork <= 19, SnodeAPI.softfork == 0 {
-                        let promise = SnodeAPI.getRawClosedGroupMessagesFromDefaultNamespace(from: snode, associatedWith: publicKey)
-                        promises.append(promise)
-                        namespaces.append(SnodeAPI.defaultNamespace)
-                    }
-                
-                    if SnodeAPI.hardfork >= 19 && SnodeAPI.softfork >= 0 {
-                        let promise = SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey, authenticated: false)
-                        promises.append(promise)
-                        namespaces.append(SnodeAPI.closedGroupNamespace)
-                    }
-                
-                    return when(resolved: promises)
-                        .then(on: DispatchQueue.main) { results -> Promise<Void> in
-                            var promises: [Promise<Void>] = []
-                            var index = 0
-                    
-                            for result in results {
-                                if case .fulfilled(let messages) = result {
-                                    guard !messages.isEmpty else { return Promise.value(()) }
-                                    
-                                    var jobsToRun: [Job] = []
-                                    
-                                    GRDBStorage.shared.write { db in
-                                        var jobDetailMessages: [MessageReceiveJob.Details.MessageInfo] = []
-                                    
-                                        messages.forEach { message in
-                                            do {
-                                                let processedMessage: ProcessedMessage? = try Message.processRawReceivedMessage(db, rawMessage: message)
-                                                
-                                                jobDetailMessages = jobDetailMessages
-                                                    .appending(processedMessage?.messageInfo)
-                                            }
-                                            catch {
-                                                switch error {
-                                                    // Ignore duplicate & selfSend message errors (and don't bother logging
-                                                    // them as there will be a lot since we each service node duplicates messages)
-                                                    case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
-                                                        MessageReceiverError.duplicateMessage,
-                                                        MessageReceiverError.duplicateControlMessage,
-                                                        MessageReceiverError.selfSend:
-                                                        break
-                                                    
-                                                    default: SNLog("Failed to deserialize envelope due to error: \(error).")
-                                                }
-                                            }
-                                        }
-                                        
-                                        let maybeJob: Job? = Job(
-                                            variant: .messageReceive,
-                                            behaviour: .runOnce,
-                                            threadId: groupPublicKey,
-                                            details: MessageReceiveJob.Details(
-                                                messages: jobDetailMessages,
-                                                isBackgroundPoll: true
-                                            )
-                                        )
-                                        
-                                        guard let job: Job = maybeJob else { return }
-                                        
-                                        JobRunner.add(db, job: job)
-                                        jobsToRun.append(job)
-                                    }
-                                    
-                                    let (promise, seal) = Promise<Void>.pending()
-                                    
-                                    // Note: In the background we just want jobs to fail silently
-                                    MessageReceiveJob.run(
-                                        job,
-                                        success: { _, _ in seal.fulfill(()) },
-                                        failure: { _, _, _ in seal.fulfill(()) },
-                                        deferred: { _ in seal.fulfill(()) }
-                                    )
-
-                                    promises.append(promise)
-                                }
-                        
-                                index += 1
-                            }
-                            
-                            return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects
                         }
                 }
             }

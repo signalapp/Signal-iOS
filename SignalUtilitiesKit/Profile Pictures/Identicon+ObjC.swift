@@ -9,7 +9,13 @@ public final class Identicon: NSObject {
     @objc public static func generatePlaceholderIcon(seed: String, text: String, size: CGFloat) -> UIImage {
         let icon = PlaceholderIcon(seed: seed)
         
-        var content = text
+        var content: String = (text.hasSuffix("\(String(seed.suffix(4))))") ?
+            (text.split(separator: "(")
+                .first
+                .map { String($0) })
+                .defaulting(to: text) :
+                text
+        )
 
         if content.count > 2 && SessionId.Prefix(from: content) != nil {
             content.removeFirst(2)

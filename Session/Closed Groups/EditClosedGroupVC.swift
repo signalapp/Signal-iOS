@@ -416,7 +416,6 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         }
         
         ModalActivityIndicatorViewController.present(fromViewController: navigationController) { _ in
-            // TODO: WriteAsync???
             GRDBStorage.shared
                 .write { db in
                     if !updatedMemberIds.contains(userPublicKey) {

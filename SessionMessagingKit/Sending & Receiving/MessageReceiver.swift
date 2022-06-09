@@ -3,28 +3,25 @@
 import Foundation
 import GRDB
 import Sodium
+import SignalCoreKit
 import SessionUtilitiesKit
 
 public enum MessageReceiver {
     private static var lastEncryptionKeyPairRequest: [String: Date] = [:]
-    // TODO: Remove these (bad convention)
-    public static var handleNewCallOfferMessageIfNeeded: ((CallMessage, YapDatabaseReadWriteTransaction) -> Void)?
-    public static var handleOfferCallMessage: ((CallMessage) -> Void)?
-    public static var handleAnswerCallMessage: ((CallMessage) -> Void)?
-    public static var handleEndCallMessage: ((CallMessage) -> Void)?
-
+    
     public static func parse(
         _ db: Database,
         envelope: SNProtoEnvelope,
         serverExpirationTimestamp: TimeInterval?,
         openGroupId: String?,
-        openGroupMessageServerId: UInt64?,
+        openGroupMessageServerId: Int64?,
+        openGroupServerPublicKey: String?,
         isOutgoing: Bool? = nil,
         otherBlindedPublicKey: String? = nil,
         dependencies: Dependencies = Dependencies()
     ) throws -> (Message, SNProtoContent, String) {
         let userPublicKey: String = getUserHexEncodedPublicKey(db)
-        let isOpenGroupMessage: Bool = (openGroupMessageServerId != nil)
+        let isOpenGroupMessage: Bool = (openGroupId != nil)
         
         // Decrypt the contents
         guard let ciphertext = envelope.content else { throw MessageReceiverError.noData }
@@ -42,19 +39,21 @@ public enum MessageReceiver {
                     // Default to 'standard' as the old code didn't seem to require an `envelope.source`
                     switch (SessionId.Prefix(from: envelope.source) ?? .standard) {
                         case .standard, .unblinded:
-                            guard let userX25519KeyPair = dependencies.storage.getUserKeyPair() else {
-                                throw Error.noUserX25519KeyPair
+                            guard let userX25519KeyPair: Box.KeyPair = Identity.fetchUserKeyPair(db) else {
+                                throw MessageReceiverError.noUserX25519KeyPair
                             }
                             
                             (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: userX25519KeyPair)
                             
                         case .blinded:
-                            guard let otherBlindedPublicKey: String = otherBlindedPublicKey else { throw Error.noData }
-                            guard let openGroupServerPublicKey: String = openGroupServerPublicKey else {
-                                throw Error.invalidGroupPublicKey
+                            guard let otherBlindedPublicKey: String = otherBlindedPublicKey else {
+                                throw MessageReceiverError.noData
                             }
-                            guard let userEd25519KeyPair = dependencies.storage.getUserED25519KeyPair() else {
-                                throw Error.noUserED25519KeyPair
+                            guard let openGroupServerPublicKey: String = openGroupServerPublicKey else {
+                                throw MessageReceiverError.invalidGroupPublicKey
+                            }
+                            guard let userEd25519KeyPair: Box.KeyPair = Identity.fetchUserEd25519KeyPair(db) else {
+                                throw MessageReceiverError.noUserED25519KeyPair
                             }
                             
                             (plaintext, sender) = try decryptWithSessionBlindingProtocol(
@@ -148,7 +147,7 @@ public enum MessageReceiver {
         message.receivedTimestamp = UInt64((Date().timeIntervalSince1970) * 1000)
         message.groupPublicKey = groupPublicKey
         message.openGroupServerTimestamp = (isOpenGroupMessage ? envelope.serverTimestamp : nil)
-        message.openGroupServerMessageId = openGroupMessageServerId
+        message.openGroupServerMessageId = openGroupMessageServerId.map { UInt64($0) }
         
         // Validate
         var isValid: Bool = message.isValid
@@ -173,5 +172,177 @@ public enum MessageReceiver {
         }()
         
         return (message, proto, threadId)
+    }
+    
+    // MARK: - Handling
+    
+    public static func handle(
+        _ db: Database,
+        message: Message,
+        associatedWithProto proto: SNProtoContent,
+        openGroupId: String?,
+        isBackgroundPoll: Bool,
+        dependencies: Dependencies = Dependencies()
+    ) throws {
+        switch message {
+            case let message as ReadReceipt:
+                try MessageReceiver.handleReadReceipt(db, message: message)
+                
+            case let message as TypingIndicator:
+                try MessageReceiver.handleTypingIndicator(db, message: message)
+                
+            case let message as ClosedGroupControlMessage:
+                try MessageReceiver.handleClosedGroupControlMessage(db, message)
+                
+            case let message as DataExtractionNotification:
+                try MessageReceiver.handleDataExtractionNotification(db, message: message)
+                
+            case let message as ExpirationTimerUpdate:
+                try MessageReceiver.handleExpirationTimerUpdate(db, message: message)
+                
+            case let message as ConfigurationMessage:
+                try MessageReceiver.handleConfigurationMessage(db, message: message)
+                
+            case let message as UnsendRequest:
+                try MessageReceiver.handleUnsendRequest(db, message: message)
+                
+            case let message as CallMessage:
+                try MessageReceiver.handleCallMessage(db, message:  message)
+                
+            case let message as MessageRequestResponse:
+                try MessageReceiver.handleMessageRequestResponse(db, message: message, dependencies: dependencies)
+                
+            case let message as VisibleMessage:
+                try MessageReceiver.handleVisibleMessage(
+                    db,
+                    message: message,
+                    associatedWithProto: proto,
+                    openGroupId: openGroupId,
+                    isBackgroundPoll: isBackgroundPoll
+                )
+                
+            default: fatalError()
+        }
+        
+        // When handling any non-typing indicator message we want to make sure the thread becomes
+        // visible (the only other spot this flag gets set is when sending messages)
+        switch message {
+            case is TypingIndicator: break
+                
+            default:
+                guard let threadInfo: (id: String, variant: SessionThread.Variant) = threadInfo(db, message: message, openGroupId: openGroupId) else {
+                    return
+                }
+                
+                _ = try SessionThread
+                    .fetchOrCreate(db, id: threadInfo.id, variant: threadInfo.variant)
+                    .with(shouldBeVisible: true)
+                    .saved(db)
+        }
+    }
+    
+    // MARK: - Convenience
+    
+    internal static func threadInfo(_ db: Database, message: Message, openGroupId: String?) -> (id: String, variant: SessionThread.Variant)? {
+        if let openGroupId: String = openGroupId {
+            // Note: We don't want to create a thread for an open group if it doesn't exist
+            if (try? SessionThread.exists(db, id: openGroupId)) != true { return nil }
+            
+            return (openGroupId, .openGroup)
+        }
+        
+        if let groupPublicKey: String = message.groupPublicKey {
+            // Note: We don't want to create a thread for a closed group if it doesn't exist
+            if (try? SessionThread.exists(db, id: groupPublicKey)) != true { return nil }
+            
+            return (groupPublicKey, .closedGroup)
+        }
+        
+        // Extract the 'syncTarget' value if there is one
+        let maybeSyncTarget: String?
+        
+        switch message {
+            case let message as VisibleMessage: maybeSyncTarget = message.syncTarget
+            case let message as ExpirationTimerUpdate: maybeSyncTarget = message.syncTarget
+            default: maybeSyncTarget = nil
+        }
+        
+        // Note: We don't want to create a thread for a closed group if it doesn't exist
+        guard let contactId: String = (maybeSyncTarget ?? message.sender) else { return nil }
+        
+        return (contactId, .contact)
+    }
+    
+    internal static func updateProfileIfNeeded(
+        _ db: Database,
+        publicKey: String,
+        name: String?,
+        profilePictureUrl: String?,
+        profileKey: OWSAES256Key?,
+        sentTimestamp: TimeInterval,
+        dependencies: Dependencies = Dependencies()
+    ) throws {
+        let isCurrentUser = (publicKey == getUserHexEncodedPublicKey(db))
+        var profile: Profile = Profile.fetchOrCreate(id: publicKey)
+        
+        // Name
+        if let name = name, name != profile.name {
+            let shouldUpdate: Bool
+            if isCurrentUser {
+                shouldUpdate = given(UserDefaults.standard[.lastDisplayNameUpdate]) {
+                    sentTimestamp > $0.timeIntervalSince1970
+                }
+                .defaulting(to: true)
+            }
+            else {
+                shouldUpdate = true
+            }
+            
+            if shouldUpdate {
+                if isCurrentUser {
+                    UserDefaults.standard[.lastDisplayNameUpdate] = Date(timeIntervalSince1970: sentTimestamp)
+                }
+                
+                profile = profile.with(name: name)
+            }
+        }
+        
+        // Profile picture & profile key
+        if
+            let profileKey: OWSAES256Key = profileKey,
+            let profilePictureUrl: String = profilePictureUrl,
+            profileKey.keyData.count == kAES256_KeyByteLength,
+            profileKey != profile.profileEncryptionKey
+        {
+            let shouldUpdate: Bool
+            if isCurrentUser {
+                shouldUpdate = given(UserDefaults.standard[.lastProfilePictureUpdate]) {
+                    sentTimestamp > $0.timeIntervalSince1970
+                }
+                .defaulting(to: true)
+            }
+            else {
+                shouldUpdate = true
+            }
+            
+            if shouldUpdate {
+                if isCurrentUser {
+                    UserDefaults.standard[.lastProfilePictureUpdate] = Date(timeIntervalSince1970: sentTimestamp)
+                }
+                
+                profile = profile.with(
+                    profilePictureUrl: .update(profilePictureUrl),
+                    profileEncryptionKey: .update(profileKey)
+                )
+            }
+        }
+        
+        // Persist changes
+        try profile.save(db)
+        
+        // Download the profile picture if needed
+        db.afterNextTransactionCommit { _ in
+            ProfileManager.downloadAvatar(for: profile)
+        }
     }
 }

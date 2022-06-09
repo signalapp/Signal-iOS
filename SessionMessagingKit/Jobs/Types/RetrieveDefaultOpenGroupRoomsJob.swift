@@ -22,7 +22,22 @@ public enum RetrieveDefaultOpenGroupRoomsJob: JobExecutor {
             return
         }
         
-        OpenGroupAPIV2.getDefaultRoomsIfNeeded()
+        // The OpenGroupAPI won't make any API calls if there is no entry for an OpenGroup
+        // in the database so we need to create a dummy one to retrieve the default room data
+        GRDBStorage.shared.write { db in
+            _ = try OpenGroup(
+                server: OpenGroupAPI.defaultServer,
+                roomToken: "",
+                publicKey: OpenGroupAPI.defaultServerPublicKey,
+                isActive: false,
+                name: "",
+                userCount: 0,
+                infoUpdates: 0
+            )
+            .saved(db)
+        }
+        
+        OpenGroupManager.getDefaultRoomsIfNeeded()
             .done { _ in success(job, false) }
             .catch { error in failure(job, error, false) }
             .retainUntilComplete()

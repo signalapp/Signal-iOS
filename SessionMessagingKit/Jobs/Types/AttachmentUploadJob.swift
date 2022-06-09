@@ -37,12 +37,20 @@ public enum AttachmentUploadJob: JobExecutor {
         // issues when the success/failure closures get called before the upload as the JobRunner will attempt to
         // update the state of the job immediately
         attachment.upload(
-            using: { data in
+            using: { db, data in
                 if let openGroup: OpenGroup = openGroup {
-                    return OpenGroupAPIV2.upload(data, to: openGroup.room, on: openGroup.server)
+                    return OpenGroupAPI
+                        .uploadFile(
+                            db,
+                            bytes: data.bytes,
+                            to: openGroup.roomToken,
+                            on: openGroup.server
+                        )
+                        .map { _, response -> String in response.id }
                 }
                 
-                return FileServerAPIV2.upload(data)
+                return FileServerAPI.upload(data)
+                    .map { response -> String in response.id }
             },
             encrypt: (openGroup == nil),
             success: { success(job, false) },

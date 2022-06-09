@@ -222,11 +222,11 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-
-        guard let conversationVC: ConversationVC = ConversationVC(threadId: viewModel.viewData[indexPath.row].threadId) else {
-            return
-        }
         
+        let conversationVC: ConversationVC = ConversationVC(
+            threadId: viewModel.viewData[indexPath.row].threadId,
+            threadVariant: viewModel.viewData[indexPath.row].threadVariant
+        )
         self.navigationController?.pushViewController(conversationVC, animated: true)
     }
 

@@ -43,17 +43,22 @@ public struct SnodeReceivedMessageInfo: Codable, FetchableRecord, MutablePersist
 // MARK: - Convenience
 
 public extension SnodeReceivedMessageInfo {
-    private static func key(for snode: Snode, publicKey: String) -> String {
-        return "\(snode.address):\(snode.port).\(publicKey)"
+    private static func key(for snode: Snode, publicKey: String, namespace: Int) -> String {
+        guard namespace != SnodeAPI.defaultNamespace else {
+            return "\(snode.address):\(snode.port).\(publicKey)"
+        }
+        
+        return "\(snode.address):\(snode.port).\(publicKey).\(namespace)"
     }
     
     init(
         snode: Snode,
         publicKey: String,
+        namespace: Int,
         hash: String,
         expirationDateMs: Int64?
     ) {
-        self.key = SnodeReceivedMessageInfo.key(for: snode, publicKey: publicKey)
+        self.key = SnodeReceivedMessageInfo.key(for: snode, publicKey: publicKey, namespace: namespace)
         self.hash = hash
         self.expirationDateMs = (expirationDateMs ?? 0)
     }
@@ -62,19 +67,19 @@ public extension SnodeReceivedMessageInfo {
 // MARK: - GRDB Interactions
 
 public extension SnodeReceivedMessageInfo {
-    static func pruneExpiredMessageHashInfo(for snode: Snode, associatedWith publicKey: String) {
+    static func pruneExpiredMessageHashInfo(for snode: Snode, namespace: Int, associatedWith publicKey: String) {
         // Delete any expired SnodeReceivedMessageInfo values associated to a specific node
         GRDBStorage.shared.write { db in
             // Only prune the hashes if new hashes exist for this Snode (if they don't then we don't want
             // to clear out the legacy hashes)
             let hasNonLegacyHash: Bool = try SnodeReceivedMessageInfo
-                .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey))
+                .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey, namespace: namespace))
                 .isNotEmpty(db)
             
             guard hasNonLegacyHash else { return }
             
             try SnodeReceivedMessageInfo
-                .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey))
+                .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey, namespace: namespace))
                 .filter(SnodeReceivedMessageInfo.Columns.expirationDateMs <= (Date().timeIntervalSince1970 * 1000))
                 .deleteAll(db)
         }
@@ -85,10 +90,10 @@ public extension SnodeReceivedMessageInfo {
     /// **Note:** This method uses a `write` instead of a read because there is a single write queue for the database and it's very common for
     /// this method to be called after the hash value has been updated but before the various `read` threads have been updated, resulting in a
     /// pointless fetch for data the app has already received
-    static func fetchLastNotExpired(for snode: Snode, associatedWith publicKey: String) -> SnodeReceivedMessageInfo? {
-        return GRDBStorage.shared.write { db in
+    static func fetchLastNotExpired(for snode: Snode, namespace: Int, associatedWith publicKey: String) -> SnodeReceivedMessageInfo? {
+        return GRDBStorage.shared.read { db in
             let nonLegacyHash: SnodeReceivedMessageInfo? = try SnodeReceivedMessageInfo
-                .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey))
+                .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey, namespace: namespace))
                 .filter(SnodeReceivedMessageInfo.Columns.expirationDateMs > (Date().timeIntervalSince1970 * 1000))
                 .order(SnodeReceivedMessageInfo.Columns.id.desc)
                 .fetchOne(db)

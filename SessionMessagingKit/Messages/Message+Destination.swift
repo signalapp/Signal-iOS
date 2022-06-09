@@ -8,7 +8,6 @@ public extension Message {
     enum Destination: Codable {
         case contact(publicKey: String)
         case closedGroup(groupPublicKey: String)
-        case legacyOpenGroup(channel: UInt64, server: String)
         case openGroup(
             roomToken: String,
             server: String,
@@ -25,14 +24,14 @@ public extension Message {
         ) throws -> Message.Destination {
             switch thread.variant {
                 case .contact:
-                    if SessionId.Prefix(from: thread.contactSessionID()) == .blinded {
-                        guard let server: String = thread.originalOpenGroupServer, let publicKey: String = thread.originalOpenGroupPublicKey else {
+                    if SessionId.Prefix(from: thread.id) == .blinded {
+                        guard let lookup: BlindedIdLookup = try? BlindedIdLookup.fetchOne(db, id: thread.id) else {
                             preconditionFailure("Attempting to send message to blinded id without the Open Group information")
                         }
                         
                         return .openGroupInbox(
-                            server: server,
-                            openGroupPublicKey: publicKey,
+                            server: lookup.openGroupServer,
+                            openGroupPublicKey: lookup.openGroupPublicKey,
                             blindedPublicKey: thread.id
                         )
                     }
@@ -47,7 +46,7 @@ public extension Message {
                         throw StorageError.objectNotFound
                     }
                     
-                    return .openGroup(roomToken: openGroup.room, server: openGroup.server, fileIds: fileIds)
+                    return .openGroup(roomToken: openGroup.roomToken, server: openGroup.server, fileIds: fileIds)
             }
         }
     }

@@ -25,11 +25,6 @@ public final class FileServerAPI: NSObject {
     
     // MARK: - File Storage
     
-    @objc(upload:)
-    public static func objc_upload(file: Data) -> AnyPromise {
-        return AnyPromise.from(upload(file).map { String($0.id) })
-    }
-    
     public static func upload(_ file: Data) -> Promise<FileUploadResponse> {
         let request = Request(
             method: .post,
@@ -46,13 +41,7 @@ public final class FileServerAPI: NSObject {
             .decoded(as: FileUploadResponse.self, on: .global(qos: .userInitiated))
     }
     
-    @objc(download:useOldServer:)
-    public static func objc_download(file: String, useOldServer: Bool) -> AnyPromise {
-        guard let id = UInt64(file) else { return AnyPromise.from(Promise<Data>(error: HTTP.Error.invalidURL)) }
-        return AnyPromise.from(download(id, useOldServer: useOldServer))
-    }
-    
-    public static func download(_ file: UInt64, useOldServer: Bool) -> Promise<Data> {
+    public static func download(_ file: Int64, useOldServer: Bool) -> Promise<Data> {
         let serverPublicKey: String = (useOldServer ? oldServerPublicKey : serverPublicKey)
         let request = Request<NoBody, Endpoint>(
             server: (useOldServer ? oldServer : server),

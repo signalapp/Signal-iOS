@@ -5,7 +5,6 @@ import GRDB
 import PromiseKit
 import SignalCoreKit
 
-
 public final class GRDBStorage {
     private static let dbFileName: String = "Session.sqlite"
     private static let keychainService: String = "TSKeyChainService"
@@ -34,9 +33,10 @@ public final class GRDBStorage {
     // MARK: - Initialization
     
     public init() {
-        print("RAWR START \("\(GRDBStorage.sharedDatabaseDirectoryPath)/\(GRDBStorage.dbFileName)")")
-        GRDBStorage.deleteDatabaseFiles() // TODO: Remove this
-        try! GRDBStorage.deleteDbKeys() // TODO: Remove this
+//        if CurrentAppContext().isMainApp {
+//            GRDBStorage.deleteDatabaseFiles() // TODO: Remove this.
+//            try! GRDBStorage.deleteDbKeys() // TODO: Remove this.
+//        }
         
         // Create the database directory if needed and ensure it's protection level is set before attempting to
         // create the database KeySpec or the database itself
@@ -171,6 +171,10 @@ public final class GRDBStorage {
             self?.hasCompletedMigrations = true
             self?.migrationProgressUpdater = nil
             SUKLegacy.clearLegacyDatabaseInstance()
+            
+            if let error = error {
+                SNLog("[Migration Error] Migration failed with error: \(error)")
+            }
             
             onComplete((error == nil), needsConfigSync)
         }

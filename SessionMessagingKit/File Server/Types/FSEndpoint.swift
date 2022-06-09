@@ -5,7 +5,7 @@ import Foundation
 extension FileServerAPI {
     public enum Endpoint: EndpointType {
         case file
-        case fileIndividual(fileId: UInt64)
+        case fileIndividual(fileId: Int64)
         case sessionVersion
         
         var path: String {

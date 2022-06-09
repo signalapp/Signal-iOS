@@ -30,10 +30,31 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     
     public static let pageSize: Int = 50
     
+    private let threadId: String
+    public let initialThreadVariant: SessionThread.Variant
+    public var sentMessageBeforeUpdate: Bool = false
+    public var lastSearchedText: String?
+    public let focusedInteractionId: Int64?    // Note: This is used for global search
+    
+    public lazy var blockedBannerMessage: String = {
+        switch self.threadData.threadVariant {
+            case .contact:
+                let name: String = Profile.displayName(
+                    id: self.threadData.threadId,
+                    threadVariant: self.threadData.threadVariant
+                )
+                
+                return "\(name) is blocked. Unblock them?"
+                
+            default: return "Thread is blocked. Unblock it?"
+        }
+    }()
+    
     // MARK: - Initialization
     
-    init?(threadId: String, focusedInteractionId: Int64?) {
+    init(threadId: String, threadVariant: SessionThread.Variant, focusedInteractionId: Int64?) {
         self.threadId = threadId
+        self.initialThreadVariant = threadVariant
         self.focusedInteractionId = focusedInteractionId
         self.pagedDataObserver = nil
         
@@ -108,27 +129,6 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
             self?.pagedDataObserver?.load(.initialPageAround(id: initialFocusedId))
         }
     }
-    
-    // MARK: - Variables
-    
-    private let threadId: String
-    public var sentMessageBeforeUpdate: Bool = false
-    public var lastSearchedText: String?
-    public let focusedInteractionId: Int64?    // Note: This is used for global search
-    
-    public lazy var blockedBannerMessage: String = {
-        switch self.threadData.threadVariant {
-            case .contact:
-                let name: String = Profile.displayName(
-                    id: self.threadData.threadId,
-                    threadVariant: self.threadData.threadVariant
-                )
-                
-                return "\(name) is blocked. Unblock them?"
-                
-            default: return "Thread is blocked. Unblock it?"
-        }
-    }()
     
     // MARK: - Thread Data
     
@@ -211,13 +211,13 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     
     public struct MentionInfo: FetchableRecord, Decodable {
         fileprivate static let threadVariantKey = CodingKeys.threadVariant.stringValue
-        fileprivate static let openGroupRoomKey = CodingKeys.openGroupRoom.stringValue
         fileprivate static let openGroupServerKey = CodingKeys.openGroupServer.stringValue
+        fileprivate static let openGroupRoomTokenKey = CodingKeys.openGroupRoomToken.stringValue
         
         let profile: Profile
         let threadVariant: SessionThread.Variant
-        let openGroupRoom: String?
         let openGroupServer: String?
+        let openGroupRoomToken: String?
     }
     
     public func mentions(for query: String = "") -> [MentionInfo] {
@@ -236,8 +236,8 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                                 MentionInfo(
                                     profile: profile,
                                     threadVariant: threadData.threadVariant,
-                                    openGroupRoom: nil,
-                                    openGroupServer: nil
+                                    openGroupServer: nil,
+                                    openGroupRoomToken: nil
                                 )
                             }
                             .filter {
@@ -280,8 +280,8 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                             .select(
                                 profile.allColumns(),
                                 SQL("\(threadData.threadVariant)").forKey(MentionInfo.threadVariantKey),
-                                SQL("\(threadData.openGroupRoom)").forKey(MentionInfo.openGroupRoomKey),
-                                SQL("\(threadData.openGroupServer)").forKey(MentionInfo.openGroupServerKey)
+                                SQL("\(threadData.openGroupServer)").forKey(MentionInfo.openGroupServerKey),
+                                SQL("\(threadData.openGroupRoomToken)").forKey(MentionInfo.openGroupRoomTokenKey)
                             )
                             .distinct()
                             .group(Interaction.Columns.authorId)

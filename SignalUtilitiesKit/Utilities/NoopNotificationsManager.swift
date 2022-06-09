@@ -4,12 +4,14 @@ import Foundation
 import GRDB
 import SessionMessagingKit
 
-public class NoopNotificationsManager, NotificationsProtocol {
+public class NoopNotificationsManager: NotificationsProtocol {
+    public init() {}
+    
     public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread, isBackgroundPoll: Bool) {
         owsFailDebug("")
     }
     
-    public func notifyUser(_ db: Database, forIncomingCall callInfoMessage: Interaction, in thread: SessionThread) {
+    public func notifyUser(_ db: Database, forIncomingCall interaction: Interaction, in thread: SessionThread) {
         owsFailDebug("")
     }
     

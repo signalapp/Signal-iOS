@@ -12,21 +12,15 @@ public class Dependencies {
         set { _onionApi = newValue }
     }
     
-    internal var _identityManager: IdentityManagerProtocol?
-    public var identityManager: IdentityManagerProtocol {
-        get { Dependencies.getValueSettingIfNull(&_identityManager) { OWSIdentityManager.shared() } }
-        set { _identityManager = newValue }
-    }
-    
     internal var _generalCache: Atomic<GeneralCacheType>?
     public var generalCache: Atomic<GeneralCacheType> {
         get { Dependencies.getValueSettingIfNull(&_generalCache) { General.cache } }
         set { _generalCache = newValue }
     }
     
-    internal var _storage: SessionMessagingKitStorageProtocol?
-    public var storage: SessionMessagingKitStorageProtocol {
-        get { Dependencies.getValueSettingIfNull(&_storage) { SNMessagingKitConfiguration.shared.storage } }
+    internal var _storage: GRDBStorage?
+    public var storage: GRDBStorage {
+        get { Dependencies.getValueSettingIfNull(&_storage) { GRDBStorage.shared } }
         set { _storage = newValue }
     }
     
@@ -94,9 +88,8 @@ public class Dependencies {
     
     public init(
         onionApi: OnionRequestAPIType.Type? = nil,
-        identityManager: IdentityManagerProtocol? = nil,
         generalCache: Atomic<GeneralCacheType>? = nil,
-        storage: SessionMessagingKitStorageProtocol? = nil,
+        storage: GRDBStorage? = nil,
         sodium: SodiumType? = nil,
         box: BoxType? = nil,
         genericHash: GenericHashType? = nil,
@@ -109,7 +102,6 @@ public class Dependencies {
         date: Date? = nil
     ) {
         _onionApi = onionApi
-        _identityManager = identityManager
         _generalCache = generalCache
         _storage = storage
         _sodium = sodium

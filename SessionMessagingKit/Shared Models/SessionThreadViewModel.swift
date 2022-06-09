@@ -41,7 +41,7 @@ public struct SessionThreadViewModel: FetchableRecord, Decodable, Equatable, Has
     public static let closedGroupProfileBackFallbackKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupProfileBackFallback.stringValue)
     public static let openGroupNameKey: SQL = SQL(stringLiteral: CodingKeys.openGroupName.stringValue)
     public static let openGroupServerKey: SQL = SQL(stringLiteral: CodingKeys.openGroupServer.stringValue)
-    public static let openGroupRoomKey: SQL = SQL(stringLiteral: CodingKeys.openGroupRoom.stringValue)
+    public static let openGroupRoomTokenKey: SQL = SQL(stringLiteral: CodingKeys.openGroupRoomToken.stringValue)
     public static let openGroupProfilePictureDataKey: SQL = SQL(stringLiteral: CodingKeys.openGroupProfilePictureData.stringValue)
     public static let openGroupUserCountKey: SQL = SQL(stringLiteral: CodingKeys.openGroupUserCount.stringValue)
     public static let interactionIdKey: SQL = SQL(stringLiteral: CodingKeys.interactionId.stringValue)
@@ -100,7 +100,7 @@ public struct SessionThreadViewModel: FetchableRecord, Decodable, Equatable, Has
     public let currentUserIsClosedGroupAdmin: Bool?
     public let openGroupName: String?
     public let openGroupServer: String?
-    public let openGroupRoom: String?
+    public let openGroupRoomToken: String?
     public let openGroupProfilePictureData: Data?
     private let openGroupUserCount: Int?
     
@@ -228,7 +228,7 @@ public extension SessionThreadViewModel {
         self.currentUserIsClosedGroupAdmin = nil
         self.openGroupName = nil
         self.openGroupServer = nil
-        self.openGroupRoom = nil
+        self.openGroupRoomToken = nil
         self.openGroupProfilePictureData = nil
         self.openGroupUserCount = nil
         
@@ -549,7 +549,7 @@ public extension SessionThreadViewModel {
                 (\(groupMember[.profileId]) IS NOT NULL) AS \(ViewModel.currentUserIsClosedGroupMemberKey),
                 \(openGroup[.name]) AS \(ViewModel.openGroupNameKey),
                 \(openGroup[.server]) AS \(ViewModel.openGroupServerKey),
-                \(openGroup[.room]) AS \(ViewModel.openGroupRoomKey),
+                \(openGroup[.roomToken]) AS \(ViewModel.openGroupRoomTokenKey),
                 \(openGroup[.imageData]) AS \(ViewModel.openGroupProfilePictureDataKey),
                 \(openGroup[.userCount]) AS \(ViewModel.openGroupUserCountKey),
         

@@ -268,7 +268,7 @@ CGFloat kIconViewLength = 24;
     }]];
 
     // Disappearing messages
-    if (![self isOpenGroup] && !self.thread.isBlocked) {
+    if (![self isOpenGroup] && ![SMKContact isBlockedFor:self.threadId]) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell = [OWSTableItem newCell];
             OWSConversationSettingsViewController *strongSelf = weakSelf;

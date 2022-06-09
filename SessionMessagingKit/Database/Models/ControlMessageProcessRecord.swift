@@ -39,6 +39,7 @@ public struct ControlMessageProcessRecord: Codable, FetchableRecord, Persistable
         case configurationMessage = 6
         case unsendRequest = 7
         case messageRequestResponse = 8
+        case call = 9
     }
     
     /// The id for the thread the control message is associated to
@@ -70,6 +71,9 @@ public struct ControlMessageProcessRecord: Codable, FetchableRecord, Persistable
         // the unique constraints on that table prevent duplicate messages
         if message is VisibleMessage { return nil }
         
+        // Allow duplicates for all call messages, the double checking will be done on
+        // message handling to make sure the messages are for the same ongoing call
+        if message is CallMessage { return nil }
         
         // Allow '.new' and 'encryptionKeyPair' closed group control message duplicates to avoid
         // the following situation:
@@ -94,6 +98,7 @@ public struct ControlMessageProcessRecord: Codable, FetchableRecord, Persistable
                 case is ConfigurationMessage: return .configurationMessage
                 case is UnsendRequest: return .unsendRequest
                 case is MessageRequestResponse: return .messageRequestResponse
+                case is CallMessage: return .call
                 default: preconditionFailure("[ControlMessageProcessRecord] Unsupported message type")
             }
         }()
@@ -149,6 +154,9 @@ internal extension ControlMessageProcessRecord {
         
             case .infoMessageRequestAccepted:
                 self.variant = .messageRequestResponse
+                
+            case .infoCall:
+                self.variant = .call
         }
         
         self.threadId = threadId

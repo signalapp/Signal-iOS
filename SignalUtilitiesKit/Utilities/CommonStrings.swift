@@ -25,9 +25,6 @@ import Foundation
 
 @objc public class MessageStrings: NSObject {
     @objc
-    static public let newGroupDefaultTitle = NSLocalizedString("NEW_GROUP_DEFAULT_TITLE", comment: "Used in place of the group name when a group has not yet been named.")
-
-    @objc
     static public let replyNotificationAction = NSLocalizedString("PUSH_MANAGER_REPLY", comment: "Notification action button title")
 
     @objc

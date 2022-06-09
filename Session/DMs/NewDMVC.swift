@@ -157,10 +157,11 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
                 }.catch { error in
                     modalActivityIndicator.dismiss {
                         var messageOrNil: String?
-                        if let error = error as? SnodeAPI.Error {
+                        if let error = error as? SnodeAPIError {
                             switch error {
-                            case .decryptionFailed, .hashingFailed, .validationFailed: messageOrNil = error.errorDescription
-                            default: break
+                                case .decryptionFailed, .hashingFailed, .validationFailed:
+                                    messageOrNil = error.errorDescription
+                                default: break
                             }
                         }
                         let message = messageOrNil ?? "Please check the Session ID or ONS name and try again"

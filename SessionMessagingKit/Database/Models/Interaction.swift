@@ -40,6 +40,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
         case serverHash
+        case messageUuid
         case threadId
         case authorId
         
@@ -78,7 +79,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
         
         case infoMessageRequestAccepted = 4000
         
-        case infoMessageCall = 5000
+        case infoCall = 5000
         
         // MARK: - Convenience
         
@@ -86,10 +87,26 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
             switch self {
                 case .infoClosedGroupCreated, .infoClosedGroupUpdated, .infoClosedGroupCurrentUserLeft,
                     .infoDisappearingMessagesUpdate, .infoScreenshotNotification, .infoMediaSavedNotification,
-                    .infoMessageRequestAccepted, .infoMessageCall:
+                    .infoMessageRequestAccepted, .infoCall:
                     return true
                     
                 case .standardIncoming, .standardOutgoing, .standardIncomingDeleted:
+                    return false
+            }
+        }
+        
+        /// This flag controls whether the `wasRead` flag is automatically set to true based on the message variant (as a result it they will
+        /// or won't affect the unread count)
+        fileprivate var canBeUnread: Bool {
+            switch self {
+                case .standardIncoming: return true
+                case .infoCall: return true
+                
+                case .standardOutgoing, .standardIncomingDeleted: return false
+                
+                case .infoClosedGroupCreated, .infoClosedGroupUpdated, .infoClosedGroupCurrentUserLeft,
+                    .infoDisappearingMessagesUpdate, .infoScreenshotNotification, .infoMediaSavedNotification,
+                    .infoMessageRequestAccepted:
                     return false
             }
         }
@@ -97,7 +114,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     
     /// The `id` value is auto incremented by the database, if the `Interaction` hasn't been inserted into
     /// the database yet this value will be `nil`
-    public var id: Int64? = nil
+    public private(set) var id: Int64? = nil
     
     /// The hash returned by the server when this message was created on the server
     ///
@@ -107,6 +124,11 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     /// - This value will differ for "sync" messages (messages we resend to the current to ensure it appears
     /// on all linked devices) because the data in the message is slightly different
     public let serverHash: String?
+    
+    /// The UUID specified when sending the message to allow for custom updating and de-duping behaviours
+    ///
+    /// **Note:** Currently only `infoCall` messages utilise this value
+    public let messageUuid: String?
     
     /// The id of the thread that this interaction belongs to (used to expose the `thread` variable)
     public let threadId: String
@@ -141,7 +163,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     /// we couldn’t know if a read timestamp is accurate)
     ///
     /// **Note:** This flag is not applicable to standardOutgoing or standardIncomingDeleted interactions
-    public let wasRead: Bool
+    public private(set) var wasRead: Bool
     
     /// A flag indicating whether the current user was mentioned in this interaction (or the associated quote)
     public let hasMention: Bool
@@ -214,6 +236,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     internal init(
         id: Int64? = nil,
         serverHash: String?,
+        messageUuid: String?,
         threadId: String,
         authorId: String,
         variant: Variant,
@@ -231,6 +254,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     ) {
         self.id = id
         self.serverHash = serverHash
+        self.messageUuid = messageUuid
         self.threadId = threadId
         self.authorId = authorId
         self.variant = variant
@@ -249,6 +273,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     
     public init(
         serverHash: String? = nil,
+        messageUuid: String? = nil,
         threadId: String,
         authorId: String,
         variant: Variant,
@@ -264,6 +289,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
         openGroupWhisperTo: String? = nil
     ) throws {
         self.serverHash = serverHash
+        self.messageUuid = messageUuid
         self.threadId = threadId
         self.authorId = authorId
         self.variant = variant
@@ -290,6 +316,10 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
     // MARK: - Custom Database Interaction
     
     public mutating func insert(_ db: Database) throws {
+        // Automatically mark interactions which can't be unread as read so the unread count
+        // isn't impacted
+        self.wasRead = (self.wasRead || !self.variant.canBeUnread)
+        
         try performInsert(db)
         
         // Since we need to do additional logic upon insert we can just set the 'id' value
@@ -355,6 +385,7 @@ public extension Interaction {
     func with(
         serverHash: String? = nil,
         authorId: String? = nil,
+        body: String? = nil,
         timestampMs: Int64? = nil,
         wasRead: Bool? = nil,
         hasMention: Bool? = nil,
@@ -363,22 +394,23 @@ public extension Interaction {
         openGroupServerMessageId: Int64? = nil
     ) -> Interaction {
         return Interaction(
-            id: id,
+            id: self.id,
             serverHash: (serverHash ?? self.serverHash),
-            threadId: threadId,
+            messageUuid: self.messageUuid,
+            threadId: self.threadId,
             authorId: (authorId ?? self.authorId),
-            variant: variant,
-            body: body,
+            variant: self.variant,
+            body: (body ?? self.body),
             timestampMs: (timestampMs ?? self.timestampMs),
-            receivedAtTimestampMs: receivedAtTimestampMs,
+            receivedAtTimestampMs: self.receivedAtTimestampMs,
             wasRead: (wasRead ?? self.wasRead),
             hasMention: (hasMention ?? self.hasMention),
             expiresInSeconds: (expiresInSeconds ?? self.expiresInSeconds),
             expiresStartedAtMs: (expiresStartedAtMs ?? self.expiresStartedAtMs),
-            linkPreviewUrl: linkPreviewUrl,
+            linkPreviewUrl: self.linkPreviewUrl,
             openGroupServerMessageId: (openGroupServerMessageId ?? self.openGroupServerMessageId),
-            openGroupWhisperMods: openGroupWhisperMods,
-            openGroupWhisperTo: openGroupWhisperTo
+            openGroupWhisperMods: self.openGroupWhisperMods,
+            openGroupWhisperTo: self.openGroupWhisperTo
         )
     }
 }
@@ -538,6 +570,7 @@ public extension Interaction {
         return Interaction(
             id: id,
             serverHash: nil,
+            messageUuid: messageUuid,
             threadId: threadId,
             authorId: authorId,
             variant: .standardIncomingDeleted,
@@ -589,8 +622,8 @@ public extension Interaction {
                         .defaulting(to: false)
                 )
 
-            case .infoMediaSavedNotification, .infoScreenshotNotification:
-                // Note: This should only occur in 'contact' threads so the `threadId`
+            case .infoMediaSavedNotification, .infoScreenshotNotification, .infoCall:
+                // Note: These should only occur in 'contact' threads so the `threadId`
                 // is the contact id
                 return Interaction.previewText(
                     variant: self.variant,
@@ -673,6 +706,17 @@ public extension Interaction {
                 else { return (body ?? "") }
                 
                 return messageInfo.previewText
+                
+            case .infoCall:
+                guard
+                    let infoMessageData: Data = (body ?? "").data(using: .utf8),
+                    let messageInfo: CallMessage.MessageInfo = try? JSONDecoder().decode(
+                        CallMessage.MessageInfo.self,
+                        from: infoMessageData
+                    )
+                else { return (body ?? "") }
+                
+                return messageInfo.previewText(authorDisplayName: authorDisplayName)
         }
     }
     

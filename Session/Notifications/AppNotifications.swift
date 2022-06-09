@@ -273,7 +273,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         guard Date().timeIntervalSince1970 > (thread.mutedUntilTimestamp ?? 0) else { return }
         guard thread.variant != .closedGroup && thread.variant != .openGroup else { return }
         guard
-            interaction.variant == .infoMessageCall,
+            interaction.variant == .infoCall,
             let infoMessageData: Data = (interaction.body ?? "").data(using: .utf8),
             let messageInfo: CallMessage.MessageInfo = try? JSONDecoder().decode(
                 CallMessage.MessageInfo.self,

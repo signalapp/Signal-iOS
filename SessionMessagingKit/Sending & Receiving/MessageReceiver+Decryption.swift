@@ -23,7 +23,7 @@ extension MessageReceiver {
             ),
             plaintextWithMetadata.count > (signatureSize + ed25519PublicKeySize)
         else {
-            throw Error.decryptionFailed
+            throw MessageReceiverError.decryptionFailed
         }
         
         // 2. ) Get the message parts
@@ -35,12 +35,12 @@ extension MessageReceiver {
         let verificationData = plaintext + senderED25519PublicKey + recipientX25519PublicKey
         
         guard dependencies.sign.verify(message: verificationData, publicKey: senderED25519PublicKey, signature: signature) else {
-            throw Error.invalidSignature
+            throw MessageReceiverError.invalidSignature
         }
         
         // 4. ) Get the sender's X25519 public key
         guard let senderX25519PublicKey = dependencies.sign.toX25519(ed25519PublicKey: senderED25519PublicKey) else {
-            throw Error.decryptionFailed
+            throw MessageReceiverError.decryptionFailed
         }
         
         return (Data(plaintext), SessionId(.standard, publicKey: senderX25519PublicKey).hexString)
@@ -48,10 +48,14 @@ extension MessageReceiver {
     
     internal static func decryptWithSessionBlindingProtocol(data: Data, isOutgoing: Bool, otherBlindedPublicKey: String, with openGroupPublicKey: String, userEd25519KeyPair: Box.KeyPair, using dependencies: Dependencies = Dependencies()) throws -> (plaintext: Data, senderX25519PublicKey: String) {
         /// Ensure the data is at least long enough to have the required components
-        guard data.count > dependencies.nonceGenerator24.NonceBytes + 2 else { throw Error.decryptionFailed }
-        guard let blindedKeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: openGroupPublicKey, edKeyPair: userEd25519KeyPair, genericHash: dependencies.genericHash) else {
-            throw Error.decryptionFailed
-        }
+        guard
+            data.count > (dependencies.nonceGenerator24.NonceBytes + 2),
+            let blindedKeyPair = dependencies.sodium.blindedKeyPair(
+                serverPublicKey: openGroupPublicKey,
+                edKeyPair: userEd25519KeyPair,
+                genericHash: dependencies.genericHash
+            )
+        else { throw MessageReceiverError.decryptionFailed }
 
         /// Step one: calculate the shared encryption key, receiving from A to B
         let otherKeyBytes: Bytes = Data(hex: otherBlindedPublicKey.removingIdPrefixIfNeeded()).bytes
@@ -63,7 +67,7 @@ extension MessageReceiver {
             toBlindedPublicKey: (isOutgoing ? otherKeyBytes : blindedKeyPair.publicKey),
             genericHash: dependencies.genericHash
         ) else {
-            throw Error.decryptionFailed
+            throw MessageReceiverError.decryptionFailed
         }
         
         /// v, ct, nc = data[0], data[1:-24], data[-24:]
@@ -72,15 +76,15 @@ extension MessageReceiver {
         let nonce: Bytes = Bytes(data.bytes[(data.count - dependencies.nonceGenerator24.NonceBytes)..<data.count])
 
         /// Make sure our encryption version is okay
-        guard version == 0 else { throw Error.decryptionFailed }
+        guard version == 0 else { throw MessageReceiverError.decryptionFailed }
 
         /// Decrypt
         guard let innerBytes: Bytes = dependencies.aeadXChaCha20Poly1305Ietf.decrypt(authenticatedCipherText: ciphertext, secretKey: dec_key, nonce: nonce) else {
-            throw Error.decryptionFailed
+            throw MessageReceiverError.decryptionFailed
         }
         
         /// Ensure the length is correct
-        guard innerBytes.count > dependencies.sign.PublicKeyBytes else { throw Error.decryptionFailed }
+        guard innerBytes.count > dependencies.sign.PublicKeyBytes else { throw MessageReceiverError.decryptionFailed }
 
         /// Split up: the last 32 bytes are the sender's *unblinded* ed25519 key
         let plaintext: Bytes = Bytes(innerBytes[
@@ -92,16 +96,16 @@ extension MessageReceiver {
         
         /// Verify that the inner sender_edpk (A) yields the same outer kA we got with the message
         guard let blindingFactor: Bytes = dependencies.sodium.generateBlindingFactor(serverPublicKey: openGroupPublicKey, genericHash: dependencies.genericHash) else {
-            throw Error.invalidSignature
+            throw MessageReceiverError.invalidSignature
         }
         guard let sharedSecret: Bytes = dependencies.sodium.combineKeys(lhsKeyBytes: blindingFactor, rhsKeyBytes: sender_edpk) else {
-            throw Error.invalidSignature
+            throw MessageReceiverError.invalidSignature
         }
-        guard kA == sharedSecret else { throw Error.invalidSignature }
+        guard kA == sharedSecret else { throw MessageReceiverError.invalidSignature }
         
         /// Get the sender's X25519 public key
         guard let senderSessionIdBytes: Bytes = dependencies.sign.toX25519(ed25519PublicKey: sender_edpk) else {
-            throw Error.decryptionFailed
+            throw MessageReceiverError.decryptionFailed
         }
         
         return (Data(plaintext), SessionId(.standard, publicKey: senderSessionIdBytes).hexString)

@@ -122,7 +122,7 @@ public struct ProfileManager {
             return
         }
         guard
-            let fileId: UInt64 = UInt64(profileUrlAtStart.lastPathComponent),
+            let fileId: Int64 = Int64(profileUrlAtStart.lastPathComponent),
             let profileKeyAtStart: OWSAES256Key = profile.profileEncryptionKey,
             profileKeyAtStart.keyData.count > 0
         else {
@@ -137,9 +137,9 @@ public struct ProfileManager {
             OWSLogger.verbose("downloading profile avatar: \(profile.id)")
             currentAvatarDownloads.mutate { $0.insert(profile.id) }
             
-            let useOldServer: Bool = (profileUrlStringAtStart.contains(FileServerAPIV2.oldServer))
+            let useOldServer: Bool = (profileUrlStringAtStart.contains(FileServerAPI.oldServer))
             
-            FileServerAPIV2
+            FileServerAPI
                 .download(fileId, useOldServer: useOldServer)
                 .done { data in
                     currentAvatarDownloads.mutate { $0.remove(profile.id) }
@@ -302,10 +302,10 @@ public struct ProfileManager {
             }
             
             // Upload the avatar to the FileServer
-            FileServerAPIV2
+            FileServerAPI
                 .upload(encryptedAvatarData)
                 .done { fileId in
-                    let downloadUrl: String = "\(FileServerAPIV2.server)/files/\(fileId)"
+                    let downloadUrl: String = "\(FileServerAPI.server)/files/\(fileId)"
                     UserDefaults.standard[.lastProfilePictureUpload] = Date()
                     
                     GRDBStorage.shared.writeAsync { db in
@@ -330,7 +330,7 @@ public struct ProfileManager {
                     DispatchQueue.main.async {
                         SNLog("Updating service with profile failed.")
                         
-                        let isMaxFileSizeExceeded: Bool = ((error as? FileServerAPIV2.Error) == FileServerAPIV2.Error.maxFileSizeExceeded)
+                        let isMaxFileSizeExceeded: Bool = ((error as? HTTP.Error) == HTTP.Error.maxFileSizeExceeded)
                         failure?(isMaxFileSizeExceeded ?
                             .avatarUploadMaxFileSizeExceeded :
                             .avatarUploadFailed

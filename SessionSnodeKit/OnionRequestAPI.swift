@@ -5,8 +5,8 @@ import PromiseKit
 import SessionUtilitiesKit
 
 public protocol OnionRequestAPIType {
-    static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, using version: OnionRequestAPI.Version, associatedWith publicKey: String?) -> Promise<Data>
-    static func sendOnionRequest(_ request: URLRequest, to server: String, using version: OnionRequestAPI.Version, with x25519PublicKey: String) -> Promise<(OnionRequestResponseInfoType, Data?)>
+    static func sendOnionRequest(to snode: Snode, invoking method: SnodeAPIEndpoint, with parameters: JSON, using version: OnionRequestAPIVersion, associatedWith publicKey: String?) -> Promise<Data>
+    static func sendOnionRequest(_ request: URLRequest, to server: String, using version: OnionRequestAPIVersion, with x25519PublicKey: String) -> Promise<(OnionRequestResponseInfoType, Data?)>
 }
 
 public extension OnionRequestAPIType {
@@ -78,7 +78,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                         throw HTTP.Error.invalidJSON
                     }
                     guard let version = responseJson["version"] as? String else {
-                        return seal.reject(Error.missingSnodeVersion)
+                        return seal.reject(OnionRequestAPIError.missingSnodeVersion)
                     }
                     
                     if version >= "2.0.7" {
@@ -86,7 +86,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                     }
                     else {
                         SNLog("Unsupported snode version: \(version).")
-                        seal.reject(Error.unsupportedSnodeVersion(version))
+                        seal.reject(OnionRequestAPIError.unsupportedSnodeVersion(version))
                     }
                 }
                 .catch2 { error in
@@ -110,14 +110,14 @@ public enum OnionRequestAPI: OnionRequestAPIType {
             let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
             
             guard unusedSnodes.count >= (targetGuardSnodeCount - reusableGuardSnodeCount) else {
-                return Promise(error: Error.insufficientSnodes)
+                return Promise(error: OnionRequestAPIError.insufficientSnodes)
             }
             
             func getGuardSnode() -> Promise<Snode> {
                 // randomElement() uses the system's default random generator, which
                 // is cryptographically secure
                 guard let candidate = unusedSnodes.randomElement() else {
-                    return Promise<Snode> { $0.reject(Error.insufficientSnodes) }
+                    return Promise<Snode> { $0.reject(OnionRequestAPIError.insufficientSnodes) }
                 }
                 
                 unusedSnodes.remove(candidate) // All used snodes should be unique
@@ -160,7 +160,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                 let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
                 let pathSnodeCount = (targetGuardSnodeCount - reusableGuardSnodeCount) * pathSize - (targetGuardSnodeCount - reusableGuardSnodeCount)
                 
-                guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
+                guard unusedSnodes.count >= pathSnodeCount else { throw OnionRequestAPIError.insufficientSnodes }
                 
                 // Don't test path snodes as this would reveal the user's IP to them
                 return guardSnodes.subtracting(reusableGuardSnodes).map { guardSnode in
@@ -242,7 +242,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                         return path
                     }
                     
-                    throw Error.insufficientSnodes
+                    throw OnionRequestAPIError.insufficientSnodes
                 }
                 
                 return paths.randomElement()!
@@ -271,7 +271,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         guard let snodeIndex = path.firstIndex(of: snode) else { return }
         path.remove(at: snodeIndex)
         let unusedSnodes = SnodeAPI.snodePool.subtracting(oldPaths.flatMap { $0 })
-        guard !unusedSnodes.isEmpty else { throw Error.insufficientSnodes }
+        guard !unusedSnodes.isEmpty else { throw OnionRequestAPIError.insufficientSnodes }
         // randomElement() uses the system's default random generator, which is cryptographically secure
         path.append(unusedSnodes.randomElement()!)
         // Don't test the new snode as this would reveal the user's IP
@@ -308,7 +308,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     }
 
     /// Builds an onion around `payload` and returns the result.
-    private static func buildOnion(around payload: Data, targetedAt destination: Destination, version: Version) -> Promise<OnionBuildingResult> {
+    private static func buildOnion(around payload: Data, targetedAt destination: OnionRequestAPIDestination, version: OnionRequestAPIVersion) -> Promise<OnionBuildingResult> {
         var guardSnode: Snode!
         var targetSnodeSymmetricKey: Data! // Needed by invoke(_:on:with:) to decrypt the response sent back by the destination
         var encryptionResult: AESGCM.EncryptionResult!
@@ -321,7 +321,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                 guardSnode = path.first!
                 
                 // Encrypt in reverse order, i.e. the destination first
-                return encrypt(payload, for: destination)
+                return encrypt(payload, for: destination, with: version)
                     .then2 { r -> Promise<AESGCM.EncryptionResult> in
                         targetSnodeSymmetricKey = r.symmetricKey
                         
@@ -335,7 +335,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                                 return Promise<AESGCM.EncryptionResult> { $0.fulfill(encryptionResult) }
                             }
                             
-                            let lhs = Destination.snode(path.removeLast())
+                            let lhs = OnionRequestAPIDestination.snode(path.removeLast())
                             return OnionRequestAPI
                                 .encryptHop(from: lhs, to: rhs, using: encryptionResult)
                                 .then2 { r -> Promise<AESGCM.EncryptionResult> in
@@ -354,21 +354,21 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     // MARK: - Public API
     
     /// Sends an onion request to `snode`. Builds new paths as needed.
-    public static func sendOnionRequest(to snode: Snode, invoking method: SnodeAPI.Endpoint, with parameters: JSON, using version: Version, associatedWith publicKey: String? = nil) -> Promise<JSON> {
-        let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
+    public static func sendOnionRequest(to snode: Snode, invoking method: SnodeAPIEndpoint, with parameters: JSON, using version: OnionRequestAPIVersion, associatedWith publicKey: String? = nil) -> Promise<Data> {
+        let payloadJson: JSON = [ "method" : method.rawValue, "params" : parameters ]
         
         guard let payload: Data = try? JSONSerialization.data(withJSONObject: payloadJson, options: []) else {
             return Promise(error: HTTP.Error.invalidJSON)
         }
         
-        return sendOnionRequest(with: payload, to: Destination.snode(snode), version: version)
+        return sendOnionRequest(with: payload, to: OnionRequestAPIDestination.snode(snode), version: version)
             .map { _, maybeData in
                 guard let data: Data = maybeData else { throw HTTP.Error.invalidResponse }
                 
                 return data
             }
-            .recover2 { error -> Promise<JSON> in
-                guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let json, _) = error else {
+            .recover2 { error -> Promise<Data> in
+                guard case OnionRequestAPIError.httpRequestFailedAtDestination(let statusCode, let data, _) = error else {
                     throw error
                 }
                 
@@ -377,17 +377,25 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     }
 
     /// Sends an onion request to `server`. Builds new paths as needed.
-    public static func sendOnionRequest(_ request: URLRequest, to server: String, using version: Version = .v4, with x25519PublicKey: String) -> Promise<(OnionRequestResponseInfoType, Data?)> {
-        guard let url = request.url, let host = request.url?.host else { return Promise(error: Error.invalidURL) }
+    public static func sendOnionRequest(_ request: URLRequest, to server: String, using version: OnionRequestAPIVersion = .v4, with x25519PublicKey: String) -> Promise<(OnionRequestResponseInfoType, Data?)> {
+        guard let url = request.url, let host = request.url?.host else {
+            return Promise(error: OnionRequestAPIError.invalidURL)
+        }
         
         let scheme: String? = url.scheme
         let port: UInt16? = url.port.map { UInt16($0) }
         
         guard let payload: Data = generatePayload(for: request, with: version) else {
-            return Promise(error: Error.invalidRequestInfo)
+            return Promise(error: OnionRequestAPIError.invalidRequestInfo)
         }
         
-        let destination = Destination.server(host: host, target: version.rawValue, x25519PublicKey: x25519PublicKey, scheme: scheme, port: port)
+        let destination = OnionRequestAPIDestination.server(
+            host: host,
+            target: version.rawValue,
+            x25519PublicKey: x25519PublicKey,
+            scheme: scheme,
+            port: port
+        )
         let promise = sendOnionRequest(with: payload, to: destination, version: version)
         promise.catch2 { error in
             SNLog("Couldn't reach server: \(url) due to error: \(error).")
@@ -395,16 +403,17 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         return promise
     }
 
-    public static func sendOnionRequest(with payload: Data, to destination: Destination, version: Version) -> Promise<(OnionRequestResponseInfoType, Data?)> {
+    public static func sendOnionRequest(with payload: Data, to destination: OnionRequestAPIDestination, version: OnionRequestAPIVersion) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         let (promise, seal) = Promise<(OnionRequestResponseInfoType, Data?)>.pending()
         var guardSnode: Snode?
+        
         Threading.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
             buildOnion(around: payload, targetedAt: destination, version: version).done2 { intermediate in
                 guardSnode = intermediate.guardSnode
                 let url = "\(guardSnode!.address):\(guardSnode!.port)/onion_req/v2"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
                 let onion = finalEncryptionResult.ciphertext
-                if case Destination.server = destination, Double(onion.count) > 0.75 * Double(maxRequestSize) {
+                if case OnionRequestAPIDestination.server = destination, Double(onion.count) > 0.75 * Double(maxRequestSize) {
                     SNLog("Approaching request size limit: ~\(onion.count) bytes.")
                 }
                 let parameters: JSON = [
@@ -519,7 +528,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     
     // MARK: - Version Handling
     
-    private static func generatePayload(for request: URLRequest, with version: Version) -> Data? {
+    private static func generatePayload(for request: URLRequest, with version: OnionRequestAPIVersion) -> Data? {
         guard let url = request.url else { return nil }
         
         switch version {
@@ -596,8 +605,8 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     private static func handleResponse(
         responseData: Data,
         destinationSymmetricKey: Data,
-        version: Version,
-        destination: Destination,
+        version: OnionRequestAPIVersion,
+        destination: OnionRequestAPIDestination,
         seal: Resolver<(OnionRequestResponseInfoType, Data?)>
     ) {
         switch version {
@@ -628,12 +637,12 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                     
                     if statusCode == 406 { // Clock out of sync
                         SNLog("The user's clock is out of sync with the service node network.")
-                        return seal.reject(SnodeAPI.Error.clockOutOfSync)
+                        return seal.reject(SnodeAPIError.clockOutOfSync)
                     }
                     
                     if statusCode == 401 { // Signature verification failed
                         SNLog("Failed to verify the signature.")
-                        return seal.reject(SnodeAPI.Error.signatureVerificationFailed)
+                        return seal.reject(SnodeAPIError.signatureVerificationFailed)
                     }
                     
                     if let bodyAsString = json["body"] as? String {
@@ -647,14 +656,14 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                         }
                         
                         guard 200...299 ~= statusCode else {
-                            return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), data: bodyAsData, destination: destination))
+                            return seal.reject(OnionRequestAPIError.httpRequestFailedAtDestination(statusCode: UInt(statusCode), data: bodyAsData, destination: destination))
                         }
                         
                         return seal.fulfill((OnionRequestAPI.ResponseInfo(code: statusCode, headers: [:]), bodyAsData))
                     }
                     
                     guard 200...299 ~= statusCode else {
-                        return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), data: data, destination: destination))
+                        return seal.reject(OnionRequestAPIError.httpRequestFailedAtDestination(statusCode: UInt(statusCode), data: data, destination: destination))
                     }
                     
                     return seal.fulfill((OnionRequestAPI.ResponseInfo(code: statusCode, headers: [:]), data))
@@ -694,18 +703,18 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                     // Custom handle a clock out of sync error (v4 returns '425' but included the '406' just in case)
                     guard responseInfo.code != 406 && responseInfo.code != 425 else {
                         SNLog("The user's clock is out of sync with the service node network.")
-                        return seal.reject(SnodeAPI.Error.clockOutOfSync)
+                        return seal.reject(SnodeAPIError.clockOutOfSync)
                     }
                     
                     guard responseInfo.code != 401 else { // Signature verification failed
                         SNLog("Failed to verify the signature.")
-                        return seal.reject(SnodeAPI.Error.signatureVerificationFailed)
+                        return seal.reject(SnodeAPIError.signatureVerificationFailed)
                     }
                     
                     // Handle error status codes
                     guard 200...299 ~= responseInfo.code else {
                         return seal.reject(
-                            Error.httpRequestFailedAtDestination(
+                            OnionRequestAPIError.httpRequestFailedAtDestination(
                                 statusCode: UInt(responseInfo.code),
                                 data: data,
                                 destination: destination

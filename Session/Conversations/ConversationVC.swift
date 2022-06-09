@@ -10,6 +10,7 @@ import SignalUtilitiesKit
 
 final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     private static let loadingHeaderHeight: CGFloat = 20
+    private static let messageRequestButtonHeight: CGFloat = 34
     
     internal let viewModel: ConversationViewModel
     private var dataChangeObservable: DatabaseCancellable?
@@ -119,12 +120,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     }()
 
     // MARK: - UI
-
-    private static let messageRequestButtonHeight: CGFloat = 34
-    
-    var scrollButtonBottomConstraint: NSLayoutConstraint?
-    var scrollButtonMessageRequestsBottomConstraint: NSLayoutConstraint?
-    var messageRequestsViewBotomConstraint: NSLayoutConstraint?
     
     lazy var titleView: ConversationTitleView = {
         let result: ConversationTitleView = ConversationTitleView()
@@ -154,7 +149,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         result.register(view: VisibleMessageCell.self)
         result.register(view: InfoMessageCell.self)
         result.register(view: TypingIndicatorCell.self)
-        register(CallMessageCell.self, forCellReuseIdentifier: CallMessageCell.identifier)
+        result.register(view: CallMessageCell.self)
         result.dataSource = self
         result.delegate = self
 
@@ -311,12 +306,9 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
 
     // MARK: - Initialization
     
-    init?(threadId: String, focusedInteractionId: Int64? = nil) {
-        guard let viewModel: ConversationViewModel = ConversationViewModel(threadId: threadId, focusedInteractionId: focusedInteractionId) else {
-            return nil
-        }
+    init(threadId: String, threadVariant: SessionThread.Variant, focusedInteractionId: Int64? = nil) {
+        self.viewModel = ConversationViewModel(threadId: threadId, threadVariant: threadVariant, focusedInteractionId: focusedInteractionId)
         
-        self.viewModel = viewModel
         GRDBStorage.shared.addObserver(viewModel.pagedDataObserver)
         
         super.init(nibName: nil, bundle: nil)
@@ -346,7 +338,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         // nav will be offset incorrectly during the push animation (unfortunately the profile icon still
         // doesn't appear until after the animation, I assume it's taking a snapshot or something, but
         // there isn't much we can do about that unfortunately)
-        updateNavBarButtons(threadData: nil)
+        updateNavBarButtons(threadData: nil, initialVariant: self.viewModel.initialThreadVariant)
+        titleView.initialSetup(with: self.viewModel.initialThreadVariant)
         
         // Constraints
         view.addSubview(tableView)
@@ -528,12 +521,16 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         if
             initialLoad ||
             viewModel.threadData.displayName != updatedThreadData.displayName ||
+            viewModel.threadData.threadVariant != updatedThreadData.threadVariant ||
+            viewModel.threadData.threadIsNoteToSelf != updatedThreadData.threadIsNoteToSelf ||
             viewModel.threadData.threadMutedUntilTimestamp != updatedThreadData.threadMutedUntilTimestamp ||
             viewModel.threadData.threadOnlyNotifyForMentions != updatedThreadData.threadOnlyNotifyForMentions ||
             viewModel.threadData.userCount != updatedThreadData.userCount
         {
             titleView.update(
                 with: updatedThreadData.displayName,
+                isNoteToSelf: updatedThreadData.threadIsNoteToSelf,
+                threadVariant: updatedThreadData.threadVariant,
                 mutedUntilTimestamp: updatedThreadData.threadMutedUntilTimestamp,
                 onlyNotifyForMentions: (updatedThreadData.threadOnlyNotifyForMentions == true),
                 userCount: updatedThreadData.userCount
@@ -545,7 +542,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             viewModel.threadData.threadRequiresApproval != updatedThreadData.threadRequiresApproval ||
             viewModel.threadData.profile != updatedThreadData.profile
         {
-            updateNavBarButtons(threadData: updatedThreadData)
+            updateNavBarButtons(threadData: updatedThreadData, initialVariant: viewModel.initialThreadVariant)
         }
         
         if initialLoad || viewModel.threadData.threadIsBlocked != updatedThreadData.threadIsBlocked {
@@ -908,7 +905,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
     }
     
-    func updateNavBarButtons(threadData: SessionThreadViewModel?) {
+    func updateNavBarButtons(threadData: SessionThreadViewModel?, initialVariant: SessionThread.Variant) {
         navigationItem.hidesBackButton = isShowingSearchUI
 
         if isShowingSearchUI {
@@ -925,13 +922,18 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                             frame: CGRect(
                                 x: 0,
                                 y: 0,
-                                width: (44 - 16), // Width of the standard back button
+                                // Width of the standard back button minus an arbitrary amount to make the
+                                // animation look good
+                                width: (44 - 10),
                                 height: 44
                             )
                         )
                     ),
-                    UIBarButtonItem(customView: UIView(frame: CGRect(x: 0, y: 0, width: 44, height: 44)))
-                ]
+                    (initialVariant == .contact ?
+                        UIBarButtonItem(customView: UIView(frame: CGRect(x: 0, y: 0, width: 44, height: 44))) :
+                        nil
+                    )
+                ].compactMap { $0 }
                 return
             }
             
@@ -954,7 +956,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                     settingsButtonItem.accessibilityLabel = "Settings button"
                     settingsButtonItem.isAccessibilityElement = true
                     
-                    if SessionCall.isEnabled && !threadData.threadIsNoteToSelf && !threadData.threadIsMessageRequest {
+                    if SessionCall.isEnabled && !threadData.threadIsNoteToSelf && threadData.threadIsMessageRequest == false {
                         let callButton = UIBarButtonItem(
                             image: UIImage(named: "Phone"),
                             style: .plain,
@@ -965,12 +967,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                         navigationItem.rightBarButtonItems = [settingsButtonItem, callButton]
                     }
                     else {
-                        navigationItem.rightBarButtonItem = rightBarButtonItem
-                    }
-                    let shouldShowCallButton = SessionCall.isEnabled && !thread.isNoteToSelf() && !thread.isMessageRequest()
-                    if shouldShowCallButton {
-                        let callButton = UIBarButtonItem(image: UIImage(named: "Phone")!, style: .plain, target: self, action: #selector(startCall))
-                        rightBarButtonItems.append(callButton)
+                        navigationItem.rightBarButtonItem = settingsButtonItem
                     }
                     
                 default:
@@ -978,7 +975,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                     rightBarButtonItem.accessibilityLabel = "Settings button"
                     rightBarButtonItem.isAccessibilityElement = true
 
-                    navigationItem.rightBarButtonItem = rightBarButtonItem
+                    navigationItem.rightBarButtonItems = [rightBarButtonItem]
             }
         }
     }
@@ -1412,7 +1409,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
         
         // Nav bar buttons
-        updateNavBarButtons(threadData: self.viewModel.threadData)
+        updateNavBarButtons(threadData: self.viewModel.threadData, initialVariant: viewModel.initialThreadVariant)
         
         // Hack so that the ResultsBar stays on the screen when dismissing the search field
         // keyboard.
@@ -1448,7 +1445,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     @objc func hideSearchUI() {
         isShowingSearchUI = false
         navigationItem.titleView = titleView
-        updateNavBarButtons(threadData: self.viewModel.threadData)
+        updateNavBarButtons(threadData: self.viewModel.threadData, initialVariant: viewModel.initialThreadVariant)
         
         let navBar: OWSNavigationBar? = navigationController?.navigationBar as? OWSNavigationBar
         navBar?.stubbedNextResponder = nil

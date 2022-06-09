@@ -60,7 +60,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         setNavBarTitle("vc_join_public_chat_title".localized())
         
         // Navigation bar buttons
-        let navBarHeight: CGFloat = (navigationController?.navigationBar.height() ?? 0)
+        let navBarHeight: CGFloat = (navigationController?.navigationBar.frame.size.height ?? 0)
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
         navigationItem.leftBarButtonItem = closeButton
@@ -79,7 +79,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
             .top,
             to: .top,
             of: view,
-            withInset: (UIDevice.current.isIPad ? navigationBar.height() + 20 : navigationBar.height())
+            withInset: (UIDevice.current.isIPad ? navBarHeight + 20 : navBarHeight)
         )
         view.pin(.trailing, to: .trailing, of: tabBar)
         
@@ -163,9 +163,17 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         
         ModalActivityIndicatorViewController.present(fromViewController: navigationController, canCancel: false) { [weak self] _ in
             GRDBStorage.shared
-                .write { db in OpenGroupManager.shared.add(db, roomToken: roomToken, server: server, publicKey: publicKey, isConfigMessage: false) }
+                .write { db in
+                    OpenGroupManager.shared.add(
+                        db,
+                        roomToken: roomToken,
+                        server: server,
+                        publicKey: publicKey,
+                        isConfigMessage: false
+                    )
+                }
                 .done(on: DispatchQueue.main) { [weak self] _ in
-                    GRDBStorage.shared.write { db in
+                    GRDBStorage.shared.writeAsync { db in
                         try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
                     }
 
@@ -216,6 +224,7 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         result.text = "vc_join_open_group_suggestions_title".localized()
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
+        result.setContentHuggingPriority(.required, for: .vertical)
         
         return result
     }()
@@ -299,11 +308,19 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         let location = gestureRecognizer.location(in: view)
-        return !suggestionGrid.frame.contains(location)
+        
+        return (
+            (!suggestionGrid.isHidden && !suggestionGrid.frame.contains(location)) ||
+            location.y > urlTextView.frame.maxY
+        )
     }
     
     func join(_ room: OpenGroupAPI.Room) {
-        joinOpenGroupVC.joinOpenGroup(roomToken: room.token, server: OpenGroupAPI.defaultServer, publicKey: OpenGroupAPI.defaultServerPublicKey)
+        joinOpenGroupVC?.joinOpenGroup(
+            roomToken: room.token,
+            server: OpenGroupAPI.defaultServer,
+            publicKey: OpenGroupAPI.defaultServerPublicKey
+        )
     }
 
     @objc private func joinOpenGroup() {
@@ -317,9 +334,10 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         guard !isKeyboardShowing else { return }
         isKeyboardShowing = true
         
-        guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
+        guard let endFrame: CGRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        guard endFrame.minY < UIScreen.main.bounds.height else { return }
         
-        bottomConstraint.constant = newHeight + bottomMargin
+        bottomConstraint.constant = endFrame.size.height + bottomMargin
         
         UIView.animate(
             withDuration: 0.25,

@@ -38,7 +38,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
     
     var inputTextViewIsFirstResponder: Bool { inputTextView.isFirstResponder }
     
-    var enabledMessageTypes: MessageTypes = .all {
+    var enabledMessageTypes: MessageInputTypes = .all {
         didSet {
             setEnabledMessageTypes(enabledMessageTypes, message: nil)
         }

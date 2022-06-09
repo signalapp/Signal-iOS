@@ -143,8 +143,6 @@ public final class Poller {
                                 let processedMessage: ProcessedMessage? = try Message.processRawReceivedMessage(db, rawMessage: message)
                                 let key: String = (processedMessage?.threadId ?? Message.nonThreadMessageId)
                                 
-                                }
-                                
                                 threadMessages[key] = (threadMessages[key] ?? [])
                                     .appending(processedMessage?.messageInfo)
                             }

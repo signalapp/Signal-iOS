@@ -131,6 +131,7 @@ public final class MessageSender {
         
         // Serialize the protobuf
         let plaintext: Data
+        
         do {
             plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
         }
@@ -208,7 +209,7 @@ public final class MessageSender {
             .sendMessage(
                 snodeMessage,
                 isClosedGroupMessage: (kind == .closedGroupMessage),
-                isConfigMessage: message.isKind(of: ConfigurationMessage.self)
+                isConfigMessage: (message is ConfigurationMessage)
             )
             .done(on: DispatchQueue.global(qos: .userInitiated)) { promises in
                 let promiseCount = promises.count
@@ -222,8 +223,7 @@ public final class MessageSender {
 
                         GRDBStorage.shared.write { db in
                             let responseJson: JSON? = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON
-                            let hash = json?["hash"] as? String
-                            message.serverHash = hash
+                            message.serverHash = (responseJson?["hash"] as? String)
                             
                             try MessageSender.handleSuccessfulMessageSend(
                                 db,
@@ -332,16 +332,18 @@ public final class MessageSender {
         
         guard
             let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: threadId),
-            let userEdKeyPair: Box.KeyPair = try? Identity.fetchUserEd25519KeyPair(db)
+            let userEdKeyPair: Box.KeyPair = Identity.fetchUserEd25519KeyPair(db),
+            case .openGroup(let roomToken, let server, let whisperTo, let whisperMods, let fileIds) = destination
         else { preconditionFailure() }
         
         message.sender = {
-            let capabilities: [Capability.Variant] = Capability
+            let capabilities: [Capability.Variant] = (try? Capability
                 .select(.variant)
-                .filter(Capability.Columns.openGroupId == threadId)
+                .filter(Capability.Columns.openGroupServer == server)
                 .filter(Capability.Columns.isMissing == false)
                 .asRequest(of: Capability.Variant.self)
-                .fetchAll(db)
+                .fetchAll(db))
+                .defaulting(to: [])
             
             // If the server doesn't support blinding then go with an unblinded id
             guard capabilities.contains(.blind) else {
@@ -405,8 +407,9 @@ public final class MessageSender {
         // Send the result
         OpenGroupAPI
             .send(
-                plaintext,
-                to: room,
+                db,
+                plaintext: plaintext,
+                to: roomToken,
                 on: server,
                 whisperTo: whisperTo,
                 whisperMods: whisperMods,
@@ -414,7 +417,7 @@ public final class MessageSender {
                 using: dependencies
             )
             .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
-                message.openGroupServerMessageID = UInt64(data.id)
+                message.openGroupServerMessageId = UInt64(data.id)
 
                 dependencies.storage.write { db in
                     // The `posted` value is in seconds but we sent it in ms so need that for de-duping
@@ -519,7 +522,8 @@ public final class MessageSender {
         // Send the result
         OpenGroupAPI
             .send(
-                ciphertext,
+                db,
+                ciphertext: ciphertext,
                 toInboxFor: recipientBlindedPublicKey,
                 on: server,
                 using: dependencies
@@ -595,8 +599,10 @@ public final class MessageSender {
                 switch destination {
                     case .contact(let publicKey): return publicKey
                     case .closedGroup(let groupPublicKey): return groupPublicKey
-                    case .openGroup(let room, let server, _, _, _):
-                        return OpenGroup.idFor(room: room, server: server)
+                    case .openGroup(let roomToken, let server, _, _, _):
+                        return OpenGroup.idFor(roomToken: roomToken, server: server)
+                    
+                    case .openGroupInbox(_, _, let blindedPublicKey): return blindedPublicKey
                 }
             }(),
             message: message,

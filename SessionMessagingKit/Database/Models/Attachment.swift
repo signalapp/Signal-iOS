@@ -920,7 +920,7 @@ extension Attachment {
 extension Attachment {
     internal func upload(
         _ db: Database? = nil,
-        using upload: (Data) -> Promise<UInt64>,
+        using upload: (Database, Data) -> Promise<String>,
         encrypt: Bool,
         success: (() -> Void)?,
         failure: ((Error) -> Void)?
@@ -1001,8 +1001,8 @@ extension Attachment {
         
         // Check the file size
         SNLog("File size: \(data.count) bytes.")
-        if Double(data.count) > Double(FileServerAPIV2.maxFileSize) / FileServerAPIV2.fileSizeORMultiplier {
-            failure?(FileServerAPIV2.Error.maxFileSizeExceeded)
+        if Double(data.count) > Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier {
+            failure?(HTTP.Error.maxFileSizeExceeded)
             return
         }
         
@@ -1028,7 +1028,15 @@ extension Attachment {
         }
         
         // Perform the upload
-        upload(data)
+        let uploadPromise: Promise<String> = {
+            guard let db: Database = db else {
+                return GRDBStorage.shared.read { db in upload(db, data) }
+            }
+            
+            return upload(db, data)
+        }()
+        
+        uploadPromise
             .done(on: DispatchQueue.global(qos: .userInitiated)) { fileId in
                 // Save the final upload info
                 let uploadedAttachment: Attachment? = GRDBStorage.shared.write { db in
@@ -1040,7 +1048,7 @@ extension Attachment {
                                 updatedAttachment?.creationTimestamp ??
                                 Date().timeIntervalSince1970
                             ),
-                            downloadUrl: "\(FileServerAPIV2.server)/files/\(fileId)"
+                            downloadUrl: "\(FileServerAPI.server)/files/\(fileId)"
                         )
                         .saved(db)
                 }

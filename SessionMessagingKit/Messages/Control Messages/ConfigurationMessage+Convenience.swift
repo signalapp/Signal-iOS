@@ -36,8 +36,13 @@ extension ConfigurationMessage {
                 )
             }
             .asSet()
-        let openGroups: Set<String> = try OpenGroup.fetchAll(db)
-            .map { "\($0.server)/\($0.room)?public_key=\($0.publicKey)" }
+        // The default room promise creates an OpenGroup with an empty `roomToken` value,
+        // we don't want to start a poller for this as the user hasn't actually joined a room
+        let openGroups: Set<String> = try OpenGroup
+            .filter(OpenGroup.Columns.roomToken != "")
+            .filter(OpenGroup.Columns.isActive)
+            .fetchAll(db)
+            .map { "\($0.server)/\($0.roomToken)?public_key=\($0.publicKey)" }
             .asSet()
         let contacts: Set<CMContact> = try Contact
             .filter(Contact.Columns.id != currentUserProfile.id)

@@ -41,8 +41,8 @@ enum _003_YDBToGRDBMigration: Migration {
         var closedGroupModel: [String: SMKLegacy._GroupModel] = [:]
         var closedGroupZombieMemberIds: [String: Set<String>] = [:]
         
-        var openGroupInfo: [String: OpenGroupV2] = [:]
-        var openGroupUserCount: [String: Int] = [:]
+        var openGroupInfo: [String: SMKLegacy._OpenGroup] = [:]
+        var openGroupUserCount: [String: Int64] = [:]
         var openGroupImage: [String: Data] = [:]
         var openGroupLastMessageServerId: [String: Int64] = [:]    // Optional
         var openGroupLastDeletionServerId: [String: Int64] = [:]   // Optional
@@ -52,6 +52,7 @@ enum _003_YDBToGRDBMigration: Migration {
         var processedAttachmentIds: Set<String> = []
         var outgoingReadReceiptsTimestampsMs: [String: Set<Int64>] = [:]
         var receivedMessageTimestamps: Set<UInt64> = []
+        var receivedCallUUIDs: [String: Set<String>] = [:]
         
         var notifyPushServerJobs: Set<SMKLegacy._NotifyPNServerJob> = []
         var messageReceiveJobs: Set<SMKLegacy._MessageReceiveJob> = []
@@ -165,18 +166,18 @@ enum _003_YDBToGRDBMigration: Migration {
                     }
                 }
                 else if groupThread.isOpenGroup {
-                    guard let openGroup: OpenGroupV2 = transaction.object(forKey: thread.uniqueId, inCollection: SMKLegacy.openGroupCollection) as? OpenGroupV2 else {
+                    guard let openGroup: SMKLegacy._OpenGroup = transaction.object(forKey: thread.uniqueId, inCollection: SMKLegacy.openGroupCollection) as? SMKLegacy._OpenGroup else {
                         SNLog("[Migration Error] Unable to find open group info")
                         shouldFailMigration = true
                         return
                     }
                     
                     legacyThreadIdToIdMap[thread.uniqueId] = OpenGroup.idFor(
-                        room: openGroup.room,
+                        roomToken: openGroup.room,
                         server: openGroup.server
                     )
                     openGroupInfo[thread.uniqueId] = openGroup
-                    openGroupUserCount[thread.uniqueId] = ((transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupUserCountCollection) as? Int) ?? 0)
+                    openGroupUserCount[thread.uniqueId] = ((transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupUserCountCollection) as? Int64) ?? 0)
                     openGroupImage[thread.uniqueId] = transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupImageCollection) as? Data
                     openGroupLastMessageServerId[thread.uniqueId] = transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupLastMessageServerIDCollection) as? Int64
                     openGroupLastDeletionServerId[thread.uniqueId] = transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupLastDeletionServerIDCollection) as? Int64
@@ -249,6 +250,8 @@ enum _003_YDBToGRDBMigration: Migration {
                     .union(timestampsMs)
             }
             
+            // MARK: --De-duping
+            
             receivedMessageTimestamps = receivedMessageTimestamps.inserting(
                 contentsOf: transaction
                     .object(
@@ -259,6 +262,13 @@ enum _003_YDBToGRDBMigration: Migration {
                     .defaulting(to: [])
                     .asSet()
             )
+            
+            transaction.enumerateKeysAndObjects(inCollection: SMKLegacy.receivedCallsCollection) { key, object, _ in
+                guard let uuids: Set<String> = object as? Set<String> else { return }
+                
+                receivedCallUUIDs[key] = (receivedCallUUIDs[key] ?? Set())
+                    .union(uuids)
+            }
             
             // MARK: --Jobs
             
@@ -409,7 +419,6 @@ enum _003_YDBToGRDBMigration: Migration {
                     shouldForceBlockContact
                 {
                     // Create the contact
-                    // TODO: Closed group admins???
                     try Contact(
                         id: legacyContact.sessionID,
                         isTrusted: (
@@ -608,21 +617,25 @@ enum _003_YDBToGRDBMigration: Migration {
                 
                 // Open Groups
                 if legacyThread.isOpenGroup {
-                    guard let openGroup: OpenGroupV2 = openGroupInfo[legacyThread.uniqueId] else {
+                    guard let openGroup: SMKLegacy._OpenGroup = openGroupInfo[legacyThread.uniqueId] else {
                         SNLog("[Migration Error] Open group missing required data")
                         throw StorageError.migrationFailed
                     }
                     
                     try OpenGroup(
                         server: openGroup.server,
-                        room: openGroup.room,
+                        roomToken: openGroup.room,
                         publicKey: openGroup.publicKey,
+                        isActive: true,
                         name: openGroup.name,
-                        groupDescription: nil,  // TODO: Add with SOGS V4.
-                        imageId: nil,  // TODO: Add with SOGS V4.
+                        roomDescription: nil,
+                        imageId: openGroup.imageID,
                         imageData: openGroupImage[legacyThread.uniqueId],
                         userCount: (openGroupUserCount[legacyThread.uniqueId] ?? 0),  // Will be updated next poll
-                        infoUpdates: 0  // TODO: Add with SOGS V4.
+                        infoUpdates: 0,
+                        sequenceNumber: 0,
+                        inboxLatestMessageId: 0,
+                        outboxLatestMessageId: 0
                     ).insert(db)
                 }
             }
@@ -752,13 +765,14 @@ enum _003_YDBToGRDBMigration: Migration {
                                     case .groupUpdated: variant = .infoClosedGroupUpdated
                                     case .groupCurrentUserLeft: variant = .infoClosedGroupCurrentUserLeft
                                     case .disappearingMessagesUpdate: variant = .infoDisappearingMessagesUpdate
-                                    case .messageRequestAccepted: variant = .infoMessageRequestAccepted
                                     case .screenshotNotification: variant = .infoScreenshotNotification
                                     case .mediaSavedNotification: variant = .infoMediaSavedNotification
+                                    case .call: variant = .infoCall
+                                    case .messageRequestAccepted: variant = .infoMessageRequestAccepted
                                     
                                     @unknown default:
                                         SNLog("[Migration Error] Unsupported info message type")
-                                        throw GRDBStorageError.migrationFailed
+                                        throw StorageError.migrationFailed
                                 }
                                 
                             default:
@@ -768,41 +782,70 @@ enum _003_YDBToGRDBMigration: Migration {
                         }
                         
                         // Insert the data
-                        let interaction: Interaction = try Interaction(
-                            serverHash: {
-                                switch variant {
-                                    // Don't store the 'serverHash' for these so sync messages
-                                    // are seen as duplicates
-                                    case .infoDisappearingMessagesUpdate: return nil
-                                        
-                                    default: return serverHash
-                                }
-                            }(),
-                            threadId: threadId,
-                            authorId: authorId,
-                            variant: variant,
-                            body: body,
-                            timestampMs: Int64(legacyInteraction.timestamp),
-                            receivedAtTimestampMs: Int64(legacyInteraction.receivedAtTimestamp),
-                            wasRead: wasRead,
-                            hasMention: (
-                                body?.contains("@\(currentUserPublicKey)") == true ||
-                                quotedMessage?.authorId == currentUserPublicKey
-                            ),
-                            // For both of these '0' used to be equivalent to null
-                            expiresInSeconds: ((expiresInSeconds ?? 0) > 0 ?
-                                expiresInSeconds.map { TimeInterval($0) } :
-                                nil
-                            ),
-                            expiresStartedAtMs: ((expiresStartedAtMs ?? 0) > 0 ?
-                                expiresStartedAtMs.map { Double($0) } :
-                                nil
-                            ),
-                            linkPreviewUrl: linkPreview?.urlString, // Only a soft link so save to set
-                            openGroupServerMessageId: openGroupServerMessageId.map { Int64($0) },
-                            openGroupWhisperMods: false, // TODO: This in SOGSV4
-                            openGroupWhisperTo: nil // TODO: This in SOGSV4
-                        ).inserted(db)
+                        let interaction: Interaction
+                        
+                        do {
+                            interaction = try Interaction(
+                                serverHash: {
+                                    switch variant {
+                                        // Don't store the 'serverHash' for these so sync messages
+                                        // are seen as duplicates
+                                        case .infoDisappearingMessagesUpdate: return nil
+                                            
+                                        default: return serverHash
+                                    }
+                                }(),
+                                messageUuid: {
+                                    guard variant == .infoCall else { return nil }
+                                    
+                                    /// **Note:** Unfortunately there is no good way to properly match this UUID up with the correct
+                                    /// interaction (and it was previously stored as a Set so the values will be unsorted anyway); luckily
+                                    /// we are only using this value for updating and de-duping purposes at this stage so it _shouldn't_
+                                    /// matter if the values end up being assigned to the wrong interactions, we do still want to try and
+                                    /// store each value through so mutate the list as we process each UUID
+                                    ///
+                                    /// **Note:** It looks like these values were stored against the sessionId rather than the legacy
+                                    /// thread unique id
+                                    return receivedCallUUIDs[threadId]?.popFirst()
+                                }(),
+                                threadId: threadId,
+                                authorId: authorId,
+                                variant: variant,
+                                body: body,
+                                timestampMs: Int64(legacyInteraction.timestamp),
+                                receivedAtTimestampMs: Int64(legacyInteraction.receivedAtTimestamp),
+                                wasRead: wasRead,
+                                hasMention: (
+                                    body?.contains("@\(currentUserPublicKey)") == true ||
+                                    quotedMessage?.authorId == currentUserPublicKey
+                                ),
+                                // For both of these '0' used to be equivalent to null
+                                expiresInSeconds: ((expiresInSeconds ?? 0) > 0 ?
+                                    expiresInSeconds.map { TimeInterval($0) } :
+                                    nil
+                                ),
+                                expiresStartedAtMs: ((expiresStartedAtMs ?? 0) > 0 ?
+                                    expiresStartedAtMs.map { Double($0) } :
+                                    nil
+                                ),
+                                linkPreviewUrl: linkPreview?.urlString, // Only a soft link so save to set
+                                openGroupServerMessageId: openGroupServerMessageId.map { Int64($0) },
+                                openGroupWhisperMods: false,
+                                openGroupWhisperTo: nil
+                            ).inserted(db)
+                        }
+                        catch {
+                            switch error {
+                                // Ignore duplicate interactions
+                                case DatabaseError.SQLITE_CONSTRAINT_UNIQUE:
+                                    SNLog("[Migration Warning] Found duplicate message of variant: \(variant); skipping")
+                                    return
+                                
+                                default:
+                                    SNLog("[Migration Error] Failed to insert interaction")
+                                    throw StorageError.migrationFailed
+                            }
+                        }
                         
                         // Insert a 'ControlMessageProcessRecord' if needed (for duplication prevention)
                         try ControlMessageProcessRecord(
@@ -998,7 +1041,7 @@ enum _003_YDBToGRDBMigration: Migration {
                                 processedAttachmentIds: &processedAttachmentIds
                             ) else {
                                 SNLog("[Migration Error] Missing interaction attachment")
-                                throw GRDBStorageError.migrationFailed
+                                throw StorageError.migrationFailed
                             }
                             
                             // Link the attachment to the interaction and add to the id lookup
@@ -1123,10 +1166,10 @@ enum _003_YDBToGRDBMigration: Migration {
                     switch legacyJob.destination {
                         case .contact(let publicKey): return publicKey
                         case .closedGroup(let groupPublicKey): return groupPublicKey
-                        case .openGroupV2(let room, let server):
-                            return OpenGroup.idFor(room: room, server: server)
-                            
-                        case .openGroup: return ""
+                        case .openGroup(let roomToken, let server, _, _, _):
+                            return OpenGroup.idFor(roomToken: roomToken, server: server)
+                        
+                        case .openGroupInbox(_, _, let blindedPublicKey): return blindedPublicKey
                     }
                 }()
                 let interactionId: Int64? = {
@@ -1497,6 +1540,10 @@ enum _003_YDBToGRDBMigration: Migration {
             forClassName: "TSGroupModel"
         )
         NSKeyedUnarchiver.setClass(
+            SMKLegacy._OpenGroup.self,
+            forClassName: "SNOpenGroupV2"
+        )
+        NSKeyedUnarchiver.setClass(
             SMKLegacy._Contact.self,
             forClassName: "SNContact"
         )
@@ -1543,6 +1590,10 @@ enum _003_YDBToGRDBMigration: Migration {
         NSKeyedUnarchiver.setClass(
             SMKLegacy._DisappearingConfigurationUpdateInfoMessage.self,
             forClassName: "OWSDisappearingConfigurationUpdateInfoMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            SMKLegacy._DataExtractionNotificationInfoMessage.self,
+            forClassName: "SNDataExtractionNotificationInfoMessage"
         )
         NSKeyedUnarchiver.setClass(
             SMKLegacy._Attachment.self,

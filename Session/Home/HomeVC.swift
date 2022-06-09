@@ -392,8 +392,13 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 self.navigationController?.pushViewController(viewController, animated: true)
                 
             case .threads:
-                let threadId: String = section.elements[indexPath.row].threadId
-                show(threadId, with: .none, focusedInteractionId: nil, animated: true)
+                show(
+                    section.elements[indexPath.row].threadId,
+                    variant: section.elements[indexPath.row].threadVariant,
+                    with: .none,
+                    focusedInteractionId: nil,
+                    animated: true
+                )
         }
     }
     
@@ -522,18 +527,16 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     
     func show(
         _ threadId: String,
+        variant: SessionThread.Variant,
         with action: ConversationViewModel.Action,
         focusedInteractionId: Int64?,
         animated: Bool
     ) {
-        guard let conversationVC: ConversationVC = ConversationVC(threadId: threadId, focusedInteractionId: focusedInteractionId) else {
-            return
-        }
-        
         if let presentedVC = self.presentedViewController {
             presentedVC.dismiss(animated: false, completion: nil)
         }
         
+        let conversationVC: ConversationVC = ConversationVC(threadId: threadId, threadVariant: variant, focusedInteractionId: focusedInteractionId)
         self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
     }
     

@@ -38,14 +38,15 @@ public class AppEnvironment {
         self.pushRegistrationManager = PushRegistrationManager()
         self._userNotificationActionHandler = UserNotificationActionHandler()
         self.fileLogger = DDFileLogger()
-
-        super.init()
-
+        
         SwiftSingletons.register(self)
     }
 
     public func setup() {
-        // Hang certain singletons on SSKEnvironment too.
+        // Hang certain singletons on Environment too.
+        Environment.shared.callManager.mutate {
+            $0 = callManager
+        }
         Environment.shared.notificationsManager.mutate {
             $0 = notificationPresenter
         }

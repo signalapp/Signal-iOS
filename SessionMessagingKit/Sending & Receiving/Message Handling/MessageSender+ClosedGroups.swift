@@ -410,14 +410,19 @@ extension MessageSender {
         let members: Set<String> = Set(groupMemberIds).subtracting(removedMembers)
         
         // Update zombie * member list
-        try allGroupMembers
+        let profileIdsToRemove: Set<String> = allGroupMembers
             .filter { member in
                 removedMembers.contains(member.profileId) && (
                     member.role == .standard ||
                     member.role == .zombie
                 )
             }
-            .forEach { try $0.delete(db) }
+            .map { $0.profileId }
+            .asSet()
+        try GroupMember
+            .filter(GroupMember.Columns.groupId == thread.id)
+            .filter(profileIdsToRemove.contains(GroupMember.Columns.profileId))
+            .deleteAll(db)
         
         let interactionId: Int64?
         

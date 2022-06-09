@@ -104,18 +104,19 @@ public extension Identity {
         )
     }
     
-    static func fetchUserEd25519KeyPair() -> Box.KeyPair? {
-        return GRDBStorage.shared.read { db -> Box.KeyPair? in
-            guard
-                let publicKey: Data = try? Identity.fetchOne(db, id: .ed25519PublicKey)?.data,
-                let secretKey: Data = try? Identity.fetchOne(db, id: .ed25519SecretKey)?.data
-            else { return nil }
-            
-            return Box.KeyPair(
-                publicKey: publicKey.bytes,
-                secretKey: secretKey.bytes
-            )
+    static func fetchUserEd25519KeyPair(_ db: Database? = nil) -> Box.KeyPair? {
+        guard let db: Database = db else {
+            return GRDBStorage.shared.read { db in fetchUserEd25519KeyPair(db) }
         }
+        guard
+            let publicKey: Data = try? Identity.fetchOne(db, id: .ed25519PublicKey)?.data,
+            let secretKey: Data = try? Identity.fetchOne(db, id: .ed25519SecretKey)?.data
+        else { return nil }
+        
+        return Box.KeyPair(
+            publicKey: publicKey.bytes,
+            secretKey: secretKey.bytes
+        )
     }
     
     static func fetchHexEncodedSeed() -> String? {

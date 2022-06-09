@@ -245,12 +245,14 @@ extension OpenGroupSuggestionGrid {
             label.text = room.name
             
             // Only continue if we have a room image
-            guard let imageId: UInt64 = room.imageId else {
+            guard let imageId: Int64 = room.imageId else {
                 imageView.isHidden = true
                 return
             }
             
-            let promise = OpenGroupManager.roomImage(imageId, for: room.token, on: OpenGroupAPI.defaultServer)
+            let promise = GRDBStorage.shared.read { db in
+                OpenGroupManager.roomImage(db, fileId: imageId, for: room.token, on: OpenGroupAPI.defaultServer)
+            }
             
             if let imageData: Data = promise.value {
                 imageView.image = UIImage(data: imageData)

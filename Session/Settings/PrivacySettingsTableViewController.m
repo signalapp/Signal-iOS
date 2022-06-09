@@ -192,7 +192,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                      @"Setting for enabling & disabling voice & video calls.")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"calls"]
                     isOnBlock:^{
-                        return [SSKPreferences areCallsEnabled];
+                        return [SMKPreferences areCallsEnabled];
                     }
                     isEnabledBlock:^{
                         return YES;
@@ -277,9 +277,10 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
             [self objc_requestMicrophonePermissionIfNeeded];
         }];
         [self presentViewController:modal animated:YES completion:nil];
-    } else {
+    }
+    else {
         OWSLogInfo(@"toggled to: %@", (enabled ? @"ON" : @"OFF"));
-        SSKPreferences.areCallsEnabled = enabled;
+        [SMKPreferences setCallsEnabled:enabled];
     }
 }
 

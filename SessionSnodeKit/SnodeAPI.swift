@@ -1,10 +1,12 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 import PromiseKit
 import Sodium
 import GRDB
 import SessionUtilitiesKit
 
-@objc(SNSnodeAPI)
-public final class SnodeAPI : NSObject {
+public final class SnodeAPI {
     private static let sodium = Sodium()
     
     private static var hasLoadedSnodePool = false
@@ -125,7 +127,7 @@ public final class SnodeAPI : NSObject {
     
     // MARK: Internal API
     
-    internal static func invoke(_ method: Snode.Method, on snode: Snode, associatedWith publicKey: String? = nil, parameters: JSON) -> Promise<Data> {
+    internal static func invoke(_ method: SnodeAPIEndpoint, on snode: Snode, associatedWith publicKey: String? = nil, parameters: JSON) -> Promise<Data> {
         if Features.useOnionRequests {
             return OnionRequestAPI
                 .sendOnionRequest(
@@ -207,7 +209,7 @@ public final class SnodeAPI : NSObject {
                     .map2 { responseData -> Set<Snode> in
                         // TODO: Validate this works
                         guard let snodePool: SnodePoolResponse = try? JSONDecoder().decode(SnodePoolResponse.self, from: responseData) else {
-                            throw Error.snodePoolUpdatingFailed
+                            throw SnodeAPIError.snodePoolUpdatingFailed
                         }
                         
                         return snodePool.result
@@ -261,7 +263,7 @@ public final class SnodeAPI : NSObject {
                     .map2 { responseData in
                         // TODO: Validate this works
                         guard let snodePool: SnodePoolResponse = try? JSONDecoder().decode(SnodePoolResponse.self, from: responseData) else {
-                            throw Error.snodePoolUpdatingFailed
+                            throw SnodeAPIError.snodePoolUpdatingFailed
                         }
                         
                         return snodePool.result
@@ -276,7 +278,7 @@ public final class SnodeAPI : NSObject {
             let result: Set<Snode> = results.reduce(Set()) { prev, next in prev.intersection(next) }
             
             // We want the snodes to agree on at least this many snodes
-            guard result.count > 24 else { throw Error.inconsistentSnodePools }
+            guard result.count > 24 else { throw SnodeAPIError.inconsistentSnodePools }
             
             // Limit the snode pool size to 256 so that we don't go too long without
             // refreshing it
@@ -317,7 +319,7 @@ public final class SnodeAPI : NSObject {
             
             getSnodePoolPromise = promise
             promise.map2 { snodePool -> Set<Snode> in
-                guard !snodePool.isEmpty else { throw Error.snodePoolUpdatingFailed }
+                guard !snodePool.isEmpty else { throw SnodeAPIError.snodePoolUpdatingFailed }
                 
                 return snodePool
             }
@@ -357,7 +359,10 @@ public final class SnodeAPI : NSObject {
         let onsName = onsName.lowercased()
         // Hash the ONS name using BLAKE2b
         let nameAsData = [UInt8](onsName.data(using: String.Encoding.utf8)!)
-        guard let nameHash = sodium.genericHash.hash(message: nameAsData) else { return Promise(error: Error.hashingFailed) }
+        
+        guard let nameHash = sodium.genericHash.hash(message: nameAsData) else {
+            return Promise(error: SnodeAPIError.hashingFailed)
+        }
         
         // Ask 3 different snodes for the Session ID associated with the given name hash
         let base64EncodedNameHash = nameHash.toBase64()
@@ -376,49 +381,77 @@ public final class SnodeAPI : NSObject {
             }
         }
         let (promise, seal) = Promise<String>.pending()
+        
         when(resolved: promises).done2 { results in
             var sessionIDs: [String] = []
             for result in results {
                 switch result {
-                case .rejected(let error): return seal.reject(error)
-                case .fulfilled(let responseData):
-                    guard let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON else {
-                        throw HTTP.Error.invalidJSON
-                    }
-                    guard let intermediate = responseJson["result"] as? JSON,
-                        let hexEncodedCiphertext = intermediate["encrypted_value"] as? String else { return seal.reject(HTTP.Error.invalidJSON) }
-                    let ciphertext = [UInt8](Data(hex: hexEncodedCiphertext))
-                    let isArgon2Based = (intermediate["nonce"] == nil)
-                    if isArgon2Based {
-                        // Handle old Argon2-based encryption used before HF16
-                        let salt = [UInt8](Data(repeating: 0, count: sodium.pwHash.SaltBytes))
-                        guard let key = sodium.pwHash.hash(outputLength: sodium.secretBox.KeyBytes, passwd: nameAsData, salt: salt,
-                            opsLimit: sodium.pwHash.OpsLimitModerate, memLimit: sodium.pwHash.MemLimitModerate, alg: .Argon2ID13) else { return seal.reject(Error.hashingFailed) }
-                        let nonce = [UInt8](Data(repeating: 0, count: sodium.secretBox.NonceBytes))
-                        guard let sessionIDAsData = sodium.secretBox.open(authenticatedCipherText: ciphertext, secretKey: key, nonce: nonce) else {
-                            return seal.reject(Error.decryptionFailed)
+                    case .rejected(let error): return seal.reject(error)
+                        
+                    case .fulfilled(let responseData):
+                        guard let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON else {
+                            throw HTTP.Error.invalidJSON
                         }
-                        sessionIDs.append(sessionIDAsData.toHexString())
-                    } else {
-                        guard let hexEncodedNonce = intermediate["nonce"] as? String else { return seal.reject(HTTP.Error.invalidJSON) }
-                        let nonce = [UInt8](Data(hex: hexEncodedNonce))
-                        // xchacha-based encryption
-                        guard let key = sodium.genericHash.hash(message: nameAsData, key: nameHash) else { // key = H(name, key=H(name))
-                            return seal.reject(Error.hashingFailed)
+                        guard
+                            let intermediate = responseJson["result"] as? JSON,
+                            let hexEncodedCiphertext = intermediate["encrypted_value"] as? String
+                        else { return seal.reject(HTTP.Error.invalidJSON) }
+                        
+                        let ciphertext = [UInt8](Data(hex: hexEncodedCiphertext))
+                        let isArgon2Based = (intermediate["nonce"] == nil)
+                        
+                        if isArgon2Based {
+                            // Handle old Argon2-based encryption used before HF16
+                            let salt = [UInt8](Data(repeating: 0, count: sodium.pwHash.SaltBytes))
+                            guard
+                                let key = sodium.pwHash.hash(
+                                    outputLength: sodium.secretBox.KeyBytes,
+                                    passwd: nameAsData,
+                                    salt: salt,
+                                    opsLimit: sodium.pwHash.OpsLimitModerate,
+                                    memLimit: sodium.pwHash.MemLimitModerate,
+                                    alg: .Argon2ID13
+                                )
+                            else { return seal.reject(SnodeAPIError.hashingFailed) }
+                            
+                            let nonce = [UInt8](Data(repeating: 0, count: sodium.secretBox.NonceBytes))
+                            
+                            guard let sessionIDAsData = sodium.secretBox.open(authenticatedCipherText: ciphertext, secretKey: key, nonce: nonce) else {
+                                return seal.reject(SnodeAPIError.decryptionFailed)
+                            }
+                            
+                            sessionIDs.append(sessionIDAsData.toHexString())
                         }
-                        guard ciphertext.count >= (sessionIDByteCount + sodium.aead.xchacha20poly1305ietf.ABytes) else { // Should always be equal in practice
-                            return seal.reject(Error.decryptionFailed)
+                        else {
+                            guard let hexEncodedNonce = intermediate["nonce"] as? String else {
+                                return seal.reject(HTTP.Error.invalidJSON)
+                            }
+                            
+                            let nonce = [UInt8](Data(hex: hexEncodedNonce))
+                            
+                            // xchacha-based encryption
+                            guard let key = sodium.genericHash.hash(message: nameAsData, key: nameHash) else { // key = H(name, key=H(name))
+                                return seal.reject(SnodeAPIError.hashingFailed)
+                            }
+                            guard ciphertext.count >= (sessionIDByteCount + sodium.aead.xchacha20poly1305ietf.ABytes) else { // Should always be equal in practice
+                                return seal.reject(SnodeAPIError.decryptionFailed)
+                            }
+                            guard let sessionIDAsData = sodium.aead.xchacha20poly1305ietf.decrypt(authenticatedCipherText: ciphertext, secretKey: key, nonce: nonce) else {
+                                return seal.reject(SnodeAPIError.decryptionFailed)
+                            }
+                            
+                            sessionIDs.append(sessionIDAsData.toHexString())
                         }
-                        guard let sessionIDAsData = sodium.aead.xchacha20poly1305ietf.decrypt(authenticatedCipherText: ciphertext, secretKey: key, nonce: nonce) else {
-                            return seal.reject(Error.decryptionFailed)
-                        }
-                        sessionIDs.append(sessionIDAsData.toHexString())
-                    }
                 }
             }
-            guard sessionIDs.count == validationCount && Set(sessionIDs).count == 1 else { return seal.reject(Error.validationFailed) }
+            
+            guard sessionIDs.count == validationCount && Set(sessionIDs).count == 1 else {
+                return seal.reject(SnodeAPIError.validationFailed)
+            }
+            
             seal.fulfill(sessionIDs.first!)
         }
+        
         return promise
     }
     
@@ -445,7 +478,7 @@ public final class SnodeAPI : NSObject {
                     invoke(.getSwarm, on: snode, associatedWith: publicKey, parameters: parameters)
                 }
             }
-            .map2 { rawSnodes in
+            .map2 { responseData in
                 let swarm = parseSnodes(from: responseData)
                 
                 setSwarm(to: swarm, for: publicKey)
@@ -456,8 +489,9 @@ public final class SnodeAPI : NSObject {
     // MARK: - Retrieve
     
     // Not in use until we can batch delete and store config messages
-    public static func getConfigMessages(from snode: Snode, associatedWith publicKey: String) -> Promise<Data> {
-        let (promise, seal) = Promise<Data>.pending()
+    public static func getConfigMessages(from snode: Snode, associatedWith publicKey: String) -> Promise<[SnodeReceivedMessage]> {
+        let (promise, seal) = Promise<[SnodeReceivedMessage]>.pending()
+        
         Threading.workQueue.async {
             getMessagesWithAuthentication(from: snode, associatedWith: publicKey, namespace: configNamespace)
                 .done2 {
@@ -471,8 +505,9 @@ public final class SnodeAPI : NSObject {
         return promise
     }
     
-    public static func getMessages(from snode: Snode, associatedWith publicKey: String) -> Promise<[SnodeReceivedMessage]> {
+    public static func getMessages(from snode: Snode, associatedWith publicKey: String, authenticated: Bool = true) -> Promise<[SnodeReceivedMessage]> {
         let (promise, seal) = Promise<[SnodeReceivedMessage]>.pending()
+        
         Threading.workQueue.async {
             let retrievePromise = (authenticated ?
                 getMessagesWithAuthentication(from: snode, associatedWith: publicKey, namespace: defaultNamespace) :
@@ -482,50 +517,28 @@ public final class SnodeAPI : NSObject {
             retrievePromise
                 .done2 { seal.fulfill($0) }
                 .catch2 { seal.reject($0) }
-//            getMessagesInternal(from: snode, associatedWith: publicKey)
-//                .done2 { rawResponse in
-//                    guard
-//                        let json: JSON = rawResponse as? JSON,
-//                        let rawMessages: [JSON] = json["messages"] as? [JSON]
-//                    else {
-//                        seal.fulfill([])
-//                        return
-//                    }
-//
-//                    let messages: [SnodeReceivedMessage] = rawMessages
-//                        .compactMap { rawMessage -> SnodeReceivedMessage? in
-//                            SnodeReceivedMessage(
-//                                snode: snode,
-//                                publicKey: publicKey,
-//                                rawMessage: rawMessage
-//                            )
-//                        }
-//
-//                    seal.fulfill(messages)
-//                }
-//                .catch2 { seal.reject($0) }
         }
         
         return promise
     }
     
     public static func getClosedGroupMessagesFromDefaultNamespace(from snode: Snode, associatedWith publicKey: String) -> Promise<[SnodeReceivedMessage]> {
-        let (promise, seal) = Promise<Data>.pending()
+        let (promise, seal) = Promise<[SnodeReceivedMessage]>.pending()
+        
         Threading.workQueue.async {
             getMessagesUnauthenticated(from: snode, associatedWith: publicKey, namespace: defaultNamespace)
                 .done2 { seal.fulfill($0) }
                 .catch2 { seal.reject($0) }
         }
+        
         return promise
     }
     
-    private static func getMessagesWithAuthentication(from snode: Snode, associatedWith publicKey: String, namespace: Int) -> Promise<Data> {
-        let storage = SNSnodeKitConfiguration.shared.storage
-        
+    private static func getMessagesWithAuthentication(from snode: Snode, associatedWith publicKey: String, namespace: Int) -> Promise<[SnodeReceivedMessage]> {
         /// **Note:** All authentication logic is only apply to 1-1 chats, the reason being that we can't currently support it yet for
         /// closed groups. The Storage Server requires an ed25519 key pair, but we don't have that for our closed groups.
-        guard let userED25519KeyPair: Box.KeyPair = GRDBStorage.shared.read { db in try Identity.fetchUserEd25519KeyPair(db) } else {
-            return Promise(error: Error.noKeyPair)
+        guard let userED25519KeyPair: Box.KeyPair = GRDBStorage.shared.read({ db in Identity.fetchUserEd25519KeyPair(db) }) else {
+            return Promise(error: SnodeAPIError.noKeyPair)
         }
         
         // Get last message hash
@@ -540,7 +553,7 @@ public final class SnodeAPI : NSObject {
         guard
             let verificationData = ("retrieve" + namespaceVerificationString + String(timestamp)).data(using: String.Encoding.utf8),
             let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)
-        else { return Promise(error: Error.signingFailed) }
+        else { return Promise(error: SnodeAPIError.signingFailed) }
         
         // Make the request
         let parameters: JSON = [
@@ -553,17 +566,33 @@ public final class SnodeAPI : NSObject {
         ]
         
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
+            .map { responseData -> [SnodeReceivedMessage] in
+                guard
+                    let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON,
+                    let rawMessages: [JSON] = responseJson["messages"] as? [JSON]
+                else {
+                    return []
+                }
+                
+                return rawMessages
+                    .compactMap { rawMessage -> SnodeReceivedMessage? in
+                        SnodeReceivedMessage(
+                            snode: snode,
+                            publicKey: publicKey,
+                            namespace: namespace,
+                            rawMessage: rawMessage
+                        )
+                    }
+            }
     }
         
     private static func getMessagesUnauthenticated(
         from snode: Snode,
         associatedWith publicKey: String,
         namespace: Int = closedGroupNamespace
-    ) -> Promise<Data> {
-        let storage = SNSnodeKitConfiguration.shared.storage
-        
+    ) -> Promise<[SnodeReceivedMessage]> {
         // Get last message hash
-        SnodeReceivedMessageInfo.pruneLastMessageHashInfoIfExpired(for: snode, namespace: namespace, associatedWith: publicKey)
+        SnodeReceivedMessageInfo.pruneExpiredMessageHashInfo(for: snode, namespace: namespace, associatedWith: publicKey)
         let lastHash = SnodeReceivedMessageInfo.fetchLastNotExpired(for: snode, namespace: namespace, associatedWith: publicKey)?.hash ?? ""
         
         // Make the request
@@ -578,6 +607,24 @@ public final class SnodeAPI : NSObject {
         }
         
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
+            .map { responseData -> [SnodeReceivedMessage] in
+                guard
+                    let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON,
+                    let rawMessages: [JSON] = responseJson["messages"] as? [JSON]
+                else {
+                    return []
+                }
+                
+                return rawMessages
+                    .compactMap { rawMessage -> SnodeReceivedMessage? in
+                        SnodeReceivedMessage(
+                            snode: snode,
+                            publicKey: publicKey,
+                            namespace: namespace,
+                            rawMessage: rawMessage
+                        )
+                    }
+            }
     }
     
     // MARK: Store
@@ -588,10 +635,13 @@ public final class SnodeAPI : NSObject {
     
     // Not in use until we can batch delete and store config messages
     private static func sendMessageWithAuthentication(_ message: SnodeMessage, namespace: Int) -> Promise<Set<Promise<Data>>> {
-        let storage = SNSnodeKitConfiguration.shared.storage
+        guard
+            let messageData: Data = try? JSONEncoder().encode(message),
+            let messageJson: JSON = try? JSONSerialization.jsonObject(with: messageData, options: [ .fragmentsAllowed ]) as? JSON
+        else { return Promise(error: HTTP.Error.invalidJSON) }
         
-        guard let userED25519KeyPair: Box.KeyPair = GRDBStorage.shared.read { db in try Identity.fetchUserEd25519KeyPair(db) } else {
-            return Promise(error: Error.noKeyPair)
+        guard let userED25519KeyPair: Box.KeyPair = GRDBStorage.shared.read({ db in Identity.fetchUserEd25519KeyPair(db) }) else {
+            return Promise(error: SnodeAPIError.noKeyPair)
         }
         
         // Construct signature
@@ -601,7 +651,7 @@ public final class SnodeAPI : NSObject {
         guard
             let verificationData = ("store" + String(namespace) + String(timestamp)).data(using: String.Encoding.utf8),
             let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)
-        else { return Promise(error: Error.signingFailed) }
+        else { return Promise(error: SnodeAPIError.signingFailed) }
         
         // Make the request
         let (promise, seal) = Promise<Set<Promise<Data>>>.pending()
@@ -610,7 +660,7 @@ public final class SnodeAPI : NSObject {
         Threading.workQueue.async {
             getTargetSnodes(for: publicKey)
                 .map2 { targetSnodes in
-                    var parameters = message.toJSON()
+                    var parameters: JSON = messageJson
                     parameters["namespace"] = namespace
                     parameters["sig_timestamp"] = timestamp
                     parameters["pubkey_ed25519"] = ed25519PublicKey
@@ -630,6 +680,11 @@ public final class SnodeAPI : NSObject {
     }
     
     private static func sendMessageUnauthenticated(_ message: SnodeMessage, isClosedGroupMessage: Bool) -> Promise<Set<Promise<Data>>> {
+        guard
+            let messageData: Data = try? JSONEncoder().encode(message),
+            let messageJson: JSON = try? JSONSerialization.jsonObject(with: messageData, options: [ .fragmentsAllowed ]) as? JSON
+        else { return Promise(error: HTTP.Error.invalidJSON) }
+        
         let (promise, seal) = Promise<Set<Promise<Data>>>.pending()
         let publicKey = Features.useTestnet ? message.recipient.removingIdPrefixIfNeeded() : message.recipient
         
@@ -637,7 +692,7 @@ public final class SnodeAPI : NSObject {
             getTargetSnodes(for: publicKey)
                 .map2 { targetSnodes in
                     var rawResponsePromises: Set<Promise<Data>> = Set()
-                    var parameters = message.toJSON()
+                    var parameters: JSON = messageJson
                     parameters["namespace"] = (isClosedGroupMessage ? closedGroupNamespace : defaultNamespace)
                     
                     for targetSnode in targetSnodes {
@@ -671,7 +726,7 @@ public final class SnodeAPI : NSObject {
     
     public static func deleteMessage(publicKey: String, serverHashes: [String]) -> Promise<[String: Bool]> {
         guard let userED25519KeyPair = Identity.fetchUserEd25519KeyPair() else {
-            return Promise(error: Error.noKeyPair)
+            return Promise(error: SnodeAPIError.noKeyPair)
         }
         
         let publicKey = (Features.useTestnet ? publicKey.removingIdPrefixIfNeeded() : publicKey)
@@ -682,10 +737,10 @@ public final class SnodeAPI : NSObject {
                 .then2 { swarm -> Promise<[String: Bool]> in
                     guard
                         let snode = swarm.randomElement(),
-                        let verificationData = (Endpoint.deleteMessage.rawValue + serverHashes.joined()).data(using: String.Encoding.utf8),
+                        let verificationData = (SnodeAPIEndpoint.deleteMessage.rawValue + serverHashes.joined()).data(using: String.Encoding.utf8),
                         let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)
                     else {
-                        throw Error.signingFailed
+                        throw SnodeAPIError.signingFailed
                     }
                     
                     let parameters: JSON = [
@@ -755,7 +810,7 @@ public final class SnodeAPI : NSObject {
     /// Clears all the user's data from their swarm. Returns a dictionary of snode public key to deletion confirmation.
     public static func clearAllData() -> Promise<[String:Bool]> {
         guard let userED25519KeyPair = Identity.fetchUserEd25519KeyPair() else {
-            return Promise(error: Error.noKeyPair)
+            return Promise(error: SnodeAPIError.noKeyPair)
         }
         
         let userX25519PublicKey: String = getUserHexEncodedPublicKey()
@@ -767,10 +822,10 @@ public final class SnodeAPI : NSObject {
                     
                     return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                         getNetworkTime(from: snode).then2 { timestamp -> Promise<[String: Bool]> in
-                            let verificationData = (Endpoint.clearAllData.rawValue + String(timestamp)).data(using: String.Encoding.utf8)!
+                            let verificationData = (SnodeAPIEndpoint.clearAllData.rawValue + String(timestamp)).data(using: String.Encoding.utf8)!
                             
                             guard let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey) else {
-                                throw Error.signingFailed
+                                throw SnodeAPIError.signingFailed
                             }
                             
                             let parameters: JSON = [
@@ -806,7 +861,9 @@ public final class SnodeAPI : NSObject {
                                                     userX25519PublicKey,
                                                     String(timestamp),
                                                     hashes.joined()
-                                                ].data(using: String.Encoding.utf8)!
+                                                ]
+                                                .joined()
+                                                .data(using: String.Encoding.utf8)!
                                                 let isValid = sodium.sign.verify(
                                                     message: Bytes(verificationData),
                                                     publicKey: Bytes(Data(hex: snodePublicKey)),
@@ -901,7 +958,7 @@ public final class SnodeAPI : NSObject {
                 
             case 406:
                 SNLog("The user's clock is out of sync with the service node network.")
-                return Error.clockOutOfSync
+                return SnodeAPIError.clockOutOfSync
                 
             case 421:
                 // The snode isn't associated with the given public key anymore

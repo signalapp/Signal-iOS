@@ -6,6 +6,9 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 
 final class ConversationTitleView: UIView {
+    private static let leftInset: CGFloat = 8
+    private static let leftInsetWithCallButton: CGFloat = 54
+    
     override var intrinsicContentSize: CGSize {
         return UIView.layoutFittingExpandedSize
     }
@@ -35,6 +38,7 @@ final class ConversationTitleView: UIView {
         result.axis = .vertical
         result.alignment = .center
         result.isLayoutMarginsRelativeArrangement = true
+        
         return result
     }()
 
@@ -43,25 +47,9 @@ final class ConversationTitleView: UIView {
     init() {
         super.init(frame: .zero)
         
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.isLayoutMarginsRelativeArrangement = true
         addSubview(stackView)
         
         stackView.pin(to: self)
-        
-        let shouldShowCallButton = SessionCall.isEnabled && !thread.isNoteToSelf() && !thread.isGroupThread()
-        let leftMargin: CGFloat = shouldShowCallButton ? 54 : 8 // Contact threads also have the call button to compensate for
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: leftMargin, bottom: 0, right: 0)
-        
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        addGestureRecognizer(tapGestureRecognizer)
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.groupThreadUpdated, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.muteSettingUpdated, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.contactUpdated, object: nil)
-        update()
     }
 
     deinit {
@@ -74,15 +62,35 @@ final class ConversationTitleView: UIView {
 
     // MARK: - Content
     
+    public func initialSetup(with threadVariant: SessionThread.Variant) {
+        self.update(
+            with: " ",
+            isNoteToSelf: false,
+            threadVariant: threadVariant,
+            mutedUntilTimestamp: nil,
+            onlyNotifyForMentions: false,
+            userCount: (threadVariant != .contact ? 0 : nil)
+        )
+    }
+    
     public func update(
         with name: String,
+        isNoteToSelf: Bool,
+        threadVariant: SessionThread.Variant,
         mutedUntilTimestamp: TimeInterval?,
         onlyNotifyForMentions: Bool,
         userCount: Int?
     ) {
         guard Thread.isMainThread else {
             DispatchQueue.main.async { [weak self] in
-                self?.update(with: name, mutedUntilTimestamp: mutedUntilTimestamp, onlyNotifyForMentions: onlyNotifyForMentions, userCount: userCount)
+                self?.update(
+                    with: name,
+                    isNoteToSelf: isNoteToSelf,
+                    threadVariant: threadVariant,
+                    mutedUntilTimestamp: mutedUntilTimestamp,
+                    onlyNotifyForMentions: onlyNotifyForMentions,
+                    userCount: userCount
+                )
             }
             return
         }
@@ -128,5 +136,21 @@ final class ConversationTitleView: UIView {
             )
         )
         self.subtitleLabel.attributedText = subtitle
+        
+        // Contact threads also have the call button to compensate for
+        let shouldShowCallButton: Bool = (
+            SessionCall.isEnabled &&
+            !isNoteToSelf &&
+            threadVariant == .contact
+        )
+        self.stackView.layoutMargins = UIEdgeInsets(
+            top: 0,
+            left: (shouldShowCallButton ?
+                ConversationTitleView.leftInsetWithCallButton :
+                ConversationTitleView.leftInset
+            ),
+            bottom: 0,
+            right: 0
+        )
     }
 }

@@ -14,10 +14,11 @@ public struct SessionApp {
             try SessionThread.fetchOrCreate(db, id: threadId, variant: .contact)
         }
         
-        guard maybeThread != nil else { return }
+        guard let variant: SessionThread.Variant = maybeThread?.variant else { return }
         
         self.presentConversation(
             for: threadId,
+            threadVariant: variant,
             action: action,
             focusInteractionId: nil,
             animated: animated
@@ -26,6 +27,7 @@ public struct SessionApp {
     
     public static func presentConversation(
         for threadId: String,
+        threadVariant: SessionThread.Variant,
         action: ConversationViewModel.Action,
         focusInteractionId: Int64?,
         animated: Bool
@@ -34,6 +36,7 @@ public struct SessionApp {
             DispatchQueue.main.async {
                 self.presentConversation(
                     for: threadId,
+                    threadVariant: threadVariant,
                     action: action,
                     focusInteractionId: focusInteractionId,
                     animated: animated
@@ -44,6 +47,7 @@ public struct SessionApp {
         
         homeViewController.wrappedValue?.show(
             threadId,
+            variant: threadVariant,
             with: action,
             focusedInteractionId: focusInteractionId,
             animated: animated

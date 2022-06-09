@@ -3,6 +3,7 @@
 import Foundation
 import PromiseKit
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 extension Promise where T == Data {
     func decoded<R: Decodable>(as type: R.Type, on queue: DispatchQueue? = nil, using dependencies: Dependencies = Dependencies()) -> Promise<R> {
