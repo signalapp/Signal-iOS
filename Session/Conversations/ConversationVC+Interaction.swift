@@ -880,6 +880,8 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func showFullEmojiKeyboard(_ viewItem: ConversationViewItem) {
         // TODO: to be implemented
         
+        print("Ryan Test: showFullEmojiKeyboard")
+        
     }
     
     func contextMenuDismissed() {

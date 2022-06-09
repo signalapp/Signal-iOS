@@ -2083,6 +2083,13 @@
 			path = Utilities;
 			sourceTree = "<group>";
 		};
+		7B1B52BD2851ADE1006069F2 /* Emoji Picker */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Emoji Picker";
+			sourceTree = "<group>";
+		};
 		7B7CB18C270D06350079FF93 /* Views & Modals */ = {
 			isa = PBXGroup;
 			children = (
@@ -2302,6 +2309,7 @@
 				B835247725C38D190089A44F /* Message Cells */,
 				C328252E25CA54F70062D0A7 /* Context Menu */,
 				B821493625D4D6A7009C0F2A /* Views & Modals */,
+				7B1B52BD2851ADE1006069F2 /* Emoji Picker */,
 				C302094625DCDFD3001F572D /* Settings */,
 			);
 			path = Conversations;
