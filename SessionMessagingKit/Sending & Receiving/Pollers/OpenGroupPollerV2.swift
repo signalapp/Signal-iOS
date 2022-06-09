@@ -104,8 +104,18 @@ public final class OpenGroupPollerV2 : NSObject {
                 }
                 guard let tsMessage: TSMessage = TSMessage.fetch(uniqueId: messageLookup.tsMessageId, transaction: transaction) else { return }
                 
-                tsMessage.remove(with: transaction)
-                storage.removeOpenGroupServerIdLookup(openGroupServerMessageId, in: body.room, on: self.server, using: transaction)
+                if tsMessage.openGroupServerMessageID == openGroupServerMessageId { // This is the case the deleted message is a tsMessage
+                    tsMessage.remove(with: transaction)
+                    storage.removeOpenGroupServerIdLookup(openGroupServerMessageId, in: body.room, on: self.server, using: transaction)
+                } else { // Otherwise the deleted message is an emoji react
+                    for reaction in tsMessage.reactions {
+                        if let reactMessage = reaction as? ReactMessage, let messageIdString = reactMessage.messageId, let messageId = UInt64(messageIdString), messageId == openGroupServerMessageId {
+                            tsMessage.removeReaction(reactMessage, transaction: transaction)
+                            storage.removeOpenGroupServerIdLookup(openGroupServerMessageId, in: body.room, on: self.server, using: transaction)
+                            break
+                        }
+                    }
+                }
             }
         }
     }

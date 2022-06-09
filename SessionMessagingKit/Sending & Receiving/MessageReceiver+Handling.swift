@@ -386,7 +386,14 @@ extension MessageReceiver {
             }
             let reactionMessage = ReactMessage(timestamp: timestamp, authorId: author, emoji: reaction.emoji)
             reactionMessage.sender = message.sender
-            if let serverID = message.openGroupServerMessageID { reactionMessage.messageId = "\(serverID)" }
+            if let serverID = message.openGroupServerMessageID {
+                reactionMessage.messageId = "\(serverID)"
+                // Create a lookup between the openGroupServerMessageId and the tsMessage id for easy lookup
+                // For emoji reacts, the lookup is linking emoji react message server id to the id of the tsMessage that the emoji is reacted to
+                if let openGroup: OpenGroupV2 = storage.getV2OpenGroup(for: threadID) {
+                    storage.addOpenGroupServerIdLookup(serverID, tsMessageId: tsMessage?.uniqueId, in: openGroup.room, on: openGroup.server, using: transaction)
+                }
+            }
             if let serverHash = message.serverHash { reactionMessage.messageId = serverHash }
             switch reaction.kind {
             case .react:
