@@ -5210,7 +5210,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.12.10;
+				MARKETING_VERSION = 1.13.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5288,7 +5288,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.12.10;
+				MARKETING_VERSION = 1.13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5347,7 +5347,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.12.10;
+				MARKETING_VERSION = 1.13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.NotificationServiceExtension";
@@ -5426,7 +5426,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.12.10;
+				MARKETING_VERSION = 1.13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.NotificationServiceExtension";
@@ -6374,7 +6374,7 @@
 					"$(SRCROOT)",
 				);
 				LLVM_LTO = NO;
-				MARKETING_VERSION = 1.12.10;
+				MARKETING_VERSION = 1.13.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger";
@@ -6447,7 +6447,7 @@
 					"$(SRCROOT)",
 				);
 				LLVM_LTO = NO;
-				MARKETING_VERSION = 1.12.10;
+				MARKETING_VERSION = 1.13.0;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger";
 				PRODUCT_NAME = Session;
