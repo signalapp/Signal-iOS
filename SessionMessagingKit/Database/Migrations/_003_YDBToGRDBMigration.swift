@@ -1059,7 +1059,8 @@ enum _003_YDBToGRDBMigration: Migration {
                                 processedAttachmentIds: &processedAttachmentIds
                             ) else {
                                 SNLog("[Migration Error] Missing interaction attachment")
-                                throw StorageError.migrationFailed
+//                                throw StorageError.migrationFailed
+                                return
                             }
                             
                             // Link the attachment to the interaction and add to the id lookup
