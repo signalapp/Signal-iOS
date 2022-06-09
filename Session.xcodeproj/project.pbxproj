@@ -291,8 +291,6 @@
 		C32C598A256D0664003C73A2 /* SNProtoEnvelope+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EEF09255B49A8007E1867 /* SNProtoEnvelope+Conversion.swift */; };
 		C32C599E256DB02B003C73A2 /* TypingIndicators.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA87255A57FC00E217F9 /* TypingIndicators.swift */; };
 		C32C5A24256DB7DB003C73A2 /* SNUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB6B255A580F00E217F9 /* SNUserDefaults.swift */; };
-		C32C5A2D256DB849003C73A2 /* LKGroupUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBE1255A581A00E217F9 /* LKGroupUtilities.m */; };
-		C32C5A36256DB856003C73A2 /* LKGroupUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBCA255A581700E217F9 /* LKGroupUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C32C5A47256DB8F0003C73A2 /* ECKeyPair+Hexadecimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA73255A57FA00E217F9 /* ECKeyPair+Hexadecimal.swift */; };
 		C32C5A48256DB8F0003C73A2 /* BuildConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAA8255A57FF00E217F9 /* BuildConfiguration.swift */; };
 		C32C5A88256DBCF9003C73A2 /* MessageReceiver+ClosedGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32C5A87256DBCF9003C73A2 /* MessageReceiver+ClosedGroups.swift */; };
@@ -1405,11 +1403,9 @@
 		C33FDBB6255A581600E217F9 /* DataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataSource.m; sourceTree = "<group>"; };
 		C33FDBBC255A581600E217F9 /* SSKKeychainStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKKeychainStorage.swift; sourceTree = "<group>"; };
 		C33FDBC2255A581700E217F9 /* SSKAsserts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKAsserts.h; sourceTree = "<group>"; };
-		C33FDBCA255A581700E217F9 /* LKGroupUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKGroupUtilities.h; sourceTree = "<group>"; };
 		C33FDBD3255A581800E217F9 /* OWSSignalAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSignalAddress.swift; sourceTree = "<group>"; };
 		C33FDBD8255A581900E217F9 /* SignalIOS.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalIOS.pb.swift; sourceTree = "<group>"; };
 		C33FDBDE255A581900E217F9 /* PushNotificationAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushNotificationAPI.swift; sourceTree = "<group>"; };
-		C33FDBE1255A581A00E217F9 /* LKGroupUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKGroupUtilities.m; sourceTree = "<group>"; };
 		C33FDBF6255A581C00E217F9 /* NSURLSessionDataTask+StatusCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURLSessionDataTask+StatusCode.h"; sourceTree = "<group>"; };
 		C33FDBF9255A581C00E217F9 /* OWSError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSError.h; sourceTree = "<group>"; };
 		C33FDC03255A581D00E217F9 /* ByteParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ByteParser.h; sourceTree = "<group>"; };
@@ -2445,15 +2441,6 @@
 			path = General;
 			sourceTree = "<group>";
 		};
-		B8A582B9258C696200AFD84C /* Messaging */ = {
-			isa = PBXGroup;
-			children = (
-				C33FDBCA255A581700E217F9 /* LKGroupUtilities.h */,
-				C33FDBE1255A581A00E217F9 /* LKGroupUtilities.m */,
-			);
-			path = Messaging;
-			sourceTree = "<group>";
-		};
 		B8B3201F258B1A540020074B /* Contacts */ = {
 			isa = PBXGroup;
 			children = (
@@ -3158,7 +3145,6 @@
 				B8A582B0258C66C900AFD84C /* General */,
 				FD9004102818ABB000ABAAF6 /* JobRunner */,
 				B8A582AF258C665E00AFD84C /* Media */,
-				B8A582B9258C696200AFD84C /* Messaging */,
 				B8A582AE258C65D000AFD84C /* Networking */,
 				B8A582AD258C655E00AFD84C /* PromiseKit */,
 				FD09796527F6B0A800936362 /* Utilities */,
@@ -4027,7 +4013,6 @@
 			files = (
 				C3D9E3A4256763DE0040E4F3 /* AppContext.h in Headers */,
 				C3D9E38A256760390040E4F3 /* OWSFileSystem.h in Headers */,
-				C32C5A36256DB856003C73A2 /* LKGroupUtilities.h in Headers */,
 				C3D9E379256760340040E4F3 /* MIMETypeUtil.h in Headers */,
 				C3D9E50E25677A510040E4F3 /* DataSource.h in Headers */,
 				B8856DF8256F1633001CE70E /* NSString+SSK.h in Headers */,
@@ -5036,7 +5021,6 @@
 				C352A36D2557858E00338F3E /* NSTimer+Proxying.m in Sources */,
 				FD09797B27FBB25900936362 /* Updatable.swift in Sources */,
 				FDCDB8F12817ABE600352A0C /* Optional+Utilities.swift in Sources */,
-				C32C5A2D256DB849003C73A2 /* LKGroupUtilities.m in Sources */,
 				7B7CB192271508AD0079FF93 /* CallRingTonePlayer.swift in Sources */,
 				C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */,
 				FD848B8B283DC509000E298B /* PagedDatabaseObserver.swift in Sources */,

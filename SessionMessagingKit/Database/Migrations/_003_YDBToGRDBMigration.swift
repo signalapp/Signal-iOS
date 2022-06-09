@@ -24,6 +24,7 @@ enum _003_YDBToGRDBMigration: Migration {
         
         // MARK: - Read from Legacy Database
         
+        let timestampNow: TimeInterval = Date().timeIntervalSince1970
         var shouldFailMigration: Bool = false
         var legacyMigrations: Set<SMKLegacy._DBMigration> = []
         var contacts: Set<SMKLegacy._Contact> = []
@@ -207,6 +208,23 @@ enum _003_YDBToGRDBMigration: Migration {
                 guard let interaction: SMKLegacy._DBInteraction = object as? SMKLegacy._DBInteraction else {
                     SNLog("[Migration Error] Unable to process interaction")
                     shouldFailMigration = true
+                    return
+                }
+                
+                /// Prune interactions from OpenGroup thread interactions which are older than 6 months
+                ///
+                /// The old structure for the open group id was `g{base64String(Data(__loki_public_chat_group__!{server.room}))}
+                /// so we process the uniqueThreadId to see if it matches that
+                if
+                    interaction.uniqueThreadId.starts(with: SMKLegacy.groupThreadPrefix),
+                    let base64Data: Data = Data(base64Encoded: interaction.uniqueThreadId.substring(from: SMKLegacy.groupThreadPrefix.count)),
+                    let groupIdString: String = String(data: base64Data, encoding: .utf8),
+                    (
+                        groupIdString.starts(with: SMKLegacy.openGroupIdPrefix) ||
+                        groupIdString.starts(with: "http")
+                    ),
+                    interaction.timestamp < UInt64(floor((timestampNow - GarbageCollectionJob.approxSixMonthsInSeconds) * 1000))
+                {
                     return
                 }
                 

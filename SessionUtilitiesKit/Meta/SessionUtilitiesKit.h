@@ -5,7 +5,6 @@ FOUNDATION_EXPORT const unsigned char SessionUtilitiesKitVersionString[];
 
 #import <SessionUtilitiesKit/AppContext.h>
 #import <SessionUtilitiesKit/DataSource.h>
-#import <SessionUtilitiesKit/LKGroupUtilities.h>
 #import <SessionUtilitiesKit/MIMETypeUtil.h>
 #import <SessionUtilitiesKit/NSData+Image.h>
 #import <SessionUtilitiesKit/NSNotificationCenter+OWS.h>

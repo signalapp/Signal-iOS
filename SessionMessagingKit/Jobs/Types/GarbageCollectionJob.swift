@@ -11,7 +11,7 @@ public enum GarbageCollectionJob: JobExecutor {
     public static var maxFailureCount: Int = -1
     public static var requiresThreadId: Bool = false
     public static let requiresInteractionId: Bool = false
-    private static let approxSixMonthsInSeconds: TimeInterval = (6 * 30 * 24 * 60 * 60)
+    public static let approxSixMonthsInSeconds: TimeInterval = (6 * 30 * 24 * 60 * 60)
     
     public static func run(
         _ job: Job,
