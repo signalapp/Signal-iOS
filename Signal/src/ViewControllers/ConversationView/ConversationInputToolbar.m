@@ -1090,7 +1090,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                          forConstraints:^{
                              [cancelButton autoHCenterInSuperview];
                          }];
-    [cancelButton autoPinEdgeToSuperviewMargin:ALEdgeRight withInset:20];
+    [cancelButton autoPinEdgeToSuperviewMargin:ALEdgeRight withInset:40];
     [cancelButton autoPinEdge:ALEdgeLeft
                        toEdge:ALEdgeRight
                        ofView:self.recordingLabel
