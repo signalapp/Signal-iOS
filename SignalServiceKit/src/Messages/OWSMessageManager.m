@@ -181,6 +181,49 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (BOOL)canProcessEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (!envelope) {
+        OWSFailDebug(@"Missing envelope.");
+        return NO;
+    }
+    if (!transaction) {
+        OWSFail(@"Missing transaction.");
+        return NO;
+    }
+    if (!self.tsAccountManager.isRegistered) {
+        OWSFailDebug(@"Not registered.");
+        return NO;
+    }
+    if (!CurrentAppContext().shouldProcessIncomingMessages) {
+        OWSFail(@"Should not process messages.");
+        return NO;
+    }
+
+    OWSLogInfo(@"handling decrypted envelope: %@", [self descriptionForEnvelope:envelope]);
+
+    if (!envelope.hasValidSource) {
+        OWSFailDebug(@"incoming envelope has invalid source");
+        return NO;
+    }
+    if (!envelope.hasSourceDevice || envelope.sourceDevice < 1) {
+        OWSFailDebug(@"incoming envelope has invalid source device");
+        return NO;
+    }
+    if (!envelope.hasType) {
+        OWSFailDebug(@"incoming envelope is missing type.");
+        return NO;
+    }
+
+    if ([self isEnvelopeSenderBlocked:envelope transaction:transaction]) {
+        OWSLogInfo(@"incoming envelope sender is blocked.");
+        return NO;
+    }
+
+    return YES;
+}
+
+
 - (void)throws_processEnvelope:(SSKProtoEnvelope *)envelope
                    plaintextData:(NSData *_Nullable)plaintextData
                  wasReceivedByUD:(BOOL)wasReceivedByUD
@@ -188,40 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
     shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
                      transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (!envelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!transaction) {
-        OWSFail(@"Missing transaction.");
-        return;
-    }
-    if (!self.tsAccountManager.isRegistered) {
-        OWSFailDebug(@"Not registered.");
-        return;
-    }
-    if (!CurrentAppContext().shouldProcessIncomingMessages) {
-        OWSFail(@"Should not process messages.");
-        return;
-    }
-
-    OWSLogInfo(@"handling decrypted envelope: %@", [self descriptionForEnvelope:envelope]);
-
-    if (!envelope.hasValidSource) {
-        OWSFailDebug(@"incoming envelope has invalid source");
-        return;
-    }
-    if (!envelope.hasSourceDevice || envelope.sourceDevice < 1) {
-        OWSFailDebug(@"incoming envelope has invalid source device");
-        return;
-    }
-    if (!envelope.hasType) {
-        OWSFailDebug(@"incoming envelope is missing type.");
-        return;
-    }
-
-    if ([self isEnvelopeSenderBlocked:envelope transaction:transaction]) {
-        OWSLogInfo(@"incoming envelope sender is blocked.");
+    if (![self canProcessEnvelope:envelope transaction:transaction]) {
         return;
     }
 
@@ -246,7 +256,9 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         case SSKProtoEnvelopeTypeReceipt:
             OWSAssertDebug(!plaintextData);
-            [self handleDeliveryReceipt:envelope transaction:transaction];
+            [self handleDeliveryReceipt:envelope
+                                context:[[PassthroughDeliveryReceiptContext alloc] init]
+                            transaction:transaction];
             break;
             // Other messages are just dismissed for now.
         case SSKProtoEnvelopeTypeKeyExchange:
@@ -260,6 +272,11 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
 
+    [self finishProcessingEnvelope:envelope transaction:transaction];
+}
+
+- (void)finishProcessingEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction
+{
     // If we reach here, we were able to successfully handle the message.
     // We need to check to make sure that we clear any placeholders that may have been
     // inserted for this message. This would happen if:
@@ -271,7 +288,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleDeliveryReceipt:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction
+- (void)handleDeliveryReceipt:(SSKProtoEnvelope *)envelope
+                      context:(id<DeliveryReceiptContext>)context
+                  transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -293,6 +312,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     @(envelope.timestamp),
                                 ]
                              deliveryTimestamp:nil
+                                       context:context
                                    transaction:transaction];
 }
 
@@ -304,6 +324,7 @@ NS_ASSUME_NONNULL_BEGIN
                                             recipientDeviceId:(uint32_t)deviceId
                                                sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
                                             deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
+                                                      context:(id<DeliveryReceiptContext>)context
                                                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!address.isValid) {
@@ -332,17 +353,7 @@ NS_ASSUME_NONNULL_BEGIN
             continue;
         }
 
-        NSError *error;
-        NSArray<TSOutgoingMessage *> *messages = (NSArray<TSOutgoingMessage *> *)[InteractionFinder
-            interactionsWithTimestamp:timestamp
-                               filter:^(TSInteraction *interaction) {
-                                   return [interaction isKindOfClass:[TSOutgoingMessage class]];
-                               }
-                          transaction:transaction
-                                error:&error];
-        if (error != nil) {
-            OWSFailDebug(@"Error loading interactions: %@", error);
-        }
+        NSArray<TSOutgoingMessage *> *messages = [context messagesWithTimestamp:timestamp transaction:transaction];
 
         if (messages.count < 1) {
             OWSLogInfo(@"Missing message for delivery receipt: %llu", timestamp);
@@ -357,12 +368,38 @@ NS_ASSUME_NONNULL_BEGIN
                 [outgoingMessage updateWithDeliveredRecipient:address
                                             recipientDeviceId:deviceId
                                             deliveryTimestamp:deliveryTimestamp
+                                                      context:context
                                                   transaction:transaction];
             }
         }
     }
 
     return earlyTimestamps;
+}
+
+- (MessageManagerRequest *_Nullable)requestForEnvelope:(SSKProtoEnvelope *)envelope
+                                         plaintextData:(NSData *)plaintextData
+                                       wasReceivedByUD:(BOOL)wasReceivedByUD
+                               serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+                          shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
+                                           transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (transaction == nil) {
+        OWSFail(@"Missing transaction.");
+        return nil;
+    }
+    MessageManagerRequest *request = [[MessageManagerRequest alloc] initWithEnvelope:envelope
+                                                                       plaintextData:plaintextData
+                                                                     wasReceivedByUD:wasReceivedByUD
+                                                             serverDeliveryTimestamp:serverDeliveryTimestamp
+                                                        shouldDiscardVisibleMessages:shouldDiscardVisibleMessages
+                                                                         transaction:transaction];
+    return request;
+}
+
+- (void)logUnactionablePayload:(SSKProtoEnvelope *)envelope
+{
+    OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorEnvelopeNoActionablePayload], envelope);
 }
 
 - (void)throws_handleEnvelope:(SSKProtoEnvelope *)envelope
@@ -372,134 +409,129 @@ NS_ASSUME_NONNULL_BEGIN
     shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
                      transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (![self isValidEnvelope:envelope]) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!plaintextData) {
-        OWSFailDebug(@"Missing plaintextData.");
-        return;
-    }
-    if (!transaction) {
-        OWSFail(@"Missing transaction.");
-        return;
-    }
-
-    BOOL duplicateEnvelope = [InteractionFinder existsIncomingMessageWithTimestamp:envelope.timestamp
-                                                                           address:envelope.sourceAddress
-                                                                    sourceDeviceId:envelope.sourceDevice
-                                                                       transaction:transaction];
-
-    if (duplicateEnvelope) {
-        OWSLogInfo(@"Ignoring previously received envelope from %@ with timestamp: %llu",
-            envelopeAddress(envelope),
-            envelope.timestamp);
+    OWSAssert(plaintextData != nil);
+    MessageManagerRequest *request = [self requestForEnvelope:envelope
+                                                plaintextData:plaintextData
+                                              wasReceivedByUD:wasReceivedByUD
+                                      serverDeliveryTimestamp:serverDeliveryTimestamp
+                                 shouldDiscardVisibleMessages:shouldDiscardVisibleMessages
+                                                  transaction:transaction];
+    if (request == nil) {
         return;
     }
 
-    if (envelope.content != nil) {
-        NSError *error;
-        SSKProtoContent *_Nullable contentProto = [[SSKProtoContent alloc] initWithSerializedData:plaintextData
-                                                                                            error:&error];
-        if (error || !contentProto) {
-            OWSFailDebug(@"could not parse proto: %@", error);
-            return;
-        }
-        OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
+    [self throws_handleRequest:request
+                       context:[[PassthroughDeliveryReceiptContext alloc] init]
+                   transaction:transaction];
+}
 
-        if (contentProto.syncMessage) {
-            [self throws_handleIncomingEnvelope:envelope
+- (BOOL)handleRequest:(MessageManagerRequest *)request
+              context:(id<DeliveryReceiptContext>)context
+          transaction:(SDSAnyWriteTransaction *)transaction
+{
+    @try {
+        [self throws_handleRequest:request context:context transaction:transaction];
+        return YES;
+    } @catch (NSException *exception) {
+        OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
+        return NO;
+    }
+}
+
+- (void)throws_handleRequest:(MessageManagerRequest *)request
+                     context:(id<DeliveryReceiptContext>)context
+                 transaction:(SDSAnyWriteTransaction *)transaction
+{
+    SSKProtoContent *contentProto = request.protoContent;
+    if (contentProto == nil) {
+        return;
+    }
+    OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
+
+    switch (request.messageType) {
+        case OWSMessageManagerMessageTypeSyncMessage:
+            [self throws_handleIncomingEnvelope:request.envelope
                                 withSyncMessage:contentProto.syncMessage
-                                  plaintextData:plaintextData
-                                wasReceivedByUD:wasReceivedByUD
-                        serverDeliveryTimestamp:serverDeliveryTimestamp
+                                  plaintextData:request.plaintextData
+                                wasReceivedByUD:request.wasReceivedByUD
+                        serverDeliveryTimestamp:request.serverDeliveryTimestamp
                                     transaction:transaction];
 
             [[OWSDeviceManager shared] setHasReceivedSyncMessage];
-        } else if (contentProto.dataMessage) {
-            [self handleIncomingEnvelope:envelope
+            break;
+        case OWSMessageManagerMessageTypeDataMessage:
+            [self handleIncomingEnvelope:request.envelope
                              withDataMessage:contentProto.dataMessage
-                               plaintextData:plaintextData
-                             wasReceivedByUD:wasReceivedByUD
-                     serverDeliveryTimestamp:serverDeliveryTimestamp
-                shouldDiscardVisibleMessages:shouldDiscardVisibleMessages
+                               plaintextData:request.plaintextData
+                             wasReceivedByUD:request.wasReceivedByUD
+                     serverDeliveryTimestamp:request.serverDeliveryTimestamp
+                shouldDiscardVisibleMessages:request.shouldDiscardVisibleMessages
                                  transaction:transaction];
-        } else if (contentProto.callMessage) {
-            if (shouldDiscardVisibleMessages) {
-                OWSLogInfo(@"Discarding message with timestamp: %llu", envelope.timestamp);
-                return;
-            }
-            OWSCallMessageAction action = [self.callMessageHandler actionForEnvelope:envelope
+            break;
+        case OWSMessageManagerMessageTypeCallMessage:
+            OWSAssertDebug(!request.shouldDiscardVisibleMessages);
+            OWSCallMessageAction action = [self.callMessageHandler actionForEnvelope:request.envelope
                                                                          callMessage:contentProto.callMessage
-                                                             serverDeliveryTimestamp:serverDeliveryTimestamp];
+                                                             serverDeliveryTimestamp:request.serverDeliveryTimestamp];
             switch (action) {
                 case OWSCallMessageActionIgnore:
-                    OWSLogInfo(@"Ignoring call message with timestamp: %llu", envelope.timestamp);
+                    OWSLogInfo(@"Ignoring call message with timestamp: %llu", request.envelope.timestamp);
                     break;
                 case OWSCallMessageActionHandoff:
-                    [self.callMessageHandler externallyHandleCallMessageWithEnvelope:envelope
-                                                                       plaintextData:plaintextData
-                                                                     wasReceivedByUD:wasReceivedByUD
-                                                             serverDeliveryTimestamp:serverDeliveryTimestamp
+                    [self.callMessageHandler externallyHandleCallMessageWithEnvelope:request.envelope
+                                                                       plaintextData:request.plaintextData
+                                                                     wasReceivedByUD:request.wasReceivedByUD
+                                                             serverDeliveryTimestamp:request.serverDeliveryTimestamp
                                                                          transaction:transaction];
                     break;
                 case OWSCallMessageActionProcess:
-                    [self handleIncomingEnvelope:envelope
+                    [self handleIncomingEnvelope:request.envelope
                                  withCallMessage:contentProto.callMessage
-                         serverDeliveryTimestamp:serverDeliveryTimestamp
+                         serverDeliveryTimestamp:request.serverDeliveryTimestamp
                                      transaction:transaction];
                     break;
             }
-        } else if (contentProto.typingMessage) {
-            [self handleIncomingEnvelope:envelope
+            break;
+        case OWSMessageManagerMessageTypeTypingMessage:
+            [self handleIncomingEnvelope:request.envelope
                        withTypingMessage:contentProto.typingMessage
-                 serverDeliveryTimestamp:serverDeliveryTimestamp
+                 serverDeliveryTimestamp:request.serverDeliveryTimestamp
                              transaction:transaction];
-        } else if (contentProto.nullMessage) {
+            break;
+        case OWSMessageManagerMessageTypeNullMessage:
             OWSLogInfo(@"Received null message.");
-        } else if (contentProto.receiptMessage) {
-            [self handleIncomingEnvelope:envelope
+            break;
+        case OWSMessageManagerMessageTypeReceiptMessage:
+            [self handleIncomingEnvelope:request.envelope
                       withReceiptMessage:contentProto.receiptMessage
+                                 context:context
                              transaction:transaction];
-        } else if (contentProto.decryptionErrorMessage) {
-            [self handleIncomingEnvelope:envelope
+            break;
+        case OWSMessageManagerMessageTypeDecryptionErrorMessage:
+            [self handleIncomingEnvelope:request.envelope
                 withDecryptionErrorMessage:contentProto.decryptionErrorMessage
                                transaction:transaction];
-        } else if (contentProto.storyMessage) {
-            [self handleIncomingEnvelope:envelope withStoryMessage:contentProto.storyMessage transaction:transaction];
-        } else if (contentProto.hasSenderKeyDistributionMessage) {
+            break;
+        case OWSMessageManagerMessageTypeStoryMessage:
+            [self handleIncomingEnvelope:request.envelope
+                        withStoryMessage:contentProto.storyMessage
+                             transaction:transaction];
+            break;
+        case OWSMessageManagerMessageTypeHasSenderKeyDistributionMessage:
             // Sender key distribution messages are not mutually exclusive. They can be
             // included with any message type. However, they're not processed here. They're
             // processed in the -preprocess phase that occurs post-decryption.
             //
             // See: OWSMessageManager.preprocessEnvelope(envelope:plaintext:transaction:)
-        } else {
+            break;
+        case OWSMessageManagerMessageTypeUnknown:
             OWSLogWarn(@"Ignoring envelope. Content with no known payload");
-        }
-
-    } else if (envelope.legacyMessage != nil) { // DEPRECATED - Remove after all clients have been upgraded.
-        NSError *error;
-        SSKProtoDataMessage *_Nullable dataMessageProto =
-            [[SSKProtoDataMessage alloc] initWithSerializedData:plaintextData error:&error];
-        if (error || !dataMessageProto) {
-            OWSFailDebug(@"could not parse proto: %@", error);
-            return;
-        }
-        OWSLogInfo(@"handling message: <DataMessage: %@ />", [self descriptionForDataMessage:dataMessageProto]);
-
-        [self handleIncomingEnvelope:envelope
-                         withDataMessage:dataMessageProto
-                           plaintextData:plaintextData
-                         wasReceivedByUD:wasReceivedByUD
-                 serverDeliveryTimestamp:serverDeliveryTimestamp
-            shouldDiscardVisibleMessages:shouldDiscardVisibleMessages
-                             transaction:transaction];
-    } else {
-        OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorEnvelopeNoActionablePayload], envelope);
+            break;
     }
-
     if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"Done timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, envelope.serverTimestamp);
+        OWSLogInfo(@"Done timestamp: %llu, serviceTimestamp: %llu, ",
+            request.envelope.timestamp,
+            request.envelope.serverTimestamp);
     }
 }
 
@@ -863,6 +895,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
             withReceiptMessage:(SSKProtoReceiptMessage *)receiptMessage
+                       context:(id<DeliveryReceiptContext>)context
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -903,6 +936,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        recipientDeviceId:envelope.sourceDevice
                                                           sentTimestamps:sentTimestamps
                                                        deliveryTimestamp:@(envelope.timestamp)
+                                                                 context:context
                                                              transaction:transaction];
             break;
         case SSKProtoReceiptMessageTypeRead:

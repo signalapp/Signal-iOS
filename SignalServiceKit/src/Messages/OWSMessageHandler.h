@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,6 +19,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope);
 
 - (NSString *)descriptionForContent:(SSKProtoContent *)content;
 - (NSString *)descriptionForDataMessage:(SSKProtoDataMessage *)dataMessage;
++ (void)logInvalidEnvelope:(SSKProtoEnvelope *)envelope;
 
 @end
 

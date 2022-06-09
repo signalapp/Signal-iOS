@@ -94,23 +94,7 @@ extension OWSMessageManager {
 
     @objc
     func isValidEnvelope(_ envelope: SSKProtoEnvelope) -> Bool {
-        guard envelope.timestamp >= 1 else {
-            owsFailDebug("Invalid timestamp")
-            return false
-        }
-        guard SDS.fitsInInt64(envelope.timestamp) else {
-            owsFailDebug("Invalid timestamp")
-            return false
-        }
-        guard envelope.hasValidSource else {
-            owsFailDebug("Invalid source")
-            return false
-        }
-        guard envelope.sourceDevice >= 1 else {
-            owsFailDebug("Invalid source device")
-            return false
-        }
-        return true
+        return envelope.isValid
     }
 
     /// Performs a limited amount of time sensitive processing before scheduling the remainder of message processing
@@ -126,6 +110,7 @@ extension OWSMessageManager {
     /// to decrypt.
     /// - This *needs* to happen in the very same write transaction where the message was decrypted. It's important to keep in mind
     /// that the NSE could race with the main app when processing messages. The write transaction is used to protect us from any races.
+    @objc
     func preprocessEnvelope(envelope: SSKProtoEnvelope, plaintext: Data?, transaction: SDSAnyWriteTransaction) {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             owsFail("Should not process messages")
@@ -315,5 +300,338 @@ extension OWSMessageManager {
             splits.append("flags: \(dataMessage.flags)")
         }
         return "[" + splits.joined(separator: ", ") + "]"
+    }
+}
+
+extension SSKProtoEnvelope {
+    var isValid: Bool {
+        guard timestamp >= 1 else {
+            owsFailDebug("Invalid timestamp")
+            return false
+        }
+        guard SDS.fitsInInt64(timestamp) else {
+            owsFailDebug("Invalid timestamp")
+            return false
+        }
+        guard hasValidSource else {
+            owsFailDebug("Invalid source")
+            return false
+        }
+        guard sourceDevice >= 1 else {
+            owsFailDebug("Invalid source device")
+            return false
+        }
+        return true
+    }
+
+    @objc
+    var formattedAddress: String {
+        return "\(String(describing: sourceAddress)).\(sourceDevice)"
+    }
+}
+
+extension SSKProtoContent {
+    @objc
+    var contentDescription: String {
+        var message = String()
+        if let syncMessage = self.syncMessage {
+            message.append("<SyncMessage: \(syncMessage.contentDescription) />")
+        } else if let dataMessage = self.dataMessage {
+            message.append("<DataMessage: \(dataMessage.contentDescription) />")
+        } else if let callMessage = self.callMessage {
+            message.append("<CallMessage \(callMessage.contentDescription) />")
+        } else if let nullMessage = self.nullMessage {
+            message.append("<NullMessage: \(nullMessage) />")
+        } else if let receiptMessage = self.receiptMessage {
+            message.append("<ReceiptMessage: \(receiptMessage) />")
+        } else if let typingMessage = self.typingMessage {
+            message.append("<TypingMessage: \(typingMessage) />")
+        } else if let decryptionErrorMessage = self.decryptionErrorMessage {
+            message.append("<DecryptionErrorMessage: \(decryptionErrorMessage) />")
+        } else if let storyMessage = self.storyMessage {
+            message.append("<StoryMessage: \(storyMessage) />")
+        }
+
+         // SKDM's are not mutually exclusive with other content types
+         if hasSenderKeyDistributionMessage {
+             if !message.isEmpty {
+                 message.append(" + ")
+             }
+             message.append("SenderKeyDistributionMessage")
+         }
+
+        if message.isEmpty {
+            // Don't fire an analytics event; if we ever add a new content type, we'd generate a ton of
+            // analytics traffic.
+            owsFailDebug("Unknown content type.")
+            return "UnknownContent"
+
+        }
+        return message
+    }
+}
+
+extension SSKProtoCallMessage {
+    @objc
+    var contentDescription: String {
+        let messageType: String
+        let callId: UInt64
+
+        if let offer = self.offer {
+            messageType = "Offer"
+            callId = offer.id
+        } else if let busy = self.busy {
+            messageType = "Busy"
+            callId = busy.id
+        } else if let answer = self.answer {
+            messageType = "Answer"
+            callId = answer.id
+        } else if let legacyHangup = self.legacyHangup {
+            messageType = "legacyHangup"
+            callId = legacyHangup.id
+        } else if let hangup = self.hangup {
+            messageType = "Hangup"
+            callId = hangup.id
+        } else if let firstICEUpdate = iceUpdate.first {
+            messageType = "Ice Updates \(iceUpdate.count)"
+            callId = firstICEUpdate.id
+        } else if let opaque = self.opaque {
+            if opaque.hasUrgency {
+                messageType = "Opaque (\(opaque.unwrappedUrgency.contentDescription))"
+            } else {
+                messageType = "Opaque"
+            }
+            callId = 0
+        } else {
+            owsFailDebug("failure: unexpected call message type: \(self)")
+            messageType = "Unknown"
+            callId = 0
+        }
+
+        return "type: \(messageType), id: \(callId)"
+    }
+}
+
+extension SSKProtoCallMessageOpaqueUrgency {
+    var contentDescription: String {
+        switch self {
+        case .droppable:
+            return "Droppable"
+        case .handleImmediately:
+            return "HandleImmediately"
+        default:
+            return "Unknown"
+        }
+    }
+}
+
+extension SSKProtoDataMessage {
+    @objc
+    var contentDescription: String {
+        var parts = [String]()
+        if group != nil {
+            parts.append("(Group:YES) )")
+        }
+        if Int64(flags) & Int64(SSKProtoDataMessageFlags.endSession.rawValue) != 0 {
+            parts.append("EndSession")
+        } else if Int64(flags) & Int64(SSKProtoDataMessageFlags.expirationTimerUpdate.rawValue) != 0 {
+            parts.append("ExpirationTimerUpdate")
+        } else if Int64(flags) & Int64(SSKProtoDataMessageFlags.profileKeyUpdate.rawValue) != 0 {
+            parts.append("ProfileKey")
+        } else if attachments.count > 0 {
+            parts.append("MessageWithAttachment")
+        } else {
+            parts.append("Plain")
+        }
+        return "<\(parts.joined(separator: " ")) />"
+    }
+}
+
+extension SSKProtoSyncMessage {
+    @objc
+    var contentDescription: String {
+        if sent != nil {
+            return "SentTranscript"
+        }
+        if let request = self.request {
+            if !request.hasType {
+                return "Unknown sync request."
+            }
+            switch request.unwrappedType {
+            case .contacts:
+                return "ContactRequest"
+            case .groups:
+                return "GroupRequest"
+            case .blocked:
+                return "BlockedRequest"
+            case .configuration:
+                return "ConfigurationRequest"
+            case .keys:
+                return "KeysRequest"
+            case .pniIdentity:
+                return "PniIdentityRequest"
+            default:
+                owsFailDebug("Unknown sync message request type")
+                return "UnknownRequest"
+            }
+        }
+        if blocked != nil {
+            return "Blocked"
+        }
+        if pniIdentity != nil {
+            return "PniIdentity"
+        }
+        if read.count > 0 {
+            return "ReadReceipt"
+        }
+        if let verified = verified {
+            return "Verification for: \(String(describing: verified.destinationAddress))"
+        }
+        if !stickerPackOperation.isEmpty {
+            var operationTypes = [String]()
+            for packOperationProto in stickerPackOperation {
+                if !packOperationProto.hasType {
+                    operationTypes.append("unknown")
+                    continue
+                }
+                switch packOperationProto.unwrappedType {
+                case .install:
+                    operationTypes.append("install")
+                case .remove:
+                    operationTypes.append("remove")
+                default:
+                    operationTypes.append("unknown")
+                }
+            }
+            return "StickerPackOperation: \(operationTypes.joined(separator: ", "))"
+        }
+        if let fetchLatest = fetchLatest {
+            switch fetchLatest.unwrappedType {
+            case .unknown:
+                return "FetchLatest_Unknown"
+            case .localProfile:
+                return "FetchLatest_LocalProfile"
+            case .storageManifest:
+                return "FetchLatest_StorageManifest"
+            case .subscriptionStatus:
+                return "FetchLatest_SubscriptionStatus"
+            }
+        } else {
+            owsFailDebug("Unknown sync message type")
+            return "Unknown"
+        }
+
+    }
+}
+
+extension SSKProtoCallMessageOpaque {
+    @objc
+    static func urgencyDescription(_ value: SSKProtoCallMessageOpaqueUrgency) -> String {
+        return value.contentDescription
+    }
+}
+
+@objc
+class MessageManagerRequest: NSObject {
+    @objc let envelope: SSKProtoEnvelope
+    @objc let plaintextData: Data
+    @objc let wasReceivedByUD: Bool
+    @objc let serverDeliveryTimestamp: UInt64
+    @objc let shouldDiscardVisibleMessages: Bool
+
+    enum Kind {
+        case modern(SSKProtoContent)
+        case unactionable
+    }
+    private let kind: Kind
+    @objc
+    var protoContent: SSKProtoContent? {
+        switch kind {
+        case .modern(let content):
+            return content
+        case .unactionable:
+            return nil
+        }
+    }
+
+    @objc
+    var messageType: OWSMessageManagerMessageType {
+        if protoContent?.syncMessage != nil {
+            return .syncMessage
+        }
+        if protoContent?.dataMessage != nil {
+            return .dataMessage
+        }
+        if protoContent?.callMessage != nil {
+            return .callMessage
+        }
+        if protoContent?.typingMessage != nil {
+            return .typingMessage
+        }
+        if protoContent?.nullMessage != nil {
+            return .nullMessage
+        }
+        if protoContent?.receiptMessage != nil {
+            return .receiptMessage
+        }
+        if protoContent?.decryptionErrorMessage != nil {
+            return .decryptionErrorMessage
+        }
+        if protoContent?.storyMessage != nil {
+            return .storyMessage
+        }
+        if protoContent?.hasSenderKeyDistributionMessage ?? false {
+            return .hasSenderKeyDistributionMessage
+        }
+        return .unknown
+    }
+
+    @objc
+    init?(envelope: SSKProtoEnvelope,
+          plaintextData: Data,
+          wasReceivedByUD: Bool,
+          serverDeliveryTimestamp: UInt64,
+          shouldDiscardVisibleMessages: Bool,
+          transaction: SDSAnyWriteTransaction) {
+        guard envelope.isValid, let sourceAddress = envelope.sourceAddress else {
+            owsFailDebug("Missing envelope")
+            return nil
+        }
+        self.envelope = envelope
+        self.plaintextData = plaintextData
+        self.wasReceivedByUD = wasReceivedByUD
+        self.serverDeliveryTimestamp = serverDeliveryTimestamp
+        self.shouldDiscardVisibleMessages = shouldDiscardVisibleMessages
+
+        if Self.isDuplicate(envelope, address: sourceAddress, transaction: transaction) {
+            Logger.info("Ignoring previously received envelope from \(envelope.formattedAddress) with timestamp: \(envelope.timestamp)")
+            return nil
+        }
+
+        if envelope.content != nil {
+            do {
+                let contentProto = try SSKProtoContent(serializedData: self.plaintextData)
+                Logger.info("handling content: <Content: \(contentProto.contentDescription)>")
+                if contentProto.callMessage != nil && shouldDiscardVisibleMessages {
+                    Logger.info("Discarding message with timestamp \(envelope.timestamp)")
+                    return nil
+                }
+                kind = .modern(contentProto)
+            } catch {
+                owsFailDebug("could not parse proto: \(error)")
+                return nil
+            }
+        } else {
+            kind = .unactionable
+        }
+    }
+
+    private static func isDuplicate(_ envelope: SSKProtoEnvelope,
+                                    address: SignalServiceAddress,
+                                    transaction: SDSAnyReadTransaction) -> Bool {
+        return InteractionFinder.existsIncomingMessage(timestamp: envelope.timestamp,
+                                                       address: address,
+                                                       sourceDeviceId: envelope.sourceDevice,
+                                                       transaction: transaction)
     }
 }

@@ -388,6 +388,7 @@ public class EarlyMessageManager: NSObject {
                     withDeliveredRecipient: sender,
                     recipientDeviceId: deviceId,
                     deliveryTimestamp: NSNumber(value: timestamp),
+                    context: PassthroughDeliveryReceiptContext(),
                     transaction: transaction
                 )
             case .messageReadOnLinkedDevice(let timestamp):

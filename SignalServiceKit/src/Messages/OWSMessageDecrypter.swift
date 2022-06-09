@@ -98,7 +98,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                 envelopeData: Data?,
                                 transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
         owsAssertDebug(tsAccountManager.isRegistered)
-
+        OWSMessageHandler.logInvalidEnvelope(envelope)
         Logger.info("decrypting envelope: \(description(for: envelope))")
 
         guard envelope.hasType else {

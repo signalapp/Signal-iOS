@@ -756,6 +756,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 - (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress
                    recipientDeviceId:(uint32_t)deviceId
                    deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
+                             context:(id<DeliveryReceiptContext>)context
                          transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(recipientAddress.isValid);
@@ -781,22 +782,23 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                       deviceId:deviceId
                                    transaction:transaction];
 
-    [self anyUpdateOutgoingMessageWithTransaction:transaction
-                                            block:^(TSOutgoingMessage *message) {
-                                                TSOutgoingMessageRecipientState *_Nullable recipientState
-                                                    = message.recipientAddressStates[recipientAddress];
-                                                if (!recipientState) {
-                                                    OWSFailDebug(@"Missing recipient state for delivered recipient: %@",
-                                                        recipientAddress);
-                                                    return;
-                                                }
-                                                if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
-                                                    OWSLogWarn(@"marking unsent message as delivered.");
-                                                }
-                                                recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                                recipientState.deliveryTimestamp = deliveryTimestamp;
-                                                recipientState.errorCode = nil;
-                                            }];
+    [context
+        addUpdateForMessage:self
+                transaction:transaction
+                     update:^(TSOutgoingMessage *message) {
+                         TSOutgoingMessageRecipientState *_Nullable recipientState
+                             = message.recipientAddressStates[recipientAddress];
+                         if (!recipientState) {
+                             OWSFailDebug(@"Missing recipient state for delivered recipient: %@", recipientAddress);
+                             return;
+                         }
+                         if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
+                             OWSLogWarn(@"marking unsent message as delivered.");
+                         }
+                         recipientState.state = OWSOutgoingMessageRecipientStateSent;
+                         recipientState.deliveryTimestamp = deliveryTimestamp;
+                         recipientState.errorCode = nil;
+                     }];
 }
 
 - (void)updateWithReadRecipient:(SignalServiceAddress *)recipientAddress

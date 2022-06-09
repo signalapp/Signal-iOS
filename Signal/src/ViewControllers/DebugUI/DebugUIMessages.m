@@ -4282,6 +4282,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 [message updateWithDeliveredRecipient:address
                                     recipientDeviceId:0
                                     deliveryTimestamp:timestamp
+                                              context:[[PassthroughDeliveryReceiptContext alloc] init]
                                           transaction:transaction];
                 [message updateWithReadRecipient:address
                                recipientDeviceId:0
@@ -4584,6 +4585,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             [message updateWithDeliveredRecipient:address
                                 recipientDeviceId:0
                                 deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
+                                          context:[[PassthroughDeliveryReceiptContext alloc] init]
                                       transaction:transaction];
         }
     }

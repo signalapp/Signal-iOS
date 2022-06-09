@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockSSKEnvironment.h"
@@ -216,6 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
         [expiringDeliveredOutgoingMessage updateWithDeliveredRecipient:self.otherAddress
                                                      recipientDeviceId:0
                                                      deliveryTimestamp:nil
+                                                               context:[[PassthroughDeliveryReceiptContext alloc] init]
                                                            transaction:transaction];
         uint64_t nowMs = [NSDate ows_millisecondTimeStamp];
         [expiringDeliveredAndReadOutgoingMessage updateWithReadRecipient:self.otherAddress

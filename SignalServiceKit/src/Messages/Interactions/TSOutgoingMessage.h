@@ -57,6 +57,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
     TSGroupMetaMessageRequestInfo,
 };
 
+@protocol DeliveryReceiptContext;
+
 @class SDSAnyWriteTransaction;
 @class SSKProtoAttachmentPointer;
 @class SSKProtoContentBuilder;
@@ -318,6 +320,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress
                    recipientDeviceId:(uint32_t)deviceId
                    deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
+                             context:(id<DeliveryReceiptContext>)deliveryReceiptContext
                          transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:

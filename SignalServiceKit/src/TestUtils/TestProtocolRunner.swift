@@ -270,8 +270,82 @@ public struct FakeService: Dependencies {
         return builder
     }
 
+    public func envelopeBuilder(fromSenderClient senderClient: TestSignalClient, groupV2Context: SSKProtoGroupContextV2) throws -> SSKProtoEnvelopeBuilder {
+        envelopeId += 1
+        let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
+        builder.setType(.ciphertext)
+        builder.setSourceDevice(senderClient.deviceId)
+
+        let content = try buildEncryptedContentData(fromSenderClient: senderClient, groupV2Context: groupV2Context)
+        builder.setContent(content)
+
+        // builder.setServerTimestamp(serverTimestamp)
+        // builder.setServerGuid(serverGuid)
+
+        return builder
+    }
+
+    public func envelopeBuilderForServerGeneratedDeliveryReceipt(fromSenderClient senderClient: TestSignalClient) -> SSKProtoEnvelopeBuilder {
+        envelopeId += 1
+        let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
+        builder.setType(.receipt)
+        builder.setSourceDevice(senderClient.deviceId)
+
+        return builder
+    }
+
+    public func envelopeBuilderForInvalidEnvelope(fromSenderClient senderClient: TestSignalClient) -> SSKProtoEnvelopeBuilder {
+        envelopeId += 1
+        let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
+        builder.setType(.unknown)
+        builder.setSourceDevice(senderClient.deviceId)
+        builder.setContent("Hello world".data(using: .utf8)!)
+
+        return builder
+    }
+
+    public func envelopeBuilderForUDDeliveryReceipt(fromSenderClient senderClient: TestSignalClient,
+                                                    timestamp: UInt64) -> SSKProtoEnvelopeBuilder {
+        envelopeId += 1
+        let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
+        builder.setType(.ciphertext)
+        builder.setSourceDevice(senderClient.deviceId)
+
+        let content = try! buildEncryptedContentData(fromSenderClient: senderClient, deliveryReceiptForMessage: timestamp)
+        builder.setContent(content)
+
+        return builder
+    }
+
     public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, bodyText: String?) throws -> Data {
         let plaintext = try buildContentData(bodyText: bodyText)
+        let cipherMessage: CiphertextMessage = databaseStorage.write { transaction in
+            return try! self.runner.encrypt(plaintext,
+                                            senderClient: senderClient,
+                                            recipient: self.localClient.protocolAddress,
+                                            context: transaction)
+        }
+
+        assert(cipherMessage.messageType == .whisper)
+        return Data(cipherMessage.serialize())
+    }
+
+    public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, groupV2Context: SSKProtoGroupContextV2) throws -> Data {
+        let plaintext = try buildContentData(groupV2Context: groupV2Context)
+        let cipherMessage: CiphertextMessage = databaseStorage.write { transaction in
+            return try! self.runner.encrypt(plaintext,
+                                            senderClient: senderClient,
+                                            recipient: self.localClient.protocolAddress,
+                                            context: transaction)
+        }
+
+        assert(cipherMessage.messageType == .whisper)
+        return Data(cipherMessage.serialize())
+    }
+
+    public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient,
+                                          deliveryReceiptForMessage timestamp: UInt64) throws -> Data {
+        let plaintext = try buildContentData(deliveryReceiptForMessage: timestamp)
         let cipherMessage: CiphertextMessage = databaseStorage.write { transaction in
             return try! self.runner.encrypt(plaintext,
                                             senderClient: senderClient,
@@ -293,6 +367,27 @@ public struct FakeService: Dependencies {
 
         let contentBuilder = SSKProtoContent.builder()
         contentBuilder.setDataMessage(try dataMessageBuilder.build())
+
+        return try contentBuilder.buildSerializedData()
+    }
+
+    public func buildContentData(groupV2Context: SSKProtoGroupContextV2) throws -> Data {
+        let dataMessageBuilder = SSKProtoDataMessage.builder()
+        dataMessageBuilder.setGroupV2(groupV2Context)
+
+        let contentBuilder = SSKProtoContent.builder()
+        contentBuilder.setDataMessage(try dataMessageBuilder.build())
+
+        return try contentBuilder.buildSerializedData()
+    }
+
+    public func buildContentData(deliveryReceiptForMessage timestamp: UInt64) throws -> Data {
+        let receiptMessageBuilder = SSKProtoReceiptMessage.builder()
+        receiptMessageBuilder.setType(.delivery)
+        receiptMessageBuilder.setTimestamp([timestamp])
+
+        let contentBuilder = SSKProtoContent.builder()
+        contentBuilder.setReceiptMessage(try receiptMessageBuilder.build())
 
         return try contentBuilder.buildSerializedData()
     }

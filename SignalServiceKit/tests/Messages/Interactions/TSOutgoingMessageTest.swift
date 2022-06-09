@@ -123,6 +123,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
                            deliveryTimestamp: nil,
+                           context: PassthroughDeliveryReceiptContext(),
                            transaction: transaction)
 
             XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAddress, transaction: transaction))
@@ -160,6 +161,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
                            deliveryTimestamp: nil,
+                           context: PassthroughDeliveryReceiptContext(),
                            transaction: transaction)
 
             // Still waiting on device #2!
@@ -168,6 +170,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 2,
                            deliveryTimestamp: nil,
+                           context: PassthroughDeliveryReceiptContext(),
                            transaction: transaction)
 
             // There we go.
@@ -201,6 +204,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
                            deliveryTimestamp: nil,
+                           context: PassthroughDeliveryReceiptContext(),
                            transaction: transaction)
 
             // Still not changed!
@@ -234,6 +238,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
                            deliveryTimestamp: nil,
+                           context: PassthroughDeliveryReceiptContext(),
                            transaction: transaction)
 
             // ...it should stay active.
@@ -278,6 +283,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
                            deliveryTimestamp: nil,
+                           context: PassthroughDeliveryReceiptContext(),
                            transaction: transaction)
 
             // Still on, because our PNI changed!

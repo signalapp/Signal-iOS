@@ -130,40 +130,40 @@ public class MessageProcessor: NSObject {
     }
 
     public func processEncryptedEnvelopeData(
-        _ encryptedEnvelopeData: Data,
+        _ envelopeData: Data,
         serverDeliveryTimestamp: UInt64,
         envelopeSource: EnvelopeSource,
         completion: @escaping (Error?) -> Void
     ) {
-        guard !encryptedEnvelopeData.isEmpty else {
+        guard !envelopeData.isEmpty else {
             completion(OWSAssertionError("Empty envelope, envelopeSource: \(envelopeSource)."))
             return
         }
 
         // Drop any too-large messages on the floor. Well behaving clients should never send them.
-        guard encryptedEnvelopeData.count <= Self.maxEnvelopeByteCount else {
+        guard envelopeData.count <= Self.maxEnvelopeByteCount else {
             completion(OWSAssertionError("Oversize envelope, envelopeSource: \(envelopeSource)."))
             return
         }
 
         // Take note of any messages larger than we expect, but still process them.
         // This likely indicates a misbehaving sending client.
-        if encryptedEnvelopeData.count > Self.largeEnvelopeWarningByteCount {
-            Logger.verbose("encryptedEnvelopeData: \(encryptedEnvelopeData.count) > : \(Self.largeEnvelopeWarningByteCount)")
+        if envelopeData.count > Self.largeEnvelopeWarningByteCount {
+            Logger.verbose("encryptedEnvelopeData: \(envelopeData.count) > : \(Self.largeEnvelopeWarningByteCount)")
             owsFailDebug("Unexpectedly large envelope, envelopeSource: \(envelopeSource).")
         }
 
-        let encryptedEnvelopeProto: SSKProtoEnvelope
+        let protoEnvelope: SSKProtoEnvelope
         do {
-            encryptedEnvelopeProto = try SSKProtoEnvelope(serializedData: encryptedEnvelopeData)
+            protoEnvelope = try SSKProtoEnvelope(serializedData: envelopeData)
         } catch {
             owsFailDebug("Failed to parse encrypted envelope \(error), envelopeSource: \(envelopeSource)")
             completion(error)
             return
         }
 
-        processEncryptedEnvelope(EncryptedEnvelope(encryptedEnvelopeData: encryptedEnvelopeData,
-                                                   encryptedEnvelope: encryptedEnvelopeProto,
+        processEncryptedEnvelope(EncryptedEnvelope(encryptedEnvelopeData: envelopeData,
+                                                   encryptedEnvelope: protoEnvelope,
                                                    serverDeliveryTimestamp: serverDeliveryTimestamp,
                                                    completion: completion),
                                  envelopeSource: envelopeSource)
@@ -274,14 +274,17 @@ public class MessageProcessor: NSObject {
 
             var processedEnvelopes: [PendingEnvelope] = []
             SDSDatabaseStorage.shared.write { transaction in
-                for envelope in batchEnvelopes {
-                    if messagePipelineSupervisor.isMessageProcessingPermitted {
-                        self.processEnvelope(envelope, transaction: transaction)
-                        processedEnvelopes.append(envelope)
-                    } else {
-                        // If we're skipping one message, we have to skip them all to preserve ordering
-                        // Next time around we can process the skipped messages in order
-                        break
+                var remainingEnvelopes = batchEnvelopes
+                while messagePipelineSupervisor.isMessageProcessingPermitted && !remainingEnvelopes.isEmpty {
+                    autoreleasepool {
+                        let combinedRequest = buildNextCombinedRequest(envelopes: &remainingEnvelopes,
+                                                                       transaction: transaction)
+                        let processed = handle(combinedRequest: combinedRequest,
+                                               transaction: transaction)
+                        if processed {
+                            let envelopes = combinedRequest.processingRequests.lazy.map { $0.pendingEnvelope }
+                            processedEnvelopes.append(contentsOf: envelopes)
+                        }
                     }
                 }
             }
@@ -292,138 +295,92 @@ public class MessageProcessor: NSObject {
         }
     }
 
-    private func processEnvelope(_ pendingEnvelope: PendingEnvelope, transaction: SDSAnyWriteTransaction) {
-        assertOnQueue(serialQueue)
-
-        switch pendingEnvelope.decrypt(transaction: transaction) {
-        case .success(let result):
-            // NOTE: We use the envelope from the decrypt result, not the pending envelope,
-            // since the envelope may be altered by the decryption process in the UD case.
-            guard let sourceAddress = result.envelope.sourceAddress, sourceAddress.isValid else {
-                owsFailDebug("Successful decryption with no source address; discarding message")
-                transaction.addAsyncCompletionOffMain {
-                    pendingEnvelope.completion(OWSAssertionError("successful decryption with no source address"))
-                }
-                return
-            }
-
-            // Pre-processing happens during the same transaction that performed decryption
-            messageManager.preprocessEnvelope(envelope: result.envelope,
-                                              plaintext: result.plaintextData,
-                                              transaction: transaction)
-
-            // If the sender is in the block list, we can skip scheduling any additional processing.
-            if blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) {
-                Logger.info("Skipping processing for blocked envelope: \(sourceAddress)")
-
-                let error = MessageProcessingError.blockedSender
-                transaction.addAsyncCompletionOffMain {
-                    pendingEnvelope.completion(error)
-                }
-                return
-            }
-
-            if result.identity == .pni {
-                identityManager.setShouldSharePhoneNumber(with: sourceAddress, transaction: transaction)
-            }
-
-            enum ProcessingStep {
-                case discard
-                case enqueueForGroupProcessing
-                case processNow(shouldDiscardVisibleMessages: Bool)
-            }
-            let processingStep = { () -> ProcessingStep in
-                guard let plaintextData = result.plaintextData,
-                      let groupContextV2 =
-                        GroupsV2MessageProcessor.groupContextV2(fromPlaintextData: plaintextData) else {
-                    // Non-v2-group messages can be processed immediately.
-                    return .processNow(shouldDiscardVisibleMessages: false)
-                }
-
-                guard GroupsV2MessageProcessor.canContextBeProcessedImmediately(
-                    groupContext: groupContextV2,
-                    transaction: transaction
-                ) else {
-                    // Some v2 group messages required group state to be
-                    // updated before they can be processed.
-                    return .enqueueForGroupProcessing
-                }
-                let discardMode = GroupsMessageProcessor.discardMode(forMessageFrom: sourceAddress,
-                                                                     groupContext: groupContextV2,
-                                                                     transaction: transaction)
-                if discardMode == .discard {
-                    // Some v2 group messages should be discarded and not processed.
-                    Logger.verbose("Discarding job.")
-                    return .discard
-                }
-                // Some v2 group messages should be processed, but
-                // discarding any "visible" messages, e.g. text messages
-                // or calls.
-                return .processNow(shouldDiscardVisibleMessages: discardMode == .discardVisibleMessages)
-            }()
-
-            switch processingStep {
-            case .discard:
-                // Do nothing.
-                Logger.verbose("Discarding job.")
-            case .enqueueForGroupProcessing:
-                // If we can't process the message immediately, we enqueue it for
-                // for processing in the same transaction within which it was decrypted
-                // to prevent data loss.
-                let envelopeData: Data
-                if let existingEnvelopeData = result.envelopeData {
-                    envelopeData = existingEnvelopeData
-                } else {
-                    do {
-                        envelopeData = try result.envelope.serializedData()
-                    } catch {
-                        owsFailDebug("failed to reserialize envelope: \(error)")
-                        transaction.addAsyncCompletionOffMain {
-                            pendingEnvelope.completion(error)
-                        }
-                        return
-                    }
-                }
-                Self.groupsV2MessageProcessor.enqueue(
-                    envelopeData: envelopeData,
-                    // All GV2 messages have plaintext data (because that's where the group context lives)
-                    plaintextData: result.plaintextData!,
-                    wasReceivedByUD: result.wasReceivedByUD,
-                    serverDeliveryTimestamp: result.serverDeliveryTimestamp,
-                    transaction: transaction
-                )
-            case .processNow(let shouldDiscardVisibleMessages):
-                // Envelopes can be processed immediately if they're:
-                // 1. Not a GV2 message.
-                // 2. A GV2 message that doesn't require updating the group.
-                //
-                // The advantage to processing the message immediately is that
-                // we can full process the message in the same transaction that
-                // we used to decrypt it. This results in a significant perf
-                // benefit verse queueing the message and waiting for that queue
-                // to open new transactions and process messages. The downside is
-                // that if we *fail* to process this message (e.g. the app crashed
-                // or was killed), we'll have to re-decrypt again before we process.
-                // This is safe, since the decrypt operation would also be rolled
-                // back (since the transaction didn't finalize) and should be rare.
-                Self.messageManager.processEnvelope(
-                    result.envelope,
-                    plaintextData: result.plaintextData,
-                    wasReceivedByUD: result.wasReceivedByUD,
-                    serverDeliveryTimestamp: result.serverDeliveryTimestamp,
-                    shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
-                    transaction: transaction
-                )
-            }
-
-            transaction.addAsyncCompletionOffMain {
-                pendingEnvelope.completion(nil)
-            }
-        case .failure(let error):
-            transaction.addAsyncCompletionOffMain {
-                pendingEnvelope.completion(error)
+    // If envelopes is not empty, this will emit a single request for a non-delivery receipt or one or more requests
+    // all for delivery receipts.
+    private func buildNextCombinedRequest(envelopes: inout [PendingEnvelope],
+                                          transaction: SDSAnyWriteTransaction) -> RelatedProcessingRequests {
+        let result = RelatedProcessingRequests()
+        while let envelope = envelopes.first {
+            envelopes.removeFirst()
+            let request = processingRequest(for: envelope,
+                                            messageManager: Self.messageManager,
+                                            blockingManager: Self.blockingManager,
+                                            transaction: transaction)
+            result.add(request)
+            if request.deliveryReceiptMessageTimestamps == nil {
+                // If we hit a non-delivery receipt envelope, handle it immediately to avoid
+                // keeping potentially large decrypted envelopes in memory.
+                break
             }
         }
+        return result
+    }
+
+    private func handle(combinedRequest: RelatedProcessingRequests,
+                        transaction: SDSAnyWriteTransaction) -> Bool {
+        guard messagePipelineSupervisor.isMessageProcessingPermitted else {
+            // If we're skipping one message, we have to skip them all to preserve ordering
+            // Next time around we can process the skipped messages in order
+            return false
+        }
+        Logger.info("Process \(combinedRequest.processingRequests.count) related requests")
+        // Efficiently handle delivery receipts for the same message by fetching the sent message only
+        // once and only using one transaction to update the message with new recipient state.
+        // If `relation` doesn't contain a bunch of delivery receipts, handle the envelopes individually.
+        BatchingDeliveryReceiptContext.withDeferredUpdates(transaction: transaction) { context in
+            for request in combinedRequest.processingRequests {
+                if handleProcessingRequest(request, context: context, transaction: transaction),
+                   let protoEnvelope = request.protoEnvelope {
+                    messageManager.finishProcessingEnvelope(protoEnvelope,
+                                                            transaction: transaction)
+                }
+            }
+        }
+        return true
+    }
+
+    private func reallyHandleProcessingRequest(_ request: ProcessingRequest,
+                                               context: DeliveryReceiptContext,
+                                               transaction: SDSAnyWriteTransaction) -> (Bool, Error?) {
+        switch request.state {
+        case .completed(error: let error):
+            Logger.info("Envelope completed early with error \(String(describing: error))")
+            return (false, error)
+        case .enqueueForGroup(decryptedEnvelope: let decryptedEnvelope, envelopeData: let envelopeData):
+            Logger.info("Enqueue group envelope")
+            Self.groupsV2MessageProcessor.enqueue(
+                envelopeData: envelopeData,
+                // All GV2 messages have plaintext data (because that's where the group context lives)
+                plaintextData: decryptedEnvelope.plaintextData!,
+                wasReceivedByUD: decryptedEnvelope.wasReceivedByUD,
+                serverDeliveryTimestamp: decryptedEnvelope.serverDeliveryTimestamp,
+                transaction: transaction)
+            return (false, nil)
+        case .messageManagerRequest(let messageManagerRequest):
+            Logger.info("Pass envelope to message manager")
+            messageManager.handle(messageManagerRequest, context: context, transaction: transaction)
+            return (true, nil)
+        case .plaintextReceipt(let protoEnvelope):
+            Logger.info("Handle server-generated receipt")
+            messageManager.handleDeliveryReceipt(protoEnvelope,
+                                                 context: context,
+                                                 transaction: transaction)
+            return (true, nil)
+        case .clearPlaceholdersOnly:
+            return (true, nil)
+        }
+    }
+
+    private func handleProcessingRequest(_ request: ProcessingRequest,
+                                         context: DeliveryReceiptContext,
+                                         transaction: SDSAnyWriteTransaction) -> Bool {
+        let (shouldFinishProcessing, maybeError) = reallyHandleProcessingRequest(request,
+                                                                                 context: context,
+                                                                                 transaction: transaction)
+        transaction.addAsyncCompletionOffMain {
+            request.pendingEnvelope.completion(maybeError)
+        }
+        return shouldFinishProcessing
     }
 
     @objc
@@ -461,6 +418,265 @@ public class MessageProcessor: NSObject {
     }
 }
 
+struct ProcessingRequest {
+    enum State {
+        case completed(error: Error?)
+        case enqueueForGroup(decryptedEnvelope: DecryptedEnvelope,
+                             envelopeData: Data)
+        case messageManagerRequest(MessageManagerRequest)
+        case plaintextReceipt(SSKProtoEnvelope)
+
+        // Message decrypted but had an invalid protobuf.
+        case clearPlaceholdersOnly(SSKProtoEnvelope)
+    }
+
+    let state: State
+    let pendingEnvelope: PendingEnvelope
+    var protoEnvelope: SSKProtoEnvelope? {
+        switch state {
+        case .completed, .enqueueForGroup:
+            return nil
+        case .messageManagerRequest(let messageManagerRequest):
+            return messageManagerRequest.envelope
+        case .plaintextReceipt(let protoEnvelope), .clearPlaceholdersOnly(let protoEnvelope):
+            return protoEnvelope
+        }
+    }
+
+    // If this request is for a delivery receipt, return the timestamps for the sent-messages it
+    // corresponds to.
+    var deliveryReceiptMessageTimestamps: [UInt64]? {
+        switch state {
+        case .completed, .enqueueForGroup, .clearPlaceholdersOnly:
+            return nil
+        case .plaintextReceipt(let protoEnvelope):
+            return [protoEnvelope.timestamp]
+        case .messageManagerRequest(let request):
+            switch request.messageType {
+            case .receiptMessage:
+                guard let receiptMessage = request.protoContent?.receiptMessage,
+                      receiptMessage.unwrappedType == .delivery else {
+                    return nil
+                }
+                return receiptMessage.timestamp
+            case .syncMessage, .dataMessage, .callMessage, .typingMessage, .nullMessage,
+                    .decryptionErrorMessage, .storyMessage, .hasSenderKeyDistributionMessage, .unknown:
+                return nil
+            }
+        }
+    }
+    init(_ pendingEnvelope: PendingEnvelope,
+         state: State) {
+        self.pendingEnvelope = pendingEnvelope
+        self.state = state
+    }
+}
+
+class RelatedProcessingRequests {
+    private(set) var processingRequests = [ProcessingRequest]()
+
+    var deliveryReceiptMessageTimestamps: [UInt64]? {
+        guard let request = processingRequests.first else {
+            return nil
+        }
+        return request.deliveryReceiptMessageTimestamps
+    }
+
+    func add(_ processingRequest: ProcessingRequest) {
+        processingRequests.append(processingRequest)
+    }
+}
+
+struct ProcessingRequestBuilder {
+    let pendingEnvelope: PendingEnvelope
+    let messageManager: OWSMessageManager
+    let blockingManager: BlockingManager
+
+    init(_ pendingEnvelope: PendingEnvelope,
+         messageManager: OWSMessageManager,
+         blockingManager: BlockingManager) {
+        self.pendingEnvelope = pendingEnvelope
+        self.messageManager = messageManager
+        self.blockingManager = blockingManager
+    }
+
+    func build(transaction: SDSAnyWriteTransaction) -> ProcessingRequest {
+        switch pendingEnvelope.decrypt(transaction: transaction) {
+        case .success(let result):
+            return decryptionSucceeded(result, transaction: transaction)
+        case .failure(let error):
+            return decryptionFailed(error)
+        }
+    }
+
+    private enum ProcessingStep {
+        case discard
+        case enqueueForGroupProcessing
+        case processNow(shouldDiscardVisibleMessages: Bool)
+    }
+
+    private func processingStep(_ result: DecryptedEnvelope,
+                                sourceAddress: SignalServiceAddress,
+                                transaction: SDSAnyWriteTransaction) -> ProcessingStep {
+        guard let plaintextData = result.plaintextData,
+              let groupContextV2 =
+                GroupsV2MessageProcessor.groupContextV2(fromPlaintextData: plaintextData) else {
+            // Non-v2-group messages can be processed immediately.
+            return .processNow(shouldDiscardVisibleMessages: false)
+        }
+
+        guard GroupsV2MessageProcessor.canContextBeProcessedImmediately(
+            groupContext: groupContextV2,
+            transaction: transaction
+        ) else {
+            // Some v2 group messages required group state to be
+            // updated before they can be processed.
+            return .enqueueForGroupProcessing
+        }
+        let discardMode = GroupsMessageProcessor.discardMode(forMessageFrom: sourceAddress,
+                                                             groupContext: groupContextV2,
+                                                             transaction: transaction)
+        if discardMode == .discard {
+            // Some v2 group messages should be discarded and not processed.
+            Logger.verbose("Discarding job.")
+            return .discard
+        }
+        // Some v2 group messages should be processed, but
+        // discarding any "visible" messages, e.g. text messages
+        // or calls.
+        return .processNow(shouldDiscardVisibleMessages: discardMode == .discardVisibleMessages)
+    }
+
+    private func decryptionSucceeded(_ result: DecryptedEnvelope,
+                                     transaction: SDSAnyWriteTransaction) -> ProcessingRequest {
+        // NOTE: We use the envelope from the decrypt result, not the pending envelope,
+        // since the envelope may be altered by the decryption process in the UD case.
+        guard let sourceAddress = result.envelope.sourceAddress, sourceAddress.isValid else {
+            owsFailDebug("Successful decryption with no source address; discarding message")
+            let error = OWSAssertionError("successful decryption with no source address")
+            return ProcessingRequest(pendingEnvelope,
+                                     state: .completed(error: error))
+        }
+
+        // Pre-processing has to happen during the same transaction that performed decryption
+        messageManager.preprocessEnvelope(envelope: result.envelope,
+                                          plaintext: result.plaintextData,
+                                          transaction: transaction)
+
+        // If the sender is in the block list, we can skip scheduling any additional processing.
+        if blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) {
+            Logger.info("Skipping processing for blocked envelope: \(sourceAddress)")
+            return ProcessingRequest(pendingEnvelope,
+                                     state: .completed(error: MessageProcessingError.blockedSender))
+        }
+
+        if result.identity == .pni {
+            NSObject.identityManager.setShouldSharePhoneNumber(with: sourceAddress, transaction: transaction)
+        }
+
+        switch processingStep(result, sourceAddress: sourceAddress, transaction: transaction) {
+        case .discard:
+            // Do nothing.
+            Logger.verbose("Discarding job.")
+            return ProcessingRequest(pendingEnvelope,
+                                     state: .completed(error: nil))
+        case .enqueueForGroupProcessing:
+            // If we can't process the message immediately, we enqueue it for
+            // for processing in the same transaction within which it was decrypted
+            // to prevent data loss.
+            let envelopeData: Data
+            if let existingEnvelopeData = result.envelopeData {
+                envelopeData = existingEnvelopeData
+            } else {
+                do {
+                    envelopeData = try result.envelope.serializedData()
+                } catch {
+                    owsFailDebug("failed to reserialize envelope: \(error)")
+                    return ProcessingRequest(pendingEnvelope,
+                                             state: .completed(error: error))
+                }
+            }
+            return ProcessingRequest(pendingEnvelope,
+                                     state: .enqueueForGroup(decryptedEnvelope: result, envelopeData: envelopeData))
+        case .processNow(let shouldDiscardVisibleMessages):
+            // Envelopes can be processed immediately if they're:
+            // 1. Not a GV2 message.
+            // 2. A GV2 message that doesn't require updating the group.
+            //
+            // The advantage to processing the message immediately is that
+            // we can full process the message in the same transaction that
+            // we used to decrypt it. This results in a significant perf
+            // benefit verse queueing the message and waiting for that queue
+            // to open new transactions and process messages. The downside is
+            // that if we *fail* to process this message (e.g. the app crashed
+            // or was killed), we'll have to re-decrypt again before we process.
+            // This is safe, since the decrypt operation would also be rolled
+            // back (since the transaction didn't finalize) and should be rare.
+            if !messageManager.canProcessEnvelope(result.envelope, transaction: transaction) {
+                return ProcessingRequest(pendingEnvelope,
+                                         state: .completed(error: nil))
+            }
+            messageManager.checkForUnknownLinkedDevice(inEnvelope: result.envelope, transaction: transaction)
+            switch result.envelope.unwrappedType {
+            case .ciphertext, .prekeyBundle, .unidentifiedSender, .senderkeyMessage, .plaintextContent:
+                if result.plaintextData == nil {
+                    owsFailDebug("Missing plaintextData")
+                }
+                guard let plaintextData = result.plaintextData,
+                      let messageManagerRequest = messageManager.request(for: result.envelope,
+                                                                         plaintextData: plaintextData,
+                                                                         wasReceivedByUD: result.wasReceivedByUD,
+                                                                         serverDeliveryTimestamp: result.serverDeliveryTimestamp,
+                                                                         shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
+                                                                         transaction: transaction) else {
+                    return ProcessingRequest(pendingEnvelope,
+                                             state: .completed(error: nil))
+                }
+                if messageManagerRequest.protoContent == nil {
+                    messageManager.logUnactionablePayload(result.envelope)
+                    return ProcessingRequest(pendingEnvelope,
+                                             state: .clearPlaceholdersOnly(result.envelope))
+                }
+                return ProcessingRequest(pendingEnvelope,
+                                         state: .messageManagerRequest(messageManagerRequest))
+            case .receipt:
+                return ProcessingRequest(pendingEnvelope,
+                                         state: .plaintextReceipt(result.envelope))
+            case .keyExchange:
+                Logger.warn("Received Key Exchange Message, not supported")
+                return ProcessingRequest(pendingEnvelope,
+                                         state: .completed(error: nil))
+            case .unknown:
+                Logger.warn("Received an unknown message type")
+                return ProcessingRequest(pendingEnvelope,
+                                         state: .completed(error: nil))
+            default:
+                Logger.warn("Received unhandled envelope type: \(result.envelope.unwrappedType)")
+                return ProcessingRequest(pendingEnvelope,
+                                         state: .completed(error: nil))
+            }
+        }
+    }
+
+    private func decryptionFailed(_ error: Error) -> ProcessingRequest {
+        return ProcessingRequest(pendingEnvelope,
+                                 state: .completed(error: error))
+    }
+}
+
+extension MessageProcessor {
+    func processingRequest(for envelope: PendingEnvelope,
+                           messageManager: OWSMessageManager,
+                           blockingManager: BlockingManager,
+                           transaction: SDSAnyWriteTransaction) -> ProcessingRequest {
+        assertOnQueue(serialQueue)
+        let builder = ProcessingRequestBuilder(envelope,
+                                               messageManager: messageManager,
+                                               blockingManager: blockingManager)
+        return builder.build(transaction: transaction)
+    }
+}
+
 // MARK: -
 
 extension MessageProcessor: MessageProcessingPipelineStage {
@@ -471,7 +687,7 @@ extension MessageProcessor: MessageProcessingPipelineStage {
 
 // MARK: -
 
-private protocol PendingEnvelope {
+protocol PendingEnvelope {
     var completion: (Error?) -> Void { get }
     var wasReceivedByUD: Bool { get }
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error>
@@ -546,7 +762,7 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
 
 // MARK: -
 
-private struct DecryptedEnvelope: PendingEnvelope {
+struct DecryptedEnvelope: PendingEnvelope {
     let envelope: SSKProtoEnvelope
     let envelopeData: Data?
     let plaintextData: Data?

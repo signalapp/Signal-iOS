@@ -1,13 +1,30 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/OWSMessageHandler.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol DeliveryReceiptContext;
+
+@class MessageManagerRequest;
 @class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
+
+typedef NS_CLOSED_ENUM(NSUInteger, OWSMessageManagerMessageType)
+{
+    OWSMessageManagerMessageTypeSyncMessage,
+    OWSMessageManagerMessageTypeDataMessage,
+    OWSMessageManagerMessageTypeCallMessage,
+    OWSMessageManagerMessageTypeTypingMessage,
+    OWSMessageManagerMessageTypeNullMessage,
+    OWSMessageManagerMessageTypeReceiptMessage,
+    OWSMessageManagerMessageTypeDecryptionErrorMessage,
+    OWSMessageManagerMessageTypeStoryMessage,
+    OWSMessageManagerMessageTypeHasSenderKeyDistributionMessage,
+    OWSMessageManagerMessageTypeUnknown
+};
 
 @interface OWSMessageManager : OWSMessageHandler
 
@@ -20,6 +37,31 @@ NS_ASSUME_NONNULL_BEGIN
          serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
     shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
                      transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (BOOL)handleRequest:(MessageManagerRequest *)request
+              context:(id<DeliveryReceiptContext>)context
+          transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (BOOL)canProcessEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)checkForUnknownLinkedDevice:(SSKProtoEnvelope *)envelope
+                        transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(checkForUnknownLinkedDevice(inEnvelope:transaction:));
+
+- (void)finishProcessingEnvelope:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (MessageManagerRequest *_Nullable)requestForEnvelope:(SSKProtoEnvelope *)envelope
+                                         plaintextData:(NSData *)plaintextData
+                                       wasReceivedByUD:(BOOL)wasReceivedByUD
+                               serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+                          shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
+                                           transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)logUnactionablePayload:(SSKProtoEnvelope *)envelope;
+
+- (void)handleDeliveryReceipt:(SSKProtoEnvelope *)envelope
+                      context:(id<DeliveryReceiptContext>)context
+                  transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 
