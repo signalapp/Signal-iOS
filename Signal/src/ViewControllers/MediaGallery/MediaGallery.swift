@@ -204,6 +204,10 @@ class MediaGallery: Dependencies {
     init(thread: TSThread) {
         self.mediaGalleryFinder = MediaGalleryFinder(thread: thread)
         NotificationCenter.default.addObserver(self,
+                                               selector: #selector(Self.newAttachmentsAvailable(_:)),
+                                               name: MediaGalleryManager.newAttachmentsAvailableNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
                                                selector: #selector(Self.didRemoveAttachments(_:)),
                                                name: MediaGalleryManager.didRemoveAttachmentsNotification,
                                                object: nil)
@@ -245,7 +249,7 @@ class MediaGallery: Dependencies {
         // In some cases this may result in deleting sections entirely; we do this as a follow-up step so that
         // delegates don't get confused.
         AssertIsOnMainThread()
-        let incomingDeletedAttachments = notification.object as! [MediaGalleryManager.RemovedAttachment]
+        let incomingDeletedAttachments = notification.object as! [MediaGalleryManager.ChangedAttachmentInfo]
 
         var sectionsNeedingUpdate = Set<GalleryDate>()
         for incomingDeletedAttachment in incomingDeletedAttachments {
@@ -303,34 +307,24 @@ class MediaGallery: Dependencies {
         }
     }
 
-    func process(updatedAttachmentIds: Set<String>) {
+    @objc
+    private func newAttachmentsAvailable(_ notification: Notification) {
         AssertIsOnMainThread()
+        let incomingNewAttachments = notification.object as! [MediaGalleryManager.ChangedAttachmentInfo]
+        let relevantAttachments = incomingNewAttachments.filter { $0.threadGrdbId == mediaGalleryFinder.threadId }
 
-        guard !updatedAttachmentIds.isEmpty else {
+        guard !relevantAttachments.isEmpty else {
             return
         }
         Logger.debug("")
-
-        // Conservatively assume that every updated attachment is an added attachment,
-        // and deal with this by reloading the affected sections.
 
         var sectionsNeedingUpdate = IndexSet()
         var didAddSectionAtEnd = false
         var didReset = false
 
         databaseStorage.read { transaction in
-            for attachmentId in updatedAttachmentIds {
-                let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
-                guard let attachmentStream = attachment as? TSAttachmentStream else {
-                    // not downloaded yet
-                    return
-                }
-                guard let message = attachmentStream.fetchAlbumMessage(transaction: transaction) else {
-                    Logger.warn("message was unexpectedly nil")
-                    return
-                }
-
-                let sectionDate = GalleryDate(message: message)
+            for attachmentInfo in relevantAttachments {
+                let sectionDate = GalleryDate(date: Date(millisecondsSince1970: attachmentInfo.timestamp))
                 // Do a backwards search assuming new messages usually arrive at the end.
                 // Still, this is kept sorted, so we ought to be able to do a binary search instead.
                 if let lastSectionDate = sections.orderedKeys.last, sectionDate > lastSectionDate {
@@ -364,7 +358,9 @@ class MediaGallery: Dependencies {
         if didReset {
             delegates.forEach { $0.didReloadAllSectionsInMediaGallery(self) }
         } else {
-            delegates.forEach { $0.mediaGallery(self, didReloadItemsInSections: sectionsNeedingUpdate) }
+            if !sectionsNeedingUpdate.isEmpty {
+                delegates.forEach { $0.mediaGallery(self, didReloadItemsInSections: sectionsNeedingUpdate) }
+            }
             if didAddSectionAtEnd {
                 delegates.forEach { $0.didAddSectionInMediaGallery(self) }
             }
@@ -1043,7 +1039,7 @@ class MediaGallery: Dependencies {
 extension MediaGallery: DatabaseChangeDelegate {
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        process(updatedAttachmentIds: databaseChanges.attachmentUniqueIds.subtracting(deletedAttachmentIds))
+        // Ignore: we get local changes from notifications instead.
     }
 
     func databaseChangesDidUpdateExternally() {
