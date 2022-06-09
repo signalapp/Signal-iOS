@@ -220,20 +220,6 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    @objc
-    public func updateIdMapping(attachment: TSAttachment, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .grdbWrite(let grdb):
-            DatabaseChangeObserver.serializedSync {
-                if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
-                    databaseChangeObserver.updateIdMapping(attachment: attachment, transaction: grdb)
-                } else if AppReadiness.isAppReady {
-                    owsFailDebug("databaseChangeObserver was unexpectedly nil")
-                }
-            }
-        }
-    }
-
     // MARK: - Touch
 
     @objc(touchInteraction:shouldReindex:transaction:)

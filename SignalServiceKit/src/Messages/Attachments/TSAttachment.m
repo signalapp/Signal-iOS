@@ -482,13 +482,6 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     [self.modelReadCaches.attachmentReadCache didInsertOrUpdateAttachment:self transaction:transaction];
 }
 
-- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [SDSDatabaseStorage.shared updateIdMappingWithAttachment:self transaction:transaction];
-
-    [super anyWillRemoveWithTransaction:transaction];
-}
-
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];

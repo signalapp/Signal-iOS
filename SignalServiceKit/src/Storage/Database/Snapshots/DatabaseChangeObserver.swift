@@ -301,16 +301,6 @@ extension DatabaseChangeObserver: TransactionObserver {
         didModifyPendingChanges()
     }
 
-    // This should only be called by DatabaseStorage.
-    func updateIdMapping(attachment: TSAttachment, transaction: GRDBWriteTransaction) {
-        AssertHasDatabaseChangeObserverLock()
-
-        pendingChanges.append(attachment: attachment)
-        pendingChanges.append(tableName: TSAttachment.table.tableName)
-
-        didModifyPendingChanges()
-    }
-
     // internal - should only be called by DatabaseStorage
     func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
         AssertHasDatabaseChangeObserverLock()
@@ -390,8 +380,6 @@ extension DatabaseChangeObserver: TransactionObserver {
                 pendingChanges.append(interactionRowId: event.rowID)
             } else if event.tableName == ThreadRecord.databaseTableName {
                 pendingChanges.append(threadRowId: event.rowID)
-            } else if event.tableName == AttachmentRecord.databaseTableName {
-                pendingChanges.append(attachmentRowId: event.rowID)
             } else if event.tableName == StoryMessage.databaseTableName {
                 pendingChanges.append(storyMessageRowId: event.rowID)
             }
@@ -426,7 +414,6 @@ extension DatabaseChangeObserver: TransactionObserver {
                 let threadUniqueIds = pendingChangesToCommit.threadUniqueIds
                 let storyMessageUniqueIds = pendingChangesToCommit.storyMessageUniqueIds
                 let storyMessageRowIds = pendingChangesToCommit.storyMessageRowIds
-                let attachmentUniqueIds = pendingChangesToCommit.attachmentUniqueIds
                 let interactionDeletedUniqueIds = pendingChangesToCommit.interactionDeletedUniqueIds
                 let storyMessageDeletedUniqueIds = pendingChangesToCommit.storyMessageDeletedUniqueIds
                 let collections = pendingChangesToCommit.collections
@@ -437,7 +424,6 @@ extension DatabaseChangeObserver: TransactionObserver {
                     self.committedChanges.append(threadUniqueIds: threadUniqueIds)
                     self.committedChanges.append(storyMessageUniqueIds: storyMessageUniqueIds)
                     self.committedChanges.append(storyMessageRowIds: storyMessageRowIds)
-                    self.committedChanges.append(attachmentUniqueIds: attachmentUniqueIds)
                     self.committedChanges.append(interactionDeletedUniqueIds: interactionDeletedUniqueIds)
                     self.committedChanges.append(storyMessageDeletedUniqueIds: storyMessageDeletedUniqueIds)
                     self.committedChanges.append(collections: collections)
