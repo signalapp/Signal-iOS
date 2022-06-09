@@ -66,19 +66,21 @@ public final class BackgroundPoller : NSObject {
         return SnodeAPI.getSwarm(for: publicKey).then(on: DispatchQueue.main) { swarm -> Promise<Void> in
             guard let snode = swarm.randomElement() else { throw SnodeAPI.Error.generic }
             return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
-                var promises: [SnodeAPI.RawResponsePromise] = []
                 var namespaces: [Int] = []
-                // We have to poll for both namespace 0 and -10 when hardfork == 19 && softfork == 0
-                if SnodeAPI.hardfork <= 19, SnodeAPI.softfork == 0 {
-                    let promise = SnodeAPI.getRawClosedGroupMessagesFromDefaultNamespace(from: snode, associatedWith: publicKey)
-                    promises.append(promise)
-                    namespaces.append(SnodeAPI.defaultNamespace)
-                }
-                if SnodeAPI.hardfork >= 19 && SnodeAPI.softfork >= 0 {
-                    let promise = SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey, authenticated: false)
-                    promises.append(promise)
-                    namespaces.append(SnodeAPI.closedGroupNamespace)
-                }
+                let promises: [SnodeAPI.RawResponsePromise] = {
+                    if SnodeAPI.hardfork >= 19 && SnodeAPI.softfork >= 1 {
+                        namespaces = [ SnodeAPI.closedGroupNamespace ]
+                        return [ SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey, authenticated: false) ]
+                    }
+                    if SnodeAPI.hardfork >= 19 {
+                        namespaces = [ SnodeAPI.defaultNamespace, SnodeAPI.closedGroupNamespace ]
+                        return [ SnodeAPI.getRawClosedGroupMessagesFromDefaultNamespace(from: snode, associatedWith: publicKey),
+                                 SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey, authenticated: false)]
+                    }
+                    namespaces = [ SnodeAPI.defaultNamespace ]
+                    return [ SnodeAPI.getRawClosedGroupMessagesFromDefaultNamespace(from: snode, associatedWith: publicKey) ]
+                }()
+
                 return when(resolved: promises).then(on: DispatchQueue.main) { results -> Promise<Void> in
                     var promises: [Promise<Void>] = []
                     var index = 0
