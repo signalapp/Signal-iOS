@@ -61,7 +61,16 @@ public final class ClosedGroupPoller : NSObject {
     // MARK: Private API
     private func setUpPolling(for groupPublicKey: String) {
         Threading.pollerQueue.async {
-            self.poll(groupPublicKey).done(on: Threading.pollerQueue) { [weak self] _ in
+            let promises: [Promise<Void>] = {
+                if SnodeAPI.hardfork >= 19 && SnodeAPI.softfork >= 1 {
+                    return [ self.poll(groupPublicKey) ]
+                }
+                if SnodeAPI.hardfork >= 19 {
+                    return [ self.poll(groupPublicKey, defaultInbox: true), self.poll(groupPublicKey) ]
+                }
+                return [ self.poll(groupPublicKey, defaultInbox: true) ]
+            }()
+            when(resolved: promises).done(on: Threading.pollerQueue) { [weak self] _ in
                 self?.pollRecursively(groupPublicKey)
             }.catch(on: Threading.pollerQueue) { [weak self] error in
                 // The error is logged in poll(_:)
@@ -87,13 +96,15 @@ public final class ClosedGroupPoller : NSObject {
         timers[groupPublicKey] = Timer.scheduledTimerOnMainThread(withTimeInterval: nextPollInterval, repeats: false) { [weak self] timer in
             timer.invalidate()
             Threading.pollerQueue.async {
-                var promises: [Promise<Void>] = []
-                if SnodeAPI.hardfork <= 19, SnodeAPI.softfork == 0, let promise = self?.poll(groupPublicKey, defaultInbox: true) {
-                    promises.append(promise)
-                }
-                if SnodeAPI.hardfork >= 19, SnodeAPI.softfork >= 0,let promise = self?.poll(groupPublicKey) {
-                    promises.append(promise)
-                }
+                let promises: [Promise<Void>] = {
+                    if SnodeAPI.hardfork >= 19 && SnodeAPI.softfork >= 1 {
+                        return [ self?.poll(groupPublicKey) ].compactMap{ $0 }
+                    }
+                    if SnodeAPI.hardfork >= 19 {
+                        return [ self?.poll(groupPublicKey, defaultInbox: true), self?.poll(groupPublicKey) ].compactMap{ $0 }
+                    }
+                    return [ self?.poll(groupPublicKey, defaultInbox: true) ].compactMap{ $0 }
+                }()
                 when(resolved: promises).done(on: Threading.pollerQueue) { _ in
                     self?.pollRecursively(groupPublicKey)
                 }.catch(on: Threading.pollerQueue) { error in
