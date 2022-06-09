@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputToolbar.h"
@@ -309,7 +309,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     self.voiceMemoContentView.hidden = YES;
     [self.voiceMemoContentView setContentHuggingHorizontalLow];
     [self.voiceMemoContentView setCompressionResistanceHorizontalLow];
-    [self.voiceMemoContentView autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
     self.voiceMemoContentView.backgroundColor = Theme.conversationInputBackgroundColor;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoContentView);
 
@@ -331,8 +330,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [vStack setCompressionResistanceHorizontalLow];
 
     [vStack addSubview:self.voiceMemoContentView];
-    [self.voiceMemoContentView autoPinWidthToWidthOf:self.inputTextView];
-    [self.voiceMemoContentView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.inputTextView];
+    [self.voiceMemoContentView autoPinToEdgesOfView:self.inputTextView];
 
     for (UIView *button in
         @[ self.cameraButton, self.attachmentButton, self.stickerButton, self.voiceMemoButton, self.sendButton ]) {
