@@ -18,7 +18,18 @@ class MemberActionSheet: InteractiveSheetViewController {
     let address: SignalServiceAddress
 
     override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
-    override var sheetBackgroundColor: UIColor {  tableViewController.tableBackgroundColor }
+
+    override var sheetBackgroundColor: UIColor {
+        // We can't use `tableViewController.tableBackgroundColor` directly because it changes
+        // depending on whether it's inside a view controller. When this variable is first used,
+        // `tableViewController` isn't a child yet, so the color will be different.
+        //
+        // In the long term, we should consider a larger refactor, likely by turning this sheet's
+        // contents into a "regular" view.
+        //
+        // See IOS-2468 for more details.
+        OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
+    }
 
     var contentSizeHeight: CGFloat {
         tableViewController.tableView.contentSize.height + tableViewController.tableView.adjustedContentInset.totalHeight
@@ -128,10 +139,9 @@ class MemberActionSheet: InteractiveSheetViewController {
         let contents = OWSTableContents()
         defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
-        // Leave space at the top for the handle
-        let handleSection = OWSTableSection()
-        handleSection.customHeaderHeight = 50
-        contents.addSection(handleSection)
+        let topSpacerSection = OWSTableSection()
+        topSpacerSection.customHeaderHeight = 12
+        contents.addSection(topSpacerSection)
 
         let section = OWSTableSection()
         contents.addSection(section)
