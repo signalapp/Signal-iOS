@@ -158,6 +158,13 @@
 		7B93D07327CF19C800811CB6 /* MessageRequestsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B93D07227CF19C800811CB6 /* MessageRequestsMigration.swift */; };
 		7B93D07727CF1A8A00811CB6 /* MockDataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B93D07527CF1A8900811CB6 /* MockDataGenerator.swift */; };
 		7B9F71C928470667006DFE7B /* ReactionListSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F71C828470667006DFE7B /* ReactionListSheet.swift */; };
+		7B9F71D02852EEE2006DFE7B /* Emoji+Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F71CB2852EEE2006DFE7B /* Emoji+Category.swift */; };
+		7B9F71D12852EEE2006DFE7B /* EmojiWithSkinTones+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F71CC2852EEE2006DFE7B /* EmojiWithSkinTones+String.swift */; };
+		7B9F71D22852EEE2006DFE7B /* Emoji+SkinTones.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F71CD2852EEE2006DFE7B /* Emoji+SkinTones.swift */; };
+		7B9F71D32852EEE2006DFE7B /* Emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F71CE2852EEE2006DFE7B /* Emoji.swift */; };
+		7B9F71D42852EEE2006DFE7B /* Emoji+Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F71CF2852EEE2006DFE7B /* Emoji+Name.swift */; };
+		7B9F71D72853100A006DFE7B /* Emoji+Available.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F71D528531009006DFE7B /* Emoji+Available.swift */; };
+		7B9F71D82853100A006DFE7B /* EmojiWithSkinTones.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9F71D628531009006DFE7B /* EmojiWithSkinTones.swift */; };
 		7BA68909272A27BE00EFC32F /* SessionCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA68908272A27BE00EFC32F /* SessionCall.swift */; };
 		7BA6890D27325CCC00EFC32F /* SessionCallManager+CXCallController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA6890C27325CCC00EFC32F /* SessionCallManager+CXCallController.swift */; };
 		7BA6890F27325CE300EFC32F /* SessionCallManager+CXProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA6890E27325CE300EFC32F /* SessionCallManager+CXProvider.swift */; };
@@ -1155,6 +1162,13 @@
 		7B93D07227CF19C800811CB6 /* MessageRequestsMigration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRequestsMigration.swift; sourceTree = "<group>"; };
 		7B93D07527CF1A8900811CB6 /* MockDataGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockDataGenerator.swift; sourceTree = "<group>"; };
 		7B9F71C828470667006DFE7B /* ReactionListSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionListSheet.swift; sourceTree = "<group>"; };
+		7B9F71CB2852EEE2006DFE7B /* Emoji+Category.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+Category.swift"; sourceTree = "<group>"; };
+		7B9F71CC2852EEE2006DFE7B /* EmojiWithSkinTones+String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "EmojiWithSkinTones+String.swift"; sourceTree = "<group>"; };
+		7B9F71CD2852EEE2006DFE7B /* Emoji+SkinTones.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+SkinTones.swift"; sourceTree = "<group>"; };
+		7B9F71CE2852EEE2006DFE7B /* Emoji.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
+		7B9F71CF2852EEE2006DFE7B /* Emoji+Name.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+Name.swift"; sourceTree = "<group>"; };
+		7B9F71D528531009006DFE7B /* Emoji+Available.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+Available.swift"; sourceTree = "<group>"; };
+		7B9F71D628531009006DFE7B /* EmojiWithSkinTones.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiWithSkinTones.swift; sourceTree = "<group>"; };
 		7BA68908272A27BE00EFC32F /* SessionCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCall.swift; sourceTree = "<group>"; };
 		7BA6890C27325CCC00EFC32F /* SessionCallManager+CXCallController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionCallManager+CXCallController.swift"; sourceTree = "<group>"; };
 		7BA6890E27325CE300EFC32F /* SessionCallManager+CXProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionCallManager+CXProvider.swift"; sourceTree = "<group>"; };
@@ -2125,6 +2139,20 @@
 				7B93D06C27CF175800811CB6 /* MessageRequestsCell.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		7B9F71CA2852EEE2006DFE7B /* Emoji */ = {
+			isa = PBXGroup;
+			children = (
+				7B9F71D528531009006DFE7B /* Emoji+Available.swift */,
+				7B9F71D628531009006DFE7B /* EmojiWithSkinTones.swift */,
+				7B9F71CB2852EEE2006DFE7B /* Emoji+Category.swift */,
+				7B9F71CC2852EEE2006DFE7B /* EmojiWithSkinTones+String.swift */,
+				7B9F71CD2852EEE2006DFE7B /* Emoji+SkinTones.swift */,
+				7B9F71CE2852EEE2006DFE7B /* Emoji.swift */,
+				7B9F71CF2852EEE2006DFE7B /* Emoji+Name.swift */,
+			);
+			path = Emoji;
 			sourceTree = "<group>";
 		};
 		7BA68907272A279900EFC32F /* Call Management */ = {
@@ -3665,6 +3693,7 @@
 		D221A093169C9E5E00537ABF /* Session */ = {
 			isa = PBXGroup;
 			children = (
+				7B9F71CA2852EEE2006DFE7B /* Emoji */,
 				C3F0A58F255C8E3D007BE2A3 /* Meta */,
 				B8B558ED26C4B55F00693325 /* Calls */,
 				C360969C25AD18BA008B62B2 /* Closed Groups */,
@@ -4917,6 +4946,7 @@
 				EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */,
 				45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */,
 				B83524A525C3BA4B0089A44F /* InfoMessageCell.swift in Sources */,
+				7B9F71D82853100A006DFE7B /* EmojiWithSkinTones.swift in Sources */,
 				B84A89BC25DE328A0040017D /* ProfilePictureVC.swift in Sources */,
 				34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */,
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
@@ -4928,6 +4958,7 @@
 				340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */,
 				7BAF54CE27ACCEEC003D12F8 /* Storage+RecentSearchResults.swift in Sources */,
 				4C090A1B210FD9C7001FD7F9 /* HapticFeedback.swift in Sources */,
+				7B9F71D12852EEE2006DFE7B /* EmojiWithSkinTones+String.swift in Sources */,
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
 				34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */,
 				B886B4A92398BA1500211ABE /* QRCode.swift in Sources */,
@@ -4996,6 +5027,7 @@
 				45F32C222057297A00A300D5 /* MediaDetailViewController.m in Sources */,
 				B82149C125D605C6009C0F2A /* InfoBanner.swift in Sources */,
 				C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */,
+				7B9F71D02852EEE2006DFE7B /* Emoji+Category.swift in Sources */,
 				7BAADFCC27B0EF23007BCF92 /* CallVideoView.swift in Sources */,
 				B8CCF63F23975CFB0091D419 /* JoinOpenGroupVC.swift in Sources */,
 				34ABC0E421DD20C500ED9469 /* ConversationMessageMapping.swift in Sources */,
@@ -5017,14 +5049,17 @@
 				B8041A9525C8FA1D003C2166 /* MediaLoaderView.swift in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
 				34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */,
+				7B9F71D42852EEE2006DFE7B /* Emoji+Name.swift in Sources */,
 				4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */,
 				C328253025CA55370062D0A7 /* ContextMenuWindow.swift in Sources */,
 				340FC8B7204DAC8D007AEB0F /* OWSConversationSettingsViewController.m in Sources */,
 				7B1581E4271FC59D00848B49 /* CallModal.swift in Sources */,
 				34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */,
 				B84664F5235022F30083A1CD /* MentionUtilities.swift in Sources */,
+				7B9F71D72853100A006DFE7B /* Emoji+Available.swift in Sources */,
 				34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */,
 				7B7CB189270430D20079FF93 /* CallMessageView.swift in Sources */,
+				7B9F71D32852EEE2006DFE7B /* Emoji.swift in Sources */,
 				C328250F25CA06020062D0A7 /* VoiceMessageView.swift in Sources */,
 				B82B4090239DD75000A248E7 /* RestoreVC.swift in Sources */,
 				3488F9362191CC4000E524CC /* MediaView.swift in Sources */,
@@ -5047,6 +5082,7 @@
 				C31D1DE9252172D4005D4DA8 /* ContactUtilities.swift in Sources */,
 				4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */,
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
+				7B9F71D22852EEE2006DFE7B /* Emoji+SkinTones.swift in Sources */,
 				7B7CB18E270D066F0079FF93 /* IncomingCallBanner.swift in Sources */,
 				B8569AE325CBB19A00DBA3DB /* DocumentView.swift in Sources */,
 				7BFD1A8A2745C4F000FB91B9 /* Permissions.swift in Sources */,

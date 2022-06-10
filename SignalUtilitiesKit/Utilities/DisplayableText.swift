@@ -131,7 +131,7 @@ extension String {
         return CTLineGetGlyphCount(line)
     }
 
-    var isSingleEmoji: Bool {
+    public var isSingleEmoji: Bool {
         return glyphCount == 1 && containsEmoji
     }
 
