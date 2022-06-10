@@ -2035,7 +2035,7 @@ public class GRDBSchemaMigrator: NSObject {
 
                 while let thread = try threadCursor.next() as? TSGroupThread {
                     try autoreleasepool {
-                        try thread.groupModel.migrateLegacyAvatarDataToDisk()
+                        try thread.groupModel.attemptToMigrateLegacyAvatarDataToDisk()
                         thread.anyUpsert(transaction: transaction.asAnyWrite)
                         GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: transaction)
                     }
