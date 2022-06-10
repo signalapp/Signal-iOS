@@ -102,6 +102,29 @@ class DisplayableTextTest: SignalBaseTest {
         XCTAssertFalse("L̷̳͔̲͝Ģ̵̮̯̤̩̙͍̬̟͉̹̘̹͍͈̮̦̰̣͟͝O̶̴̮̻̮̗͘͡!̴̷̟͓͓".containsOnlyEmoji)
     }
 
+    func testJumbomojiCount() {
+        let testCases: [(String, UInt)] = [
+            ("", 0),
+            ("👌🏽", 1),
+            ("❤️💜💛💚💙", 5),
+            ("❤️💜💛💚💙❤️", 0),
+            ("❤️💜💛💚💙❤️💜", 0),
+            ("❤️A", 0),
+            ("A💜", 0),
+            ("❤️A💜", 0),
+            ("A💜B", 0),
+            ("❤️ 💜", 0),
+            ("❤️ ", 0),
+            ("Signal", 0),
+            ("Signal Messenger", 0),
+            ("Noise", 0)
+        ]
+        for (textValue, expectedCount) in testCases {
+            let displayableText: DisplayableText = .displayableTextForTests(textValue)
+            XCTAssertEqual(displayableText.jumbomojiCount, expectedCount, "textValue: \(textValue)")
+        }
+    }
+
     func test_shouldAllowLinkification() {
         func assertLinkifies(_ text: String, file: StaticString = #file, line: UInt = #line) {
             let displayableText = DisplayableText.displayableTextForTests(text)

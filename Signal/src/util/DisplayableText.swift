@@ -96,13 +96,7 @@ public class DisplayableText: NSObject {
     public let jumbomojiCount: UInt
 
     @objc
-    public static let kMaxJumbomojiCount: UInt = 5
-
-    // This value is a bit arbitrary since we don't need to be 100% correct about 
-    // rendering "Jumbomoji".  It allows us to place an upper bound on worst-case
-    // performacne.
-    @objc
-    static let kMaxCharactersPerEmojiCount: UInt = 10
+    public static let kMaxJumbomojiCount: Int = 5
 
     static let truncatedTextSuffix: String = "…"
 
@@ -150,25 +144,20 @@ public class DisplayableText: NSObject {
 
     // MARK: Emoji
 
-    // If the string is...
+    // If the string...
     //
-    // * Non-empty
-    // * Only contains emoji
-    // * Contains <= kMaxJumbomojiCount emoji
+    // * Contains <= kMaxJumbomojiCount characters
+    // * Contains only emoji
     //
     // ...return the number of emoji (to be treated as "Jumbomoji") in the string.
     private class func jumbomojiCount(in string: String) -> UInt {
-        if string == "" {
-            return 0
-        }
-        if string.count > Int(kMaxJumbomojiCount * kMaxCharactersPerEmojiCount) {
+        // Don't iterate the entire string; only inspect the first few characters.
+        let stringPrefix = string.prefix(kMaxJumbomojiCount + 1)
+        let emojiCount = stringPrefix.count
+        guard emojiCount <= kMaxJumbomojiCount else {
             return 0
         }
         guard string.containsOnlyEmoji else {
-            return 0
-        }
-        let emojiCount = string.glyphCount
-        if UInt(emojiCount) > kMaxJumbomojiCount {
             return 0
         }
         return UInt(emojiCount)
