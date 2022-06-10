@@ -273,8 +273,19 @@ public extension TSGroupModel {
     @nonobjc
     private static let avatarsCache = LRUCache<String, Data>(maxSize: 16, nseMaxSize: 0)
 
-    func migrateLegacyAvatarDataToDisk() throws {
-        guard let legacyAvatarData = legacyAvatarData else { return }
+    func attemptToMigrateLegacyAvatarDataToDisk() throws {
+        guard let legacyAvatarData = legacyAvatarData, !legacyAvatarData.isEmpty else {
+            self.legacyAvatarData = nil
+            return
+        }
+
+        guard Self.isValidGroupAvatarData(legacyAvatarData) else {
+            owsFailDebug("Invalid legacy avatar data. Removing it completely")
+            self.avatarHash = nil
+            self.legacyAvatarData = nil
+            return
+        }
+
         try persistAvatarData(legacyAvatarData)
         self.legacyAvatarData = nil
     }
