@@ -17,6 +17,16 @@ class OnboardingControllerTest: SignalBaseTest {
 
         XCTAssertNotNil(navigationController.currentViewController as? OnboardingPermissionsViewController)
     }
+
+    func test_onboardingSplashRequestedModeSwitch_showsConfirmationScreen() {
+        let sut = OnboardingController(onboardingMode: .registering)
+        let viewController = UIViewController()
+        let navigationController = UINavigationControllerSpy(rootViewController: viewController)
+
+        sut.onboardingSplashRequestedModeSwitch(viewController: viewController)
+
+        XCTAssertNotNil(navigationController.currentViewController as? OnboardingModeSwitchConfirmationViewController)
+    }
 }
 
 // MARK: - Helpers
