@@ -55,6 +55,16 @@ class OnboardingControllerTest: SignalBaseTest {
 
         XCTAssertEqual(navigationController.topViewController?.title, "Root View")
     }
+
+    func test_onboardingPermissionsWasSkipped_whenOnboardingModeIsProvisioning_showsTransferChoiceScreen() {
+        let sut = OnboardingController(onboardingMode: .provisioning)
+        let viewController = UIViewController()
+        let navigationController = UINavigationControllerSpy(rootViewController: viewController)
+
+        sut.onboardingPermissionsWasSkipped(viewController: viewController)
+
+        XCTAssertNotNil(navigationController.topViewController as? OnboardingTransferChoiceViewController)
+    }
 }
 
 // MARK: - Helpers
