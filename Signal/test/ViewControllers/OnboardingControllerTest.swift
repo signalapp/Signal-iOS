@@ -27,6 +27,18 @@ class OnboardingControllerTest: SignalBaseTest {
 
         XCTAssertNotNil(navigationController.currentViewController as? OnboardingModeSwitchConfirmationViewController)
     }
+
+    func test_toggleModeSwitch_whenOnboardingModeIsNotOverriden_showsPermissonScreen() {
+        let sut = OnboardingController(onboardingMode: .registering)
+        let viewController = UIViewController()
+        let navigationController = UINavigationControllerSpy(rootViewController: viewController)
+
+        XCTAssertFalse(sut.isOnboardingModeOverriden)
+
+        sut.toggleModeSwitch(viewController: viewController)
+
+        XCTAssertNotNil(navigationController.topViewController as? OnboardingPermissionsViewController)
+    }
 }
 
 // MARK: - Helpers
