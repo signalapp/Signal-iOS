@@ -1046,7 +1046,8 @@ public extension PaymentsImpl {
                                                     paymentCancellation: nil,
                                                     paymentNotification: nil,
                                                     paymentRequest: paymentRequest,
-                                                    expiresInSeconds: expiresInSeconds)
+                                                    expiresInSeconds: expiresInSeconds,
+                                                    transaction: transaction)
             Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
             return message
         }
@@ -1080,7 +1081,8 @@ public extension PaymentsImpl {
                                                 paymentCancellation: nil,
                                                 paymentNotification: paymentNotification,
                                                 paymentRequest: nil,
-                                                expiresInSeconds: expiresInSeconds)
+                                                expiresInSeconds: expiresInSeconds,
+                                                transaction: transaction)
         Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         return message
 
@@ -1106,7 +1108,8 @@ public extension PaymentsImpl {
                                                 paymentCancellation: paymentCancellation,
                                                 paymentNotification: nil,
                                                 paymentRequest: nil,
-                                                expiresInSeconds: expiresInSeconds)
+                                                expiresInSeconds: expiresInSeconds,
+                                                transaction: transaction)
         Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         return message
 
@@ -1140,7 +1143,7 @@ public extension PaymentsImpl {
                                                    outputPublicKeys: mcOutputPublicKeys,
                                                    receiptData: mcReceiptData,
                                                    isDefragmentation: isDefragmentation)
-        let message = OutgoingPaymentSyncMessage(thread: thread, mobileCoin: mobileCoin)
+        let message = OutgoingPaymentSyncMessage(thread: thread, mobileCoin: mobileCoin, transaction: transaction)
         Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         return message
     }

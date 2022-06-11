@@ -50,6 +50,7 @@ public enum ThemeIcon: UInt {
     case settingsBoost
     case settingsReceipts
     case settingsGift
+    case settingsPrivateStory
 
     case stickerButton
     case cameraButton
@@ -278,6 +279,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "receipts-solid-24" : "receipts-outline-24"
         case .settingsGift:
             return isDarkThemeEnabled ? "gift-solid-24" : "gift-outline-24"
+        case .settingsPrivateStory:
+            return isDarkThemeEnabled ? "private-story-solid-24" : "private-story-outline-24"
 
         // Input Toolbar
         case .stickerButton:

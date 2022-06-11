@@ -4,77 +4,29 @@
 
 import Foundation
 import SignalMessaging
+import SignalServiceKit
 
 public class AttachmentMultisend: Dependencies {
 
-    public class func sendApprovedMedia(conversations: [ConversationItem],
-                                        approvalMessageBody: MessageBody?,
-                                        approvedAttachments: [SignalAttachment]) -> Promise<[TSThread]> {
+    public class func sendApprovedMedia(
+        conversations: [ConversationItem],
+        approvalMessageBody: MessageBody?,
+        approvedAttachments: [SignalAttachment]
+    ) -> Promise<[TSThread]> {
         return firstly(on: ThreadUtil.enqueueSendQueue) {
-            // Duplicate attachments per conversation
-            let conversationAttachments: [(ConversationItem, [SignalAttachment])] =
-                try conversations.map { conversation in
-                    return (conversation, try approvedAttachments.map { try $0.cloneAttachment() })
-            }
+            let preparedSend = try self.prepareForSending(
+                conversations: conversations,
+                approvalMessageBody: approvalMessageBody,
+                approvedAttachments: approvedAttachments)
 
-            // We only upload one set of attachments, and then copy the upload details into
-            // each conversation before sending.
-            let attachmentsToUpload: [OutgoingAttachmentInfo] = approvedAttachments.map { attachment in
-                return OutgoingAttachmentInfo(dataSource: attachment.dataSource,
-                                              contentType: attachment.mimeType,
-                                              sourceFilename: attachment.filenameOrDefault,
-                                              caption: attachment.captionText,
-                                              albumMessageId: nil,
-                                              isBorderless: attachment.isBorderless,
-                                              isLoopingVideo: attachment.isLoopingVideo)
-            }
-
-            var threads: [TSThread] = []
             self.databaseStorage.write { transaction in
-                var messages: [TSOutgoingMessage] = []
-
-                for (conversation, attachments) in conversationAttachments {
-                    guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
-                        owsFailDebug("Missing thread for conversation")
-                        continue
-                    }
-
-                    // If this thread has a pending message request, treat it as accepted.
-                    ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: thread,
-                                                                                                    transaction: transaction)
-
-                    let messageBodyForContext = approvalMessageBody?.forNewContext(thread, transaction: transaction.unwrapGrdbRead)
-
-                    let message = try! ThreadUtil.createUnsentMessage(body: messageBodyForContext,
-                                                                      mediaAttachments: attachments,
-                                                                      thread: thread,
-                                                                      quotedReplyModel: nil,
-                                                                      linkPreviewDraft: nil,
-                                                                      transaction: transaction)
-                    messages.append(message)
-                    threads.append(thread)
-
-                    thread.donateSendMessageIntent(for: message, transaction: transaction)
-                }
-
-                // map of attachments we'll upload to their copies in each recipient thread
-                var attachmentIdMap: [String: [String]] = [:]
-                let correspondingAttachmentIds = transpose(messages.map { $0.attachmentIds })
-                for (index, attachmentInfo) in attachmentsToUpload.enumerated() {
-                    do {
-                        let attachmentToUpload = try attachmentInfo.asStreamConsumingDataSource(withIsVoiceMessage: false)
-                        attachmentToUpload.anyInsert(transaction: transaction)
-
-                        attachmentIdMap[attachmentToUpload.uniqueId] = correspondingAttachmentIds[index]
-                    } catch {
-                        owsFailDebug("error: \(error)")
-                    }
-                }
-
-                self.broadcastMediaMessageJobQueue.add(attachmentIdMap: attachmentIdMap,
-                                                       transaction: transaction)
+                self.broadcastMediaMessageJobQueue.add(
+                    attachmentIdMap: preparedSend.attachmentIdMap,
+                    unsavedMessagesToSend: preparedSend.unsavedMessages,
+                    transaction: transaction)
             }
-            return threads
+
+            return preparedSend.threads
         }
     }
 
@@ -85,71 +37,14 @@ public class AttachmentMultisend: Dependencies {
         messagesReadyToSend: (([TSOutgoingMessage]) -> Void)? = nil
     ) -> Promise<[TSThread]> {
         return firstly(on: .sharedUserInitiated) { () -> (Promise<[TSThread]>) in
-            // Duplicate attachments per conversation
-            let conversationAttachments: [(ConversationItem, [SignalAttachment])] =
-                try conversations.map { conversation in
-                    return (conversation, try approvedAttachments.map { try $0.cloneAttachment() })
-            }
+            let preparedSend = try self.prepareForSending(
+                conversations: conversations,
+                approvalMessageBody: approvalMessageBody,
+                approvedAttachments: approvedAttachments)
 
-            // We only upload one set of attachments, and then copy the upload details into
-            // each conversation before sending.
-            let attachmentsToUpload: [OutgoingAttachmentInfo] = approvedAttachments.map { attachment in
-                return OutgoingAttachmentInfo(dataSource: attachment.dataSource,
-                                              contentType: attachment.mimeType,
-                                              sourceFilename: attachment.filenameOrDefault,
-                                              caption: attachment.captionText,
-                                              albumMessageId: nil,
-                                              isBorderless: attachment.isBorderless,
-                                              isLoopingVideo: attachment.isLoopingVideo)
-            }
+            messagesReadyToSend?(preparedSend.messages)
 
-            var threads: [TSThread] = []
-            var attachmentIdMap: [String: [String]] = [:]
-            var messages: [TSOutgoingMessage] = []
-
-            self.databaseStorage.write { transaction in
-
-                for (conversation, attachments) in conversationAttachments {
-                    guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
-                        owsFailDebug("Missing thread for conversation")
-                        continue
-                    }
-
-                    // If this thread has a pending message request, treat it as accepted.
-                    ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: thread,
-                                                                                                    transaction: transaction)
-
-                    let messageBodyForContext = approvalMessageBody?.forNewContext(thread, transaction: transaction.unwrapGrdbRead)
-
-                    let message = try! ThreadUtil.createUnsentMessage(body: messageBodyForContext,
-                                                                      mediaAttachments: attachments,
-                                                                      thread: thread,
-                                                                      quotedReplyModel: nil,
-                                                                      linkPreviewDraft: nil,
-                                                                      transaction: transaction)
-                    messages.append(message)
-                    threads.append(thread)
-
-                    thread.donateSendMessageIntent(for: message, transaction: transaction)
-                }
-
-                // map of attachments we'll upload to their copies in each recipient thread
-                let correspondingAttachmentIds = transpose(messages.map { $0.attachmentIds })
-                for (index, attachmentInfo) in attachmentsToUpload.enumerated() {
-                    do {
-                        let attachmentToUpload = try attachmentInfo.asStreamConsumingDataSource(withIsVoiceMessage: false)
-                        attachmentToUpload.anyInsert(transaction: transaction)
-
-                        attachmentIdMap[attachmentToUpload.uniqueId] = correspondingAttachmentIds[index]
-                    } catch {
-                        owsFailDebug("error: \(error)")
-                    }
-                }
-            }
-
-            messagesReadyToSend?(messages)
-
-            let outgoingMessages = try BroadcastMediaUploader.upload(attachmentIdMap: attachmentIdMap)
+            let outgoingMessages = try BroadcastMediaUploader.upload(attachmentIdMap: preparedSend.attachmentIdMap) + preparedSend.unsavedMessages
 
             var messageSendPromises = [Promise<Void>]()
             databaseStorage.write { transaction in
@@ -162,7 +57,135 @@ public class AttachmentMultisend: Dependencies {
                 }
             }
 
-            return Promise.when(fulfilled: messageSendPromises).map { threads }
+            return Promise.when(fulfilled: messageSendPromises).map { preparedSend.threads }
         }
+    }
+
+    private struct PreparedMultisend {
+        let attachmentIdMap: [String: [String]]
+        let messages: [TSOutgoingMessage]
+        let unsavedMessages: [TSOutgoingMessage]
+        let threads: [TSThread]
+    }
+
+    private class func prepareForSending(
+        conversations: [ConversationItem],
+        approvalMessageBody: MessageBody?,
+        approvedAttachments: [SignalAttachment]
+    ) throws -> PreparedMultisend {
+        var storyConversationAttachments = [(StoryConversationItem, [SignalAttachment])]()
+        var otherConversationAttachments = [(ConversationItem, [SignalAttachment])]()
+        var correspondingAttachmentIds: [[String]] = []
+
+        for conversation in conversations {
+            // Duplicate attachments per conversation
+            let clonedAttachments = try approvedAttachments.map { try $0.cloneAttachment() }
+
+            if let storyConversation = conversation as? StoryConversationItem {
+                storyConversationAttachments.append((storyConversation, clonedAttachments))
+            } else {
+                otherConversationAttachments.append((conversation, clonedAttachments))
+            }
+        }
+
+        // We only upload one set of attachments, and then copy the upload details into
+        // each conversation before sending.
+        let attachmentsToUpload: [OutgoingAttachmentInfo] = approvedAttachments.map { attachment in
+            return OutgoingAttachmentInfo(dataSource: attachment.dataSource,
+                                          contentType: attachment.mimeType,
+                                          sourceFilename: attachment.filenameOrDefault,
+                                          caption: attachment.captionText,
+                                          albumMessageId: nil,
+                                          isBorderless: attachment.isBorderless,
+                                          isLoopingVideo: attachment.isLoopingVideo)
+        }
+
+        var threads: [TSThread] = []
+        var attachmentIdMap: [String: [String]] = [:]
+        var messages: [TSOutgoingMessage] = []
+        var unsavedMessages: [TSOutgoingMessage] = []
+
+        try self.databaseStorage.write { transaction in
+
+            for (conversation, attachments) in storyConversationAttachments {
+                guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
+                    owsFailDebug("Missing thread for conversation")
+                    continue
+                }
+
+                for (idx, attachment) in attachments.enumerated() {
+                    attachment.captionText = approvalMessageBody?.plaintextBody(transaction: transaction.unwrapGrdbRead)
+                    let attachmentStream = try attachment
+                        .buildOutgoingAttachmentInfo()
+                        .asStreamConsumingDataSource(withIsVoiceMessage: attachment.isVoiceMessage)
+                    attachmentStream.anyInsert(transaction: transaction)
+
+                    if correspondingAttachmentIds.count > idx {
+                        correspondingAttachmentIds[idx] += [attachmentStream.uniqueId]
+                    } else {
+                        correspondingAttachmentIds.append([attachmentStream.uniqueId])
+                    }
+
+                    let message = OutgoingStoryMessage.createUnsentMessage(
+                        attachment: attachmentStream,
+                        thread: thread,
+                        transaction: transaction
+                    )
+                    messages.append(message)
+                    unsavedMessages.append(message)
+                }
+            }
+
+            for (conversation, attachments) in otherConversationAttachments {
+                guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
+                    owsFailDebug("Missing thread for conversation")
+                    continue
+                }
+
+                // If this thread has a pending message request, treat it as accepted.
+                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: thread,
+                                                                                                transaction: transaction)
+
+                let messageBodyForContext = approvalMessageBody?.forNewContext(thread, transaction: transaction.unwrapGrdbRead)
+
+                let message = try! ThreadUtil.createUnsentMessage(body: messageBodyForContext,
+                                                                  mediaAttachments: attachments,
+                                                                  thread: thread,
+                                                                  quotedReplyModel: nil,
+                                                                  linkPreviewDraft: nil,
+                                                                  transaction: transaction)
+                messages.append(message)
+                threads.append(thread)
+
+                for (idx, attachmentId) in message.attachmentIds.enumerated() {
+                    if correspondingAttachmentIds.count > idx {
+                        correspondingAttachmentIds[idx] += [attachmentId]
+                    } else {
+                        correspondingAttachmentIds.append([attachmentId])
+                    }
+                }
+
+                thread.donateSendMessageIntent(for: message, transaction: transaction)
+            }
+
+            owsAssertDebug(correspondingAttachmentIds.count == attachmentsToUpload.count)
+
+            for (index, attachmentInfo) in attachmentsToUpload.enumerated() {
+                do {
+                    let attachmentToUpload = try attachmentInfo.asStreamConsumingDataSource(withIsVoiceMessage: false)
+                    attachmentToUpload.anyInsert(transaction: transaction)
+
+                    attachmentIdMap[attachmentToUpload.uniqueId] = correspondingAttachmentIds[index]
+                } catch {
+                    owsFailDebug("error: \(error)")
+                }
+            }
+        }
+
+        return PreparedMultisend(
+            attachmentIdMap: attachmentIdMap,
+            messages: messages,
+            unsavedMessages: unsavedMessages,
+            threads: threads)
     }
 }

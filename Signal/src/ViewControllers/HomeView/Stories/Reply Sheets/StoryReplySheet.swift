@@ -40,7 +40,7 @@ extension StoryReplySheet {
         }
 
         guard !SafetyNumberConfirmationSheet.presentIfNecessary(
-            addresses: thread.recipientAddresses,
+            addresses: thread.recipientAddressesWithSneakyTransaction,
             confirmationText: SafetyNumberStrings.confirmSendButton,
             completion: { [weak self] didConfirmIdentity in
                 guard didConfirmIdentity else { return }
@@ -60,7 +60,7 @@ extension StoryReplySheet {
                 builder.expiresInSeconds = dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0
             }
 
-            let message = builder.build()
+            let message = builder.build(transaction: transaction)
             message.anyInsert(transaction: transaction)
             Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
 
@@ -137,7 +137,7 @@ extension StoryReplySheet {
     func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar) {}
 
     func storyReplyInputToolbarMentionPickerPossibleAddresses(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> [SignalServiceAddress] {
-        return thread?.recipientAddresses ?? []
+        return thread?.recipientAddressesWithSneakyTransaction ?? []
     }
 }
 

@@ -23,8 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
     showUnidentifiedDeliveryIndicators:(BOOL)showUnidentifiedDeliveryIndicators
                   showTypingIndicators:(BOOL)showTypingIndicators
                       sendLinkPreviews:(BOOL)sendLinkPreviews
+                           transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread];
+    self = [super initWithThread:thread transaction:transaction];
     if (!self) {
         return nil;
     }

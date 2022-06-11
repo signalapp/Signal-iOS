@@ -59,7 +59,7 @@ extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
     }
 
     public var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
-        supportsMentions ? thread.recipientAddresses : []
+        supportsMentions ? thread.recipientAddressesWithSneakyTransaction : []
     }
 }
 

@@ -244,7 +244,7 @@ public class CVLoadCoordinator: NSObject {
         }
 
         var threadAddressKeys = Set<String>()
-        for address in thread.recipientAddresses {
+        for address in thread.recipientAddressesWithSneakyTransaction {
             if let uuidString = address.uuidString {
                 threadAddressKeys.insert(uuidString)
             }

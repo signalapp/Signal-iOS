@@ -820,13 +820,14 @@ extension CallService: CallManagerDelegate {
             opaqueBuilder.setData(message)
             opaqueBuilder.setUrgency(urgency.protobufValue)
 
-            let callMessage = OWSOutgoingCallMessage(
-                thread: thread,
-                opaqueMessage: try opaqueBuilder.build()
-            )
+            return try Self.databaseStorage.write { transaction in
+                let callMessage = OWSOutgoingCallMessage(
+                    thread: thread,
+                    opaqueMessage: try opaqueBuilder.build(),
+                    transaction: transaction
+                )
 
-            return Self.databaseStorage.write { transaction in
-                ThreadUtil.enqueueMessagePromise(
+                return ThreadUtil.enqueueMessagePromise(
                     message: callMessage,
                     limitToCurrentProcessLifetime: true,
                     isHighPriority: true,

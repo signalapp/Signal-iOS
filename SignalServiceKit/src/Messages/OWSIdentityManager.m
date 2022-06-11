@@ -709,7 +709,8 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                                                            verificationState:recipientIdentity
                                                                                                  .verificationState
                                                                                  identityKey:identityKey
-                                                             verificationForRecipientAddress:address];
+                                                             verificationForRecipientAddress:address
+                                                                                 transaction:transaction];
                                                      [messages addObject:message];
                                                  }];
         }];
@@ -729,14 +730,15 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     TSContactThread *contactThread =
         [TSContactThread getOrCreateThreadWithContactAddress:message.verificationForRecipientAddress];
 
-    // Send null message to appear as though we're sending a normal message to cover the sync message sent
-    // subsequently
-    OWSOutgoingNullMessage *nullMessage = [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread
-                                                                   verificationStateSyncMessage:message];
-
     // DURABLE CLEANUP - we could replace the custom durability logic in this class
     // with a durable JobQueue.
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        // Send null message to appear as though we're sending a normal message to cover the sync message sent
+        // subsequently
+        OWSOutgoingNullMessage *nullMessage = [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread
+                                                                       verificationStateSyncMessage:message
+                                                                                        transaction:transaction];
+
         [self.messageSenderJobQueue addPromiseWithMessage:nullMessage.asPreparer
                                 removeMessageAfterSending:NO
                             limitToCurrentProcessLifetime:YES

@@ -24,6 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSThread ()
 
+@property (nonatomic) TSThreadStoryViewMode storyViewMode;
+@property (nonatomic, nullable) NSNumber *lastSentStoryTimestamp;
+
 @property (nonatomic, nullable) NSDate *creationDate;
 @property (nonatomic) BOOL isArchivedObsolete;
 @property (nonatomic) BOOL isMarkedUnreadObsolete;
@@ -92,6 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(int64_t)lastInteractionRowId
+          lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
          mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
@@ -100,6 +104,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
           mutedUntilDateObsolete:(nullable NSDate *)mutedUntilDateObsolete
      mutedUntilTimestampObsolete:(uint64_t)mutedUntilTimestampObsolete
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+                   storyViewMode:(TSThreadStoryViewMode)storyViewMode
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId];
@@ -113,6 +118,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     _isArchivedObsolete = isArchivedObsolete;
     _isMarkedUnreadObsolete = isMarkedUnreadObsolete;
     _lastInteractionRowId = lastInteractionRowId;
+    _lastSentStoryTimestamp = lastSentStoryTimestamp;
     _lastVisibleSortIdObsolete = lastVisibleSortIdObsolete;
     _lastVisibleSortIdOnScreenPercentageObsolete = lastVisibleSortIdOnScreenPercentageObsolete;
     _mentionNotificationMode = mentionNotificationMode;
@@ -121,6 +127,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     _mutedUntilDateObsolete = mutedUntilDateObsolete;
     _mutedUntilTimestampObsolete = mutedUntilTimestampObsolete;
     _shouldThreadBeVisible = shouldThreadBeVisible;
+    _storyViewMode = storyViewMode;
 
     return self;
 }
@@ -273,7 +280,17 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
 #pragma mark - To be subclassed.
 
-- (NSArray<SignalServiceAddress *> *)recipientAddresses
+- (NSArray<SignalServiceAddress *> *)recipientAddressesWithSneakyTransaction
+{
+    __block NSArray<SignalServiceAddress *> *recipientAddresses;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        recipientAddresses = [self recipientAddressesWithTransaction:transaction];
+    }];
+    return recipientAddresses;
+}
+
+
+- (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAbstractMethod();
 
@@ -592,6 +609,18 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) { thread.shouldThreadBeVisible = shouldThreadBeVisible; }];
+}
+
+- (void)updateWithLastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
+                             transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) { thread.lastSentStoryTimestamp = lastSentStoryTimestamp; }];
+}
+
+- (void)updateWithStoryViewMode:(TSThreadStoryViewMode)storyViewMode transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction block:^(TSThread *thread) { thread.storyViewMode = storyViewMode; }];
 }
 
 @end

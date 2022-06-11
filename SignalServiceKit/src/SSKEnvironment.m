@@ -298,7 +298,9 @@ static SSKEnvironment *sharedSSKEnvironment;
         @"paymentsHelper",
         ^{ [self.paymentsHelper warmCaches]; },
         @"paymentsCurrencies",
-        ^{ [self.paymentsCurrencies warmCaches]; }
+        ^{ [self.paymentsCurrencies warmCaches]; },
+        @"storyManager",
+        ^{ [StoryManager setup]; }
     ];
 
     for (int i = 0; i < specs.count / 2; i++) {

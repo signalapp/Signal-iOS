@@ -314,7 +314,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             }
         } else {
             StoryMessage *_Nullable storyMessage = [StoryFinder storyWithTimestamp:sentTimestamp
-                                                                            author:address
+                                                                            author:TSAccountManager.localAddress
                                                                        transaction:transaction];
             if (storyMessage) {
                 [storyMessage markAsViewedAt:viewedTimestamp by:address transaction:transaction];

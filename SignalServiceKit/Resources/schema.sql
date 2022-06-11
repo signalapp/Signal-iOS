@@ -35,6 +35,11 @@ CREATE
             ,"messageDraftBodyRanges" BLOB
             ,"mentionNotificationMode" INTEGER NOT NULL DEFAULT 0
             ,"mutedUntilTimestamp" INTEGER NOT NULL DEFAULT 0
+            ,"allowsReplies" BOOLEAN DEFAULT 0
+            ,"lastSentStoryTimestamp" INTEGER
+            ,"name" TEXT
+            ,"addresses" BLOB
+            ,"storyViewMode" INTEGER DEFAULT 0
         )
 ;
 
@@ -258,6 +263,7 @@ CREATE
             ,"receiptCredentialPresentation" BLOB
             ,"amount" NUMERIC
             ,"currencyCode" TEXT
+            ,"unsavedMessagesToSend" BLOB
         )
 ;
 
@@ -1337,4 +1343,12 @@ WHERE
         expiresAt IS 0
         OR expireStartedAt IS 0
     )
+;
+
+CREATE
+    INDEX "index_model_TSThread_on_storyViewMode"
+        ON "model_TSThread"("storyViewMode"
+    ,"lastSentStoryTimestamp"
+    ,"allowsReplies"
+)
 ;

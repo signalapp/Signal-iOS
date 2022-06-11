@@ -9,9 +9,9 @@ public class OWSSyncPniIdentityMessage: OWSOutgoingSyncMessage {
     @objc
     private var keyPair: ECKeyPair!
 
-    public init(thread: TSThread, keyPair: ECKeyPair) {
+    public init(thread: TSThread, keyPair: ECKeyPair, transaction: SDSAnyReadTransaction) {
         self.keyPair = keyPair
-        super.init(thread: thread)
+        super.init(thread: thread, transaction: transaction)
     }
 
     public override func syncMessageBuilder(transaction: SDSAnyReadTransaction) -> SSKProtoSyncMessageBuilder? {

@@ -229,9 +229,9 @@ class ParsedClass:
 
         record_name = self.record_name()
         # If a property has a custom column source, we don't redundantly create a column for that column
-        base_properties = [property for property in self.properties() if not property.has_custom_column_source()]
+        base_properties = [property for property in self.properties() if not property.has_aliased_column_name()]
         # If a property has a custom column source, we don't redundantly create a column for that column
-        subclass_properties = [property for property in self.database_subclass_properties() if not property.has_custom_column_source()]
+        subclass_properties = [property for property in self.database_subclass_properties() if not property.has_aliased_column_name()]
 
         # We need to maintain a stable ordering of record properties
         # across migrations, e.g. adding new columns to the tables.
@@ -355,11 +355,7 @@ class TypeInfo:
 
     def deserialize_record_invocation(self, property, value_name, is_optional, did_force_optional):
 
-        custom_column_name = custom_column_name_for_property(property)
-        if custom_column_name is not None:
-            value_expr = 'record.%s' % ( custom_column_name, )
-        else:
-            value_expr = 'record.%s' % ( value_name, )
+        value_expr = 'record.%s' % ( property.column_name(), )
 
         deserialization_optional = None
         deserialization_not_optional = None
@@ -380,7 +376,15 @@ class TypeInfo:
             deserialization_not_optional = 'required'
             deserialization_conversion = ', conversion: { NSNumber(value: $0) }'
 
+        initializer_param_type = self.swift_type()
         if is_optional:
+            initializer_param_type = initializer_param_type + '?'
+
+        # Special-case the unpacking of the auto-incremented
+        # primary key.
+        if value_expr == 'record.id':
+            value_expr = '%s(recordId)' % ( initializer_param_type, )
+        elif is_optional:
             if deserialization_optional is not None:
                 value_expr = 'SDSDeserialization.%s(%s, name: "%s"%s)' % ( deserialization_optional, value_expr, value_name, deserialization_conversion)
         elif did_force_optional:
@@ -390,25 +394,12 @@ class TypeInfo:
             # Do nothing; we don't need to unpack this non-optional.
             pass
 
-        initializer_param_type = self.swift_type()
-        if is_optional:
-            initializer_param_type = initializer_param_type + '?'
-
-        # Special case this oddball type.
-        if property.has_custom_column_source():
-            value_expr = property.column_source()
-            value_expr = 'record.%s' % ( value_expr, )
-
-            # Special-case the unpacking of the auto-incremented
-            # primary key.
-            if value_expr == 'record.id':
-                value_expr = 'recordId'
-
-            value_statement = 'let %s: %s = %s(%s)' % ( value_name, initializer_param_type, initializer_param_type, value_expr, )
-        elif value_name == 'conversationColorName':
+        if value_name == 'conversationColorName':
             value_statement = 'let %s: %s = ConversationColorName(rawValue: %s)' % ( value_name, "ConversationColorName", value_expr, )
         elif value_name == 'mentionNotificationMode':
             value_statement = 'let %s: %s = TSThreadMentionNotificationMode(rawValue: %s) ?? .default' % ( value_name, "TSThreadMentionNotificationMode", value_expr, )
+        elif value_name == 'storyViewMode':
+            value_statement = 'let %s: %s = TSThreadStoryViewMode(rawValue: %s) ?? .none' % ( value_name, "TSThreadStoryViewMode", value_expr, )
         elif self.is_codable:
             value_statement = 'let %s: %s = %s' % ( value_name, initializer_param_type, value_expr, )
         elif self.should_use_blob:
@@ -742,15 +733,8 @@ class ParsedProperty:
     def should_ignore_property(self):
         return should_ignore_property(self)
 
-    def column_source(self):
-        custom_name = custom_property_column_source(self)
-        if custom_name is not None:
-            return custom_name
-        else:
-            return self.name
-
-    def has_custom_column_source(self):
-        return custom_property_column_source(self) is not None
+    def has_aliased_column_name(self):
+        return aliased_column_name_for_property(self) is not None
 
     def deserialize_record_invocation(self, value_name, did_force_optional):
         return self.type_info().deserialize_record_invocation(self, value_name, self.is_optional, did_force_optional)
@@ -845,6 +829,9 @@ class ParsedProperty:
         return to_swift_identifier_name(self.name)
 
     def column_name(self):
+        aliased_column_name = aliased_column_name_for_property(self)
+        if aliased_column_name is not None:
+            return aliased_column_name
         custom_column_name = custom_column_name_for_property(self)
         if custom_column_name is not None:
             return custom_column_name
@@ -914,9 +901,9 @@ import SignalCoreKit
     if not has_sds_superclass:
 
         # If a property has a custom column source, we don't redundantly create a column for that column
-        base_properties = [property for property in clazz.properties() if not property.has_custom_column_source()]
+        base_properties = [property for property in clazz.properties() if not property.has_aliased_column_name()]
         # If a property has a custom column source, we don't redundantly create a column for that column
-        subclass_properties = [property for property in clazz.database_subclass_properties() if not property.has_custom_column_source()]
+        subclass_properties = [property for property in clazz.database_subclass_properties() if not property.has_aliased_column_name()]
 
         swift_body += '''
 // MARK: - Record
@@ -1941,17 +1928,18 @@ class %sSerializer: SDSSerializer {
 
     initializer_args = ['id', 'recordType', 'uniqueId', ]
 
-    initializer_value_names = []
+    inherited_property_map = {}
     for property in properties_and_inherited_properties(clazz):
-        initializer_value_names.append(property.name)
-    # print 'initializer_value_names', initializer_value_names
+        inherited_property_map[property.column_name()] = property
 
     def write_record_property(property, force_optional=False):
         optional_value = ''
-        if property.swift_identifier() in initializer_value_names:
+
+        if property.column_name() in inherited_property_map:
+            inherited_property = inherited_property_map[property.column_name()]
             did_force_optional = property.force_optional
-            model_accessor = accessor_name_for_property(property)
-            value_expr = property.serialize_record_invocation('model.%s' % ( model_accessor, ), did_force_optional)
+            model_accessor = accessor_name_for_property(inherited_property)
+            value_expr = inherited_property.serialize_record_invocation('model.%s' % ( model_accessor, ), did_force_optional)
 
             optional_value = ' = %s' % ( value_expr, )
         else:
@@ -2285,14 +2273,6 @@ def should_ignore_property(property):
     key = property.class_name + '.' + property.name
     return key in properties_to_ignore
 
-def custom_property_column_source(property):
-    custom_names = configuration_json.get('custom_property_column_sources')
-    if custom_names is None:
-        fail('Configuration JSON is missing dict of custom_property_column_sources.')
-    key = property.class_name + '.' + property.name
-
-    return custom_names.get(key)
-
 def cache_get_code_for_class(clazz):
     code_map = configuration_json.get('class_cache_get_code')
     if code_map is None:
@@ -2339,6 +2319,13 @@ def custom_column_name_for_property(property):
     # print '--?--', key, custom_accessors.get(key, property.name)
     return custom_column_names.get(key)
 
+def aliased_column_name_for_property(property):
+    custom_column_names = configuration_json.get('aliased_column_names')
+    if custom_column_names is None:
+        fail('Configuration JSON is missing dict of aliased_column_names.')
+    key = property.class_name + '.' + property.name
+
+    return custom_column_names.get(key)
 
 def was_property_renamed_for_property(property):
     renamed_column_names = configuration_json.get('renamed_column_names')

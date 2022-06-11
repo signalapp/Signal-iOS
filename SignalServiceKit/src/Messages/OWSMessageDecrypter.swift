@@ -235,7 +235,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         transaction.addAsyncCompletionOffMain {
             Self.databaseStorage.write { transaction in
-                let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread)
+                let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread, transaction: transaction)
                 Self.messageSenderJobQueue.add(
                     .promise,
                     message: nullMessage.asPreparer,
@@ -284,7 +284,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         transaction.addAsyncCompletionOffMain {
             Self.databaseStorage.write { transaction in
-                let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread)
+                let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread, transaction: transaction)
                 Self.messageSenderJobQueue.add(
                     .promise,
                     message: profileKeyMessage.asPreparer,

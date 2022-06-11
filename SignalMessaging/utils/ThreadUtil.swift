@@ -37,12 +37,11 @@ public extension ThreadUtil {
     class func enqueueMessage(outgoingMessageBuilder builder: TSOutgoingMessageBuilder,
                               thread: TSThread) -> TSOutgoingMessage {
 
-        let dmConfiguration = databaseStorage.read { transaction in
-            return thread.disappearingMessagesConfiguration(with: transaction)
+        let message: TSOutgoingMessage = databaseStorage.read { transaction in
+            let dmConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
+            builder.expiresInSeconds = dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0
+            return builder.build(transaction: transaction)
         }
-        builder.expiresInSeconds = dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0
-
-        let message = builder.build()
 
         Self.enqueueSendAsyncWrite { transaction in
             message.anyInsert(transaction: transaction)
@@ -61,7 +60,7 @@ public extension ThreadUtil {
         let dmConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
         builder.expiresInSeconds = dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0
 
-        let message = builder.build()
+        let message = builder.build(transaction: transaction)
         message.anyInsert(transaction: transaction)
         self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
 
@@ -198,7 +197,7 @@ extension TSThread {
         if isGroupThread {
 
             let donationMetadata = INSendMessageIntentDonationMetadata()
-            donationMetadata.recipientCount = recipientAddresses.count
+            donationMetadata.recipientCount = recipientAddresses(with: transaction).count
 
             if let message = message {
                 let mentionedAddresses = MentionFinder.mentionedAddresses(for: message, transaction: transaction.unwrapGrdbRead)

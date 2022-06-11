@@ -177,13 +177,13 @@ extension ConversationViewController {
     }
 
     private func threadContainsUnverifiedMember(_ thread: TSThread) -> Bool {
-        guard !thread.recipientAddresses.isEmpty else {
+        guard !thread.recipientAddressesWithSneakyTransaction.isEmpty else {
             return false
         }
         if let groupThread = thread as? TSGroupThread {
             return Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId)
         }
-        return thread.recipientAddresses.contains { address in
+        return thread.recipientAddressesWithSneakyTransaction.contains { address in
             Self.identityManager.verificationState(for: address) != .verified
         }
     }

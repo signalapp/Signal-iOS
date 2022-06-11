@@ -186,7 +186,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                             readReceiptsEnabled:areReadReceiptsEnabled
                              showUnidentifiedDeliveryIndicators:showUnidentifiedDeliveryIndicators
                                            showTypingIndicators:showTypingIndicators
-                                               sendLinkPreviews:sendLinkPreviews];
+                                               sendLinkPreviews:sendLinkPreviews
+                                                    transaction:transaction];
 
         [self.messageSenderJobQueue addMessage:syncConfigurationMessage.asPreparer transaction:transaction];
     });
@@ -250,7 +251,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         OWSFailDebug(@"Missing thread.");
         return;
     }
-    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] initWithThread:thread];
+    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] initWithThread:thread
+                                                                               transaction:transaction];
     NSURL *_Nullable syncFileUrl = [syncGroupsMessage buildPlainTextAttachmentFileWithTransaction:transaction];
     if (!syncFileUrl) {
         OWSFailDebug(@"Failed to serialize groups sync message.");
@@ -373,15 +375,21 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                     return [future rejectWithError:error];
                 }
 
-                OWSSyncContactsMessage *syncContactsMessage =
-                    [[OWSSyncContactsMessage alloc] initWithThread:thread signalAccounts:signalAccounts];
+                __block OWSSyncContactsMessage *syncContactsMessage;
                 __block NSURL *_Nullable syncFileUrl;
                 __block NSData *_Nullable lastMessageHash;
-                [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                    syncFileUrl = [syncContactsMessage buildPlainTextAttachmentFileWithTransaction:transaction];
-                    lastMessageHash = [OWSSyncManager.keyValueStore getData:kSyncManagerLastContactSyncKey
-                                                                transaction:transaction];
-                } file:__FILE__ function:__FUNCTION__ line:__LINE__];
+                [self.databaseStorage
+                    readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                        syncContactsMessage = [[OWSSyncContactsMessage alloc] initWithThread:thread
+                                                                              signalAccounts:signalAccounts
+                                                                                 transaction:transaction];
+                        syncFileUrl = [syncContactsMessage buildPlainTextAttachmentFileWithTransaction:transaction];
+                        lastMessageHash = [OWSSyncManager.keyValueStore getData:kSyncManagerLastContactSyncKey
+                                                                    transaction:transaction];
+                    }
+                             file:__FILE__
+                         function:__FUNCTION__
+                             line:__LINE__];
 
                 if (!syncFileUrl) {
                     OWSFailDebug(@"Failed to serialize contacts sync message.");
@@ -511,7 +519,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         }
 
         OWSSyncFetchLatestMessage *syncFetchLatestMessage =
-            [[OWSSyncFetchLatestMessage alloc] initWithThread:thread fetchType:fetchType];
+            [[OWSSyncFetchLatestMessage alloc] initWithThread:thread fetchType:fetchType transaction:transaction];
 
         [self.messageSenderJobQueue addMessage:syncFetchLatestMessage.asPreparer transaction:transaction];
     });

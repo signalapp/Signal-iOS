@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -38,7 +38,7 @@ public class CameraFirstCaptureSendFlow: NSObject {
 
         owsAssertDebug(groupThread != nil)
         if let groupThread = groupThread, Mention.threadAllowsMentionSend(groupThread) {
-            mentionCandidates = groupThread.recipientAddresses
+            mentionCandidates = groupThread.recipientAddressesWithSneakyTransaction
         } else {
             mentionCandidates = []
         }
@@ -56,6 +56,7 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
 
         let pickerVC = ConversationPickerViewController(selection: selection)
         pickerVC.pickerDelegate = self
+        pickerVC.shouldHideStoriesSection = false
         sendMediaNavigationController.pushViewController(pickerVC, animated: true)
     }
 
@@ -80,7 +81,7 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
     }
 
     var sendMediaNavRecipientNames: [String] {
-        return selectedConversations.map { $0.title }
+        return selectedConversations.map { $0.titleWithSneakyTransaction }
     }
 
     var sendMediaNavMentionableAddresses: [SignalServiceAddress] {

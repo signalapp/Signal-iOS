@@ -19,7 +19,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = 100
-            let message = messageBuilder.build()
+            let message = messageBuilder.build(transaction: transaction)
 
             XCTAssertFalse(message.shouldStartExpireTimer())
 
@@ -36,7 +36,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = 100
             messageBuilder.expiresInSeconds = 10
-            let message = messageBuilder.build()
+            let message = messageBuilder.build(transaction: transaction)
 
             XCTAssertFalse(message.shouldStartExpireTimer())
 
@@ -53,7 +53,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = 100
             messageBuilder.expiresInSeconds = 10
-            let message = messageBuilder.build()
+            let message = messageBuilder.build(transaction: transaction)
 
             message.updateAllUnsentRecipientsAsSending(transaction: transaction)
 
@@ -67,7 +67,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = 100
-            let message = messageBuilder.build()
+            let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
             let content = try! SSKProtoContent(serializedData: messageData)
             XCTAssertNil(content.pniSignatureMessage)
@@ -82,7 +82,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = 100
-            let message = messageBuilder.build()
+            let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
             let content = try! SSKProtoContent(serializedData: messageData)
 
@@ -105,7 +105,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = Date.ows_millisecondTimestamp()
-            let message = messageBuilder.build()
+            let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
             message.update(withSentRecipient: otherAddress, wasSentByUD: true, transaction: transaction)
@@ -138,7 +138,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = Date.ows_millisecondTimestamp()
-            let message = messageBuilder.build()
+            let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
             message.update(withSentRecipient: otherAddress, wasSentByUD: true, transaction: transaction)
@@ -186,7 +186,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = Date.ows_millisecondTimestamp()
-            let message = messageBuilder.build()
+            let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
             message.update(withSentRecipient: otherAddress, wasSentByUD: false, transaction: transaction)
@@ -219,7 +219,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = Date.ows_millisecondTimestamp()
-            let message = messageBuilder.build()
+            let message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
             message.update(withSentRecipient: otherAddress, wasSentByUD: true, transaction: transaction)
@@ -256,7 +256,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
             let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = Date.ows_millisecondTimestamp()
-            message = messageBuilder.build()
+            message = messageBuilder.build(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
             message.update(withSentRecipient: otherAddress, wasSentByUD: true, transaction: transaction)

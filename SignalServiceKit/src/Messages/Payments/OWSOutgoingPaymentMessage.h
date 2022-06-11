@@ -16,13 +16,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) TSPaymentNotification *paymentNotification;
 @property (nonatomic, readonly, nullable) TSPaymentCancellation *paymentCancellation;
 
-- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder NS_UNAVAILABLE;
+- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
            paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
            paymentNotification:(nullable TSPaymentNotification *)paymentNotification
                 paymentRequest:(nullable TSPaymentRequest *)paymentRequest
-              expiresInSeconds:(uint32_t)expiresInSeconds;
+              expiresInSeconds:(uint32_t)expiresInSeconds
+                   transaction:(SDSAnyReadTransaction *)transaction;
 
 // --- CODE GENERATION MARKER
 

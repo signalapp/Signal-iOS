@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -10,10 +10,16 @@ NS_ASSUME_NONNULL_BEGIN
 // send fixed plaintextData payloads.
 @interface OWSStaticOutgoingMessage : TSOutgoingMessage
 
-- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder NS_UNAVAILABLE;
+- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
 
-- (instancetype)initWithThread:(TSThread *)thread plaintextData:(NSData *)plaintextData;
-- (instancetype)initWithThread:(TSThread *)thread timestamp:(uint64_t)timestamp plaintextData:(NSData *)plaintextData;
+- (instancetype)initWithThread:(TSThread *)thread
+                 plaintextData:(NSData *)plaintextData
+                   transaction:(SDSAnyReadTransaction *)transaction;
+- (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
+                 plaintextData:(NSData *)plaintextData
+                   transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

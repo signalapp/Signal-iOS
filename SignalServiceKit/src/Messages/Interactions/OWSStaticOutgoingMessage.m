@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStaticOutgoingMessage.h"
@@ -18,16 +18,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSStaticOutgoingMessage
 
-- (instancetype)initWithThread:(TSThread *)thread plaintextData:(NSData *)plaintextData
+- (instancetype)initWithThread:(TSThread *)thread
+                 plaintextData:(NSData *)plaintextData
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    return [self initWithThread:thread timestamp:[NSDate ows_millisecondTimeStamp] plaintextData:plaintextData];
+    return [self initWithThread:thread
+                      timestamp:[NSDate ows_millisecondTimeStamp]
+                  plaintextData:plaintextData
+                    transaction:transaction];
 }
 
-- (instancetype)initWithThread:(TSThread *)thread timestamp:(uint64_t)timestamp plaintextData:(NSData *)plaintextData
+- (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
+                 plaintextData:(NSData *)plaintextData
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     messageBuilder.timestamp = timestamp;
-    self = [super initOutgoingMessageWithBuilder:messageBuilder];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
 
     if (self) {
         _plaintextData = plaintextData;

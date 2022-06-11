@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -53,8 +53,9 @@ public class BroadcastMediaMessageJobQueue: NSObject, JobQueue {
         return BroadcastMediaMessageOperation(jobRecord: jobRecord)
     }
 
-    public func add(attachmentIdMap: [String: [String]], transaction: SDSAnyWriteTransaction) {
+    public func add(attachmentIdMap: [String: [String]], unsavedMessagesToSend: [TSOutgoingMessage], transaction: SDSAnyWriteTransaction) {
         let jobRecord = OWSBroadcastMediaMessageJobRecord(attachmentIdMap: attachmentIdMap,
+                                                          unsavedMessagesToSend: unsavedMessagesToSend,
                                                           label: self.jobRecordLabel)
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
@@ -80,6 +81,7 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
     public override func run() {
         do {
             let messagesToSend = try BroadcastMediaUploader.upload(attachmentIdMap: jobRecord.attachmentIdMap)
+                + (jobRecord.unsavedMessagesToSend ?? [])
             databaseStorage.write { transaction in
                 for message in messagesToSend {
                     self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
@@ -243,7 +245,6 @@ public enum BroadcastMediaUploader: Dependencies {
                                                              transaction: transaction)
 
                     guard let albumMessageId = correspondingAttachment.albumMessageId else {
-                        owsFailDebug("albumMessageId was unexpectedly nil")
                         continue
                     }
                     messageIdsToSend.insert(albumMessageId)

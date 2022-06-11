@@ -187,6 +187,8 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 - (NSArray<id<SSKMaybeString>> *)usernamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
                                            transaction:(SDSAnyReadTransaction *)transaction;
 
+- (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTransaction:
+    (SDSAnyReadTransaction *)transaction;
 
 @end
 

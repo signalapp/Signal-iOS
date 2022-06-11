@@ -13,6 +13,8 @@ public protocol ThreadFinder {
     func visibleThreadIds(isArchived: Bool, transaction: ReadTransaction) throws -> [String]
     func sortIndex(thread: TSThread, transaction: ReadTransaction) throws -> UInt?
     func threads(withThreadIds threadIds: Set<String>, transaction: ReadTransaction) throws -> Set<TSThread>
+    func storyThreads(transaction: ReadTransaction) -> [TSThread]
+    func privateStoryThreads(transaction: ReadTransaction) -> [TSPrivateStoryThread]
 }
 
 @objc
@@ -68,6 +70,20 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
             return try grdbAdapter.threads(withThreadIds: threadIds, transaction: grdb)
+        }
+    }
+
+    public func storyThreads(transaction: SDSAnyReadTransaction) -> [TSThread] {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdb):
+            return grdbAdapter.storyThreads(transaction: grdb)
+        }
+    }
+
+    public func privateStoryThreads(transaction: SDSAnyReadTransaction) -> [TSPrivateStoryThread] {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdb):
+            return grdbAdapter.privateStoryThreads(transaction: grdb)
         }
     }
 }
@@ -258,5 +274,43 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         """
         let arguments: StatementArguments = [SDSRecordType.groupThread.rawValue]
         return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+    }
+
+    public func storyThreads(transaction: GRDBReadTransaction) -> [TSThread] {
+        let sql = """
+            SELECT *
+            FROM \(ThreadRecord.databaseTableName)
+            WHERE \(threadColumn: .storyViewMode) != \(TSThreadStoryViewMode.none.rawValue)
+            ORDER BY \(threadColumn: .lastSentStoryTimestamp) DESC
+        """
+        let cursor = TSThread.grdbFetchCursor(sql: sql, transaction: transaction)
+        var threads = [TSThread]()
+        do {
+            while let thread = try cursor.next() {
+                threads.append(thread)
+            }
+        } catch {
+            owsFailDebug("Failed to query story threads \(error)")
+        }
+        return threads
+    }
+
+    public func privateStoryThreads(transaction: GRDBReadTransaction) -> [TSPrivateStoryThread] {
+        let sql = """
+            SELECT *
+            FROM \(ThreadRecord.databaseTableName)
+            WHERE \(threadColumn: .recordType) = \(SDSRecordType.privateStoryThread.rawValue)
+            ORDER BY \(threadColumn: .lastSentStoryTimestamp) DESC
+        """
+        let cursor = TSThread.grdbFetchCursor(sql: sql, transaction: transaction)
+        var threads = [TSPrivateStoryThread]()
+        do {
+            while let thread = try cursor.next() as? TSPrivateStoryThread {
+                threads.append(thread)
+            }
+        } catch {
+            owsFailDebug("Failed to query story threads \(error)")
+        }
+        return threads
     }
 }

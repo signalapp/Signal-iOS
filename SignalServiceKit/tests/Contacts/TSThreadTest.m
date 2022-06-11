@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "MIMETypeUtil.h"
@@ -55,7 +55,7 @@
     TSOutgoingMessageBuilder *messageBuilder =
         [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread messageBody:@"outgoing message body"];
     messageBuilder.timestamp = 20000;
-    TSOutgoingMessage *outgoingMessage = [messageBuilder build];
+    TSOutgoingMessage *outgoingMessage = [messageBuilder buildWithSneakyTransaction];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [outgoingMessage anyInsertWithTransaction:transaction];
     }];
@@ -124,7 +124,7 @@
         [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread messageBody:@"outgoing message body"];
     messageBuilder.timestamp = 10000;
     messageBuilder.attachmentIds = [@[ outgoingAttachment.uniqueId ] mutableCopy];
-    TSOutgoingMessage *outgoingMessage = [messageBuilder build];
+    TSOutgoingMessage *outgoingMessage = [messageBuilder buildWithSneakyTransaction];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [outgoingMessage anyInsertWithTransaction:transaction];
     }];

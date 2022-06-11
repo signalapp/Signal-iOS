@@ -142,7 +142,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                                 additionalRecipients: additionalRecipientsBuilder(),
                                                 storyAuthorAddress: storyAuthorAddressBuilder(),
                                                 storyTimestamp: storyTimestampBuilder(),
-                                                storyReactionEmoji: storyReactionEmojiBuilder()).build()
+                                                storyReactionEmoji: storyReactionEmojiBuilder()).build(transaction: transaction)
     }
 
     @objc
@@ -266,7 +266,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
     @objc
     public func buildDeliveryReceipt(transaction: SDSAnyWriteTransaction) -> OWSReceiptsForSenderMessage {
         let item = OWSReceiptsForSenderMessage.deliveryReceiptsForSenderMessage(with: threadCreator(transaction),
-                                                                                receiptSet: receiptSetBuilder())
+                                                                                receiptSet: receiptSetBuilder(), transaction: transaction)
         return item
     }
 
@@ -346,7 +346,7 @@ public class IncomingMessageFactory: NSObject, Factory {
         case let contactThread as TSContactThread:
             return contactThread.contactAddress
         case let groupThread as TSGroupThread:
-            let randomAddress = groupThread.recipientAddresses.randomElement() ?? CommonGenerator.address()
+            let randomAddress = groupThread.recipientAddressesWithSneakyTransaction.randomElement() ?? CommonGenerator.address()
             return randomAddress
         default:
             owsFailDebug("unexpected thread type")

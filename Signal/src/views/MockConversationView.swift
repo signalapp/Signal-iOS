@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 protocol MockConversationDelegate: AnyObject {
     var mockConversationViewWidth: CGFloat { get }
@@ -134,7 +135,7 @@ class MockConversationView: UIView {
                         return DateHeaderInteraction(thread: self.thread,
                                                      timestamp: NSDate.ows_millisecondTimeStamp())
                     case .outgoing(let text):
-                        return MockOutgoingMessage(messageBody: text, thread: self.thread)
+                        return databaseStorage.read { MockOutgoingMessage(messageBody: text, thread: self.thread, transaction: $0) }
                     case .incoming(let text):
                         return MockIncomingMessage(messageBody: text, thread: self.thread)
                     }
@@ -221,9 +222,9 @@ private class MockIncomingMessage: TSIncomingMessage {
 // MARK: -
 
 private class MockOutgoingMessage: TSOutgoingMessage {
-    init(messageBody: String, thread: TSThread) {
+    init(messageBody: String, thread: TSThread, transaction: SDSAnyReadTransaction) {
         let builder = TSOutgoingMessageBuilder(thread: thread, messageBody: messageBody)
-        super.init(outgoingMessageWithBuilder: builder)
+        super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
     }
 
     required init?(coder: NSCoder) {

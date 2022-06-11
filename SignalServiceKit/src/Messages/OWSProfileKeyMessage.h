@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -8,7 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSProfileKeyMessage : TSOutgoingMessage
 
-- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder NS_UNAVAILABLE;
+- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
            receivedAtTimestamp:(uint64_t)receivedAtTimestamp
@@ -39,7 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
         recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
             storedMessageState:(TSOutgoingMessageState)storedMessageState NS_UNAVAILABLE;
 
-- (instancetype)initWithThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithThread:(TSThread *)thread
+                   transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 @end

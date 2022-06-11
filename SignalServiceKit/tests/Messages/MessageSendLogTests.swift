@@ -498,8 +498,8 @@ class MessageSendLogTests: SSKBaseTestSwift {
     // MARK: - Helpers
 
     class MSLTestMessage: TSOutgoingMessage {
-        override init(outgoingMessageWithBuilder outgoingMessageBuilder: TSOutgoingMessageBuilder) {
-            super.init(outgoingMessageWithBuilder: outgoingMessageBuilder)
+        override init(outgoingMessageWithBuilder outgoingMessageBuilder: TSOutgoingMessageBuilder, transaction: SDSAnyReadTransaction) {
+            super.init(outgoingMessageWithBuilder: outgoingMessageBuilder, transaction: transaction)
         }
 
         required init?(coder: NSCoder) {
@@ -532,7 +532,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
 
         let builder = TSOutgoingMessageBuilder(thread: ContactThreadFactory().create(transaction: writeTx),
                                                timestamp: resolvedDate.ows_millisecondsSince1970)
-        let testMessage = MSLTestMessage(outgoingMessageWithBuilder: builder)
+        let testMessage = MSLTestMessage(outgoingMessageWithBuilder: builder, transaction: writeTx)
         testMessage._contentHint = contentHint
         testMessage._relatedMessageIds = [testMessage.uniqueId] + relatedMessageIds
         return testMessage

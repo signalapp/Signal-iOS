@@ -5,17 +5,13 @@
 import Foundation
 import SignalServiceKit
 
-struct IncomingStoryViewModel: Dependencies {
+struct StoryViewModel: Dependencies {
     let context: StoryContext
 
     let messages: [StoryMessage]
     let hasUnviewedMessages: Bool
-    enum Attachment {
-        case file(TSAttachment)
-        case text(TextAttachment)
-        case missing
-    }
-    let latestMessageAttachment: Attachment
+
+    let latestMessageAttachment: StoryThumbnailView.Attachment
     let hasReplies: Bool
     let latestMessageName: String
     let latestMessageTimestamp: UInt64
@@ -24,7 +20,7 @@ struct IncomingStoryViewModel: Dependencies {
     let latestMessageAvatarDataSource: ConversationAvatarDataSource
 
     init(messages: [StoryMessage], transaction: SDSAnyReadTransaction) throws {
-        let sortedFilteredMessages = messages.lazy.filter { $0.direction == .incoming }.sorted { $0.timestamp < $1.timestamp }
+        let sortedFilteredMessages = messages.lazy.sorted { $0.timestamp < $1.timestamp }
         self.messages = sortedFilteredMessages
         self.hasUnviewedMessages = sortedFilteredMessages.contains { $0.localUserViewedTimestamp == nil }
 
@@ -56,18 +52,7 @@ struct IncomingStoryViewModel: Dependencies {
             latestMessageAvatarDataSource = .address(latestMessage.authorAddress)
         }
 
-        switch latestMessage.attachment {
-        case .file(let attachmentId):
-            guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
-                owsFailDebug("Unexpectedly missing attachment for story")
-                latestMessageAttachment = .missing
-                break
-            }
-            latestMessageAttachment = .file(attachment)
-        case .text(let attachment):
-            latestMessageAttachment = .text(attachment)
-        }
-
+        latestMessageAttachment = .from(latestMessage.attachment, transaction: transaction)
         latestMessageTimestamp = latestMessage.timestamp
         latestMessageViewedTimestamp = latestMessage.localUserViewedTimestamp
     }

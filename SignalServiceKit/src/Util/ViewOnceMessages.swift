@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -138,7 +138,8 @@ public class ViewOnceMessages: NSObject {
         let syncMessage = OWSViewOnceMessageReadSyncMessage(thread: thread,
                                                             senderAddress: senderAddress,
                                                             message: message,
-                                                            readTimestamp: readTimestamp)
+                                                            readTimestamp: readTimestamp,
+                                                            transaction: transaction)
         messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
 
         if let incomingMessage = message as? TSIncomingMessage {

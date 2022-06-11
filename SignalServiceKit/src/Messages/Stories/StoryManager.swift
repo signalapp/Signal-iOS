@@ -9,6 +9,16 @@ public class StoryManager: NSObject {
     public static let storyLifetimeMillis = kDayInMs
 
     @objc
+    public class func setup() {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            // Create My Story thread if necessary
+            Self.databaseStorage.asyncWrite { transaction in
+                TSPrivateStoryThread.getOrCreateMyStory(transaction: transaction)
+            }
+        }
+    }
+
+    @objc
     public class func processIncomingStoryMessage(
         _ storyMessage: SSKProtoStoryMessage,
         timestamp: UInt64,

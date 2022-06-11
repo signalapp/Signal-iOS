@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSProfileManager+SignalUI.h"
@@ -43,10 +43,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSProfileKeyMessage *message = [[OWSProfileKeyMessage alloc] initWithThread:thread];
     [OWSProfileManager.shared addThreadToProfileWhitelist:thread];
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        OWSProfileKeyMessage *message = [[OWSProfileKeyMessage alloc] initWithThread:thread transaction:transaction];
         [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
     });
 }

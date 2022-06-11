@@ -48,6 +48,15 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
     }
 
+    public var remoteViewCount: Int {
+        switch manifest {
+        case .incoming:
+            return 0
+        case .outgoing(_, let recipientStates):
+            return recipientStates.values.lazy.filter { $0.viewedTimestamp != nil }.count
+        }
+    }
+
     public var localUserAllowedToReply: Bool {
         switch manifest {
         case .incoming(let allowsReplies, _):
@@ -166,18 +175,18 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     @objc
     public func markAsViewed(at timestamp: UInt64, by recipient: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
         anyUpdate(transaction: transaction) { record in
-            guard case .outgoing(var manifest) = record.manifest else {
+            guard case .outgoing(let threadId, var recipientStates) = record.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark incoming message as viewed with wrong method.")
             }
 
-            guard let recipientUuid = recipient.uuid, var recipientState = manifest[recipientUuid] else {
+            guard let recipientUuid = recipient.uuid, var recipientState = recipientStates[recipientUuid] else {
                 return owsFailDebug("missing recipient for viewed update")
             }
 
             recipientState.viewedTimestamp = timestamp
-            manifest[recipientUuid] = recipientState
+            recipientStates[recipientUuid] = recipientState
 
-            record.manifest = .outgoing(manifest: manifest)
+            record.manifest = .outgoing(threadId: threadId, recipientStates: recipientStates)
         }
     }
 
@@ -244,7 +253,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
 
 public enum StoryManifest: Codable {
     case incoming(allowsReplies: Bool, viewedTimestamp: UInt64?)
-    case outgoing(manifest: [UUID: StoryRecipientState])
+    case outgoing(threadId: String, recipientStates: [UUID: StoryRecipientState])
 }
 
 public struct StoryRecipientState: Codable {

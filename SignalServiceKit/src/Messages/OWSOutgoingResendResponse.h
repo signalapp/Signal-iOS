@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/SignalServiceKit.h>
@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
                          didResetSession:(BOOL)didPerformSessionReset
                              transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder NS_UNAVAILABLE;
+- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                         uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp

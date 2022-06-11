@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingResendRequest.h"
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    self = [super initOutgoingMessageWithBuilder:builder];
+    self = [super initOutgoingMessageWithBuilder:builder transaction:transaction];
     if (self) {
         _decryptionErrorData = errorData;
         _failedEnvelopeGroupId = failedEnvelopeGroupId;

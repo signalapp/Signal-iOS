@@ -1072,6 +1072,9 @@
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
 
+/* table section header for section containing stories */
+"CONVERSATION_PICKER_SECTION_STORIES" = "Stories";
+
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Choose Recipients";
 
@@ -3514,6 +3517,15 @@
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Muted";
 
+/* Indicates that there are no sent stories to render */
+"MY_STORIES_NO_STORIES" = "Updates to your story will show up here.";
+
+/* Title for the 'My Stories' view */
+"MY_STORIES_TITLE" = "My Stories";
+
+/* Name for the 'My Story' default story that sends to all the user's contacts. */
+"MY_STORY_NAME" = "My Story";
+
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
 
@@ -5888,10 +5900,22 @@
 "STORIES_HIDE_STORY_ACTION" = "Hide Story";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No recent updates to show right now.";
+"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "No replies yet";
+
+/* Label for 'new private story' button in story settings view. */
+"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+
+/* Footer for the 'Private Stories' section of the stories settings */
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+
+/* Header for the 'Private Stories' section of the stories settings */
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+
+/* Title for the story privacy settings view */
+"STORIES_SETTINGS_TITLE" = "Story Privacy";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Share";
@@ -5904,6 +5928,9 @@
 
 /* Text indicating a story that was replied to is no longer available. */
 "STORY_NO_LONGER_AVAILABLE" = "No longer available";
+
+/* Button to access the story privacy settings menu */
+"STORY_PRIVACY_SETTINGS" = "Privacy";
 
 /* Button for replying to a story with a single existing reply. */
 "STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";

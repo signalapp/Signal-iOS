@@ -17,10 +17,10 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithThread:(TSThread *)thread
+- (instancetype)initWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    self = [super initOutgoingMessageWithBuilder:messageBuilder];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
 
     if (!self) {
         return self;
@@ -29,11 +29,13 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                           thread:(TSThread *)thread
+                      transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     messageBuilder.timestamp = timestamp;
-    self = [super initOutgoingMessageWithBuilder:messageBuilder];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
 
     if (!self) {
         return self;

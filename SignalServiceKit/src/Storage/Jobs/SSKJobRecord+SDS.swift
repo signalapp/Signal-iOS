@@ -55,6 +55,7 @@ public struct JobRecordRecord: SDSRecord {
     public let receiptCredentialPresentation: Data?
     public let amount: Data?
     public let currencyCode: String?
+    public let unsavedMessagesToSend: Data?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -85,6 +86,7 @@ public struct JobRecordRecord: SDSRecord {
         case receiptCredentialPresentation
         case amount
         case currencyCode
+        case unsavedMessagesToSend
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -136,6 +138,7 @@ public extension JobRecordRecord {
         receiptCredentialPresentation = row[25]
         amount = row[26]
         currencyCode = row[27]
+        unsavedMessagesToSend = row[28]
     }
 }
 
@@ -174,6 +177,8 @@ extension SSKJobRecord {
             let status: SSKJobRecordStatus = record.status
             let attachmentIdMapSerialized: Data? = record.attachmentIdMap
             let attachmentIdMap: [String: [String]] = try SDSDeserialization.unarchive(attachmentIdMapSerialized, name: "attachmentIdMap")
+            let unsavedMessagesToSendSerialized: Data? = record.unsavedMessagesToSend
+            let unsavedMessagesToSend: [TSOutgoingMessage]? = try SDSDeserialization.optionalUnarchive(unsavedMessagesToSendSerialized, name: "unsavedMessagesToSend")
 
             return OWSBroadcastMediaMessageJobRecord(grdbId: recordId,
                                                      uniqueId: uniqueId,
@@ -182,7 +187,8 @@ extension SSKJobRecord {
                                                      label: label,
                                                      sortId: sortId,
                                                      status: status,
-                                                     attachmentIdMap: attachmentIdMap)
+                                                     attachmentIdMap: attachmentIdMap,
+                                                     unsavedMessagesToSend: unsavedMessagesToSend)
 
         case .incomingContactSyncJobRecord:
 
@@ -598,6 +604,19 @@ extension SSKJobRecord: DeepCopyable {
             // NOTE: If this generates build errors, you made need to
             // implement DeepCopyable for this type in DeepCopy.swift.
             let attachmentIdMap: [String: [String]] = try DeepCopies.deepCopy(modelToCopy.attachmentIdMap)
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let unsavedMessagesToSend: [TSOutgoingMessage]?
+            if let unsavedMessagesToSendForCopy = modelToCopy.unsavedMessagesToSend {
+               unsavedMessagesToSend = try DeepCopies.deepCopy(unsavedMessagesToSendForCopy)
+            } else {
+               unsavedMessagesToSend = nil
+            }
 
             return OWSBroadcastMediaMessageJobRecord(grdbId: id,
                                                      uniqueId: uniqueId,
@@ -606,7 +625,8 @@ extension SSKJobRecord: DeepCopyable {
                                                      label: label,
                                                      sortId: sortId,
                                                      status: status,
-                                                     attachmentIdMap: attachmentIdMap)
+                                                     attachmentIdMap: attachmentIdMap,
+                                                     unsavedMessagesToSend: unsavedMessagesToSend)
         }
 
         do {
@@ -666,6 +686,7 @@ extension SSKJobRecordSerializer {
     static var receiptCredentialPresentationColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "receiptCredentialPresentation", columnType: .blob, isOptional: true) }
     static var amountColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "amount", columnType: .blob, isOptional: true) }
     static var currencyCodeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "currencyCode", columnType: .unicodeString, isOptional: true) }
+    static var unsavedMessagesToSendColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "unsavedMessagesToSend", columnType: .blob, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -700,7 +721,8 @@ extension SSKJobRecordSerializer {
         isBoostColumn,
         receiptCredentialPresentationColumn,
         amountColumn,
-        currencyCodeColumn
+        currencyCodeColumn,
+        unsavedMessagesToSendColumn
         ])
     }
 }
@@ -1114,8 +1136,9 @@ class SSKJobRecordSerializer: SDSSerializer {
         let receiptCredentialPresentation: Data? = nil
         let amount: Data? = nil
         let currencyCode: String? = nil
+        let unsavedMessagesToSend: Data? = nil
 
-        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost, receiptCredentialPresentation: receiptCredentialPresentation, amount: amount, currencyCode: currencyCode)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost, receiptCredentialPresentation: receiptCredentialPresentation, amount: amount, currencyCode: currencyCode, unsavedMessagesToSend: unsavedMessagesToSend)
     }
 }
 

@@ -81,4 +81,5 @@ public enum SDSRecordType: UInt, CaseIterable {
     case groupMember = 69
     case recoverableDecryptionPlaceholder = 70
     case receiptCredentialRedemptionJobRecord = 71
+    case privateStoryThread = 72
 }

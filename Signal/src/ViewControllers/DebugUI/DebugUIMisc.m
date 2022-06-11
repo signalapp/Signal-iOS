@@ -560,8 +560,9 @@ NS_ASSUME_NONNULL_BEGIN
                               lastSeenAt:[NSDate new]
                                     name:nil] anyInsertWithTransaction:transaction];
 
-    TSOutgoingMessage *queuedMessage = [[TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
-                                                                                       messageBody:@"some body"] build];
+    TSOutgoingMessage *queuedMessage =
+        [[TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
+                                                        messageBody:@"some body"] buildWithTransaction:transaction];
     NSError *_Nullable error;
     [queuedMessage anyInsertWithTransaction:transaction];
     [[[SSKMessageSenderJobRecord alloc] initWithMessage:queuedMessage
@@ -572,6 +573,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   error:&error] anyInsertWithTransaction:transaction];
     OWSAssertDebug(error == nil);
     [[[OWSBroadcastMediaMessageJobRecord alloc] initWithAttachmentIdMap:[NSMutableDictionary new]
+                                                  unsavedMessagesToSend:@[]
                                                                   label:BroadcastMediaMessageJobQueue.jobRecordLabel]
         anyInsertWithTransaction:transaction];
     [[[OWSSessionResetJobRecord alloc] initWithContactThread:thread label:OWSSessionResetJobQueue.jobRecordLabel]

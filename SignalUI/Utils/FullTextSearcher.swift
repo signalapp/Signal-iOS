@@ -740,7 +740,7 @@ public class FullTextSearcher: NSObject {
 
                 appendMessage(message)
             case let recipient as SignalRecipient:
-                guard thread.recipientAddresses.contains(recipient.address) || recipient.address.isLocalAddress else {
+                guard thread.recipientAddresses(with: transaction).contains(recipient.address) || recipient.address.isLocalAddress else {
                     return
                 }
                 let messagesMentioningAccount = MentionFinder.messagesMentioning(

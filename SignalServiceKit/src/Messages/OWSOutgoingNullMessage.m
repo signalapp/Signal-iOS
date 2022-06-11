@@ -21,19 +21,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingNullMessage
 
-- (instancetype)initWithContactThread:(TSContactThread *)contactThread
+- (instancetype)initWithContactThread:(TSContactThread *)contactThread transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder =
         [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:contactThread];
-    return [super initOutgoingMessageWithBuilder:messageBuilder];
+    return [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
 }
 
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
          verificationStateSyncMessage:(OWSVerificationStateSyncMessage *)verificationStateSyncMessage
+                          transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder =
         [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:contactThread];
-    self = [super initOutgoingMessageWithBuilder:messageBuilder];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
     if (!self) {
         return self;
     }

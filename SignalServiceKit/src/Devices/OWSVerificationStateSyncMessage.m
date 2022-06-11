@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSVerificationStateSyncMessage.h"
@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
                   verificationState:(OWSVerificationState)verificationState
                         identityKey:(NSData *)identityKey
     verificationForRecipientAddress:(SignalServiceAddress *)address
+                        transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(identityKey.length == kIdentityKeyLength);
     OWSAssertDebug(address.isValid);
@@ -34,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     // will figure that out on it's own.
     OWSAssertDebug(verificationState != OWSVerificationStateNoLongerVerified);
 
-    self = [super initWithThread:thread];
+    self = [super initWithThread:thread transaction:transaction];
     if (!self) {
         return self;
     }

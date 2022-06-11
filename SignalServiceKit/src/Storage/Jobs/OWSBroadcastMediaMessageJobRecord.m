@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBroadcastMediaMessageJobRecord.h"
@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithAttachmentIdMap:(NSDictionary<NSString *, NSArray<NSString *> *> *)attachmentIdMap
+                  unsavedMessagesToSend:(nullable NSArray<TSOutgoingMessage *> *)unsavedMessagesToSend
                                   label:(NSString *)label
 {
     self = [super initWithLabel:label];
@@ -27,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _attachmentIdMap = attachmentIdMap;
+    _unsavedMessagesToSend = unsavedMessagesToSend;
 
     return self;
 }
@@ -45,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                  attachmentIdMap:(NSDictionary<NSString *,NSArray<NSString *> *> *)attachmentIdMap
+           unsavedMessagesToSend:(nullable NSArray<TSOutgoingMessage *> *)unsavedMessagesToSend
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
@@ -59,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _attachmentIdMap = attachmentIdMap;
+    _unsavedMessagesToSend = unsavedMessagesToSend;
 
     return self;
 }

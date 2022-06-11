@@ -126,18 +126,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateIdentityVerificationForThread:(TSThread *)thread
 {
-    if (thread.recipientAddresses.count == 0) {
+    if (thread.recipientAddressesWithSneakyTransaction.count == 0) {
         OWSFailDebug(@"No recipients for thread %@", thread);
         return;
     }
 
-    if (thread.recipientAddresses.count > 1) {
+    if (thread.recipientAddressesWithSneakyTransaction.count > 1) {
         ActionSheetController *recipientSelection = [[ActionSheetController alloc] initWithTitle:@"Select a recipient"
                                                                                          message:nil];
         [recipientSelection addAction:OWSActionSheets.cancelAction];
 
         __weak typeof(self) wSelf = self;
-        for (SignalServiceAddress *address in thread.recipientAddresses) {
+        for (SignalServiceAddress *address in thread.recipientAddressesWithSneakyTransaction) {
             NSString *name = [self.contactsManager displayNameForAddress:address];
             [recipientSelection
                 addAction:[[ActionSheetAction alloc] initWithTitle:name
@@ -150,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSActionSheets showActionSheet:recipientSelection];
 
     } else {
-        [self updateIdentityVerificationForAddress:thread.recipientAddresses.firstObject];
+        [self updateIdentityVerificationForAddress:thread.recipientAddressesWithSneakyTransaction.firstObject];
     }
 }
 

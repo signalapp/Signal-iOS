@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -60,13 +60,18 @@ class ConversationConfigurationSyncOperation: OWSOperation {
             owsFailDebug("Missing thread.")
             return
         }
-        let syncMessage = OWSSyncGroupsMessage(thread: thread)
         do {
-            let attachmentDataSource: DataSource = try self.databaseStorage.read { transaction in
+            let (syncMessage, attachmentDataSource) = try self.databaseStorage.read { transaction -> (OWSSyncGroupsMessage, DataSource) in
+                let syncMessage = OWSSyncGroupsMessage(thread: thread, transaction: transaction)
+
                 guard let syncFileUrl = syncMessage.buildPlainTextAttachmentFile(transaction: transaction) else {
                     throw OWSAssertionError("Could not serialize sync groups data.")
                 }
-                return try DataSourcePath.dataSource(with: syncFileUrl, shouldDeleteOnDeallocation: false)
+
+                return (
+                    syncMessage,
+                    try DataSourcePath.dataSource(with: syncFileUrl, shouldDeleteOnDeallocation: false)
+                )
             }
 
             self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)

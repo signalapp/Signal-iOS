@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingSentMessageTranscript.h"
@@ -46,13 +46,14 @@ NS_ASSUME_NONNULL_BEGIN
                       messageThread:(TSThread *)messageThread
                     outgoingMessage:(TSOutgoingMessage *)message
                   isRecipientUpdate:(BOOL)isRecipientUpdate
+                        transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(message != nil);
     OWSAssertDebug(localThread != nil);
     OWSAssertDebug(messageThread != nil);
 
     // The sync message's timestamp must match the original outgoing message's timestamp.
-    self = [super initWithTimestamp:message.timestamp thread:localThread];
+    self = [super initWithTimestamp:message.timestamp thread:localThread transaction:transaction];
 
     if (!self) {
         return self;

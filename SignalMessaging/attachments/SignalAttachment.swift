@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -314,12 +314,12 @@ public class SignalAttachment: NSObject {
     }
 
     @objc
-    public func buildOutgoingAttachmentInfo(message: TSMessage) -> OutgoingAttachmentInfo {
+    public func buildOutgoingAttachmentInfo(message: TSMessage? = nil) -> OutgoingAttachmentInfo {
         return OutgoingAttachmentInfo(dataSource: dataSource,
                                       contentType: mimeType,
                                       sourceFilename: filenameOrDefault,
                                       caption: captionText,
-                                      albumMessageId: message.uniqueId,
+                                      albumMessageId: message?.uniqueId,
                                       isBorderless: isBorderless,
                                       isLoopingVideo: isLoopingVideo)
     }

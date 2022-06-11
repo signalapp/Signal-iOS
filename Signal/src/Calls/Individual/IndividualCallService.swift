@@ -886,10 +886,15 @@ final public class IndividualCallService: NSObject {
             case .audioCall: offerBuilder.setType(.offerAudioCall)
             case .videoCall: offerBuilder.setType(.offerVideoCall)
             }
-            let callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, offerMessage: try offerBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
 
-            return Self.databaseStorage.write { transaction in
-                ThreadUtil.enqueueMessagePromise(
+            return try Self.databaseStorage.write { transaction -> Promise<Void> in
+                let callMessage = OWSOutgoingCallMessage(
+                    thread: call.individualCall.thread,
+                    offerMessage: try offerBuilder.build(),
+                    destinationDeviceId: NSNumber(value: destinationDeviceId),
+                    transaction: transaction)
+
+                return ThreadUtil.enqueueMessagePromise(
                     message: callMessage,
                     limitToCurrentProcessLifetime: true,
                     isHighPriority: true,
@@ -913,10 +918,15 @@ final public class IndividualCallService: NSObject {
         firstly(on: .global()) { () throws -> Promise<Void> in
             let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId)
             answerBuilder.setOpaque(opaque)
-            let callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, answerMessage: try answerBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
 
-            return Self.databaseStorage.write { transaction in
-                ThreadUtil.enqueueMessagePromise(
+            return try Self.databaseStorage.write { transaction -> Promise<Void> in
+                let callMessage = OWSOutgoingCallMessage(
+                    thread: call.individualCall.thread,
+                    answerMessage: try answerBuilder.build(),
+                    destinationDeviceId: NSNumber(value: destinationDeviceId),
+                    transaction: transaction)
+
+                return ThreadUtil.enqueueMessagePromise(
                     message: callMessage,
                     limitToCurrentProcessLifetime: true,
                     isHighPriority: true,
@@ -953,10 +963,14 @@ final public class IndividualCallService: NSObject {
                 throw OWSAssertionError("no ice updates to send")
             }
 
-            let callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, iceUpdateMessages: iceUpdateProtos, destinationDeviceId: NSNumber(value: destinationDeviceId))
+            return Self.databaseStorage.write { transaction -> Promise<Void> in
+                let callMessage = OWSOutgoingCallMessage(
+                    thread: call.individualCall.thread,
+                    iceUpdateMessages: iceUpdateProtos,
+                    destinationDeviceId: NSNumber(value: destinationDeviceId),
+                    transaction: transaction)
 
-            return Self.databaseStorage.write { transaction in
-                ThreadUtil.enqueueMessagePromise(
+                return ThreadUtil.enqueueMessagePromise(
                     message: callMessage,
                     limitToCurrentProcessLifetime: true,
                     isHighPriority: true,
@@ -994,11 +1008,14 @@ final public class IndividualCallService: NSObject {
                 hangupBuilder.setDeviceID(deviceId)
             }
 
-            let callMessage: OWSOutgoingCallMessage
-            callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, hangupMessage: try hangupBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
+            return try Self.databaseStorage.write { transaction -> Promise<Void> in
+                let callMessage = OWSOutgoingCallMessage(
+                    thread: call.individualCall.thread,
+                    hangupMessage: try hangupBuilder.build(),
+                    destinationDeviceId: NSNumber(value: destinationDeviceId),
+                    transaction: transaction)
 
-            return Self.databaseStorage.write { transaction in
-                ThreadUtil.enqueueMessagePromise(
+                return ThreadUtil.enqueueMessagePromise(
                     message: callMessage,
                     limitToCurrentProcessLifetime: true,
                     isHighPriority: true,
@@ -1021,10 +1038,15 @@ final public class IndividualCallService: NSObject {
 
         firstly(on: .global()) { () throws -> Promise<Void> in
             let busyBuilder = SSKProtoCallMessageBusy.builder(id: callId)
-            let callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, busyMessage: try busyBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
 
-            return Self.databaseStorage.write { transaction in
-                ThreadUtil.enqueueMessagePromise(
+            return try Self.databaseStorage.write { transaction -> Promise<Void> in
+                let callMessage = OWSOutgoingCallMessage(
+                    thread: call.individualCall.thread,
+                    busyMessage: try busyBuilder.build(),
+                    destinationDeviceId: NSNumber(value: destinationDeviceId),
+                    transaction: transaction)
+
+                return ThreadUtil.enqueueMessagePromise(
                     message: callMessage,
                     limitToCurrentProcessLifetime: true,
                     isHighPriority: true,

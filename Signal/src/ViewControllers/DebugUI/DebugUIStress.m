@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIStress.h"
@@ -537,8 +537,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(thread);
     OWSAssertDebug(block);
 
-    OWSDynamicOutgoingMessage *message = [[OWSDynamicOutgoingMessage alloc] initWithThread:thread
-                                                                        plainTextDataBlock:block];
+    __block OWSDynamicOutgoingMessage *message;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        message = [[OWSDynamicOutgoingMessage alloc] initWithThread:thread
+                                                        transaction:transaction
+                                                 plainTextDataBlock:block];
+    }];
 
     [self sendStressMessage:message];
 }
@@ -548,9 +552,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(thread);
     OWSAssertDebug(block);
 
-    OWSDynamicOutgoingMessage *message = [[OWSDynamicOutgoingMessage alloc] initWithThread:thread
-                                                                                 timestamp:timestamp
-                                                                        plainTextDataBlock:block];
+    __block OWSDynamicOutgoingMessage *message;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        message = [[OWSDynamicOutgoingMessage alloc] initWithThread:thread
+                                                          timestamp:timestamp
+                                                        transaction:transaction
+                                                 plainTextDataBlock:block];
+    }];
 
     [self sendStressMessage:message];
 }
@@ -637,7 +645,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *text = NSUUID.UUID.UUIDString;
     TSOutgoingMessageBuilder *messageBuilder =
         [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:interactionThread messageBody:text];
-    TSOutgoingMessage *message = [messageBuilder build];
+    TSOutgoingMessage *message = [messageBuilder buildWithSneakyTransaction];
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [message anyInsertWithTransaction:transaction];

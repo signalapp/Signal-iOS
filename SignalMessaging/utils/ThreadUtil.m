@@ -82,16 +82,18 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(stickerInfo != nil);
     OWSAssertDebug(thread != nil);
 
-    __block OWSDisappearingMessagesConfiguration *configuration;
+    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
+
+    __block TSOutgoingMessage *message;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
+        OWSDisappearingMessagesConfiguration *configuration =
+            [thread disappearingMessagesConfigurationWithTransaction:transaction];
+        uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+        builder.expiresInSeconds = expiresInSeconds;
+        message = [builder buildWithTransaction:transaction];
     }];
 
-    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-
-    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    builder.expiresInSeconds = expiresInSeconds;
-    return [builder build];
+    return message;
 }
 
 + (void)enqueueMessage:(TSOutgoingMessage *)message

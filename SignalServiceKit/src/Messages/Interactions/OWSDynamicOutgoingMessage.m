@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDynamicOutgoingMessage.h"
@@ -18,19 +18,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDynamicOutgoingMessage
 
-- (instancetype)initWithThread:(TSThread *)thread plainTextDataBlock:(DynamicOutgoingMessageBlock)block
+- (instancetype)initWithThread:(TSThread *)thread
+                   transaction:(SDSAnyReadTransaction *)transaction
+            plainTextDataBlock:(DynamicOutgoingMessageBlock)block
 {
-    return [self initWithThread:thread timestamp:[NSDate ows_millisecondTimeStamp] plainTextDataBlock:block];
+    return [self initWithThread:thread
+                      timestamp:[NSDate ows_millisecondTimeStamp]
+                    transaction:transaction
+             plainTextDataBlock:block];
 }
 
 // MJK TODO can we remove sender timestamp?
 - (instancetype)initWithThread:(TSThread *)thread
                      timestamp:(uint64_t)timestamp
+                   transaction:(SDSAnyReadTransaction *)transaction
             plainTextDataBlock:(DynamicOutgoingMessageBlock)block
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     messageBuilder.timestamp = timestamp;
-    self = [super initOutgoingMessageWithBuilder:messageBuilder];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
 
     if (self) {
         _block = block;

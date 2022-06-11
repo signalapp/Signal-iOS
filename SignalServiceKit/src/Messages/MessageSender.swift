@@ -687,8 +687,32 @@ extension MessageSender {
                 return [contactAddress]
             }
         } else {
-            owsFailDebug("Invalid thread.")
-            throw SSKUnretryableError.invalidThread
+            // Send to the intersection of:
+            //
+            // * "sending" recipients of the message.
+            // * recipients of the thread
+            //
+            // I.e. try to send a message IFF:
+            //
+            // * The recipient was part of the thread when the message was first tried to be sent.
+            // * The recipient is still part of the thread.
+            // * The recipient is in the "sending" state.
+
+            var recipientAddresses = Set(message.sendingRecipientAddresses())
+
+            // Only send to members in the latest known thread recipients list.
+            let currentValidThreadRecipients = thread.recipientAddressesWithSneakyTransaction
+
+            recipientAddresses.formIntersection(currentValidThreadRecipients)
+
+            let blockedAddresses = databaseStorage.read { blockingManager.blockedAddresses(transaction: $0) }
+            recipientAddresses.subtract(blockedAddresses)
+
+            if recipientAddresses.contains(localAddress) {
+                owsFailDebug("Message send recipients should not include self.")
+            }
+
+            return Array(recipientAddresses)
         }
     }
 

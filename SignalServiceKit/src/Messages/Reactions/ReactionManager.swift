@@ -90,7 +90,8 @@ public class ReactionManager: NSObject {
             message: message,
             emoji: emoji,
             isRemoving: isRemoving,
-            expiresInSeconds: expiresInSeconds
+            expiresInSeconds: expiresInSeconds,
+            transaction: transaction
         )
 
         outgoingMessage.previousReaction = message.reaction(for: localAddress, transaction: transaction)
@@ -207,7 +208,7 @@ public class ReactionManager: NSObject {
             if reactor.isLocalAddress {
                 let builder = TSOutgoingMessageBuilder(thread: thread)
                 populateStoryContext(on: builder)
-                message = builder.build()
+                message = builder.build(transaction: transaction)
             } else {
                 let builder = TSIncomingMessageBuilder(thread: thread)
                 builder.authorAddress = reactor

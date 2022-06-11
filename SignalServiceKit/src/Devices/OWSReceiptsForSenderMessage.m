@@ -23,34 +23,41 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                                  receiptSet:(MessageReceiptSet *)receiptSet
+                                                                transaction:(SDSAnyReadTransaction *)transaction
 {
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
                                                     receiptSet:receiptSet
-                                                   receiptType:SSKProtoReceiptMessageTypeDelivery];
+                                                   receiptType:SSKProtoReceiptMessageTypeDelivery
+                                                   transaction:transaction];
 }
 
 + (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                              receiptSet:(MessageReceiptSet *)receiptSet
+                                                            transaction:(SDSAnyReadTransaction *)transaction
 {
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
                                                     receiptSet:receiptSet
-                                                   receiptType:SSKProtoReceiptMessageTypeRead];
+                                                   receiptType:SSKProtoReceiptMessageTypeRead
+                                                   transaction:transaction];
 }
 
 + (OWSReceiptsForSenderMessage *)viewedReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                                receiptSet:(MessageReceiptSet *)receiptSet
+                                                              transaction:(SDSAnyReadTransaction *)transaction
 {
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
                                                     receiptSet:receiptSet
-                                                   receiptType:SSKProtoReceiptMessageTypeViewed];
+                                                   receiptType:SSKProtoReceiptMessageTypeViewed
+                                                   transaction:transaction];
 }
 
 - (instancetype)initWithThread:(TSThread *)thread
                     receiptSet:(MessageReceiptSet *)receiptSet
                    receiptType:(SSKProtoReceiptMessageType)receiptType
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    self = [super initOutgoingMessageWithBuilder:messageBuilder];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
     if (!self) {
         return self;
     }

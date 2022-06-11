@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -329,10 +329,10 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             // or show typing indicators for other users.
             guard delegate.areTypingIndicatorsEnabled() else { return }
 
-            let message = TypingIndicatorMessage(thread: thread, action: action)
-
             firstly(on: .global()) {
                 SDSDatabaseStorage.shared.write { transaction in
+                    let message = TypingIndicatorMessage(thread: thread, action: action, transaction: transaction)
+
                     messageSenderJobQueue.add(
                         .promise,
                         message: message.asPreparer,

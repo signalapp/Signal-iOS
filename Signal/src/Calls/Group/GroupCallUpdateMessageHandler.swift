@@ -33,10 +33,9 @@ class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver, Dependen
     func sendUpdateMessageForThread(_ thread: TSGroupThread, eraId: String?) {
         Logger.info("Sending call update message for thread \(thread.uniqueId)")
 
-        let updateMessage = OWSOutgoingGroupCallMessage(thread: thread, eraId: eraId)
-        let messagePreparer = updateMessage.asPreparer
         SDSDatabaseStorage.shared.asyncWrite { writeTx in
-            Self.messageSenderJobQueue.add(message: messagePreparer, transaction: writeTx)
+            let updateMessage = OWSOutgoingGroupCallMessage(thread: thread, eraId: eraId, transaction: writeTx)
+            Self.messageSenderJobQueue.add(message: updateMessage.asPreparer, transaction: writeTx)
         }
     }
 

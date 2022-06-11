@@ -406,9 +406,12 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                 owsFailDebug("Error: \(error)")
                 continue
             }
-            let message = OWSStaticOutgoingMessage(thread: contactThread,
-                                                   plaintextData: contentProtoData)
+
             databaseStorage.write { transaction in
+                let message = OWSStaticOutgoingMessage(thread: contactThread,
+                                                       plaintextData: contentProtoData,
+                                                       transaction: transaction)
+
                 Self.messageSenderJobQueue.add(message: message.asPreparer, limitToCurrentProcessLifetime: true, transaction: transaction)
             }
         }

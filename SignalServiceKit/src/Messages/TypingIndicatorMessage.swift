@@ -18,11 +18,12 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
 
     @objc
     public init(thread: TSThread,
-                action: TypingIndicatorAction) {
+                action: TypingIndicatorAction,
+                transaction: SDSAnyReadTransaction) {
         self.action = action
 
         let builder = TSOutgoingMessageBuilder(thread: thread)
-        super.init(outgoingMessageWithBuilder: builder)
+        super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
     }
 
     @objc

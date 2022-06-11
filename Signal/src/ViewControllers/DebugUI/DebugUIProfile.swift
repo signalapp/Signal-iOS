@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -52,7 +52,7 @@ class DebugUIProfile: DebugUIPage {
                     return
                 }
 
-                let message = OWSProfileKeyMessage(thread: aThread)
+                let message = Self.databaseStorage.read { OWSProfileKeyMessage(thread: aThread, transaction: $0) }
                 strongSelf.messageSender.sendMessage(.promise, message.asPreparer).done {
                     Logger.info("Successfully sent profile key message to thread: \(String(describing: aThread))")
                 }.catch { _ in

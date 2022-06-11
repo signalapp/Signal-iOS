@@ -156,7 +156,7 @@ extension MessageSender {
 
                 // Sender key requires that you're a full member of the group and you support UD
                 guard GroupManager.doesUserHaveSenderKeyCapability(address: candidate, transaction: readTx),
-                      thread.recipientAddresses.contains(candidate),
+                      thread.recipientAddresses(with: readTx).contains(candidate),
                       [.enabled, .unrestricted].contains(udAccessMap[candidate]?.udAccess.udAccessMode) else {
                     senderKeyStatus.participants[candidate] = .FanoutOnly
                     return
@@ -389,7 +389,7 @@ extension MessageSender {
                 let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: writeTx)
                 let skdmMessage = OWSOutgoingSenderKeyDistributionMessage(
                     thread: contactThread,
-                    senderKeyDistributionMessageBytes: skdmBytes)
+                    senderKeyDistributionMessageBytes: skdmBytes, transaction: writeTx)
                 skdmMessage.configureAsSentOnBehalfOf(originalMessage)
 
                 let plaintext = skdmMessage.buildPlainTextData(contactThread, transaction: writeTx)

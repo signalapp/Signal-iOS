@@ -13,10 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingCallMessage
 
-- (instancetype)initWithThread:(TSThread *)thread
+- (instancetype)initWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    self = [super initOutgoingMessageWithBuilder:messageBuilder];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
     if (!self) {
         return self;
     }
@@ -27,8 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
                   offerMessage:(SSKProtoCallMessageOffer *)offerMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [self initWithThread:thread];
+    self = [self initWithThread:thread transaction:transaction];
     if (!self) {
         return self;
     }
@@ -42,8 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
                  answerMessage:(SSKProtoCallMessageAnswer *)answerMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [self initWithThread:thread];
+    self = [self initWithThread:thread transaction:transaction];
     if (!self) {
         return self;
     }
@@ -57,8 +59,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
              iceUpdateMessages:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdateMessages
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [self initWithThread:thread];
+    self = [self initWithThread:thread transaction:transaction];
     if (!self) {
         return self;
     }
@@ -72,8 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
            legacyHangupMessage:(SSKProtoCallMessageHangup *)legacyHangupMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [self initWithThread:thread];
+    self = [self initWithThread:thread transaction:transaction];
     if (!self) {
         return self;
     }
@@ -87,8 +91,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
                  hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [self initWithThread:thread];
+    self = [self initWithThread:thread transaction:transaction];
     if (!self) {
         return self;
     }
@@ -102,8 +107,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
                    busyMessage:(SSKProtoCallMessageBusy *)busyMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [self initWithThread:thread];
+    self = [self initWithThread:thread transaction:transaction];
     if (!self) {
         return self;
     }
@@ -114,9 +120,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread opaqueMessage:(SSKProtoCallMessageOpaque *)opaqueMessage
+- (instancetype)initWithThread:(TSThread *)thread
+                 opaqueMessage:(SSKProtoCallMessageOpaque *)opaqueMessage
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [self initWithThread:thread];
+    self = [self initWithThread:thread transaction:transaction];
     if (!self) {
         return self;
     }

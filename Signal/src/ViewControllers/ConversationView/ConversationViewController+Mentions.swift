@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -21,13 +21,13 @@ extension ConversationViewController: MentionTextViewDelegate {
 
     public func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
         guard supportsMentions else { return [] }
-        return thread.recipientAddresses
+        return thread.recipientAddressesWithSneakyTransaction
     }
 
     public func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
     public func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
-        supportsMentions && thread.recipientAddresses.contains(address)
+        supportsMentions && thread.recipientAddressesWithSneakyTransaction.contains(address)
     }
 
     public func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {

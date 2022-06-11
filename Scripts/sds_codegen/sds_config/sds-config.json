@@ -14,7 +14,8 @@
 		"TestModel.nsNumberValueUsingInt64": "Int64",
 		"TestModel.nsNumberValueUsingUInt64": "UInt64",
 		"SSKJobRecord.exclusiveProcessIdentifier": "Int32",
-		"TSMessage.storyTimestamp": "UInt64"
+		"TSMessage.storyTimestamp": "UInt64",
+		"TSThread.lastSentStoryTimestamp": "UInt64"
 	},
 	"properties_to_ignore": [
 		"TSYapDatabaseObject.grdbId",
@@ -40,10 +41,6 @@
 		"OWSLinkedDeviceReadReceipt.linkedDeviceReadReceiptSchemaVersion",
 		"TSOutgoingMessage.changeActionsProtoData"
 	],
-	"custom_property_column_sources": {
-		"TSInteraction.sortId": "id",
-		"SSKJobRecord.sortId": "id"
-	},
 	"class_cache_get_code": {
 		"InstalledSticker": "Self.modelReadCaches.installedStickerCache.getInstalledSticker(uniqueId: uniqueId, transaction: transaction)",
 		"TSThread": "Self.modelReadCaches.threadReadCache.getThread(uniqueId: uniqueId, transaction: transaction)",
@@ -109,6 +106,16 @@
 			"record_swift_type": "UInt",
 			"serialize_record_invocation": "%s.rawValue",
 			"should_use_blob": false
+		},
+		"TSThread.storyViewMode": {
+			"swift_type": "TSThreadStoryViewMode",
+			"objc_initializer_type": "TSThreadStoryViewMode",
+			"is_objc_codable": true,
+			"is_enum": true,
+			"column_type": ".int",
+			"record_swift_type": "UInt",
+			"serialize_record_invocation": "%s.rawValue",
+			"should_use_blob": false
 		}
 	},
 	"custom_accessors": {
@@ -131,6 +138,10 @@
 		"TSThread.mutedUntilTimestampObsolete": "mutedUntilTimestamp",
 		"TSThread.conversationColorNameObsolete": "conversationColorName",
 		"SignalAccount.contactAvatarJpegDataObsolete": "contactAvatarJpegData"
+	},
+	"aliased_column_names": {
+		"TSInteraction.sortId": "id",
+		"SSKJobRecord.sortId": "id"
 	},
 	"renamed_column_names": {
 		"TSThread.lastVisibleSortIdObsolete": "lastVisibleSortId",

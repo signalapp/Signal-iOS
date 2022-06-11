@@ -75,7 +75,7 @@ public class BulkProfileFetch: NSObject {
     // This should be used for non-urgent profile updates.
     @objc
     public func fetchProfiles(thread: TSThread) {
-        var addresses = Set(thread.recipientAddresses)
+        var addresses = Set(thread.recipientAddressesWithSneakyTransaction)
         if let groupThread = thread as? TSGroupThread,
            let groupModel = groupThread.groupModel as? TSGroupModelV2 {
             addresses.formUnion(groupModel.droppedMembers)

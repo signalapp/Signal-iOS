@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncContactsMessage.h"
@@ -24,8 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
                 signalAccounts:(NSArray<SignalAccount *> *)signalAccounts
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread];
+    self = [super initWithThread:thread transaction:transaction];
     if (!self) {
         return self;
     }

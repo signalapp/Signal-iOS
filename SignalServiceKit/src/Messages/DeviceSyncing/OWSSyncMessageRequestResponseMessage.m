@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncMessageRequestResponseMessage.h"
@@ -22,9 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithThread:(TSThread *)thread responseType:(OWSSyncMessageRequestResponseType)responseType
+- (instancetype)initWithThread:(TSThread *)thread
+                  responseType:(OWSSyncMessageRequestResponseType)responseType
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread];
+    self = [super initWithThread:thread transaction:transaction];
 
     _responseType = responseType;
 

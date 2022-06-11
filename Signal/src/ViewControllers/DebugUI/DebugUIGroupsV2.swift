@@ -168,7 +168,7 @@ class DebugUIGroupsV2: DebugUIPage {
         let randoAddress = SignalServiceAddress(uuid: UUID())
 
         let insertOutgoingMessage = { body in
-            TSOutgoingMessageBuilder(thread: groupThread, messageBody: body).build().anyInsert(transaction: transaction)
+            TSOutgoingMessageBuilder(thread: groupThread, messageBody: body).build(transaction: transaction).anyInsert(transaction: transaction)
         }
 
         var defaultModelBuilder = TSGroupModelBuilder()
@@ -663,180 +663,182 @@ class DebugUIGroupsV2: DebugUIPage {
             return try! groupsV2.groupV2ContextInfo(forMasterKeyData: masterKeyData)
         }
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
-            // Real and valid group id/master key/secret params.
-            // Other user is not in the group.
-            let masterKeyData = missingOtherUserGroupContextInfo.masterKeyData
-            // Real revision.
-            let revision: UInt32 = 0
+        databaseStorage.read { transaction in
+            messages.append(OWSDynamicOutgoingMessage(thread: contactThread, transaction: transaction) {
+                // Real and valid group id/master key/secret params.
+                // Other user is not in the group.
+                let masterKeyData = missingOtherUserGroupContextInfo.masterKeyData
+                // Real revision.
+                let revision: UInt32 = 0
 
-            let builder = SSKProtoGroupContextV2.builder()
-            builder.setMasterKey(masterKeyData)
-            builder.setRevision(revision)
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(masterKeyData)
+                builder.setRevision(revision)
 
-            let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setGroupV2(try! builder.build())
-            dataBuilder.setRequiredProtocolVersion(0)
-            dataBuilder.setBody("\(messages.count)")
-            return Self.contentProtoData(forDataBuilder: dataBuilder)
-        })
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setRequiredProtocolVersion(0)
+                dataBuilder.setBody("\(messages.count)")
+                return Self.contentProtoData(forDataBuilder: dataBuilder)
+            })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
-            // Real and valid group id/master key/secret params.
-            // Local user is not in the group.
-            let masterKeyData = missingLocalUserGroupContextInfo.masterKeyData
-            // Real revision.
-            let revision: UInt32 = 0
+            messages.append(OWSDynamicOutgoingMessage(thread: contactThread, transaction: transaction) {
+                // Real and valid group id/master key/secret params.
+                // Local user is not in the group.
+                let masterKeyData = missingLocalUserGroupContextInfo.masterKeyData
+                // Real revision.
+                let revision: UInt32 = 0
 
-            let builder = SSKProtoGroupContextV2.builder()
-            builder.setMasterKey(masterKeyData)
-            builder.setRevision(revision)
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(masterKeyData)
+                builder.setRevision(revision)
 
-            let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setGroupV2(try! builder.build())
-            dataBuilder.setRequiredProtocolVersion(0)
-            dataBuilder.setBody("\(messages.count)")
-            return Self.contentProtoData(forDataBuilder: dataBuilder)
-        })
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setRequiredProtocolVersion(0)
+                dataBuilder.setBody("\(messages.count)")
+                return Self.contentProtoData(forDataBuilder: dataBuilder)
+            })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
-            // Real and valid group id/master key/secret params.
-            let masterKeyData = validGroupContextInfo.masterKeyData
-            // Non-existent revision.
-            let revision: UInt32 = 99
+            messages.append(OWSDynamicOutgoingMessage(thread: contactThread, transaction: transaction) {
+                // Real and valid group id/master key/secret params.
+                let masterKeyData = validGroupContextInfo.masterKeyData
+                // Non-existent revision.
+                let revision: UInt32 = 99
 
-            let builder = SSKProtoGroupContextV2.builder()
-            builder.setMasterKey(masterKeyData)
-            builder.setRevision(revision)
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(masterKeyData)
+                builder.setRevision(revision)
 
-            let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setGroupV2(try! builder.build())
-            dataBuilder.setRequiredProtocolVersion(0)
-            dataBuilder.setBody("\(messages.count)")
-            return Self.contentProtoData(forDataBuilder: dataBuilder)
-        })
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setRequiredProtocolVersion(0)
+                dataBuilder.setBody("\(messages.count)")
+                return Self.contentProtoData(forDataBuilder: dataBuilder)
+            })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
-            // Real and valid group id/master key/secret params.
-            var masterKeyData = validGroupContextInfo.masterKeyData
-            // Truncate the master key.
-            masterKeyData = masterKeyData.subdata(in: Int(0)..<Int(1))
-            // Real revision.
-            let revision: UInt32 = 0
+            messages.append(OWSDynamicOutgoingMessage(thread: contactThread, transaction: transaction) {
+                // Real and valid group id/master key/secret params.
+                var masterKeyData = validGroupContextInfo.masterKeyData
+                // Truncate the master key.
+                masterKeyData = masterKeyData.subdata(in: Int(0)..<Int(1))
+                // Real revision.
+                let revision: UInt32 = 0
 
-            let builder = SSKProtoGroupContextV2.builder()
-            builder.setMasterKey(masterKeyData)
-            builder.setRevision(revision)
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(masterKeyData)
+                builder.setRevision(revision)
 
-            let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setGroupV2(try! builder.build())
-            dataBuilder.setRequiredProtocolVersion(0)
-            dataBuilder.setBody("\(messages.count)")
-            return Self.contentProtoData(forDataBuilder: dataBuilder)
-        })
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setRequiredProtocolVersion(0)
+                dataBuilder.setBody("\(messages.count)")
+                return Self.contentProtoData(forDataBuilder: dataBuilder)
+            })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
-            // Real and valid group id/master key/secret params.
-            var masterKeyData = validGroupContextInfo.masterKeyData
-            // Append garbage to the master key.
-            masterKeyData += Randomness.generateRandomBytes(1)
-            // Real revision.
-            let revision: UInt32 = 0
+            messages.append(OWSDynamicOutgoingMessage(thread: contactThread, transaction: transaction) {
+                // Real and valid group id/master key/secret params.
+                var masterKeyData = validGroupContextInfo.masterKeyData
+                // Append garbage to the master key.
+                masterKeyData += Randomness.generateRandomBytes(1)
+                // Real revision.
+                let revision: UInt32 = 0
 
-            let builder = SSKProtoGroupContextV2.builder()
-            builder.setMasterKey(masterKeyData)
-            builder.setRevision(revision)
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(masterKeyData)
+                builder.setRevision(revision)
 
-            let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setGroupV2(try! builder.build())
-            dataBuilder.setRequiredProtocolVersion(0)
-            dataBuilder.setBody("\(messages.count)")
-            return Self.contentProtoData(forDataBuilder: dataBuilder)
-        })
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setRequiredProtocolVersion(0)
+                dataBuilder.setBody("\(messages.count)")
+                return Self.contentProtoData(forDataBuilder: dataBuilder)
+            })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
-            // Real and valid group id/master key/secret params.
-            var masterKeyData = validGroupContextInfo.masterKeyData
-            // Replace master key with zeroes.
-            masterKeyData = Data(repeating: 0, count: masterKeyData.count)
-            // Real revision.
-            let revision: UInt32 = 0
+            messages.append(OWSDynamicOutgoingMessage(thread: contactThread, transaction: transaction) {
+                // Real and valid group id/master key/secret params.
+                var masterKeyData = validGroupContextInfo.masterKeyData
+                // Replace master key with zeroes.
+                masterKeyData = Data(repeating: 0, count: masterKeyData.count)
+                // Real revision.
+                let revision: UInt32 = 0
 
-            let builder = SSKProtoGroupContextV2.builder()
-            builder.setMasterKey(masterKeyData)
-            builder.setRevision(revision)
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(masterKeyData)
+                builder.setRevision(revision)
 
-            let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setGroupV2(try! builder.build())
-            dataBuilder.setRequiredProtocolVersion(0)
-            dataBuilder.setBody("\(messages.count)")
-            return Self.contentProtoData(forDataBuilder: dataBuilder)
-        })
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setRequiredProtocolVersion(0)
+                dataBuilder.setBody("\(messages.count)")
+                return Self.contentProtoData(forDataBuilder: dataBuilder)
+            })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
-            // Real and valid group id/master key/secret params.
-            let masterKeyData = validGroupContextInfo.masterKeyData
+            messages.append(OWSDynamicOutgoingMessage(thread: contactThread, transaction: transaction) {
+                // Real and valid group id/master key/secret params.
+                let masterKeyData = validGroupContextInfo.masterKeyData
 
-            let builder = SSKProtoGroupContextV2.builder()
-            builder.setMasterKey(masterKeyData)
-            // Don't set revision.
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(masterKeyData)
+                // Don't set revision.
 
-            let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setGroupV2(try! builder.build())
-            dataBuilder.setRequiredProtocolVersion(0)
-            dataBuilder.setBody("\(messages.count)")
-            return Self.contentProtoData(forDataBuilder: dataBuilder)
-        })
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setRequiredProtocolVersion(0)
+                dataBuilder.setBody("\(messages.count)")
+                return Self.contentProtoData(forDataBuilder: dataBuilder)
+            })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
-            // Real revision.
-            let revision: UInt32 = 0
+            messages.append(OWSDynamicOutgoingMessage(thread: contactThread, transaction: transaction) {
+                // Real revision.
+                let revision: UInt32 = 0
 
-            let builder = SSKProtoGroupContextV2.builder()
-            // Don't set master key.
-            builder.setRevision(revision)
+                let builder = SSKProtoGroupContextV2.builder()
+                // Don't set master key.
+                builder.setRevision(revision)
 
-            let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setGroupV2(try! builder.build())
-            dataBuilder.setRequiredProtocolVersion(0)
-            dataBuilder.setBody("\(messages.count)")
-            return Self.contentProtoData(forDataBuilder: dataBuilder)
-        })
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setRequiredProtocolVersion(0)
+                dataBuilder.setBody("\(messages.count)")
+                return Self.contentProtoData(forDataBuilder: dataBuilder)
+            })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
-            // Valid-looking group id/master key/secret params, but doesn't
-            // correspond to an actual group on the service.
-            let groupV2ContextInfo: GroupV2ContextInfo = buildValidGroupContextInfo()
-            let masterKeyData = groupV2ContextInfo.masterKeyData
-            let revision: UInt32 = 0
+            messages.append(OWSDynamicOutgoingMessage(thread: contactThread, transaction: transaction) {
+                // Valid-looking group id/master key/secret params, but doesn't
+                // correspond to an actual group on the service.
+                let groupV2ContextInfo: GroupV2ContextInfo = buildValidGroupContextInfo()
+                let masterKeyData = groupV2ContextInfo.masterKeyData
+                let revision: UInt32 = 0
 
-            let builder = SSKProtoGroupContextV2.builder()
-            builder.setMasterKey(masterKeyData)
-            builder.setRevision(revision)
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(masterKeyData)
+                builder.setRevision(revision)
 
-            let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setGroupV2(try! builder.build())
-            dataBuilder.setRequiredProtocolVersion(0)
-            dataBuilder.setBody("\(messages.count)")
-            return Self.contentProtoData(forDataBuilder: dataBuilder)
-        })
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setRequiredProtocolVersion(0)
+                dataBuilder.setBody("\(messages.count)")
+                return Self.contentProtoData(forDataBuilder: dataBuilder)
+            })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
-            // Real and valid group id/master key/secret params.
-            let masterKeyData = validGroupContextInfo.masterKeyData
-            // Real revision.
-            let revision: UInt32 = 0
+            messages.append(OWSDynamicOutgoingMessage(thread: contactThread, transaction: transaction) {
+                // Real and valid group id/master key/secret params.
+                let masterKeyData = validGroupContextInfo.masterKeyData
+                // Real revision.
+                let revision: UInt32 = 0
 
-            let builder = SSKProtoGroupContextV2.builder()
-            builder.setMasterKey(masterKeyData)
-            builder.setRevision(revision)
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(masterKeyData)
+                builder.setRevision(revision)
 
-            let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setGroupV2(try! builder.build())
-            dataBuilder.setRequiredProtocolVersion(0)
-            dataBuilder.setBody("Valid gv2 message.")
-            return Self.contentProtoData(forDataBuilder: dataBuilder)
-        })
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setRequiredProtocolVersion(0)
+                dataBuilder.setBody("Valid gv2 message.")
+                return Self.contentProtoData(forDataBuilder: dataBuilder)
+            })
+        }
 
         for message in messages {
             messageSender.sendMessage(message.asPreparer, success: {}, failure: { _ in })
@@ -854,43 +856,45 @@ class DebugUIGroupsV2: DebugUIPage {
         let masterKey = try! GroupsV2Protos.masterKeyData(forGroupModel: groupModelV2)
         let groupContextInfo = try! self.groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
 
-        messages.append(OWSDynamicOutgoingMessage(thread: groupThread) {
-            // Real and valid group id/master key/secret params.
-            let masterKeyData = groupContextInfo.masterKeyData
-            // Real revision.
-            let revision: UInt32 = 0
+        databaseStorage.read { transaction in
+            messages.append(OWSDynamicOutgoingMessage(thread: groupThread, transaction: transaction) {
+                // Real and valid group id/master key/secret params.
+                let masterKeyData = groupContextInfo.masterKeyData
+                // Real revision.
+                let revision: UInt32 = 0
 
-            let builder = SSKProtoGroupContextV2.builder()
-            builder.setMasterKey(masterKeyData)
-            builder.setRevision(revision)
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(masterKeyData)
+                builder.setRevision(revision)
 
-            // Invalid embedded change actions proto data.
-            let changeActionsProtoData = Randomness.generateRandomBytes(256)
-            builder.setGroupChange(changeActionsProtoData)
+                // Invalid embedded change actions proto data.
+                let changeActionsProtoData = Randomness.generateRandomBytes(256)
+                builder.setGroupChange(changeActionsProtoData)
 
-            let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setGroupV2(try! builder.build())
-            dataBuilder.setRequiredProtocolVersion(0)
-            dataBuilder.setBody("Invalid embedded change actions proto: \(messages.count)")
-            return Self.contentProtoData(forDataBuilder: dataBuilder)
-        })
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setRequiredProtocolVersion(0)
+                dataBuilder.setBody("Invalid embedded change actions proto: \(messages.count)")
+                return Self.contentProtoData(forDataBuilder: dataBuilder)
+            })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: groupThread) {
-            // Real and valid group id/master key/secret params.
-            let masterKeyData = groupContextInfo.masterKeyData
-            // Real revision.
-            let revision: UInt32 = 0
+            messages.append(OWSDynamicOutgoingMessage(thread: groupThread, transaction: transaction) {
+                // Real and valid group id/master key/secret params.
+                let masterKeyData = groupContextInfo.masterKeyData
+                // Real revision.
+                let revision: UInt32 = 0
 
-            let builder = SSKProtoGroupContextV2.builder()
-            builder.setMasterKey(masterKeyData)
-            builder.setRevision(revision)
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(masterKeyData)
+                builder.setRevision(revision)
 
-            let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setGroupV2(try! builder.build())
-            dataBuilder.setRequiredProtocolVersion(0)
-            dataBuilder.setBody("Valid gv2 message.")
-            return Self.contentProtoData(forDataBuilder: dataBuilder)
-        })
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try! builder.build())
+                dataBuilder.setRequiredProtocolVersion(0)
+                dataBuilder.setBody("Valid gv2 message.")
+                return Self.contentProtoData(forDataBuilder: dataBuilder)
+            })
+        }
 
         for message in messages {
             messageSender.sendMessage(message.asPreparer, success: {}, failure: { _ in })
@@ -913,20 +917,23 @@ class DebugUIGroupsV2: DebugUIPage {
 
         let groupModel = groupThread.groupModel
         let timestamp = NSDate.ows_millisecondTimeStamp()
-        let message = OWSDynamicOutgoingMessage(thread: groupThread) {
-            let groupContextBuilder = SSKProtoGroupContext.builder(id: groupModel.groupId)
-            groupContextBuilder.setType(.update)
-            groupContextBuilder.addMembersE164(localAddress.phoneNumber!)
 
-            let memberBuilder = SSKProtoGroupContextMember.builder()
-            memberBuilder.setE164(localAddress.phoneNumber!)
-            groupContextBuilder.addMembers(try! memberBuilder.build())
+        let message = databaseStorage.read { transaction in
+            OWSDynamicOutgoingMessage(thread: groupThread, transaction: transaction) {
+                let groupContextBuilder = SSKProtoGroupContext.builder(id: groupModel.groupId)
+                groupContextBuilder.setType(.update)
+                groupContextBuilder.addMembersE164(localAddress.phoneNumber!)
 
-            let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setTimestamp(timestamp)
-            dataBuilder.setGroup(try! groupContextBuilder.build())
-            dataBuilder.setRequiredProtocolVersion(0)
-            return Self.contentProtoData(forDataBuilder: dataBuilder)
+                let memberBuilder = SSKProtoGroupContextMember.builder()
+                memberBuilder.setE164(localAddress.phoneNumber!)
+                groupContextBuilder.addMembers(try! memberBuilder.build())
+
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setTimestamp(timestamp)
+                dataBuilder.setGroup(try! groupContextBuilder.build())
+                dataBuilder.setRequiredProtocolVersion(0)
+                return Self.contentProtoData(forDataBuilder: dataBuilder)
+            }
         }
 
         firstly { () -> Promise<Void> in

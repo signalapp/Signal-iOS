@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSOutgoingDeleteMessage.h"
@@ -19,12 +19,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSOutgoingDeleteMessage
 
-- (instancetype)initWithThread:(TSThread *)thread message:(TSOutgoingMessage *)message
+- (instancetype)initWithThread:(TSThread *)thread
+                       message:(TSOutgoingMessage *)message
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug([thread.uniqueId isEqualToString:message.uniqueThreadId]);
 
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    self = [super initOutgoingMessageWithBuilder:messageBuilder];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
     if (!self) {
         return self;
     }

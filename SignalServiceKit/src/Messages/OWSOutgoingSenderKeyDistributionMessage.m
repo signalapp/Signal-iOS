@@ -13,7 +13,8 @@
 @implementation OWSOutgoingSenderKeyDistributionMessage
 
 - (instancetype)initWithThread:(TSContactThread *)destinationThread
-    senderKeyDistributionMessageBytes:(NSData *)skdmBytes;
+    senderKeyDistributionMessageBytes:(NSData *)skdmBytes
+                          transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(destinationThread);
     OWSAssertDebug(skdmBytes);
@@ -23,7 +24,7 @@
 
     TSOutgoingMessageBuilder *messageBuilder =
         [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:destinationThread];
-    self = [super initOutgoingMessageWithBuilder:messageBuilder];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
     if (self) {
         _serializedSKDM = [skdmBytes copy];
     }

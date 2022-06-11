@@ -1211,7 +1211,8 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         sentMessageTranscript = [[OWSOutgoingSentMessageTranscript alloc] initWithLocalThread:localThread
                                                                                 messageThread:messageThread
                                                                               outgoingMessage:message
-                                                                            isRecipientUpdate:isRecipientUpdate];
+                                                                            isRecipientUpdate:isRecipientUpdate
+                                                                                  transaction:transaction];
         plaintext = [sentMessageTranscript buildPlainTextData:localThread transaction:transaction];
         plaintextPayloadId = [MessageSendLog recordPayload:plaintext
                                        forMessageBeingSent:sentMessageTranscript

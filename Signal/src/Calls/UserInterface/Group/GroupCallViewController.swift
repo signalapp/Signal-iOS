@@ -582,7 +582,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
 
         // If we haven't joined the call yet, we want to alert for all members of the group
         // If we are in the call, we only care about safety numbers for the active call participants
-        let addressesToAlert = call.thread.recipientAddresses.filter { memberAddress in
+        let addressesToAlert = call.thread.recipientAddressesWithSneakyTransaction.filter { memberAddress in
             let isUntrusted = Self.identityManager.untrustedIdentityForSending(to: memberAddress) != nil
             let isMemberInCall = currentParticipantAddresses.contains(memberAddress)
 

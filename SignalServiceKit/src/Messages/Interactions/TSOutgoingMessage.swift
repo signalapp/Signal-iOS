@@ -122,12 +122,17 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
     private var hasBuilt = false
 
     @objc
-    public func build() -> TSOutgoingMessage {
+    public func build(transaction: SDSAnyReadTransaction) -> TSOutgoingMessage {
         if hasBuilt {
             owsFailDebug("Don't build more than once.")
         }
         hasBuilt = true
-        return TSOutgoingMessage(outgoingMessageWithBuilder: self)
+        return TSOutgoingMessage(outgoingMessageWithBuilder: self, transaction: transaction)
+    }
+
+    @objc
+    public func buildWithSneakyTransaction() -> TSOutgoingMessage {
+        databaseStorage.read { build(transaction: $0) }
     }
 }
 

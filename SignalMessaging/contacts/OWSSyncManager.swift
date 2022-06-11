@@ -62,7 +62,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
                 return owsFailDebug("Missing thread")
             }
 
-            let syncKeysMessage = OWSSyncKeysMessage(thread: thread, storageServiceKey: KeyBackupService.DerivedKey.storageService.data)
+            let syncKeysMessage = OWSSyncKeysMessage(thread: thread, storageServiceKey: KeyBackupService.DerivedKey.storageService.data, transaction: transaction)
             self.messageSenderJobQueue.add(message: syncKeysMessage.asPreparer, transaction: transaction)
         }
     }
@@ -114,7 +114,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
                     Logger.warn("no PNI identity key yet; ignoring request")
                     return
                 }
-                let syncMessage = OWSSyncPniIdentityMessage(thread: thread, keyPair: keyPair)
+                let syncMessage = OWSSyncPniIdentityMessage(thread: thread, keyPair: keyPair, transaction: transaction)
                 Self.pniIdentitySyncMessagePending.set(false)
                 self.messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
             }
@@ -186,7 +186,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
             return owsFailDebug("Unexpectedly tried to send sync message before registration.")
         }
 
-        let syncMessageRequestResponse = OWSSyncMessageRequestResponseMessage(thread: thread, responseType: responseType)
+        let syncMessageRequestResponse = OWSSyncMessageRequestResponseMessage(thread: thread, responseType: responseType, transaction: transaction)
         messageSenderJobQueue.add(message: syncMessageRequestResponse.asPreparer, transaction: transaction)
     }
 }
@@ -266,7 +266,7 @@ public extension OWSSyncManager {
             return owsFailDebug("Missing thread")
         }
 
-        let syncRequestMessage = OWSSyncRequestMessage(thread: thread, requestType: requestType)
+        let syncRequestMessage = OWSSyncRequestMessage(thread: thread, requestType: requestType, transaction: transaction)
         messageSenderJobQueue.add(message: syncRequestMessage.asPreparer, transaction: transaction)
     }
 }

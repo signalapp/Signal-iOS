@@ -34,7 +34,8 @@ public extension TSMessage {
                     self.databaseStorage.write { transaction in
                         let deleteMessage = TSOutgoingDeleteMessage(
                             thread: outgoingMessage.thread(transaction: transaction),
-                            message: outgoingMessage
+                            message: outgoingMessage,
+                            transaction: transaction
                         )
 
                         // Reset the sending states, so we can render the sending state of the deleted message.

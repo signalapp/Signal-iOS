@@ -101,25 +101,26 @@ NS_ASSUME_NONNULL_BEGIN
 
     // The builder() factory method requires us to specify every
     // property so that this will break if we add any new properties.
-    TSOutgoingMessage *outgoingMessage = [[TSOutgoingMessageBuilder builderWithThread:transcript.thread
-                                                                            timestamp:transcript.timestamp
-                                                                          messageBody:transcript.body
-                                                                           bodyRanges:transcript.bodyRanges
-                                                                        attachmentIds:@[]
-                                                                     expiresInSeconds:transcript.expirationDuration
-                                                                      expireStartedAt:transcript.expirationStartedAt
-                                                                       isVoiceMessage:false
-                                                                     groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                                        quotedMessage:transcript.quotedMessage
-                                                                         contactShare:transcript.contact
-                                                                          linkPreview:transcript.linkPreview
-                                                                       messageSticker:transcript.messageSticker
-                                                                    isViewOnceMessage:transcript.isViewOnceMessage
-                                                               changeActionsProtoData:nil
-                                                                 additionalRecipients:nil
-                                                                   storyAuthorAddress:transcript.storyAuthorAddress
-                                                                       storyTimestamp:transcript.storyTimestamp
-                                                                   storyReactionEmoji:nil] build];
+    TSOutgoingMessage *outgoingMessage =
+        [[TSOutgoingMessageBuilder builderWithThread:transcript.thread
+                                           timestamp:transcript.timestamp
+                                         messageBody:transcript.body
+                                          bodyRanges:transcript.bodyRanges
+                                       attachmentIds:@[]
+                                    expiresInSeconds:transcript.expirationDuration
+                                     expireStartedAt:transcript.expirationStartedAt
+                                      isVoiceMessage:false
+                                    groupMetaMessage:TSGroupMetaMessageUnspecified
+                                       quotedMessage:transcript.quotedMessage
+                                        contactShare:transcript.contact
+                                         linkPreview:transcript.linkPreview
+                                      messageSticker:transcript.messageSticker
+                                   isViewOnceMessage:transcript.isViewOnceMessage
+                              changeActionsProtoData:nil
+                                additionalRecipients:nil
+                                  storyAuthorAddress:transcript.storyAuthorAddress
+                                      storyTimestamp:transcript.storyTimestamp
+                                  storyReactionEmoji:nil] buildWithTransaction:transaction];
 
     SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
     if (localAddress == nil) {

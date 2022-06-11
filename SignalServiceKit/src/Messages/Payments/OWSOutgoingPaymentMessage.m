@@ -21,12 +21,13 @@ NS_ASSUME_NONNULL_BEGIN
            paymentNotification:(nullable TSPaymentNotification *)paymentNotification
                 paymentRequest:(nullable TSPaymentRequest *)paymentRequest
               expiresInSeconds:(uint32_t)expiresInSeconds
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(paymentCancellation != nil || paymentNotification != nil || paymentRequest != nil);
 
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     messageBuilder.expiresInSeconds = expiresInSeconds;
-    self = [super initOutgoingMessageWithBuilder:messageBuilder];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
     if (!self) {
         return self;
     }

@@ -390,7 +390,7 @@ extension BlockingManager {
                     thread: thread,
                     phoneNumbers: Array(state.blockedPhoneNumbers),
                     uuids: Array(state.blockedUUIDStrings),
-                    groupIds: Array(state.blockedGroupMap.keys))
+                    groupIds: Array(state.blockedGroupMap.keys), transaction: transaction)
 
                 if TestingFlags.optimisticallyCommitSyncToken {
                     // Tests can opt in to setting this token early. This won't be executed in production.

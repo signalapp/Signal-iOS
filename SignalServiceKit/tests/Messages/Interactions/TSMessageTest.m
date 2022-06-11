@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKBaseTestObjC.h"
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
         [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:self.thread messageBody:@"foo"];
     outgoingMessageBuilder.timestamp = 1;
     outgoingMessageBuilder.expiresInSeconds = 100;
-    TSMessage *message = [outgoingMessageBuilder build];
+    TSMessage *message = [outgoingMessageBuilder buildWithSneakyTransaction];
 
     XCTAssertEqual(0, message.expiresAt);
 }
@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
     outgoingMessageBuilder.timestamp = 1;
     outgoingMessageBuilder.expiresInSeconds = expirationSeconds;
     outgoingMessageBuilder.expireStartedAt = now;
-    TSMessage *message = [outgoingMessageBuilder build];
+    TSMessage *message = [outgoingMessageBuilder buildWithSneakyTransaction];
     XCTAssertEqual(now + expirationMs, message.expiresAt);
 }
 

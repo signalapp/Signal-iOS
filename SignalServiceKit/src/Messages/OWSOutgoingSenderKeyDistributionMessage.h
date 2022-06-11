@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -10,9 +10,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSOutgoingSenderKeyDistributionMessage : TSOutgoingMessage
 
-- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder NS_UNAVAILABLE;
+- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
 - (instancetype)initWithThread:(TSContactThread *)destinationThread
-    senderKeyDistributionMessageBytes:(NSData *)skdmBytes;
+    senderKeyDistributionMessageBytes:(NSData *)skdmBytes
+                          transaction:(SDSAnyReadTransaction *)transaction;
 
 /// Returns YES if this message is being sent as a precondition to sending an online-only message.
 /// Typing indicators are only delivered to online devices. Since they're ephemeral we just don't bother sending a

@@ -53,7 +53,7 @@
         return nil;
     }
 
-    self = [super initOutgoingMessageWithBuilder:builder];
+    self = [super initOutgoingMessageWithBuilder:builder transaction:transaction];
     if (self) {
         _originalMessagePlaintext = payloadRecord.plaintextContent;
         _originalThreadId = payloadRecord.uniqueThreadId;
@@ -90,7 +90,8 @@
     if (self.originalThreadId) {
         originalThread = [TSThread anyFetchWithUniqueId:self.originalThreadId transaction:transaction];
     }
-    if (originalThread.isGroupThread && [originalThread.recipientAddresses containsObject:recipient]) {
+    if (originalThread.isGroupThread &&
+        [[originalThread recipientAddressesWithTransaction:transaction] containsObject:recipient]) {
         TSGroupThread *groupThread = (TSGroupThread *)originalThread;
         NSData *skdmBytes = [self.senderKeyStore skdmBytesForGroupThread:groupThread writeTx:transaction];
         [contentBuilder setSenderKeyDistributionMessage:skdmBytes];

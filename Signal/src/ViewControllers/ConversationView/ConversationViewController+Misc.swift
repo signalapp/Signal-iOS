@@ -51,7 +51,7 @@ public extension ConversationViewController {
      */
     func showSafetyNumberConfirmationIfNecessary(confirmationText: String,
                                                  completion: @escaping (Bool) -> Void) -> Bool {
-        SafetyNumberConfirmationSheet.presentIfNecessary(addresses: thread.recipientAddresses,
+        SafetyNumberConfirmationSheet.presentIfNecessary(addresses: thread.recipientAddressesWithSneakyTransaction,
                                                          confirmationText: confirmationText,
                                                          completion: completion)
     }
@@ -62,8 +62,8 @@ public extension ConversationViewController {
         // If the message was remotely deleted, resend a *delete* message
         // rather than the message itself.
         let messageToSend = (message.wasRemotelyDeleted
-                                ? TSOutgoingDeleteMessage(thread: thread, message: message)
-                                : message)
+                             ? databaseStorage.read { TSOutgoingDeleteMessage(thread: thread, message: message, transaction: $0) }
+                             : message)
 
         let recipientsWithChangedSafetyNumber = message.failedRecipientAddresses(errorCode: UntrustedIdentityError.errorCode)
         if !recipientsWithChangedSafetyNumber.isEmpty {
@@ -120,7 +120,7 @@ public extension ConversationViewController {
                                                                   limit: limit,
                                                                   transaction: transaction)
         }
-        return thread.recipientAddresses.filter { address in
+        return thread.recipientAddresses(with: transaction).filter { address in
             Self.identityManager.verificationState(for: address,
                                                    transaction: transaction) == .noLongerVerified
         }

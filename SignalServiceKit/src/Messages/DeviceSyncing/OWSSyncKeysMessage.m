@@ -15,9 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncKeysMessage
 
-- (instancetype)initWithThread:(TSThread *)thread storageServiceKey:(nullable NSData *)storageServiceKey
+- (instancetype)initWithThread:(TSThread *)thread
+             storageServiceKey:(nullable NSData *)storageServiceKey
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread];
+    self = [super initWithThread:thread transaction:transaction];
     if (!self) {
         return nil;
     }

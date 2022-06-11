@@ -587,7 +587,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
         var didIdentityChange = false
-        for address in thread.recipientAddresses {
+        for address in thread.recipientAddresses(with: transaction) {
             if self.identityManager.verificationState(for: address,
                                                       transaction: transaction) == .noLongerVerified {
                 didIdentityChange = true
@@ -739,7 +739,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
         var didIdentityChange = false
-        for address in thread.recipientAddresses {
+        for address in thread.recipientAddresses(with: transaction) {
             if self.identityManager.verificationState(for: address,
                                                       transaction: transaction) == .noLongerVerified {
                 didIdentityChange = true

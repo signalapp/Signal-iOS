@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class TSOutgoingMessage;
+
 @interface OWSBroadcastMediaMessageJobRecord : SSKJobRecord
 
 @property (class, nonatomic, readonly) NSString *defaultLabel;
@@ -26,10 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
 ///         ]
 ///     ]
 @property (nonatomic, readonly) NSDictionary<NSString *, NSArray<NSString *> *> *attachmentIdMap;
+@property (nonatomic, readonly, nullable) NSArray<TSOutgoingMessage *> *unsavedMessagesToSend;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithAttachmentIdMap:(NSDictionary<NSString *, NSArray<NSString *> *> *)attachmentIdMap
+                  unsavedMessagesToSend:(nullable NSArray<TSOutgoingMessage *> *)unsavedMessagesToSend
                                   label:(NSString *)label NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithLabel:(NSString *)label NS_UNAVAILABLE;
@@ -56,7 +60,8 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                  attachmentIdMap:(NSDictionary<NSString *,NSArray<NSString *> *> *)attachmentIdMap
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:attachmentIdMap:));
+           unsavedMessagesToSend:(nullable NSArray<TSOutgoingMessage *> *)unsavedMessagesToSend
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:attachmentIdMap:unsavedMessagesToSend:));
 
 // clang-format on
 

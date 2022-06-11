@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OutgoingPaymentSyncMessage.h"
@@ -55,9 +55,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OutgoingPaymentSyncMessage
 
-- (instancetype)initWithThread:(TSThread *)thread mobileCoin:(OutgoingPaymentMobileCoin *)mobileCoin
+- (instancetype)initWithThread:(TSThread *)thread
+                    mobileCoin:(OutgoingPaymentMobileCoin *)mobileCoin
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread];
+    self = [super initWithThread:thread transaction:transaction];
     if (!self) {
         return nil;
     }

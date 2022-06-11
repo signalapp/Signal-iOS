@@ -235,25 +235,29 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
         }
 
         TSThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address];
-        OWSReceiptsForSenderMessage *message;
-        NSString *receiptName = NSStringForOWSReceiptType(receiptType);
-        switch (receiptType) {
-            case OWSReceiptType_Delivery:
-                message = [OWSReceiptsForSenderMessage deliveryReceiptsForSenderMessageWithThread:thread
-                                                                                       receiptSet:receiptSet];
-                break;
-            case OWSReceiptType_Read:
-                message = [OWSReceiptsForSenderMessage readReceiptsForSenderMessageWithThread:thread
-                                                                                   receiptSet:receiptSet];
-                break;
-            case OWSReceiptType_Viewed:
-                message = [OWSReceiptsForSenderMessage viewedReceiptsForSenderMessageWithThread:thread
-                                                                                     receiptSet:receiptSet];
-                break;
-        }
 
         __block AnyPromise *sendPromise;
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            OWSReceiptsForSenderMessage *message;
+            NSString *receiptName = NSStringForOWSReceiptType(receiptType);
+            switch (receiptType) {
+                case OWSReceiptType_Delivery:
+                    message = [OWSReceiptsForSenderMessage deliveryReceiptsForSenderMessageWithThread:thread
+                                                                                           receiptSet:receiptSet
+                                                                                          transaction:transaction];
+                    break;
+                case OWSReceiptType_Read:
+                    message = [OWSReceiptsForSenderMessage readReceiptsForSenderMessageWithThread:thread
+                                                                                       receiptSet:receiptSet
+                                                                                      transaction:transaction];
+                    break;
+                case OWSReceiptType_Viewed:
+                    message = [OWSReceiptsForSenderMessage viewedReceiptsForSenderMessageWithThread:thread
+                                                                                         receiptSet:receiptSet
+                                                                                        transaction:transaction];
+                    break;
+            }
+
             sendPromise =
                 [self.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
                                         removeMessageAfterSending:NO

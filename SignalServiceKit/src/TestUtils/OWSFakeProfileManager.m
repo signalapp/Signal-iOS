@@ -398,6 +398,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [addresses map:^(SignalServiceAddress *address) { return self.fakeUsernames[address] ?: [NSNull null]; }];
 }
 
+- (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTransaction:
+    (SDSAnyReadTransaction *)transaction
+{
+    return @[];
+}
 
 @end
 

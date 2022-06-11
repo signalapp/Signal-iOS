@@ -795,6 +795,6 @@ extension ConversationViewController: SendMediaNavDelegate {
     }
 
     var sendMediaNavMentionableAddresses: [SignalServiceAddress] {
-        supportsMentions ? thread.recipientAddresses : []
+        supportsMentions ? thread.recipientAddressesWithSneakyTransaction : []
     }
 }

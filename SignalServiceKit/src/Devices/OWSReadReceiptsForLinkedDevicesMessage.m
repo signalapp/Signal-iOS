@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
@@ -16,9 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSReadReceiptsForLinkedDevicesMessage
 
-- (instancetype)initWithThread:(TSThread *)thread readReceipts:(NSArray<OWSLinkedDeviceReadReceipt *> *)readReceipts
+- (instancetype)initWithThread:(TSThread *)thread
+                  readReceipts:(NSArray<OWSLinkedDeviceReadReceipt *> *)readReceipts
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread];
+    self = [super initWithThread:thread transaction:transaction];
     if (!self) {
         return self;
     }

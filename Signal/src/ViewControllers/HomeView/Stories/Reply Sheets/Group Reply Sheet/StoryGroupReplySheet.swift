@@ -50,7 +50,7 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
 
         // Fetch profiles for everyone in the group to make sure we have the latest capability state
         if let thread = thread {
-            bulkProfileFetch.fetchProfiles(addresses: thread.recipientAddresses)
+            bulkProfileFetch.fetchProfiles(addresses: thread.recipientAddressesWithSneakyTransaction)
         }
     }
 

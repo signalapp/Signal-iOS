@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncFetchLatestMessage.h"
@@ -15,9 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncFetchLatestMessage
 
-- (instancetype)initWithThread:(TSThread *)thread fetchType:(OWSSyncFetchType)fetchType
+- (instancetype)initWithThread:(TSThread *)thread
+                     fetchType:(OWSSyncFetchType)fetchType
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread];
+    self = [super initWithThread:thread transaction:transaction];
 
     _fetchType = fetchType;
 

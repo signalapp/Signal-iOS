@@ -1080,7 +1080,7 @@ public class GroupManager: NSObject {
             return
         }
         let newConfiguration = updateResult.newConfiguration
-        let message = OWSDisappearingMessagesConfigurationMessage(configuration: newConfiguration, thread: thread)
+        let message = OWSDisappearingMessagesConfigurationMessage(configuration: newConfiguration, thread: thread, transaction: transaction)
         messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
 
@@ -1538,7 +1538,7 @@ public class GroupManager: NSObject {
                                                  transaction: transaction)
                 }
             }
-            return messageBuilder.build()
+            return messageBuilder.build(transaction: transaction)
         }.then(on: .global()) { (message: TSOutgoingMessage) throws -> Promise<Void> in
 
             if let singleRecipient = singleRecipient {
@@ -1607,7 +1607,7 @@ public class GroupManager: NSObject {
                 self.addAdditionalRecipients(to: messageBuilder,
                                              groupThread: thread,
                                              transaction: transaction)
-                let message = messageBuilder.build()
+                let message = messageBuilder.build(transaction: transaction)
                 self.messageSenderJobQueue.add(message: message.asPreparer,
                                                transaction: transaction)
             }
@@ -1664,7 +1664,8 @@ public class GroupManager: NSObject {
 
         let message = TSOutgoingMessage(in: groupThread,
                                         groupMetaMessage: .quit,
-                                        expiresInSeconds: 0)
+                                        expiresInSeconds: 0,
+                                        transaction: transaction)
         messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
 
@@ -1690,7 +1691,7 @@ public class GroupManager: NSObject {
                                            transaction: transaction)
         }
         messageBuilder.additionalRecipients = Array(additionalRecipients)
-        let message = messageBuilder.build()
+        let message = messageBuilder.build(transaction: transaction)
         messageSenderJobQueue.add(
             .promise,
             message: message.asPreparer,

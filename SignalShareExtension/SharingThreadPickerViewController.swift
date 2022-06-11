@@ -12,7 +12,14 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     weak var shareViewDelegate: ShareViewDelegate?
 
     var attachments: [SignalAttachment]? {
-        didSet { updateApprovalMode() }
+        didSet {
+            if let attachments = attachments, attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo }) {
+                shouldHideStoriesSection = false
+            } else {
+                shouldHideStoriesSection = true
+            }
+            updateApprovalMode()
+        }
     }
 
     lazy var isTextMessage: Bool = {
@@ -70,7 +77,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
         owsAssertDebug(groupThread != nil)
         if let groupThread = groupThread, Mention.threadAllowsMentionSend(groupThread) {
-            mentionCandidates = groupThread.recipientAddresses
+            mentionCandidates = groupThread.recipientAddressesWithSneakyTransaction
         } else {
             mentionCandidates = []
         }
@@ -204,7 +211,7 @@ extension SharingThreadPickerViewController {
                         builder.contactShare = contactShare.dbRecord
                         let dmConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
                         builder.expiresInSeconds = dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0
-                        let message = builder.build()
+                        let message = builder.build(transaction: transaction)
                         message.anyInsert(transaction: transaction)
                         self.outgoingMessages.append(message)
                         return ThreadUtil.enqueueMessagePromise(
@@ -555,7 +562,7 @@ extension SharingThreadPickerViewController: TextApprovalViewControllerDelegate 
         guard conversations.count > 0 else {
             return nil
         }
-        return conversations.map { $0.title }.joined(separator: ", ")
+        return conversations.map { $0.titleWithSneakyTransaction }.joined(separator: ", ")
     }
 
     func textApprovalMode(_ textApproval: TextApprovalViewController) -> ApprovalMode {
@@ -587,7 +594,7 @@ extension SharingThreadPickerViewController: ContactShareApprovalViewControllerD
         guard conversations.count > 0 else {
             return nil
         }
-        return conversations.map { $0.title }.joined(separator: ", ")
+        return conversations.map { $0.titleWithSneakyTransaction }.joined(separator: ", ")
     }
 
     func contactApprovalMode(_ contactApproval: ContactShareApprovalViewController) -> ApprovalMode {
@@ -631,7 +638,7 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDel
     }
 
     var attachmentApprovalRecipientNames: [String] {
-        selectedConversations.map { $0.title }
+        selectedConversations.map { $0.titleWithSneakyTransaction }
     }
 
     var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {

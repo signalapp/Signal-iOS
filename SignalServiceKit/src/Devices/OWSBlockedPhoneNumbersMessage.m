@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBlockedPhoneNumbersMessage.h"
@@ -26,8 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
                   phoneNumbers:(NSArray<NSString *> *)phoneNumbers
                          uuids:(NSArray<NSString *> *)uuids
                       groupIds:(NSArray<NSData *> *)groupIds
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread];
+    self = [super initWithThread:thread transaction:transaction];
     if (!self) {
         return self;
     }

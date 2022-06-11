@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncGroupsMessage.h"
@@ -16,9 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncGroupsMessage
 
-- (instancetype)initWithThread:(TSThread *)thread
+- (instancetype)initWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
-    return [super initWithThread:thread];
+    return [super initWithThread:thread transaction:transaction];
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder

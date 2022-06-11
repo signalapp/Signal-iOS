@@ -120,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                                   messageBody:body];
         messageBuilder.expiresInSeconds = expiresInSeconds;
         messageBuilder.expireStartedAt = expireStartedAt;
-        message = [messageBuilder build];
+        message = [messageBuilder buildWithTransaction:transaction];
         [message anyInsertWithTransaction:transaction];
     }];
     return message;

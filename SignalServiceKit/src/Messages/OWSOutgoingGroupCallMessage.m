@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingGroupCallMessage.h"
@@ -11,12 +11,14 @@
 
 @implementation OWSOutgoingGroupCallMessage
 
-- (instancetype)initWithThread:(TSGroupThread *)thread eraId:(nullable NSString *)eraId
+- (instancetype)initWithThread:(TSGroupThread *)thread
+                         eraId:(nullable NSString *)eraId
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
 
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    self = [super initOutgoingMessageWithBuilder:messageBuilder];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
     if (self) {
         _eraId = eraId;
     }

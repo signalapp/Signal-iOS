@@ -96,6 +96,7 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                 section.add(.copyableItem(label: "Group id",
                                           value: groupThread.groupId.hexadecimalString,
                                           accessibilityIdentifier: "group_id"))
+                section.add(.switch(withText: "Story Enabled", isOn: { groupThread.storyViewMode != .none }, target: self, selector: #selector(toggleStoryViewMode)))
             } else {
                 owsFailDebug("Invalid thread.")
             }
@@ -122,6 +123,16 @@ public class ConversationInternalViewController: OWSTableViewController2 {
     }
 
     // MARK: - Helpers
+
+    @objc
+    func toggleStoryViewMode() {
+        databaseStorage.write { transaction in
+            self.thread.updateWithStoryViewMode(
+                self.thread.storyViewMode == .none ? .explicit : .none,
+                transaction: transaction
+            )
+        }
+    }
 
     public override func themeDidChange() {
         super.themeDidChange()

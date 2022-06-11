@@ -91,6 +91,17 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
+    public var shouldHideStoriesSection = true {
+        didSet {
+            if isViewLoaded {
+                updateTableContents()
+            }
+        }
+    }
+
+    public var maxStoryConversationsToRender = 2
+    public var isStorySectionExpanded = false
+
     public var shouldHideRecentConversationsTitle = false {
         didSet {
             if isViewLoaded {
@@ -291,9 +302,34 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 return lhsIndex < rhsIndex
             }.map { $0.value }
 
+            let storyItems = AnyThreadFinder().storyThreads(transaction: transaction)
+                .sorted { lhs, rhs in
+                    if (lhs as? TSPrivateStoryThread)?.isMyStory == true { return true }
+                    if (rhs as? TSPrivateStoryThread)?.isMyStory == true { return false }
+                    return (lhs.lastSentStoryTimestamp?.uint64Value ?? 0) > (rhs.lastSentStoryTimestamp?.uint64Value ?? 0)
+                }
+                .compactMap { thread -> StoryConversationItem.ItemType? in
+                    if let groupThread = thread as? TSGroupThread {
+                        return .groupStory(GroupConversationItem(
+                            groupThreadId: groupThread.uniqueId,
+                            isBlocked: false,
+                            disappearingMessagesConfig: nil
+                        ))
+                    } else if let privateStoryThread = thread as? TSPrivateStoryThread {
+                        return .privateStory(PrivateStoryConversationItem(
+                            storyThreadId: privateStoryThread.uniqueId,
+                            isMyStory: privateStoryThread.isMyStory
+                        ))
+                    } else {
+                        owsFailDebug("Unexpected story thread type \(type(of: thread))")
+                        return nil
+                    }
+                }.map { StoryConversationItem(backingItem: $0) }
+
             return ConversationCollection(contactConversations: contactItems,
                                           recentConversations: pinnedItems + recentItems,
                                           groupConversations: groupItems,
+                                          storyConversations: storyItems,
                                           isSearchResults: false)
         }
     }
@@ -316,6 +352,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 return ConversationCollection(contactConversations: contactItems,
                                               recentConversations: [],
                                               groupConversations: groupItems,
+                                              storyConversations: [],
                                               isSearchResults: true)
             }
         }
@@ -343,7 +380,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         self.conversationCollection = buildConversationCollection()
     }
 
-    private func updateTableContents() {
+    private func updateTableContents(shouldReload: Bool = true) {
         AssertIsOnMainThread()
 
         self.defaultSeparatorInsetLeading = (OWSTableViewController2.cellHInnerMargin +
@@ -356,6 +393,24 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         var hasContents = false
 
+        // Stories Section
+        do {
+            let section = OWSTableSection()
+            if FeatureFlags.stories && !shouldHideStoriesSection && !conversationCollection.storyConversations.isEmpty {
+                section.headerTitle = Strings.storiesSection
+                addExpandableConversations(
+                    to: section,
+                    sectionIndex: .stories,
+                    conversations: conversationCollection.storyConversations,
+                    maxConversationsToRender: maxStoryConversationsToRender,
+                    isExpanded: isStorySectionExpanded,
+                    markAsExpanded: { [weak self] in self?.isStorySectionExpanded = true }
+                )
+                hasContents = true
+            }
+            contents.addSection(section)
+        }
+
         // Recents Section
         do {
             let section = OWSTableSection()
@@ -363,8 +418,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 if !shouldHideRecentConversationsTitle {
                     section.headerTitle = Strings.recentsSection
                 }
-                addConversations(toSection: section,
-                                 conversations: conversationCollection.recentConversations)
+                addConversations(to: section, conversations: conversationCollection.recentConversations)
                 hasContents = true
             }
             contents.addSection(section)
@@ -375,8 +429,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             let section = OWSTableSection()
             if !conversationCollection.contactConversations.isEmpty {
                 section.headerTitle = Strings.signalContactsSection
-                addConversations(toSection: section,
-                                 conversations: conversationCollection.contactConversations)
+                addConversations(to: section, conversations: conversationCollection.contactConversations)
                 hasContents = true
             }
             contents.addSection(section)
@@ -387,8 +440,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             let section = OWSTableSection()
             if !conversationCollection.groupConversations.isEmpty {
                 section.headerTitle = Strings.groupsSection
-                addConversations(toSection: section,
-                                 conversations: conversationCollection.groupConversations)
+                addConversations(to: section, conversations: conversationCollection.groupConversations)
                 hasContents = true
             }
             contents.addSection(section)
@@ -403,26 +455,102 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             contents.addSection(section)
         }
 
-        self.contents = contents
+        setContents(contents, shouldReload: shouldReload)
         restoreSelection()
     }
 
-    private func addConversations(toSection section: OWSTableSection,
-                                  conversations: [ConversationItem]) {
+    private func addConversations(to section: OWSTableSection, conversations: [ConversationItem]) {
         for conversation in conversations {
-            section.add(OWSTableItem(dequeueCellBlock: { tableView in
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationPickerCell.reuseIdentifier) as? ConversationPickerCell else {
-                    owsFailDebug("Missing cell.")
-                    return UITableViewCell()
+            addConversationPickerCell(to: section, for: conversation)
+        }
+    }
+
+    private func addConversationPickerCell(to section: OWSTableSection, for item: ConversationItem) {
+        section.add(OWSTableItem(dequeueCellBlock: { tableView in
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationPickerCell.reuseIdentifier) as? ConversationPickerCell else {
+                owsFailDebug("Missing cell.")
+                return UITableViewCell()
+            }
+            Self.databaseStorage.read { transaction in
+                cell.configure(conversationItem: item, transaction: transaction)
+            }
+            return cell
+        },
+        actionBlock: { [weak self] in
+            self?.didToggleSection(conversation: item)
+        }))
+    }
+
+    private func addExpandableConversations(
+        to section: OWSTableSection,
+        sectionIndex: ConversationPickerSection,
+        conversations: [ConversationItem],
+        maxConversationsToRender: Int,
+        isExpanded: Bool,
+        markAsExpanded: @escaping () -> Void
+    ) {
+        var conversationsToRender = conversations
+        let hasMoreConversations = !isExpanded && conversationsToRender.count > maxConversationsToRender
+        if hasMoreConversations {
+            conversationsToRender = Array(conversationsToRender.prefix(maxConversationsToRender))
+        }
+
+        for conversation in conversationsToRender {
+            addConversationPickerCell(to: section, for: conversation)
+        }
+
+        if hasMoreConversations {
+            let expandedConversationIndices = (conversationsToRender.count..<conversations.count).map {
+                IndexPath(row: $0, section: sectionIndex.rawValue)
+            }
+
+            section.add(OWSTableItem(
+                customCellBlock: {
+                    let cell = OWSTableItem.newCell()
+                    cell.preservesSuperviewLayoutMargins = true
+                    cell.contentView.preservesSuperviewLayoutMargins = true
+
+                    let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsShowAllMembers,
+                                                                      iconSize: AvatarBuilder.smallAvatarSizePoints,
+                                                                      innerIconSize: 24,
+                                                                      iconTintColor: Theme.primaryTextColor)
+
+                    let rowLabel = UILabel()
+                    rowLabel.text = CommonStrings.seeAllButton
+                    rowLabel.textColor = Theme.primaryTextColor
+                    rowLabel.font = OWSTableItem.primaryLabelFont
+                    rowLabel.lineBreakMode = .byTruncatingTail
+
+                    let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
+                    contentRow.spacing = ContactCellView.avatarTextHSpacing
+
+                    cell.contentView.addSubview(contentRow)
+                    contentRow.autoPinWidthToSuperviewMargins()
+                    contentRow.autoPinHeightToSuperview(withMargin: 7)
+
+                    return cell
+                },
+                actionBlock: { [weak self] in
+                    guard let self = self else { return }
+
+                    markAsExpanded()
+
+                    if !expandedConversationIndices.isEmpty, let firstIndex = expandedConversationIndices.first {
+                        self.tableView.beginUpdates()
+
+                        // Delete the "See All" row.
+                        self.tableView.deleteRows(at: [IndexPath(row: firstIndex.row, section: firstIndex.section)], with: .top)
+
+                        // Insert the new rows.
+                        self.tableView.insertRows(at: expandedConversationIndices, with: .top)
+
+                        self.updateTableContents(shouldReload: false)
+                        self.tableView.endUpdates()
+                    } else {
+                        self.updateTableContents()
+                    }
                 }
-                Self.databaseStorage.read { transaction in
-                    cell.configure(conversationItem: conversation, transaction: transaction)
-                }
-                return cell
-            },
-            actionBlock: { [weak self] in
-                self?.didToggleSection(conversation: conversation)
-            }))
+            ))
         }
     }
 
@@ -479,6 +607,9 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
                 self.conversationCollection = self.buildConversationCollection()
             }
+        case .privateStory:
+            owsFailDebug("Unexpectedly attempted to show unblock UI for story thread")
+            break
         }
     }
 
@@ -529,7 +660,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     private func updateUIForCurrentSelection(animated: Bool) {
         let conversations = selection.conversations
-        let labelText = conversations.map { $0.title }.joined(separator: ", ")
+        let labelText = conversations.map { $0.titleWithSneakyTransaction }.joined(separator: ", ")
         footerView.setNamesText(labelText, animated: animated)
         footerView.proceedButton.isEnabled = !conversations.isEmpty
     }
@@ -651,6 +782,7 @@ extension ConversationPickerViewController {
         static let recentsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_RECENTS", comment: "table section header for section containing recent conversations")
         static let signalContactsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS", comment: "table section header for section containing contacts")
         static let groupsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_GROUPS", comment: "table section header for section containing groups")
+        static let storiesSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_STORIES", comment: "table section header for section containing stories")
     }
 }
 
@@ -687,12 +819,32 @@ private class ConversationPickerCell: ContactTableViewCell {
                 return
             }
             configuration = ContactCellConfiguration(groupThread: groupThread, localUserDisplayMode: .noteToSelf)
+        case .privateStory(_, let isMyStory):
+            if isMyStory {
+                guard let localAddress = tsAccountManager.localAddress else {
+                    owsFailDebug("Unexpectedly missing local address")
+                    return
+                }
+                configuration = ContactCellConfiguration(address: localAddress, localUserDisplayMode: .asUser)
+                configuration.customName = conversationItem.title(transaction: transaction)
+            } else {
+                guard let image = conversationItem.image else {
+                    owsFailDebug("Unexpectedly missing image for private story")
+                    return
+                }
+                configuration = ContactCellConfiguration(name: conversationItem.title(transaction: transaction), avatar: image)
+            }
         }
         if conversationItem.isBlocked {
             configuration.accessoryMessage = MessageStrings.conversationIsBlocked
         } else {
             configuration.accessoryView = buildAccessoryView(disappearingMessagesConfig: conversationItem.disappearingMessagesConfig)
         }
+
+        if let storyItem = conversationItem as? StoryConversationItem {
+            configuration.attributedSubtitle = storyItem.subtitle(transaction: transaction)?.asAttributedString
+        }
+
         super.configure(configuration: configuration, transaction: transaction)
 
         // Apply theme.
@@ -813,22 +965,30 @@ public class ConversationPickerSelection {
 
 // MARK: -
 
+private enum ConversationPickerSection: Int, CaseIterable {
+    case stories, recents, signalContacts, groups
+}
+
+// MARK: -
+
 private struct ConversationCollection {
     static let empty: ConversationCollection = ConversationCollection(contactConversations: [],
                                                                       recentConversations: [],
                                                                       groupConversations: [],
+                                                                      storyConversations: [],
                                                                       isSearchResults: false)
 
     let contactConversations: [ConversationItem]
     let recentConversations: [ConversationItem]
     let groupConversations: [ConversationItem]
+    let storyConversations: [ConversationItem]
     let isSearchResults: Bool
 
     var allConversations: [ConversationItem] {
-        recentConversations + contactConversations + groupConversations
+        recentConversations + contactConversations + groupConversations + storyConversations
     }
 
-    private func conversations(section: Section) -> [ConversationItem] {
+    private func conversations(section: ConversationPickerSection) -> [ConversationItem] {
         switch section {
         case .recents:
             return recentConversations
@@ -836,28 +996,34 @@ private struct ConversationCollection {
             return contactConversations
         case .groups:
             return groupConversations
+        case .stories:
+            return storyConversations
         }
-    }
-
-    private enum Section: Int, CaseIterable {
-        case recents, signalContacts, groups
     }
 
     fileprivate func indexPath(conversation: ConversationItem) -> IndexPath? {
         switch conversation.messageRecipient {
         case .contact:
             if let row = (recentConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
-                return IndexPath(row: row, section: Section.recents.rawValue)
+                return IndexPath(row: row, section: ConversationPickerSection.recents.rawValue)
             } else if let row = (contactConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
-                return IndexPath(row: row, section: Section.signalContacts.rawValue)
+                return IndexPath(row: row, section: ConversationPickerSection.signalContacts.rawValue)
             } else {
                 return nil
             }
         case .group:
             if let row = (recentConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
-                return IndexPath(row: row, section: Section.recents.rawValue)
+                return IndexPath(row: row, section: ConversationPickerSection.recents.rawValue)
+            } else if conversation is StoryConversationItem, let row = (storyConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
+                return IndexPath(row: row, section: ConversationPickerSection.stories.rawValue)
             } else if let row = (groupConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
-                return IndexPath(row: row, section: Section.groups.rawValue)
+                return IndexPath(row: row, section: ConversationPickerSection.groups.rawValue)
+            } else {
+                return nil
+            }
+        case .privateStory:
+            if let row = (storyConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
+                return IndexPath(row: row, section: ConversationPickerSection.stories.rawValue)
             } else {
                 return nil
             }
@@ -865,7 +1031,7 @@ private struct ConversationCollection {
     }
 
     fileprivate func conversation(for indexPath: IndexPath) -> ConversationItem? {
-        guard let section = Section(rawValue: indexPath.section) else {
+        guard let section = ConversationPickerSection(rawValue: indexPath.section) else {
             owsFailDebug("section was unexpectedly nil")
             return nil
         }

@@ -887,7 +887,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     }
 
     @objc
-    public var tableBackgroundColor: UIColor {
+    open var tableBackgroundColor: UIColor {
         AssertIsOnMainThread()
 
         return Self.tableBackgroundColor(useNewStyle: useNewStyle,

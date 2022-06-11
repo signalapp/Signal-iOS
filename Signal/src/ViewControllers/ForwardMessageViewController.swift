@@ -781,7 +781,7 @@ private enum ForwardMessageContent {
         let items: [Item] = try attachments.map { attachment in
             let builder = TSOutgoingMessageBuilder(thread: localThread)
             builder.attachmentIds = [attachment.uniqueId]
-            let interaction = builder.build()
+            let interaction = builder.build(transaction: transaction)
 
             let componentState = try buildComponentState(interaction: interaction,
                                                          transaction: transaction)

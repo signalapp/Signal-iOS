@@ -29,11 +29,15 @@ public class StoryFinder: NSObject {
         }
     }
 
-    public static func incomingStories(transaction: SDSAnyReadTransaction) -> [StoryMessage] {
+    // The list view shows all incoming stories *and* outgoing group stories
+    public static func storiesForListView(transaction: SDSAnyReadTransaction) -> [StoryMessage] {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
-            WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
+            WHERE (
+                \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
+                OR \(StoryMessage.columnName(.groupId)) IS NOT NULL
+            )
             ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
         """
 
@@ -45,11 +49,34 @@ public class StoryFinder: NSObject {
         }
     }
 
-    public static func incomingStoriesWithRowIds(_ rowIds: [Int64], transaction: SDSAnyReadTransaction) -> [StoryMessage] {
+    public static func outgoingStories(limit: Int? = nil, transaction: SDSAnyReadTransaction) -> [StoryMessage] {
+        var sql = """
+            SELECT *
+            FROM \(StoryMessage.databaseTableName)
+            WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.outgoing.rawValue)
+            ORDER BY \(StoryMessage.columnName(.timestamp)) DESC
+        """
+
+        if let limit = limit {
+            sql += " LIMIT \(limit)"
+        }
+
+        do {
+            return try StoryMessage.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
+        } catch {
+            owsFailDebug("Failed to fetch incoming stories \(error)")
+            return []
+        }
+    }
+
+    public static func listStoriesWithRowIds(_ rowIds: [Int64], transaction: SDSAnyReadTransaction) -> [StoryMessage] {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
-            WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
+            WHERE (
+                \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
+                OR \(StoryMessage.columnName(.groupId)) IS NOT NULL
+            )
             AND \(StoryMessage.columnName(.id)) IN (\(rowIds.lazy.map { "\($0)" }.joined(separator: ",")))
             ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
         """

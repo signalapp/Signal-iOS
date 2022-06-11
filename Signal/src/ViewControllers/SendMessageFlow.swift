@@ -200,7 +200,7 @@ class SendMessageFlow: NSObject {
 
         owsAssertDebug(groupThread != nil)
         if let groupThread = groupThread, Mention.threadAllowsMentionSend(groupThread) {
-            mentionCandidates = groupThread.recipientAddresses
+            mentionCandidates = groupThread.recipientAddressesWithSneakyTransaction
         } else {
             mentionCandidates = []
         }
@@ -513,7 +513,7 @@ extension SendMessageFlow: TextApprovalViewControllerDelegate {
         guard conversations.count > 0 else {
             return nil
         }
-        return conversations.map { $0.title }.joined(separator: ", ")
+        return conversations.map { $0.titleWithSneakyTransaction }.joined(separator: ", ")
     }
 
     func textApprovalMode(_ textApproval: TextApprovalViewController) -> ApprovalMode {
@@ -549,7 +549,7 @@ extension SendMessageFlow: ContactShareApprovalViewControllerDelegate {
         guard conversations.count > 0 else {
             return nil
         }
-        return conversations.map { $0.title }.joined(separator: ", ")
+        return conversations.map { $0.titleWithSneakyTransaction }.joined(separator: ", ")
     }
 
     func contactApprovalMode(_ contactApproval: ContactShareApprovalViewController) -> ApprovalMode {
@@ -593,7 +593,7 @@ extension SendMessageFlow: AttachmentApprovalViewControllerDelegate {
     }
 
     var attachmentApprovalRecipientNames: [String] {
-        selectedConversations.map { $0.title }
+        selectedConversations.map { $0.titleWithSneakyTransaction }
     }
 
     var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {

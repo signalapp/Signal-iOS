@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -57,7 +57,7 @@ extension ConversationViewController {
 
         if let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
            address.isValid,
-           thread.recipientAddresses.contains(address) {
+           thread.recipientAddressesWithSneakyTransaction.contains(address) {
             if thread is TSContactThread {
                 // update title with profile name
                 updateNavigationTitle()
@@ -79,7 +79,7 @@ extension ConversationViewController {
         // If profile whitelist just changed, we may want to hide a profile whitelist offer.
         if let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
            address.isValid,
-           thread.recipientAddresses.contains(address) {
+           thread.recipientAddressesWithSneakyTransaction.contains(address) {
             ensureBannerState()
             showMessageRequestDialogIfRequired()
         } else if let groupId = notification.userInfo?[kNSNotificationKey_ProfileGroupId] as? Data,

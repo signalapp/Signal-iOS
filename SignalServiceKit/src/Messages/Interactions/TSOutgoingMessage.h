@@ -118,7 +118,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
-    NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(outgoingMessageWithBuilder:));
+                                   transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER
+    NS_SWIFT_NAME(init(outgoingMessageWithBuilder:transaction:));
 
 // --- CODE GENERATION MARKER
 
@@ -187,12 +188,14 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 + (instancetype)outgoingMessageInThread:(TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-                       expiresInSeconds:(uint32_t)expiresInSeconds;
+                       expiresInSeconds:(uint32_t)expiresInSeconds
+                            transaction:(SDSAnyReadTransaction *)transaction;
 
 + (instancetype)outgoingMessageInThread:(TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds
-                 changeActionsProtoData:(nullable NSData *)changeActionsProtoData;
+                 changeActionsProtoData:(nullable NSData *)changeActionsProtoData
+                            transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)removeTemporaryAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction;
 

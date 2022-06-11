@@ -22,10 +22,19 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) {
     TSThreadMentionNotificationMode_Never
 };
 
+typedef NS_CLOSED_ENUM(NSUInteger, TSThreadStoryViewMode) {
+    TSThreadStoryViewMode_None = 0,
+    TSThreadStoryViewMode_Explicit,
+    TSThreadStoryViewMode_BlockList
+};
+
 /**
- *  TSThread is the superclass of TSContactThread and TSGroupThread
+ *  TSThread is the superclass of TSContactThread, TSGroupThread, and TSPrivateStoryThread
  */
 @interface TSThread : BaseModel
+
+@property (nonatomic, readonly) TSThreadStoryViewMode storyViewMode;
+@property (nonatomic, readonly, nullable) NSNumber *lastSentStoryTimestamp;
 
 @property (nonatomic) BOOL shouldThreadBeVisible;
 @property (nonatomic, readonly, nullable) NSDate *creationDate;
@@ -67,6 +76,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) {
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(int64_t)lastInteractionRowId
+          lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
          mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
@@ -75,7 +85,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
           mutedUntilDateObsolete:(nullable NSDate *)mutedUntilDateObsolete
      mutedUntilTimestampObsolete:(uint64_t)mutedUntilTimestampObsolete
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNameObsolete:creationDate:isArchivedObsolete:isMarkedUnreadObsolete:lastInteractionRowId:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestampObsolete:shouldThreadBeVisible:));
+                   storyViewMode:(TSThreadStoryViewMode)storyViewMode
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNameObsolete:creationDate:isArchivedObsolete:isMarkedUnreadObsolete:lastInteractionRowId:lastSentStoryTimestamp:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestampObsolete:shouldThreadBeVisible:storyViewMode:));
 
 // clang-format on
 
@@ -86,7 +97,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 /**
  * @returns recipientId for each recipient in the thread
  */
-@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *recipientAddresses;
+
+@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *recipientAddressesWithSneakyTransaction;
+- (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 @property (nonatomic, readonly) BOOL isNoteToSelf;
 
@@ -157,6 +170,14 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 - (void)updateWithShouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                             transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(updateWithShouldThreadBeVisible(_:transaction:));
+
+- (void)updateWithLastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
+                             transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(updateWithLastSentStoryTimestamp(_:transaction:));
+
+- (void)updateWithStoryViewMode:(TSThreadStoryViewMode)storyViewMode
+                    transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(updateWithStoryViewMode(_:transaction:));
 
 @end
 

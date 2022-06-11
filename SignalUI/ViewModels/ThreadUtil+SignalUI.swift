@@ -177,13 +177,15 @@ extension OutgoingMessagePreparer {
                                                ? nil
                                                : quotedReplyModel?.buildQuotedMessageForSending())
 
-        let message = TSOutgoingMessageBuilder(thread: thread,
-                                               messageBody: truncatedText,
-                                               bodyRanges: bodyRanges,
-                                               expiresInSeconds: expiresInSeconds,
-                                               isVoiceMessage: isVoiceMessage,
-                                               quotedMessage: quotedMessage,
-                                               isViewOnceMessage: isViewOnceMessage).build()
+        let message = TSOutgoingMessageBuilder(
+            thread: thread,
+            messageBody: truncatedText,
+            bodyRanges: bodyRanges,
+            expiresInSeconds: expiresInSeconds,
+            isVoiceMessage: isVoiceMessage,
+            quotedMessage: quotedMessage,
+            isViewOnceMessage: isViewOnceMessage
+        ).build(transaction: transaction)
 
         let attachmentInfos = attachments.map { $0.buildOutgoingAttachmentInfo(message: message) }
 

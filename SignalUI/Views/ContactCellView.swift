@@ -23,6 +23,7 @@ public class ContactCellConfiguration: NSObject {
     fileprivate enum CellDataSource {
         case address(SignalServiceAddress)
         case groupThread(TSGroupThread)
+        case `static`(name: String, avatar: UIImage)
     }
 
     fileprivate let dataSource: CellDataSource
@@ -69,6 +70,12 @@ public class ContactCellConfiguration: NSObject {
         super.init()
     }
 
+    public init(name: String, avatar: UIImage) {
+        self.dataSource = .static(name: name, avatar: avatar)
+        self.localUserDisplayMode = .asUser
+        super.init()
+    }
+
     public func useVerifiedSubtitle() {
         let text = NSMutableAttributedString()
         text.appendTemplatedImage(named: "check-12",
@@ -94,8 +101,9 @@ public class ContactCellView: ManualStackView {
     public static var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass { .thirtySix }
     private var avatarDataSource: ConversationAvatarDataSource? {
         switch configuration?.dataSource {
-        case let .groupThread(thread): return .thread(thread)
-        case let .address(address): return .address(address)
+        case .groupThread(let thread): return .thread(thread)
+        case .address(let address): return .address(address)
+        case .static(_, let avatar): return .asset(avatar: avatar, badge: nil)
         case nil: return nil
         }
     }
@@ -286,6 +294,8 @@ public class ContactCellView: ManualStackView {
                     owsFailDebug("Missing nameLabelColor.")
                     return TSGroupThread.defaultGroupName.asAttributedString
                 }
+            case .static(let name, _):
+                return name.asAttributedString
             }
         }()
     }

@@ -1156,7 +1156,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
         [self addGroupIdToProfileWhitelist:groupId
                          userProfileWriter:UserProfileWriter_LocalUser
                                transaction:transaction];
-    } else {
+    } else if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress
                       userProfileWriter:UserProfileWriter_LocalUser
@@ -1190,9 +1190,11 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         NSData *groupId = groupThread.groupModel.groupId;
         return [self isGroupIdInProfileWhitelist:groupId transaction:transaction];
-    } else {
+    } else if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         return [self isUserInProfileWhitelist:contactThread.contactAddress transaction:transaction];
+    } else {
+        return NO;
     }
 }
 
@@ -1534,6 +1536,12 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
         }
         return username;
     }];
+}
+
+- (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTransaction:
+    (SDSAnyReadTransaction *)transaction
+{
+    return [self objc_allWhitelistedRegisteredAddressesWithTransaction:transaction];
 }
 
 - (nullable NSString *)profileBioForDisplayForAddress:(SignalServiceAddress *)address

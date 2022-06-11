@@ -60,7 +60,7 @@ public class MessageBody: NSObject, NSCopying, NSSecureCoding {
         var rangeOffset = 0
 
         func shouldPreserveMention(_ address: SignalServiceAddress) -> Bool {
-            return groupThread.recipientAddresses.contains(address)
+            return groupThread.recipientAddressesWithSneakyTransaction.contains(address)
         }
 
         for (range, uuid) in ranges.orderedMentions {

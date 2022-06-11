@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingReactionMessage.h"
@@ -25,13 +25,14 @@ NS_ASSUME_NONNULL_BEGIN
                          emoji:(NSString *)emoji
                     isRemoving:(BOOL)isRemoving
               expiresInSeconds:(uint32_t)expiresInSeconds
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug([thread.uniqueId isEqualToString:message.uniqueThreadId]);
     OWSAssertDebug(emoji.isSingleEmoji);
 
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     messageBuilder.expiresInSeconds = expiresInSeconds;
-    self = [super initOutgoingMessageWithBuilder:messageBuilder];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
     if (!self) {
         return self;
     }

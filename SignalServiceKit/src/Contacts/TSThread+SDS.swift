@@ -47,6 +47,11 @@ public struct ThreadRecord: SDSRecord {
     public let messageDraftBodyRanges: Data?
     public let mentionNotificationMode: UInt
     public let mutedUntilTimestamp: UInt64
+    public let allowsReplies: Bool?
+    public let lastSentStoryTimestamp: UInt64?
+    public let name: String?
+    public let addresses: Data?
+    public let storyViewMode: UInt
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -69,6 +74,11 @@ public struct ThreadRecord: SDSRecord {
         case messageDraftBodyRanges
         case mentionNotificationMode
         case mutedUntilTimestamp
+        case allowsReplies
+        case lastSentStoryTimestamp
+        case name
+        case addresses
+        case storyViewMode
     }
 
     public static func columnName(_ column: ThreadRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -112,6 +122,11 @@ public extension ThreadRecord {
         messageDraftBodyRanges = row[17]
         mentionNotificationMode = row[18]
         mutedUntilTimestamp = row[19]
+        allowsReplies = row[20]
+        lastSentStoryTimestamp = row[21]
+        name = row[22]
+        addresses = row[23]
+        storyViewMode = row[24]
     }
 }
 
@@ -149,6 +164,7 @@ extension TSThread {
             let isArchivedObsolete: Bool = record.isArchived
             let isMarkedUnreadObsolete: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastSentStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastSentStoryTimestamp, name: "lastSentStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = record.lastVisibleSortIdOnScreenPercentage
             let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
@@ -159,6 +175,7 @@ extension TSThread {
             let mutedUntilDateObsolete: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateObsoleteInterval, name: "mutedUntilDateObsolete")
             let mutedUntilTimestampObsolete: UInt64 = record.mutedUntilTimestamp
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
+            let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .none
             let contactPhoneNumber: String? = record.contactPhoneNumber
             let contactUUID: String? = record.contactUUID
             let hasDismissedOffers: Bool = try SDSDeserialization.required(record.hasDismissedOffers, name: "hasDismissedOffers")
@@ -170,6 +187,7 @@ extension TSThread {
                                    isArchivedObsolete: isArchivedObsolete,
                                    isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                                    lastInteractionRowId: lastInteractionRowId,
+                                   lastSentStoryTimestamp: lastSentStoryTimestamp,
                                    lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
                                    lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
                                    mentionNotificationMode: mentionNotificationMode,
@@ -178,6 +196,7 @@ extension TSThread {
                                    mutedUntilDateObsolete: mutedUntilDateObsolete,
                                    mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
                                    shouldThreadBeVisible: shouldThreadBeVisible,
+                                   storyViewMode: storyViewMode,
                                    contactPhoneNumber: contactPhoneNumber,
                                    contactUUID: contactUUID,
                                    hasDismissedOffers: hasDismissedOffers)
@@ -191,6 +210,7 @@ extension TSThread {
             let isArchivedObsolete: Bool = record.isArchived
             let isMarkedUnreadObsolete: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastSentStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastSentStoryTimestamp, name: "lastSentStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = record.lastVisibleSortIdOnScreenPercentage
             let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
@@ -201,6 +221,7 @@ extension TSThread {
             let mutedUntilDateObsolete: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateObsoleteInterval, name: "mutedUntilDateObsolete")
             let mutedUntilTimestampObsolete: UInt64 = record.mutedUntilTimestamp
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
+            let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .none
             let groupModelSerialized: Data? = record.groupModel
             let groupModel: TSGroupModel = try SDSDeserialization.unarchive(groupModelSerialized, name: "groupModel")
 
@@ -211,6 +232,7 @@ extension TSThread {
                                  isArchivedObsolete: isArchivedObsolete,
                                  isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                                  lastInteractionRowId: lastInteractionRowId,
+                                 lastSentStoryTimestamp: lastSentStoryTimestamp,
                                  lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
                                  lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
                                  mentionNotificationMode: mentionNotificationMode,
@@ -219,9 +241,10 @@ extension TSThread {
                                  mutedUntilDateObsolete: mutedUntilDateObsolete,
                                  mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
                                  shouldThreadBeVisible: shouldThreadBeVisible,
+                                 storyViewMode: storyViewMode,
                                  groupModel: groupModel)
 
-        case .thread:
+        case .privateStoryThread:
 
             let uniqueId: String = record.uniqueId
             let conversationColorNameObsolete: String = record.conversationColorName
@@ -230,6 +253,7 @@ extension TSThread {
             let isArchivedObsolete: Bool = record.isArchived
             let isMarkedUnreadObsolete: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastSentStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastSentStoryTimestamp, name: "lastSentStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = record.lastVisibleSortIdOnScreenPercentage
             let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
@@ -240,6 +264,54 @@ extension TSThread {
             let mutedUntilDateObsolete: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateObsoleteInterval, name: "mutedUntilDateObsolete")
             let mutedUntilTimestampObsolete: UInt64 = record.mutedUntilTimestamp
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
+            let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .none
+            let addressesSerialized: Data? = record.addresses
+            let addresses: [SignalServiceAddress] = try SDSDeserialization.unarchive(addressesSerialized, name: "addresses")
+            let allowsReplies: Bool = try SDSDeserialization.required(record.allowsReplies, name: "allowsReplies")
+            let name: String = try SDSDeserialization.required(record.name, name: "name")
+
+            return TSPrivateStoryThread(grdbId: recordId,
+                                        uniqueId: uniqueId,
+                                        conversationColorNameObsolete: conversationColorNameObsolete,
+                                        creationDate: creationDate,
+                                        isArchivedObsolete: isArchivedObsolete,
+                                        isMarkedUnreadObsolete: isMarkedUnreadObsolete,
+                                        lastInteractionRowId: lastInteractionRowId,
+                                        lastSentStoryTimestamp: lastSentStoryTimestamp,
+                                        lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
+                                        lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
+                                        mentionNotificationMode: mentionNotificationMode,
+                                        messageDraft: messageDraft,
+                                        messageDraftBodyRanges: messageDraftBodyRanges,
+                                        mutedUntilDateObsolete: mutedUntilDateObsolete,
+                                        mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
+                                        shouldThreadBeVisible: shouldThreadBeVisible,
+                                        storyViewMode: storyViewMode,
+                                        addresses: addresses,
+                                        allowsReplies: allowsReplies,
+                                        name: name)
+
+        case .thread:
+
+            let uniqueId: String = record.uniqueId
+            let conversationColorNameObsolete: String = record.conversationColorName
+            let creationDateInterval: Double? = record.creationDate
+            let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
+            let isArchivedObsolete: Bool = record.isArchived
+            let isMarkedUnreadObsolete: Bool = record.isMarkedUnread
+            let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastSentStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastSentStoryTimestamp, name: "lastSentStoryTimestamp", conversion: { NSNumber(value: $0) })
+            let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
+            let lastVisibleSortIdOnScreenPercentageObsolete: Double = record.lastVisibleSortIdOnScreenPercentage
+            let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
+            let messageDraft: String? = record.messageDraft
+            let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
+            let messageDraftBodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(messageDraftBodyRangesSerialized, name: "messageDraftBodyRanges")
+            let mutedUntilDateObsoleteInterval: Double? = record.mutedUntilDate
+            let mutedUntilDateObsolete: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateObsoleteInterval, name: "mutedUntilDateObsolete")
+            let mutedUntilTimestampObsolete: UInt64 = record.mutedUntilTimestamp
+            let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
+            let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .none
 
             return TSThread(grdbId: recordId,
                             uniqueId: uniqueId,
@@ -248,6 +320,7 @@ extension TSThread {
                             isArchivedObsolete: isArchivedObsolete,
                             isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                             lastInteractionRowId: lastInteractionRowId,
+                            lastSentStoryTimestamp: lastSentStoryTimestamp,
                             lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
                             lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
                             mentionNotificationMode: mentionNotificationMode,
@@ -255,7 +328,8 @@ extension TSThread {
                             messageDraftBodyRanges: messageDraftBodyRanges,
                             mutedUntilDateObsolete: mutedUntilDateObsolete,
                             mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
-                            shouldThreadBeVisible: shouldThreadBeVisible)
+                            shouldThreadBeVisible: shouldThreadBeVisible,
+                            storyViewMode: storyViewMode)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -272,6 +346,9 @@ extension TSThread: SDSModel {
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
         switch self {
+        case let model as TSPrivateStoryThread:
+            assert(type(of: model) == TSPrivateStoryThread.self)
+            return TSPrivateStoryThreadSerializer(model: model)
         case let model as TSGroupThread:
             assert(type(of: model) == TSGroupThread.self)
             return TSGroupThreadSerializer(model: model)
@@ -308,14 +385,15 @@ extension TSThread: DeepCopyable {
             throw OWSAssertionError("Model missing grdbId.")
         }
 
-        if let modelToCopy = self as? TSGroupThread {
-            assert(type(of: modelToCopy) == TSGroupThread.self)
+        if let modelToCopy = self as? TSPrivateStoryThread {
+            assert(type(of: modelToCopy) == TSPrivateStoryThread.self)
             let uniqueId: String = modelToCopy.uniqueId
             let conversationColorNameObsolete: String = modelToCopy.conversationColorNameObsolete
             let creationDate: Date? = modelToCopy.creationDate
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastSentStoryTimestamp: NSNumber? = modelToCopy.lastSentStoryTimestamp
             let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
             let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
@@ -336,6 +414,65 @@ extension TSThread: DeepCopyable {
             let mutedUntilDateObsolete: Date? = modelToCopy.mutedUntilDateObsolete
             let mutedUntilTimestampObsolete: UInt64 = modelToCopy.mutedUntilTimestampObsolete
             let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
+            let storyViewMode: TSThreadStoryViewMode = modelToCopy.storyViewMode
+            // NOTE: If this generates build errors, you made need to
+            // implement DeepCopyable for this type in DeepCopy.swift.
+            let addresses: [SignalServiceAddress] = try DeepCopies.deepCopy(modelToCopy.addresses)
+            let allowsReplies: Bool = modelToCopy.allowsReplies
+            let name: String = modelToCopy.name
+
+            return TSPrivateStoryThread(grdbId: id,
+                                        uniqueId: uniqueId,
+                                        conversationColorNameObsolete: conversationColorNameObsolete,
+                                        creationDate: creationDate,
+                                        isArchivedObsolete: isArchivedObsolete,
+                                        isMarkedUnreadObsolete: isMarkedUnreadObsolete,
+                                        lastInteractionRowId: lastInteractionRowId,
+                                        lastSentStoryTimestamp: lastSentStoryTimestamp,
+                                        lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
+                                        lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
+                                        mentionNotificationMode: mentionNotificationMode,
+                                        messageDraft: messageDraft,
+                                        messageDraftBodyRanges: messageDraftBodyRanges,
+                                        mutedUntilDateObsolete: mutedUntilDateObsolete,
+                                        mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
+                                        shouldThreadBeVisible: shouldThreadBeVisible,
+                                        storyViewMode: storyViewMode,
+                                        addresses: addresses,
+                                        allowsReplies: allowsReplies,
+                                        name: name)
+        }
+
+        if let modelToCopy = self as? TSGroupThread {
+            assert(type(of: modelToCopy) == TSGroupThread.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let conversationColorNameObsolete: String = modelToCopy.conversationColorNameObsolete
+            let creationDate: Date? = modelToCopy.creationDate
+            let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
+            let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
+            let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastSentStoryTimestamp: NSNumber? = modelToCopy.lastSentStoryTimestamp
+            let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
+            let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
+            let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
+            let messageDraft: String? = modelToCopy.messageDraft
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let messageDraftBodyRanges: MessageBodyRanges?
+            if let messageDraftBodyRangesForCopy = modelToCopy.messageDraftBodyRanges {
+               messageDraftBodyRanges = try DeepCopies.deepCopy(messageDraftBodyRangesForCopy)
+            } else {
+               messageDraftBodyRanges = nil
+            }
+            let mutedUntilDateObsolete: Date? = modelToCopy.mutedUntilDateObsolete
+            let mutedUntilTimestampObsolete: UInt64 = modelToCopy.mutedUntilTimestampObsolete
+            let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
+            let storyViewMode: TSThreadStoryViewMode = modelToCopy.storyViewMode
             // NOTE: If this generates build errors, you made need to
             // implement DeepCopyable for this type in DeepCopy.swift.
             let groupModel: TSGroupModel = try DeepCopies.deepCopy(modelToCopy.groupModel)
@@ -347,6 +484,7 @@ extension TSThread: DeepCopyable {
                                  isArchivedObsolete: isArchivedObsolete,
                                  isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                                  lastInteractionRowId: lastInteractionRowId,
+                                 lastSentStoryTimestamp: lastSentStoryTimestamp,
                                  lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
                                  lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
                                  mentionNotificationMode: mentionNotificationMode,
@@ -355,6 +493,7 @@ extension TSThread: DeepCopyable {
                                  mutedUntilDateObsolete: mutedUntilDateObsolete,
                                  mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
                                  shouldThreadBeVisible: shouldThreadBeVisible,
+                                 storyViewMode: storyViewMode,
                                  groupModel: groupModel)
         }
 
@@ -366,6 +505,7 @@ extension TSThread: DeepCopyable {
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastSentStoryTimestamp: NSNumber? = modelToCopy.lastSentStoryTimestamp
             let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
             let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
@@ -386,6 +526,7 @@ extension TSThread: DeepCopyable {
             let mutedUntilDateObsolete: Date? = modelToCopy.mutedUntilDateObsolete
             let mutedUntilTimestampObsolete: UInt64 = modelToCopy.mutedUntilTimestampObsolete
             let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
+            let storyViewMode: TSThreadStoryViewMode = modelToCopy.storyViewMode
             let contactPhoneNumber: String? = modelToCopy.contactPhoneNumber
             let contactUUID: String? = modelToCopy.contactUUID
             let hasDismissedOffers: Bool = modelToCopy.hasDismissedOffers
@@ -397,6 +538,7 @@ extension TSThread: DeepCopyable {
                                    isArchivedObsolete: isArchivedObsolete,
                                    isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                                    lastInteractionRowId: lastInteractionRowId,
+                                   lastSentStoryTimestamp: lastSentStoryTimestamp,
                                    lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
                                    lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
                                    mentionNotificationMode: mentionNotificationMode,
@@ -405,6 +547,7 @@ extension TSThread: DeepCopyable {
                                    mutedUntilDateObsolete: mutedUntilDateObsolete,
                                    mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
                                    shouldThreadBeVisible: shouldThreadBeVisible,
+                                   storyViewMode: storyViewMode,
                                    contactPhoneNumber: contactPhoneNumber,
                                    contactUUID: contactUUID,
                                    hasDismissedOffers: hasDismissedOffers)
@@ -419,6 +562,7 @@ extension TSThread: DeepCopyable {
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastSentStoryTimestamp: NSNumber? = modelToCopy.lastSentStoryTimestamp
             let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
             let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
@@ -439,6 +583,7 @@ extension TSThread: DeepCopyable {
             let mutedUntilDateObsolete: Date? = modelToCopy.mutedUntilDateObsolete
             let mutedUntilTimestampObsolete: UInt64 = modelToCopy.mutedUntilTimestampObsolete
             let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
+            let storyViewMode: TSThreadStoryViewMode = modelToCopy.storyViewMode
 
             return TSThread(grdbId: id,
                             uniqueId: uniqueId,
@@ -447,6 +592,7 @@ extension TSThread: DeepCopyable {
                             isArchivedObsolete: isArchivedObsolete,
                             isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                             lastInteractionRowId: lastInteractionRowId,
+                            lastSentStoryTimestamp: lastSentStoryTimestamp,
                             lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
                             lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
                             mentionNotificationMode: mentionNotificationMode,
@@ -454,7 +600,8 @@ extension TSThread: DeepCopyable {
                             messageDraftBodyRanges: messageDraftBodyRanges,
                             mutedUntilDateObsolete: mutedUntilDateObsolete,
                             mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
-                            shouldThreadBeVisible: shouldThreadBeVisible)
+                            shouldThreadBeVisible: shouldThreadBeVisible,
+                            storyViewMode: storyViewMode)
         }
 
     }
@@ -487,6 +634,11 @@ extension TSThreadSerializer {
     static var messageDraftBodyRangesColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "messageDraftBodyRanges", columnType: .blob, isOptional: true) }
     static var mentionNotificationModeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "mentionNotificationMode", columnType: .int) }
     static var mutedUntilTimestampObsoleteColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "mutedUntilTimestampObsolete", columnType: .int64) }
+    static var allowsRepliesColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "allowsReplies", columnType: .int, isOptional: true) }
+    static var lastSentStoryTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastSentStoryTimestamp", columnType: .int64, isOptional: true) }
+    static var nameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "name", columnType: .unicodeString, isOptional: true) }
+    static var addressesColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "addresses", columnType: .blob, isOptional: true) }
+    static var storyViewModeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "storyViewMode", columnType: .int) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -513,7 +665,12 @@ extension TSThreadSerializer {
         lastVisibleSortIdObsoleteColumn,
         messageDraftBodyRangesColumn,
         mentionNotificationModeColumn,
-        mutedUntilTimestampObsoleteColumn
+        mutedUntilTimestampObsoleteColumn,
+        allowsRepliesColumn,
+        lastSentStoryTimestampColumn,
+        nameColumn,
+        addressesColumn,
+        storyViewModeColumn
         ])
     }
 }
@@ -937,8 +1094,13 @@ class TSThreadSerializer: SDSSerializer {
         let messageDraftBodyRanges: Data? = optionalArchive(model.messageDraftBodyRanges)
         let mentionNotificationMode: UInt = model.mentionNotificationMode.rawValue
         let mutedUntilTimestamp: UInt64 = model.mutedUntilTimestampObsolete
+        let allowsReplies: Bool? = nil
+        let lastSentStoryTimestamp: UInt64? = archiveOptionalNSNumber(model.lastSentStoryTimestamp, conversion: { $0.uint64Value })
+        let name: String? = nil
+        let addresses: Data? = nil
+        let storyViewMode: UInt = model.storyViewMode.rawValue
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode, mutedUntilTimestamp: mutedUntilTimestamp)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode, mutedUntilTimestamp: mutedUntilTimestamp, allowsReplies: allowsReplies, lastSentStoryTimestamp: lastSentStoryTimestamp, name: name, addresses: addresses, storyViewMode: storyViewMode)
     }
 }
 

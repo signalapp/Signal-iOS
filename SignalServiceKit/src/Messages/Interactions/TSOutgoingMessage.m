@@ -269,32 +269,35 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     builder.quotedMessage = quotedMessage;
     builder.linkPreview = linkPreview;
     builder.messageSticker = messageSticker;
-    return [builder build];
+    return [builder buildWithSneakyTransaction];
 }
 
 + (instancetype)outgoingMessageInThread:(TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds
+                            transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     builder.groupMetaMessage = groupMetaMessage;
     builder.expiresInSeconds = expiresInSeconds;
-    return [builder build];
+    return [builder buildWithTransaction:transaction];
 }
 
 + (instancetype)outgoingMessageInThread:(TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds
                  changeActionsProtoData:(nullable NSData *)changeActionsProtoData
+                            transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     builder.groupMetaMessage = groupMetaMessage;
     builder.expiresInSeconds = expiresInSeconds;
     builder.changeActionsProtoData = changeActionsProtoData;
-    return [builder build];
+    return [builder buildWithTransaction:transaction];
 }
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                                   transaction:(SDSAnyReadTransaction *)transaction
 {
     self = [super initMessageWithBuilder:outgoingMessageBuilder];
     if (!self) {
@@ -330,7 +333,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         [recipientAddresses addObject:TSAccountManager.localAddress];
     } else {
         // 2. Most messages should only be sent to the current members of the group.
-        [recipientAddresses addObjectsFromArray:thread.recipientAddresses];
+        [recipientAddresses addObjectsFromArray:[thread recipientAddressesWithTransaction:transaction]];
         // 3. V2 group updates should also be sent to pending members of the group
         //    whose clients support Groups v2.
         if (outgoingMessageBuilder.additionalRecipients) {

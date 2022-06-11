@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSViewOnceMessageReadSyncMessage.h"
@@ -17,10 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
                  senderAddress:(SignalServiceAddress *)senderAddress
                        message:(TSMessage *)message
                  readTimestamp:(uint64_t)readTimestamp
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(senderAddress.isValid && message.timestamp > 0);
 
-    self = [super initWithThread:thread];
+    self = [super initWithThread:thread transaction:transaction];
     if (!self) {
         return self;
     }

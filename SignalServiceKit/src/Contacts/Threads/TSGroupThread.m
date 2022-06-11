@@ -36,6 +36,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(int64_t)lastInteractionRowId
+          lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
          mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
@@ -44,6 +45,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
           mutedUntilDateObsolete:(nullable NSDate *)mutedUntilDateObsolete
      mutedUntilTimestampObsolete:(uint64_t)mutedUntilTimestampObsolete
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+                   storyViewMode:(TSThreadStoryViewMode)storyViewMode
                       groupModel:(TSGroupModel *)groupModel
 {
     self = [super initWithGrdbId:grdbId
@@ -53,6 +55,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                 isArchivedObsolete:isArchivedObsolete
             isMarkedUnreadObsolete:isMarkedUnreadObsolete
               lastInteractionRowId:lastInteractionRowId
+            lastSentStoryTimestamp:lastSentStoryTimestamp
          lastVisibleSortIdObsolete:lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageObsolete
            mentionNotificationMode:mentionNotificationMode
@@ -60,7 +63,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
             messageDraftBodyRanges:messageDraftBodyRanges
             mutedUntilDateObsolete:mutedUntilDateObsolete
        mutedUntilTimestampObsolete:mutedUntilTimestampObsolete
-             shouldThreadBeVisible:shouldThreadBeVisible];
+             shouldThreadBeVisible:shouldThreadBeVisible
+                     storyViewMode:storyViewMode];
 
     if (!self) {
         return self;
@@ -112,7 +116,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     return [TSGroupThread anyFetchGroupThreadWithUniqueId:uniqueId transaction:transaction];
 }
 
-- (NSArray<SignalServiceAddress *> *)recipientAddresses
+- (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(SDSAnyReadTransaction *)transaction;
 {
     NSMutableArray<SignalServiceAddress *> *groupMembers = [self.groupModel.groupMembers mutableCopy];
     if (groupMembers == nil) {
