@@ -85,6 +85,16 @@ class OnboardingControllerTest: SignalBaseTest {
 
         XCTAssertNotNil(navigationController.topViewController as? OnboardingTransferChoiceViewController)
     }
+
+    func test_onboardingPermissionsDidComplete_whenOnboardingModeIsRegistering_showsPhoneNumberScreen() {
+        let sut = OnboardingController(onboardingMode: .registering)
+        let viewController = UIViewController()
+        let navigationController = UINavigationControllerSpy(rootViewController: viewController)
+
+        sut.onboardingPermissionsDidComplete(viewController: viewController)
+
+        XCTAssertNotNil(navigationController.topViewController as? RegistrationPhoneNumberViewController)
+    }
 }
 
 // MARK: - Helpers
