@@ -39,6 +39,22 @@ class OnboardingControllerTest: SignalBaseTest {
 
         XCTAssertNotNil(navigationController.topViewController as? OnboardingPermissionsViewController)
     }
+
+    func test_toggleModeSwitch_whenOnboardingModeIsOverriden_goesBackToRootView() {
+        let sut = OnboardingController(onboardingMode: .registering)
+        let viewController = UIViewController()
+        viewController.title = "Root View"
+        let navigationController = UINavigationControllerSpy(rootViewController: viewController)
+
+        XCTAssertFalse(sut.isOnboardingModeOverriden)
+        sut.toggleModeSwitch(viewController: viewController)
+        XCTAssertNotNil(navigationController.topViewController as? OnboardingPermissionsViewController)
+
+        XCTAssertTrue(sut.isOnboardingModeOverriden)
+        sut.toggleModeSwitch(viewController: viewController)
+
+        XCTAssertEqual(navigationController.topViewController?.title, "Root View")
+    }
 }
 
 // MARK: - Helpers
