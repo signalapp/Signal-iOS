@@ -95,6 +95,16 @@ class OnboardingControllerTest: SignalBaseTest {
 
         XCTAssertNotNil(navigationController.topViewController as? RegistrationPhoneNumberViewController)
     }
+
+    func test_requestingVerificationDidSucceed_showsVerificationScreen() {
+        let sut = OnboardingController(onboardingMode: .registering)
+        let viewController = UIViewController()
+        let navigationController = UINavigationControllerSpy(rootViewController: viewController)
+
+        sut.requestingVerificationDidSucceed(viewController: viewController)
+
+        XCTAssertNotNil(navigationController.topViewController as? OnboardingVerificationViewController)
+    }
 }
 
 // MARK: - Helpers
