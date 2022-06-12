@@ -105,6 +105,16 @@ class OnboardingControllerTest: SignalBaseTest {
 
         XCTAssertNotNil(navigationController.topViewController as? OnboardingVerificationViewController)
     }
+
+    func test_onboardingDidRequireCaptcha_showsCaptchaScreen() {
+        let sut = OnboardingController(onboardingMode: .registering)
+        let viewController = UIViewController()
+        let navigationController = UINavigationControllerSpy(rootViewController: viewController)
+
+        sut.onboardingDidRequireCaptcha(viewController: viewController)
+
+        XCTAssertNotNil(navigationController.topViewController as? OnboardingCaptchaViewController)
+    }
 }
 
 // MARK: - Helpers
