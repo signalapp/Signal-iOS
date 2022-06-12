@@ -115,6 +115,25 @@ class OnboardingControllerTest: SignalBaseTest {
 
         XCTAssertNotNil(navigationController.topViewController as? OnboardingCaptchaViewController)
     }
+
+    func test_onboardingDidRequireCaptcha_withMultipleScreensAndCurrentIsNotPhoneRegistration_goBackToInitialScreen() {
+        let sut = OnboardingController(onboardingMode: .registering)
+        let viewController1 = UIViewController()
+        viewController1.title = "View 1"
+        let viewController2 = UIViewController()
+        viewController2.title = "View 2"
+        let viewController3 = UIViewController()
+        viewController3.title = "View 3"
+        let navigationController = UINavigationControllerSpy(rootViewController: viewController1)
+
+        navigationController.pushViewController(viewController2, animated: false)
+        navigationController.pushViewController(viewController3, animated: false)
+        sut.onboardingDidRequireCaptcha(viewController: viewController3)
+
+        XCTAssertEqual(navigationController.viewControllers.count, 2)
+        XCTAssertEqual(navigationController.viewControllers.first?.title, "View 1")
+        XCTAssertNotNil(navigationController.topViewController as? OnboardingCaptchaViewController)
+    }
 }
 
 // MARK: - Helpers
