@@ -226,7 +226,7 @@ CHECKOUT OPTIONS:
     :commit: 0563ad5d2780777ef9685dcee1af2f0255dc1ae4
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts.git
   libPhoneNumber-iOS:
-    :commit: 4c4341c5b89040559810a3e38c7a47c77eeaeabb
+    :commit: 58c86cfd300d6b4d2fc2a82a0f36d35275dc45e2
     :git: https://github.com/signalapp/libPhoneNumber-iOS
   LibSignalClient:
     :commit: 2c32fb802d1f8d6739ade32901a3f5d84e7ec19b
