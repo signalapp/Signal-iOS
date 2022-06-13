@@ -29,7 +29,7 @@ public struct EmojiWithSkinTones: Hashable {
 }
 
 extension Emoji {
-    private static let keyValueStore = SDSKeyValueStore(collection: "Emoji+PreferredSkinTonePermutation")
+    private static let emojiWithPreferredSkinToneCollection = "Emoji+PreferredSkinTonePermutation"
 
     static func allSendableEmojiByCategoryWithPreferredSkinTones(transaction: YapDatabaseReadTransaction) -> [Category: [EmojiWithSkinTones]] {
         return Category.allCases.reduce(into: [Category: [EmojiWithSkinTones]]()) { result, category in
@@ -38,7 +38,7 @@ extension Emoji {
     }
 
     func withPreferredSkinTones(transaction: YapDatabaseReadTransaction) -> EmojiWithSkinTones {
-        guard let rawSkinTones = Self.keyValueStore.getObject(forKey: rawValue, transaction: transaction) as? [String] else {
+        guard let rawSkinTones = transaction.object(forKey: rawValue, inCollection: Self.emojiWithPreferredSkinToneCollection) as? [String] else {
             return EmojiWithSkinTones(baseEmoji: self, skinTones: nil)
         }
 
@@ -47,9 +47,9 @@ extension Emoji {
 
     func setPreferredSkinTones(_ preferredSkinTonePermutation: [SkinTone]?, transaction: YapDatabaseReadWriteTransaction) {
         if let preferredSkinTonePermutation = preferredSkinTonePermutation {
-            Self.keyValueStore.setObject(preferredSkinTonePermutation.map { $0.rawValue }, key: rawValue, transaction: transaction)
+            transaction.setObject(preferredSkinTonePermutation.map { $0.rawValue }, forKey: rawValue, inCollection: Self.emojiWithPreferredSkinToneCollection)
         } else {
-            Self.keyValueStore.removeValue(forKey: rawValue, transaction: transaction)
+            transaction.removeObject(forKey: rawValue, inCollection: Self.emojiWithPreferredSkinToneCollection)
         }
     }
 
