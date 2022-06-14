@@ -260,7 +260,15 @@ class DeviceTransferService: NSObject {
         session = nil
         identity = nil
 
-        tsAccountManager.isTransferInProgress = false
+        // It is possible that we get here because the app was backgrounded
+        // after a failed launch. In that case, `tsAccountManager` will not be
+        // available, and setting this will crash. It'd probably be safe to more
+        // simply return in the .idle case above since none of the values being
+        // reset should have values if we are idle, but I am scared of it.
+        if case .idle = transferState {} else {
+            tsAccountManager.isTransferInProgress = false
+        }
+
         transferState = .idle
 
         stopThroughputCalculation()

@@ -62,6 +62,7 @@ typedef NS_ENUM(NSUInteger, LaunchFailure) {
     LaunchFailure_CouldNotRestoreTransferredData,
     LaunchFailure_DatabaseUnrecoverablyCorrupted,
     LaunchFailure_LastAppLaunchCrashed,
+    LaunchFailure_LowStorageSpaceAvailable,
 };
 
 static NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
@@ -79,6 +80,8 @@ static NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
             return @"LaunchFailure_DatabaseUnrecoverablyCorrupted";
         case LaunchFailure_LastAppLaunchCrashed:
             return @"LaunchFailure_LastAppLaunchCrashed";
+        case LaunchFailure_LowStorageSpaceAvailable:
+            return @"LaunchFailure_NoDiskSpaceAvailable";
     }
 }
 
@@ -119,6 +122,7 @@ static void uncaughtExceptionHandler(NSException *exception)
 
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
+@property (nonatomic) BOOL shouldKillAppWhenBackgrounded;
 
 @end
 
@@ -128,6 +132,25 @@ static void uncaughtExceptionHandler(NSException *exception)
 
 @synthesize window = _window;
 
+- (BOOL)shouldKillAppWhenBackgrounded
+{
+    if (_shouldKillAppWhenBackgrounded) {
+        // Should only be killing app in the background if app launch failed
+        OWSAssertDebug(self.didAppLaunchFail);
+    }
+
+    return _shouldKillAppWhenBackgrounded;
+}
+
+- (void)setDidAppLaunchFail:(BOOL)didAppLaunchFail
+{
+    if (!didAppLaunchFail) {
+        self.shouldKillAppWhenBackgrounded = NO;
+    }
+
+    _didAppLaunchFail = didAppLaunchFail;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -135,6 +158,10 @@ static void uncaughtExceptionHandler(NSException *exception)
     OWSLogInfo(@"applicationDidEnterBackground.");
 
     OWSLogFlush();
+
+    if (self.shouldKillAppWhenBackgrounded) {
+        exit(0);
+    }
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -219,7 +246,9 @@ static void uncaughtExceptionHandler(NSException *exception)
     LaunchFailure launchFailure = LaunchFailure_None;
     NSInteger launchAttemptFailureThreshold = SSKDebugFlags.betaLogging ? 2 : 3;
 
-    if (deviceTransferRestoreFailed) {
+    if (![self checkSomeDiskSpaceAvailable]) {
+        launchFailure = LaunchFailure_LowStorageSpaceAvailable;
+    } else if (deviceTransferRestoreFailed) {
         launchFailure = LaunchFailure_CouldNotRestoreTransferredData;
     } else if (StorageCoordinator.hasInvalidDatabaseVersion) {
         // Prevent:
@@ -232,6 +261,7 @@ static void uncaughtExceptionHandler(NSException *exception)
             >= launchAttemptFailureThreshold) {
         launchFailure = LaunchFailure_LastAppLaunchCrashed;
     }
+
     if (launchFailure != LaunchFailure_None) {
         [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
         OWSLogInfo(@"application: didFinishLaunchingWithOptions failed.");
@@ -242,6 +272,19 @@ static void uncaughtExceptionHandler(NSException *exception)
 
     [self launchToHomeScreen:launchOptions instrumentsMonitorId:monitorId];
     return YES;
+}
+
+- (BOOL)checkSomeDiskSpaceAvailable
+{
+    NSString *tempDir = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSUUID new].UUIDString];
+    BOOL succeededCreatingDir = [OWSFileSystem ensureDirectoryExists:tempDir];
+
+    // Best effort at deleting temp dir, which shouldn't ever fail
+    if (succeededCreatingDir && ![OWSFileSystem deleteFile:tempDir]) {
+        OWSFailDebug(@"Failed to delete temp dir used for checking disk space!");
+    }
+
+    return succeededCreatingDir;
 }
 
 - (BOOL)launchToHomeScreen:(NSDictionary *_Nullable)launchOptions instrumentsMonitorId:(unsigned long long)monitorId
@@ -424,6 +467,14 @@ static void uncaughtExceptionHandler(NSException *exception)
             alertMessage = NSLocalizedString(@"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE",
                 @"Error indicating that the app crashed during the previous launch.");
             break;
+        case LaunchFailure_LowStorageSpaceAvailable:
+            alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE",
+                @"Error title indicating that the app crashed because there was low storage space available on the "
+                @"device.");
+            alertMessage = NSLocalizedString(@"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE",
+                @"Error description indicating that the app crashed because there was low storage space available on "
+                @"the device.");
+            break;
         case LaunchFailure_None:
             OWSFailDebug(@"Unknown launch failure.");
             alertTitle
@@ -464,22 +515,27 @@ static void uncaughtExceptionHandler(NSException *exception)
                                 }]];
     }
 
-    [actionSheet
-        addAction:[[ActionSheetAction alloc]
-                      initWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
-                              style:ActionSheetActionStyleDefault
-                            handler:^(ActionSheetAction *_Nonnull action) {
-                                [Pastelog submitLogsWithSupportTag:NSStringForLaunchFailure(launchFailure)
-                                                        completion:^{
-                                                            if (launchFailure == LaunchFailure_LastAppLaunchCrashed) {
-                                                                // Pretend we didn't fail!
-                                                                self.didAppLaunchFail = NO;
-                                                                [self launchToHomeScreen:nil instrumentsMonitorId:0];
-                                                            } else {
-                                                                OWSFail(@"exiting after sharing debug logs.");
-                                                            }
-                                                        }];
-                            }]];
+    if (launchFailure == LaunchFailure_LowStorageSpaceAvailable) {
+        self.shouldKillAppWhenBackgrounded = YES;
+    } else {
+        [actionSheet
+            addAction:[[ActionSheetAction alloc]
+                          initWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
+                                  style:ActionSheetActionStyleDefault
+                                handler:^(ActionSheetAction *_Nonnull action) {
+                                    [Pastelog
+                                        submitLogsWithSupportTag:NSStringForLaunchFailure(launchFailure)
+                                                      completion:^{
+                                                          if (launchFailure == LaunchFailure_LastAppLaunchCrashed) {
+                                                              // Pretend we didn't fail!
+                                                              self.didAppLaunchFail = NO;
+                                                              [self launchToHomeScreen:nil instrumentsMonitorId:0];
+                                                          } else {
+                                                              OWSFail(@"exiting after sharing debug logs.");
+                                                          }
+                                                      }];
+                                }]];
+    }
 
     if (launchFailure == LaunchFailure_LastAppLaunchCrashed) {
         // Use a cancel-style button to draw attention.
