@@ -9,16 +9,16 @@ protocol DeliveryReceiptContext: AnyObject {
     @objc(addUpdateForMessage:transaction:update:)
     func addUpdate(message: TSOutgoingMessage,
                    transaction: SDSAnyWriteTransaction,
-                   update: @escaping (TSOutgoingMessage) -> ())
+                   update: @escaping (TSOutgoingMessage) -> Void)
 
     @objc(messagesWithTimestamp:transaction:)
     func messages(_ timestamps: UInt64,
                   transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage]
 }
 
-fileprivate struct Update {
+private struct Update {
     let message: TSOutgoingMessage
-    let update: (TSOutgoingMessage) -> ()
+    let update: (TSOutgoingMessage) -> Void
 }
 
 fileprivate extension TSOutgoingMessage {
@@ -42,7 +42,7 @@ public class PassthroughDeliveryReceiptContext: NSObject, DeliveryReceiptContext
     @objc(addUpdateForMessage:transaction:update:)
     func addUpdate(message: TSOutgoingMessage,
                    transaction: SDSAnyWriteTransaction,
-                   update: @escaping (TSOutgoingMessage) -> ()) {
+                   update: @escaping (TSOutgoingMessage) -> Void) {
         let deferredUpdate = Update(message: message, update: update)
         message.anyUpdateOutgoingMessage(transaction: transaction) { message in
             deferredUpdate.update(message)
@@ -61,14 +61,14 @@ public class BatchingDeliveryReceiptContext: NSObject, DeliveryReceiptContext {
     private var deferredUpdates: [Update] = []
 
 #if TESTABLE_BUILD
-    static var didRunDeferredUpdates: ((Int, SDSAnyWriteTransaction) -> ())? = nil
+    static var didRunDeferredUpdates: ((Int, SDSAnyWriteTransaction) -> Void)?
 #endif
 
     private override init() {
         super.init()
     }
 
-    static func withDeferredUpdates(transaction: SDSAnyWriteTransaction, _ closure: (DeliveryReceiptContext) -> ()) {
+    static func withDeferredUpdates(transaction: SDSAnyWriteTransaction, _ closure: (DeliveryReceiptContext) -> Void) {
         let instance = BatchingDeliveryReceiptContext()
         closure(instance)
         instance.runDeferredUpdates(transaction: transaction)
@@ -79,7 +79,7 @@ public class BatchingDeliveryReceiptContext: NSObject, DeliveryReceiptContext {
     @objc(addUpdateForMessage:transaction:update:)
     func addUpdate(message: TSOutgoingMessage,
                    transaction: SDSAnyWriteTransaction,
-                   update: @escaping (TSOutgoingMessage) -> ()) {
+                   update: @escaping (TSOutgoingMessage) -> Void) {
         deferredUpdates.append(Update(message: message, update: update))
     }
 
@@ -94,8 +94,8 @@ public class BatchingDeliveryReceiptContext: NSObject, DeliveryReceiptContext {
     }
 
     private struct UpdateCollection {
-        private var message: TSOutgoingMessage? = nil
-        private var closures = [(TSOutgoingMessage) -> ()]()
+        private var message: TSOutgoingMessage?
+        private var closures = [(TSOutgoingMessage) -> Void]()
 
         mutating func addOrExecute(update: Update,
                                    transaction: SDSAnyWriteTransaction) {
@@ -112,9 +112,9 @@ public class BatchingDeliveryReceiptContext: NSObject, DeliveryReceiptContext {
                 owsAssertDebug(closures.isEmpty)
                 return
             }
-            message.anyUpdateOutgoingMessage(transaction: transaction) { _ in
+            message.anyUpdateOutgoingMessage(transaction: transaction) { messageToUpdate in
                 for closure in closures {
-                    closure(message)
+                    closure(messageToUpdate)
                 }
             }
             self.message = nil
@@ -140,4 +140,3 @@ public class BatchingDeliveryReceiptContext: NSObject, DeliveryReceiptContext {
     }
 
 }
-
