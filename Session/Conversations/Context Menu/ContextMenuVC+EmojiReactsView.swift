@@ -89,7 +89,7 @@ extension ContextMenuVC {
         // MARK: Interaction
         @objc private func handleTap() {
             dismiss()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: { [weak self] in
                 self?.work()
             })
             

@@ -51,8 +51,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             let call = SessionCall(for: contactSessionID, uuid: UUID().uuidString.lowercased(), mode: .offer, outgoing: true)
             let callVC = CallVC(for: call)
             callVC.conversationVC = self
-            self.inputAccessoryView?.isHidden = true
-            self.inputAccessoryView?.alpha = 0
+            hideInputAccessoryView()
             present(callVC, animated: true, completion: nil)
         } else {
             let callPermissionRequestModal = CallPermissionRequestModal()
@@ -497,6 +496,11 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         self.oldText = newText
     }
     
+    func hideInputAccessoryView() {
+        self.inputAccessoryView?.isHidden = true
+        self.inputAccessoryView?.alpha = 0
+    }
+    
     func showInputAccessoryView() {
         UIView.animate(withDuration: 0.25, animations: {
             self.inputAccessoryView?.isHidden = false
@@ -742,8 +746,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             }
             alertVC.addAction(cancelAction)
             
-            self.inputAccessoryView?.isHidden = true
-            self.inputAccessoryView?.alpha = 0
+            hideInputAccessoryView()
             self.presentAlert(alertVC)
         } else {
             deleteLocally(viewItem)
@@ -878,10 +881,18 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func showFullEmojiKeyboard(_ viewItem: ConversationViewItem) {
-        // TODO: to be implemented
-        
-        print("Ryan Test: showFullEmojiKeyboard")
-        
+        hideInputAccessoryView()
+        let emojiPicker = EmojiPickerSheet(
+            completionHandler: { emoji in
+                if let emoji = emoji {
+                    self.react(viewItem, with: emoji.rawValue)
+                }
+            },
+            dismissHandler: {
+                self.showInputAccessoryView()
+            })
+        emojiPicker.modalPresentationStyle = .overFullScreen
+        present(emojiPicker, animated: true, completion: nil)
     }
     
     func contextMenuDismissed() {

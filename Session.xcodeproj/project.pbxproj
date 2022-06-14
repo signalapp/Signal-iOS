@@ -134,6 +134,9 @@
 		7B1581E4271FC59D00848B49 /* CallModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1581E3271FC59C00848B49 /* CallModal.swift */; };
 		7B1581E6271FD2A100848B49 /* VideoPreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1581E5271FD2A100848B49 /* VideoPreviewVC.swift */; };
 		7B1581E827210ECC00848B49 /* RenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1581E727210ECC00848B49 /* RenderView.swift */; };
+		7B1B52D828580C6D006069F2 /* EmojiPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1B52D728580C6D006069F2 /* EmojiPickerSheet.swift */; };
+		7B1B52DF28580D51006069F2 /* EmojiPickerCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1B52DB28580D50006069F2 /* EmojiPickerCollectionView.swift */; };
+		7B1B52E028580D51006069F2 /* EmojiSkinTonePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1B52DC28580D50006069F2 /* EmojiSkinTonePicker.swift */; };
 		7B1D74AA27BCC16E0030B423 /* NSENotificationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1D74A927BCC16E0030B423 /* NSENotificationPresenter.swift */; };
 		7B1D74AC27BDE7510030B423 /* Promise+Timeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1D74AB27BDE7510030B423 /* Promise+Timeout.swift */; };
 		7B1D74B027C365960030B423 /* Timer+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1D74AF27C365960030B423 /* Timer+MainThread.swift */; };
@@ -1138,6 +1141,9 @@
 		7B1581E3271FC59C00848B49 /* CallModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallModal.swift; sourceTree = "<group>"; };
 		7B1581E5271FD2A100848B49 /* VideoPreviewVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewVC.swift; sourceTree = "<group>"; };
 		7B1581E727210ECC00848B49 /* RenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderView.swift; sourceTree = "<group>"; };
+		7B1B52D728580C6D006069F2 /* EmojiPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPickerSheet.swift; sourceTree = "<group>"; };
+		7B1B52DB28580D50006069F2 /* EmojiPickerCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiPickerCollectionView.swift; sourceTree = "<group>"; };
+		7B1B52DC28580D50006069F2 /* EmojiSkinTonePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiSkinTonePicker.swift; sourceTree = "<group>"; };
 		7B1D74A927BCC16E0030B423 /* NSENotificationPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSENotificationPresenter.swift; sourceTree = "<group>"; };
 		7B1D74AB27BDE7510030B423 /* Promise+Timeout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promise+Timeout.swift"; sourceTree = "<group>"; };
 		7B1D74AF27C365960030B423 /* Timer+MainThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Timer+MainThread.swift"; sourceTree = "<group>"; };
@@ -2100,6 +2106,9 @@
 		7B1B52BD2851ADE1006069F2 /* Emoji Picker */ = {
 			isa = PBXGroup;
 			children = (
+				7B1B52DB28580D50006069F2 /* EmojiPickerCollectionView.swift */,
+				7B1B52DC28580D50006069F2 /* EmojiSkinTonePicker.swift */,
+				7B1B52D728580C6D006069F2 /* EmojiPickerSheet.swift */,
 			);
 			path = "Emoji Picker";
 			sourceTree = "<group>";
@@ -4970,7 +4979,9 @@
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
 				C3A76A8D25DB83F90074CB90 /* PermissionMissingModal.swift in Sources */,
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,
+				7B1B52E028580D51006069F2 /* EmojiSkinTonePicker.swift in Sources */,
 				B849789625D4A2F500D0D0B3 /* LinkPreviewView.swift in Sources */,
+				7B1B52DF28580D51006069F2 /* EmojiPickerCollectionView.swift in Sources */,
 				C3D0972B2510499C00F6E3E4 /* BackgroundPoller.swift in Sources */,
 				C3548F0624456447009433A8 /* PNModeVC.swift in Sources */,
 				B80A579F23DFF1F300876683 /* NewClosedGroupVC.swift in Sources */,
@@ -5095,6 +5106,7 @@
 				B894D0752339EDCF00B4D94D /* NukeDataModal.swift in Sources */,
 				7B93D06D27CF175800811CB6 /* MessageRequestsCell.swift in Sources */,
 				7B93D07727CF1A8A00811CB6 /* MockDataGenerator.swift in Sources */,
+				7B1B52D828580C6D006069F2 /* EmojiPickerSheet.swift in Sources */,
 				7B4C75CD26BB92060000AC89 /* DeletedMessageView.swift in Sources */,
 				B897621C25D201F7004F83B2 /* ScrollToBottomButton.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
