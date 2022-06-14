@@ -410,7 +410,7 @@
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Выберите получателя";
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Подтвердите подарок";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Отправить значок в подарок";
@@ -419,10 +419,10 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Одноразовое пожертвование";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Не удалось обработать ваш платёж, и с вас не была взята плата. Пожалуйста, попробуйте ещё раз.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Платёж не удался";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Действует %@";
@@ -2987,10 +2987,10 @@
 "IN_CALL_TERMINATED" = "Звонок завершен.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Архивированные чаты с отключённым звуком будут оставаться архивированными, даже если будет получено новое сообщение.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Архивированные чаты будут перемещены во входящие, если будет получено новое сообщение.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Ещё нет чатов.\nОтправьте другу своё первое сообщение.";
@@ -4040,7 +4040,7 @@
 "PAYMENTS_UNKNOWN_PAYMENT" = "Недействительный платёж";
 
 /* The alert message if user tries to exit a task without saving changes. */
-"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Вы хотите сбросить внесённые изменения?";
+"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Вы хотите сбросить эти изменения?";
 
 /* The alert title if user tries to exit a task without saving changes. */
 "PENDING_CHANGES_ACTION_SHEET_TITLE" = "Несохранённые изменения";
@@ -5141,10 +5141,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Звук сообщения";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Архивированные чаты с отключённым звуком будут оставаться архивированными, даже если будет получено новое сообщение.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Оставлять чаты без звука архивированными";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Условия и Политика конфиденциальности";

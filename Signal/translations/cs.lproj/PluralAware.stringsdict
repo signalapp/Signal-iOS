@@ -108,10 +108,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Tato barva je použita pro %d chatů. Chcete uložit změny pro všechny chaty?</string>
+			<key>many</key>
+			<string>Tato barva je použita pro %d chatech. Chcete uložit změny pro všechny chaty?</string>
 			<key>one</key>
-			<string>This color is used in 1 chat. Do you want to save changes for all chats?</string>
+			<string>Tato barva je použita pro 1 chat. Chcete uložit změny pro všechny chaty?</string>
 			<key>other</key>
-			<string>This color is used in %d chats. Do you want to save changes for all chats?</string>
+			<string>Tato barva je použita pro %d chatech. Chcete uložit změny pro všechny chaty?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -124,10 +128,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Smazat %d chatů?</string>
+			<key>many</key>
+			<string>Smazat %d chatů?</string>
 			<key>one</key>
-			<string>Delete Chat?</string>
+			<string>Smazat 1 chat?</string>
 			<key>other</key>
-			<string>Delete %d Chats?</string>
+			<string>Smazat %d chatů?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -140,10 +148,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Tyto chaty budou vymazány z tohoto zařízení.</string>
+			<key>many</key>
+			<string>Tyto chaty budou vymazány z tohoto zařízení.</string>
 			<key>one</key>
-			<string>This chat will be deleted from this device.</string>
+			<string>Tento chat bude vymazán z tohoto zařízení.</string>
 			<key>other</key>
-			<string>These chats will be deleted from this device.</string>
+			<string>Tyto chaty budou vymazány z tohoto zařízení.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -156,10 +168,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Nemůžete vybrat více než %d chatů</string>
+			<key>many</key>
+			<string>Nemůžete vybrat více než %d chatů</string>
 			<key>one</key>
-			<string>You can’t select more than 1 chat.</string>
+			<string>Nemůžete vybrat více než 1 chat</string>
 			<key>other</key>
-			<string>You can’t select more than %d chats.</string>
+			<string>Nemůžete vybrat více než %d chatů</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -212,10 +228,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d společných skupin</string>
+			<key>many</key>
+			<string>%d společných skupin</string>
 			<key>one</key>
-			<string>1 Group in Common</string>
+			<string>1 společná skupina</string>
 			<key>other</key>
-			<string>%d Groups in Common</string>
+			<string>%d společných skupin</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -228,6 +248,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%dm</string>
+			<key>many</key>
+			<string>%dm</string>
 			<key>one</key>
 			<string>%dm</string>
 			<key>other</key>
@@ -244,10 +268,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Před %d minutami</string>
+			<key>many</key>
+			<string>Před %dm minutami</string>
 			<key>one</key>
-			<string>1 minute ago</string>
+			<string>Před 1 minutou</string>
 			<key>other</key>
-			<string>%d minutes ago</string>
+			<string>Před %dm minutami</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -260,10 +288,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Smazat %d zpráv?</string>
+			<key>many</key>
+			<string>Smazat %d zpráv?</string>
 			<key>one</key>
-			<string>Delete Message?</string>
+			<string>Smazat 1 zprávu?</string>
 			<key>other</key>
-			<string>Delete %d Messages?</string>
+			<string>Smazat %d zpráv?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -293,13 +325,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>few</key>
-			<string>Vaše verze Signalu skončí za %d dny. Klepnutím aktualizujete na nejnovější verzi.</string>
+			<string>Vaše verze Signalu vyprší za %d dny. Klepnutím aktualizujete na nejnovější verzi.</string>
 			<key>many</key>
-			<string>Vaše verze Signalu skončí za %d dnů. Klepnutím aktualizujete na nejnovější verzi.</string>
+			<string>Vaše verze Signalu vyprší za %d dnů. Klepnutím aktualizujete na nejnovější verzi.</string>
 			<key>one</key>
-			<string>Vaše verze Signalu skončí za 1 den. Klepnutím aktualizujete na nejnovější verzi.</string>
+			<string>Vaše verze Signalu vyprší za 1 den. Klepnutím aktualizujete na nejnovější verzi.</string>
 			<key>other</key>
-			<string>Vaše verze Signalu skončí za %d dnů. Klepnutím aktualizujete na nejnovější verzi.</string>
+			<string>Vaše verze Signalu vyprší za %d dnů. Klepnutím aktualizujete na nejnovější verzi.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>

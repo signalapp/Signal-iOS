@@ -1,5 +1,5 @@
-• In certain conditions, your connection to the Signal server could get wonky. We made some improvements here to keep you connected.
-• We fixed a crash in the "All Media" view. Keep admiring those beautiful photos and videos.
-• We fixed a bug that might cause users to get stuck proving that they're not robots. We believe you! You're not a robot!
-• We fixed a bug that could cause errors in Note to Self if you had linked devices.
-• Calls should now use slightly less bandwidth thanks to some minor tweaks we've made.
+• Fizemos algumas melhorias para o Signal funcionar melhor em condições ruins de internet.
+• Corrigimos um erro na visualização de "Todas as mídias". Continue admirando suas belas fotos e vídeos.
+• Corrigimos um erro que fazia com que as pessoas ficassem provando em vão que não são robôs. Nós acreditamos em você! Você não é um(a) robô!
+• Corrigimos um erro que ocorria durante a leitura de suas Anotações, no cenário em que existem aparelhos vinculados.
+• Fizemos algumas melhorias para as chamadas usarem um pouco menos de dados de internet.

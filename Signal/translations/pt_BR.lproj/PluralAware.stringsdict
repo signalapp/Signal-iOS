@@ -157,11 +157,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Você não pode selecionar mais que 1 conversa.</string>
+			<string>Você não pode selecionar mais do que 1 conversa.</string>
 			<key>many</key>
-			<string>Você não pode selecionar mais que %d conversas.</string>
+			<string>Você não pode selecionar mais do que %d conversas.</string>
 			<key>other</key>
-			<string>Você não pode selecionar mais que %d conversas.</string>
+			<string>Você não pode selecionar mais do que %d conversas.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -260,7 +260,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Há %d minuto</string>
+			<string>Há 1 minuto</string>
 			<key>many</key>
 			<string>Há %d minutos</string>
 			<key>other</key>
@@ -296,7 +296,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>O grupo atingiu a capacidade máxima de %d membros.</string>
+			<string>O grupo atingiu a capacidade máxima de %d membro.</string>
 			<key>many</key>
 			<string>O grupo atingiu a capacidade máxima de %d membros.</string>
 			<key>other</key>
@@ -368,11 +368,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nesta chamada · 1 pessoa</string>
+			<string>Na chamada · 1 pessoa</string>
 			<key>many</key>
-			<string>Nesta chamada · %d pessoas</string>
+			<string>Na chamada · %d pessoas</string>
 			<key>other</key>
-			<string>Nesta chamada · %d pessoas</string>
+			<string>Na chamada · %d pessoas</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -386,11 +386,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ e 1 mais estão nesta chamada</string>
+			<string>%2$@, %3$@ e mais 1 estão na chamada</string>
 			<key>many</key>
-			<string>%2$@, %3$@ e %d outros estão nesta chamada</string>
+			<string>%2$@, %3$@ e outros %d estão na chamada</string>
 			<key>other</key>
-			<string>%2$@, %3$@ e %d outros estão nesta chamada</string>
+			<string>%2$@, %3$@ e outros %d estão na chamada</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -404,11 +404,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ e 1 mais entraram na chamada</string>
+			<string>%2$@, %3$@ e mais 1 entraram na chamada</string>
 			<key>many</key>
-			<string>%2$@, %3$@ e %d outros entraram na chamada</string>
+			<string>%2$@, %3$@ e outros %d entraram na chamada</string>
 			<key>other</key>
-			<string>%2$@, %3$@ e %d outros entraram na chamada</string>
+			<string>%2$@, %3$@ e outros %d entraram na chamada</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -422,11 +422,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ e 1 mais saíram da chamada</string>
+			<string>%2$@, %3$@ e mais 1 saíram da chamada</string>
 			<key>many</key>
-			<string>%2$@, %3$@ e %d outros saíram da chamada</string>
+			<string>%2$@, %3$@ e outros %d saíram da chamada</string>
 			<key>other</key>
-			<string>%2$@, %3$@ e %d outros saíram da chamada</string>
+			<string>%2$@, %3$@ e outros %d saíram da chamada</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -656,11 +656,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Este grupo não pode ser criado porque um membro está usando a versão desatualizada do Signal. Você poderá criar um Novo Grupo com ele depois de ele ter atualizado o Signal, ou remova-o antes de criar um novo grupo. %2$@</string>
+			<string>Este grupo não pode ser criado porque 1 membro está usando a versão desatualizada do Signal. Você poderá criar um Novo Grupo com essa pessoa quando ela atualizar o Signal. Por enquanto, desconsidere-a para criar o grupo. %2$@</string>
 			<key>many</key>
-			<string>Este grupo não pode ser criado porque %d membros estão usando a versão desatualizada do Signal. Você poderá criar um Novo Grupo com eles depois de terem atualizado o Signal, ou remova-os antes de criar um novo grupo. %2$@</string>
+			<string>Este grupo não pode ser criado porque %d membros estão usando a versão desatualizada do Signal. Você poderá criar um Novo Grupo com essas pessoas quando elas atualizarem o Signal. Por enquanto, desconsidere-as para criar o grupo. %2$@</string>
 			<key>other</key>
-			<string>Este grupo não pode ser criado porque %d membros estão usando a versão desatualizada do Signal. Você poderá criar um Novo Grupo com eles depois de terem atualizado o Signal, ou remova-os antes de criar um novo grupo. %2$@</string>
+			<string>Este grupo não pode ser criado porque %d membros estão usando a versão desatualizada do Signal. Você poderá criar um Novo Grupo com essas pessoas quando elas atualizarem o Signal. Por enquanto, desconsidere-as para criar o grupo. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -674,11 +674,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Este grupo não pode ser criado porque 1 membro está usando a versão desatualizada do Signal. Você poderá criar um Novo Grupo com ele depois de ele ter atualizado o Signal, ou remova-o antes de criar o grupo.</string>
+			<string>Este grupo não pode ser criado porque 1 membro está usando a versão desatualizada do Signal. Você poderá criar um Novo Grupo com essa pessoa quando ela atualizar o Signal. Por enquanto, desconsidere-a para criar o grupo.</string>
 			<key>many</key>
-			<string>Este grupo não pode ser criado porque %d membros estão usando a versão desatualizada do Signal. Você poderá criar um Novo Grupo com eles depois de terem atualizado o Signal, ou remova-os antes de criar o grupo.</string>
+			<string>Este grupo não pode ser criado porque %d membros estão usando a versão desatualizada do Signal. Você poderá criar um Novo Grupo com essas pessoas quando elas atualizarem o Signal. Por enquanto, desconsidere-as para criar o grupo.</string>
 			<key>other</key>
-			<string>Este grupo não pode ser criado porque %d membros estão usando a versão desatualizada do Signal. Você poderá criar um Novo Grupo com eles depois de terem atualizado o Signal, ou remova-os antes de criar o grupo.</string>
+			<string>Este grupo não pode ser criado porque %d membros estão usando a versão desatualizada do Signal. Você poderá criar um Novo Grupo com essas pessoas quando elas atualizarem o Signal. Por enquanto, desconsidere-as para criar o grupo.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -872,7 +872,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>PIN incorreto. Uma tentativa restante.</string>
+			<string>PIN incorreto. 1 tentativa restante.</string>
 			<key>many</key>
 			<string>PIN incorreto. %d tentativas restantes.</string>
 			<key>other</key>
@@ -1034,11 +1034,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Membro de %2$@, %3$@ e 1 grupo mais</string>
+			<string>Membro de %2$@, %3$@ e mais 1 grupo</string>
 			<key>many</key>
-			<string>Membro de %2$@, %3$@ e %d outros grupos</string>
+			<string>Membro de %2$@, %3$@ e outros %d grupos</string>
 			<key>other</key>
-			<string>Membro de %2$@, %3$@ e %d outros grupos</string>
+			<string>Membro de %2$@, %3$@ e outros %d grupos</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -1216,9 +1216,9 @@
 			<key>one</key>
 			<string>1sem</string>
 			<key>many</key>
-			<string>%d.sem.</string>
+			<string>%dsem</string>
 			<key>other</key>
-			<string>%d.sem.</string>
+			<string>%dsem</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_YEARS_%d</key>

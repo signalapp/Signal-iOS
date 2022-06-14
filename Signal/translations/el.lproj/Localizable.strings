@@ -5774,7 +5774,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Αδυναμία αποστολής συνημμένου";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Μεταφόρτωση %1$@ από %2$@… ";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Μεταφόρτωση %1$@ από %2$@…";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Ανεβαίνει...";

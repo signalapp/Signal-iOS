@@ -398,10 +398,10 @@
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Adicionar uma mensagem";
 
 /* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Deve atualizar o Signal para receber selos";
+"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "É preciso atualizar o Signal para receber selos";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Dê para alguém um selo fazendo uma doação ao Signal em nome dessa pessoa. A pessoa receberá um selo que seja exibido na foto do perfil.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Dê um selo para alguém, ao fazer uma doação para o Signal em nome dessa pessoa. A pessoa receberá um selo para ser exibido na foto do perfil.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Dê um selo";
@@ -410,7 +410,7 @@
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Escolher destinatário";
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Enviar o presente";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Enviar um selo de presente";
@@ -419,10 +419,10 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Doação única";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "O seu pagamento não foi efetuado e você não recebeu uma cobrança. Por favor, tente novamente.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Falha no pagamento";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Duração %@";
@@ -1616,22 +1616,22 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Tente outra forma de pagamento ou entre em contato com seu banco para obter informações sobre o erro.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Verifique se seu método de pagamento está em dia no Apple Pay. Se não for, atualize-o e tente novamente. Se o problema continuar, entre em contato com seu banco.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Verifique se seu método de pagamento está em dia no Apple Pay. Se não estiver, atualize-o e tente novamente. Se o problema continuar, entre em contato com seu banco.";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Seu cartão não aceita este tipo de compra. Tente outra forma de pagamento ou entre em contato com seu banco para mais detalhes.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Seu cartão não aceita este tipo de compra. Tente outra forma de pagamento ou entre em contato com seu banco para obter mais informações.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Seu cartão expirou. Verifique se seu método de pagamento está em dia no Apple Pay. Se não for, atualize-o e tente novamente.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Seu cartão expirou. Verifique se seu método de pagamento está em dia no Apple Pay. Se não estiver, atualize-o e tente novamente.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "O número de seu cartão está incorreto. Verifique se o seu método de pagamento está digitado corretamente no Apple Pay. Se não for, atualize-o e tente novamente.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "O número de seu cartão está incorreto. Verifique se o seu método de pagamento está cadastrado corretamente no Apple Pay. Se não estiver, atualize-o e tente novamente.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "O número de verificação CVC está incorreto. Certifique-se de que o seu CVC está digitado corretamente no Apple Pay. Se não for, atualize-o e tente novamente.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "O número de verificação CVC está incorreto. Certifique-se de que o seu CVC está cadastrado corretamente no Apple Pay. Se não estiver, atualize-o e tente novamente.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Seu cartão não tem saldo suficiente para completar esta compra. Tente outra forma de pagamento ou entre em contato com seu banco para mais detalhes.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Seu cartão não tem saldo suficiente para completar esta compra. Tente outra forma de pagamento ou entre em contato com seu banco para obter mais informações.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "O mês de expiração de seu método de pagamento está incorreto. Atualize-o no Apple Pay e tente novamente.";
@@ -1640,16 +1640,16 @@
 "DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "O ano de expiração do seu método de pagamento está incorreto. Atualize-o no Apple Pay e tente novamente.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "O número de seu cartão está incorreto. Atualize-o no Apple Pay e tente novamente.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "O número do seu cartão está incorreto. Atualize-o no Apple Pay e tente novamente.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Tente completar o pagamento novamente ou entre em contato com seu banco para mais detalhes.";
+"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Tente efetuar o pagamento novamente ou entre em contato com seu banco para obter mais informações.";
 
 /* Donation payment error for unspecified decline failures. */
 "DONATION_PAYMENT_ERROR_OTHER" = "Tente outra forma de pagamento ou entre em contato com seu banco para obter informações sobre o erro.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Verifique se seu método de pagamento está em dia no Apple Pay. Se não for, atualize-o e tente novamente.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Verifique se seu método de pagamento está em dia no Apple Pay. Se não estiver, atualize-o e tente novamente.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Valor";
@@ -1664,7 +1664,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Compartilhar nota fiscal";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Obrigado por apoiar o Signal. Sua contribuição ajuda a incentivar a missão de desenvolver uma tecnologia de privacidade de software livre que protege a liberdade de expressão e permite a comunicação global segura para milhões de pessoas em todo o mundo. Se você for residente nos Estados Unidos, por favor, fique com este recibo para seus registros fiscais. A Signal Technology Foundation é uma organização sem fins lucrativos, isenta de impostos nos Estados Unidos, sob a seção 501c3 do Código da Receita Federal. Nossa CNPJ é 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Obrigado por apoiar o Signal. Sua contribuição ajuda a incentivar a missão de desenvolver uma tecnologia de privacidade, de software livre, que protege a liberdade de expressão e permite a comunicação global segura para milhões de pessoas em todo o mundo. Se você morar nos Estados Unidos, por favor, fique com este recibo para seus registros fiscais. A Signal Technology Foundation é uma organização sem fins lucrativos, isenta de impostos nos Estados Unidos, sob a seção 501c3 do Código da Receita Federal. Nossa identificação nos EUA (Tax ID) é 82-4506840.";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "Uma única vez";
@@ -2987,10 +2987,10 @@
 "IN_CALL_TERMINATED" = "Chamada encerrada.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Conversas silenciadas que estão arquivadas permanecerão arquivadas quando uma nova mensagem chegar.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Conversas arquivadas serão movidas para a Caixa de entrada quando uma nova mensagem chegar.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Ainda não há conversas.\nComece enviando uma mensagem para uma de suas amizades.";
@@ -5141,10 +5141,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Som de mensagem";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Conversas silenciadas que estão arquivadas permanecerão arquivadas quando uma nova mensagem chegar.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Manter arquivadas as conversas silenciadas";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Termos & Política de Privacidade";
@@ -5933,7 +5933,7 @@
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "Torne-se um apoiador";
 
 /* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copiada a ID do assinante ao clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ID de assinante copiada para a área de transferência";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "O número de segurança entre você e %@ coincide. Você pode marcar este contato como verificado.";
@@ -5996,7 +5996,7 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "O Signal é uma entidade sem fins lucrativos, sem anunciantes ou investidores, apoiada apenas pelas pessoas que o usam e valorizam. Faça uma doação mensal recorrente e receba um selo no perfil para demonstrar o seu apoio.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "O Signal está comprometido com desenvolvimento de uma tecnologia de privacidade de código aberto que protege a liberdade de expressão e permite uma comunicação global segura. \n\nSua doação incentiva esta causa e paga pelo desenvolvimento e funcionamento de um aplicativo usado por milhões de pessoas para comunicação privada. Sem anúncios. Sem rastreadores. Sem brincadeira.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "O Signal está comprometido com desenvolvimento de uma tecnologia de privacidade de código aberto que protege a liberdade de expressão e permite uma comunicação global segura.\n\nSua doação incentiva esta causa e paga pelo desenvolvimento e funcionamento de um aplicativo usado por milhões de pessoas para comunicação privada. Sem anúncios. Sem rastreadores. Sem brincadeira.";
 
 /* Title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_TITLE" = "Apoie a tecnologia que é desenvolvida pensando em você - e não em seus dados, junte-se à comunidade que a sustenta financeiramente.";
@@ -6083,7 +6083,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Atualizar";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Faça uma doação mensal recorrente para o Signal a fim de apoiar a tecnologia desenvolvida pensando em você e não em seus dados.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Faça uma doação mensal recorrente para o Signal a fim de apoiar essa tecnologia desenvolvida pensando em você; não em seus dados.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Desligado";

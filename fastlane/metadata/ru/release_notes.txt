@@ -1,5 +1,5 @@
-• In certain conditions, your connection to the Signal server could get wonky. We made some improvements here to keep you connected.
-• We fixed a crash in the "All Media" view. Keep admiring those beautiful photos and videos.
-• We fixed a bug that might cause users to get stuck proving that they're not robots. We believe you! You're not a robot!
-• We fixed a bug that could cause errors in Note to Self if you had linked devices.
-• Calls should now use slightly less bandwidth thanks to some minor tweaks we've made.
+• В некоторых условиях ваше подключение к серверу Signal могло расшататься. Мы сделали несколько улучшений в этой области, чтобы вы оставались подключёнными.
+• Мы исправили сбой на экране «Все медиа». Продолжайте любоваться этими прекрасными фото и видео.
+• Мы исправили ошибку, из-за которой пользователи могли застрять, доказывая, что они — не роботы. Мы верим вам! Вы — не робот!
+• Мы исправили проблему, которая могла вызвать ошибки в Заметках для себя, если у вас есть привязанные устройства.
+• Звонки теперь должны использовать немного меньше пропускной способности благодаря некоторым небольшим усовершенствованиям, которые мы сделали.

@@ -1,5 +1,5 @@
-• In certain conditions, your connection to the Signal server could get wonky. We made some improvements here to keep you connected.
-• We fixed a crash in the "All Media" view. Keep admiring those beautiful photos and videos.
-• We fixed a bug that might cause users to get stuck proving that they're not robots. We believe you! You're not a robot!
-• We fixed a bug that could cause errors in Note to Self if you had linked devices.
-• Calls should now use slightly less bandwidth thanks to some minor tweaks we've made.
+• Unter bestimmten Umständen konnte die Verbindung zu dem Signal-Server gestört werden. Wir haben hier einige Verbesserungen vorgenommen, damit du immer verbunden bleibst.
+• Wir haben einen Absturz in der Medienübersicht behoben. Bestaune weiter diese schönen Fotos und Videos.
+• Wir haben einen Fehler behoben, der dazu führen konnte, dass Nutzer beim Beweisen, dass sie kein Roboter sind, festsaßen. Wir glauben dir! Du bist kein Roboter!
+• Wir haben einen Fehler behoben, der zu Fehlern in der »Notiz an mich« führen konnte, wenn andere Geräte gekoppelt waren.
+• Anrufe sollten nun etwas weniger Bandbreite nutzen dank einiger kleinen Optimierungen, die wir vorgenommen haben.

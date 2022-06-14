@@ -371,7 +371,7 @@
 "BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Je ‘eenmalige donateur’-bagde is verlopen en is daarom niet langer voor anderen zichtbaar op je profiel.\n\nJe kunt Signal gewoon blijven gebruiken, maar als je Signal ook wilt helpen mogelijk maken overweeg dan om maandelijkse donaties in te stellen.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Je ‘eenmalige donateur’-badge is verlopen en is daarom niet langer voor anderen zichtbaar op je profiel.\n\nJe kunt je ‘eenmalige donateur’-badge opniew voor 30 dagen krijgen als je opnieuw een eenmalige donatie doet.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Je ‘eenmalige donateur’-badge is verlopen en is daarom niet langer voor anderen zichtbaar op je profiel.\n\nJe kunt je ‘eenmalige donateur’-badge opnieuw voor 30 dagen krijgen als je opnieuw een eenmalige donatie doet.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Vanaf nu maandelijks doneren";
@@ -410,7 +410,7 @@
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Kies een ontvanger";
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Cadeau bevestigen";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Een cadeau-badge verzenden";
@@ -419,10 +419,10 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Eenmalige donatie";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Je overschrijving kon niet worden verwerkt, daarom is er geen geld overgemaakt. Probeer het opnieuw.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Overschrijving is mislukt";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Geldig voor %@";
@@ -656,7 +656,7 @@
 "CALL_USER_ALERT_TITLE" = "Bellen?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Inkomend videogesprek …";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Inkomende video-oproep …";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Video-oproep gemist om %@";
@@ -683,7 +683,7 @@
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Weigeren";
 
 /* Accessibility label for hang up call */
-"CALL_VIEW_HANGUP_LABEL" = "Gesprek beëindigen";
+"CALL_VIEW_HANGUP_LABEL" = "Oproep beëindigen";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Microfoon dempen";
@@ -740,7 +740,7 @@
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Je oude telefoonnummer is ongeldig. Voer een geldig nummer in om je telefoonnummer te wijzigen.";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Om je gegevens te herstellen, voer je Signal-pincode in als je er een had ingesteld. Dit is niet dezelfde code als de telefoonnummer verificatie code die je per sms of telefoonoproep hebt ontvangen.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Om je gegevens te herstellen, voer je Signal-pincode in als je er een had ingesteld. Dit is niet dezelfde code als de telefoonnummerverificatie-code die je per sms of telefoonoproep hebt ontvangen.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Hier zie je een voorbeeld van de gesprekskleur.";
@@ -992,19 +992,19 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Opnieuw proberen";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Je foutlog helpt ons om je probleem sneller te ontdekken en op te lossen. Het indienen van een foutlog is optioneel.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Je foutopsporingslog helpt ons om je probleem sneller te ontdekken en op te lossen. Het indienen van een foutopsporingslog is optioneel.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Foutlog indienen?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Foutopsporingslog indienen?";
 
 /* Placeholder telling user they must select a filter. */
 "CONTACT_SUPPORT_SELECT_A_FILTER" = "Kies een rede";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Indienen met foutlog?";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Indienen met foutopsporingslog?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Indienen zonder foutlog";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Indienen zonder foutopsporingslog";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Open met Kaarten";
@@ -1385,7 +1385,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "Nog één stap";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "De verwijzing naar je foutopsporingslog is gekopieerd naar je klembord. Je wordt zodadelijk doorverwezen naar GitHub waar je je probleem kunt rapporteren en deze verwijzing kunt plakken.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "De verwijzing naar je foutopsporingslog is gekopieerd naar je klembord. Je wordt straks doorverwezen naar GitHub waar je je probleem kunt rapporteren en deze verwijzing kunt plakken.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub-doorverwijzing";
@@ -1541,7 +1541,7 @@
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "Verbinding aan het maken …";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Houd de QR-codebinnen de circel";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Houd de QR-code binnen de cirkel";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_TITLE" = "Houd je nieuwe apparaat voor de camera";
@@ -1565,7 +1565,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "dagen";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Nieuwe berichten in dit gesprek zullen voor iedereen worden gewist nadat de ingestelde tijdspanne is verlopen. De tijdspanne begint voor iedere persoon individueel pas te lopen vanaf het moment dat hij of zij het bericht heeft gezien. — Gebruik dit niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Nieuwe berichten in dit gesprek zullen voor iedereen worden gewist nadat de ingestelde tijdspanne is verlopen. De tijdspanne begint voor iedere persoon individueel pas te lopen vanaf het moment dat hij of zij het bericht heeft gezien. — Gebruik verlopende berichten niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Momenteel verlopen nieuwe berichten na %@";
@@ -1583,7 +1583,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "seconden";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Voor alle nieuwe gesprekken die jij zelf begint zullen berichten voor iedereen worden gewist nadat de ingestelde tijdspanne is verlopen. De tijdspanne begint voor iedere persoon individueel pas te lopen vanaf het moment dat hij of zij het bericht heeft gezien. — Gebruik dit niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Hiermee stel je voor alle toekomstige gesprekken die jij zelf begint in dat berichten voor iedereen worden gewist nadat de ingestelde tijdspanne is verlopen. De tijdspanne begint voor iedere persoon individueel pas te lopen vanaf het moment dat hij of zij het bericht heeft gezien. — Gebruik verlopende berichten niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "weken";
@@ -2126,25 +2126,25 @@
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Kan geen beeld en geluid van %@ ontvangen";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "Er is niemand behalve jij in dit gesprek";
+"GROUP_CALL_NO_ONE_HERE" = "Er is niemand behalve jij in deze oproep";
 
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Er is nog niemand in de oproep aanwezig.";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ neemt deel aan het gesprek";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ neemt deel aan de oproep";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ heeft de oproep verlaten";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ en %@ nemen deel aan het gesprek";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ en %@ nemen deel aan de oproep";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ en %@ hebben het gesprek verlaten";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ en %@ hebben de oproep verlaten";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "Gesprek met %@";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in deze oproep aanwezig";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
 "GROUP_CALL_PRESENTING_FORMAT" = "%@ deelt zijn of haar scherm";
@@ -2153,7 +2153,7 @@
 "GROUP_CALL_RECONNECTING" = "Opnieuw verbinden";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Iemand neemt nu deel aan het gesprek met een veiligheidsnummer dat is veranderd.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Iemand neemt deel aan deze oproep met een veiligheidsnummer dat is veranderd.";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "Veeg omhoog om gedeeld scherm te zien";
@@ -2177,7 +2177,7 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ heeft een groepsoproep gestart";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ en één ander zijn in deze groep aanwezig";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ en één ander zijn in deze groepsoproep aanwezig";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ en %2$@ zijn in deze groepsoproep aanwezig";
@@ -2783,7 +2783,7 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Deze verouderde groep kan niet worden omgezet naar een nieuwe-stijl groep omdat hij te groot is. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Dit is een verouderde groep om nieuwe functionaliteiten te kunnen gebruiken zoals @vermeldigen en beheerders, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Dit is een verouderde groep om nieuwe functionaliteiten te kunnen gebruiken zoals @vermeldingen en beheerders, %@.";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Verouderde groep";
@@ -2987,10 +2987,10 @@
 "IN_CALL_TERMINATED" = "Oproep beëindigd.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Gedempte gesprekken die zijn gearchiveerd blijven gearchiveerd als er een nieuw bericht binnenkomt.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Gearchiveerde gesprekken zullen uit het archief gaan als er een nieuw bericht binnenkomt.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Nog geen gesprekken.\nBegin door een vriend of kennis een bericht te zenden.";
@@ -3716,7 +3716,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Deze iPhone koppelen";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Als je Signal registreerd op deze iPad dan zal Signal worden uitgeschakeld op elk ander apparaat waarop het momenteel geregistreerd staat met hetzelfde telefoonnummer.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Als je Signal registreert op deze iPad dan zal Signal worden uitgeschakeld op elk ander apparaat waarop het momenteel geregistreerd staat met hetzelfde telefoonnummer.";
 
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Het wordt afgeraden om je iPhone te koppelen omdat dit kernfunctionaliteit zal beperken.";
@@ -3770,7 +3770,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Foutieve pincode";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Voer de pincode in welke je eerder hebt aangemaakt. Dit is niet dezelfde code als de telefoonnummer verificatie code die je per sms of telefoonoproep hebt ontvangen.";
+"ONBOARDING_PIN_EXPLANATION" = "Voer de pincode in welke je eerder hebt aangemaakt. Dit is niet dezelfde code als de telefoonnummerverificatie-code die je per sms of telefoonoproep hebt ontvangen.";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "Voer je pincode in";
@@ -4475,7 +4475,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Je profiel kan alleen worden bijgewerkt als je bent verbonden met het internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Signal-profielen worden eind-tot-eind-versleuteld uitgewisseld. Je profielinformatie is alleen zichtbaar voor personen die zijn opgeslagen in jouw contactenlijst, personen naar wie je zelf een nieuw gesprek initieert, personen van wie je een gespreksverzoek aanvaard en alle leden van een groep waarvan jij lid bent.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "In Signal worden profielen, net als berichten en oproepen, eind-tot-eind-versleuteld uitgewisseld. Je profielnaam, -foto en -omschrijving zijn alleen zichtbaar voor personen die zijn opgeslagen in jouw contactenlijst, personen naar wie je zelf een nieuw gesprek initieert, personen van wie je een gespreksverzoek aanvaard en alle leden van groepen waarvan jij lid bent. Niemand anders kan jouw profiel zien, zelfs Signal niet.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Opslaan";
@@ -4799,7 +4799,7 @@
 "SEARCH_SECTION_MESSAGES" = "Berichten";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Kan koppelcode niet ophalen";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Kan de koppelcode niet ophalen";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Je moet de Signal-app eerst wissen voor je dit apparaat kunt koppelen aan een ander geregistreerd telefoonnummer. Weet je zeker dat je alle gespreksgeschiedenis (berichten, bijlagen, oproepgeschiedenis, enzovoort) wil wissen? Deze actie kan niet ongedaan worden gemaakt.";
@@ -4817,7 +4817,7 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Niet-ondersteunde versie";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Op je andere apparaat wordt een verouderde versie van Signal uigevoerd welke het scannen van QR-codes van iPads niet ondersteund. Installeer de meest recente versie van Signal en probeer het opnieuw.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Op je andere apparaat wordt een verouderde versie van Signal uitgevoerd welke het scannen van QR-codes van iPads niet ondersteund. Installeer de meest recente versie van Signal en probeer het opnieuw.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Scannent apparaat bijwerken";
@@ -4970,7 +4970,7 @@
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Foutopsporingslog indienen";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Foutlogs";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Foutopsporingslogs";
 
 /* Footer for avatar section in appearance settings */
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Geef indien beschikbaar de profielfoto uit je eigen systeemcontactenlijst weer, in plaats van de profielfoto welke anderen voor henzelf hebben ingesteld.";
@@ -5093,7 +5093,7 @@
 "SETTINGS_DATA_TITLE" = "Dataoverdracht";
 
 /* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Standaard-tijdspanne voor nieuwe gesprekken";
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Standaard-tijdspanne voor toekomstige gesprekken";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Registratie opzeggen en al je gegevens wissen";
@@ -5114,7 +5114,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Alle gegevens wissen";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Weet je zeker dat je al je geschiedenis (berichten, bijlages, oproepen, etc.) wilt wissen? Deze actie kan niet worden teruggedraaid.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Weet je zeker dat je al je geschiedenis (berichten, bijlagen, oproepen, etc.) wilt wissen? Deze actie kan niet worden teruggedraaid.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Alles wissen";
@@ -5141,10 +5141,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Berichtgeluid";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Gedempte gesprekken die zijn gearchiveerd blijven gearchiveerd als er een nieuw bericht binnenkomt.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Gedempte gesprekken gearchiveerd houden";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Voorwaarden en privacybeleid";
@@ -5846,7 +5846,7 @@
 "STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Aan het laden …";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Geen stickerspakketten geïnstalleerd";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Geen stickerpakketten geïnstalleerd";
 
 /* Label indicating that the user has no known sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Stickerpakketten uit binnenkomende berichten zullen hier verschijnen";
@@ -6113,7 +6113,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Lid van %@, %@ en nog %lu andere groepen";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Je kunt in dit gesprek notities voor jezelf achterlaten. Als je gebruik maakt van gekoppelde apparaten dan zullen notities worden gesynchroniseerd.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Je kunt in dit speciale gesprek notities voor jezelf achterlaten. Je kunt notities toevoegen en teruglezen vanaf al je gekoppelde apparaten, want noties die zijn verzonden na het moment van koppelen worden gesynchroniseerd.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Lid van %@";
@@ -6272,7 +6272,7 @@
 "USERNAME_DESCRIPTION" = "Gebruikersnamen zijn optioneel op Signal. Als je er voor kiest om een gebruikersnaam aan te maken, dan kunnen andere Signal-gebruikers je vinden via die gebruikersnaam en kunnen ze contact met je opnemen zonder je telefoonnummer te kennen.";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Gebruikersnamen mogen alleen uit de karakters a-z, 0-9 en _ bestaan.";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "Gebruikersnamen mogen alleen uit de karakters a-Z, 0-9 en _ bestaan.";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR" = "Er is iets fout gegaan bij het opzoeken van de gebruikersnaam. Probeer het later opnieuw.";

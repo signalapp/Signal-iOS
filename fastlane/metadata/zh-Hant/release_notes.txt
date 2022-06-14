@@ -1,5 +1,5 @@
-• In certain conditions, your connection to the Signal server could get wonky. We made some improvements here to keep you connected.
-• We fixed a crash in the "All Media" view. Keep admiring those beautiful photos and videos.
-• We fixed a bug that might cause users to get stuck proving that they're not robots. We believe you! You're not a robot!
-• We fixed a bug that could cause errors in Note to Self if you had linked devices.
-• Calls should now use slightly less bandwidth thanks to some minor tweaks we've made.
+• 在某些情況下，你與 Signal 伺服器的連接可能會出現問題。 我們在此處進行了一些改進，以使你保持連線。
+• 我們修復了“所有媒體”圖片中的當機的問題。 繼續欣賞那些美麗的照片和影片。
+• 我們修復了一個錯誤，該錯誤可能會導致使用者在證明他們不是機器人時遇到困難。 我們相信你！ 你不是機器人！
+• 我們修復了一個錯誤，如果你有已連結的裝置，該錯誤可能會導致“給自己的筆記”中的錯誤。
+• 由於我們進行了一些小的調整，通話現在應該使用更少的頻寬。

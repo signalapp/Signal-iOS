@@ -68,10 +68,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>This custom color is used in 1 chat. Do you want to delete it?</string>
 			<key>other</key>
-			<string>This custom color is used in %d chats. Do you want to delete it for all chats?</string>
+			<string>このカスタムの色は%d件のチャットで使用されています。すべてのチャットで削除しますか？</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -84,10 +82,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>This color is used in 1 chat. Do you want to save changes for all chats?</string>
 			<key>other</key>
-			<string>This color is used in %d chats. Do you want to save changes for all chats?</string>
+			<string>この色は%d件のチャットで使用されています。すべてのチャットの色を変更しますか？</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -100,10 +96,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>Delete Chat?</string>
 			<key>other</key>
-			<string>Delete %d Chats?</string>
+			<string>%d件のチャットを削除しますか？</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -131,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d件以上はチャットを選択できません。</string>
+			<string>%d件より多くのチャットを選択できません。</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>

@@ -1,5 +1,5 @@
-• In certain conditions, your connection to the Signal server could get wonky. We made some improvements here to keep you connected.
-• We fixed a crash in the "All Media" view. Keep admiring those beautiful photos and videos.
-• We fixed a bug that might cause users to get stuck proving that they're not robots. We believe you! You're not a robot!
-• We fixed a bug that could cause errors in Note to Self if you had linked devices.
-• Calls should now use slightly less bandwidth thanks to some minor tweaks we've made.
+• Under visse omstændigheder kan din forbindelse til Signal-serveren blive ustabilt. Vi har lavet nogle forbedringer her for at sikre, at du kan bevare forbindelsen.
+• Vi har rettet et nedbrud i visningen "Alle medier". Nu kan du beundre alle de smukke billeder og videoer.
+• Vi har rettet en fejl, som betyder, at brugere kan sidde fast i forsøget på at bevise, at de ikke er robotter. Vi tror på dig! Du er ikke en robot!
+• Vi har rettet en fejl, der kunne forårsage fejl i Egen note, hvis du havde forbundne enheder.
+• Opkald bør nu bruge lidt mindre båndbredde takket være nogle mindre justeringer, som vi har foretaget.

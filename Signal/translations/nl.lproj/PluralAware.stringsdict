@@ -328,9 +328,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 persoon in dit gesprek aanwezig</string>
+			<string>1 persoon in deze oproep aanwezig</string>
 			<key>other</key>
-			<string>%d personen in dit gesprek aanwezig</string>
+			<string>%d personen in deze oproep aanwezig</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en 1 ander nemen deel aan het gesprek</string>
+			<string>%2$@, %3$@ en 1 ander nemen deel aan de oproep</string>
 			<key>other</key>
-			<string>%2$@, %3$@ en %d anderen nemen deel aan het gesprek</string>
+			<string>%2$@, %3$@ en %d anderen nemen deel aan de oproep</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en 1 ander hebben het gesprek verlaten</string>
+			<string>%2$@, %3$@ en 1 ander hebben de oproep verlaten</string>
 			<key>other</key>
-			<string>%2$@, %3$@ en %d anderen hebben het gesprek verlaten</string>
+			<string>%2$@, %3$@ en %d anderen hebben de oproep verlaten</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>

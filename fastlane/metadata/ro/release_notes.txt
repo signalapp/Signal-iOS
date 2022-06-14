@@ -1,5 +1,5 @@
-• In certain conditions, your connection to the Signal server could get wonky. We made some improvements here to keep you connected.
-• We fixed a crash in the "All Media" view. Keep admiring those beautiful photos and videos.
-• We fixed a bug that might cause users to get stuck proving that they're not robots. We believe you! You're not a robot!
-• We fixed a bug that could cause errors in Note to Self if you had linked devices.
-• Calls should now use slightly less bandwidth thanks to some minor tweaks we've made.
+• În anumite condiții conexiunea cu serverele Signal ar putea deveni instabilă. Am făcut câteva îmbunătățiri pentru a te menține conectat.
+• Am remediat o eroare în ecranul „Toate fișierele media”. Acum îți poți admira în continuare videoclipurile si fotografiile.
+• Am remediat o eroare care putea bloca utilizatorii la ecranul de verificare „Nu sunt robot”. Te credem pe cuvânt! Nu ești robot!
+• Am remediat o eroare care putea cauza probleme în „Notă personală” dacă aveai dispozitive asociate.
+• Apelurile vor folosi acum mai puțină lățime de bandă datorită unor optimizări minore pe care le-am făcut.

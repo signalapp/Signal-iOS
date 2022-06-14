@@ -1,5 +1,5 @@
-• In certain conditions, your connection to the Signal server could get wonky. We made some improvements here to keep you connected.
-• We fixed a crash in the "All Media" view. Keep admiring those beautiful photos and videos.
-• We fixed a bug that might cause users to get stuck proving that they're not robots. We believe you! You're not a robot!
-• We fixed a bug that could cause errors in Note to Self if you had linked devices.
-• Calls should now use slightly less bandwidth thanks to some minor tweaks we've made.
+• Signalサーバーへの接続が、特定の条件下でうまくいかなくなる問題を修正しました。
+• 「すべてのメディア」画面で、クラッシュする問題を修正しました。
+• ロボットでないことを証明するために行っている、reCAPTCHAの認証がうまくいかない問題を修正しました。
+• 端末をリンクしている場合、「自分用メモ」でエラーが発生することがある不具合を修正しました。
+• 通話をしたときに消費されるデータが、前よりも少なくなりました。
