@@ -313,7 +313,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let senderName = Storage.shared.getContact(with: sender, using: transaction)?.displayName(for: context) ?? sender
         
         let notificationTitle = "Sesion"
-        var notificationBody = "\(senderName) reacts to your message with \(emoji)."
+        var notificationBody = "\(senderName) reacts to your message with \(emoji)"
         switch previewType {
             case .namePreview: break
             default: notificationBody = NotificationStrings.incomingMessageBody
