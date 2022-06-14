@@ -377,32 +377,33 @@ extension MessageReceiver {
         // Get or create thread
         guard let threadID = storage.getOrCreateThread(for: message.syncTarget ?? message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
         // Handle emoji reacts first
-        if let reaction = message.reaction, proto.dataMessage?.reaction != nil, let author = reaction.publicKey, let timestamp = reaction.timestamp {
+        if let reaction = message.reaction, proto.dataMessage?.reaction != nil, let author = reaction.publicKey, let timestamp = reaction.timestamp, let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
             var tsMessage: TSMessage?
             if author == getUserHexEncodedPublicKey() {
                 tsMessage = TSOutgoingMessage.find(withTimestamp: timestamp)
             } else {
                 tsMessage = TSIncomingMessage.find(withAuthorId: author, timestamp: timestamp, transaction: transaction)
             }
-            let reactionMessage = ReactMessage(timestamp: timestamp, authorId: author, emoji: reaction.emoji)
-            reactionMessage.sender = message.sender
+            let reactMessage = ReactMessage(timestamp: timestamp, authorId: author, emoji: reaction.emoji)
+            reactMessage.sender = message.sender
             if let serverID = message.openGroupServerMessageID {
-                reactionMessage.messageId = "\(serverID)"
+                reactMessage.messageId = "\(serverID)"
                 // Create a lookup between the openGroupServerMessageId and the tsMessage id for easy lookup
                 // For emoji reacts, the lookup is linking emoji react message server id to the id of the tsMessage that the emoji is reacted to
                 if let openGroup: OpenGroupV2 = storage.getV2OpenGroup(for: threadID) {
                     storage.addOpenGroupServerIdLookup(serverID, tsMessageId: tsMessage?.uniqueId, in: openGroup.room, on: openGroup.server, using: transaction)
                 }
             }
-            if let serverHash = message.serverHash { reactionMessage.messageId = serverHash }
+            if let serverHash = message.serverHash { reactMessage.messageId = serverHash }
             switch reaction.kind {
             case .react:
-                tsMessage?.addReaction(reactionMessage, transaction: transaction)
+                tsMessage?.addReaction(reactMessage, transaction: transaction)
             case .remove:
-                tsMessage?.removeReaction(reactionMessage, transaction: transaction)
+                tsMessage?.removeReaction(reactMessage, transaction: transaction)
             case .none:
                 break
             }
+            SSKEnvironment.shared.notificationsManager?.notifyUser(forReaction: reactMessage, in: thread, transaction: transaction)
             return ""
         }
         // Parse quote if needed

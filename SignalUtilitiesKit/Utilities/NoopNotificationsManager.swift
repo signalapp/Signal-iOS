@@ -13,6 +13,10 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
         owsFailDebug("")
     }
     
+    public func notifyUser(forReaction reactMessage: ReactMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
+        owsFailDebug("")
+    }
+    
     public func cancelNotification(_ identifier: String) {
         owsFailDebug("")
     }

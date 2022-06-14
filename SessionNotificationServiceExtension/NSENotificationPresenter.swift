@@ -110,19 +110,8 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         } else {
             trigger = nil
         }
-
-        let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: trigger)
-        SNLog("Add remote notification request: \(notificationContent.body)")
-        let semaphore = DispatchSemaphore(value: 0)
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                SNLog("Failed to add notification request due to error:\(error)")
-            }
-            self.notifications[identifier] = request
-            semaphore.signal()
-        }
-        semaphore.wait()
-        SNLog("Finish adding remote notification request")
+        
+        addNotifcationRequest(identifier: identifier, notificationContent: notificationContent, trigger: trigger)
     }
     
     public func notifyUser(forIncomingCall callInfoMessage: TSInfoMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
@@ -149,19 +138,11 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
             notificationContent.body = String(format: "modal_call_missed_tips_explanation".localized(), thread.name(with: transaction))
         }
         
-        // Add request
-        let identifier = UUID().uuidString
-        let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: nil)
-        SNLog("Add remote notification request: \(notificationContent.body)")
-        let semaphore = DispatchSemaphore(value: 0)
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                SNLog("Failed to add notification request due to error:\(error)")
-            }
-            semaphore.signal()
-        }
-        semaphore.wait()
-        SNLog("Finish adding remote notification request")
+        addNotifcationRequest(identifier: UUID().uuidString, notificationContent: notificationContent, trigger: nil)
+    }
+    
+    public func notifyUser(forReaction reactMessage: ReactMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
+        
     }
     
     public func cancelNotification(_ identifier: String) {
@@ -174,6 +155,20 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.removeAllPendingNotificationRequests()
         notificationCenter.removeAllDeliveredNotifications()
+    }
+    
+    private func addNotifcationRequest(identifier: String, notificationContent: UNNotificationContent, trigger: UNNotificationTrigger?) {
+        let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: nil)
+        SNLog("Add remote notification request: \(notificationContent.body)")
+        let semaphore = DispatchSemaphore(value: 0)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                SNLog("Failed to add notification request due to error:\(error)")
+            }
+            semaphore.signal()
+        }
+        semaphore.wait()
+        SNLog("Finish adding remote notification request")
     }
 }
 
