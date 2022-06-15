@@ -225,7 +225,6 @@ class AudioMessageView: ManualStackView {
                                                                              conversationStyle: conversationStyle)
         let playbackTimeLabelSize = CVText.measureLabel(config: playbackTimeLabelConfig, maxWidth: maxWidth)
 
-        let leftInset = CGSize(width: 44, height: 0)
         var bottomInnerSubviewInfos: [ManualStackSubviewInfo] = [
             playbackTimeLabelSize.asManualSubviewInfo(hasFixedSize: true),
             dotSize.asManualSubviewInfo(hasFixedSize: true)
@@ -234,11 +233,11 @@ class AudioMessageView: ManualStackView {
         // The playback controls are always rendered RTL, but the timestamps remain pinned to the
         // trailing edge of the message bubble, as such we need to re-arrange the spacing to accommodate.
         if CurrentAppContext().isRTL {
-            bottomInnerSubviewInfos.insert(leftInset.asManualSubviewInfo(hasFixedWidth: true), at: 0)
+            bottomInnerSubviewInfos.insert(CGSize.zero.asManualSubviewInfo(hasFixedSize: true), at: 0)
             bottomInnerSubviewInfos.append(.empty)
         } else {
-            bottomInnerSubviewInfos.insert(.empty, at: 0)
-            bottomInnerSubviewInfos.append(leftInset.asManualSubviewInfo(hasFixedWidth: true))
+            bottomInnerSubviewInfos.insert(CGSize(width: 44, height: 0).asManualSubviewInfo(hasFixedWidth: true), at: 0)
+            bottomInnerSubviewInfos.append(.empty)
         }
 
         let bottomInnerStackMeasurement = ManualStackView.measure(config: bottomInnerStackConfig,
