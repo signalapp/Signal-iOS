@@ -129,18 +129,16 @@ class MockConversationView: UIView {
                 chatColor: chatColor
             )
             for item in model.items {
-                func buildInteraction() -> TSInteraction {
-                    switch item {
-                    case .date:
-                        return DateHeaderInteraction(thread: self.thread,
-                                                     timestamp: NSDate.ows_millisecondTimeStamp())
-                    case .outgoing(let text):
-                        return databaseStorage.read { MockOutgoingMessage(messageBody: text, thread: self.thread, transaction: $0) }
-                    case .incoming(let text):
-                        return MockIncomingMessage(messageBody: text, thread: self.thread)
-                    }
+                let interaction: TSInteraction
+                switch item {
+                case .date:
+                    interaction = DateHeaderInteraction(thread: self.thread, timestamp: NSDate.ows_millisecondTimeStamp())
+                case .outgoing(let text):
+                    interaction = MockOutgoingMessage(messageBody: text, thread: self.thread, transaction: transaction)
+                case .incoming(let text):
+                    interaction = MockIncomingMessage(messageBody: text, thread: self.thread)
                 }
-                let interaction = buildInteraction()
+
                 guard let renderItem = CVLoader.buildStandaloneRenderItem(
                     interaction: interaction,
                     thread: self.thread,
