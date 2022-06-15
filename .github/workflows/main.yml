@@ -35,7 +35,7 @@ jobs:
           fi
 
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           # Check out submodules through GitHub instead of from scratch later.
           # THIS STEP WILL FAIL if the current Pods commit is only available in Private.
@@ -55,7 +55,7 @@ jobs:
 
       # Checkout private pods repo iff we have an access token to read private repos
       - name: Checkout Private Pods
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         # if: secrets.ACCESS_TOKEN (not supported {yet?}; see <https://github.community/t5/GitHub-Actions/jobs-lt-job-id-gt-if-does-not-work-with-env-secrets/m-p/38549>)
         if: steps.vars.outputs.HAS_ACCESS_TOKEN
         with:
@@ -73,7 +73,7 @@ jobs:
         uses: ruby/setup-ruby@v1 # Reads .ruby-version file by default
 
       - name: Cache Bundle Install
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: vendor/bundle
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
@@ -95,7 +95,7 @@ jobs:
           bundle exec fastlane scan --scheme Signal --output_types junit || formatFailures
 
       - name: Upload build logs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: Logs
@@ -109,7 +109,7 @@ jobs:
     if: github.event_name == 'pull_request'
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Fetch base commit
         run: git fetch origin --depth 1 ${{ github.base_ref }}
