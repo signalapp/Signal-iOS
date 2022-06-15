@@ -9,7 +9,6 @@ import SignalUI
 
 class StoriesViewController: OWSViewController {
     let tableView = UITableView()
-    private var presentedContextOrder: [StoryContext]?
     private var models = [StoryViewModel]()
     private var myStoryModel: MyStoryViewModel?
 
