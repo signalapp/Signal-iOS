@@ -154,6 +154,12 @@
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "先前未能開啟 Signal";
 
+/* Error description indicating that the app crashed because there was low storage space available on the device. */
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+
+/* Error title indicating that the app crashed because there was low storage space available on the device. */
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "無法還原從您的舊裝置傳送的資料。請將除錯日誌傳送至 support@signal.org 來讓我們修正問題。如果您重新安裝 Signal，您可能會遺失你的訊息紀錄。";
 
@@ -368,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "齊集氣，為 Signal 加加油";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "您的「集氣」徽章已到時限，不再在您的個人資料中看見。\n\n您可如常使用 Signal，沒有關係。假如您希望支持為您而設的科技，不妨考慮每月捐款成為延續人。";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "您的集氣徽章已到時限，不再在您的個人資料中看見。\n\n您可憑單次捐款，將您的「集氣」徽章再延續 30 天。";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "成為延續人";
@@ -1071,6 +1077,9 @@
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "人物";
+
+/* table section header for section containing stories */
+"CONVERSATION_PICKER_SECTION_STORIES" = "限時動態";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "選擇接收者";
@@ -3514,6 +3523,15 @@
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "已靜音";
 
+/* Indicates that there are no sent stories to render */
+"MY_STORIES_NO_STORIES" = "您的限時動態更新將顯示於此。";
+
+/* Title for the 'My Stories' view */
+"MY_STORIES_TITLE" = "我的限時動態";
+
+/* Name for the 'My Story' default story that sends to all the user's contacts. */
+"MY_STORY_NAME" = "我的限時動態";
+
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "最近將其個人資料名稱 %1$@ 改為 %2$@。";
 
@@ -4585,11 +4603,14 @@
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "已讀取";
 
+/* Error message indicating that a user can't be added to a group until they upgrade their app. */
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "無法新增此用戶到群組直至他們更新 Signal。";
+
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "無法選擇使用者。";
 
-/* Error message indicating that a user can't be selected until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT" = "無法新增此用戶到群組直至他們更新 Signal。";
+/* Error message indicating that a user can't receive gifts. */
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "我忘記了 PIN 碼。";
@@ -5885,10 +5906,22 @@
 "STORIES_HIDE_STORY_ACTION" = "隱藏限時動態";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "目前沒有可顯示的近況更新。";
+"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "未有回覆";
+
+/* Label for 'new private story' button in story settings view. */
+"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+
+/* Footer for the 'Private Stories' section of the stories settings */
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "個人限時動態僅限您新增的人觀看。只有您見到限時動態名稱。";
+
+/* Header for the 'Private Stories' section of the stories settings */
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+
+/* Title for the story privacy settings view */
+"STORIES_SETTINGS_TITLE" = "Story Privacy";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "分享";
@@ -5901,6 +5934,9 @@
 
 /* Text indicating a story that was replied to is no longer available. */
 "STORY_NO_LONGER_AVAILABLE" = "不再可用";
+
+/* Button to access the story privacy settings menu */
+"STORY_PRIVACY_SETTINGS" = "私隱";
 
 /* Button for replying to a story with a single existing reply. */
 "STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> 個回覆";

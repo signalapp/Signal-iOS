@@ -1,9 +1,9 @@
 NSAppleMusicUsageDescription = "Signal은 Apple Music을 이용하여 미디어 첨부 파일을 재생합니다.";
 NSCameraUsageDescription = "Signal은 카메라를 이용하여 사진을 찍거나 영상 통화를 합니다.";
-NSContactsUsageDescription = "Signal은 내가 이미 알고 있는 이용자를 찾기 위해 연락처를 이용합니다. 연락처는 서버에 저장되지 않습니다.";
+NSContactsUsageDescription = "Signal은 연락처를 사용해 이미 알고 있는 사용자를 찾습니다. 연락처는 서버에 저장되지 않습니다.";
 NSFaceIDUsageDescription = "Signal 화면 잠금은 Face ID를 사용합니다.";
 NSLocationWhenInUseUsageDescription = "Signal에서 현재 위치를 공유하려면 내 위치에 접근해야 합니다.";
 NSMicrophoneUsageDescription = "Signal은 마이크를 이용하여 전화 및 음성 메시지를 녹음합니다.";
 NSPhotoLibraryAddUsageDescription = "Signal이 라이브러리에 사진을 저장하게 됩니다.";
 NSPhotoLibraryUsageDescription = "Signal이 보낼 사진을 라이브러리에서 선택하도록 합니다.";
-NSLocalNetworkUsageDescription = "Signal은 새 휴대전화로 계정을 이동시키기 위해 로컬 네트워크를 사용합니다. 새 기기로 전송을 시작하도록 명시적으로 선택하지 않는 이상 이 기능은 사용되지 않습니다.";
+NSLocalNetworkUsageDescription = "Signal은 로컬 네트워크를 사용하여 새 휴대전화로 사용자 계정을 전송합니다. 사용자가 명시적으로 새 기기로 전송 시작을 선택하지 않는 한 이 기능은 사용되지 않습니다.";

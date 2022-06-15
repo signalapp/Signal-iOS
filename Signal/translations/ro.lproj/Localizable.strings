@@ -154,6 +154,12 @@
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Signal nu a putut fi deschis";
 
+/* Error description indicating that the app crashed because there was low storage space available on the device. */
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+
+/* Error title indicating that the app crashed because there was low storage space available on the device. */
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Datele transferate de pe dispozitivul tău vechi nu au putut fi restabilite. Te rugăm să trimiți un jurnal de depanare la support@signal.org pentru a putea rezolva această problemă. Dacă reinstalezi Signal, istoricul mesajelor tale poate fi pierdut.";
 
@@ -368,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Dă un Boost la Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Insigna Boost a expirat și nu mai este vizibilă pe profilul tău.\n\nPoți continua să folosești Signal, dar pentru a sprijini tehnologia creată pentru tine, ia în considerare posibilitatea de a deveni un susținător făcând o donație lunară.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Insigna Boost a expirat și nu mai este vizibilă pe profilul tău.\n\nPoți reactiva insigna ta Boost pentru încă 30 de zile cu o contribuție unică.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Fii un Susținător";
@@ -410,7 +416,7 @@
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Alege destinatarul";
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirmare cadou";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Trimite o insignă cadou";
@@ -419,10 +425,10 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Donație unică";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Plata nu a putut fi procesată și nu ai fost taxat. Te rugăm să încerci din nou.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Plata a eșuat";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Durează %@";
@@ -1071,6 +1077,9 @@
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Persoane";
+
+/* table section header for section containing stories */
+"CONVERSATION_PICKER_SECTION_STORIES" = "Povești";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Alege destinatari";
@@ -2987,10 +2996,10 @@
 "IN_CALL_TERMINATED" = "Apelul a fost terminat.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Conversațiile pe silențios arhivate vor rămâne arhivate atunci când sosește un mesaj nou.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Conversațiile arhivate se vor muta în Inbox atunci când sosește un mesaj nou.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Nicio conversație încă.\nÎncepe prin a trimite un mesaj unui prieten.";
@@ -3513,6 +3522,15 @@
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Fără sunet";
+
+/* Indicates that there are no sent stories to render */
+"MY_STORIES_NO_STORIES" = "Actualizări ale poveștii tale vor apărea aici.";
+
+/* Title for the 'My Stories' view */
+"MY_STORIES_TITLE" = "Poveștile mele";
+
+/* Name for the 'My Story' default story that sends to all the user's contacts. */
+"MY_STORY_NAME" = "Povestea mea";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recent și-au schimbat numele profilului din %1$@ în %2$@.";
@@ -4585,11 +4603,14 @@
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Citit";
 
+/* Error message indicating that a user can't be added to a group until they upgrade their app. */
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Acest utilizator nu poate fi adăugat la grup până când nu își actualizează aplicația Signal.";
+
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Utilizatorul nu poate fi selectat.";
 
-/* Error message indicating that a user can't be selected until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT" = "Acest utilizator nu poate fi adăugat la grup până când nu își actualizează aplicația Signal.";
+/* Error message indicating that a user can't receive gifts. */
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Mi-am uitat PIN-ul.";
@@ -5141,10 +5162,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Sunet mesaj";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Conversațiile pe silențios arhivate vor rămâne arhivate atunci când sosește un mesaj nou.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Păstrează arhivate conversațiile silențios";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Termeni și politica de confidențialitate";
@@ -5885,10 +5906,22 @@
 "STORIES_HIDE_STORY_ACTION" = "Ascunde povestea";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "Nu există actualizări recente de afișat în acest moment.";
+"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Niciun răspuns încă";
+
+/* Label for 'new private story' button in story settings view. */
+"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+
+/* Footer for the 'Private Stories' section of the stories settings */
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Poveștile private pot fi văzute doar de persoanele pe care le-ai adăugat acestora. Numai tu poți vedea numele poveștii.";
+
+/* Header for the 'Private Stories' section of the stories settings */
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+
+/* Title for the story privacy settings view */
+"STORIES_SETTINGS_TITLE" = "Story Privacy";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Distribuie";
@@ -5901,6 +5934,9 @@
 
 /* Text indicating a story that was replied to is no longer available. */
 "STORY_NO_LONGER_AVAILABLE" = "Nu mai este disponibilă";
+
+/* Button to access the story privacy settings menu */
+"STORY_PRIVACY_SETTINGS" = "Confidențialitate";
 
 /* Button for replying to a story with a single existing reply. */
 "STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> răspuns";

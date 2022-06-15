@@ -18,6 +18,22 @@
 			<string>Hangüzenet %d másodperc</string>
 		</dict>
 	</dict>
+	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Tag hozzáadása</string>
+			<key>other</key>
+			<string>Tagok hozzáadása</string>
+		</dict>
+	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -48,22 +64,6 @@
 			<string>Új tag hozzáadása</string>
 			<key>other</key>
 			<string>Új tagok hozzáadása</string>
-		</dict>
-	</dict>
-	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Tag hozzáadása</string>
-			<key>other</key>
-			<string>Tagok hozzáadása</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -301,6 +301,70 @@
 			<string>%d üzenet küldése</string>
 		</dict>
 	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ez a csoport sajnos nem hozható létre, mivel egy tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ő is frissítette a Signalt, vagy ha eltávolítod őt a felvételre kerülő tagok közül. %2$@</string>
+			<key>other</key>
+			<string>Ez a csoport sajnos nem hozható létre, mivel %d tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ők is frissítették a Signalt, vagy ha eltávolítod őket a felvételre kerülő tagok közül. %2$@</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ez a csoport sajnos nem hozható létre, mivel egy tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ő is frissítette a Signalt, vagy ha eltávolítod őt a felvételre kerülő tagok közül.</string>
+			<key>other</key>
+			<string>Ez a csoport sajnos nem hozható létre, mivel %d tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ők is frissítették a Signalt, vagy ha eltávolítod őket a felvételre kerülő tagok közül.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Egy tagot nem sikerült az új típusú csoporthoz újra hozzáadni. Hozzá akarod adni most?</string>
+			<key>other</key>
+			<string>%d tagot nem sikerült az új típusú csoporthoz újra hozzáadni. Hozzá akarod őket adni most?</string>
+		</dict>
+	</dict>
+	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>A Signal csoportok 1 vagy kevesebb taggal működnek hatékonyan. Ennél több tag esetén lassulások tapasztalhatóak az üzenetek küldése és fogadása során.</string>
+			<key>other</key>
+			<string>A Signal csoportok %d vagy kevesebb taggal működnek hatékonyan. Ennél több tag esetén lassulások tapasztalhatóak az üzenetek küldése és fogadása során.</string>
+		</dict>
+	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -397,38 +461,6 @@
 			<string>%d meghívó elküldve</string>
 		</dict>
 	</dict>
-	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 tag</string>
-			<key>other</key>
-			<string>%d tag</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 tag</string>
-			<key>other</key>
-			<string>%d tag</string>
-		</dict>
-	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -477,7 +509,7 @@
 			<string>%d csoporttag azonos névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -488,15 +520,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 személy csoportmeghívása visszavonásra került.</string>
+			<string>1 tag</string>
 			<key>other</key>
-			<string>%d személy csoportmeghívása visszavonásra került.</string>
+			<string>%d tag</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
+		<string>%#@text@</string>
 		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -504,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string> %2$@ visszavonta 1 személy csoportmeghívását.</string>
+			<string>1 tag</string>
 			<key>other</key>
-			<string> %2$@ visszavonta %d személy csoportmeghívását.</string>
+			<string>%d tag</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -541,6 +573,54 @@
 			<string>%2$@ meghívott %d személyt a csoportba.</string>
 		</dict>
 	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 személy csoportmeghívása visszavonásra került.</string>
+			<key>other</key>
+			<string>%d személy csoportmeghívása visszavonásra került.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string> %2$@ visszavonta 1 személy csoportmeghívását.</string>
+			<key>other</key>
+			<string> %2$@ visszavonta %d személy csoportmeghívását.</string>
+		</dict>
+	</dict>
+	<key>GROUP_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Group Story · 1 Viewer</string>
+			<key>other</key>
+			<string>Group Story · %d Viewers</string>
+		</dict>
+	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -571,70 +651,6 @@
 			<string>Egy tagot nem lehetett közvetlenül az új típusú csoporthoz adni, ezért meghívót kapott.</string>
 			<key>other</key>
 			<string>%d tagot nem lehetett közvetlenül az új típusú csoporthoz adni, ezért meghívót kaptak.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Ez a csoport sajnos nem hozható létre, mivel egy tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ő is frissítette a Signalt, vagy ha eltávolítod őt a felvételre kerülő tagok közül. %2$@</string>
-			<key>other</key>
-			<string>Ez a csoport sajnos nem hozható létre, mivel %d tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ők is frissítették a Signalt, vagy ha eltávolítod őket a felvételre kerülő tagok közül. %2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Ez a csoport sajnos nem hozható létre, mivel egy tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ő is frissítette a Signalt, vagy ha eltávolítod őt a felvételre kerülő tagok közül.</string>
-			<key>other</key>
-			<string>Ez a csoport sajnos nem hozható létre, mivel %d tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ők is frissítették a Signalt, vagy ha eltávolítod őket a felvételre kerülő tagok közül.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Egy tagot nem sikerült az új típusú csoporthoz újra hozzáadni. Hozzá akarod adni most?</string>
-			<key>other</key>
-			<string>%d tagot nem sikerült az új típusú csoporthoz újra hozzáadni. Hozzá akarod őket adni most?</string>
-		</dict>
-	</dict>
-	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>A Signal csoportok 1 vagy kevesebb taggal működnek hatékonyan. Ennél több tag esetén lassulások tapasztalhatóak az üzenetek küldése és fogadása során.</string>
-			<key>other</key>
-			<string>A Signal csoportok %d vagy kevesebb taggal működnek hatékonyan. Ennél több tag esetén lassulások tapasztalhatóak az üzenetek küldése és fogadása során.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -717,6 +733,22 @@
 			<string>%d elem</string>
 		</dict>
 	</dict>
+	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>A csoport 1 tagja a tiltólistádon van</string>
+			<key>other</key>
+			<string>A csoport %d tagja a tiltólistádon van</string>
+		</dict>
+	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -733,20 +765,20 @@
 			<string>%d kiválasztva</string>
 		</dict>
 	</dict>
-	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
+	<key>MY_STORY_VIEWERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
+		<string>%#@text@</string>
+		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A csoport 1 tagja a tiltólistádon van</string>
+			<string>1 Viewer</string>
 			<key>other</key>
-			<string>A csoport %d tagja a tiltólistádon van</string>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -829,22 +861,6 @@
 			<string>%d érvénytelen meghívó visszavonása</string>
 		</dict>
 	</dict>
-	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Visszavonod a "%2$@" által kiküldött meghívót?</string>
-			<key>other</key>
-			<string>Visszavonod a "%2$@" által kiküldött %d meghívót?</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -861,6 +877,22 @@
 			<string>Meghívók visszavonása</string>
 		</dict>
 	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Visszavonod a "%2$@" által kiküldött meghívót?</string>
+			<key>other</key>
+			<string>Visszavonod a "%2$@" által kiküldött %d meghívót?</string>
+		</dict>
+	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -875,6 +907,22 @@
 			<string>Később újra emlékeztetünk. PIN kódod létrehozása 1 nap múlva kötelezővé válik.</string>
 			<key>other</key>
 			<string>Később újra emlékeztetünk. PIN kódod létrehozása %d nap múlva kötelezővé válik.</string>
+		</dict>
+	</dict>
+	<key>PRIVATE_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Private Story · 1 Viewer</string>
+			<key>other</key>
+			<string>Private Story · %d Viewers</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -907,6 +955,22 @@
 			<string>1 próbálkozásod maradt. Ha ezt is elrontod, a fiókod zárolásra kerül, majd 7 inaktív nap után a fiókod mindenestül törlésre kerül, ami után már újraregisztrálhatsz - immár PIN kód nélkül.</string>
 			<key>other</key>
 			<string>%d próbálkozásod maradt. Ha mindet elrontod, a fiókod zárolásra kerül, majd 7 inaktív nap után a fiókod mindenestül törlésre kerül, ami után már újraregisztrálhatsz - immár PIN kód nélkül.</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 view</string>
+			<key>other</key>
+			<string>%d views</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

@@ -68,10 +68,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>This custom color is used in 1 chat. Do you want to delete it?</string>
 			<key>other</key>
-			<string>This custom color is used in %d chats. Do you want to delete it for all chats?</string>
+			<string>このカスタムの色は%d件のチャットで使用されています。すべてのチャットで削除しますか？</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -84,10 +82,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>This color is used in 1 chat. Do you want to save changes for all chats?</string>
 			<key>other</key>
-			<string>This color is used in %d chats. Do you want to save changes for all chats?</string>
+			<string>この色は%d件のチャットで使用されています。すべてのチャットの色を変更しますか？</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -100,10 +96,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>Delete Chat?</string>
 			<key>other</key>
-			<string>Delete %d Chats?</string>
+			<string>%d件のチャットを削除しますか？</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -131,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d件以上はチャットを選択できません。</string>
+			<string>%d件より多くのチャットを選択できません。</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -543,6 +537,22 @@
 			<string>%2$@が%d人のユーザに対するグループへの招待を取り消しました。</string>
 		</dict>
 	</dict>
+	<key>GROUP_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Group Story · 1 Viewer</string>
+			<key>other</key>
+			<string>Group Story · %d Viewers</string>
+		</dict>
+	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -675,6 +685,22 @@
 			<string>%d件選択済み</string>
 		</dict>
 	</dict>
+	<key>MY_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Viewer</string>
+			<key>other</key>
+			<string>%d Viewers</string>
+		</dict>
+	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -791,6 +817,22 @@
 			<string>We’ll remind you later. Creating a PIN will become mandatory in %d days.</string>
 		</dict>
 	</dict>
+	<key>PRIVATE_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Private Story · 1 Viewer</string>
+			<key>other</key>
+			<string>Private Story · %d Viewers</string>
+		</dict>
+	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -819,6 +861,22 @@
 			<string>d</string>
 			<key>other</key>
 			<string>あと%d回、PINを入力することができます。PINが一致しない場合、アカウントはロックされます。7日後に、PINなしで再登録ができるようになりますが、アカウントはリセットされ、すべてのコンテンツが削除されます。</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 view</string>
+			<key>other</key>
+			<string>%d views</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

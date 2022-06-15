@@ -1,8 +1,8 @@
 NSAppleMusicUsageDescription = "Signal heeft ‘Apple Music’ nodig om mediabijlagen af te kunnen spelen.";
-NSCameraUsageDescription = "Signal gebruikt je camera om foto's te maken en om video-gesprekken mogelijk te maken.";
+NSCameraUsageDescription = "Signal gebruikt je camera om foto's te maken en om video-oproepen mogelijk te maken.";
 NSContactsUsageDescription = "Signal gebruikt je contactenlijst om personen te vinden die je kent. Je contacten worden niet opgeslagen op de server.";
 NSFaceIDUsageDescription = "Signals appvergrendeling maakt gebruik van ‘Face ID’.";
-NSLocationWhenInUseUsageDescription = "Signal heeft toegang tot je locatie nodig zodat je je huidige locatie kan delen.";
+NSLocationWhenInUseUsageDescription = "Signal heeft toegang tot je locatie nodig zodat je je huidige locatie kunt delen.";
 NSMicrophoneUsageDescription = "Signal heeft toestemming nodig om je microfoon te gebruiken, om audio- en video-oproepen te kunnen maken en om spraakberichten op te kunnen nemen.";
 NSPhotoLibraryAddUsageDescription = "Signal zal foto's opslaan naar je fotobibliotheek.";
 NSPhotoLibraryUsageDescription = "Signal laat je kiezen welke foto's uit je fotobibliotheek je wilt verzenden.";

@@ -154,6 +154,12 @@
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "لقد تعذر فتح Signal";
 
+/* Error description indicating that the app crashed because there was low storage space available on the device. */
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+
+/* Error title indicating that the app crashed because there was low storage space available on the device. */
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "تعذَّرت استعادة البيانات المنقولة من جهازك القديم. يُرجى إرسال سِجل التصحيح إلى support@signal.org حتى نتمكن من مُساعَفتك حول هذه المُشكلة. إذا قمت بإعادة تثبيت Signal  قد تُفقًد محفوظات رسائلك.";
 
@@ -368,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "دعم Signal ";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "لقد انتهت صلاحية شارة التعزيز، ولم تعد ظاهرة في ملفك الشخصي.\n\nيمكنك الاستمرار في استخدام Signal، لكن لدعم التكنولوجيا التي بُنيَت لأجلك، نطلب منك الانضمام لفئة الداعمين، وذلك عبر التبرع لنا شهريا.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "انتهت صلاحية شارة التعزيز، ولم تعد ظاهرة في ملفك الشخصي.\n\nيمكنك إعادة تنشيطها لمدة 30 يومًا بالمساهمة لمرة واحدة.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "كن من الداعمين";
@@ -1071,6 +1077,9 @@
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "الأشخاص";
+
+/* table section header for section containing stories */
+"CONVERSATION_PICKER_SECTION_STORIES" = "القِصَص";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "اختر المستلمين";
@@ -3514,6 +3523,15 @@
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "مكتوم";
 
+/* Indicates that there are no sent stories to render */
+"MY_STORIES_NO_STORIES" = "سوف يظهر تحديث قصتك هنا.";
+
+/* Title for the 'My Stories' view */
+"MY_STORIES_TITLE" = "قصصي";
+
+/* Name for the 'My Story' default story that sends to all the user's contacts. */
+"MY_STORY_NAME" = "قصتي";
+
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "مُؤخَّرًا غَيَّرَ اِسمَ مَلَفِّهِ الشَّخصِيِ مِن %1$@ إلى %2$@.";
 
@@ -4585,11 +4603,14 @@
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "مقروء";
 
+/* Error message indicating that a user can't be added to a group until they upgrade their app. */
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "لا يُمكن إضافة هذا المستخدم إلى المجموعة حتى يُحدِّث Signal.";
+
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "يتعذّر تحديد المُستخدم.";
 
-/* Error message indicating that a user can't be selected until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT" = "لا يُمكن إضافة هذا المستخدم إلى المجموعة حتى يُحدِّث Signal.";
+/* Error message indicating that a user can't receive gifts. */
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "لقد نسيت رقمي التعريفي الشخصي.";
@@ -5885,10 +5906,22 @@
 "STORIES_HIDE_STORY_ACTION" = "إخفاء القصة";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "لا توجد تحديثات أخيرة للعرض حاليا.";
+"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "لا جواب حاليا";
+
+/* Label for 'new private story' button in story settings view. */
+"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+
+/* Footer for the 'Private Stories' section of the stories settings */
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+
+/* Header for the 'Private Stories' section of the stories settings */
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+
+/* Title for the story privacy settings view */
+"STORIES_SETTINGS_TITLE" = "Story Privacy";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "المُشاركة";
@@ -5901,6 +5934,9 @@
 
 /* Text indicating a story that was replied to is no longer available. */
 "STORY_NO_LONGER_AVAILABLE" = "لم تعد متاحة";
+
+/* Button to access the story privacy settings menu */
+"STORY_PRIVACY_SETTINGS" = "الخصوصية";
 
 /* Button for replying to a story with a single existing reply. */
 "STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> رد";
