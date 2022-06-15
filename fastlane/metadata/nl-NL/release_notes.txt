@@ -1,5 +1,3 @@
-• In certain conditions, your connection to the Signal server could get wonky. We made some improvements here to keep you connected.
-• We fixed a crash in the "All Media" view. Keep admiring those beautiful photos and videos.
-• We fixed a bug that might cause users to get stuck proving that they're not robots. We believe you! You're not a robot!
-• We fixed a bug that could cause errors in Note to Self if you had linked devices.
-• Calls should now use slightly less bandwidth thanks to some minor tweaks we've made.
+• Made some improvements to voice messages, both when recording your own and listening to someone else's. There are some extra fixes for users on right-to-left languages
+• Sending messages to large groups should now be faster.
+• Verschillende foutoplossingen en prestatieverbeteringen.
