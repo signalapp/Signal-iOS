@@ -21,6 +21,7 @@ public extension OWSRequestFactory {
     static let textSecureProfileAvatarFormAPI  = "v1/profile/form/avatar"
     static let textSecure2FAAPI  = "v1/accounts/pin"
     static let textSecureRegistrationLockV2API  = "v1/accounts/registration_lock"
+    static let textSecureBoostCreatePaymentIntent = "v1/subscription/boost/create"
     static let textSecureGiftBadgePricesAPI = "v1/subscription/boost/amounts/gift"
 
     static let textSecureHTTPTimeOut: TimeInterval = 10
@@ -63,6 +64,16 @@ public extension OWSRequestFactory {
         return TSRequest(url: url,
                          method: HTTPMethod.delete.methodName,
                          parameters: [:])
+    }
+
+    static func boostCreatePaymentIntent(withAmount amount: UInt,
+                                         inCurrencyCode currencyCode: Currency.Code) -> TSRequest {
+        let request = TSRequest(url: URL(string: textSecureBoostCreatePaymentIntent)!,
+                                method: HTTPMethod.post.methodName,
+                                parameters: ["currency": currencyCode.lowercased(),
+                                             "amount": amount])
+        request.shouldHaveAuthorizationHeaders = false
+        return request
     }
 
     static func giftBadgePricesRequest() -> TSRequest {

@@ -1045,17 +1045,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return request;
 }
 
-+ (TSRequest *)boostCreatePaymentIntentWithAmount:(NSUInteger)amount
-                                   inCurrencyCode:(NSString *)currencyCode
-{
-    TSRequest *request =
-        [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/boost/create"]
-                           method:@"POST"
-                       parameters:@{ @"currency" : currencyCode.lowercaseString, @"amount" : @(amount) }];
-    request.shouldHaveAuthorizationHeaders = NO;
-    return request;
-}
-
 + (TSRequest *)boostReceiptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
                                                andRequest:(NSString *)base64ReceiptCredentialRequest
 {

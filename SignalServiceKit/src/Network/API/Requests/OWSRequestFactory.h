@@ -218,7 +218,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                                              request:(NSString *)base64ReceiptCredentialRequest;
 + (TSRequest *)subscriptionRedeemReceiptCredential:(NSString *)base64ReceiptCredentialPresentation;
 + (TSRequest *)boostSuggestedAmountsRequest;
-+ (TSRequest *)boostCreatePaymentIntentWithAmount:(NSUInteger)amount inCurrencyCode:(NSString *)currencyCode;
 + (TSRequest *)boostReceiptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
                                                andRequest:(NSString *)base64ReceiptCredentialRequest;
 + (TSRequest *)boostBadgesRequest;

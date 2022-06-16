@@ -173,9 +173,9 @@ fileprivate extension Stripe {
                 // The description is never translated as it's populated into an
                 // english only receipt by Stripe.
                 let request = OWSRequestFactory.boostCreatePaymentIntent(
-                        withAmount: integralAmount(amount, in: currencyCode),
-                        inCurrencyCode: currencyCode
-                    )
+                    withAmount: integralAmount(amount, in: currencyCode),
+                    inCurrencyCode: currencyCode
+                )
 
                 return networkManager.makePromise(request: request)
             }.map(on: .sharedUserInitiated) { response in
