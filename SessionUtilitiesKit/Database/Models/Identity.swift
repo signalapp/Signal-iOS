@@ -27,6 +27,16 @@ public struct Identity: Codable, Identifiable, FetchableRecord, PersistableRecor
     
     let variant: Variant
     let data: Data
+    
+    // MARK: - Initialization
+    
+    public init(
+        variant: Variant,
+        data: Data
+    ) {
+        self.variant = variant
+        self.data = data
+    }
 }
 
 // MARK: - Convenience

@@ -4,6 +4,7 @@ import Foundation
 
 import Quick
 import Nimble
+import SessionUtilitiesKit
 
 @testable import SessionMessagingKit
 

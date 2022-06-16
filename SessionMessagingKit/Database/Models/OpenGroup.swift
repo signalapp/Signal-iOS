@@ -176,6 +176,27 @@ public extension OpenGroup {
     }
 }
 
+extension OpenGroup: CustomStringConvertible, CustomDebugStringConvertible {
+    public var description: String { "\(name) (Server: \(server), Room: \(roomToken))" }
+    public var debugDescription: String {
+        [
+            "OpenGroup(server: \"\(server)\"",
+            "roomToken: \"\(roomToken)\"",
+            "id: \"\(id)\"",
+            "publicKey: \"\(publicKey)\"",
+            "isActive: \"\(isActive)\"",
+            "name: \"\(name)\"",
+            "roomDescription: \(roomDescription.map { "\"\($0)\"" } ?? "null")",
+            "imageId: \(imageId ?? "null")",
+            "userCount: \(userCount)",
+            "infoUpdates: \(infoUpdates)",
+            "sequenceNumber: \(sequenceNumber)",
+            "inboxLatestMessageId: \(inboxLatestMessageId)",
+            "outboxLatestMessageId: \(outboxLatestMessageId))"
+        ].joined(separator: ", ")
+    }
+}
+
 // MARK: - Objective-C Support
 
 // TODO: Remove this when possible

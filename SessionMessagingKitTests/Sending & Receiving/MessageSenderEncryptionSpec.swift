@@ -1,7 +1,9 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import Sodium
+import SessionUtilitiesKit
 
 import Quick
 import Nimble
@@ -12,7 +14,7 @@ class MessageSenderEncryptionSpec: QuickSpec {
     // MARK: - Spec
 
     override func spec() {
-        var mockStorage: MockStorage!
+        var mockStorage: GRDBStorage!
         var mockBox: MockBox!
         var mockSign: MockSign!
         var mockNonce24Generator: MockNonce24Generator!
@@ -20,7 +22,7 @@ class MessageSenderEncryptionSpec: QuickSpec {
         
         describe("a MessageSender") {
             beforeEach {
-                mockStorage = MockStorage()
+                mockStorage = GRDBStorage(customWriter: DatabaseQueue())
                 mockBox = MockBox()
                 mockSign = MockSign()
                 mockNonce24Generator = MockNonce24Generator()
@@ -32,13 +34,10 @@ class MessageSenderEncryptionSpec: QuickSpec {
                     nonceGenerator24: mockNonce24Generator
                 )
                 
-                mockStorage.when { $0.getUserED25519KeyPair() }
-                    .thenReturn(
-                        Box.KeyPair(
-                            publicKey: Data(hex: TestConstants.edPublicKey).bytes,
-                            secretKey: Data(hex: TestConstants.edSecretKey).bytes
-                        )
-                    )
+                mockStorage.write { db in
+                    try Identity(variant: .ed25519PublicKey, data: Data(hex: TestConstants.edPublicKey)).insert(db)
+                    try Identity(variant: .ed25519SecretKey, data: Data(hex: TestConstants.edSecretKey)).insert(db)
+                }
                 mockNonce24Generator
                     .when { $0.nonce() }
                     .thenReturn(Data(base64Encoded: "pbTUizreT0sqJ2R2LloseQDyVL2RYztD")!.bytes)
@@ -73,7 +72,10 @@ class MessageSenderEncryptionSpec: QuickSpec {
                 }
                 
                 it("throws an error if there is no ed25519 keyPair") {
-                    mockStorage.when { $0.getUserED25519KeyPair() }.thenReturn(nil)
+                    mockStorage.write { db in
+                        _ = try Identity.filter(id: .ed25519PublicKey).deleteAll(db)
+                        _ = try Identity.filter(id: .ed25519SecretKey).deleteAll(db)
+                    }
                     
                     expect {
                         try MessageSender.encryptWithSessionProtocol(
@@ -82,7 +84,7 @@ class MessageSenderEncryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageSender.Error.noUserED25519KeyPair))
+                    .to(throwError(MessageSenderError.noUserED25519KeyPair))
                 }
                 
                 it("throws an error if the signature generation fails") {
@@ -95,7 +97,7 @@ class MessageSenderEncryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageSender.Error.signingFailed))
+                    .to(throwError(MessageSenderError.signingFailed))
                 }
                 
                 it("throws an error if the encryption fails") {
@@ -108,7 +110,7 @@ class MessageSenderEncryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageSender.Error.encryptionFailed))
+                    .to(throwError(MessageSenderError.encryptionFailed))
                 }
             }
             
@@ -163,11 +165,14 @@ class MessageSenderEncryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageSender.Error.signingFailed))
+                    .to(throwError(MessageSenderError.signingFailed))
                 }
                 
                 it("throws an error if there is no ed25519 keyPair") {
-                    mockStorage.when { $0.getUserED25519KeyPair() }.thenReturn(nil)
+                    mockStorage.write { db in
+                        _ = try Identity.filter(id: .ed25519PublicKey).deleteAll(db)
+                        _ = try Identity.filter(id: .ed25519SecretKey).deleteAll(db)
+                    }
                     
                     expect {
                         try MessageSender.encryptWithSessionBlindingProtocol(
@@ -177,7 +182,7 @@ class MessageSenderEncryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageSender.Error.noUserED25519KeyPair))
+                    .to(throwError(MessageSenderError.noUserED25519KeyPair))
                 }
                 
                 it("throws an error if it fails to generate a blinded keyPair") {
@@ -203,7 +208,7 @@ class MessageSenderEncryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageSender.Error.signingFailed))
+                    .to(throwError(MessageSenderError.signingFailed))
                 }
                 
                 it("throws an error if it fails to generate an encryption key") {
@@ -245,7 +250,7 @@ class MessageSenderEncryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageSender.Error.signingFailed))
+                    .to(throwError(MessageSenderError.signingFailed))
                 }
                 
                 it("throws an error if it fails to encrypt") {
@@ -264,7 +269,7 @@ class MessageSenderEncryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageSender.Error.encryptionFailed))
+                    .to(throwError(MessageSenderError.encryptionFailed))
                 }
             }
         }

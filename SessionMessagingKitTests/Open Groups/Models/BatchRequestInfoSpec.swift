@@ -3,6 +3,7 @@
 import Foundation
 import PromiseKit
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 import Quick
 import Nimble

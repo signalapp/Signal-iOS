@@ -3,6 +3,7 @@
 import Foundation
 import PromiseKit
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 @testable import SessionMessagingKit
 
@@ -16,7 +17,7 @@ class TestOnionRequestAPI: OnionRequestAPIType {
         let body: Data?
         
         let server: String
-        let version: OnionRequestAPI.Version
+        let version: OnionRequestAPIVersion
         let publicKey: String?
     }
     class ResponseInfo: OnionRequestResponseInfoType {
@@ -33,7 +34,7 @@ class TestOnionRequestAPI: OnionRequestAPIType {
     
     class var mockResponse: Data? { return nil }
     
-    static func sendOnionRequest(_ request: URLRequest, to server: String, using version: OnionRequestAPI.Version, with x25519PublicKey: String) -> Promise<(OnionRequestResponseInfoType, Data?)> {
+    static func sendOnionRequest(_ request: URLRequest, to server: String, using version: OnionRequestAPIVersion, with x25519PublicKey: String) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         let responseInfo: ResponseInfo = ResponseInfo(
             requestData: RequestData(
                 urlString: request.url?.absoluteString,
@@ -53,7 +54,7 @@ class TestOnionRequestAPI: OnionRequestAPIType {
         return Promise.value((responseInfo, mockResponse))
     }
     
-    static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, using version: OnionRequestAPI.Version, associatedWith publicKey: String?) -> Promise<Data> {
+    static func sendOnionRequest(to snode: Snode, invoking method: SnodeAPIEndpoint, with parameters: JSON, using version: OnionRequestAPIVersion, associatedWith publicKey: String?) -> Promise<Data> {
         return Promise.value(mockResponse!)
     }
 }

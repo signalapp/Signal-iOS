@@ -16,42 +16,21 @@ class OpenGroupSpec: QuickSpec {
                 it("generates the id") {
                     let openGroup: OpenGroup = OpenGroup(
                         server: "server",
-                        room: "room",
+                        roomToken: "room",
                         publicKey: "1234",
+                        isActive: true,
                         name: "name",
-                        groupDescription: nil,
-                        imageID: nil,
-                        infoUpdates: 0
+                        roomDescription: nil,
+                        imageId: nil,
+                        imageData: nil,
+                        userCount: 0,
+                        infoUpdates: 0,
+                        sequenceNumber: 0,
+                        inboxLatestMessageId: 0,
+                        outboxLatestMessageId: 0
                     )
                     
                     expect(openGroup.id).to(equal("server.room"))
-                }
-            }
-            
-            context("when NSCoding") {
-                // Note: Unit testing NSCoder is horrible so we won't do it properly - wait until we refactor it to Codable
-                it("successfully encodes and decodes") {
-                    let openGroupToEncode: OpenGroup = OpenGroup(
-                        server: "server",
-                        room: "room",
-                        publicKey: "1234",
-                        name: "name",
-                        groupDescription: "desc",
-                        imageID: "image",
-                        infoUpdates: 1
-                    )
-                    let encodedData: Data = try! NSKeyedArchiver.archivedData(withRootObject: openGroupToEncode, requiringSecureCoding: false)
-                    let openGroup: OpenGroup? = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encodedData) as? OpenGroup
-                    
-                    expect(openGroup).toNot(beNil())
-                    expect(openGroup?.id).to(equal("server.room"))
-                    expect(openGroup?.server).to(equal("server"))
-                    expect(openGroup?.room).to(equal("room"))
-                    expect(openGroup?.publicKey).to(equal("1234"))
-                    expect(openGroup?.name).to(equal("name"))
-                    expect(openGroup?.groupDescription).to(equal("desc"))
-                    expect(openGroup?.imageID).to(equal("image"))
-                    expect(openGroup?.infoUpdates).to(equal(1))
                 }
             }
             
@@ -59,12 +38,18 @@ class OpenGroupSpec: QuickSpec {
                 it("includes relevant information") {
                     let openGroup: OpenGroup = OpenGroup(
                         server: "server",
-                        room: "room",
+                        roomToken: "room",
                         publicKey: "1234",
+                        isActive: true,
                         name: "name",
-                        groupDescription: nil,
-                        imageID: nil,
-                        infoUpdates: 0
+                        roomDescription: nil,
+                        imageId: nil,
+                        imageData: nil,
+                        userCount: 0,
+                        infoUpdates: 0,
+                        sequenceNumber: 0,
+                        inboxLatestMessageId: 0,
+                        outboxLatestMessageId: 0
                     )
                     
                     expect(openGroup.description)
@@ -76,16 +61,22 @@ class OpenGroupSpec: QuickSpec {
                 it("includes relevant information") {
                     let openGroup: OpenGroup = OpenGroup(
                         server: "server",
-                        room: "room",
+                        roomToken: "room",
                         publicKey: "1234",
+                        isActive: true,
                         name: "name",
-                        groupDescription: nil,
-                        imageID: nil,
-                        infoUpdates: 0
+                        roomDescription: nil,
+                        imageId: nil,
+                        imageData: nil,
+                        userCount: 0,
+                        infoUpdates: 0,
+                        sequenceNumber: 0,
+                        inboxLatestMessageId: 0,
+                        outboxLatestMessageId: 0
                     )
                     
                     expect(openGroup.debugDescription)
-                        .to(equal("OpenGroup(server: \"server\", room: \"room\", id: \"server.room\", publicKey: \"1234\", name: \"name\", groupDescription: null, imageID: null, infoUpdates: 0)"))
+                        .to(equal("OpenGroup(server: \"server\", roomToken: \"room\", id: \"server.room\", publicKey: \"1234\", isActive: true, name: \"name\", roomDescription: null, imageId: null, userCount: 0, infoUpdates: 0, sequenceNumber: 0, inboxLatestMessageId: 0, outboxLatestMessageId: 0)"))
                 }
             }
         }

@@ -26,17 +26,17 @@ public final class GRDBStorage {
     public private(set) var isValid: Bool = false
     public private(set) var hasCompletedMigrations: Bool = false
     
-    private var dbPool: DatabasePool?
+    private var dbWriter: DatabaseWriter?
     private var migrator: DatabaseMigrator?
     private var migrationProgressUpdater: Atomic<((String, CGFloat) -> ())>?
     
     // MARK: - Initialization
     
-    public init() {
 //        if CurrentAppContext().isMainApp {
 //            GRDBStorage.deleteDatabaseFiles() // TODO: Remove this.
 //            try! GRDBStorage.deleteDbKeys() // TODO: Remove this.
 //        }
+    public init(customWriter: DatabaseWriter? = nil) {
         
         // Create the database directory if needed and ensure it's protection level is set before attempting to
         // create the database KeySpec or the database itself
@@ -76,9 +76,16 @@ public final class GRDBStorage {
             try db.execute(sql: "PRAGMA cipher_plaintext_header_size = 32")
         }
         
+        // If a custom writer was provided then use that (for unit testing)
+        guard customWriter == nil else {
+            dbWriter = customWriter
+            isValid = true
+            return
+        }
+        
         // Create the DatabasePool to allow us to connect to the database and mark the storage as valid
         do {
-            dbPool = try DatabasePool(
+            dbWriter = try DatabasePool(
                 path: "\(GRDBStorage.sharedDatabaseDirectoryPath)/\(GRDBStorage.dbFileName)",
                 configuration: config
             )
@@ -94,7 +101,7 @@ public final class GRDBStorage {
         onProgressUpdate: ((CGFloat, TimeInterval) -> ())?,
         onComplete: @escaping (Bool, Bool) -> ()
     ) {
-        guard isValid, let dbPool: DatabasePool = dbPool else { return }
+        guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return }
         
         typealias MigrationInfo = (identifier: TargetMigrations.Identifier, migrations: TargetMigrations.MigrationSet)
         let sortedMigrationInfo: [MigrationInfo] = migrations
@@ -124,7 +131,7 @@ public final class GRDBStorage {
         
         // Determine which migrations need to be performed and gather the relevant settings needed to
         // inform the app of progress/states
-        let completedMigrations: [String] = (try? dbPool.read { db in try migrator?.completedMigrations(db) })
+        let completedMigrations: [String] = (try? dbWriter.read { db in try migrator?.completedMigrations(db) })
             .defaulting(to: [])
         let unperformedMigrations: [(key: String, migration: Migration.Type)] = sortedMigrationInfo
             .reduce(into: []) { result, next in
@@ -167,7 +174,7 @@ public final class GRDBStorage {
             self.migrationProgressUpdater?.wrappedValue(firstMigrationKey, 0)
         }
         
-        self.migrator?.asyncMigrate(dbPool) { [weak self] _, error in
+        self.migrator?.asyncMigrate(dbWriter) { [weak self] _, error in
             self?.hasCompletedMigrations = true
             self?.migrationProgressUpdater = nil
             SUKLegacy.clearLegacyDatabaseInstance()
@@ -280,9 +287,9 @@ public final class GRDBStorage {
     // MARK: - Functions
     
     @discardableResult public func write<T>(updates: (Database) throws -> T?) -> T? {
-        guard isValid, let dbPool: DatabasePool = dbPool else { return nil }
+        guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return nil }
         
-        return try? dbPool.write(updates)
+        return try? dbWriter.write(updates)
     }
     
     public func writeAsync<T>(updates: @escaping (Database) throws -> T) {
@@ -290,9 +297,9 @@ public final class GRDBStorage {
     }
     
     public func writeAsync<T>(updates: @escaping (Database) throws -> T, completion: @escaping (Database, Swift.Result<T, Error>) throws -> Void) {
-        guard isValid, let dbPool: DatabasePool = dbPool else { return }
+        guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return }
         
-        dbPool.asyncWrite(
+        dbWriter.asyncWrite(
             updates,
             completion: { db, result in
                 try? completion(db, result)
@@ -301,9 +308,9 @@ public final class GRDBStorage {
     }
     
     @discardableResult public func read<T>(_ value: (Database) throws -> T?) -> T? {
-        guard isValid, let dbPool: DatabasePool = dbPool else { return nil }
+        guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return nil }
         
-        return try? dbPool.read(value)
+        return try? dbWriter.read(value)
     }
     
     /// Rever to the `ValueObservation.start` method for full documentation
@@ -321,10 +328,10 @@ public final class GRDBStorage {
         onError: @escaping (Error) -> Void,
         onChange: @escaping (Reducer.Value) -> Void
     ) -> DatabaseCancellable {
-        guard isValid, let dbPool: DatabasePool = dbPool else { return AnyDatabaseCancellable(cancel: {}) }
+        guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return AnyDatabaseCancellable(cancel: {}) }
         
         return observation.start(
-            in: dbPool,
+            in: dbWriter,
             scheduling: scheduler,
             onError: onError,
             onChange: onChange
@@ -332,17 +339,17 @@ public final class GRDBStorage {
     }
     
     public func addObserver(_ observer: TransactionObserver?) {
-        guard isValid, let dbPool: DatabasePool = dbPool else { return }
+        guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return }
         guard let observer: TransactionObserver = observer else { return }
         
-        dbPool.add(transactionObserver: observer)
+        dbWriter.add(transactionObserver: observer)
     }
     
     public func removeObserver(_ observer: TransactionObserver?) {
-        guard isValid, let dbPool: DatabasePool = dbPool else { return }
+        guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return }
         guard let observer: TransactionObserver = observer else { return }
         
-        dbPool.remove(transactionObserver: observer)
+        dbWriter.remove(transactionObserver: observer)
     }
 }
 
@@ -351,10 +358,12 @@ public final class GRDBStorage {
 public extension GRDBStorage {
     // FIXME: Would be good to replace these with Swift Combine
     @discardableResult func read<T>(_ value: (Database) throws -> Promise<T>) -> Promise<T> {
-        guard isValid, let dbPool: DatabasePool = dbPool else { return Promise(error: StorageError.databaseInvalid) }
+        guard isValid, let dbWriter: DatabaseWriter = dbWriter else {
+            return Promise(error: StorageError.databaseInvalid)
+        }
         
         do {
-            return try dbPool.read(value)
+            return try dbWriter.read(value)
         }
         catch {
             return Promise(error: error)
@@ -362,10 +371,12 @@ public extension GRDBStorage {
     }
     
     @discardableResult func write<T>(updates: (Database) throws -> Promise<T>) -> Promise<T> {
-        guard isValid, let dbPool: DatabasePool = dbPool else { return Promise(error: StorageError.databaseInvalid) }
+        guard isValid, let dbWriter: DatabaseWriter = dbWriter else {
+            return Promise(error: StorageError.databaseInvalid)
+        }
         
         do {
-            return try dbPool.write(updates)
+            return try dbWriter.write(updates)
         }
         catch {
             return Promise(error: error)

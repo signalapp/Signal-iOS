@@ -1,8 +1,10 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import PromiseKit
+import GRDB
 import Sodium
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 import Quick
 import Nimble
@@ -13,7 +15,7 @@ class OpenGroupAPISpec: QuickSpec {
     // MARK: - Spec
 
     override func spec() {
-        var mockStorage: MockStorage!
+        var mockStorage: GRDBStorage!
         var mockSodium: MockSodium!
         var mockAeadXChaCha20Poly1305Ietf: MockAeadXChaCha20Poly1305Ietf!
         var mockSign: MockSign!
@@ -31,7 +33,7 @@ class OpenGroupAPISpec: QuickSpec {
             // MARK: - Configuration
             
             beforeEach {
-                mockStorage = MockStorage()
+                mockStorage = GRDBStorage(customWriter: DatabaseQueue())
                 mockSodium = MockSodium()
                 mockAeadXChaCha20Poly1305Ietf = MockAeadXChaCha20Poly1305Ietf()
                 mockSign = MockSign()
@@ -52,61 +54,23 @@ class OpenGroupAPISpec: QuickSpec {
                     date: Date(timeIntervalSince1970: 1234567890)
                 )
                 
-                mockStorage
-                    .when { $0.write(with: { _ in }) }
-                    .then { args in (args.first as? ((Any) -> Void))?(anyAny()) }
-                    .thenReturn(Promise.value(()))
-                mockStorage
-                    .when { $0.write(with: { _ in }, completion: { }) }
-                    .then { args in
-                        (args.first as? ((Any) -> Void))?(anyAny())
-                        (args.last as? (() -> Void))?()
-                    }
-                    .thenReturn(Promise.value(()))
-                mockStorage
-                    .when { $0.getUserKeyPair() }
-                    .thenReturn(
-                        try! ECKeyPair(
-                            publicKeyData: Data.data(fromHex: TestConstants.publicKey)!,
-                            privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
-                        )
-                    )
-                mockStorage
-                    .when { $0.getUserED25519KeyPair() }
-                    .thenReturn(
-                        Box.KeyPair(
-                            publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
-                            secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
-                        )
-                    )
-                mockStorage
-                    .when { $0.getAllOpenGroups() }
-                    .thenReturn([
-                        "0": OpenGroup(
-                            server: "testServer",
-                            room: "testRoom",
-                            publicKey: TestConstants.publicKey,
-                            name: "Test",
-                            groupDescription: nil,
-                            imageID: nil,
-                            infoUpdates: 0
-                        )
-                    ])
-                mockStorage
-                    .when { $0.getOpenGroupServer(name: any()) }
-                    .thenReturn(
-                        OpenGroupAPI.Server(
-                            name: "testServer",
-                            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
-                        )
-                    )
-                mockStorage
-                    .when { $0.getOpenGroupPublicKey(for: any()) }
-                    .thenReturn(TestConstants.publicKey)
-                mockStorage.when { $0.getOpenGroupSequenceNumber(for: any(), on: any()) }.thenReturn(nil)
-                mockStorage.when { $0.getOpenGroupInboxLatestMessageId(for: any()) }.thenReturn(nil)
-                mockStorage.when { $0.getOpenGroupOutboxLatestMessageId(for: any()) }.thenReturn(nil)
-                mockStorage.when { $0.addReceivedMessageTimestamp(any(), using: anyAny()) }.thenReturn(())
+                mockStorage.write { db in
+                    try Identity(variant: .x25519PublicKey, data: Data.data(fromHex: TestConstants.publicKey)).insert(db)
+                    try Identity(variant: .x25519PrivateKey, data: Data.data(fromHex: TestConstants.privateKey)).insert(db)
+                    try Identity(variant: .ed25519PublicKey, data: Data.data(fromHex: TestConstants.edPublicKey)).insert(db)
+                    try Identity(variant: .ed25519SecretKey, data: Data.data(fromHex: TestConstants.edSecretKey)).insert(db)
+                    
+                    try OpenGroup(
+                        server: "testServer",
+                        roomToken: "testRoom",
+                        publicKey: TestConstants.publicKey,
+                        name: "Test",
+                        groupDescription: nil,
+                        imageID: nil,
+                        infoUpdates: 0
+                    ).insert(db)
+                    try Capability(openGroupServer: "testserver", variant: .sogs, isMissing: false)
+                }
                 
                 mockGenericHash.when { $0.hash(message: anyArray(), outputLength: any()) }.thenReturn([])
                 mockSodium
@@ -233,13 +197,16 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("retrieves recent messages if there was no last message") {
-                        OpenGroupAPI
-                            .poll(
-                                "testServer",
-                                hasPerformedInitialPoll: false,
-                                timeSinceLastPoll: 0,
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI.poll(
+                                    db,
+                                    server: "testserver",
+                                    hasPerformedInitialPoll: false,
+                                    timeSinceLastPoll: 0,
+                                    using: dependencies
+                                )
+                            }
                             .get { result in pollResponse = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -254,15 +221,21 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("retrieves recent messages if there was a last message and it has not performed the initial poll and the last message was too long ago") {
-                        mockStorage.when { $0.getOpenGroupSequenceNumber(for: any(), on: any()) }.thenReturn(123)
+                        mockStorage.write { db in
+                            try OpenGroup
+                                .updateAll(db, OpenGroup.Columns.sequenceNumber.set(to: 123))
+                        }
                         
-                        OpenGroupAPI
-                            .poll(
-                                "testServer",
-                                hasPerformedInitialPoll: false,
-                                timeSinceLastPoll: (OpenGroupAPI.Poller.maxInactivityPeriod + 1),
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI.poll(
+                                    db,
+                                    server: "testserver",
+                                    hasPerformedInitialPoll: false,
+                                    timeSinceLastPoll: (OpenGroupAPI.Poller.maxInactivityPeriod + 1),
+                                    using: dependencies
+                                )
+                            }
                             .get { result in pollResponse = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -277,15 +250,21 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("retrieves recent messages if there was a last message and it has performed an initial poll but it was not too long ago") {
-                        mockStorage.when { $0.getOpenGroupSequenceNumber(for: any(), on: any()) }.thenReturn(123)
+                        mockStorage.write { db in
+                            try OpenGroup
+                                .updateAll(db, OpenGroup.Columns.sequenceNumber.set(to: 123))
+                        }
                         
-                        OpenGroupAPI
-                            .poll(
-                                "testServer",
-                                hasPerformedInitialPoll: false,
-                                timeSinceLastPoll: 0,
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI.poll(
+                                    db,
+                                    server: "testserver",
+                                    hasPerformedInitialPoll: false,
+                                    timeSinceLastPoll: 0,
+                                    using: dependencies
+                                )
+                            }
                             .get { result in pollResponse = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -300,15 +279,21 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("retrieves recent messages if there was a last message and there has already been a poll this session") {
-                        mockStorage.when { $0.getOpenGroupSequenceNumber(for: any(), on: any()) }.thenReturn(123)
+                        mockStorage.write { db in
+                            try OpenGroup
+                                .updateAll(db, OpenGroup.Columns.sequenceNumber.set(to: 123))
+                        }
 
-                        OpenGroupAPI
-                            .poll(
-                                "testServer",
-                                hasPerformedInitialPoll: true,
-                                timeSinceLastPoll: 0,
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI.poll(
+                                    db,
+                                    server: "testserver",
+                                    hasPerformedInitialPoll: true,
+                                    timeSinceLastPoll: 0,
+                                    using: dependencies
+                                )
+                            }
                             .get { result in pollResponse = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -324,18 +309,23 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     context("when unblinded") {
                         beforeEach {
-                            mockStorage
-                                .when { $0.getOpenGroupServer(name: any()) }
-                                .thenReturn(
-                                    OpenGroupAPI.Server(
-                                        name: "testServer",
-                                        capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
-                                    )
-                                )
+                            mockStorage.write { db in
+                                _ = try Capability.deleteAll(db)
+                                try Capability(openGroupServer: "testserver", variant: .sogs, isMissing: false).insert(db)
+                            }
                         }
                     
                         it("does not call the inbox and outbox endpoints") {
-                            OpenGroupAPI.poll("testServer", hasPerformedInitialPoll: false, timeSinceLastPoll: 0, using: dependencies)
+                            mockStorage
+                                .read { db in
+                                    OpenGroupAPI.poll(
+                                        db,
+                                        server: "testserver",
+                                        hasPerformedInitialPoll: false,
+                                        timeSinceLastPoll: 0,
+                                        using: dependencies
+                                    )
+                                }
                                 .get { result in pollResponse = result }
                                 .catch { requestError in error = requestError }
                                 .retainUntilComplete()
@@ -417,18 +407,24 @@ class OpenGroupAPISpec: QuickSpec {
                             
                             dependencies = dependencies.with(onionApi: TestApi.self)
                             
-                            mockStorage
-                                .when { $0.getOpenGroupServer(name: any()) }
-                                .thenReturn(
-                                    OpenGroupAPI.Server(
-                                        name: "testServer",
-                                        capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
-                                    )
-                                )
+                            mockStorage.write { db in
+                                _ = try Capability.deleteAll(db)
+                                try Capability(openGroupServer: "testserver", variant: .sogs, isMissing: false).insert(db)
+                                try Capability(openGroupServer: "testserver", variant: .blind, isMissing: false).insert(db)
+                            }
                         }
                     
                         it("includes the inbox and outbox endpoints") {
-                            OpenGroupAPI.poll("testServer", hasPerformedInitialPoll: false, timeSinceLastPoll: 0, using: dependencies)
+                            mockStorage
+                                .read { db in
+                                    OpenGroupAPI.poll(
+                                        db,
+                                        server: "testserver",
+                                        hasPerformedInitialPoll: false,
+                                        timeSinceLastPoll: 0,
+                                        using: dependencies
+                                    )
+                                }
                                 .get { result in pollResponse = result }
                                 .catch { requestError in error = requestError }
                                 .retainUntilComplete()
@@ -446,13 +442,16 @@ class OpenGroupAPISpec: QuickSpec {
                         }
                         
                         it("retrieves recent inbox messages if there was no last message") {
-                            OpenGroupAPI
-                                .poll(
-                                    "testServer",
-                                    hasPerformedInitialPoll: true,
-                                    timeSinceLastPoll: 0,
-                                    using: dependencies
-                                )
+                            mockStorage
+                                .read { db in
+                                    OpenGroupAPI.poll(
+                                        db,
+                                        server: "testserver",
+                                        hasPerformedInitialPoll: true,
+                                        timeSinceLastPoll: 0,
+                                        using: dependencies
+                                    )
+                                }
                                 .get { result in pollResponse = result }
                                 .catch { requestError in error = requestError }
                                 .retainUntilComplete()
@@ -467,15 +466,21 @@ class OpenGroupAPISpec: QuickSpec {
                         }
                         
                         it("retrieves inbox messages since the last message if there was one") {
-                            mockStorage.when { $0.getOpenGroupInboxLatestMessageId(for: any()) }.thenReturn(124)
+                            mockStorage.write { db in
+                                try OpenGroup
+                                    .updateAll(db, OpenGroup.Columns.inboxLatestMessageId.set(to: 124))
+                            }
                             
-                            OpenGroupAPI
-                                .poll(
-                                    "testServer",
-                                    hasPerformedInitialPoll: true,
-                                    timeSinceLastPoll: 0,
-                                    using: dependencies
-                                )
+                            mockStorage
+                                .read { db in
+                                    OpenGroupAPI.poll(
+                                        db,
+                                        server: "testserver",
+                                        hasPerformedInitialPoll: true,
+                                        timeSinceLastPoll: 0,
+                                        using: dependencies
+                                    )
+                                }
                                 .get { result in pollResponse = result }
                                 .catch { requestError in error = requestError }
                                 .retainUntilComplete()
@@ -490,13 +495,16 @@ class OpenGroupAPISpec: QuickSpec {
                         }
                         
                         it("retrieves recent outbox messages if there was no last message") {
-                            OpenGroupAPI
-                                .poll(
-                                    "testServer",
-                                    hasPerformedInitialPoll: true,
-                                    timeSinceLastPoll: 0,
-                                    using: dependencies
-                                )
+                            mockStorage
+                                .read { db in
+                                    OpenGroupAPI.poll(
+                                        db,
+                                        server: "testserver",
+                                        hasPerformedInitialPoll: true,
+                                        timeSinceLastPoll: 0,
+                                        using: dependencies
+                                    )
+                                }
                                 .get { result in pollResponse = result }
                                 .catch { requestError in error = requestError }
                                 .retainUntilComplete()
@@ -511,15 +519,21 @@ class OpenGroupAPISpec: QuickSpec {
                         }
                         
                         it("retrieves outbox messages since the last message if there was one") {
-                            mockStorage.when { $0.getOpenGroupOutboxLatestMessageId(for: any()) }.thenReturn(125)
+                            mockStorage.write { db in
+                                try OpenGroup
+                                    .updateAll(db, OpenGroup.Columns.outboxLatestMessageId.set(to: 125))
+                            }
                             
-                            OpenGroupAPI
-                                .poll(
-                                    "testServer",
-                                    hasPerformedInitialPoll: true,
-                                    timeSinceLastPoll: 0,
-                                    using: dependencies
-                                )
+                            mockStorage
+                                .read { db in
+                                    OpenGroupAPI.poll(
+                                        db,
+                                        server: "testserver",
+                                        hasPerformedInitialPoll: true,
+                                        timeSinceLastPoll: 0,
+                                        using: dependencies
+                                    )
+                                }
                                 .get { result in pollResponse = result }
                                 .catch { requestError in error = requestError }
                                 .retainUntilComplete()
@@ -571,7 +585,16 @@ class OpenGroupAPISpec: QuickSpec {
                         }
                         dependencies = dependencies.with(onionApi: TestApi.self)
                         
-                        OpenGroupAPI.poll("testServer", hasPerformedInitialPoll: false, timeSinceLastPoll: 0, using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI.poll(
+                                    db,
+                                    server: "testserver",
+                                    hasPerformedInitialPoll: false,
+                                    timeSinceLastPoll: 0,
+                                    using: dependencies
+                                )
+                            }
                             .get { result in pollResponse = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()

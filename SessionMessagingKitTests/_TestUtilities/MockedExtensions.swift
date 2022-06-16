@@ -6,19 +6,18 @@ import SessionMessagingKit
 extension OpenGroup: Mocked {
     static var mockValue: OpenGroup = OpenGroup(
         server: any(),
-        room: any(),
+        roomToken: any(),
         publicKey: TestConstants.publicKey,
         name: any(),
-        groupDescription: any(),
-        imageID: any(),
-        infoUpdates: any()
-    )
-}
-
-extension OpenGroupAPI.Server: Mocked {
-    static var mockValue: OpenGroupAPI.Server = OpenGroupAPI.Server(
-        name: any(),
-        capabilities: OpenGroupAPI.Capabilities(capabilities: anyArray(), missing: anyArray())
+        isActive: any(),
+        roomDescription: any(),
+        imageId: any(),
+        imageData: any(),
+        userCount: any(),
+        infoUpdates: any(),
+        sequenceNumber: any(),
+        inboxLatestMessageId: any(),
+        outboxLatestMessageId: any()
     )
 }
 

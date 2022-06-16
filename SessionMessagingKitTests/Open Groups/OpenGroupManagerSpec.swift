@@ -1,8 +1,10 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import PromiseKit
+import GRDB
 import Sodium
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 import Quick
 import Nimble
@@ -70,9 +72,8 @@ class OpenGroupManagerSpec: QuickSpec {
 
     override func spec() {
         var mockOGMCache: MockOGMCache!
-        var mockIdentityManager: MockIdentityManager!
         var mockGeneralCache: MockGeneralCache!
-        var mockStorage: MockStorage!
+        var mockStorage: GRDBStorage!
         var mockSodium: MockSodium!
         var mockAeadXChaCha20Poly1305Ietf: MockAeadXChaCha20Poly1305Ietf!
         var mockGenericHash: MockGenericHash!
@@ -100,9 +101,8 @@ class OpenGroupManagerSpec: QuickSpec {
             
             beforeEach {
                 mockOGMCache = MockOGMCache()
-                mockIdentityManager = MockIdentityManager()
                 mockGeneralCache = MockGeneralCache()
-                mockStorage = MockStorage()
+                mockStorage = GRDBStorage(customWriter: DatabaseQueue())
                 mockSodium = MockSodium()
                 mockAeadXChaCha20Poly1305Ietf = MockAeadXChaCha20Poly1305Ietf()
                 mockGenericHash = MockGenericHash()
@@ -155,7 +155,7 @@ class OpenGroupManagerSpec: QuickSpec {
                 
                 testOpenGroup = OpenGroup(
                     server: "testServer",
-                    room: "testRoom",
+                    roomToken: "testRoom",
                     publicKey: TestConstants.publicKey,
                     name: "Test",
                     groupDescription: nil,
@@ -215,62 +215,16 @@ class OpenGroupManagerSpec: QuickSpec {
                     ).base64EncodedString()
                 )
                 
-                mockIdentityManager
-                    .when { $0.identityKeyPair() }
-                    .thenReturn(
-                        try! ECKeyPair(
-                            publicKeyData: Data.data(fromHex: TestConstants.publicKey)!,
-                            privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
-                        )
-                    )
+                mockStorage.write { db in
+                    try Identity(variant: .x25519PublicKey, data: Data.data(fromHex: TestConstants.publicKey)).insert(db)
+                    try Identity(variant: .x25519PrivateKey, data: Data.data(fromHex: TestConstants.privateKey)).insert(db)
+                    try Identity(variant: .ed25519PublicKey, data: Data.data(fromHex: TestConstants.edPublicKey)).insert(db)
+                    try Identity(variant: .ed25519SecretKey, data: Data.data(fromHex: TestConstants.edSecretKey)).insert(db)
+                    
+                    try testOpenGroup.insert(db)
+                    try Capability(openGroupServer: testOpenGroup.server, variant: .sogs, isMissing: false).insert(db)
+                }
                 mockGeneralCache.when { $0.encodedPublicKey }.thenReturn("05\(TestConstants.publicKey)")
-                mockStorage
-                    .when { $0.write(with: { _ in }) }
-                    .then { [testTransaction] args in (args.first as? ((Any) -> Void))?(testTransaction! as Any) }
-                    .thenReturn(Promise.value(()))
-                mockStorage
-                    .when { $0.write(with: { _ in }, completion: { }) }
-                    .then { [testTransaction] args in
-                        (args.first as? ((Any) -> Void))?(testTransaction! as Any)
-                        (args.last as? (() -> Void))?()
-                    }
-                    .thenReturn(Promise.value(()))
-                mockStorage
-                    .when { $0.getUserKeyPair() }
-                    .thenReturn(
-                        try! ECKeyPair(
-                            publicKeyData: Data.data(fromHex: TestConstants.publicKey)!,
-                            privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
-                        )
-                    )
-                mockStorage
-                    .when { $0.getUserED25519KeyPair() }
-                    .thenReturn(
-                        Box.KeyPair(
-                            publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
-                            secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
-                        )
-                    )
-                mockStorage
-                    .when { $0.getAllOpenGroups() }
-                    .thenReturn([
-                        "0": testOpenGroup
-                    ])
-                mockStorage
-                    .when { $0.getOpenGroup(for: any()) }
-                    .thenReturn(testOpenGroup)
-                mockStorage
-                    .when { $0.getOpenGroupServer(name: any()) }
-                    .thenReturn(
-                        OpenGroupAPI.Server(
-                            name: "testServer",
-                            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
-                        )
-                    )
-                mockStorage
-                    .when { $0.getOpenGroupPublicKey(for: any()) }
-                    .thenReturn(TestConstants.publicKey)
-                
                 mockGenericHash.when { $0.hash(message: anyArray(), outputLength: any()) }.thenReturn([])
                 mockSodium
                     .when { $0.blindedKeyPair(serverPublicKey: any(), edKeyPair: any(), genericHash: mockGenericHash) }
@@ -370,28 +324,17 @@ class OpenGroupManagerSpec: QuickSpec {
             
             context("when starting polling") {
                 beforeEach {
-                    mockStorage
-                        .when { $0.getAllOpenGroups() }
-                        .thenReturn([
-                            "0": testOpenGroup,
-                            "1": OpenGroup(
-                                server: "testServer1",
-                                room: "testRoom1",
-                                publicKey: TestConstants.publicKey,
-                                name: "Test1",
-                                groupDescription: nil,
-                                imageID: nil,
-                                infoUpdates: 0
-                            )
-                        ])
-                    mockStorage.when { $0.removeOpenGroupSequenceNumber(for: any(), on: any(), using: anyAny()) }.thenReturn(())
-                    mockStorage.when { $0.setOpenGroupPublicKey(for: any(), to: any(), using: anyAny()) }.thenReturn(())
-                    mockStorage.when { $0.setOpenGroupServer(any(), using: anyAny()) }.thenReturn(())
-                    mockStorage.when { $0.setOpenGroup(any(), for: any(), using: anyAny()) }.thenReturn(())
-                    mockStorage.when { $0.setUserCount(to: any(), forOpenGroupWithID: any(), using: anyAny()) }.thenReturn(())
-                    mockStorage.when { $0.getOpenGroupInboxLatestMessageId(for: any()) }.thenReturn(nil)
-                    mockStorage.when { $0.getOpenGroupOutboxLatestMessageId(for: any()) }.thenReturn(nil)
-                    mockStorage.when { $0.getOpenGroupSequenceNumber(for: any(), on: any()) }.thenReturn(nil)
+                    mockStorage.write { db in
+                        try OpenGroup(
+                            server: "testServer1",
+                            room: "testRoom1",
+                            publicKey: TestConstants.publicKey,
+                            name: "Test1",
+                            groupDescription: nil,
+                            imageID: nil,
+                            infoUpdates: 0
+                        ).insert(db)
+                    }
                     
                     mockOGMCache.when { $0.hasPerformedInitialPoll }.thenReturn([:])
                     mockOGMCache.when { $0.timeSinceLastPoll }.thenReturn([:])
@@ -433,28 +376,17 @@ class OpenGroupManagerSpec: QuickSpec {
             
             context("when stopping polling") {
                 beforeEach {
-                    mockStorage
-                        .when { $0.getAllOpenGroups() }
-                        .thenReturn([
-                            "0": testOpenGroup,
-                            "1": OpenGroup(
-                                server: "testServer1",
-                                room: "testRoom1",
-                                publicKey: TestConstants.publicKey,
-                                name: "Test1",
-                                groupDescription: nil,
-                                imageID: nil,
-                                infoUpdates: 0
-                            )
-                        ])
-                    mockStorage.when { $0.removeOpenGroupSequenceNumber(for: any(), on: any(), using: anyAny()) }.thenReturn(())
-                    mockStorage.when { $0.setOpenGroupPublicKey(for: any(), to: any(), using: anyAny()) }.thenReturn(())
-                    mockStorage.when { $0.setOpenGroupServer(any(), using: anyAny()) }.thenReturn(())
-                    mockStorage.when { $0.setOpenGroup(any(), for: any(), using: anyAny()) }.thenReturn(())
-                    mockStorage.when { $0.setUserCount(to: any(), forOpenGroupWithID: any(), using: anyAny()) }.thenReturn(())
-                    mockStorage.when { $0.getOpenGroupInboxLatestMessageId(for: any()) }.thenReturn(nil)
-                    mockStorage.when { $0.getOpenGroupOutboxLatestMessageId(for: any()) }.thenReturn(nil)
-                    mockStorage.when { $0.getOpenGroupSequenceNumber(for: any(), on: any()) }.thenReturn(nil)
+                    mockStorage.write { db in
+                        try OpenGroup(
+                            server: "testServer1",
+                            room: "testRoom1",
+                            publicKey: TestConstants.publicKey,
+                            name: "Test1",
+                            groupDescription: nil,
+                            imageId: nil,
+                            infoUpdates: 0
+                        ).insert(db)
+                    }
                     
                     mockOGMCache.when { $0.isPolling }.thenReturn(true)
                     mockOGMCache.when { $0.pollers }.thenReturn(["testserver": OpenGroupAPI.Poller(for: "testserver")])

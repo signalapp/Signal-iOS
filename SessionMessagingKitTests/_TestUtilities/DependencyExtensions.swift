@@ -2,15 +2,15 @@
 
 import Foundation
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 @testable import SessionMessagingKit
 
 extension Dependencies {
     public func with(
         onionApi: OnionRequestAPIType.Type? = nil,
-        identityManager: IdentityManagerProtocol? = nil,
         generalCache: Atomic<GeneralCacheType>? = nil,
-        storage: SessionMessagingKitStorageProtocol? = nil,
+        storage: GRDBStorage? = nil,
         sodium: SodiumType? = nil,
         box: BoxType? = nil,
         genericHash: GenericHashType? = nil,
@@ -24,7 +24,6 @@ extension Dependencies {
     ) -> Dependencies {
         return Dependencies(
             onionApi: (onionApi ?? self._onionApi),
-            identityManager: (identityManager ?? self._identityManager),
             generalCache: (generalCache ?? self._generalCache),
             storage: (storage ?? self._storage),
             sodium: (sodium ?? self._sodium),
