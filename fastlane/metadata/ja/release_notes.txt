@@ -1,3 +1,3 @@
-• Made some improvements to voice messages, both when recording your own and listening to someone else's. There are some extra fixes for users on right-to-left languages
-• Sending messages to large groups should now be faster.
-• さまざまなバグ修正や、パフォーマンスの向上を行い、アプリの動作がスムーズになりました。
+• Improving the look & feel of voice messages, both the ones you send and the ones you receive. Bonus fixes for people who use right-to-left languages like Arabic, Farsi, and Hebrew.
+• Speeding up messages for big group chats.
+• Various other bug fixes and performance improvements to help keep your app running smoothly.
