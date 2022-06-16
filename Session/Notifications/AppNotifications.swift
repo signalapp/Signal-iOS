@@ -183,8 +183,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         
         // Don't fire the notification if the current user isn't mentioned
         // and isOnlyNotifyingForMentions is on.
-        guard !thread.onlyNotifyForMentions || interaction.isUserMentioned(db) else { return }
-
+        guard !thread.onlyNotifyForMentions || interaction.hasMention else { return }
+        
         let notificationTitle: String?
         var notificationBody: String?
         
@@ -445,14 +445,13 @@ class NotificationActionHandler {
         }
         
         let promise: Promise<Void> = GRDBStorage.shared.write { db in
-            let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
             let interaction: Interaction = try Interaction(
                 threadId: thread.id,
                 authorId: getUserHexEncodedPublicKey(db),
                 variant: .standardOutgoing,
                 body: replyText,
                 timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000)),
-                hasMention: replyText.contains("@\(currentUserPublicKey)")
+                hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: replyText)
             ).inserted(db)
             
             try Interaction.markAsRead(

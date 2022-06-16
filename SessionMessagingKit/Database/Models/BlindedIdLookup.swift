@@ -112,7 +112,9 @@ public extension BlindedIdLookup {
         guard lookup.sessionId == nil else { return lookup }
         
         // Lastly loop through existing id lookups (in case the user is looking at a different SOGS but once had
-        // a thread with this contact in a different SOGS and had cached the lookup)
+        // a thread with this contact in a different SOGS and had cached the lookup) - we really should never hit
+        // this case since the contact approval status is sync'ed (the only situation I can think of is a config
+        // message hasn't been handled correctly?)
         let blindedIdLookupCursor: RecordCursor<BlindedIdLookup> = try BlindedIdLookup
             .filter(BlindedIdLookup.Columns.sessionId != nil)
             .filter(BlindedIdLookup.Columns.openGroupServer != openGroupServer.lowercased())

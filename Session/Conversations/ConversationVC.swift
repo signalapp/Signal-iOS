@@ -411,8 +411,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
-        
-//        notificationCenter.addObserver(self, selector: #selector(handleContactThreadReplaced(_:)), name: .contactThreadReplaced, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -487,7 +485,36 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             viewModel.observableThreadData,
             onError:  { _ in },
             onChange: { [weak self] maybeThreadData in
-                guard let threadData: SessionThreadViewModel = maybeThreadData else { return }
+                guard let threadData: SessionThreadViewModel = maybeThreadData else {
+                    // If the thread data is null and the id was blinded then we just unblinded the thread
+                    // and need to swap over to the new one
+                    guard
+                        let sessionId: String = self?.viewModel.threadData.threadId,
+                        SessionId.Prefix(from: sessionId) == .blinded,
+                        let blindedLookup: BlindedIdLookup = GRDBStorage.shared.read({ db in
+                            try BlindedIdLookup
+                                .filter(id: sessionId)
+                                .fetchOne(db)
+                        }),
+                        let unblindedId: String = blindedLookup.sessionId
+                    else {
+                        // If we don't have an unblinded id then something has gone very wrong so pop to the HomeVC
+                        self?.navigationController?.popToRootViewController(animated: true)
+                        return
+                    }
+                    
+                    // Stop observing changes
+                    self?.stopObservingChanges()
+                    GRDBStorage.shared.removeObserver(self?.viewModel.pagedDataObserver)
+                    
+                    // Swap the observing to the updated thread
+                    self?.viewModel.swapToThread(updatedThreadId: unblindedId)
+                    
+                    // Start observing changes again
+                    GRDBStorage.shared.addObserver(self?.viewModel.pagedDataObserver)
+                    self?.startObservingChanges()
+                    return
+                }
                 
                 // The default scheduler emits changes on the main thread
                 self?.handleThreadUpdates(threadData)
@@ -1093,91 +1120,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         DispatchQueue.main.async {
             self.snInputView.text = self.snInputView.text
         }
-    }
-    
-    @objc private func handleContactThreadReplaced(_ notification: Notification) {
-        print("ASDASDASD")
-//        // Ensure the current thread is one of the removed ones
-//        guard let newThreadId: String = notification.userInfo?[NotificationUserInfoKey.threadId] as? String else { return }
-//        guard let removedThreadIds: [String] = notification.userInfo?[NotificationUserInfoKey.removedThreadIds] as? [String] else {
-//            return
-//        }
-//        guard let threadId: String = thread.uniqueId, removedThreadIds.contains(threadId) else { return }
-//
-//        // Then look to swap the current ConversationVC with a replacement one with the new thread
-//        DispatchQueue.main.async {
-//            guard let navController: UINavigationController = self.navigationController else { return }
-//            guard let viewControllerIndex: Int = navController.viewControllers.firstIndex(of: self) else { return }
-//            guard let newThread: TSContactThread = TSContactThread.fetch(uniqueId: newThreadId) else { return }
-//
-//            // Let the view controller know we are replacing the thread
-//            self.isReplacingThread = true
-//
-//            // Create the new ConversationVC and swap the old one out for it
-//            let conversationVC: ConversationVC = ConversationVC(thread: newThread)
-//            let currentlyOnThisScreen: Bool = (navController.topViewController == self)
-//
-//            navController.viewControllers = [
-//                (viewControllerIndex == 0 ?
-//                    [] :
-//                    navController.viewControllers[0..<viewControllerIndex]
-//                ),
-//                [conversationVC],
-//                (viewControllerIndex == (navController.viewControllers.count - 1) ?
-//                    [] :
-//                    navController.viewControllers[(viewControllerIndex + 1)..<navController.viewControllers.count]
-//                )
-//            ].flatMap { $0 }
-//
-//            // If the top vew controller isn't the current one then we need to make sure to swap out child ones as well
-//            if !currentlyOnThisScreen {
-//                let maybeSettingsViewController: UIViewController? = navController
-//                    .viewControllers[viewControllerIndex..<navController.viewControllers.count]
-//                    .first(where: { $0 is OWSConversationSettingsViewController })
-//
-//                // Update the settings screen (if there is one)
-//                if let settingsViewController: OWSConversationSettingsViewController = maybeSettingsViewController as? OWSConversationSettingsViewController {
-//                    settingsViewController.configure(with: newThread, uiDatabaseConnection: OWSPrimaryStorage.shared().uiDatabaseConnection)
-//                }
-//            }
-//
-//            // Try to minimise painful UX issues by keeping the 'first responder' state, current input text and
-//            // cursor position (Unfortunately there doesn't seem to be a way to prevent the keyboard from
-//            // flickering during the swap but other than that it's relatively seamless)
-//            if self.snInputView.inputTextViewIsFirstResponder {
-//                conversationVC.isReplacingThread = true
-//                conversationVC.snInputView.frame = self.snInputView.frame
-//                conversationVC.snInputView.text = self.snInputView.text
-//                conversationVC.snInputView.selectedRange = self.snInputView.selectedRange
-//
-//                // Make the current snInputView invisible and add the new one the the UI
-//                self.snInputView.alpha = 0
-//                self.snInputView.superview?.addSubview(conversationVC.snInputView)
-//
-//                // Add the old first responder to the window so it the keyboard won't get dismissed when the
-//                // OS removes it's parent view from the view hierarchy due to the view controller swap
-//                var maybeOldFirstResponderView: UIView?
-//
-//                if let oldFirstResponderView: UIView = UIResponder.currentFirstResponder() as? UIView {
-//                    maybeOldFirstResponderView = oldFirstResponderView
-//                    self.view.window?.addSubview(oldFirstResponderView)
-//                }
-//
-//                // On the next run loop setup the first responder state for the new screen and remove the
-//                // old first responder from the window
-//                DispatchQueue.main.async {
-//                    UIView.performWithoutAnimation {
-//                        conversationVC.isReplacingThread = false
-//                        maybeOldFirstResponderView?.resignFirstResponder()
-//                        maybeOldFirstResponderView?.removeFromSuperview()
-//                        conversationVC.snInputView.removeFromSuperview()
-//
-//                        _ = conversationVC.becomeFirstResponder()
-//                        conversationVC.snInputView.inputTextViewBecomeFirstResponder()
-//                    }
-//                }
-//            }
-//        }
     }
 
     // MARK: - UITableViewDataSource

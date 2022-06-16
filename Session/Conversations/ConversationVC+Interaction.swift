@@ -366,14 +366,13 @@ extension ConversationVC:
                         .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
                     
                     // Create the interaction
-                    let userPublicKey: String = getUserHexEncodedPublicKey(db)
                     let interaction: Interaction = try Interaction(
                         threadId: threadId,
                         authorId: getUserHexEncodedPublicKey(db),
                         variant: .standardOutgoing,
                         body: text,
                         timestampMs: sentTimestampMs,
-                        hasMention: text.contains("@\(userPublicKey)"),
+                        hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: text),
                         linkPreviewUrl: linkPreviewDraft?.urlString
                     ).inserted(db)
 
@@ -464,14 +463,13 @@ extension ConversationVC:
                         .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
                     
                     // Create the interaction
-                    let userPublicKey: String = getUserHexEncodedPublicKey(db)
                     let interaction: Interaction = try Interaction(
                         threadId: threadId,
                         authorId: getUserHexEncodedPublicKey(db),
                         variant: .standardOutgoing,
                         body: text,
                         timestampMs: sentTimestampMs,
-                        hasMention: text.contains("@\(userPublicKey)")
+                        hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: text)
                     ).inserted(db)
 
                     try MessageSender.send(

@@ -299,14 +299,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
         
-        let navController: UINavigationController = OWSNavigationController(
+        self.window?.rootViewController = OWSNavigationController(
             rootViewController: (Identity.userExists() ?
                 HomeVC() :
                 LandingVC()
             )
         )
-        navController.isNavigationBarHidden = !(navController.viewControllers.first is HomeVC)
-        self.window?.rootViewController = navController
         UIViewController.attemptRotationToDeviceOrientation()
     }
     

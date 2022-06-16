@@ -200,11 +200,10 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         }
         
         // If there are no inserted/updated rows then trigger the update callback and stop here
-        let rowIdsToQuery: [Int64] = relevantChanges
+        let changesToQuery: [PagedData.TrackedChange] = relevantChanges
             .filter { $0.kind != .delete }
-            .map { $0.rowId }
         
-        guard !rowIdsToQuery.isEmpty else {
+        guard !changesToQuery.isEmpty else {
             updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, !deletionChanges.isEmpty)
             return
         }
@@ -212,7 +211,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         // Fetch the indexes of the rowIds so we can determine whether they should be added to the screen
         let itemIndexes: [Int64] = PagedData.indexes(
             db,
-            rowIds: rowIdsToQuery,
+            rowIds: changesToQuery.map { $0.rowId },
             tableName: pagedTableName,
             orderSQL: orderSQL,
             filterSQL: filterSQL
@@ -224,17 +223,21 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         // added at once)
         let itemIndexesAreSequential: Bool = (itemIndexes.map { $0 - 1 }.dropFirst() == itemIndexes.dropLast())
         let hasOneValidIndex: Bool = itemIndexes.contains(where: { index -> Bool in
-            index >= updatedPageInfo.pageOffset &&
-            index < updatedPageInfo.currentCount
+            index >= updatedPageInfo.pageOffset && (
+                index < updatedPageInfo.currentCount ||
+                updatedPageInfo.currentCount == 0
+            )
         })
-        let validRowIds: [Int64] = (itemIndexesAreSequential && hasOneValidIndex ?
-            rowIdsToQuery :
-            zip(itemIndexes, rowIdsToQuery)
+        let validChanges: [PagedData.TrackedChange] = (itemIndexesAreSequential && hasOneValidIndex ?
+            changesToQuery :
+            zip(itemIndexes, changesToQuery)
                 .filter { index, _ -> Bool in
-                    index >= updatedPageInfo.pageOffset &&
-                    index < updatedPageInfo.currentCount
+                    index >= updatedPageInfo.pageOffset && (
+                        index < updatedPageInfo.currentCount ||
+                        updatedPageInfo.currentCount == 0
+                    )
                 }
-                .map { _, rowId -> Int64 in rowId }
+                .map { _, change -> PagedData.TrackedChange in change }
         )
         let countBefore: Int = itemIndexes.filter { $0 < updatedPageInfo.pageOffset }.count
         
@@ -244,18 +247,18 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             pageSize: updatedPageInfo.pageSize,
             pageOffset: (updatedPageInfo.pageOffset + countBefore),
             currentCount: updatedPageInfo.currentCount,
-            totalCount: (updatedPageInfo.totalCount + itemIndexes.count)
+            totalCount: (updatedPageInfo.totalCount + validChanges.filter { $0.kind == .insert }.count)
         )
 
         // If there are no valid row ids then stop here (trigger updates though since the page info
         // has changes)
-        guard !validRowIds.isEmpty else {
+        guard !validChanges.isEmpty else {
             updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, true)
             return
         }
 
         // Fetch the inserted/updated rows
-        let additionalFilters: SQL = SQL(validRowIds.contains(Column.rowID))
+        let additionalFilters: SQL = SQL(validChanges.map { $0.rowId }.contains(Column.rowID))
         let updatedItems: [T] = (try? dataQuery(additionalFilters, nil)
             .fetchAll(db))
             .defaulting(to: [])
@@ -390,8 +393,9 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
                             )
                         }
                         
-                        // Otherwise load after
-                        let finalIndex: Int = min(totalCount, (targetIndex + abs(padding)))
+                        // Otherwise load after (targetIndex is 0-indexed so we need to add 1 for this to
+                        // have the correct 'limit' value)
+                        let finalIndex: Int = min(totalCount, (targetIndex + 1 + abs(padding)))
                         
                         return (
                             (finalIndex - cacheCurrentEndIndex),
@@ -937,15 +941,19 @@ public class AssociatedRecord<T, PagedType>: ErasedAssociatedRecord where T: Fet
         let uniqueIndexes: [Int64] = itemIndexes.asSet().sorted()
         let itemIndexesAreSequential: Bool = (uniqueIndexes.map { $0 - 1 }.dropFirst() == uniqueIndexes.dropLast())
         let hasOneValidIndex: Bool = itemIndexes.contains(where: { index -> Bool in
-            index >= pageInfo.pageOffset &&
-            index < pageInfo.currentCount
+            index >= pageInfo.pageOffset && (
+                index < pageInfo.currentCount ||
+                pageInfo.currentCount == 0
+            )
         })
         let validRowIds: [Int64] = (itemIndexesAreSequential && hasOneValidIndex ?
             rowIdsToQuery :
             zip(itemIndexes, rowIdsToQuery)
                 .filter { index, _ -> Bool in
-                    index >= pageInfo.pageOffset &&
-                    index < pageInfo.currentCount
+                    index >= pageInfo.pageOffset && (
+                        index < pageInfo.currentCount ||
+                        pageInfo.currentCount == 0
+                    )
                 }
                 .map { _, rowId -> Int64 in rowId }
         )

@@ -50,7 +50,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         var notificationTitle: String = senderName
         
         if thread.variant == .closedGroup || thread.variant == .openGroup {
-            if thread.onlyNotifyForMentions && !interaction.isUserMentioned(db) {
+            if thread.onlyNotifyForMentions && !interaction.hasMention {
                 // Ignore PNs if the group is set to only notify for mentions
                 return
             }

@@ -30,7 +30,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     
     public static let pageSize: Int = 50
     
-    private let threadId: String
+    private var threadId: String
     public let initialThreadVariant: SessionThread.Variant
     public var sentMessageBeforeUpdate: Bool = false
     public var lastSearchedText: String?
@@ -62,7 +62,73 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         // also want to skip the initial query and trigger it async so that the push animation
         // doesn't stutter (it should load basically immediately but without this there is a
         // distinct stutter)
-        self.pagedDataObserver = PagedDatabaseObserver(
+        self.pagedDataObserver = self.setupPagedObserver(for: threadId)
+        
+        // Run the initial query on a backgorund thread so we don't block the push transition
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            // If we don't have a `initialFocusedId` then default to `.pageBefore` (it'll query
+            // from a `0` offset)
+            guard let initialFocusedId: Int64 = focusedInteractionId else {
+                self?.pagedDataObserver?.load(.pageBefore)
+                return
+            }
+            
+            self?.pagedDataObserver?.load(.initialPageAround(id: initialFocusedId))
+        }
+    }
+    
+    // MARK: - Thread Data
+    
+    /// This value is the current state of the view
+    public private(set) var threadData: SessionThreadViewModel = SessionThreadViewModel()
+    
+    /// This is all the data the screen needs to populate itself, please see the following link for tips to help optimise
+    /// performance https://github.com/groue/GRDB.swift#valueobservation-performance
+    ///
+    /// **Note:** The 'trackingConstantRegion' is optimised in such a way that the request needs to be static
+    /// otherwise there may be situations where it doesn't get updates, this means we can't have conditional queries
+    ///
+    /// **Note:** This observation will be triggered twice immediately (and be de-duped by the `removeDuplicates`)
+    /// this is due to the behaviour of `ValueConcurrentObserver.asyncStartObservation` which triggers it's own
+    /// fetch (after the ones in `ValueConcurrentObserver.asyncStart`/`ValueConcurrentObserver.syncStart`)
+    /// just in case the database has changed between the two reads - unfortunately it doesn't look like there is a way to prevent this
+    public lazy var observableThreadData: ValueObservation<ValueReducers.RemoveDuplicates<ValueReducers.Fetch<SessionThreadViewModel?>>> = setupObservableThreadData(for: self.threadId)
+    
+    private func setupObservableThreadData(for threadId: String) -> ValueObservation<ValueReducers.RemoveDuplicates<ValueReducers.Fetch<SessionThreadViewModel?>>> {
+        return ValueObservation
+            .trackingConstantRegion { db -> SessionThreadViewModel? in
+                let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                
+                return try SessionThreadViewModel
+                    .conversationQuery(threadId: threadId, userPublicKey: userPublicKey)
+                    .fetchOne(db)
+            }
+            .removeDuplicates()
+    }
+
+    public func updateThreadData(_ updatedData: SessionThreadViewModel) {
+        self.threadData = updatedData
+    }
+    
+    // MARK: - Interaction Data
+    
+    public private(set) var unobservedInteractionDataChanges: [SectionModel]?
+    public private(set) var interactionData: [SectionModel] = []
+    public private(set) var pagedDataObserver: PagedDatabaseObserver<Interaction, MessageViewModel>?
+    
+    public var onInteractionChange: (([SectionModel]) -> ())? {
+        didSet {
+            // When starting to observe interaction changes we want to trigger a UI update just in case the
+            // data was changed while we weren't observing
+            if let unobservedInteractionDataChanges: [SectionModel] = self.unobservedInteractionDataChanges {
+                onInteractionChange?(unobservedInteractionDataChanges)
+                self.unobservedInteractionDataChanges = nil
+            }
+        }
+    }
+    
+    private func setupPagedObserver(for threadId: String) -> PagedDatabaseObserver<Interaction, MessageViewModel> {
+        return PagedDatabaseObserver(
             pagedTable: Interaction.self,
             pageSize: ConversationViewModel.pageSize,
             idColumn: .id,
@@ -113,57 +179,19 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                     return
                 }
                 
-                self?.onInteractionChange?(updatedInteractionData)
+                // If we have the 'onInteractionChanged' callback then trigger it, otherwise just store the changes
+                // to be sent to the callback if we ever start observing again (when we have the callback it needs
+                // to do the data updating as it's tied to UI updates and can cause crashes if not updated in the
+                // correct order)
+                guard let onInteractionChange: (([SectionModel]) -> ()) = self?.onInteractionChange else {
+                    self?.unobservedInteractionDataChanges = updatedInteractionData
+                    return
+                }
+
+                onInteractionChange(updatedInteractionData)
             }
         )
-        
-        // Run the initial query on a backgorund thread so we don't block the push transition
-        DispatchQueue.global(qos: .default).async { [weak self] in
-            // If we don't have a `initialFocusedId` then default to `.pageBefore` (it'll query
-            // from a `0` offset)
-            guard let initialFocusedId: Int64 = focusedInteractionId else {
-                self?.pagedDataObserver?.load(.pageBefore)
-                return
-            }
-            
-            self?.pagedDataObserver?.load(.initialPageAround(id: initialFocusedId))
-        }
     }
-    
-    // MARK: - Thread Data
-    
-    /// This value is the current state of the view
-    public private(set) var threadData: SessionThreadViewModel = SessionThreadViewModel()
-    
-    /// This is all the data the screen needs to populate itself, please see the following link for tips to help optimise
-    /// performance https://github.com/groue/GRDB.swift#valueobservation-performance
-    ///
-    /// **Note:** The 'trackingConstantRegion' is optimised in such a way that the request needs to be static
-    /// otherwise there may be situations where it doesn't get updates, this means we can't have conditional queries
-    ///
-    /// **Note:** This observation will be triggered twice immediately (and be de-duped by the `removeDuplicates`)
-    /// this is due to the behaviour of `ValueConcurrentObserver.asyncStartObservation` which triggers it's own
-    /// fetch (after the ones in `ValueConcurrentObserver.asyncStart`/`ValueConcurrentObserver.syncStart`)
-    /// just in case the database has changed between the two reads - unfortunately it doesn't look like there is a way to prevent this
-    public lazy var observableThreadData = ValueObservation
-        .trackingConstantRegion { [threadId = self.threadId] db -> SessionThreadViewModel? in
-            let userPublicKey: String = getUserHexEncodedPublicKey(db)
-            
-            return try SessionThreadViewModel
-                .conversationQuery(threadId: threadId, userPublicKey: userPublicKey)
-                .fetchOne(db)
-        }
-        .removeDuplicates()
-
-    public func updateThreadData(_ updatedData: SessionThreadViewModel) {
-        self.threadData = updatedData
-    }
-    
-    // MARK: - Interaction Data
-    
-    public private(set) var interactionData: [SectionModel] = []
-    public private(set) var pagedDataObserver: PagedDatabaseObserver<Interaction, MessageViewModel>?
-    public var onInteractionChange: (([SectionModel]) -> ())?
     
     private func process(data: [MessageViewModel], for pageInfo: PagedData.PageInfo) -> [SectionModel] {
         let typingIndicator: MessageViewModel? = data.first(where: { $0.isTypingIndicator == true })
@@ -358,6 +386,26 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                 includingOlder: true,
                 trySendReadReceipt: trySendReadReceipt
             )
+        }
+    }
+    
+    public func swapToThread(updatedThreadId: String) {
+        let oldestMessageId: Int64? = self.interactionData
+            .filter { $0.model == .messages }
+            .first?
+            .elements
+            .first?
+            .id
+        
+        self.threadId = updatedThreadId
+        self.observableThreadData = self.setupObservableThreadData(for: updatedThreadId)
+        self.pagedDataObserver = self.setupPagedObserver(for: updatedThreadId)
+        
+        // Try load everything up to the initial visible message, fallback to just the initial page of messages
+        // if we don't have one
+        switch oldestMessageId {
+            case .some(let id): self.pagedDataObserver?.load(.untilInclusive(id: id, padding: 0))
+            case .none: self.pagedDataObserver?.load(.pageBefore)
         }
     }
     

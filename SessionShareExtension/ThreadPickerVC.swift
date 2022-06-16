@@ -4,6 +4,7 @@ import UIKit
 import GRDB
 import PromiseKit
 import DifferenceKit
+import Sodium
 import SessionUIKit
 import SignalUtilitiesKit
 import SessionMessagingKit
@@ -228,14 +229,13 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
                     }
                     
                     // Create the interaction
-                    let userPublicKey: String = getUserHexEncodedPublicKey(db)
                     let interaction: Interaction = try Interaction(
                         threadId: threadId,
                         authorId: getUserHexEncodedPublicKey(db),
                         variant: .standardOutgoing,
                         body: body,
                         timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000)),
-                        hasMention: (body?.contains("@\(userPublicKey)") == true),
+                        hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: body),
                         linkPreviewUrl: (isSharingUrl ? attachments.first?.linkPreviewDraft?.urlString : nil)
                     ).inserted(db)
 

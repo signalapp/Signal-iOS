@@ -2,6 +2,7 @@
 
 import Foundation
 import GRDB
+import Sodium
 import SessionUtilitiesKit
 
 public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, MutablePersistableRecord, TableRecord, ColumnExpressible {
@@ -588,19 +589,44 @@ public extension Interaction {
         )
     }
     
-    func isUserMentioned(_ db: Database) -> Bool {
-        guard variant == .standardIncoming else { return false }
+    static func isUserMentioned(
+        _ db: Database,
+        threadId: String,
+        body: String?,
+        quoteAuthorId: String? = nil
+    ) -> Bool {
+        var publicKeysToCheck: [String] = [
+            getUserHexEncodedPublicKey(db)
+        ]
         
-        let userPublicKey: String = getUserHexEncodedPublicKey(db)
+        // If the thread is an open group then add the blinded id as a key to check
+        if let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: threadId) {
+            let sodium: Sodium = Sodium()
+            
+            if
+                let userEd25519KeyPair: Box.KeyPair = Identity.fetchUserEd25519KeyPair(db),
+                let blindedKeyPair: Box.KeyPair = sodium.blindedKeyPair(
+                    serverPublicKey: openGroup.publicKey,
+                    edKeyPair: userEd25519KeyPair,
+                    genericHash: sodium.genericHash
+                )
+            {
+                publicKeysToCheck.append(
+                    SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString
+                )
+            }
+        }
         
-        return (
+        // A user is mentioned if their public key is in the body of a message or one of their messages
+        // was quoted
+        return publicKeysToCheck.contains { publicKey in
             (
                 body != nil &&
-                (body ?? "").contains("@\(userPublicKey)")
+                (body ?? "").contains("@\(publicKey)")
             ) || (
-                (try? quote.fetchOne(db))?.authorId == userPublicKey
+                quoteAuthorId == publicKey
             )
-        )
+        }
     }
     
     /// Use the `Interaction.previewText` method directly where possible rather than this method as it

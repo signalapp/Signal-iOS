@@ -590,8 +590,19 @@ public final class OpenGroupManager: NSObject {
                     )
                 }
             }
-            catch let error {
-                SNLog("Couldn't receive inbox message due to error: \(error).")
+            catch {
+                switch error {
+                    // Ignore duplicate and self-send errors (we will always receive a duplicate message back
+                    // whenever we send a message so this ends up being spam otherwise)
+                    case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
+                        MessageReceiverError.duplicateMessage,
+                        MessageReceiverError.duplicateControlMessage,
+                        MessageReceiverError.selfSend:
+                        break
+                        
+                    default:
+                        SNLog("Couldn't receive inbox message due to error: \(error).")
+                }
             }
         }
     }

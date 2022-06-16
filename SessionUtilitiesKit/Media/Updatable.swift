@@ -72,6 +72,14 @@ public func ?? <T>(updatable: Updatable<T>, existingValue: @autoclosure () throw
     }
 }
 
+public func ?? <T>(updatable: Updatable<Optional<T>>, existingValue: @autoclosure () throws -> T?) rethrows -> T? {
+    switch updatable {
+        case .remove: return nil
+        case .existing: return try existingValue()
+        case .update(let newValue): return newValue
+    }
+}
+
 // MARK: - ExpressibleBy Conformance
 
 extension Updatable {

@@ -2,6 +2,7 @@
 
 import Foundation
 import GRDB
+import Sodium
 import SignalCoreKit
 import SessionUtilitiesKit
 
@@ -48,10 +49,44 @@ extension MessageReceiver {
         let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
         let thread: SessionThread = try SessionThread
             .fetchOrCreate(db, id: threadInfo.id, variant: threadInfo.variant)
-        let variant: Interaction.Variant = (sender == currentUserPublicKey ?
-            .standardOutgoing :
-            .standardIncoming
-        )
+        let variant: Interaction.Variant = {
+            guard
+                let openGroupId: String = openGroupId,
+                let senderSessionId: SessionId = SessionId(from: sender),
+                let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: openGroupId)
+            else {
+                return (sender == currentUserPublicKey ?
+                    .standardOutgoing :
+                    .standardIncoming
+                )
+            }
+
+            // Need to check if the blinded id matches for open groups
+            switch senderSessionId.prefix {
+                case .blinded:
+                    let sodium: Sodium = Sodium()
+                    
+                    guard
+                        let userEdKeyPair: Box.KeyPair = Identity.fetchUserEd25519KeyPair(db),
+                        let blindedKeyPair: Box.KeyPair = sodium.blindedKeyPair(
+                            serverPublicKey: openGroup.publicKey,
+                            edKeyPair: userEdKeyPair,
+                            genericHash: sodium.genericHash
+                        )
+                    else { return .standardIncoming }
+                    
+                    return (sender == SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString ?
+                        .standardOutgoing :
+                        .standardIncoming
+                    )
+                    
+                case .standard, .unblinded:
+                    return (sender == currentUserPublicKey ?
+                        .standardOutgoing :
+                        .standardIncoming
+                    )
+            }
+        }()
         
         // Retrieve the disappearing messages config to set the 'expiresInSeconds' value
         // accoring to the config
@@ -74,9 +109,11 @@ extension MessageReceiver {
                 body: message.text,
                 timestampMs: Int64(messageSentTimestamp * 1000),
                 wasRead: (variant == .standardOutgoing), // Auto-mark sent messages as read
-                hasMention: (
-                    message.text?.contains("@\(currentUserPublicKey)") == true ||
-                    dataMessage.quote?.author == currentUserPublicKey
+                hasMention: Interaction.isUserMentioned(
+                    db,
+                    threadId: thread.id,
+                    body: message.text,
+                    quoteAuthorId: dataMessage.quote?.author
                 ),
                 // Note: Ensure we don't ever expire open group messages
                 expiresInSeconds: (disappearingMessagesConfiguration.isEnabled && message.openGroupServerMessageId == nil ?

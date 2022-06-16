@@ -132,14 +132,13 @@ extension MessageReceiver {
         else {
             // The message was sent to the current user so flag their 'didApproveMe' as true (can't send a message to
             // someone without approving them)
-            guard
-                let contact: Contact = try? Contact.fetchOne(db, id: senderSessionId),
-                !contact.didApproveMe
-            else { return }
+            let contact: Contact = Contact.fetchOrCreate(db, id: senderSessionId)
+            
+            guard !contact.didApproveMe else { return }
 
-            try? contact
+            _ = try? contact
                 .with(didApproveMe: true)
-                .update(db)
+                .saved(db)
         }
         
         // Force a config sync to ensure all devices know the contact approval state if desired

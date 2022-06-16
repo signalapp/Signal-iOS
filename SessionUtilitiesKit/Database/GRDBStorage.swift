@@ -337,6 +337,13 @@ public final class GRDBStorage {
         
         dbPool.add(transactionObserver: observer)
     }
+    
+    public func removeObserver(_ observer: TransactionObserver?) {
+        guard isValid, let dbPool: DatabasePool = dbPool else { return }
+        guard let observer: TransactionObserver = observer else { return }
+        
+        dbPool.remove(transactionObserver: observer)
+    }
 }
 
 // MARK: - Promise Extensions

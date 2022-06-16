@@ -67,11 +67,12 @@ public final class MessageSender {
         let (promise, seal) = Promise<Void>.pending()
         let userPublicKey: String = getUserHexEncodedPublicKey(db)
         let isMainAppActive: Bool = (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false)
+        let messageSendTimestamp: Int64 = Int64(floor(Date().timeIntervalSince1970 * 1000))
         
         // Set the timestamp, sender and recipient
         message.sentTimestamp = (
             message.sentTimestamp ??     // Visible messages will already have their sent timestamp set
-            UInt64(floor(Date().timeIntervalSince1970 * 1000))
+            UInt64(messageSendTimestamp)
         )
         message.sender = userPublicKey
         message.recipient = {
@@ -196,13 +197,12 @@ public final class MessageSender {
         
         // Send the result
         let base64EncodedData = wrappedMessage.base64EncodedString()
-        let timestamp = UInt64(Int64(message.sentTimestamp!) + SnodeAPI.clockOffset)
 
         let snodeMessage = SnodeMessage(
             recipient: message.recipient!,
             data: base64EncodedData,
             ttl: message.ttl,
-            timestampMs: timestamp
+            timestampMs: UInt64(messageSendTimestamp + SnodeAPI.clockOffset)
         )
         
         SnodeAPI
@@ -529,6 +529,8 @@ public final class MessageSender {
                 using: dependencies
             )
             .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
+                message.openGroupServerMessageId = UInt64(data.id)
+                
                 dependencies.storage.write { transaction in
                     try MessageSender.handleSuccessfulMessageSend(
                         db,

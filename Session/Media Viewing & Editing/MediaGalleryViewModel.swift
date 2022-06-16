@@ -35,8 +35,18 @@ public class MediaGalleryViewModel {
     public private(set) var pagedDataObserver: PagedDatabaseObserver<Attachment, Item>?
     
     /// This value is the current state of a gallery view
+    private var unobservedGalleryDataChanges: [SectionModel]?
     public private(set) var galleryData: [SectionModel] = []
-    public var onGalleryChange: (([SectionModel]) -> ())?
+    public var onGalleryChange: (([SectionModel]) -> ())? {
+        didSet {
+            // When starting to observe interaction changes we want to trigger a UI update just in case the
+            // data was changed while we weren't observing
+            if let unobservedGalleryDataChanges: [SectionModel] = self.unobservedGalleryDataChanges {
+                onGalleryChange?(unobservedGalleryDataChanges)
+                self.unobservedGalleryDataChanges = nil
+            }
+        }
+    }
     
     // MARK: - Initialization
     
@@ -78,7 +88,16 @@ public class MediaGalleryViewModel {
                     return
                 }
                 
-                self?.onGalleryChange?(updatedGalleryData)
+                // If we have the 'onGalleryChange' callback then trigger it, otherwise just store the changes
+                // to be sent to the callback if we ever start observing again (when we have the callback it needs
+                // to do the data updating as it's tied to UI updates and can cause crashes if not updated in the
+                // correct order)
+                guard let onGalleryChange: (([SectionModel]) -> ()) = self?.onGalleryChange else {
+                    self?.unobservedGalleryDataChanges = updatedGalleryData
+                    return
+                }
+
+                onGalleryChange(updatedGalleryData)
             }
         )
         
