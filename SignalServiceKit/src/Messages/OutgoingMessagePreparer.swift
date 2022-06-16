@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 @objc
@@ -19,7 +19,7 @@ public class OutgoingMessagePreparer: NSObject {
     }
 
     @objc
-    convenience init(_ message: TSOutgoingMessage) {
+    public convenience init(_ message: TSOutgoingMessage) {
         self.init(message, unsavedAttachmentInfos: [])
     }
 

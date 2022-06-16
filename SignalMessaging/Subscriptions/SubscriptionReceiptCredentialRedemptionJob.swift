@@ -190,8 +190,9 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                     Logger.info("[Subscriptions] Durable job requesting receipt for boost")
                     return try SubscriptionManager.requestBoostReceiptCredentialPresentation(
                         for: self.boostPaymentIntentID,
-                           context: self.receiptCredentialRequestContext,
-                           request: self.receiptCredentialRequest
+                        context: self.receiptCredentialRequestContext,
+                        request: self.receiptCredentialRequest,
+                        expectedBadgeLevel: .boostBadge
                     )
                 } else {
                     Logger.info("[Subscriptions] Durable job requesting receipt for subscription")

@@ -67,11 +67,13 @@ public extension OWSRequestFactory {
     }
 
     static func boostCreatePaymentIntent(withAmount amount: UInt,
-                                         inCurrencyCode currencyCode: Currency.Code) -> TSRequest {
+                                         inCurrencyCode currencyCode: Currency.Code,
+                                         level: UInt64) -> TSRequest {
         let request = TSRequest(url: URL(string: textSecureBoostCreatePaymentIntent)!,
                                 method: HTTPMethod.post.methodName,
                                 parameters: ["currency": currencyCode.lowercased(),
-                                             "amount": amount])
+                                             "amount": amount,
+                                             "level": level])
         request.shouldHaveAuthorizationHeaders = false
         return request
     }

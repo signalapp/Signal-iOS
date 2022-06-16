@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 import PassKit
 import SignalUI
+import LibSignalClient
 
 // TODO (GB) This view is unfinished.
 class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
@@ -255,52 +256,102 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
         didAuthorizePayment payment: PKPayment,
         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
-        // TODO (GB) Actually charge the card and send the badge.
-        let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
-        completion(authResult)
+        var hasChargeCompleted = false
 
-        firstly { () -> Promise<TSContactThread> in
-            let (thread, messagePromise) = databaseStorage.write { transaction -> (TSContactThread, Promise<Void>) in
-                let thread = TSContactThread.getOrCreateThread(withContactAddress: recipientAddress,
+        let priceAsDecimal = NSDecimalNumber(value: price)
+
+        firstly(on: .global()) {
+            Stripe.boost(amount: priceAsDecimal, in: self.currencyCode, level: .giftBadge, for: payment)
+        }.then { (intentId: String) -> Promise<ReceiptCredentialPresentation> in
+            hasChargeCompleted = true
+
+            // TODO (GB): Make this operation durable.
+            let (receiptCredentialRequestContext, receiptCredentialRequest) = try SubscriptionManager.generateReceiptRequest()
+            return try SubscriptionManager.requestBoostReceiptCredentialPresentation(
+                for: intentId,
+                context: receiptCredentialRequestContext,
+                request: receiptCredentialRequest,
+                expectedBadgeLevel: .giftBadge
+            )
+        }.then { (receiptCredentialPresentation: ReceiptCredentialPresentation) -> Promise<TSContactThread> in
+            let (thread, messagesPromise) = self.databaseStorage.write { transaction -> (TSContactThread, Promise<Void>) in
+                let thread = TSContactThread.getOrCreateThread(withContactAddress: self.recipientAddress,
                                                                transaction: transaction)
 
-                let messagePromise: Promise<Void>
-                if messageText.isEmpty {
-                    messagePromise = Promise.value(())
+                func send(_ preparer: OutgoingMessagePreparer) -> Promise<Void> {
+                    preparer.insertMessage(linkPreviewDraft: nil, transaction: transaction)
+                    return ThreadUtil.enqueueMessagePromise(message: preparer.unpreparedMessage,
+                                                            transaction: transaction)
+                }
+
+                let giftMessagePromise = send(OutgoingMessagePreparer(
+                    giftBadgeReceiptCredentialPresentation: receiptCredentialPresentation,
+                    thread: thread,
+                    transaction: transaction
+                ))
+
+                let messagesPromise: Promise<Void>
+                if self.messageText.isEmpty {
+                    messagesPromise = giftMessagePromise
                 } else {
-                    let preparer = OutgoingMessagePreparer(
-                        messageBody: MessageBody(text: messageText, ranges: .empty),
+                    let textMessagePromise = send(OutgoingMessagePreparer(
+                        messageBody: MessageBody(text: self.messageText, ranges: .empty),
                         mediaAttachments: [],
                         thread: thread,
                         quotedReplyModel: nil,
                         transaction: transaction
-                    )
-                    preparer.insertMessage(linkPreviewDraft: nil, transaction: transaction)
-                    messagePromise = ThreadUtil.enqueueMessagePromise(message: preparer.unpreparedMessage,
-                                                                      transaction: transaction)
+                    ))
+                    messagesPromise = giftMessagePromise.then { textMessagePromise }
                 }
 
-                return (thread, messagePromise)
+                return (thread, messagesPromise)
             }
-
-            return messagePromise.map { thread }
-        }.done { (thread: TSContactThread) in
+            return messagesPromise.map { thread }
+        }.done(on: .main) { (thread: TSContactThread) in
+            completion(.init(status: .success, errors: nil))
             SignalApp.shared().presentConversation(for: thread, action: .none, animated: false)
             self.dismiss(animated: true)
             controller.dismiss()
-        }.catch { error in
-            // TODO (GB) If the user has been charged, show a different error.
-            OWSActionSheets.showActionSheet(
-                title: NSLocalizedString("BADGE_GIFTING_PAYMENT_FAILED_TITLE",
-                                         comment: "Title for the action sheet when you try to send a gift badge but the payment failed"),
-                message: NSLocalizedString("BADGE_GIFTING_PAYMENT_FAILED_BODY",
-                                           comment: "Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged")
-            )
-            owsFailDebug("Failed to send gift: \(error)")
+        }.catch(on: .main) { error in
+            owsFailDebugUnlessNetworkFailure(error)
+
+            completion(.init(status: .failure, errors: [error]))
+
+            let title: String
+            let message: String
+            if hasChargeCompleted {
+                title = NSLocalizedString("BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE",
+                                          comment: "Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support.")
+                message = NSLocalizedString("BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY",
+                                            comment: "Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support.")
+            } else {
+                title = NSLocalizedString("BADGE_GIFTING_PAYMENT_FAILED_TITLE",
+                                          comment: "Title for the action sheet when you try to send a gift badge but the payment failed")
+                message = NSLocalizedString("BADGE_GIFTING_PAYMENT_FAILED_BODY",
+                                            comment: "Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged")
+            }
+
+            OWSActionSheets.showActionSheet(title: title, message: message)
         }
     }
 
     func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
         controller.dismiss()
+    }
+}
+
+// MARK: - Outgoing message preparer
+
+extension OutgoingMessagePreparer {
+    public convenience init(giftBadgeReceiptCredentialPresentation: ReceiptCredentialPresentation,
+                            thread: TSThread,
+                            transaction: SDSAnyReadTransaction) {
+        let message = TSOutgoingMessageBuilder(
+            thread: thread,
+            expiresInSeconds: thread.disappearingMessagesDuration(with: transaction),
+            giftBadge: OWSGiftBadge(redemptionCredential: Data(giftBadgeReceiptCredentialPresentation.serialize()))
+        ).build(transaction: transaction)
+
+        self.init(message)
     }
 }

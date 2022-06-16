@@ -569,7 +569,10 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
         enum BoostError: Error { case timeout, assertion }
 
         firstly {
-            Stripe.boost(amount: donationAmount, in: currencyCode, for: payment)
+            Stripe.boost(amount: donationAmount,
+                         in: currencyCode,
+                         level: .boostBadge,
+                         for: payment)
         }.done { intentId in
             completion(.init(status: .success, errors: nil))
             SubscriptionManager.terminateTransactionIfPossible = false

@@ -39,7 +39,9 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                          additionalRecipients: [SignalServiceAddress]? = nil,
                          storyAuthorAddress: SignalServiceAddress? = nil,
                          storyTimestamp: UInt64? = nil,
-                         storyReactionEmoji: String? = nil) {
+                         storyReactionEmoji: String? = nil,
+                         giftBadge: OWSGiftBadge? = nil
+    ) {
 
         super.init(thread: thread,
                    timestamp: timestamp,
@@ -55,7 +57,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                    isViewOnceMessage: isViewOnceMessage,
                    storyAuthorAddress: storyAuthorAddress,
                    storyTimestamp: storyTimestamp,
-                   storyReactionEmoji: storyReactionEmoji)
+                   storyReactionEmoji: storyReactionEmoji,
+                   giftBadge: giftBadge)
 
         self.isVoiceMessage = isVoiceMessage
         self.groupMetaMessage = groupMetaMessage
