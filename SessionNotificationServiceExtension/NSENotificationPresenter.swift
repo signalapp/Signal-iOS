@@ -142,7 +142,33 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
     }
     
     public func notifyUser(forReaction reactMessage: ReactMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
+        guard !thread.isMuted else { return }
+        guard !thread.isGroupThread() else { return } // We do NOT notify emoji reacts in groups
+        guard !thread.isMessageRequest(using: transaction) else { return }
+        guard let sender = reactMessage.sender, let emoji = reactMessage.emoji else { return }
+        guard let threadID = thread.uniqueId else { return }
         
+        let context = Contact.context(for: thread)
+        let senderName = Storage.shared.getContact(with: sender, using: transaction)?.displayName(for: context) ?? sender
+        
+        let notificationTitle = "Session"
+        var notificationBody = String(format: "EMOJI_REACTS_NOTIFICATION".localized(), senderName, emoji)
+        let notificationsPreference = Environment.shared.preferences!.notificationPreviewType()
+        switch notificationsPreference {
+            case .namePreview: break
+            default: notificationBody = NotificationStrings.incomingMessageBody
+        }
+
+        var userInfo: [String:Any] = [ NotificationServiceExtension.isFromRemoteKey : true ]
+        userInfo[NotificationServiceExtension.threadIdKey] = threadID
+        
+        let notificationContent = UNMutableNotificationContent()
+        notificationContent.userInfo = userInfo
+        notificationContent.sound = OWSSounds.notificationSound(for: thread).notificationSound(isQuiet: false)
+        notificationContent.title = notificationTitle
+        notificationContent.body = notificationBody
+        
+        addNotifcationRequest(identifier: UUID().uuidString, notificationContent: notificationContent, trigger: nil)
     }
     
     public func cancelNotification(_ identifier: String) {
