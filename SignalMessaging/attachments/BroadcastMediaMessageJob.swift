@@ -244,6 +244,10 @@ public enum BroadcastMediaUploader: Dependencies {
                                                              uploadTimestamp: uploadTimestamp,
                                                              transaction: transaction)
 
+                    uploadedAttachment.blurHash.map { blurHash in
+                        correspondingAttachment.update(withBlurHash: blurHash, transaction: transaction)
+                    }
+
                     guard let albumMessageId = correspondingAttachment.albumMessageId else {
                         continue
                     }
