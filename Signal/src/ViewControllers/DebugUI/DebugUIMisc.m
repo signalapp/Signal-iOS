@@ -340,6 +340,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     thread:thread
                           quotedReplyModel:nil
                           linkPreviewDraft:nil
+              persistenceCompletionHandler:nil
                                transaction:transaction];
     }];
 }

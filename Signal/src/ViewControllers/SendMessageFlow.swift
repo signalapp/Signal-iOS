@@ -390,7 +390,6 @@ extension SendMessageFlow {
         databaseStorage.read { transaction in
             ThreadUtil.enqueueMessage(body: messageBody,
                                       thread: thread,
-                                      quotedReplyModel: nil,
                                       linkPreviewDraft: linkPreviewDraft,
                                       transaction: transaction)
         }
@@ -405,8 +404,6 @@ extension SendMessageFlow {
             ThreadUtil.enqueueMessage(body: messageBody,
                                       mediaAttachments: [attachment],
                                       thread: thread,
-                                      quotedReplyModel: nil,
-                                      linkPreviewDraft: nil,
                                       transaction: transaction)
         }
     }

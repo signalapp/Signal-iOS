@@ -140,12 +140,10 @@ public class NotificationActionHandler: NSObject {
                 self.databaseStorage.write { transaction in
                     let preparer = OutgoingMessagePreparer(
                         messageBody: MessageBody(text: replyText, ranges: .empty),
-                        mediaAttachments: [],
                         thread: thread,
-                        quotedReplyModel: nil,
                         transaction: transaction
                     )
-                    preparer.insertMessage(linkPreviewDraft: nil, transaction: transaction)
+                    preparer.insertMessage(transaction: transaction)
                     return ThreadUtil.enqueueMessagePromise(message: preparer.unpreparedMessage, transaction: transaction)
                 }
             }.recover(on: .global()) { error -> Promise<Void> in

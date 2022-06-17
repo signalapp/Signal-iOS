@@ -184,9 +184,7 @@ extension SharingThreadPickerViewController {
                     return self.databaseStorage.write { transaction in
                         let preparer = OutgoingMessagePreparer(
                             messageBody: body,
-                            mediaAttachments: [],
                             thread: thread,
-                            quotedReplyModel: nil,
                             transaction: transaction
                         )
                         preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, transaction: transaction)

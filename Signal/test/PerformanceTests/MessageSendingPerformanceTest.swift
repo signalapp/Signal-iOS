@@ -154,8 +154,6 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
                                               ranges: MessageBodyRanges.empty)
                 ThreadUtil.enqueueMessage(body: messageBody,
                                           thread: thread,
-                                          quotedReplyModel: nil,
-                                          linkPreviewDraft: nil,
                                           transaction: transaction)
             }
         }

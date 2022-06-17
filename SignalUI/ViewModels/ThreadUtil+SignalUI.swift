@@ -11,42 +11,11 @@ public extension ThreadUtil {
 
     @discardableResult
     class func enqueueMessage(body messageBody: MessageBody?,
+                              mediaAttachments: [SignalAttachment] = [],
                               thread: TSThread,
-                              quotedReplyModel: OWSQuotedReplyModel?,
-                              linkPreviewDraft: OWSLinkPreviewDraft?,
-                              transaction: SDSAnyReadTransaction) -> TSOutgoingMessage {
-        enqueueMessage(body: messageBody,
-                       mediaAttachments: [],
-                       thread: thread,
-                       quotedReplyModel: quotedReplyModel,
-                       linkPreviewDraft: linkPreviewDraft,
-                       persistenceCompletionHandler: nil,
-                       transaction: transaction)
-    }
-
-    @discardableResult
-    class func enqueueMessage(body messageBody: MessageBody?,
-                              mediaAttachments: [SignalAttachment],
-                              thread: TSThread,
-                              quotedReplyModel: OWSQuotedReplyModel?,
-                              linkPreviewDraft: OWSLinkPreviewDraft?,
-                              transaction: SDSAnyReadTransaction) -> TSOutgoingMessage {
-        enqueueMessage(body: messageBody,
-                       mediaAttachments: mediaAttachments,
-                       thread: thread,
-                       quotedReplyModel: quotedReplyModel,
-                       linkPreviewDraft: linkPreviewDraft,
-                       persistenceCompletionHandler: nil,
-                       transaction: transaction)
-    }
-
-    @discardableResult
-    class func enqueueMessage(body messageBody: MessageBody?,
-                              mediaAttachments: [SignalAttachment],
-                              thread: TSThread,
-                              quotedReplyModel: OWSQuotedReplyModel?,
-                              linkPreviewDraft: OWSLinkPreviewDraft?,
-                              persistenceCompletionHandler persistenceCompletion: PersistenceCompletion?,
+                              quotedReplyModel: OWSQuotedReplyModel? = nil,
+                              linkPreviewDraft: OWSLinkPreviewDraft? = nil,
+                              persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
                               transaction readTransaction: SDSAnyReadTransaction) -> TSOutgoingMessage {
         AssertIsOnMainThread()
 
@@ -98,8 +67,8 @@ public extension ThreadUtil {
     class func createUnsentMessage(body messageBody: MessageBody?,
                                    mediaAttachments: [SignalAttachment],
                                    thread: TSThread,
-                                   quotedReplyModel: OWSQuotedReplyModel?,
-                                   linkPreviewDraft: OWSLinkPreviewDraft?,
+                                   quotedReplyModel: OWSQuotedReplyModel? = nil,
+                                   linkPreviewDraft: OWSLinkPreviewDraft? = nil,
                                    transaction: SDSAnyWriteTransaction) throws -> TSOutgoingMessage {
 
         let preparer = OutgoingMessagePreparer(messageBody: messageBody,
@@ -117,9 +86,9 @@ public extension ThreadUtil {
 extension OutgoingMessagePreparer {
     @objc
     public convenience init(messageBody: MessageBody?,
-                            mediaAttachments: [SignalAttachment],
+                            mediaAttachments: [SignalAttachment] = [],
                             thread: TSThread,
-                            quotedReplyModel: OWSQuotedReplyModel?,
+                            quotedReplyModel: OWSQuotedReplyModel? = nil,
                             transaction: SDSAnyReadTransaction) {
 
         var attachments = mediaAttachments

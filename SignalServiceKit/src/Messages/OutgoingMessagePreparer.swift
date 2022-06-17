@@ -30,7 +30,7 @@ public class OutgoingMessagePreparer: NSObject {
     }
 
     @objc
-    public func insertMessage(linkPreviewDraft: OWSLinkPreviewDraft?,
+    public func insertMessage(linkPreviewDraft: OWSLinkPreviewDraft? = nil,
                               transaction: SDSAnyWriteTransaction) {
         unpreparedMessage.anyInsert(transaction: transaction)
         if let linkPreviewDraft = linkPreviewDraft {

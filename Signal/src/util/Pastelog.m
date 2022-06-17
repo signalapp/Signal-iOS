@@ -392,9 +392,11 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             [ThreadUtil enqueueMessageWithBody:[[MessageBody alloc] initWithText:url.absoluteString
                                                                           ranges:MessageBodyRanges.empty]
+                              mediaAttachments:@[]
                                         thread:thread
                               quotedReplyModel:nil
                               linkPreviewDraft:nil
+                  persistenceCompletionHandler:nil
                                    transaction:transaction];
         }];
     });

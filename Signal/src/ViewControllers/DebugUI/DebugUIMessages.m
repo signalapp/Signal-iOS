@@ -292,9 +292,11 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
     DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         message = [ThreadUtil enqueueMessageWithBody:[[MessageBody alloc] initWithText:text
                                                                                 ranges:MessageBodyRanges.empty]
+                                    mediaAttachments:@[]
                                               thread:thread
                                     quotedReplyModel:nil
                                     linkPreviewDraft:nil
+                        persistenceCompletionHandler:nil
                                          transaction:transaction];
     });
     OWSLogInfo(@"sendTextMessageInThread timestamp: %llu.", message.timestamp);
@@ -1695,6 +1697,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
                                     thread:thread
                           quotedReplyModel:nil
                           linkPreviewDraft:nil
+              persistenceCompletionHandler:nil
                                transaction:transaction];
     }];
 }
@@ -3843,9 +3846,11 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
                 [ThreadUtil enqueueMessageWithBody:[[MessageBody alloc] initWithText:[@(counter) description]
                                                                               ranges:MessageBodyRanges.empty]
+                                  mediaAttachments:@[]
                                             thread:thread
                                   quotedReplyModel:nil
                                   linkPreviewDraft:nil
+                      persistenceCompletionHandler:nil
                                        transaction:transaction];
             });
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -4757,12 +4762,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         TSOutgoingMessage *message = [ThreadUtil
-            enqueueMessageWithBody:[[MessageBody alloc] initWithText:messageBody ranges:MessageBodyRanges.empty]
-                  mediaAttachments:attachments
-                            thread:thread
-                  quotedReplyModel:nil
-                  linkPreviewDraft:nil
-                       transaction:transaction];
+                  enqueueMessageWithBody:[[MessageBody alloc] initWithText:messageBody ranges:MessageBodyRanges.empty]
+                        mediaAttachments:attachments
+                                  thread:thread
+                        quotedReplyModel:nil
+                        linkPreviewDraft:nil
+            persistenceCompletionHandler:nil
+                             transaction:transaction];
         OWSLogDebug(@"timestamp: %llu.", message.timestamp);
     }];
 }

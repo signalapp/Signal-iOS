@@ -151,8 +151,6 @@ public class AttachmentMultisend: Dependencies {
                 let message = try! ThreadUtil.createUnsentMessage(body: messageBodyForContext,
                                                                   mediaAttachments: attachments,
                                                                   thread: thread,
-                                                                  quotedReplyModel: nil,
-                                                                  linkPreviewDraft: nil,
                                                                   transaction: transaction)
                 messages.append(message)
                 threads.append(thread)

@@ -339,7 +339,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
         }.then { (receiptCredentialPresentation: ReceiptCredentialPresentation) -> Promise<Void> in
             self.databaseStorage.write { transaction -> Promise<Void> in
                 func send(_ preparer: OutgoingMessagePreparer) -> Promise<Void> {
-                    preparer.insertMessage(linkPreviewDraft: nil, transaction: transaction)
+                    preparer.insertMessage(transaction: transaction)
                     return ThreadUtil.enqueueMessagePromise(message: preparer.unpreparedMessage,
                                                             transaction: transaction)
                 }
@@ -356,9 +356,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                 } else {
                     let textMessagePromise = send(OutgoingMessagePreparer(
                         messageBody: MessageBody(text: self.messageText, ranges: .empty),
-                        mediaAttachments: [],
                         thread: self.thread,
-                        quotedReplyModel: nil,
                         transaction: transaction
                     ))
                     messagesPromise = giftMessagePromise.then { textMessagePromise }

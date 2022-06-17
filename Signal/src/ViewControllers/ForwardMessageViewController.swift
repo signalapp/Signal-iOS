@@ -275,7 +275,6 @@ extension ForwardMessageViewController {
                         let messageBody = MessageBody(text: textMessage, ranges: .empty)
                         return self.send(toRecipientThreads: recipientThreads) { recipientThread in
                             self.send(body: messageBody,
-                                      linkPreviewDraft: nil,
                                       recipientThread: recipientThread)
                         }
                     } else {
@@ -347,12 +346,11 @@ extension ForwardMessageViewController {
         }
     }
 
-    fileprivate func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?, recipientThread: TSThread) -> Promise<Void> {
+    fileprivate func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft? = nil, recipientThread: TSThread) -> Promise<Void> {
         databaseStorage.read { transaction in
             ThreadUtil.enqueueMessage(
                 body: body.forNewContext(recipientThread, transaction: transaction.unwrapGrdbRead),
                 thread: recipientThread,
-                quotedReplyModel: nil,
                 linkPreviewDraft: linkPreviewDraft,
                 transaction: transaction
             )
@@ -365,13 +363,11 @@ extension ForwardMessageViewController {
         return Promise.value(())
     }
 
-    fileprivate func send(body: MessageBody?, attachment: SignalAttachment, thread: TSThread) -> Promise<Void> {
+    fileprivate func send(body: MessageBody, attachment: SignalAttachment, thread: TSThread) -> Promise<Void> {
         databaseStorage.read { transaction in
             ThreadUtil.enqueueMessage(body: body,
                                       mediaAttachments: [attachment],
                                       thread: thread,
-                                      quotedReplyModel: nil,
-                                      linkPreviewDraft: nil,
                                       transaction: transaction)
         }
         return Promise.value(())

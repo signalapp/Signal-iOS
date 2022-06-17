@@ -104,7 +104,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         let message = Self.databaseStorage.read { transaction in
             ThreadUtil.enqueueMessage(body: messageBody,
-                                      mediaAttachments: [],
                                       thread: self.thread,
                                       quotedReplyModel: inputToolbar.quotedReply,
                                       linkPreviewDraft: inputToolbar.linkPreviewDraft,
@@ -315,7 +314,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                                           mediaAttachments: attachments,
                                           thread: self.thread,
                                           quotedReplyModel: inputToolbar.quotedReply,
-                                          linkPreviewDraft: nil,
                                           persistenceCompletionHandler: {
                                                 AssertIsOnMainThread()
                                                 self.loadCoordinator.enqueueReload()
@@ -589,8 +587,6 @@ extension ConversationViewController: LocationPickerDelegate {
                                                             ranges: .empty),
                                           mediaAttachments: [ attachment ],
                                           thread: self.thread,
-                                          quotedReplyModel: nil,
-                                          linkPreviewDraft: nil,
                                           persistenceCompletionHandler: {
                                                 AssertIsOnMainThread()
                                                 self.loadCoordinator.enqueueReload()
