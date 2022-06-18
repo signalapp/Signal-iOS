@@ -9,8 +9,8 @@ import SignalUI
 
 class StoriesViewController: OWSViewController {
     let tableView = UITableView()
-    private var models = [StoryViewModel]()
-    private var myStoryModel: MyStoryViewModel?
+    private var models = AtomicArray<StoryViewModel>()
+    private var myStoryModel = AtomicOptional<MyStoryViewModel>(nil)
 
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
@@ -68,7 +68,7 @@ class StoriesViewController: OWSViewController {
                 switch Section(rawValue: indexPath.section) {
                 case .myStory:
                     guard let cell = self.tableView.cellForRow(at: indexPath) as? MyStoryCell else { continue }
-                    guard let model = self.myStoryModel else { continue }
+                    guard let model = self.myStoryModel.get() else { continue }
                     cell.configureTimestamp(with: model)
                 case .visibleStories:
                     guard let cell = self.tableView.cellForRow(at: indexPath) as? StoryCell else { continue }
@@ -126,7 +126,7 @@ class StoriesViewController: OWSViewController {
             switch Section(rawValue: indexPath.section) {
             case .myStory:
                 guard let cell = self.tableView.cellForRow(at: indexPath) as? MyStoryCell else { continue }
-                guard let model = self.myStoryModel else { continue }
+                guard let model = self.myStoryModel.get() else { continue }
                 cell.configure(with: model) { [weak self] in self?.showCameraView() }
             case .visibleStories:
                 guard let cell = self.tableView.cellForRow(at: indexPath) as? StoryCell else { continue }
@@ -229,9 +229,11 @@ class StoriesViewController: OWSViewController {
                 groupedMessages.compactMap { try? StoryViewModel(messages: $1, transaction: transaction) }
             }.sorted(by: self.sortStoryModels)
             let myStoryModel = Self.databaseStorage.read { MyStoryViewModel(messages: outgoingStories, transaction: $0) }
+
+            self.models.set(newModels)
+            self.myStoryModel.set(myStoryModel)
+
             DispatchQueue.main.async {
-                self.models = newModels
-                self.myStoryModel = myStoryModel
                 self.tableView.reloadData()
             }
         }
@@ -242,7 +244,10 @@ class StoriesViewController: OWSViewController {
 
         guard !rowIds.isEmpty else { return }
 
-        Self.loadingQueue.async { [models, myStoryModel] in
+        Self.loadingQueue.async {
+            let models = self.models.get()
+            let myStoryModel = self.myStoryModel.get()
+
             let (updatedListMessages, outgoingStories) = Self.databaseStorage.read {
                 (
                     StoryFinder.listStoriesWithRowIds(Array(rowIds), transaction: $0),
@@ -302,10 +307,10 @@ class StoriesViewController: OWSViewController {
                 return
             }
 
-            DispatchQueue.main.async {
-                self.models = newModels
-                self.myStoryModel = newMyStoryModel
+            self.models.set(newModels)
+            self.myStoryModel.set(newMyStoryModel)
 
+            DispatchQueue.main.async {
                 guard self.isViewLoaded else { return }
                 self.tableView.beginUpdates()
 
@@ -327,7 +332,7 @@ class StoriesViewController: OWSViewController {
                         let path = IndexPath(row: newIndex, section: Section.visibleStories.rawValue)
                         if (self.tableView.indexPathsForVisibleRows ?? []).contains(path),
                             let visibleCell = self.tableView.cellForRow(at: path) as? StoryCell {
-                            guard let model = self.models[safe: newIndex] else {
+                            guard let model = self.models.get()[safe: newIndex] else {
                                 return owsFailDebug("Missing model for story")
                             }
                             visibleCell.configure(with: model)
@@ -416,15 +421,15 @@ extension StoriesViewController: UITableViewDataSource {
     func model(for indexPath: IndexPath) -> StoryViewModel? {
         // TODO: Hidden stories
         guard indexPath.section == Section.visibleStories.rawValue else { return nil }
-        return models[safe: indexPath.row]
+        return models.get()[safe: indexPath.row]
     }
 
     func model(for context: StoryContext) -> StoryViewModel? {
-        models.first { $0.context == context }
+        models.get().first { $0.context == context }
     }
 
     func cell(for context: StoryContext) -> StoryCell? {
-        guard let row = models.firstIndex(where: { $0.context == context }) else { return nil }
+        guard let row = models.get().firstIndex(where: { $0.context == context }) else { return nil }
         let indexPath = IndexPath(row: row, section: Section.visibleStories.rawValue)
         guard tableView.indexPathsForVisibleRows?.contains(indexPath) == true else { return nil }
         return tableView.cellForRow(at: indexPath) as? StoryCell
@@ -434,7 +439,7 @@ extension StoriesViewController: UITableViewDataSource {
         switch Section(rawValue: indexPath.section) {
         case .myStory:
             let cell = tableView.dequeueReusableCell(withIdentifier: MyStoryCell.reuseIdentifier) as! MyStoryCell
-            guard let myStoryModel = myStoryModel else {
+            guard let myStoryModel = myStoryModel.get() else {
                 owsFailDebug("Missing my story model")
                 return cell
             }
@@ -461,7 +466,7 @@ extension StoriesViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        emptyStateLabel.isHidden = models.count > 0 || myStoryModel?.messages.isEmpty == false
+        emptyStateLabel.isHidden = models.get().count > 0 || myStoryModel.get()?.messages.isEmpty == false
 
         switch Section(rawValue: section) {
         case .myStory:
@@ -479,7 +484,7 @@ extension StoriesViewController: UITableViewDataSource {
 
 extension StoriesViewController: StoryPageViewControllerDataSource {
     func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext] {
-        models.map { $0.context }
+        models.get().map { $0.context }
     }
 }
 
