@@ -544,7 +544,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         if reactionContainerView.frame.contains(location) {
             let convertedLocation = reactionContainerView.convert(location, from: self)
             for reactionView in reactionContainerView.reactionViews {
-                if reactionView.frame.contains(convertedLocation) {
+                if reactionContainerView.convert(reactionView.frame, from: reactionView.superview).contains(convertedLocation) {
                     delegate?.showReactionList(viewItem, selectedReaction: reactionView.emoji)
                     break
                 }
@@ -568,7 +568,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         } else if reactionContainerView.frame.contains(location) {
             let convertedLocation = reactionContainerView.convert(location, from: self)
             for reactionView in reactionContainerView.reactionViews {
-                if reactionView.frame.contains(convertedLocation) {
+                if reactionContainerView.convert(reactionView.frame, from: reactionView.superview).contains(convertedLocation) {
                     if reactionView.showBorder {
                         delegate?.cancelReact(viewItem, for: reactionView.emoji)
                     } else {
