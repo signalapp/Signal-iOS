@@ -60,7 +60,7 @@ class EmojiPickerCollectionView: UICollectionView {
             withReuseIdentifier: EmojiSectionHeader.reuseIdentifier
         )
 
-        backgroundColor = isDarkMode ? .ows_gray90 : .ows_white
+        backgroundColor = .clear
 
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
         panGestureRecognizer.require(toFail: longPressGesture)

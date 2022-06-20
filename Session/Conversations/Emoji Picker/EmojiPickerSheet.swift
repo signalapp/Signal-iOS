@@ -22,7 +22,7 @@ class EmojiPickerSheet: BaseVC {
     private lazy var searchBar: SearchBar = {
         let result = SearchBar()
         result.tintColor = Colors.text
-        result.backgroundColor = isDarkMode ? .ows_gray90 : .ows_white
+        result.backgroundColor = .clear
         result.delegate = self
         return result
     }()

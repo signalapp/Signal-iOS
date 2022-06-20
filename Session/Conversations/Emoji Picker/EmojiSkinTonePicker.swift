@@ -116,12 +116,12 @@ class EmojiSkinTonePicker: UIView {
         layer.shadowOpacity = 0.25
         layer.shadowRadius = 4
 
-        referenceOverlay.backgroundColor = isDarkMode ? .ows_gray75 : .ows_white
+        referenceOverlay.backgroundColor = Colors.modalBackground
         referenceOverlay.layer.cornerRadius = 9
         addSubview(referenceOverlay)
 
         containerView.layoutMargins = UIEdgeInsets(top: 9, leading: 16, bottom: 9, trailing: 16)
-        containerView.backgroundColor = isDarkMode ? .ows_gray75 : .ows_white
+        containerView.backgroundColor = Colors.modalBackground
         containerView.layer.cornerRadius = 11
         addSubview(containerView)
         containerView.autoPinWidthToSuperview()
