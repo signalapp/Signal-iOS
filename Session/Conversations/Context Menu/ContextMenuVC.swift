@@ -139,11 +139,11 @@ final class ContextMenuVC : UIViewController {
         let spacing = Values.smallSpacing
         let margin = max(UIApplication.shared.keyWindow!.safeAreaInsets.bottom, Values.mediumSpacing)
         if frame.maxY + spacing + menuHeight > UIScreen.main.bounds.height - margin {
-            menuView.pin(.bottom, to: .top, of: snapshot, withInset: -spacing)
-            emojiBar.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
-        } else {
-            menuView.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
             emojiBar.pin(.bottom, to: .top, of: snapshot, withInset: -spacing)
+            menuView.pin(.bottom, to: .top, of: emojiBar, withInset: -spacing)
+        } else {
+            emojiBar.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
+            menuView.pin(.top, to: .bottom, of: emojiBar, withInset: spacing)
         }
         switch viewItem.interaction.interactionType() {
         case .outgoingMessage:
