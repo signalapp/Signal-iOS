@@ -81,8 +81,10 @@ public extension ThreadUtil {
                 writeTransaction.addSyncCompletion {
                     benchmarkCompletion()
                 }
-                writeTransaction.addAsyncCompletionOnMain {
-                    persistenceCompletion?()
+                if let persistenceCompletion = persistenceCompletion {
+                    writeTransaction.addAsyncCompletionOnMain {
+                        persistenceCompletion()
+                    }
                 }
             }
         }
