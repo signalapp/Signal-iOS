@@ -110,14 +110,18 @@ final class ReactionContainerView : UIView {
     
     private func updateAllReactions() {
         var reactions = self.reactions
+        var numberOfLines = 0
         while reactions.count > 0 {
             var line: [(EmojiWithSkinTones, (Int, Bool))] = []
             while reactions.count > 0 && line.count < maxEmojisPerLine {
                 line.append(reactions.removeFirst())
             }
             updateCollapsedReactions(line)
+            numberOfLines += 1
         }
-        mainStackView.addArrangedSubview(collapseButton)
+        if numberOfLines > 1 {
+            mainStackView.addArrangedSubview(collapseButton)
+        }
     }
     
     private func prepareForUpdate() {
