@@ -287,10 +287,6 @@ extension StoryReplyInputToolbar: MentionTextViewDelegate {
 
     func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
-    func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
-        return textViewMentionPickerPossibleAddresses(textView).contains(address)
-    }
-
     func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
         return .groupReply
     }
