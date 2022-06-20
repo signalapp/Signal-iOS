@@ -1,3 +1,3 @@
-• Improving the look & feel of voice messages, both the ones you send and the ones you receive. Bonus fixes for people who use right-to-left languages like Arabic, Farsi, and Hebrew.
-• Speeding up messages for big group chats.
-• Various other bug fixes and performance improvements to help keep your app running smoothly.
+• Fixes to voice memos for people who use right-to-left languages like Arabic, Farsi, and Hebrew.
+• बड़ी ग्रुप चैट के लिए संदेशों में तेज़ी लाना।
+• कई अन्य बग फ़िक्स और परफ़ॉर्मेंस सुधार जो आपके ऐप को सुचारू रूप से चलाते रहने में मदद करते हैं।
