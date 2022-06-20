@@ -3,11 +3,11 @@ extension Storage {
     private static let emojiPickerCollection = "EmojiPickerCollection"
     private static let recentEmojiKey = "recentEmoji"
     
-    func getRecentEmoji(transaction: YapDatabaseReadTransaction) -> [EmojiWithSkinTones] {
+    func getRecentEmoji(withDefaultEmoji: Bool, transaction: YapDatabaseReadTransaction) -> [EmojiWithSkinTones] {
         var rawRecentEmoji = transaction.object(forKey: Self.recentEmojiKey, inCollection: Self.emojiPickerCollection) as? [String] ?? []
         let defaultEmoji = ["🙈", "🙉", "🙊", "😈", "🥸", "🐀"].filter{ !rawRecentEmoji.contains($0) }
         
-        if rawRecentEmoji.count < 6 {
+        if rawRecentEmoji.count < 6 && withDefaultEmoji {
             rawRecentEmoji.append(contentsOf: defaultEmoji[..<(defaultEmoji.count - rawRecentEmoji.count)])
         }
         
@@ -15,7 +15,7 @@ extension Storage {
     }
     
     func recordRecentEmoji(_ emoji: EmojiWithSkinTones, transaction: YapDatabaseReadWriteTransaction) {
-        let recentEmoji = getRecentEmoji(transaction: transaction)
+        let recentEmoji = getRecentEmoji(withDefaultEmoji: false, transaction: transaction)
         guard recentEmoji.first != emoji else { return }
         guard emoji.isNormalized else {
             recordRecentEmoji(emoji.normalized, transaction: transaction)

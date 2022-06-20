@@ -61,7 +61,7 @@ final class ContextMenuVC : UIViewController {
         self.dismiss = dismiss
         super.init(nibName: nil, bundle: nil)
         Storage.read { transaction in
-            self.recentEmoji = Array(Storage.shared.getRecentEmoji(transaction: transaction)[...5])
+            self.recentEmoji = Array(Storage.shared.getRecentEmoji(withDefaultEmoji: true, transaction: transaction)[...5])
         }
     }
 

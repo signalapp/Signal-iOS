@@ -67,7 +67,7 @@ class EmojiPickerCollectionView: UICollectionView {
         tapGestureRecognizer.delegate = self
         
         Storage.read { transaction in
-            self.recentEmoji = Storage.shared.getRecentEmoji(transaction: transaction)
+            self.recentEmoji = Storage.shared.getRecentEmoji(withDefaultEmoji: false, transaction: transaction)
 
             // Some emoji have two different code points but identical appearances. Let's remove them!
             // If we normalize to a different emoji than the one currently in our array, we want to drop
