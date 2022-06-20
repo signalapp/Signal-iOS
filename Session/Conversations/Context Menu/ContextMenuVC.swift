@@ -5,6 +5,8 @@ final class ContextMenuVC : UIViewController {
     private let frame: CGRect
     private let dismiss: () -> Void
     private weak var delegate: ContextMenuActionDelegate?
+    
+    private var recentEmoji: [EmojiWithSkinTones] = []
 
     // MARK: UI Components
     private lazy var blurView = UIVisualEffectView(effect: nil)
@@ -58,6 +60,9 @@ final class ContextMenuVC : UIViewController {
         self.delegate = delegate
         self.dismiss = dismiss
         super.init(nibName: nil, bundle: nil)
+        Storage.read { transaction in
+            self.recentEmoji = Array(Storage.shared.getRecentEmoji(transaction: transaction)[...5])
+        }
     }
 
     override init(nibName: String?, bundle: Bundle?) {
@@ -106,7 +111,7 @@ final class ContextMenuVC : UIViewController {
         emojiPlusButton.pin(.right, to: .right, of: emojiBar, withInset: -Values.smallSpacing)
         emojiPlusButton.center(.vertical, in: emojiBar)
         
-        let emojiLabels = UserDefaults.standard.getRecentlyUsedEmojis().map { emoji -> EmojiReactsView in
+        let emojiLabels = recentEmoji.map { emoji -> EmojiReactsView in
             EmojiReactsView(for: emoji, dismiss: snDismiss) {
                 self.delegate?.react(self.viewItem, with: emoji)
             }

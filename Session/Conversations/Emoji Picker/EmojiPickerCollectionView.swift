@@ -7,9 +7,6 @@ protocol EmojiPickerCollectionViewDelegate: AnyObject {
 class EmojiPickerCollectionView: UICollectionView {
     let layout: UICollectionViewFlowLayout
 
-    private static let emojiPickerCollection = "EmojiPickerCollection"
-    private static let recentEmojiKey = "recentEmoji"
-
     weak var pickerDelegate: EmojiPickerCollectionViewDelegate?
 
     private var recentEmoji: [EmojiWithSkinTones] = []
@@ -70,12 +67,7 @@ class EmojiPickerCollectionView: UICollectionView {
         tapGestureRecognizer.delegate = self
         
         Storage.read { transaction in
-            let rawRecentEmoji = transaction.object(
-                forKey: EmojiPickerCollectionView.recentEmojiKey,
-                inCollection: EmojiPickerCollectionView.emojiPickerCollection
-            ) as? [String] ?? []
-
-            self.recentEmoji = rawRecentEmoji.compactMap { EmojiWithSkinTones(rawValue: $0) }
+            self.recentEmoji = Storage.shared.getRecentEmoji(transaction: transaction)
 
             // Some emoji have two different code points but identical appearances. Let's remove them!
             // If we normalize to a different emoji than the one currently in our array, we want to drop
@@ -140,29 +132,6 @@ class EmojiPickerCollectionView: UICollectionView {
         return category.localizedName
     }
 
-    func recordRecentEmoji(_ emoji: EmojiWithSkinTones, transaction: YapDatabaseReadWriteTransaction) {
-        guard recentEmoji.first != emoji else { return }
-        guard emoji.isNormalized else {
-            recordRecentEmoji(emoji.normalized, transaction: transaction)
-            return
-        }
-
-        var newRecentEmoji = recentEmoji
-
-        // Remove any existing entries for this emoji
-        newRecentEmoji.removeAll { emoji == $0 }
-        // Insert the selected emoji at the start of the list
-        newRecentEmoji.insert(emoji, at: 0)
-        // Truncate the recent emoji list to a maximum of 50 stored
-        newRecentEmoji = Array(newRecentEmoji[0..<min(50, newRecentEmoji.count)])
-        
-        transaction.setObject(
-            newRecentEmoji.map { $0.rawValue },
-            forKey: EmojiPickerCollectionView.recentEmojiKey,
-            inCollection: EmojiPickerCollectionView.emojiPickerCollection
-        )
-    }
-
     // MARK: - Search
 
     func searchWithText(_ searchText: String?) {
@@ -205,7 +174,7 @@ class EmojiPickerCollectionView: UICollectionView {
 
                 if let emoji = emoji {
                     Storage.write { transaction in
-                        self.recordRecentEmoji(emoji, transaction: transaction)
+                        Storage.shared.recordRecentEmoji(emoji, transaction: transaction)
                         emoji.baseEmoji.setPreferredSkinTones(emoji.skinTones, transaction: transaction)
                     }
 
@@ -248,7 +217,7 @@ extension EmojiPickerCollectionView: UICollectionViewDelegate {
         }
 
         Storage.write { transaction in
-            self.recordRecentEmoji(emoji, transaction: transaction)
+            Storage.shared.recordRecentEmoji(emoji, transaction: transaction)
         }
 
         pickerDelegate?.emojiPicker(self, didSelectEmoji: emoji)
@@ -377,19 +346,4 @@ private class EmojiSectionHeader: UICollectionReusableView {
         labelSize.height += layoutMargins.top + layoutMargins.bottom
         return labelSize
     }
-}
-
-fileprivate extension EmojiWithSkinTones {
-
-    var normalized: EmojiWithSkinTones {
-        switch (baseEmoji, skinTones) {
-        case (let base, nil) where base.normalized != base:
-            return EmojiWithSkinTones(baseEmoji: base.normalized)
-        default:
-            return self
-        }
-    }
-
-    var isNormalized: Bool { self == normalized }
-
 }

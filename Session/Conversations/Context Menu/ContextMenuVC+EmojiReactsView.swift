@@ -2,7 +2,7 @@
 extension ContextMenuVC {
     
     final class EmojiReactsView: UIView {
-        private let emoji: String
+        private let emoji: EmojiWithSkinTones
         private let dismiss: () -> Void
         private let work: () -> Void
 
@@ -10,7 +10,7 @@ extension ContextMenuVC {
         private static let size: CGFloat = 40
         
         // MARK: Lifecycle
-        init(for emoji: String, dismiss: @escaping () -> Void, work: @escaping () -> Void) {
+        init(for emoji: EmojiWithSkinTones, dismiss: @escaping () -> Void, work: @escaping () -> Void) {
             self.emoji = emoji
             self.dismiss = dismiss
             self.work = work
@@ -28,7 +28,7 @@ extension ContextMenuVC {
 
         private func setUpViewHierarchy() {
             let emojiLabel = UILabel()
-            emojiLabel.text = self.emoji
+            emojiLabel.text = self.emoji.rawValue
             emojiLabel.font = .systemFont(ofSize: Values.veryLargeFontSize)
             emojiLabel.set(.height, to: ContextMenuVC.EmojiReactsView.size)
             addSubview(emojiLabel)

@@ -3,8 +3,8 @@ final class ReactionListSheet : BaseVC {
     private let thread: TSGroupThread
     private let viewItem: ConversationViewItem
     private var reactions: [ReactMessage] = []
-    private var reactionMap: OrderedDictionary<String, [ReactMessage]> = OrderedDictionary()
-    var selectedReaction: String?
+    private var reactionMap: OrderedDictionary<EmojiWithSkinTones, [ReactMessage]> = OrderedDictionary()
+    var selectedReaction: EmojiWithSkinTones?
     var delegate: ReactionDelegate?
     
     // MARK: Components
@@ -151,7 +151,7 @@ final class ReactionListSheet : BaseVC {
             self.reactions = message.reactions as! [ReactMessage]
         }
         for reaction in reactions {
-            if let emoji = reaction.emoji {
+            if let rawEmoji = reaction.emoji, let emoji = EmojiWithSkinTones(rawValue: rawEmoji) {
                 if !reactionMap.hasValue(forKey: emoji) { reactionMap.append(key: emoji, value: []) }
                 var value = reactionMap.value(forKey: emoji)!
                 if reaction.sender == getUserHexEncodedPublicKey() {
@@ -170,7 +170,7 @@ final class ReactionListSheet : BaseVC {
     private func reloadData() {
         reactionContainer.reloadData()
         let seletedData = reactionMap.value(forKey: selectedReaction!)!
-        detailInfoLabel.text = "\(selectedReaction!) · \(seletedData.count)"
+        detailInfoLabel.text = "\(selectedReaction!.rawValue) · \(seletedData.count)"
         if thread.isOpenGroup, let threadId = thread.uniqueId, let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadId) {
             let isUserModerator = OpenGroupAPIV2.isUserModerator(getUserHexEncodedPublicKey(), for: openGroupV2.room, on: openGroupV2.server)
             clearAllButton.isHidden = !isUserModerator
@@ -227,7 +227,7 @@ extension ReactionListSheet: UICollectionViewDataSource, UICollectionViewDelegat
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.identifier, for: indexPath) as! Cell
         let item = reactionMap.orderedItems[indexPath.item]
-        cell.data = (item.0, item.1.count)
+        cell.data = (item.0.rawValue, item.1.count)
         cell.isCurrentSelection = item.0 == selectedReaction!
         return cell
     }
@@ -350,8 +350,8 @@ extension ReactionListSheet {
 
 protocol ReactionDelegate : AnyObject {
     
-    func quickReact(_ viewItem: ConversationViewItem, with emoji: String)
-    func cancelReact(_ viewItem: ConversationViewItem, for emoji: String)
+    func quickReact(_ viewItem: ConversationViewItem, with emoji: EmojiWithSkinTones)
+    func cancelReact(_ viewItem: ConversationViewItem, for emoji: EmojiWithSkinTones)
     func cancelAllReact(reactMessages: [ReactMessage])
     
 }

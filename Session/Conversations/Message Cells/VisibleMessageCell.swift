@@ -457,9 +457,9 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     }
     
     private func populateReaction(for viewItem: ConversationViewItem, message: TSMessage) {
-        let reactions: OrderedDictionary<String, (Int, Bool)> = OrderedDictionary()
+        let reactions: OrderedDictionary<EmojiWithSkinTones, (Int, Bool)> = OrderedDictionary()
         for reaction in message.reactions {
-            if let reactMessage = reaction as? ReactMessage, let emoji = reactMessage.emoji {
+            if let reactMessage = reaction as? ReactMessage, let rawEmoji = reactMessage.emoji, let emoji = EmojiWithSkinTones(rawValue: rawEmoji) {
                 let isSelfSend = (reactMessage.sender! == getUserHexEncodedPublicKey())
                 if let value = reactions.value(forKey: emoji) {
                     reactions.replace(key: emoji, value: (value.0 + 1, value.1 || isSelfSend))

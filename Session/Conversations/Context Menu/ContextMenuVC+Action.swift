@@ -95,7 +95,7 @@ protocol ContextMenuActionDelegate : AnyObject {
     func save(_ viewItem: ConversationViewItem)
     func ban(_ viewItem: ConversationViewItem)
     func banAndDeleteAllMessages(_ viewItem: ConversationViewItem)
-    func react(_ viewItem: ConversationViewItem, with emoji: String)
+    func react(_ viewItem: ConversationViewItem, with emoji: EmojiWithSkinTones)
     func showFullEmojiKeyboard(_ viewItem: ConversationViewItem)
     func contextMenuDismissed()
 }

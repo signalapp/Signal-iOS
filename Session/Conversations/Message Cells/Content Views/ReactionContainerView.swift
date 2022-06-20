@@ -21,7 +21,7 @@ final class ReactionContainerView : UIView {
     private var showNumbers = true
     private var maxEmojisPerLine = isIPhone6OrSmaller ? 5 : 6
     
-    var reactions: [(String, (Int, Bool))] = []
+    var reactions: [(EmojiWithSkinTones, (Int, Bool))] = []
     var reactionViews: [ReactionButton] = []
     var expandButton: ExpandingReactionButton?
     var collapseButton: UIStackView = {
@@ -58,7 +58,7 @@ final class ReactionContainerView : UIView {
         mainStackView.pin(to: self)
     }
     
-    public func update(_ reactions: [(String, (Int, Bool))], isOutgoingMessage: Bool, showNumbers: Bool) {
+    public func update(_ reactions: [(EmojiWithSkinTones, (Int, Bool))], isOutgoingMessage: Bool, showNumbers: Bool) {
         self.reactions = reactions
         self.isOutgoingMessage = isOutgoingMessage
         self.showNumbers = showNumbers
@@ -70,7 +70,7 @@ final class ReactionContainerView : UIView {
         }
     }
     
-    private func updateCollapsedReactions(_ reactions: [(String, (Int, Bool))]) {
+    private func updateCollapsedReactions(_ reactions: [(EmojiWithSkinTones, (Int, Bool))]) {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = Values.smallSpacing
@@ -83,8 +83,8 @@ final class ReactionContainerView : UIView {
             reactionContainerView.semanticContentAttribute = .unspecified
         }
         
-        var displayedReactions: [(String, (Int, Bool))]
-        var expandButtonReactions: [String]
+        var displayedReactions: [(EmojiWithSkinTones, (Int, Bool))]
+        var expandButtonReactions: [EmojiWithSkinTones]
         
         if reactions.count > maxEmojisPerLine {
             displayedReactions = Array(reactions[0...(maxEmojisPerLine - 3)])
@@ -111,7 +111,7 @@ final class ReactionContainerView : UIView {
     private func updateAllReactions() {
         var reactions = self.reactions
         while reactions.count > 0 {
-            var line: [(String, (Int, Bool))] = []
+            var line: [(EmojiWithSkinTones, (Int, Bool))] = []
             while reactions.count > 0 && line.count < maxEmojisPerLine {
                 line.append(reactions.removeFirst())
             }

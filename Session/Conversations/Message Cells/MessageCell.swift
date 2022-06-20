@@ -80,6 +80,6 @@ protocol MessageCellDelegate : ReactionDelegate {
     func openURL(_ url: URL)
     func handleReplyButtonTapped(for viewItem: ConversationViewItem)
     func showUserDetails(for sessionID: String)
-    func showReactionList(_ viewItem: ConversationViewItem, selectedReaction: String?)
+    func showReactionList(_ viewItem: ConversationViewItem, selectedReaction: EmojiWithSkinTones?)
     func needsLayout()
 }

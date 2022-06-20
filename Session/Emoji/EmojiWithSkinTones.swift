@@ -26,6 +26,17 @@ public struct EmojiWithSkinTones: Hashable {
             return baseEmoji.rawValue
         }
     }
+    
+    var normalized: EmojiWithSkinTones {
+        switch (baseEmoji, skinTones) {
+        case (let base, nil) where base.normalized != base:
+            return EmojiWithSkinTones(baseEmoji: base.normalized)
+        default:
+            return self
+        }
+    }
+
+    var isNormalized: Bool { self == normalized }
 }
 
 extension Emoji {

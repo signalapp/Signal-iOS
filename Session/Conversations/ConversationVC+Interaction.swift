@@ -822,7 +822,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         presentAlert(alert)
     }
     
-    func showReactionList(_ viewItem: ConversationViewItem, selectedReaction: String?) {
+    func showReactionList(_ viewItem: ConversationViewItem, selectedReaction: EmojiWithSkinTones?) {
         guard let thread = thread as? TSGroupThread else { return }
         guard let message = viewItem.interaction as? TSMessage, message.reactions.count > 0 else { return }
         let reactionListSheet = ReactionListSheet(for: viewItem, thread: thread)
@@ -833,17 +833,19 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         present(reactionListSheet, animated: true, completion: nil)
     }
     
-    func react(_ viewItem: ConversationViewItem, with emoji: String) {
-        UserDefaults.standard.addNewRecentlyUsedEmoji(emoji)
-        react(viewItem, with: emoji, cancel: false)
+    func react(_ viewItem: ConversationViewItem, with emoji: EmojiWithSkinTones) {
+        Storage.write { transaction in
+            Storage.shared.recordRecentEmoji(emoji, transaction: transaction)
+        }
+        react(viewItem, with: emoji.rawValue, cancel: false)
     }
     
-    func quickReact(_ viewItem: ConversationViewItem, with emoji: String) {
+    func quickReact(_ viewItem: ConversationViewItem, with emoji: EmojiWithSkinTones) {
         react(viewItem, with: emoji)
     }
     
-    func cancelReact(_ viewItem: ConversationViewItem, for emoji: String) {
-        react(viewItem, with: emoji, cancel: true)
+    func cancelReact(_ viewItem: ConversationViewItem, for emoji: EmojiWithSkinTones) {
+        react(viewItem, with: emoji.rawValue, cancel: true)
     }
     
     func cancelAllReact(reactMessages: [ReactMessage]) {
@@ -885,7 +887,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let emojiPicker = EmojiPickerSheet(
             completionHandler: { emoji in
                 if let emoji = emoji {
-                    self.react(viewItem, with: emoji.rawValue)
+                    self.react(viewItem, with: emoji)
                 }
             },
             dismissHandler: {
