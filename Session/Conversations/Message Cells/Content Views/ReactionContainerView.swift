@@ -121,6 +121,8 @@ final class ReactionContainerView : UIView {
         }
         if numberOfLines > 1 {
             mainStackView.addArrangedSubview(collapseButton)
+        } else {
+            showingAllReactions = false
         }
     }
     
