@@ -288,6 +288,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+// This code path is for server-generated receipts only.
 - (void)handleDeliveryReceipt:(SSKProtoEnvelope *)envelope
                       context:(id<DeliveryReceiptContext>)context
                   transaction:(SDSAnyWriteTransaction *)transaction
@@ -304,26 +305,31 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Invalid timestamp.");
         return;
     }
-    // Old-style delivery notices don't include a "delivery timestamp".
-    // TODO: do we need to preserve early old-style delivery receipts?
-    [self processDeliveryReceiptsFromRecipient:envelope.sourceAddress
-                             recipientDeviceId:envelope.sourceDevice
-                                sentTimestamps:@[
-                                    @(envelope.timestamp),
-                                ]
-                             deliveryTimestamp:nil
-                                       context:context
-                                   transaction:transaction];
+    // Server-generated delivery receipts don't include a "delivery timestamp".
+    // The envelope's timestamp gives the timestamp of the message this receipt
+    // is for. Unlike UD receipts, it is not meant to be the time the message
+    // was delivered. We use the current time as a good-enough guess. We could
+    // also use the envelope's serverTimestamp.
+    const uint64_t deliveryTimestamp = [NSDate ows_millisecondTimeStamp];
+    NSArray<NSNumber *> *early = [self processDeliveryReceiptsFromRecipient:envelope.sourceAddress
+                                                          recipientDeviceId:envelope.sourceDevice
+                                                             sentTimestamps:@[
+                                                                 @(envelope.timestamp),
+                                                             ]
+                                                          deliveryTimestamp:deliveryTimestamp
+                                                                    context:context
+                                                                transaction:transaction];
+    [self recordEarlyReceiptOfType:SSKProtoReceiptMessageTypeDelivery
+                          envelope:envelope
+                        timestamps:early
+                   remoteTimestamp:deliveryTimestamp
+                       transaction:transaction];
 }
 
-// deliveryTimestamp is an optional parameter, since legacy
-// delivery receipts don't have a "delivery timestamp".  Those
-// messages repurpose the "timestamp" field to indicate when the
-// corresponding message was originally sent.
 - (NSArray<NSNumber *> *)processDeliveryReceiptsFromRecipient:(SignalServiceAddress *)address
                                             recipientDeviceId:(uint32_t)deviceId
                                                sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
-                                            deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
+                                            deliveryTimestamp:(uint64_t)deliveryTimestamp
                                                       context:(id<DeliveryReceiptContext>)context
                                                   transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -339,7 +345,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return @[];
     }
-    if (deliveryTimestamp != nil && ![SDS fitsInInt64WithNSNumber:deliveryTimestamp]) {
+    if (![SDS fitsInInt64:deliveryTimestamp]) {
         OWSFailDebug(@"Invalid timestamp.");
         return @[];
     }
@@ -893,6 +899,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  transaction:transaction];
 }
 
+// This code path is for UD receipts.
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
             withReceiptMessage:(SSKProtoReceiptMessage *)receiptMessage
                        context:(id<DeliveryReceiptContext>)context
@@ -935,7 +942,7 @@ NS_ASSUME_NONNULL_BEGIN
             earlyTimestamps = [self processDeliveryReceiptsFromRecipient:envelope.sourceAddress
                                                        recipientDeviceId:envelope.sourceDevice
                                                           sentTimestamps:sentTimestamps
-                                                       deliveryTimestamp:@(envelope.timestamp)
+                                                       deliveryTimestamp:envelope.timestamp
                                                                  context:context
                                                              transaction:transaction];
             break;
@@ -971,18 +978,34 @@ NS_ASSUME_NONNULL_BEGIN
     // TODO: Move to internal logging.
     OWSLogInfo(@"earlyTimestamps: %lu.", (unsigned long)earlyTimestamps.count);
 
-    for (NSNumber *nsEarlyTimestamp in earlyTimestamps) {
-        UInt64 earlyTimestamp = [nsEarlyTimestamp unsignedLongLongValue];
-        [self.earlyMessageManager recordEarlyReceiptForOutgoingMessageWithType:receiptMessage.unwrappedType
-                                                                 senderAddress:envelope.sourceAddress
-                                                                senderDeviceId:envelope.sourceDevice
-                                                                     timestamp:envelope.timestamp
-                                                    associatedMessageTimestamp:earlyTimestamp
-                                                                   transaction:transaction];
-    }
+    [self recordEarlyReceiptOfType:receiptMessage.unwrappedType
+                          envelope:envelope
+                        timestamps:earlyTimestamps
+                   remoteTimestamp:envelope.timestamp
+                       transaction:transaction];
 
     // TODO: Move to internal logging without flush.
     OWSLogInfo(@"Complete.");
+}
+
+// remoteTimestamp is the time the message was delivered, read, or viewed.
+// earlyTimestamps contains the collection of outgoing messages referred to by the receipt.
+- (void)recordEarlyReceiptOfType:(SSKProtoReceiptMessageType)receiptType
+                        envelope:(SSKProtoEnvelope *)envelope
+                      timestamps:(NSArray<NSNumber *> *)earlyTimestamps
+                 remoteTimestamp:(uint64_t)remoteTimestamp
+                     transaction:(SDSAnyWriteTransaction *)transaction
+{
+    for (NSNumber *nsEarlyTimestamp in earlyTimestamps) {
+        OWSLogInfo(@"Record early receipt for %@", nsEarlyTimestamp);
+        const UInt64 earlyTimestamp = [nsEarlyTimestamp unsignedLongLongValue];
+        [self.earlyMessageManager recordEarlyReceiptForOutgoingMessageWithType:receiptType
+                                                                 senderAddress:envelope.sourceAddress
+                                                                senderDeviceId:envelope.sourceDevice
+                                                                     timestamp:remoteTimestamp
+                                                    associatedMessageTimestamp:earlyTimestamp
+                                                                   transaction:transaction];
+    }
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope

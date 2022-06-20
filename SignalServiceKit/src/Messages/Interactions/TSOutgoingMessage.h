@@ -315,14 +315,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This method is used to record a successful delivery to one recipient.
-//
-// deliveryTimestamp is an optional parameter, since legacy
-// delivery receipts don't have a "delivery timestamp".  Those
-// messages repurpose the "timestamp" field to indicate when the
-// corresponding message was originally sent.
 - (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress
                    recipientDeviceId:(uint32_t)deviceId
-                   deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
+                   deliveryTimestamp:(uint64_t)deliveryTimestamp
                              context:(id<DeliveryReceiptContext>)deliveryReceiptContext
                          transaction:(SDSAnyWriteTransaction *)transaction;
 

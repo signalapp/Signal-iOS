@@ -4242,7 +4242,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 [message updateWithSentRecipient:address wasSentByUD:NO transaction:transaction];
                 [message updateWithDeliveredRecipient:address
                                     recipientDeviceId:0
-                                    deliveryTimestamp:timestamp
+                                    deliveryTimestamp:timestamp.unsignedLongLongValue
                                               context:[[PassthroughDeliveryReceiptContext alloc] init]
                                           transaction:transaction];
                 [message updateWithReadRecipient:address
@@ -4541,7 +4541,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             OWSAssertDebug(address.isValid);
             [message updateWithDeliveredRecipient:address
                                 recipientDeviceId:0
-                                deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
+                                deliveryTimestamp:[NSDate ows_millisecondTimeStamp]
                                           context:[[PassthroughDeliveryReceiptContext alloc] init]
                                       transaction:transaction];
         }

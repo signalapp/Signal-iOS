@@ -387,7 +387,7 @@ public class EarlyMessageManager: NSObject {
                 message.update(
                     withDeliveredRecipient: sender,
                     recipientDeviceId: deviceId,
-                    deliveryTimestamp: NSNumber(value: timestamp),
+                    deliveryTimestamp: timestamp,
                     context: PassthroughDeliveryReceiptContext(),
                     transaction: transaction
                 )

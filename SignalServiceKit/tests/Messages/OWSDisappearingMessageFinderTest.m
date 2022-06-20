@@ -215,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
         [expiringSentOutgoingMessage updateWithSentRecipient:self.otherAddress wasSentByUD:NO transaction:transaction];
         [expiringDeliveredOutgoingMessage updateWithDeliveredRecipient:self.otherAddress
                                                      recipientDeviceId:0
-                                                     deliveryTimestamp:nil
+                                                     deliveryTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                context:[[PassthroughDeliveryReceiptContext alloc] init]
                                                            transaction:transaction];
         uint64_t nowMs = [NSDate ows_millisecondTimeStamp];

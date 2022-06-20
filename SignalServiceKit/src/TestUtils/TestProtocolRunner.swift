@@ -181,21 +181,28 @@ public struct FakeSignalClient: TestSignalClient {
     public let uuid: UUID
     public let protocolStore: InMemorySignalProtocolStore
 
-    public var deviceId: UInt32 { return 1 }
+    public var deviceId = UInt32(1)
     public var identityKeyPair: ECKeyPair {
         return ECKeyPair(try! protocolStore.identityKeyPair(context: NullContext()))
     }
 
     public static func generate() -> FakeSignalClient {
+
         return FakeSignalClient(e164Identifier: CommonGenerator.e164(),
                                 uuid: UUID(),
                                 protocolStore: InMemorySignalProtocolStore(identity: .generate(), registrationId: 1))
     }
 
-    public static func generate(e164Identifier: SignalE164Identifier? = nil, uuid: UUID? = nil) -> FakeSignalClient {
-        return FakeSignalClient(e164Identifier: e164Identifier,
-                                uuid: uuid ?? UUID(),
-                                protocolStore: InMemorySignalProtocolStore(identity: .generate(), registrationId: 1))
+    public static func generate(e164Identifier: SignalE164Identifier? = nil,
+                                uuid: UUID? = nil,
+                                deviceID: UInt32? = nil) -> FakeSignalClient {
+        var result = FakeSignalClient(e164Identifier: e164Identifier,
+                                      uuid: uuid ?? UUID(),
+                                      protocolStore: InMemorySignalProtocolStore(identity: .generate(), registrationId: 1))
+        if let deviceID = deviceID {
+            result.deviceId = deviceID
+        }
+        return result
     }
 }
 
@@ -241,6 +248,14 @@ public struct LocalSignalClient: TestSignalClient {
         return SSKEnvironment.shared.databaseStorage.read { transaction in
             return try! SSKEnvironment.shared.identityManager.store(for: identity, transaction: transaction)
         }
+    }
+
+    public func linkedDevice(deviceID: UInt32) -> FakeSignalClient {
+        return FakeSignalClient(e164Identifier: e164Identifier,
+                                uuid: uuid,
+                                protocolStore: InMemorySignalProtocolStore(identity: identityKeyPair.identityKeyPair,
+                                                                           registrationId: 1),
+                                deviceId: deviceID)
     }
 }
 
@@ -367,6 +382,30 @@ public struct FakeService: Dependencies {
 
         let contentBuilder = SSKProtoContent.builder()
         contentBuilder.setDataMessage(try dataMessageBuilder.build())
+
+        return try contentBuilder.buildSerializedData()
+    }
+
+    public func buildSyncSentMessage(bodyText: String,
+                                     recipient: SignalServiceAddress,
+                                     timestamp: UInt64) throws -> Data {
+        let dataMessageBuilder = SSKProtoDataMessage.builder()
+        dataMessageBuilder.setBody(bodyText)
+        dataMessageBuilder.setTimestamp(timestamp)
+
+        let sentBuilder = SSKProtoSyncMessageSent.builder()
+        sentBuilder.setMessage(try dataMessageBuilder.build())
+        sentBuilder.setTimestamp(timestamp)
+        if let uuid = recipient.uuidString {
+            sentBuilder.setDestinationUuid(uuid)
+        } else if let e164 = recipient.phoneNumber {
+            sentBuilder.setDestinationE164(e164)
+        }
+        let syncMessageBuilder = SSKProtoSyncMessage.builder()
+        syncMessageBuilder.setSent(try sentBuilder.build())
+
+        let contentBuilder = SSKProtoContent.builder()
+        contentBuilder.setSyncMessage(try syncMessageBuilder.build())
 
         return try contentBuilder.buildSerializedData()
     }

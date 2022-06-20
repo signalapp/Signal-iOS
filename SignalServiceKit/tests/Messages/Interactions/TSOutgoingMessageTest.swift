@@ -122,7 +122,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
-                           deliveryTimestamp: nil,
+                           deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                            context: PassthroughDeliveryReceiptContext(),
                            transaction: transaction)
 
@@ -160,7 +160,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
-                           deliveryTimestamp: nil,
+                           deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                            context: PassthroughDeliveryReceiptContext(),
                            transaction: transaction)
 
@@ -169,7 +169,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 2,
-                           deliveryTimestamp: nil,
+                           deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                            context: PassthroughDeliveryReceiptContext(),
                            transaction: transaction)
 
@@ -203,7 +203,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
-                           deliveryTimestamp: nil,
+                           deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                            context: PassthroughDeliveryReceiptContext(),
                            transaction: transaction)
 
@@ -237,7 +237,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
-                           deliveryTimestamp: nil,
+                           deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                            context: PassthroughDeliveryReceiptContext(),
                            transaction: transaction)
 
@@ -282,7 +282,7 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
 
             message.update(withDeliveredRecipient: otherAddress,
                            recipientDeviceId: 1,
-                           deliveryTimestamp: nil,
+                           deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                            context: PassthroughDeliveryReceiptContext(),
                            transaction: transaction)
 
