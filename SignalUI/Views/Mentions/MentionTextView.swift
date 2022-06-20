@@ -16,7 +16,6 @@ public protocol MentionTextViewDelegate: UITextViewDelegate {
 
     func textView(_ textView: MentionTextView, didDeleteMention: Mention)
 
-    func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool
     func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style
 }
 
@@ -87,7 +86,7 @@ open class MentionTextView: OWSTextView {
         }
 
         let replacementString: NSAttributedString
-        if mentionDelegate.textView(self, shouldResolveMentionForAddress: mention.address) {
+        if mentionDelegate.textViewMentionPickerPossibleAddresses(self).contains(mention.address) {
             replacementString = mention.attributedString
         } else {
             // If we shouldn't resolve the mention, insert the plaintext representation.
@@ -102,11 +101,15 @@ open class MentionTextView: OWSTextView {
             return owsFailDebug("Can't replace characters without delegate")
         }
 
+        // This might perform a sneaky transaction, so needs to be outside the
+        // read block below.
+        let possibleMentionAddresses = mentionDelegate.textViewMentionPickerPossibleAddresses(self)
+
         let attributedBody = SDSDatabaseStorage.shared.read { transaction in
             messageBody.attributedBody(
                 style: mentionDelegate.textViewMentionStyle(self),
                 attributes: self.defaultAttributes,
-                shouldResolveAddress: { mentionDelegate.textView(self, shouldResolveMentionForAddress: $0) },
+                shouldResolveAddress: { possibleMentionAddresses.contains($0) },
                 transaction: transaction.unwrapGrdbRead
             )
         }

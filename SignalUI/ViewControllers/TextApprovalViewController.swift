@@ -218,10 +218,6 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
     }
 
     public func textView(_ textView: MentionTextView, didDeleteMention: Mention) {}
-
-    public func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
-        return false
-    }
 }
 
 // MARK: -

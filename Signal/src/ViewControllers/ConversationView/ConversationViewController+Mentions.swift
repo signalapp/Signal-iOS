@@ -20,15 +20,10 @@ extension ConversationViewController: MentionTextViewDelegate {
     }
 
     public func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
-        guard supportsMentions else { return [] }
-        return thread.recipientAddressesWithSneakyTransaction
+        supportsMentions ? thread.recipientAddressesWithSneakyTransaction : []
     }
 
     public func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
-
-    public func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
-        supportsMentions && thread.recipientAddressesWithSneakyTransaction.contains(address)
-    }
 
     public func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
         .composing
