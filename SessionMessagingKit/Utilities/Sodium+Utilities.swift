@@ -17,7 +17,7 @@ import SessionUtilitiesKit
 /// https://github.com/apple/swift-evolution/blob/master/proposals/0055-optional-unsafe-pointers.md#unsafebufferpointer
 extension Sodium {
     private static let scalarLength: Int = Int(crypto_core_ed25519_scalarbytes())   // 32
-    private static let noClampLength: Int = Int(crypto_scalarmult_ed25519_bytes())  // 32
+    private static let noClampLength: Int = Int(Sodium.lib_crypto_scalarmult_ed25519_bytes())  // 32
     private static let scalarMultLength: Int = Int(crypto_scalarmult_bytes())       // 32
     private static let publicKeyLength: Int = Int(crypto_scalarmult_bytes())        // 32
     private static let secretKeyLength: Int = Int(crypto_sign_secretkeybytes())     // 64
@@ -38,7 +38,7 @@ extension Sodium {
                 return -1   // Impossible case (refer to comments at top of extension)
             }
             
-            crypto_core_ed25519_scalar_reduce(kPtr, serverPublicKeyHashBaseAddress)
+            Sodium.lib_crypto_core_ed25519_scalar_reduce(kPtr, serverPublicKeyHashBaseAddress)
             return 0
         }
         
@@ -89,7 +89,7 @@ extension Sodium {
                     return -1   // Impossible case (refer to comments at top of extension)
                 }
                 
-                crypto_core_ed25519_scalar_mul(kaPtr, kBaseAddress, aBaseAddress)
+                Sodium.lib_crypto_core_ed25519_scalar_mul(kaPtr, kBaseAddress, aBaseAddress)
                 return 0
             }
         }
@@ -118,7 +118,7 @@ extension Sodium {
                 return -1   // Impossible case (refer to comments at top of extension)
             }
             
-            crypto_core_ed25519_scalar_reduce(rPtr, combinedHashBaseAddress)
+            Sodium.lib_crypto_core_ed25519_scalar_reduce(rPtr, combinedHashBaseAddress)
             return 0
         }
         
@@ -136,7 +136,7 @@ extension Sodium {
                 return -1   // Impossible case (refer to comments at top of extension)
             }
             
-            crypto_core_ed25519_scalar_reduce(HRAMPtr, HRAMHashBaseAddress)
+            Sodium.lib_crypto_core_ed25519_scalar_reduce(HRAMPtr, HRAMHashBaseAddress)
             return 0
         }
         
@@ -149,8 +149,8 @@ extension Sodium {
                 return -1   // Impossible case (refer to comments at top of extension)
             }
             
-            crypto_core_ed25519_scalar_mul(sig_sMulPtr, HRAMPtr, kaBaseAddress)
-            crypto_core_ed25519_scalar_add(sig_sPtr, rPtr, sig_sMulPtr)
+            Sodium.lib_crypto_core_ed25519_scalar_mul(sig_sMulPtr, HRAMPtr, kaBaseAddress)
+            Sodium.lib_crypto_core_ed25519_scalar_add(sig_sPtr, rPtr, sig_sMulPtr)
             return 0
         }
         
@@ -171,7 +171,7 @@ extension Sodium {
                     return -1   // Impossible case (refer to comments at top of extension)
                 }
                 
-                return crypto_scalarmult_ed25519_noclamp(combinedPtr, lhsKeyBytesBaseAddress, rhsKeyBytesBaseAddress)
+                return Sodium.lib_crypto_scalarmult_ed25519_noclamp(combinedPtr, lhsKeyBytesBaseAddress, rhsKeyBytesBaseAddress)
             }
         }
         

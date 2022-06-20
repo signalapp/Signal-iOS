@@ -6,6 +6,7 @@
 #import "OWSWindowManager.h"
 #import "Session-Swift.h"
 #import <SignalUtilitiesKit/ScreenLockViewController.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SessionUtilitiesKit/UIView+OWS.h>
 

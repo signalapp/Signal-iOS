@@ -52,7 +52,7 @@ public class Environment {
 // MARK: - Objective C Support
 
 @objc(SMKEnvironment)
-class SMKEnvironment: NSObject {
+public class SMKEnvironment: NSObject {
     @objc public static let shared: SMKEnvironment = SMKEnvironment()
     
     @objc public var audioSession: OWSAudioSession { Environment.shared.audioSession }

@@ -196,7 +196,7 @@ CHECKOUT OPTIONS:
     :commit: 4590c2737a2b5dc0ef4ace9f9019b581caccc1de
     :git: https://github.com/oxen-io/session-ios-core-kit
   Sodium:
-    :commit: 6d4317cd4c67e7a617d474d7c5bf20d319aa4536
+    :commit: 4ecfe2ddfd75e7b396c57975b4163e5c8cf4d5cc
     :git: https://github.com/oxen-io/session-ios-swift-sodium.git
   YapDatabase:
     :commit: d84069e25e12a16ab4422e5258127a04b70489ad
@@ -230,6 +230,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 386b63ccd9f91d308417daddf35710eadca22e03
+PODFILE CHECKSUM: 6ab902a81a379cc2c0a9a92c334c78d413190338
 
 COCOAPODS: 1.11.3

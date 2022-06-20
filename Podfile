@@ -1,4 +1,4 @@
-platform :ios, '12.0'
+platform :ios, '13.0'
 source 'https://github.com/CocoaPods/Specs.git'
 
 use_frameworks!
@@ -107,7 +107,7 @@ end
 def set_minimum_deployment_target(installer)
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |build_configuration|
-      build_configuration.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+      build_configuration.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
     end
   end
 end
