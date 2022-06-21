@@ -32,11 +32,17 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     // MARK: - Callbacks
 
     public override func viewDidLoad() {
+        self.shouldAvoidKeyboard = true
+
         super.viewDidLoad()
+
         title = NSLocalizedString("BADGE_GIFTING_CONFIRMATION_TITLE",
                                   comment: "Title on the screen where you confirm sending of a gift badge, and can write a message")
+
         setUpTableContents()
         setUpBottomFooter()
+
+        tableView.keyboardDismissMode = .onDrag
     }
 
     public override func themeDidChange() {
@@ -179,6 +185,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         bottomFooterStackView.spacing = 16
         bottomFooterStackView.isLayoutMarginsRelativeArrangement = true
         bottomFooterStackView.preservesSuperviewLayoutMargins = true
+        bottomFooterStackView.layoutMargins = UIEdgeInsets(margin: 16)
         bottomFooterStackView.removeAllSubviews()
 
         let amountView: UIStackView = {
