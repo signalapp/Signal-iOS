@@ -23,7 +23,7 @@ public class SenderKeyStore: NSObject {
     }
 
     /// Returns the distributionId the current device uses to tag senderKey messages sent to the thread.
-    public func distributionIdForSendingToThread(_ thread: TSGroupThread, writeTx: SDSAnyWriteTransaction) -> DistributionId {
+    public func distributionIdForSendingToThread(_ thread: TSThread, writeTx: SDSAnyWriteTransaction) -> DistributionId {
         storageLock.withLock {
             distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
         }
@@ -32,7 +32,7 @@ public class SenderKeyStore: NSObject {
     /// Returns a list of addresses that may not have the current device's sender key for the thread.
     @objc
     public func recipientsInNeedOfSenderKey(
-        for thread: TSGroupThread,
+        for thread: TSThread,
         addresses: [SignalServiceAddress],
         readTx: SDSAnyReadTransaction
     ) -> [SignalServiceAddress] {
@@ -75,7 +75,7 @@ public class SenderKeyStore: NSObject {
     /// Records that the current sender key for the `thread` has been sent to `participant`
     @objc
     public func recordSenderKeySent(
-        for thread: TSGroupThread,
+        for thread: TSThread,
         to address: SignalServiceAddress,
         timestamp: UInt64,
         writeTx: SDSAnyWriteTransaction) throws {
@@ -92,7 +92,7 @@ public class SenderKeyStore: NSObject {
 
     @objc
     public func resetSenderKeyDeliveryRecord(
-        for thread: TSGroupThread,
+        for thread: TSThread,
         address: SignalServiceAddress,
         writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
@@ -107,25 +107,27 @@ public class SenderKeyStore: NSObject {
         }
     }
 
-    private func _locked_isKeyValid(for thread: TSGroupThread, readTx: SDSAnyReadTransaction) -> Bool {
+    private func _locked_isKeyValid(for thread: TSThread, readTx: SDSAnyReadTransaction) -> Bool {
         storageLock.assertOwner()
 
         guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: readTx),
               let keyMetadata = getKeyMetadata(for: keyId, readTx: readTx) else { return false }
 
-        let currentGroupMembership = thread.groupMembership.fullMembers
-        let didSomeoneLeaveTheGroup = keyMetadata.currentRecipients.subtracting(currentGroupMembership).count > 0
+        guard keyMetadata.isValid else { return false }
 
-        return keyMetadata.isValid && !didSomeoneLeaveTheGroup
+        let currentRecipients = thread.recipientAddresses(with: readTx)
+        let wasRecipientRemovedFromThread = keyMetadata.currentRecipients.subtracting(currentRecipients).count > 0
+
+        return keyMetadata.isValid && !wasRecipientRemovedFromThread
     }
 
-    public func isKeyValid(for thread: TSGroupThread, readTx: SDSAnyReadTransaction) -> Bool {
+    public func isKeyValid(for thread: TSThread, readTx: SDSAnyReadTransaction) -> Bool {
         storageLock.withLock {
             _locked_isKeyValid(for: thread, readTx: readTx)
         }
     }
 
-    public func expireSendingKeyIfNecessary(for thread: TSGroupThread, writeTx: SDSAnyWriteTransaction) {
+    public func expireSendingKeyIfNecessary(for thread: TSThread, writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
             guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: writeTx) else { return }
 
@@ -136,7 +138,7 @@ public class SenderKeyStore: NSObject {
     }
 
     @objc
-    public func resetSenderKeySession(for thread: TSGroupThread, transaction writeTx: SDSAnyWriteTransaction) {
+    public func resetSenderKeySession(for thread: TSThread, transaction writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
             guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx) else { return }
             setMetadata(nil, for: keyId, writeTx: writeTx)
@@ -154,10 +156,10 @@ public class SenderKeyStore: NSObject {
     }
 
     @objc
-    public func skdmBytesForGroupThread(_ groupThread: TSGroupThread, writeTx: SDSAnyWriteTransaction) -> Data? {
+    public func skdmBytesForThread(_ thread: TSThread, writeTx: SDSAnyWriteTransaction) -> Data? {
         do {
             let localAddress = try ProtocolAddress.localAddress
-            let distributionId = distributionIdForSendingToThread(groupThread, writeTx: writeTx)
+            let distributionId = distributionIdForSendingToThread(thread, writeTx: writeTx)
             let skdm = try SenderKeyDistributionMessage(from: localAddress,
                                                         distributionId: distributionId,
                                                         store: self,
@@ -596,7 +598,7 @@ extension KeyMetadata: Codable {
 // MARK: - Helper extensions
 
 private typealias ThreadUniqueId = String
-fileprivate extension TSGroupThread {
+fileprivate extension TSThread {
     var threadUniqueId: ThreadUniqueId { uniqueId }
 }
 

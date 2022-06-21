@@ -130,7 +130,8 @@ extension MessageSender {
             Logger.info("Sender key kill switch activated. No recipients support sender key.")
             return .init(fanoutOnlyParticipants: intendedRecipients)
         }
-        guard let groupThread = thread as? TSGroupThread, groupThread.isGroupV2Thread else {
+
+        guard thread.usesSenderKey else {
             return .init(fanoutOnlyParticipants: intendedRecipients)
         }
 
@@ -140,13 +141,14 @@ extension MessageSender {
                 return .init(fanoutOnlyParticipants: intendedRecipients)
             }
 
-            let isCurrentKeyValid = senderKeyStore.isKeyValid(for: groupThread, readTx: readTx)
+            let isCurrentKeyValid = senderKeyStore.isKeyValid(for: thread, readTx: readTx)
             let recipientsWithoutSenderKey = senderKeyStore.recipientsInNeedOfSenderKey(
-                for: groupThread,
+                for: thread,
                 addresses: intendedRecipients,
                 readTx: readTx)
 
             let senderKeyStatus = SenderKeyStatus(numberOfParticipants: intendedRecipients.count)
+            let threadRecipients = thread.recipientAddresses(with: readTx)
             intendedRecipients.forEach { candidate in
                 // Sender key is UUID-only
                 guard candidate.isValid, candidate.uuid != nil, !candidate.isLocalAddress else {
@@ -156,7 +158,7 @@ extension MessageSender {
 
                 // Sender key requires that you're a full member of the group and you support UD
                 guard GroupManager.doesUserHaveSenderKeyCapability(address: candidate, transaction: readTx),
-                      thread.recipientAddresses(with: readTx).contains(candidate),
+                      threadRecipients.contains(candidate),
                       [.enabled, .unrestricted].contains(udAccessMap[candidate]?.udAccess.udAccessMode) else {
                     senderKeyStatus.participants[candidate] = .FanoutOnly
                     return
@@ -188,7 +190,7 @@ extension MessageSender {
         message: TSOutgoingMessage,
         plaintextContent: Data?,
         payloadId: NSNumber?,
-        thread: TSGroupThread,
+        thread: TSThread,
         status: SenderKeyStatus,
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
         senderCertificates: SenderCertificates,
@@ -212,7 +214,7 @@ extension MessageSender {
         message: TSOutgoingMessage,
         plaintextContent: Data?,
         payloadId: Int64?,
-        thread: TSGroupThread,
+        thread: TSThread,
         status: SenderKeyStatus,
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
         senderCertificates: SenderCertificates,
@@ -353,7 +355,7 @@ extension MessageSender {
     // Returns the list of all recipients ready for the SenderKeyMessage.
     private func senderKeyDistributionPromise(
         recipients: [SignalServiceAddress],
-        thread: TSGroupThread,
+        thread: TSThread,
         originalMessage: TSOutgoingMessage,
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
         sendErrorBlock: @escaping (SignalServiceAddress, Error) -> Void
@@ -380,12 +382,17 @@ extension MessageSender {
             recipientsNotNeedingSKDM = Set(recipients).subtracting(recipientsNeedingSKDM)
 
             guard !recipientsNeedingSKDM.isEmpty else { return [] }
-            guard let skdmBytes = self.senderKeyStore.skdmBytesForGroupThread(thread, writeTx: writeTx) else {
+            guard let skdmBytes = self.senderKeyStore.skdmBytesForThread(thread, writeTx: writeTx) else {
                 throw OWSAssertionError("Couldn't build SKDM")
             }
 
             return recipientsNeedingSKDM.map { address in
-                Logger.info("Sending SKDM to \(address) for thread \(thread.groupId)")
+                if let groupThread = thread as? TSGroupThread {
+                    Logger.info("Sending SKDM to \(address) for group thread \(groupThread.groupId)")
+                } else {
+                    Logger.info("Sending SKDM to \(address) for thread \(thread.uniqueId)")
+                }
+
                 let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: writeTx)
                 let skdmMessage = OWSOutgoingSenderKeyDistributionMessage(
                     thread: contactThread,
@@ -490,7 +497,7 @@ extension MessageSender {
     fileprivate func sendSenderKeyRequest(
         message: TSOutgoingMessage,
         plaintext: Data?,
-        thread: TSGroupThread,
+        thread: TSThread,
         addresses: [SignalServiceAddress],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
         senderCertificate: SenderCertificate
@@ -528,7 +535,7 @@ extension MessageSender {
         encryptedMessageBody: Data,
         timestamp: UInt64,
         isOnline: Bool,
-        thread: TSGroupThread,
+        thread: TSThread,
         recipients: [Recipient],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
         senderCertificate: SenderCertificate,
@@ -643,17 +650,26 @@ extension MessageSender {
     func senderKeyMessageBody(
         plaintext: Data,
         message: TSOutgoingMessage,
-        thread: TSGroupThread,
+        thread: TSThread,
         recipients: [Recipient],
         senderCertificate: SenderCertificate,
         transaction writeTx: SDSAnyWriteTransaction
     ) throws -> Data {
-        // multiRecipient messages really need to have the USMC groupId actually match the target thread. Otherwise
-        // this breaks sender key recovery. So we'll always use the thread's groupId here, but we'll verify that
-        // we're not trying to send any messages with a special envelope groupId.
-        // These are only ever set on resend request/response messages, which are only sent through a 1:1 session,
-        // but we should be made aware if that ever changes.
-        owsAssertDebug(message.envelopeGroupIdWithTransaction(writeTx) == thread.groupId)
+        let groupIdForSending: Data
+        if let groupThread = thread as? TSGroupThread {
+            // multiRecipient messages really need to have the USMC groupId actually match the target thread. Otherwise
+            // this breaks sender key recovery. So we'll always use the thread's groupId here, but we'll verify that
+            // we're not trying to send any messages with a special envelope groupId.
+            // These are only ever set on resend request/response messages, which are only sent through a 1:1 session,
+            // but we should be made aware if that ever changes.
+            owsAssertDebug(message.envelopeGroupIdWithTransaction(writeTx) == groupThread.groupId)
+
+            groupIdForSending = groupThread.groupId
+        } else {
+            // If we're not a group thread, we don't have a groupId.
+            // TODO: Eventually LibSignalClient could allow passing `nil` in this case
+            groupIdForSending = Data()
+        }
 
         let protocolAddresses = recipients.flatMap { $0.protocolAddresses }
         let secretCipher = try SMKSecretSessionCipher(
@@ -668,7 +684,7 @@ extension MessageSender {
             recipients: protocolAddresses,
             paddedPlaintext: (plaintext as NSData).paddedMessageBody(),
             senderCertificate: senderCertificate,
-            groupId: thread.groupId,
+            groupId: groupIdForSending,
             distributionId: distributionId,
             contentHint: message.contentHint.signalClientHint,
             protocolContext: writeTx)
@@ -684,7 +700,7 @@ extension MessageSender {
         ciphertext: Data,
         timestamp: UInt64,
         isOnline: Bool,
-        thread: TSGroupThread,
+        thread: TSThread,
         recipients: [Recipient],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess]
     ) throws -> Promise<HTTPResponse> {

@@ -11,6 +11,10 @@ public extension TSThread {
         return (self as? TSGroupThread) != nil
     }
 
+    var usesSenderKey: Bool {
+        self is TSGroupThread || self is TSPrivateStoryThread
+    }
+
     var isGroupV1Thread: Bool {
         guard let groupThread = self as? TSGroupThread else {
             return false

@@ -633,12 +633,11 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     AnyPromise *_Nullable senderKeyMessagePromise = nil;
     NSArray<SignalServiceAddress *> *senderKeyAddresses = senderKeyStatus.allSenderKeyParticipants;
     NSArray<SignalServiceAddress *> *fanoutSendAddresses = senderKeyStatus.fanoutParticipants;
-    if ([thread isKindOfClass:[TSGroupThread class]] && senderKeyAddresses.count >= 2 && message.canSendWithSenderKey) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
+    if (thread.usesSenderKey && senderKeyAddresses.count >= 2 && message.canSendWithSenderKey) {
         senderKeyMessagePromise = [self senderKeyMessageSendPromiseWithMessage:message
                                                               plaintextContent:plaintext
                                                                      payloadId:plaintextPayloadId
-                                                                        thread:groupThread
+                                                                        thread:thread
                                                                         status:senderKeyStatus
                                                                    udAccessMap:sendingAccessMap
                                                             senderCertificates:senderCertificates

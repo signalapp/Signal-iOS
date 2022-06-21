@@ -90,10 +90,9 @@
     if (self.originalThreadId) {
         originalThread = [TSThread anyFetchWithUniqueId:self.originalThreadId transaction:transaction];
     }
-    if (originalThread.isGroupThread &&
+    if (originalThread.usesSenderKey &&
         [[originalThread recipientAddressesWithTransaction:transaction] containsObject:recipient]) {
-        TSGroupThread *groupThread = (TSGroupThread *)originalThread;
-        NSData *skdmBytes = [self.senderKeyStore skdmBytesForGroupThread:groupThread writeTx:transaction];
+        NSData *skdmBytes = [self.senderKeyStore skdmBytesForThread:originalThread writeTx:transaction];
         [contentBuilder setSenderKeyDistributionMessage:skdmBytes];
 
         self.didAppendSKDM = (skdmBytes != nil);
