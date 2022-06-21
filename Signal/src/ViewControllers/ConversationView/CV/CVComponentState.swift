@@ -565,7 +565,7 @@ public class CVComponentState: Equatable, Dependencies {
         return activeComponentStateKeys.isSubset(of: Set(validKeys))
     }()
 
-    lazy var isJumbomojiMessage: Bool = {
+    lazy var isBorderlessJumbomojiMessage: Bool = {
         isTextOnlyMessage && (bodyText?.isJumbomojiMessage == true)
     }()
 

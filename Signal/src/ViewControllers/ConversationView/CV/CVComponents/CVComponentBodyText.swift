@@ -69,10 +69,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         CVComponentViewBodyText(componentDelegate: componentDelegate)
     }
 
-    private var isJumbomoji: Bool {
-        componentState.isJumbomojiMessage
-    }
-
     private static func shouldIgnoreEvents(interaction: TSInteraction) -> Bool {
         guard let outgoingMessage = interaction as? TSOutgoingMessage else {
             return false
@@ -449,7 +445,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     public var textMessageFont: UIFont {
         owsAssertDebug(DisplayableText.kMaxJumbomojiCount == 5)
 
-        if isJumbomoji, let jumbomojiCount = bodyText.jumbomojiCount {
+        if let jumbomojiCount = bodyText.jumbomojiCount {
             let basePointSize = UIFont.ows_dynamicTypeBodyClamped.pointSize
             switch jumbomojiCount {
             case 0:

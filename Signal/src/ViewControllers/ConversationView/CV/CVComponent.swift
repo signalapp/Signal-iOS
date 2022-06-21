@@ -250,7 +250,7 @@ extension CVComponentBase: CVNode {
     }
 
     public var isBorderless: Bool {
-        if componentState.isJumbomojiMessage {
+        if componentState.isBorderlessJumbomojiMessage {
             return true
         }
         if componentState.isBorderlessBodyMediaMessage {
