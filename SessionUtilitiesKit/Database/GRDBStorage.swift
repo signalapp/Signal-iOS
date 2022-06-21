@@ -370,16 +370,28 @@ public extension GRDBStorage {
         }
     }
     
-    @discardableResult func write<T>(updates: (Database) throws -> Promise<T>) -> Promise<T> {
+    @discardableResult func writeAsync<T>(updates: @escaping (Database) throws -> Promise<T>) -> Promise<T> {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else {
             return Promise(error: StorageError.databaseInvalid)
         }
         
-        do {
-            return try dbWriter.write(updates)
-        }
-        catch {
-            return Promise(error: error)
-        }
+        let (promise, seal) = Promise<T>.pending()
+        
+        dbWriter.asyncWrite(
+            { db in
+                try updates(db)
+                    .done { result in seal.fulfill(result) }
+                    .catch { error in seal.reject(error) }
+                    .retainUntilComplete()
+            },
+            completion: { _, result in
+                switch result {
+                    case .failure(let error): seal.reject(error)
+                    default: break
+                }
+            }
+        )
+        
+        return promise
     }
 }
