@@ -241,7 +241,10 @@ public class GRDBSchemaMigrator: NSObject {
         var migrator = DatabaseMigrator()
 
         func registerMigration(_ identifier: MigrationId, migrate: @escaping (Database) -> Void) {
-            migrator.registerMigration(identifier.rawValue) {  (database: Database) in
+            // Run with immediate foreign key checks so that pre-existing dangling rows
+            // don't cause unrelated migrations to fail. We also don't perform schema
+            // alterations that would necessitate disabling foreign key checks.
+            migrator.registerMigration(identifier.rawValue, foreignKeyChecks: .immediate) { (database: Database) in
                 let startTime = CACurrentMediaTime()
                 Logger.info("Running migration: \(identifier)")
                 migrate(database)
