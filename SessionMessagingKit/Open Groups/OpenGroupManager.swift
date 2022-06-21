@@ -195,11 +195,16 @@ public final class OpenGroupManager: NSObject {
         OpenGroupAPI.workQueue.async {
             dependencies.storage
                 .writeAsync { db in
+                    // Note: The initial request for room info and it's capabilities should NOT be
+                    // authenticated (this is because if the server requires blinding and the auth
+                    // headers aren't blinded it will error - these endpoints do support unauthenticated
+                    // retrieval so doing so prevents the error)
                     OpenGroupAPI
                         .capabilitiesAndRoom(
                             db,
                             for: roomToken,
                             on: server,
+                            authenticated: false,
                             using: dependencies
                         )
                 }
@@ -704,7 +709,7 @@ public final class OpenGroupManager: NSObject {
         // Try to retrieve the default rooms 8 times
         attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
             dependencies.storage.read { db in
-                OpenGroupAPI.rooms(db, for: OpenGroupAPI.defaultServer, using: dependencies)
+                OpenGroupAPI.rooms(db, server: OpenGroupAPI.defaultServer, using: dependencies)
             }
             .map { _, data in data }
         }

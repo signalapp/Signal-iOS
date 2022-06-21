@@ -1150,7 +1150,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                                 OWSAlerts.showErrorAlert(message: "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE".localized())
                                 return
                             }
-                            // TODO: Looks like the 'play/pause' icon isn't swapping when it auto-plays to the next item)
+                            
                             cell.dynamicUpdate(with: cellViewModel, playbackInfo: updatedInfo)
                         }
                     },

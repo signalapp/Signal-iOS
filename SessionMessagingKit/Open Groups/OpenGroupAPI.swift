@@ -184,6 +184,7 @@ public enum OpenGroupAPI {
         _ db: Database,
         server: String,
         requests: [BatchRequestInfoType],
+        authenticated: Bool = true,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
         let requestBody: BatchRequest = requests.map { $0.toSubRequest() }
@@ -198,6 +199,7 @@ public enum OpenGroupAPI {
                     endpoint: Endpoint.sequence,
                     body: requestBody
                 ),
+                authenticated: authenticated,
                 using: dependencies
             )
             .decoded(as: responseTypes, on: OpenGroupAPI.workQueue, using: dependencies)
@@ -220,7 +222,7 @@ public enum OpenGroupAPI {
     /// could return: `{"capabilities": ["sogs", "batch"], "missing": ["magic"]}`
     public static func capabilities(
         _ db: Database,
-        on server: String,
+        server: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Capabilities)> {
         return OpenGroupAPI
@@ -242,7 +244,7 @@ public enum OpenGroupAPI {
     /// Rooms to which the user does not have access (e.g. because they are banned, or the room has restricted access permissions) are not included
     public static func rooms(
         _ db: Database,
-        for server: String,
+        server: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, [Room])> {
         return OpenGroupAPI
@@ -315,6 +317,7 @@ public enum OpenGroupAPI {
         _ db: Database,
         for roomToken: String,
         on server: String,
+        authenticated: Bool = true,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(capabilities: (info: OnionRequestResponseInfoType, data: Capabilities), room: (info: OnionRequestResponseInfoType, data: Room))> {
         let requestResponseType: [BatchRequestInfoType] = [
@@ -342,6 +345,7 @@ public enum OpenGroupAPI {
                 db,
                 server: server,
                 requests: requestResponseType,
+                authenticated: authenticated,
                 using: dependencies
             )
             .map { (response: [Endpoint: (OnionRequestResponseInfoType, Codable?)]) -> (capabilities: (OnionRequestResponseInfoType, Capabilities), room: (OnionRequestResponseInfoType, Room)) in
@@ -1199,6 +1203,7 @@ public enum OpenGroupAPI {
     private static func send<T: Encodable>(
         _ db: Database,
         request: Request<T, Endpoint>,
+        authenticated: Bool = true,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         let urlRequest: URLRequest
@@ -1217,6 +1222,11 @@ public enum OpenGroupAPI {
             .fetchOne(db)
         
         guard let publicKey: String = maybePublicKey else { return Promise(error: Error.noPublicKey) }
+        
+        // If we don't want to authenticate the request then send it immediately
+        guard authenticated else {
+            return dependencies.onionApi.sendOnionRequest(urlRequest, to: request.server, with: publicKey)
+        }
         
         // Attempt to sign the request with the new auth
         guard let signedRequest: URLRequest = sign(db, request: urlRequest, for: request.server, with: publicKey, using: dependencies) else {

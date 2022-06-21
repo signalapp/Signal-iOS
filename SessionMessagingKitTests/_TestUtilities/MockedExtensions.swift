@@ -8,8 +8,8 @@ extension OpenGroup: Mocked {
         server: any(),
         roomToken: any(),
         publicKey: TestConstants.publicKey,
-        name: any(),
         isActive: any(),
+        name: any(),
         roomDescription: any(),
         imageId: any(),
         imageData: any(),
@@ -22,7 +22,7 @@ extension OpenGroup: Mocked {
 }
 
 extension VisibleMessage: Mocked {
-    static var mockValue: VisibleMessage = VisibleMessage()
+    static var mockValue: VisibleMessage = VisibleMessage(text: "")
 }
 
 extension BlindedIdMapping: Mocked {

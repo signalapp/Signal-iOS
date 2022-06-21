@@ -45,8 +45,6 @@ enum _003_YDBToGRDBMigration: Migration {
         var openGroupInfo: [String: SMKLegacy._OpenGroup] = [:]
         var openGroupUserCount: [String: Int64] = [:]
         var openGroupImage: [String: Data] = [:]
-        var openGroupLastMessageServerId: [String: Int64] = [:]    // Optional
-        var openGroupLastDeletionServerId: [String: Int64] = [:]   // Optional
         
         var interactions: [String: [SMKLegacy._DBInteraction]] = [:]
         var attachments: [String: SMKLegacy._Attachment] = [:]
@@ -180,8 +178,6 @@ enum _003_YDBToGRDBMigration: Migration {
                     openGroupInfo[thread.uniqueId] = openGroup
                     openGroupUserCount[thread.uniqueId] = ((transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupUserCountCollection) as? Int64) ?? 0)
                     openGroupImage[thread.uniqueId] = transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupImageCollection) as? Data
-                    openGroupLastMessageServerId[thread.uniqueId] = transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupLastMessageServerIDCollection) as? Int64
-                    openGroupLastDeletionServerId[thread.uniqueId] = transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupLastDeletionServerIDCollection) as? Int64
                 }
             }
             GRDBStorage.shared.update(progress: 0.04, for: self, in: target)
@@ -787,10 +783,6 @@ enum _003_YDBToGRDBMigration: Migration {
                                     case .mediaSavedNotification: variant = .infoMediaSavedNotification
                                     case .call: variant = .infoCall
                                     case .messageRequestAccepted: variant = .infoMessageRequestAccepted
-                                    
-                                    @unknown default:
-                                        SNLog("[Migration Error] Unsupported info message type")
-                                        throw StorageError.migrationFailed
                                 }
                                 
                             default:
@@ -1100,8 +1092,6 @@ enum _003_YDBToGRDBMigration: Migration {
         openGroupInfo = [:]
         openGroupUserCount = [:]
         openGroupImage = [:]
-        openGroupLastMessageServerId = [:]
-        openGroupLastDeletionServerId = [:]
         
         interactions = [:]
         attachments = [:]
@@ -1506,7 +1496,6 @@ enum _003_YDBToGRDBMigration: Migration {
             
             return (true, nil)
         }()
-        
         
         _ = try Attachment(
             // Note: The legacy attachment object used a UUID string for it's id as well

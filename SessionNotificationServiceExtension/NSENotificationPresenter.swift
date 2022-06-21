@@ -13,7 +13,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         guard Date().timeIntervalSince1970 > (thread.mutedUntilTimestamp ?? 0) else { return }
         
         let userPublicKey: String = getUserHexEncodedPublicKey(db)
-        let isMessageRequest: Bool = thread.isMessageRequest(db)
+        let isMessageRequest: Bool = thread.isMessageRequest(db, includeNonVisible: true)
         
         // If the thread is a message request and the user hasn't hidden message requests then we need
         // to check if this is the only message request thread (group threads can't be message requests
@@ -21,13 +21,13 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         // notification regardless of how many message requests there are)
         if thread.variant == .contact {
             if isMessageRequest && !db[.hasHiddenMessageRequests] {
-                let numMessageRequestThreads: Int? = (try? SessionThread
-                    .messageRequestsCountQuery(userPublicKey: userPublicKey)
-                    .fetchOne(db))
+                let numMessageRequestThreads: Int = (try? SessionThread
+                    .messageRequestsQuery(userPublicKey: userPublicKey, includeNonVisible: true)
+                    .fetchCount(db))
                     .defaulting(to: 0)
                 
                 // Allow this to show a notification if there are no message requests (ie. this is the first one)
-                guard (numMessageRequestThreads ?? 0) == 0 else { return }
+                guard numMessageRequestThreads == 0 else { return }
             }
             else if isMessageRequest && db[.hasHiddenMessageRequests] {
                 // If there are other interactions on this thread already then don't show the notification

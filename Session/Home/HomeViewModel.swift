@@ -73,9 +73,8 @@ public class HomeViewModel {
                 let hasViewedSeed: Bool = db[.hasViewedSeed]
                 let userPublicKey: String = getUserHexEncodedPublicKey(db)
                 let unreadMessageRequestCount: Int = try SessionThread
-                    .unreadMessageRequestsCountQuery(userPublicKey: userPublicKey)
-                    .fetchOne(db)
-                    .defaulting(to: 0)
+                    .unreadMessageRequestsQuery(userPublicKey: userPublicKey)
+                    .fetchCount(db)
                 let finalUnreadMessageRequestCount: Int = (db[.hasHiddenMessageRequests] ? 0 : unreadMessageRequestCount)
                 let threads: [SessionThreadViewModel] = try SessionThreadViewModel
                     .homeQuery(userPublicKey: userPublicKey)

@@ -511,6 +511,11 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         currentPlayingInteraction.mutate { $0 = viewModel.id }
         
         audioPlayer.mutate { [weak self] player in
+            // Note: We clear the delegate and explicitly set to nil here as when the OWSAudioPlayer
+            // gets deallocated it triggers state changes which cause UI bugs when auto-playing
+            player?.delegate = nil
+            player = nil
+            
             let audioPlayer: OWSAudioPlayer = OWSAudioPlayer(
                 mediaUrl: URL(fileURLWithPath: originalFilePath),
                 audioBehavior: .audioMessagePlayback,
@@ -543,7 +548,12 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         audioPlayer.wrappedValue?.stop()
         
         currentPlayingInteraction.mutate { $0 = nil }
-        audioPlayer.mutate { $0 = nil }
+        audioPlayer.mutate {
+            // Note: We clear the delegate and explicitly set to nil here as when the OWSAudioPlayer
+            // gets deallocated it triggers state changes which cause UI bugs when auto-playing
+            $0?.delegate = nil
+            $0 = nil
+        }
     }
     
     // MARK: - OWSAudioPlayerDelegate
@@ -591,7 +601,12 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         
         // Clear out the currently playing record
         currentPlayingInteraction.mutate { $0 = nil }
-        audioPlayer.mutate { $0 = nil }
+        audioPlayer.mutate {
+            // Note: We clear the delegate and explicitly set to nil here as when the OWSAudioPlayer
+            // gets deallocated it triggers state changes which cause UI bugs when auto-playing
+            $0?.delegate = nil
+            $0 = nil
+        }
         
         // If the next interaction is another voice message then autoplay it
         guard

@@ -38,7 +38,7 @@ public struct Capability: Codable, FetchableRecord, PersistableRecord, TableReco
         
         public init(from valueString: String) {
             let maybeValue: Variant? = Variant.allCases.first { $0.rawValue == valueString }
-
+            
             self = (maybeValue ?? .unsupported(valueString))
         }
     }

@@ -169,9 +169,9 @@ public extension SessionThread {
         return existingThread
     }
     
-    func isMessageRequest(_ db: Database) -> Bool {
+    func isMessageRequest(_ db: Database, includeNonVisible: Bool = false) -> Bool {
         return (
-            shouldBeVisible &&
+            (includeNonVisible || shouldBeVisible) &&
             variant == .contact &&
             id != getUserHexEncodedPublicKey(db) && // Note to self
             (try? Contact.fetchOne(db, id: id))?.isApproved != true
@@ -182,27 +182,27 @@ public extension SessionThread {
 // MARK: - Convenience
 
 public extension SessionThread {
-    static func messageRequestsCountQuery(userPublicKey: String) -> SQLRequest<Int> {
+    static func messageRequestsQuery(userPublicKey: String, includeNonVisible: Bool = false) -> SQLRequest<SessionThread> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         
         return """
-            SELECT COUNT(\(thread[.id]))
+            SELECT \(thread.allColumns())
             FROM \(SessionThread.self)
             LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
             WHERE (
-                \(SessionThread.isMessageRequest(userPublicKey: userPublicKey))
+                \(SessionThread.isMessageRequest(userPublicKey: userPublicKey, includeNonVisible: includeNonVisible))
             )
         """
     }
     
-    static func unreadMessageRequestsCountQuery(userPublicKey: String) -> SQLRequest<Int> {
+    static func unreadMessageRequestsQuery(userPublicKey: String) -> SQLRequest<SessionThread> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
         return """
-            SELECT COUNT(\(thread[.id]))
+            SELECT \(thread.allColumns())
             FROM \(SessionThread.self)
             JOIN (
                 SELECT
@@ -225,13 +225,17 @@ public extension SessionThread {
     ///
     /// **Note:** In order to use this filter you **MUST** have a `joining(required/optional:)` to the
     /// `SessionThread.contact` association or it won't work
-    static func isMessageRequest(userPublicKey: String) -> SQLSpecificExpressible {
+    static func isMessageRequest(userPublicKey: String, includeNonVisible: Bool = false) -> SQLSpecificExpressible {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
+        let shouldBeVisibleSQL: SQL = (includeNonVisible ?
+            SQL(stringLiteral: "true") :
+            SQL("\(thread[.shouldBeVisible]) = true")
+        )
         
         return SQL(
             """
-                \(thread[.shouldBeVisible]) = true AND
+                \(shouldBeVisibleSQL) AND
                 \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND
                 \(SQL("\(thread[.id]) != \(userPublicKey)")) AND
                 IFNULL(\(contact[.isApproved]), false) = false

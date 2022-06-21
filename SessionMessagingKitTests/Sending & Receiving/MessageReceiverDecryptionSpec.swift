@@ -2,6 +2,8 @@
 
 import Foundation
 import Sodium
+import GRDB
+import SessionUtilitiesKit
 
 import Quick
 import Nimble
@@ -12,7 +14,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
     // MARK: - Spec
 
     override func spec() {
-        var mockStorage: MockStorage!
+        var mockStorage: GRDBStorage!
         var mockSodium: MockSodium!
         var mockBox: MockBox!
         var mockGenericHash: MockGenericHash!
@@ -23,7 +25,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
         
         describe("a MessageReceiver") {
             beforeEach {
-                mockStorage = MockStorage()
+                mockStorage = GRDBStorage(customWriter: DatabaseQueue())
                 mockSodium = MockSodium()
                 mockBox = MockBox()
                 mockGenericHash = MockGenericHash()
@@ -45,14 +47,10 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                     nonceGenerator24: mockNonce24Generator
                 )
                 
-                mockStorage
-                    .when { $0.getUserED25519KeyPair() }
-                    .thenReturn(
-                        Box.KeyPair(
-                            publicKey: Data(hex: TestConstants.edPublicKey).bytes,
-                            secretKey: Data(hex: TestConstants.edSecretKey).bytes
-                        )
-                    )
+                mockStorage.write { db in
+                    try Identity(variant: .ed25519PublicKey, data: Data(hex: TestConstants.edPublicKey)).insert(db)
+                    try Identity(variant: .ed25519SecretKey, data: Data(hex: TestConstants.edSecretKey)).insert(db)
+                }
                 mockBox
                     .when {
                         $0.open(
@@ -109,9 +107,9 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                             "sFMhE5G4PbRtQFey1hsxLl221Qivc3ayaX2Mm/X89Dl8e45BC+Lb/KU9EdesxIK4pVgYXs9XrMtX3v8" +
                             "dt0eBaXneOBfr7qB8pHwwMZjtkOu1ED07T9nszgbWabBphUfWXe2U9K3PTRisSCI="
                         )!,
-                        using: try! ECKeyPair(
-                            publicKeyData: Data.data(fromHex: TestConstants.publicKey)!,
-                            privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
+                        using: Box.KeyPair(
+                            publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
+                            secretKey: Data.data(fromHex: TestConstants.privateKey)!.bytes
                         ),
                         dependencies: Dependencies()
                     )
@@ -135,14 +133,14 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                     expect {
                         try MessageReceiver.decryptWithSessionProtocol(
                             ciphertext: "TestMessage".data(using: .utf8)!,
-                            using: try! ECKeyPair(
-                                publicKeyData: Data.data(fromHex: TestConstants.publicKey)!,
-                                privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
+                            using: Box.KeyPair(
+                                publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
+                                secretKey: Data.data(fromHex: TestConstants.privateKey)!.bytes
                             ),
                             dependencies: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.decryptionFailed))
+                    .to(throwError(MessageReceiverError.decryptionFailed))
                 }
                 
                 it("throws an error if the open message is too short") {
@@ -159,14 +157,14 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                     expect {
                         try MessageReceiver.decryptWithSessionProtocol(
                             ciphertext: "TestMessage".data(using: .utf8)!,
-                            using: try! ECKeyPair(
-                                publicKeyData: Data.data(fromHex: TestConstants.publicKey)!,
-                                privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
+                            using: Box.KeyPair(
+                                publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
+                                secretKey: Data.data(fromHex: TestConstants.privateKey)!.bytes
                             ),
                             dependencies: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.decryptionFailed))
+                    .to(throwError(MessageReceiverError.decryptionFailed))
                 }
                 
                 it("throws an error if it cannot verify the message") {
@@ -177,14 +175,14 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                     expect {
                         try MessageReceiver.decryptWithSessionProtocol(
                             ciphertext: "TestMessage".data(using: .utf8)!,
-                            using: try! ECKeyPair(
-                                publicKeyData: Data.data(fromHex: TestConstants.publicKey)!,
-                                privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
+                            using: Box.KeyPair(
+                                publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
+                                secretKey: Data.data(fromHex: TestConstants.privateKey)!.bytes
                             ),
                             dependencies: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.invalidSignature))
+                    .to(throwError(MessageReceiverError.invalidSignature))
                 }
                 
                 it("throws an error if it cannot get the senders x25519 public key") {
@@ -193,14 +191,14 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                     expect {
                         try MessageReceiver.decryptWithSessionProtocol(
                             ciphertext: "TestMessage".data(using: .utf8)!,
-                            using: try! ECKeyPair(
-                                publicKeyData: Data.data(fromHex: TestConstants.publicKey)!,
-                                privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
+                            using: Box.KeyPair(
+                                publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
+                                secretKey: Data.data(fromHex: TestConstants.privateKey)!.bytes
                             ),
                             dependencies: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.decryptionFailed))
+                    .to(throwError(MessageReceiverError.decryptionFailed))
                 }
             }
             
@@ -263,7 +261,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.decryptionFailed))
+                    .to(throwError(MessageReceiverError.decryptionFailed))
                 }
                 
                 it("throws an error if it cannot get the blinded keyPair") {
@@ -288,7 +286,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.decryptionFailed))
+                    .to(throwError(MessageReceiverError.decryptionFailed))
                 }
                 
                 it("throws an error if it cannot get the decryption key") {
@@ -321,7 +319,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.decryptionFailed))
+                    .to(throwError(MessageReceiverError.decryptionFailed))
                 }
                 
                 it("throws an error if the data version is not 0") {
@@ -342,7 +340,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.decryptionFailed))
+                    .to(throwError(MessageReceiverError.decryptionFailed))
                 }
                 
                 it("throws an error if it cannot decrypt the data") {
@@ -367,7 +365,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.decryptionFailed))
+                    .to(throwError(MessageReceiverError.decryptionFailed))
                 }
                 
                 it("throws an error if the inner bytes are too short") {
@@ -392,7 +390,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.decryptionFailed))
+                    .to(throwError(MessageReceiverError.decryptionFailed))
                 }
                 
                 it("throws an error if it cannot generate the blinding factor") {
@@ -417,7 +415,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.invalidSignature))
+                    .to(throwError(MessageReceiverError.invalidSignature))
                 }
                 
                 it("throws an error if it cannot generate the combined key") {
@@ -442,7 +440,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.invalidSignature))
+                    .to(throwError(MessageReceiverError.invalidSignature))
                 }
                 
                 it("throws an error if the combined key does not match kA") {
@@ -467,7 +465,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.invalidSignature))
+                    .to(throwError(MessageReceiverError.invalidSignature))
                 }
                 
                 it("throws an error if it cannot get the senders x25519 public key") {
@@ -492,7 +490,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                             using: dependencies
                         )
                     }
-                    .to(throwError(MessageReceiver.Error.decryptionFailed))
+                    .to(throwError(MessageReceiverError.decryptionFailed))
                 }
             }
         }

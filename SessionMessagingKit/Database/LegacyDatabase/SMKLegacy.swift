@@ -21,16 +21,12 @@ public enum SMKLegacy {
     public static let threadCollection = "TSThread"
     internal static let disappearingMessagesCollection = "OWSDisappearingMessagesConfiguration"
     
-    internal static let closedGroupPublicKeyCollection = "SNClosedGroupPublicKeyCollection"
     internal static let closedGroupFormationTimestampCollection = "SNClosedGroupFormationTimestampCollection"
     internal static let closedGroupZombieMembersCollection = "SNClosedGroupZombieMembersCollection"
     
     internal static let openGroupCollection = "SNOpenGroupCollection"
     internal static let openGroupUserCountCollection = "SNOpenGroupUserCountCollection"
     internal static let openGroupImageCollection = "SNOpenGroupImageCollection"
-    internal static let openGroupLastMessageServerIDCollection = "SNLastMessageServerIDCollection"
-    internal static let openGroupLastDeletionServerIDCollection = "SNLastDeletionServerIDCollection"
-    internal static let openGroupServerIdToUniqueIdLookupCollection = "SNOpenGroupServerIdToUniqueIdLookup"
     
     public static let messageDatabaseViewExtensionName = "TSMessageDatabaseViewExtensionName_Monotonic"
     internal static let interactionCollection = "TSInteraction"

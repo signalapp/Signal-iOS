@@ -200,9 +200,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         DispatchQueue.global(qos: .utility).sync {
             let _ = IP2Country.shared.populateCacheIfNeeded()
         }
-        
-        // Get default open group rooms if needed
-//        OpenGroupManager.getDefaultRoomsIfNeeded()    // TODO: Needed???
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -411,13 +408,8 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         
         switch section.model {
             case .messageRequests:
-                let hide = UITableViewRowAction(style: .destructive, title: "TXT_HIDE_TITLE".localized()) { [weak self] _, _ in
+                let hide = UITableViewRowAction(style: .destructive, title: "TXT_HIDE_TITLE".localized()) { _, _ in
                     GRDBStorage.shared.write { db in db[.hasHiddenMessageRequests] = true }
-
-                    // Animate the row removal
-                    self?.tableView.beginUpdates()
-                    self?.tableView.deleteRows(at: [indexPath], with: .automatic)
-                    self?.tableView.endUpdates()
                 }
                 hide.backgroundColor = Colors.destructive
                 
@@ -443,7 +435,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                         title: "TXT_DELETE_TITLE".localized(),
                         style: .destructive
                     ) { _ in
-                        GRDBStorage.shared.write { db in
+                        GRDBStorage.shared.writeAsync { db in
                             switch cellViewModel.threadVariant {
                                 case .closedGroup:
                                     try MessageSender
@@ -477,7 +469,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                         "PIN_BUTTON_TEXT".localized()
                     )
                 ) { _, _ in
-                    GRDBStorage.shared.write { db in
+                    GRDBStorage.shared.writeAsync { db in
                         try SessionThread
                             .filter(id: cellViewModel.threadId)
                             .updateAll(db, SessionThread.Columns.isPinned.set(to: !cellViewModel.threadIsPinned))
@@ -495,7 +487,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                         "BLOCK_LIST_BLOCK_BUTTON".localized()
                     )
                 ) { _, _ in
-                    GRDBStorage.shared.write { db in
+                    GRDBStorage.shared.writeAsync { db in
                         try Contact
                             .filter(id: cellViewModel.threadId)
                             .updateAll(

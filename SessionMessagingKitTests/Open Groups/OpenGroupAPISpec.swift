@@ -55,21 +55,26 @@ class OpenGroupAPISpec: QuickSpec {
                 )
                 
                 mockStorage.write { db in
-                    try Identity(variant: .x25519PublicKey, data: Data.data(fromHex: TestConstants.publicKey)).insert(db)
-                    try Identity(variant: .x25519PrivateKey, data: Data.data(fromHex: TestConstants.privateKey)).insert(db)
-                    try Identity(variant: .ed25519PublicKey, data: Data.data(fromHex: TestConstants.edPublicKey)).insert(db)
-                    try Identity(variant: .ed25519SecretKey, data: Data.data(fromHex: TestConstants.edSecretKey)).insert(db)
+                    try Identity(variant: .x25519PublicKey, data: Data.data(fromHex: TestConstants.publicKey)!).insert(db)
+                    try Identity(variant: .x25519PrivateKey, data: Data.data(fromHex: TestConstants.privateKey)!).insert(db)
+                    try Identity(variant: .ed25519PublicKey, data: Data.data(fromHex: TestConstants.edPublicKey)!).insert(db)
+                    try Identity(variant: .ed25519SecretKey, data: Data.data(fromHex: TestConstants.edSecretKey)!).insert(db)
                     
                     try OpenGroup(
                         server: "testServer",
                         roomToken: "testRoom",
                         publicKey: TestConstants.publicKey,
+                        isActive: true,
                         name: "Test",
-                        groupDescription: nil,
-                        imageID: nil,
-                        infoUpdates: 0
+                        roomDescription: nil,
+                        imageId: nil,
+                        userCount: 0,
+                        infoUpdates: 0,
+                        sequenceNumber: 0,
+                        inboxLatestMessageId: 0,
+                        outboxLatestMessageId: 0
                     ).insert(db)
-                    try Capability(openGroupServer: "testserver", variant: .sogs, isMissing: false)
+                    try Capability(openGroupServer: "testserver", variant: .sogs, isMissing: false).insert(db)
                 }
                 
                 mockGenericHash.when { $0.hash(message: anyArray(), outputLength: any()) }.thenReturn([])
@@ -169,7 +174,16 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("generates the correct request") {
-                        OpenGroupAPI.poll("testServer", hasPerformedInitialPoll: false, timeSinceLastPoll: 0, using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI.poll(
+                                    db,
+                                    server: "testserver",
+                                    hasPerformedInitialPoll: false,
+                                    timeSinceLastPoll: 0,
+                                    using: dependencies
+                                )
+                            }
                             .get { result in pollResponse = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -615,7 +629,16 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("errors when no data is returned") {
-                        OpenGroupAPI.poll("testServer", hasPerformedInitialPoll: false, timeSinceLastPoll: 0, using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI.poll(
+                                    db,
+                                    server: "testserver",
+                                    hasPerformedInitialPoll: false,
+                                    timeSinceLastPoll: 0,
+                                    using: dependencies
+                                )
+                            }
                             .get { result in pollResponse = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -635,7 +658,16 @@ class OpenGroupAPISpec: QuickSpec {
                         }
                         dependencies = dependencies.with(onionApi: TestApi.self)
                         
-                        OpenGroupAPI.poll("testServer", hasPerformedInitialPoll: false, timeSinceLastPoll: 0, using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI.poll(
+                                    db,
+                                    server: "testserver",
+                                    hasPerformedInitialPoll: false,
+                                    timeSinceLastPoll: 0,
+                                    using: dependencies
+                                )
+                            }
                             .get { result in pollResponse = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -655,7 +687,16 @@ class OpenGroupAPISpec: QuickSpec {
                         }
                         dependencies = dependencies.with(onionApi: TestApi.self)
                         
-                        OpenGroupAPI.poll("testServer", hasPerformedInitialPoll: false, timeSinceLastPoll: 0, using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI.poll(
+                                    db,
+                                    server: "testserver",
+                                    hasPerformedInitialPoll: false,
+                                    timeSinceLastPoll: 0,
+                                    using: dependencies
+                                )
+                            }
                             .get { result in pollResponse = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -675,7 +716,16 @@ class OpenGroupAPISpec: QuickSpec {
                         }
                         dependencies = dependencies.with(onionApi: TestApi.self)
                         
-                        OpenGroupAPI.poll("testServer", hasPerformedInitialPoll: false, timeSinceLastPoll: 0, using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI.poll(
+                                    db,
+                                    server: "testserver",
+                                    hasPerformedInitialPoll: false,
+                                    timeSinceLastPoll: 0,
+                                    using: dependencies
+                                )
+                            }
                             .get { result in pollResponse = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -727,7 +777,16 @@ class OpenGroupAPISpec: QuickSpec {
                         }
                         dependencies = dependencies.with(onionApi: TestApi.self)
                         
-                        OpenGroupAPI.poll("testServer", hasPerformedInitialPoll: false, timeSinceLastPoll: 0, using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI.poll(
+                                    db,
+                                    server: "testserver",
+                                    hasPerformedInitialPoll: false,
+                                    timeSinceLastPoll: 0,
+                                    using: dependencies
+                                )
+                            }
                             .get { result in pollResponse = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -756,7 +815,14 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Capabilities)?
                     
-                    OpenGroupAPI.capabilities(on: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI.capabilities(
+                                db,
+                                server: "testserver",
+                                using: dependencies
+                            )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -820,7 +886,14 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     var response: (info: OnionRequestResponseInfoType, data: [OpenGroupAPI.Room])?
                     
-                    OpenGroupAPI.rooms(for: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI.rooms(
+                                db,
+                                server: "testserver",
+                                using: dependencies
+                            )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -905,7 +978,15 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         var response: (capabilities: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Capabilities?), room: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Room?))?
                         
-                        OpenGroupAPI.capabilitiesAndRoom(for: "testRoom", on: "testServer", using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI.capabilitiesAndRoom(
+                                    db,
+                                    for: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -953,7 +1034,16 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         var response: (capabilities: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Capabilities?), room: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Room?))?
                         
-                        OpenGroupAPI.capabilitiesAndRoom(for: "testRoom", on: "testServer", using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .capabilitiesAndRoom(
+                                        db,
+                                        for: "testRoom",
+                                        on: "testserver",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1016,7 +1106,16 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         var response: (capabilities: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Capabilities?), room: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Room?))?
                         
-                        OpenGroupAPI.capabilitiesAndRoom(for: "testRoom", on: "testServer", using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .capabilitiesAndRoom(
+                                        db,
+                                        for: "testRoom",
+                                        on: "testserver",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1096,7 +1195,15 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         var response: (capabilities: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Capabilities?), room: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Room?))?
                         
-                        OpenGroupAPI.capabilitiesAndRoom(for: "testRoom", on: "testServer", using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI.capabilitiesAndRoom(
+                                    db,
+                                    for: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1145,16 +1252,20 @@ class OpenGroupAPISpec: QuickSpec {
                 it("correctly sends the message") {
                     var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
                     
-                    OpenGroupAPI
-                        .send(
-                            "test".data(using: .utf8)!,
-                            to: "testRoom",
-                            on: "testServer",
-                            whisperTo: nil,
-                            whisperMods: false,
-                            fileIds: nil,
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .send(
+                                    db,
+                                    plaintext: "test".data(using: .utf8)!,
+                                    to: "testRoom",
+                                    on: "testServer",
+                                    whisperTo: nil,
+                                    whisperMods: false,
+                                    fileIds: nil,
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -1176,60 +1287,31 @@ class OpenGroupAPISpec: QuickSpec {
                     expect(requestData?.urlString).to(equal("testServer/room/testRoom/message"))
                 }
                 
-                it("saves the received message timestamp to the database in milliseconds") {
-                    var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
-                    
-                    OpenGroupAPI
-                        .send(
-                            "test".data(using: .utf8)!,
-                            to: "testRoom",
-                            on: "testServer",
-                            whisperTo: nil,
-                            whisperMods: false,
-                            fileIds: nil,
-                            using: dependencies
-                        )
-                        .get { result in response = result }
-                        .catch { requestError in error = requestError }
-                        .retainUntilComplete()
-                    
-                    expect(response)
-                        .toEventuallyNot(
-                            beNil(),
-                            timeout: .milliseconds(100)
-                        )
-                    expect(error?.localizedDescription).to(beNil())
-                    expect(mockStorage)
-                        .to(call(matchingParameters: true) {
-                            $0.addReceivedMessageTimestamp(321000, using: anyAny())
-                        })
-                }
-                
                 context("when unblinded") {
                     beforeEach {
-                        mockStorage
-                            .when { $0.getOpenGroupServer(name: any()) }
-                            .thenReturn(
-                                OpenGroupAPI.Server(
-                                    name: "testServer",
-                                    capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
-                                )
-                            )
+                        mockStorage.write { db in
+                            _ = try Capability.deleteAll(db)
+                            try Capability(openGroupServer: "testserver", variant: .sogs, isMissing: false).insert(db)
+                        }
                     }
                     
                     it("signs the message correctly") {
                         var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
                         
-                        OpenGroupAPI
-                            .send(
-                                "test".data(using: .utf8)!,
-                                to: "testRoom",
-                                on: "testServer",
-                                whisperTo: nil,
-                                whisperMods: false,
-                                fileIds: nil,
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .send(
+                                        db,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        to: "testRoom",
+                                        on: "testServer",
+                                        whisperTo: nil,
+                                        whisperMods: false,
+                                        fileIds: nil,
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1249,21 +1331,27 @@ class OpenGroupAPISpec: QuickSpec {
                         expect(requestBody.signature).to(equal("TestStandardSignature".data(using: .utf8)))
                     }
                     
-                    it("fails to sign if there is no public key") {
-                        mockStorage.when { $0.getOpenGroupPublicKey(for: any()) }.thenReturn(nil)
+                    it("fails to sign if there is no open group") {
+                        mockStorage.write { db in
+                            _ = try OpenGroup.deleteAll(db)
+                        }
                         
                         var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
                         
-                        OpenGroupAPI
-                            .send(
-                                "test".data(using: .utf8)!,
-                                to: "testRoom",
-                                on: "testServer",
-                                whisperTo: nil,
-                                whisperMods: false,
-                                fileIds: nil,
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .send(
+                                        db,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        to: "testRoom",
+                                        on: "testserver",
+                                        whisperTo: nil,
+                                        whisperMods: false,
+                                        fileIds: nil,
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1278,20 +1366,27 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("fails to sign if there is no user key pair") {
-                        mockStorage.when { $0.getUserKeyPair() }.thenReturn(nil)
+                        mockStorage.write { db in
+                            _ = try Identity.filter(id: .x25519PublicKey).deleteAll(db)
+                            _ = try Identity.filter(id: .x25519PrivateKey).deleteAll(db)
+                        }
                         
                         var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
                         
-                        OpenGroupAPI
-                            .send(
-                                "test".data(using: .utf8)!,
-                                to: "testRoom",
-                                on: "testServer",
-                                whisperTo: nil,
-                                whisperMods: false,
-                                fileIds: nil,
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .send(
+                                        db,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        to: "testRoom",
+                                        on: "testserver",
+                                        whisperTo: nil,
+                                        whisperMods: false,
+                                        fileIds: nil,
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1311,16 +1406,20 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
                         
-                        OpenGroupAPI
-                            .send(
-                                "test".data(using: .utf8)!,
-                                to: "testRoom",
-                                on: "testServer",
-                                whisperTo: nil,
-                                whisperMods: false,
-                                fileIds: nil,
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .send(
+                                        db,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        to: "testRoom",
+                                        on: "testserver",
+                                        whisperTo: nil,
+                                        whisperMods: false,
+                                        fileIds: nil,
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1337,29 +1436,30 @@ class OpenGroupAPISpec: QuickSpec {
                 
                 context("when blinded") {
                     beforeEach {
-                        mockStorage
-                            .when { $0.getOpenGroupServer(name: any()) }
-                            .thenReturn(
-                                OpenGroupAPI.Server(
-                                    name: "testServer",
-                                    capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
-                                )
-                            )
+                        mockStorage.write { db in
+                            _ = try Capability.deleteAll(db)
+                            try Capability(openGroupServer: "testserver", variant: .sogs, isMissing: false).insert(db)
+                            try Capability(openGroupServer: "testserver", variant: .blind, isMissing: false).insert(db)
+                        }
                     }
                     
                     it("signs the message correctly") {
                         var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
                         
-                        OpenGroupAPI
-                            .send(
-                                "test".data(using: .utf8)!,
-                                to: "testRoom",
-                                on: "testServer",
-                                whisperTo: nil,
-                                whisperMods: false,
-                                fileIds: nil,
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .send(
+                                        db,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        to: "testRoom",
+                                        on: "testserver",
+                                        whisperTo: nil,
+                                        whisperMods: false,
+                                        fileIds: nil,
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1379,21 +1479,27 @@ class OpenGroupAPISpec: QuickSpec {
                         expect(requestBody.signature).to(equal("TestSogsSignature".data(using: .utf8)))
                     }
                     
-                    it("fails to sign if there is no public key") {
-                        mockStorage.when { $0.getOpenGroupPublicKey(for: any()) }.thenReturn(nil)
+                    it("fails to sign if there is no open group") {
+                        mockStorage.write { db in
+                            _ = try OpenGroup.deleteAll(db)
+                        }
                         
                         var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
                         
-                        OpenGroupAPI
-                            .send(
-                                "test".data(using: .utf8)!,
-                                to: "testRoom",
-                                on: "testServer",
-                                whisperTo: nil,
-                                whisperMods: false,
-                                fileIds: nil,
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .send(
+                                        db,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        to: "testRoom",
+                                        on: "testServer",
+                                        whisperTo: nil,
+                                        whisperMods: false,
+                                        fileIds: nil,
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1408,20 +1514,27 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("fails to sign if there is no ed key pair key") {
-                        mockStorage.when { $0.getUserED25519KeyPair() }.thenReturn(nil)
+                        mockStorage.write { db in
+                            _ = try Identity.filter(id: .ed25519PublicKey).deleteAll(db)
+                            _ = try Identity.filter(id: .ed25519SecretKey).deleteAll(db)
+                        }
                         
                         var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
                         
-                        OpenGroupAPI
-                            .send(
-                                "test".data(using: .utf8)!,
-                                to: "testRoom",
-                                on: "testServer",
-                                whisperTo: nil,
-                                whisperMods: false,
-                                fileIds: nil,
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .send(
+                                        db,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        to: "testRoom",
+                                        on: "testserver",
+                                        whisperTo: nil,
+                                        whisperMods: false,
+                                        fileIds: nil,
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1449,16 +1562,20 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
                         
-                        OpenGroupAPI
-                            .send(
-                                "test".data(using: .utf8)!,
-                                to: "testRoom",
-                                on: "testServer",
-                                whisperTo: nil,
-                                whisperMods: false,
-                                fileIds: nil,
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .send(
+                                        db,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        to: "testRoom",
+                                        on: "testserver",
+                                        whisperTo: nil,
+                                        whisperMods: false,
+                                        fileIds: nil,
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1496,7 +1613,17 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
                     
-                    OpenGroupAPI.message(123, in: "testRoom", on: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .message(
+                                    db,
+                                    id: 123,
+                                    in: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -1526,21 +1653,32 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     dependencies = dependencies.with(onionApi: TestApi.self)
                     
-                    mockStorage.when { $0.getUserED25519KeyPair() }.thenReturn(Box.KeyPair(publicKey: [], secretKey: []))
+                    mockStorage.write { db in
+                        _ = try Identity
+                            .filter(id: .ed25519PublicKey)
+                            .updateAll(db, Identity.Columns.data.set(to: Data()))
+                        _ = try Identity
+                            .filter(id: .ed25519SecretKey)
+                            .updateAll(db, Identity.Columns.data.set(to: Data()))
+                    }
                 }
                 
                 it("correctly sends the update") {
                     var response: (info: OnionRequestResponseInfoType, data: Data?)?
                     
-                    OpenGroupAPI
-                        .messageUpdate(
-                            123,
-                            plaintext: "test".data(using: .utf8)!,
-                            fileIds: nil,
-                            in: "testRoom",
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .messageUpdate(
+                                    db,
+                                    id: 123,
+                                    plaintext: "test".data(using: .utf8)!,
+                                    fileIds: nil,
+                                    in: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -1561,28 +1699,28 @@ class OpenGroupAPISpec: QuickSpec {
                 
                 context("when unblinded") {
                     beforeEach {
-                        mockStorage
-                            .when { $0.getOpenGroupServer(name: any()) }
-                            .thenReturn(
-                                OpenGroupAPI.Server(
-                                    name: "testServer",
-                                    capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
-                                )
-                            )
+                        mockStorage.write { db in
+                            _ = try Capability.deleteAll(db)
+                            try Capability(openGroupServer: "testserver", variant: .sogs, isMissing: false).insert(db)
+                        }
                     }
                     
                     it("signs the message correctly") {
                         var response: (info: OnionRequestResponseInfoType, data: Data?)?
                         
-                        OpenGroupAPI
-                            .messageUpdate(
-                                123,
-                                plaintext: "test".data(using: .utf8)!,
-                                fileIds: nil,
-                                in: "testRoom",
-                                on: "testServer",
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .messageUpdate(
+                                        db,
+                                        id: 123,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        fileIds: nil,
+                                        in: "testRoom",
+                                        on: "testServer",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1602,20 +1740,26 @@ class OpenGroupAPISpec: QuickSpec {
                         expect(requestBody.signature).to(equal("TestStandardSignature".data(using: .utf8)))
                     }
                     
-                    it("fails to sign if there is no public key") {
-                        mockStorage.when { $0.getOpenGroupPublicKey(for: any()) }.thenReturn(nil)
+                    it("fails to sign if there is no open group") {
+                        mockStorage.write { db in
+                            _ = try OpenGroup.deleteAll(db)
+                        }
                         
                         var response: (info: OnionRequestResponseInfoType, data: Data?)?
                         
-                        OpenGroupAPI
-                            .messageUpdate(
-                                123,
-                                plaintext: "test".data(using: .utf8)!,
-                                fileIds: nil,
-                                in: "testRoom",
-                                on: "testServer",
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .messageUpdate(
+                                        db,
+                                        id: 123,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        fileIds: nil,
+                                        in: "testRoom",
+                                        on: "testserver",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1630,19 +1774,26 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("fails to sign if there is no user key pair") {
-                        mockStorage.when { $0.getUserKeyPair() }.thenReturn(nil)
+                        mockStorage.write { db in
+                            _ = try Identity.filter(id: .x25519PublicKey).deleteAll(db)
+                            _ = try Identity.filter(id: .x25519PrivateKey).deleteAll(db)
+                        }
                         
                         var response: (info: OnionRequestResponseInfoType, data: Data?)?
                         
-                        OpenGroupAPI
-                            .messageUpdate(
-                                123,
-                                plaintext: "test".data(using: .utf8)!,
-                                fileIds: nil,
-                                in: "testRoom",
-                                on: "testServer",
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .messageUpdate(
+                                        db,
+                                        id: 123,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        fileIds: nil,
+                                        in: "testRoom",
+                                        on: "testserver",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1662,15 +1813,19 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         var response: (info: OnionRequestResponseInfoType, data: Data?)?
                         
-                        OpenGroupAPI
-                            .messageUpdate(
-                                123,
-                                plaintext: "test".data(using: .utf8)!,
-                                fileIds: nil,
-                                in: "testRoom",
-                                on: "testServer",
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .messageUpdate(
+                                        db,
+                                        id: 123,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        fileIds: nil,
+                                        in: "testRoom",
+                                        on: "testServer",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1687,28 +1842,29 @@ class OpenGroupAPISpec: QuickSpec {
                 
                 context("when blinded") {
                     beforeEach {
-                        mockStorage
-                            .when { $0.getOpenGroupServer(name: any()) }
-                            .thenReturn(
-                                OpenGroupAPI.Server(
-                                    name: "testServer",
-                                    capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
-                                )
-                            )
+                        mockStorage.write { db in
+                            _ = try Capability.deleteAll(db)
+                            try Capability(openGroupServer: "testserver", variant: .sogs, isMissing: false).insert(db)
+                            try Capability(openGroupServer: "testserver", variant: .blind, isMissing: false).insert(db)
+                        }
                     }
                     
                     it("signs the message correctly") {
                         var response: (info: OnionRequestResponseInfoType, data: Data?)?
                         
-                        OpenGroupAPI
-                            .messageUpdate(
-                                123,
-                                plaintext: "test".data(using: .utf8)!,
-                                fileIds: nil,
-                                in: "testRoom",
-                                on: "testServer",
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .messageUpdate(
+                                        db,
+                                        id: 123,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        fileIds: nil,
+                                        in: "testRoom",
+                                        on: "testServer",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1728,20 +1884,26 @@ class OpenGroupAPISpec: QuickSpec {
                         expect(requestBody.signature).to(equal("TestSogsSignature".data(using: .utf8)))
                     }
                     
-                    it("fails to sign if there is no public key") {
-                        mockStorage.when { $0.getOpenGroupPublicKey(for: any()) }.thenReturn(nil)
+                    it("fails to sign if there is no open group") {
+                        mockStorage.write { db in
+                            _ = try OpenGroup.deleteAll(db)
+                        }
                         
                         var response: (info: OnionRequestResponseInfoType, data: Data?)?
                         
-                        OpenGroupAPI
-                            .messageUpdate(
-                                123,
-                                plaintext: "test".data(using: .utf8)!,
-                                fileIds: nil,
-                                in: "testRoom",
-                                on: "testServer",
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .messageUpdate(
+                                        db,
+                                        id: 123,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        fileIds: nil,
+                                        in: "testRoom",
+                                        on: "testserver",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1756,19 +1918,26 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("fails to sign if there is no ed key pair key") {
-                        mockStorage.when { $0.getUserED25519KeyPair() }.thenReturn(nil)
+                        mockStorage.write { db in
+                            _ = try Identity.filter(id: .ed25519PublicKey).deleteAll(db)
+                            _ = try Identity.filter(id: .ed25519SecretKey).deleteAll(db)
+                        }
                         
                         var response: (info: OnionRequestResponseInfoType, data: Data?)?
                         
-                        OpenGroupAPI
-                            .messageUpdate(
-                                123,
-                                plaintext: "test".data(using: .utf8)!,
-                                fileIds: nil,
-                                in: "testRoom",
-                                on: "testServer",
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .messageUpdate(
+                                        db,
+                                        id: 123,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        fileIds: nil,
+                                        in: "testRoom",
+                                        on: "testserver",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1796,15 +1965,19 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         var response: (info: OnionRequestResponseInfoType, data: Data?)?
                         
-                        OpenGroupAPI
-                            .messageUpdate(
-                                123,
-                                plaintext: "test".data(using: .utf8)!,
-                                fileIds: nil,
-                                in: "testRoom",
-                                on: "testServer",
-                                using: dependencies
-                            )
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .messageUpdate(
+                                        db,
+                                        id: 123,
+                                        plaintext: "test".data(using: .utf8)!,
+                                        fileIds: nil,
+                                        in: "testRoom",
+                                        on: "testServer",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -1829,7 +2002,17 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     var response: (info: OnionRequestResponseInfoType, data: Data?)?
                     
-                    OpenGroupAPI.messageDelete(123, in: "testRoom", on: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .messageDelete(
+                                    db,
+                                    id: 123,
+                                    in: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -1864,13 +2047,17 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("generates the request and handles the response correctly") {
-                    OpenGroupAPI
-                        .messagesDeleteAll(
-                            "testUserId",
-                            in: "testRoom",
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .messagesDeleteAll(
+                                    db,
+                                    sessionId: "testUserId",
+                                    in: "testRoom",
+                                    on: "testServer",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -1901,7 +2088,17 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     var response: OnionRequestResponseInfoType?
                     
-                    OpenGroupAPI.pinMessage(id: 123, in: "testRoom", on: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .pinMessage(
+                                    db,
+                                    id: 123,
+                                    in: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -1930,7 +2127,17 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     var response: OnionRequestResponseInfoType?
                     
-                    OpenGroupAPI.unpinMessage(id: 123, in: "testRoom", on: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .unpinMessage(
+                                    db,
+                                    id: 123,
+                                    in: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -1959,7 +2166,16 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     var response: OnionRequestResponseInfoType?
                     
-                    OpenGroupAPI.unpinAll(in: "testRoom", on: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .unpinAll(
+                                    db,
+                                    in: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -1990,7 +2206,17 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     dependencies = dependencies.with(onionApi: TestApi.self)
                     
-                    OpenGroupAPI.uploadFile([], to: "testRoom", on: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .uploadFile(
+                                    db,
+                                    bytes: [],
+                                    to: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2017,7 +2243,17 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     dependencies = dependencies.with(onionApi: TestApi.self)
                     
-                    OpenGroupAPI.uploadFile([], to: "testRoom", on: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .uploadFile(
+                                    db,
+                                    bytes: [],
+                                    to: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2043,7 +2279,18 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     dependencies = dependencies.with(onionApi: TestApi.self)
                     
-                    OpenGroupAPI.uploadFile([], fileName: "TestFileName", to: "testRoom", on: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .uploadFile(
+                                    db,
+                                    bytes: [],
+                                    fileName: "TestFileName",
+                                    to: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2070,7 +2317,17 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     dependencies = dependencies.with(onionApi: TestApi.self)
                     
-                    OpenGroupAPI.downloadFile(1, from: "testRoom", on: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .downloadFile(
+                                    db,
+                                    fileId: 1,
+                                    from: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2118,13 +2375,17 @@ class OpenGroupAPISpec: QuickSpec {
                 it("correctly sends the message request") {
                     var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.SendDirectMessageResponse)?
                     
-                    OpenGroupAPI
-                        .send(
-                            "test".data(using: .utf8)!,
-                            toInboxFor: "testUserId",
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .send(
+                                    db,
+                                    ciphertext: "test".data(using: .utf8)!,
+                                    toInboxFor: "testUserId",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2145,32 +2406,6 @@ class OpenGroupAPISpec: QuickSpec {
                     expect(requestData?.server).to(equal("testServer"))
                     expect(requestData?.urlString).to(equal("testServer/inbox/testUserId"))
                 }
-                
-                it("saves the received message timestamp to the database in milliseconds") {
-                    var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.SendDirectMessageResponse)?
-                    
-                    OpenGroupAPI
-                        .send(
-                            "test".data(using: .utf8)!,
-                            toInboxFor: "testUserId",
-                            on: "testServer",
-                            using: dependencies
-                        )
-                        .get { result in response = result }
-                        .catch { requestError in error = requestError }
-                        .retainUntilComplete()
-                    
-                    expect(response)
-                        .toEventuallyNot(
-                            beNil(),
-                            timeout: .milliseconds(100)
-                        )
-                    expect(error?.localizedDescription).to(beNil())
-                    expect(mockStorage)
-                        .to(call(matchingParameters: true) {
-                            $0.addReceivedMessageTimestamp(321000, using: anyAny())
-                        })
-                }
             }
             
             // MARK: - Users
@@ -2190,14 +2425,18 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("generates the request and handles the response correctly") {
-                    OpenGroupAPI
-                        .userBan(
-                            "testUserId",
-                            for: nil,
-                            from: nil,
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .userBan(
+                                    db,
+                                    sessionId: "testUserId",
+                                    for: nil,
+                                    from: nil,
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2217,14 +2456,18 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("does a global ban if no room tokens are provided") {
-                    OpenGroupAPI
-                        .userBan(
-                            "testUserId",
-                            for: nil,
-                            from: nil,
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .userBan(
+                                    db,
+                                    sessionId: "testUserId",
+                                    for: nil,
+                                    from: nil,
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2245,14 +2488,18 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("does room specific bans if room tokens are provided") {
-                    OpenGroupAPI
-                        .userBan(
-                            "testUserId",
-                            for: nil,
-                            from: ["testRoom"],
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .userBan(
+                                    db,
+                                    sessionId: "testUserId",
+                                    for: nil,
+                                    from: ["testRoom"],
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2288,13 +2535,17 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("generates the request and handles the response correctly") {
-                    OpenGroupAPI
-                        .userUnban(
-                            "testUserId",
-                            from: nil,
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .userUnban(
+                                    db,
+                                    sessionId: "testUserId",
+                                    from: nil,
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2314,13 +2565,17 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("does a global ban if no room tokens are provided") {
-                    OpenGroupAPI
-                        .userUnban(
-                            "testUserId",
-                            from: nil,
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .userUnban(
+                                    db,
+                                    sessionId: "testUserId",
+                                    from: nil,
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2341,13 +2596,17 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("does room specific bans if room tokens are provided") {
-                    OpenGroupAPI
-                        .userUnban(
-                            "testUserId",
-                            from: ["testRoom"],
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .userUnban(
+                                    db,
+                                    sessionId: "testUserId",
+                                    from: ["testRoom"],
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2383,16 +2642,20 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("generates the request and handles the response correctly") {
-                    OpenGroupAPI
-                        .userModeratorUpdate(
-                            "testUserId",
-                            moderator: true,
-                            admin: nil,
-                            visible: true,
-                            for: nil,
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .userModeratorUpdate(
+                                    db,
+                                    sessionId: "testUserId",
+                                    moderator: true,
+                                    admin: nil,
+                                    visible: true,
+                                    for: nil,
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2412,16 +2675,20 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("does a global update if no room tokens are provided") {
-                    OpenGroupAPI
-                        .userModeratorUpdate(
-                            "testUserId",
-                            moderator: true,
-                            admin: nil,
-                            visible: true,
-                            for: nil,
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .userModeratorUpdate(
+                                    db,
+                                    sessionId: "testUserId",
+                                    moderator: true,
+                                    admin: nil,
+                                    visible: true,
+                                    for: nil,
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2442,16 +2709,20 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("does room specific updates if room tokens are provided") {
-                    OpenGroupAPI
-                        .userModeratorUpdate(
-                            "testUserId",
-                            moderator: true,
-                            admin: nil,
-                            visible: true,
-                            for: ["testRoom"],
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .userModeratorUpdate(
+                                    db,
+                                    sessionId: "testUserId",
+                                    moderator: true,
+                                    admin: nil,
+                                    visible: true,
+                                    for: ["testRoom"],
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2472,16 +2743,20 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("fails if neither moderator or admin are set") {
-                    OpenGroupAPI
-                        .userModeratorUpdate(
-                            "testUserId",
-                            moderator: nil,
-                            admin: nil,
-                            visible: true,
-                            for: nil,
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .userModeratorUpdate(
+                                    db,
+                                    sessionId: "testUserId",
+                                    moderator: nil,
+                                    admin: nil,
+                                    visible: true,
+                                    for: nil,
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2532,13 +2807,17 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("generates the request and handles the response correctly") {
-                    OpenGroupAPI
-                        .userBanAndDeleteAllMessages(
-                            "testUserId",
-                            in: "testRoom",
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .userBanAndDeleteAllMessages(
+                                    db,
+                                    sessionId: "testUserId",
+                                    in: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2558,13 +2837,17 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("bans the user from the specified room rather than globally") {
-                    OpenGroupAPI
-                        .userBanAndDeleteAllMessages(
-                            "testUserId",
-                            in: "testRoom",
-                            on: "testServer",
-                            using: dependencies
-                        )
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .userBanAndDeleteAllMessages(
+                                    db,
+                                    sessionId: "testUserId",
+                                    in: "testRoom",
+                                    on: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2606,9 +2889,20 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("fails when there is no userEdKeyPair") {
-                    mockStorage.when { $0.getUserED25519KeyPair() }.thenReturn(nil)
+                    mockStorage.write { db in
+                        _ = try Identity.filter(id: .ed25519PublicKey).deleteAll(db)
+                        _ = try Identity.filter(id: .ed25519SecretKey).deleteAll(db)
+                    }
                     
-                    OpenGroupAPI.rooms(for: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .rooms(
+                                    db,
+                                    server: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2623,9 +2917,19 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("fails when there is no serverPublicKey") {
-                    mockStorage.when { $0.getOpenGroupPublicKey(for: any()) }.thenReturn(nil)
+                    mockStorage.write { db in
+                        _ = try OpenGroup.deleteAll(db)
+                    }
                     
-                    OpenGroupAPI.rooms(for: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .rooms(
+                                    db,
+                                    server: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2640,9 +2944,19 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("fails when the serverPublicKey is not a hex string") {
-                    mockStorage.when { $0.getOpenGroupPublicKey(for: any()) }.thenReturn("TestString!!!")
+                    mockStorage.write { db in
+                        _ = try OpenGroup.updateAll(db, OpenGroup.Columns.publicKey.set(to: "TestString!!!"))
+                    }
                     
-                    OpenGroupAPI.rooms(for: "testServer", using: dependencies)
+                    mockStorage
+                        .read { db in
+                            OpenGroupAPI
+                                .rooms(
+                                    db,
+                                    server: "testserver",
+                                    using: dependencies
+                                )
+                        }
                         .get { result in response = result }
                         .catch { requestError in error = requestError }
                         .retainUntilComplete()
@@ -2658,18 +2972,22 @@ class OpenGroupAPISpec: QuickSpec {
                 
                 context("when unblinded") {
                     beforeEach {
-                        mockStorage
-                            .when { $0.getOpenGroupServer(name: any()) }
-                            .thenReturn(
-                                OpenGroupAPI.Server(
-                                    name: "testServer",
-                                    capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
-                                )
-                            )
+                        mockStorage.write { db in
+                            _ = try Capability.deleteAll(db)
+                            try Capability(openGroupServer: "testserver", variant: .sogs, isMissing: false).insert(db)
+                        }
                     }
                     
                     it("signs correctly") {
-                        OpenGroupAPI.rooms(for: "testServer", using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .rooms(
+                                        db,
+                                        server: "testserver",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -2698,7 +3016,15 @@ class OpenGroupAPISpec: QuickSpec {
                     it("fails when the signature is not generated") {
                         mockSign.when { $0.signature(message: anyArray(), secretKey: anyArray()) }.thenReturn(nil)
                         
-                        OpenGroupAPI.rooms(for: "testServer", using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .rooms(
+                                        db,
+                                        server: "testserver",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -2715,18 +3041,23 @@ class OpenGroupAPISpec: QuickSpec {
                 
                 context("when blinded") {
                     beforeEach {
-                        mockStorage
-                            .when { $0.getOpenGroupServer(name: any()) }
-                            .thenReturn(
-                                OpenGroupAPI.Server(
-                                    name: "testServer",
-                                    capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
-                                )
-                            )
+                        mockStorage.write { db in
+                            _ = try Capability.deleteAll(db)
+                            try Capability(openGroupServer: "testserver", variant: .sogs, isMissing: false).insert(db)
+                            try Capability(openGroupServer: "testserver", variant: .blind, isMissing: false).insert(db)
+                        }
                     }
                     
                     it("signs correctly") {
-                        OpenGroupAPI.rooms(for: "testServer", using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .rooms(
+                                        db,
+                                        server: "testserver",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -2756,7 +3087,15 @@ class OpenGroupAPISpec: QuickSpec {
                             .when { $0.blindedKeyPair(serverPublicKey: any(), edKeyPair: any(), genericHash: mockGenericHash) }
                             .thenReturn(nil)
                         
-                        OpenGroupAPI.rooms(for: "testServer", using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .rooms(
+                                        db,
+                                        server: "testserver",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()
@@ -2775,7 +3114,15 @@ class OpenGroupAPISpec: QuickSpec {
                             .when { $0.blindedKeyPair(serverPublicKey: any(), edKeyPair: any(), genericHash: mockGenericHash) }
                             .thenReturn(nil)
                         
-                        OpenGroupAPI.rooms(for: "testServer", using: dependencies)
+                        mockStorage
+                            .read { db in
+                                OpenGroupAPI
+                                    .rooms(
+                                        db,
+                                        server: "testserver",
+                                        using: dependencies
+                                    )
+                            }
                             .get { result in response = result }
                             .catch { requestError in error = requestError }
                             .retainUntilComplete()

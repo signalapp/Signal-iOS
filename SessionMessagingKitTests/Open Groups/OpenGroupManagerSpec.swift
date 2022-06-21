@@ -113,7 +113,6 @@ class OpenGroupManagerSpec: QuickSpec {
                 dependencies = OpenGroupManager.OGMDependencies(
                     cache: Atomic(mockOGMCache),
                     onionApi: TestCapabilitiesAndRoomApi.self,
-                    identityManager: mockIdentityManager,
                     generalCache: Atomic(mockGeneralCache),
                     storage: mockStorage,
                     sodium: mockSodium,
