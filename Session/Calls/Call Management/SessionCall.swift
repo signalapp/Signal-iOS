@@ -397,7 +397,7 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
         let webRTCSession: WebRTCSession = self.webRTCSession
         
         GRDBStorage.shared
-            .write { db in webRTCSession.sendOffer(db, to: sessionId, isRestartingICEConnection: true) }
+            .read { db in webRTCSession.sendOffer(db, to: sessionId, isRestartingICEConnection: true) }
             .retainUntilComplete()
     }
     

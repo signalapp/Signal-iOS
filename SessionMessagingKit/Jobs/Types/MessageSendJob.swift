@@ -130,7 +130,7 @@ public enum MessageSendJob: JobExecutor {
         details.message.threadId = (details.message.threadId ?? job.threadId)
         
         // Perform the actual message sending
-        GRDBStorage.shared.write { db -> Promise<Void> in
+        GRDBStorage.shared.writeAsync { db -> Promise<Void> in
             try MessageSender.sendImmediate(
                 db,
                 message: details.message,
@@ -170,6 +170,7 @@ public enum MessageSendJob: JobExecutor {
                     failure(job, error, false)
             }
         }
+        .retainUntilComplete()
     }
 }
 

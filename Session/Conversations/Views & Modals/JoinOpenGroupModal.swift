@@ -92,24 +92,26 @@ final class JoinOpenGroupModal: Modal {
         
         presentingViewController.dismiss(animated: true, completion: nil)
         
-        GRDBStorage.shared.write { db in
-            OpenGroupManager.shared.add(
-                db,
-                roomToken: room,
-                server: server,
-                publicKey: publicKey,
-                isConfigMessage: false
-            )
-        }
-        .done(on: DispatchQueue.main) { _ in
-            GRDBStorage.shared.write { db in
-                try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+        GRDBStorage.shared
+            .writeAsync { db in
+                OpenGroupManager.shared.add(
+                    db,
+                    roomToken: room,
+                    server: server,
+                    publicKey: publicKey,
+                    isConfigMessage: false
+                )
             }
-        }
-        .catch(on: DispatchQueue.main) { error in
-            let alert = UIAlertController(title: "Couldn't Join", message: error.localizedDescription, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-            presentingViewController.present(alert, animated: true, completion: nil)
-        }
+            .done(on: DispatchQueue.main) { _ in
+                GRDBStorage.shared.writeAsync { db in
+                    try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+                }
+            }
+            .catch(on: DispatchQueue.main) { error in
+                let alert = UIAlertController(title: "Couldn't Join", message: error.localizedDescription, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
+                presentingViewController.present(alert, animated: true, completion: nil)
+            }
+            .retainUntilComplete()
     }
 }

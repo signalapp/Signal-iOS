@@ -444,7 +444,9 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
         }
         
-        let promise: Promise<Void> = GRDBStorage.shared.write { db in
+        let (promise, seal) = Promise<Void>.pending()
+        
+        GRDBStorage.shared.writeAsync { db in
             let interaction: Interaction = try Interaction(
                 threadId: thread.id,
                 authorId: getUserHexEncodedPublicKey(db),
@@ -468,12 +470,15 @@ class NotificationActionHandler {
                 in: thread
             )
         }
-        
-        promise.catch { [weak self] error in
-            GRDBStorage.shared.read { db in
+        .done { seal.fulfill(()) }
+        .catch { error in
+            GRDBStorage.shared.read { [weak self] db in
                 self?.notificationPresenter.notifyForFailedSend(db, in: thread)
             }
+            
+            seal.reject(error)
         }
+        .retainUntilComplete()
         
         return promise
     }

@@ -196,27 +196,28 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         let selectedContacts = self.selectedContacts
         let message: String? = (selectedContacts.count > 20) ? "Please wait while the group is created..." : nil
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, message: message) { [weak self] _ in
-            let promise: Promise<SessionThread> = GRDBStorage.shared.write { db in
-                try MessageSender.createClosedGroup(db, name: name, members: selectedContacts)
-            }
-            
-            let _ = promise.done(on: DispatchQueue.main) { thread in
-                GRDBStorage.shared.write { db in
-                    try? MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+            GRDBStorage.shared
+                .writeAsync { db in
+                    try MessageSender.createClosedGroup(db, name: name, members: selectedContacts)
                 }
-                
-                self?.presentingViewController?.dismiss(animated: true, completion: nil)
-                SessionApp.presentConversation(for: thread.id, action: .compose, animated: false)
-            }
-            promise.catch(on: DispatchQueue.main) { [weak self] _ in
-                self?.dismiss(animated: true, completion: nil) // Dismiss the loader
-                
-                let title = "Couldn't Create Group"
-                let message = "Please check your internet connection and try again."
-                let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-                self?.presentAlert(alert)
-            }
+                .done(on: DispatchQueue.main) { thread in
+                    GRDBStorage.shared.writeAsync { db in
+                        try? MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                    }
+                    
+                    self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                    SessionApp.presentConversation(for: thread.id, action: .compose, animated: false)
+                }
+                .catch(on: DispatchQueue.main) { [weak self] _ in
+                    self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                    
+                    let title = "Couldn't Create Group"
+                    let message = "Please check your internet connection and try again."
+                    let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+                    self?.presentAlert(alert)
+                }
+                .retainUntilComplete()
         }
     }
     

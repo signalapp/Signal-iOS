@@ -359,7 +359,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     // MARK: - Functions
     
     public func updateDraft(to draft: String) {
-        GRDBStorage.shared.write { db in
+        GRDBStorage.shared.writeAsync { db in
             try SessionThread
                 .filter(id: self.threadId)
                 .updateAll(db, SessionThread.Columns.messageDraft.set(to: draft))

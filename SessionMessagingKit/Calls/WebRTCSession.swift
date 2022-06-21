@@ -170,7 +170,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
                 }
             }
             GRDBStorage.shared
-                .write { db in
+                .writeAsync { db in
                     try MessageSender
                         .sendNonDurably(
                             db,

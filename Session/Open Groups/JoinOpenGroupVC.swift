@@ -163,7 +163,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         
         ModalActivityIndicatorViewController.present(fromViewController: navigationController, canCancel: false) { [weak self] _ in
             GRDBStorage.shared
-                .write { db in
+                .writeAsync { db in
                     OpenGroupManager.shared.add(
                         db,
                         roomToken: roomToken,

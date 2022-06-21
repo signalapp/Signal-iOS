@@ -71,6 +71,13 @@ public struct ControlMessageProcessRecord: Codable, FetchableRecord, Persistable
         // the unique constraints on that table prevent duplicate messages
         if message is VisibleMessage { return nil }
         
+        // Allow duplicates for UnsendRequest messages, if a user received an UnsendRequest
+        // as a push notification the it wouldn't include a serverHash and, as a result,
+        // wouldn't get deleted from the server - since the logic only runs if we find a
+        // matching message the safest option is to allow duplicate handling to avoid an
+        // edge-case where a message doesn't get deleted
+        if message is UnsendRequest { return nil }
+        
         // Allow duplicates for all call messages, the double checking will be done on
         // message handling to make sure the messages are for the same ongoing call
         if message is CallMessage { return nil }

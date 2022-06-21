@@ -1680,7 +1680,7 @@ extension ConversationVC {
 
                 return promise
                     .then { _ -> Promise<Void> in
-                        GRDBStorage.shared.write { db in
+                        GRDBStorage.shared.writeAsync { db in
                             try MessageSender.sendNonDurably(
                                 db,
                                 message: messageRequestResponse,

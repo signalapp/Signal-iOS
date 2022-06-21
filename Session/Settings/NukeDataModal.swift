@@ -154,17 +154,16 @@ final class NukeDataModal: Modal {
     
     @objc private func clearDeviceOnly() {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] _ in
-            GRDBStorage.shared.write { db in
-                try MessageSender.syncConfiguration(db, forceSyncNow: true)
-                    .ensure(on: DispatchQueue.main) {
-                        self?.dismiss(animated: true, completion: nil) // Dismiss the loader
-                        
-                        UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later
-                        General.cache.mutate { $0.encodedPublicKey = nil } // Remove the cached key so it gets re-cached on next access
-                        NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
-                    }
-                    .retainUntilComplete()
-            }
+            GRDBStorage.shared
+                .writeAsync { db in try MessageSender.syncConfiguration(db, forceSyncNow: true) }
+                .ensure(on: DispatchQueue.main) {
+                    self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                    
+                    UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later
+                    General.cache.mutate { $0.encodedPublicKey = nil } // Remove the cached key so it gets re-cached on next access
+                    NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
+                }
+                .retainUntilComplete()
         }
     }
     

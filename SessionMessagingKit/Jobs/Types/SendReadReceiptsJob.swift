@@ -35,7 +35,7 @@ public enum SendReadReceiptsJob: JobExecutor {
         }
         
         GRDBStorage.shared
-            .write { db in
+            .writeAsync { db in
                 try MessageSender.sendImmediate(
                     db,
                     message: ReadReceipt(

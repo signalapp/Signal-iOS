@@ -164,8 +164,7 @@ extension MessageSender {
                     }
 
                 if let error: Error = errors.first { return Promise(error: error) }
-                
-                return GRDBStorage.shared.write { db in
+                return GRDBStorage.shared.writeAsync { db in
                     try MessageSender.sendImmediate(
                         db,
                         message: message,

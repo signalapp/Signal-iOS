@@ -194,7 +194,7 @@ public final class OpenGroupManager: NSObject {
         // Note: We don't do this after the db commit as it can fail (resulting in endless loading)
         OpenGroupAPI.workQueue.async {
             dependencies.storage
-                .write { db in
+                .writeAsync { db in
                     OpenGroupAPI
                         .capabilitiesAndRoom(
                             db,
@@ -809,7 +809,7 @@ public final class OpenGroupManager: NSObject {
         // Trigger the download on a background queue
         DispatchQueue.global(qos: .background).async {
             dependencies.storage
-                .write { db in
+                .writeAsync { db in
                     OpenGroupAPI
                         .downloadFile(
                             db,
@@ -832,6 +832,7 @@ public final class OpenGroupManager: NSObject {
                     seal.fulfill(imageData)
                 }
                 .catch { seal.reject($0) }
+                .retainUntilComplete()
         }
         
         dependencies.mutableCache.mutate { cache in

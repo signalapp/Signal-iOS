@@ -221,7 +221,7 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         
         ModalActivityIndicatorViewController.present(fromViewController: shareVC!, canCancel: false, message: "vc_share_sending_message".localized()) { activityIndicator in
             GRDBStorage.shared
-                .write { [weak self] db -> Promise<Void> in
+                .writeAsync { [weak self] db -> Promise<Void> in
                     guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
                         activityIndicator.dismiss { }
                         self?.shareVC?.shareViewFailed(error: MessageSenderError.noThread)

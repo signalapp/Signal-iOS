@@ -417,7 +417,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         
         ModalActivityIndicatorViewController.present(fromViewController: navigationController) { _ in
             GRDBStorage.shared
-                .write { db in
+                .writeAsync { db in
                     if !updatedMemberIds.contains(userPublicKey) {
                         return try MessageSender.leave(db, groupPublicKey: threadId)
                     }
