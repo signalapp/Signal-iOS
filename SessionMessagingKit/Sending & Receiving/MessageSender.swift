@@ -681,7 +681,7 @@ public final class MessageSender {
 public class SMKMessageSender: NSObject {
     @objc(leaveClosedGroupWithPublicKey:)
     public static func objc_leave(_ groupPublicKey: String) -> AnyPromise {
-        let promise = GRDBStorage.shared.write { db in
+        let promise = GRDBStorage.shared.writeAsync { db in
             try MessageSender.leave(db, groupPublicKey: groupPublicKey)
         }
         
