@@ -35,4 +35,52 @@ class TSMessageTest: SSKBaseTestSwift {
         let message = builder.buildWithSneakyTransaction()
         XCTAssertEqual(now + UInt64(expirationSeconds * 1000), message.expiresAt)
     }
+
+    func testCanBeRemotelyDeleted() {
+        let now = Date.ows_millisecondTimestamp()
+
+        do {
+            let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread)
+            builder.timestamp = now - kMinuteInMs
+            let message = builder.buildWithSneakyTransaction()
+
+            XCTAssert(message.canBeRemotelyDeleted)
+        }
+
+        do {
+            let builder = TSIncomingMessageBuilder.incomingMessageBuilder(thread: self.thread)
+            builder.timestamp = now - kMinuteInMs
+            let message = builder.build()
+
+            XCTAssertFalse(message.canBeRemotelyDeleted)
+        }
+
+        do {
+            let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread)
+            builder.timestamp = now - kMinuteInMs
+            let message = builder.buildWithSneakyTransaction()
+            self.databaseStorage.write { transaction in
+                message.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
+            }
+
+            XCTAssertFalse(message.canBeRemotelyDeleted)
+        }
+
+        do {
+            let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread)
+            builder.timestamp = now - kMinuteInMs
+            builder.giftBadge = OWSGiftBadge()
+            let message = builder.buildWithSneakyTransaction()
+
+            XCTAssertFalse(message.canBeRemotelyDeleted)
+        }
+
+        do {
+            let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread)
+            builder.timestamp = now - (4 * kHourInMs)
+            let message = builder.buildWithSneakyTransaction()
+
+            XCTAssertFalse(message.canBeRemotelyDeleted)
+        }
+    }
 }
