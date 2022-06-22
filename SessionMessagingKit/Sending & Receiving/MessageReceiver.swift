@@ -18,9 +18,9 @@ public enum MessageReceiver {
         openGroupServerPublicKey: String?,
         isOutgoing: Bool? = nil,
         otherBlindedPublicKey: String? = nil,
-        dependencies: Dependencies = Dependencies()
+        dependencies: SMKDependencies = SMKDependencies()
     ) throws -> (Message, SNProtoContent, String) {
-        let userPublicKey: String = getUserHexEncodedPublicKey(db)
+        let userPublicKey: String = getUserHexEncodedPublicKey(db, dependencies: dependencies)
         let isOpenGroupMessage: Bool = (openGroupId != nil)
         
         // Decrypt the contents
@@ -182,7 +182,7 @@ public enum MessageReceiver {
         associatedWithProto proto: SNProtoContent,
         openGroupId: String?,
         isBackgroundPoll: Bool,
-        dependencies: Dependencies = Dependencies()
+        dependencies: SMKDependencies = SMKDependencies()
     ) throws {
         switch message {
             case let message as ReadReceipt:
@@ -282,7 +282,7 @@ public enum MessageReceiver {
         sentTimestamp: TimeInterval,
         dependencies: Dependencies = Dependencies()
     ) throws {
-        let isCurrentUser = (publicKey == getUserHexEncodedPublicKey(db))
+        let isCurrentUser = (publicKey == getUserHexEncodedPublicKey(db, dependencies: dependencies))
         var profile: Profile = Profile.fetchOrCreate(id: publicKey)
         
         // Name

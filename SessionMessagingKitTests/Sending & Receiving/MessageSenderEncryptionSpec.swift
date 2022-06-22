@@ -18,16 +18,22 @@ class MessageSenderEncryptionSpec: QuickSpec {
         var mockBox: MockBox!
         var mockSign: MockSign!
         var mockNonce24Generator: MockNonce24Generator!
-        var dependencies: Dependencies!
+        var dependencies: SMKDependencies!
         
         describe("a MessageSender") {
             beforeEach {
-                mockStorage = GRDBStorage(customWriter: DatabaseQueue())
+                mockStorage = GRDBStorage(
+                    customWriter: DatabaseQueue(),
+                    customMigrations: [
+                        SNUtilitiesKit.migrations(),
+                        SNMessagingKit.migrations()
+                    ]
+                )
                 mockBox = MockBox()
                 mockSign = MockSign()
                 mockNonce24Generator = MockNonce24Generator()
                 
-                dependencies = Dependencies(
+                dependencies = SMKDependencies(
                     storage: mockStorage,
                     box: mockBox,
                     sign: mockSign,
@@ -53,7 +59,7 @@ class MessageSenderEncryptionSpec: QuickSpec {
                     let result = try? MessageSender.encryptWithSessionProtocol(
                         "TestMessage".data(using: .utf8)!,
                         for: "05\(TestConstants.publicKey)",
-                        using: Dependencies(storage: mockStorage)
+                        using: SMKDependencies(storage: mockStorage)
                     )
                     
                     // Note: A Nonce is used for this so we can't compare the exact value when not mocked

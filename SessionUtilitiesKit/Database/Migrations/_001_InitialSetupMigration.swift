@@ -65,6 +65,6 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.value, .blob).notNull()
         }
         
-        GRDBStorage.shared.update(progress: 1, for: self, in: target) // In case this is the last migration
+        GRDBStorage.update(progress: 1, for: self, in: target) // In case this is the last migration
     }
 }

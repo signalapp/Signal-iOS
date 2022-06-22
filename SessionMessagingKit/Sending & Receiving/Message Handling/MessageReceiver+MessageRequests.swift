@@ -8,9 +8,9 @@ extension MessageReceiver {
     internal static func handleMessageRequestResponse(
         _ db: Database,
         message: MessageRequestResponse,
-        dependencies: Dependencies
+        dependencies: SMKDependencies
     ) throws {
-        let userPublicKey = getUserHexEncodedPublicKey(db)
+        let userPublicKey = getUserHexEncodedPublicKey(db, dependencies: dependencies)
         var hadBlindedContact: Bool = false
         
         // Ignore messages which were sent from the current user

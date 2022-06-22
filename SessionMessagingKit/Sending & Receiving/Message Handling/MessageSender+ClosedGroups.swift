@@ -11,7 +11,7 @@ extension MessageSender {
     public static var distributingKeyPairs: Atomic<[String: [ClosedGroupKeyPair]]> = Atomic([:])
     
     public static func createClosedGroup(_ db: Database, name: String, members: Set<String>) throws -> Promise<SessionThread> {
-        let userPublicKey: String = getUserHexEncodedPublicKey()
+        let userPublicKey: String = getUserHexEncodedPublicKey(db)
         var members: Set<String> = members
         
         // Generate the group's public key

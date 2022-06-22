@@ -386,7 +386,7 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
     private func tryToReconnect() {
         reconnectTimer?.invalidate()
         
-        guard Environment.shared.reachabilityManager.isReachable else {
+        guard Environment.shared?.reachabilityManager.isReachable == true else {
             reconnectTimer = Timer.scheduledTimerOnMainThread(withTimeInterval: 5, repeats: false) { _ in
                 self.tryToReconnect()
             }

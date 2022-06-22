@@ -198,7 +198,6 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.authorId, .text)
                 .notNull()
                 .indexed()                                            // Quicker querying
-                .references(Profile.self)
             
             t.column(.variant, .integer).notNull()
             t.column(.body, .text)
@@ -369,6 +368,6 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.timestampMs, .integer).notNull()
         }
         
-        GRDBStorage.shared.update(progress: 1, for: self, in: target) // In case this is the last migration
+        GRDBStorage.update(progress: 1, for: self, in: target) // In case this is the last migration
     }
 }

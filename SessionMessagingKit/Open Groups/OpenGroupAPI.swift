@@ -32,7 +32,7 @@ public enum OpenGroupAPI {
         server: String,
         hasPerformedInitialPoll: Bool,
         timeSinceLastPoll: TimeInterval,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
         let lastInboxMessageId: Int64 = (try? OpenGroup
             .select(.inboxLatestMessageId)
@@ -146,7 +146,7 @@ public enum OpenGroupAPI {
         _ db: Database,
         server: String,
         requests: [BatchRequestInfoType],
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
         let requestBody: BatchRequest = requests.map { $0.toSubRequest() }
         let responseTypes = requests.map { $0.responseType }
@@ -185,7 +185,7 @@ public enum OpenGroupAPI {
         server: String,
         requests: [BatchRequestInfoType],
         authenticated: Bool = true,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
         let requestBody: BatchRequest = requests.map { $0.toSubRequest() }
         let responseTypes = requests.map { $0.responseType }
@@ -223,7 +223,7 @@ public enum OpenGroupAPI {
     public static func capabilities(
         _ db: Database,
         server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Capabilities)> {
         return OpenGroupAPI
             .send(
@@ -245,7 +245,7 @@ public enum OpenGroupAPI {
     public static func rooms(
         _ db: Database,
         server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, [Room])> {
         return OpenGroupAPI
             .send(
@@ -269,7 +269,7 @@ public enum OpenGroupAPI {
         _ db: Database,
         for roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Room)> {
         return OpenGroupAPI
             .send(
@@ -297,7 +297,7 @@ public enum OpenGroupAPI {
         lastUpdated: Int64,
         for roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, RoomPollInfo)> {
         return OpenGroupAPI
             .send(
@@ -318,7 +318,7 @@ public enum OpenGroupAPI {
         for roomToken: String,
         on server: String,
         authenticated: Bool = true,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(capabilities: (info: OnionRequestResponseInfoType, data: Capabilities), room: (info: OnionRequestResponseInfoType, data: Room))> {
         let requestResponseType: [BatchRequestInfoType] = [
             // Get the latest capabilities for the server (in case it's a new server or the cached ones are stale)
@@ -389,7 +389,7 @@ public enum OpenGroupAPI {
         whisperTo: String?,
         whisperMods: Bool,
         fileIds: [String]?,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Message)> {
         guard let signResult: (publicKey: String, signature: Bytes) = sign(db, messageBytes: plaintext.bytes, for: server, fallbackSigningType: .standard, using: dependencies) else {
             return Promise(error: Error.signingFailed)
@@ -421,7 +421,7 @@ public enum OpenGroupAPI {
         id: Int64,
         in roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Message)> {
         return OpenGroupAPI
             .send(
@@ -445,7 +445,7 @@ public enum OpenGroupAPI {
         fileIds: [Int64]?,
         in roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         guard let signResult: (publicKey: String, signature: Bytes) = sign(db, messageBytes: plaintext.bytes, for: server, fallbackSigningType: .standard, using: dependencies) else {
             return Promise(error: Error.signingFailed)
@@ -473,7 +473,7 @@ public enum OpenGroupAPI {
         id: Int64,
         in roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         return OpenGroupAPI
             .send(
@@ -495,7 +495,7 @@ public enum OpenGroupAPI {
         _ db: Database,
         in roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, [Message])> {
         return OpenGroupAPI
             .send(
@@ -518,7 +518,7 @@ public enum OpenGroupAPI {
         messageId: Int64,
         in roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, [Message])> {
         return OpenGroupAPI
             .send(
@@ -541,7 +541,7 @@ public enum OpenGroupAPI {
         seqNo: Int64,
         in roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, [Message])> {
         return OpenGroupAPI
             .send(
@@ -573,7 +573,7 @@ public enum OpenGroupAPI {
         sessionId: String,
         in roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         return OpenGroupAPI
             .send(
@@ -604,7 +604,7 @@ public enum OpenGroupAPI {
         id: Int64,
         in roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<OnionRequestResponseInfoType> {
         return OpenGroupAPI
             .send(
@@ -627,7 +627,7 @@ public enum OpenGroupAPI {
         id: Int64,
         in roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<OnionRequestResponseInfoType> {
         return OpenGroupAPI
             .send(
@@ -649,7 +649,7 @@ public enum OpenGroupAPI {
         _ db: Database,
         in roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<OnionRequestResponseInfoType> {
         return OpenGroupAPI
             .send(
@@ -672,7 +672,7 @@ public enum OpenGroupAPI {
         fileName: String? = nil,
         to roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, FileUploadResponse)> {
         return OpenGroupAPI
             .send(
@@ -699,7 +699,7 @@ public enum OpenGroupAPI {
         fileId: Int64,
         from roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data)> {
         return OpenGroupAPI
             .send(
@@ -728,7 +728,7 @@ public enum OpenGroupAPI {
     public static func inbox(
         _ db: Database,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
         return OpenGroupAPI
             .send(
@@ -752,7 +752,7 @@ public enum OpenGroupAPI {
         _ db: Database,
         id: Int64,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
         return OpenGroupAPI
             .send(
@@ -774,7 +774,7 @@ public enum OpenGroupAPI {
         ciphertext: Data,
         toInboxFor blindedSessionId: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, SendDirectMessageResponse)> {
         return OpenGroupAPI
             .send(
@@ -801,7 +801,7 @@ public enum OpenGroupAPI {
     public static func outbox(
         _ db: Database,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
         return OpenGroupAPI
             .send(
@@ -825,7 +825,7 @@ public enum OpenGroupAPI {
         _ db: Database,
         id: Int64,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
         return OpenGroupAPI
             .send(
@@ -878,7 +878,7 @@ public enum OpenGroupAPI {
         for timeout: TimeInterval? = nil,
         from roomTokens: [String]? = nil,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         return OpenGroupAPI
             .send(
@@ -926,7 +926,7 @@ public enum OpenGroupAPI {
         sessionId: String,
         from roomTokens: [String]?,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         return OpenGroupAPI
             .send(
@@ -1003,7 +1003,7 @@ public enum OpenGroupAPI {
         visible: Bool,
         for roomTokens: [String]?,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         guard (moderator != nil && admin == nil) || (moderator == nil && admin != nil) else {
             return Promise(error: HTTP.Error.generic)
@@ -1035,7 +1035,7 @@ public enum OpenGroupAPI {
         sessionId: String,
         in roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<[OnionRequestResponseInfoType]> {
         let banRequestBody: UserBanRequest = UserBanRequest(
             rooms: [roomToken],
@@ -1080,7 +1080,7 @@ public enum OpenGroupAPI {
         messageBytes: Bytes,
         for serverName: String,
         fallbackSigningType signingType: SessionId.Prefix,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> (publicKey: String, signature: Bytes)? {
         guard
             let userEdKeyPair: Box.KeyPair = Identity.fetchUserEd25519KeyPair(db),
@@ -1146,7 +1146,7 @@ public enum OpenGroupAPI {
         request: URLRequest,
         for serverName: String,
         with serverPublicKey: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> URLRequest? {
         guard let url: URL = request.url else { return nil }
         
@@ -1204,7 +1204,7 @@ public enum OpenGroupAPI {
         _ db: Database,
         request: Request<T, Endpoint>,
         authenticated: Bool = true,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         let urlRequest: URLRequest
         

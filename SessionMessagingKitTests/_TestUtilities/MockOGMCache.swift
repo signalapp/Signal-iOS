@@ -2,6 +2,7 @@
 
 import Foundation
 import PromiseKit
+import SessionUtilitiesKit
 
 @testable import SessionMessagingKit
 
@@ -23,16 +24,6 @@ class MockOGMCache: Mock<OGMCacheType>, OGMCacheType {
     
     var isPolling: Bool {
         get { return accept() as! Bool }
-        set { accept(args: [newValue]) }
-    }
-    
-    var moderators: [String: [String: Set<String>]] {
-        get { return accept() as! [String: [String: Set<String>]] }
-        set { accept(args: [newValue]) }
-    }
-    
-    var admins: [String: [String: Set<String>]] {
-        get { return accept() as! [String: [String: Set<String>]] }
         set { accept(args: [newValue]) }
     }
     

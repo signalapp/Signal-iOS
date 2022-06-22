@@ -1412,7 +1412,7 @@ extension ConversationVC:
         let url: URL = URL(fileURLWithPath: directory).appendingPathComponent(fileName)
         
         // Set up audio session
-        let isConfigured = audioSession.startAudioActivity(recordVoiceMessageActivity)
+        let isConfigured = (Environment.shared?.audioSession.startAudioActivity(recordVoiceMessageActivity) == true)
         guard isConfigured else {
             return cancelVoiceMessageRecording()
         }
@@ -1514,7 +1514,7 @@ extension ConversationVC:
 
     func stopVoiceMessageRecording() {
         audioRecorder?.stop()
-        audioSession.endAudioActivity(recordVoiceMessageActivity)
+        Environment.shared?.audioSession.endAudioActivity(recordVoiceMessageActivity)
     }
     
     // MARK: - Permissions
@@ -1570,7 +1570,7 @@ extension ConversationVC:
                 // the picker view then will dismiss, too. The selection process cannot be finished
                 // this way. So we add a flag (isRequestingPermission) to prevent the ScreenLockUI
                 // from showing when we request the photo library permission.
-                Environment.shared.isRequestingPermission = true
+                Environment.shared?.isRequestingPermission = true
                 let appMode = AppModeManager.shared.currentAppMode
                 // FIXME: Rather than setting the app mode to light and then to dark again once we're done,
                 // it'd be better to just customize the appearance of the image picker. There doesn't currently
@@ -1580,7 +1580,7 @@ extension ConversationVC:
                     DispatchQueue.main.async {
                         AppModeManager.shared.setCurrentAppMode(to: appMode)
                     }
-                    Environment.shared.isRequestingPermission = false
+                    Environment.shared?.isRequestingPermission = false
                     if [ PHAuthorizationStatus.authorized, PHAuthorizationStatus.limited ].contains(status) {
                         onAuthorized()
                     }

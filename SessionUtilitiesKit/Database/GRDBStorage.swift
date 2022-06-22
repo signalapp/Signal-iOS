@@ -36,12 +36,23 @@ public final class GRDBStorage {
 //            GRDBStorage.deleteDatabaseFiles() // TODO: Remove this.
 //            try! GRDBStorage.deleteDbKeys() // TODO: Remove this.
 //        }
-    public init(customWriter: DatabaseWriter? = nil) {
+    public init(
+        customWriter: DatabaseWriter? = nil,
+        customMigrations: [TargetMigrations]? = nil
+    ) {
         
         // Create the database directory if needed and ensure it's protection level is set before attempting to
         // create the database KeySpec or the database itself
         OWSFileSystem.ensureDirectoryExists(GRDBStorage.sharedDatabaseDirectoryPath)
         OWSFileSystem.protectFileOrFolder(atPath: GRDBStorage.sharedDatabaseDirectoryPath)
+        
+        // If a custom writer was provided then use that (for unit testing)
+        guard customWriter == nil else {
+            dbWriter = customWriter
+            isValid = true
+            perform(migrations: (customMigrations ?? []), async: false, onProgressUpdate: nil, onComplete: { _, _ in })
+            return
+        }
         
         // Generate the database KeySpec if needed (this MUST be done before we try to access the database
         // as a different thread might attempt to access the database before the key is successfully created)
@@ -76,13 +87,6 @@ public final class GRDBStorage {
             try db.execute(sql: "PRAGMA cipher_plaintext_header_size = 32")
         }
         
-        // If a custom writer was provided then use that (for unit testing)
-        guard customWriter == nil else {
-            dbWriter = customWriter
-            isValid = true
-            return
-        }
-        
         // Create the DatabasePool to allow us to connect to the database and mark the storage as valid
         do {
             dbWriter = try DatabasePool(
@@ -98,6 +102,7 @@ public final class GRDBStorage {
     
     public func perform(
         migrations: [TargetMigrations],
+        async: Bool = true,
         onProgressUpdate: ((CGFloat, TimeInterval) -> ())?,
         onComplete: @escaping (Bool, Bool) -> ()
     ) {
@@ -174,7 +179,8 @@ public final class GRDBStorage {
             self.migrationProgressUpdater?.wrappedValue(firstMigrationKey, 0)
         }
         
-        self.migrator?.asyncMigrate(dbWriter) { [weak self] _, error in
+        // Store the logic to run when the migration completes
+        let migrationCompleted: (Error?) -> () = { [weak self] error in
             self?.hasCompletedMigrations = true
             self?.migrationProgressUpdater = nil
             SUKLegacy.clearLegacyDatabaseInstance()
@@ -185,20 +191,37 @@ public final class GRDBStorage {
             
             onComplete((error == nil), needsConfigSync)
         }
+        
+        // Note: The non-async migration should only be used for unit tests
+        guard async else {
+            do { try self.migrator?.migrate(dbWriter) }
+            catch { migrationCompleted(error) }
+            return
+        }
+        
+        self.migrator?.asyncMigrate(dbWriter) { _, error in
+            migrationCompleted(error)
+        }
     }
     
-    public func update(
+    public static func update(
         progress: CGFloat,
         for migration: Migration.Type,
         in target: TargetMigrations.Identifier
     ) {
+        // In test builds ignore any migration progress updates (we run in a custom database writer anyway),
+        // this code should be the same as 'CurrentAppContext().isRunningTests' but since the tests can run
+        // without being attached to a host application the `CurrentAppContext` might not have been set and
+        // would crash as it gets force-unwrapped - better to just do the check explicitly instead
+        guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
+        
         GRDBStorage.shared.migrationProgressUpdater?.wrappedValue(target.key(with: migration), progress)
     }
     
     // MARK: - Security
     
     private static func getDatabaseCipherKeySpec() throws -> Data {
-        return try CurrentAppContext().keychainStorage().data(forService: keychainService, key: dbCipherKeySpecKey)
+        return try SSKDefaultKeychainStorage.shared.data(forService: keychainService, key: dbCipherKeySpecKey)
     }
     
     @discardableResult private static func getOrGenerateDatabaseKeySpec() -> Data {
@@ -228,7 +251,7 @@ public final class GRDBStorage {
                         var keySpec: Data = Randomness.generateRandomBytes(kSQLCipherKeySpecLength)
                         defer { keySpec.resetBytes(in: 0..<keySpec.count) } // Reset content immediately after use
                         
-                        try CurrentAppContext().keychainStorage().set(data: keySpec, service: keychainService, key: dbCipherKeySpecKey)
+                        try SSKDefaultKeychainStorage.shared.set(data: keySpec, service: keychainService, key: dbCipherKeySpecKey)
                         print("RAWR new keySpec generated and saved")
                         return keySpec
                     }
@@ -281,7 +304,7 @@ public final class GRDBStorage {
     }
     
     private static func deleteDbKeys() throws {
-        try CurrentAppContext().keychainStorage().remove(service: keychainService, key: dbCipherKeySpecKey)
+        try SSKDefaultKeychainStorage.shared.remove(service: keychainService, key: dbCipherKeySpecKey)
     }
     
     // MARK: - Functions

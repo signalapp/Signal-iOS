@@ -56,10 +56,6 @@ final class NotificationServiceExtensionContext : NSObject, AppContext {
         return userDefaults
     }
 
-    func keychainStorage() -> SSKKeychainStorage {
-        return SSKDefaultKeychainStorage.shared
-    }
-
     // MARK: - Currently Unused
     
     let frame = CGRect.zero

@@ -56,7 +56,7 @@ extension OpenGroupAPI {
             promise.retainUntilComplete()
             
             Threading.pollerQueue.async {
-                GRDBStorage.shared
+                dependencies.storage
                     .read { db in
                         OpenGroupAPI
                             .poll(

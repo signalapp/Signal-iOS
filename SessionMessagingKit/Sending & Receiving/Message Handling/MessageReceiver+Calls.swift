@@ -49,7 +49,7 @@ extension MessageReceiver {
             if let interaction: Interaction = try MessageReceiver.insertCallInfoMessage(db, for: message, state: .missed) {
                 let thread: SessionThread = try SessionThread.fetchOrCreate(db, id: sender, variant: .contact)
                 
-                Environment.shared.notificationsManager.wrappedValue?
+                Environment.shared?.notificationsManager.wrappedValue?
                     .notifyUser(
                         db,
                         forIncomingCall: interaction,
@@ -63,7 +63,7 @@ extension MessageReceiver {
             if let interaction: Interaction = try MessageReceiver.insertCallInfoMessage(db, for: message, state: .permissionDenied) {
                 let thread: SessionThread = try SessionThread.fetchOrCreate(db, id: sender, variant: .contact)
                 
-                Environment.shared.notificationsManager.wrappedValue?
+                Environment.shared?.notificationsManager.wrappedValue?
                     .notifyUser(
                         db,
                         forIncomingCall: interaction,
@@ -81,7 +81,7 @@ extension MessageReceiver {
         }
         
         // Ensure we have a call manager before continuing
-        guard let callManager: CallManagerProtocol = Environment.shared.callManager.wrappedValue else { return }
+        guard let callManager: CallManagerProtocol = Environment.shared?.callManager.wrappedValue else { return }
         
         // Ignore pre offer message after the same call instance has been generated
         if let currentCall: CurrentCallProtocol = callManager.currentCall, currentCall.uuid == message.uuid {
@@ -109,7 +109,7 @@ extension MessageReceiver {
         
         // Ensure we have a call manager before continuing
         guard
-            let callManager: CallManagerProtocol = Environment.shared.callManager.wrappedValue,
+            let callManager: CallManagerProtocol = Environment.shared?.callManager.wrappedValue,
             let currentCall: CurrentCallProtocol = callManager.currentCall,
             currentCall.uuid == message.uuid,
             let sdp: String = message.sdps.first
@@ -125,7 +125,7 @@ extension MessageReceiver {
         guard
             let currentWebRTCSession: WebRTCSession = WebRTCSession.current,
             currentWebRTCSession.uuid == message.uuid,
-            let callManager: CallManagerProtocol = Environment.shared.callManager.wrappedValue,
+            let callManager: CallManagerProtocol = Environment.shared?.callManager.wrappedValue,
             var currentCall: CurrentCallProtocol = callManager.currentCall,
             currentCall.uuid == message.uuid,
             let sender: String = message.sender
@@ -151,7 +151,7 @@ extension MessageReceiver {
         
         guard
             WebRTCSession.current?.uuid == message.uuid,
-            let callManager: CallManagerProtocol = Environment.shared.callManager.wrappedValue,
+            let callManager: CallManagerProtocol = Environment.shared?.callManager.wrappedValue,
             let currentCall: CurrentCallProtocol = callManager.currentCall,
             currentCall.uuid == message.uuid,
             let sender: String = message.sender

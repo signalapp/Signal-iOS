@@ -108,7 +108,7 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
                                 if let sender: String = callMessage.sender, let interaction: Interaction = try MessageReceiver.insertCallInfoMessage(db, for: callMessage, state: .permissionDenied) {
                                     let thread: SessionThread = try SessionThread.fetchOrCreate(db, id: sender, variant: .contact)
 
-                                    Environment.shared.notificationsManager.wrappedValue?
+                                    Environment.shared?.notificationsManager.wrappedValue?
                                         .notifyUser(
                                             db,
                                             forIncomingCall: interaction,
@@ -168,7 +168,7 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
 
         AppSetup.setupEnvironment(
             appSpecificBlock: {
-                Environment.shared.notificationsManager.mutate {
+                Environment.shared?.notificationsManager.mutate {
                     $0 = NSENotificationPresenter()
                 }
             },

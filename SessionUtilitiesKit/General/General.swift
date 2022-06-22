@@ -20,13 +20,13 @@ public enum GeneralError: Error {
     case keyGenerationFailed
 }
 
-public func getUserHexEncodedPublicKey(_ db: Database? = nil) -> String {
-    if let cachedKey: String = General.cache.wrappedValue.encodedPublicKey { return cachedKey }
+public func getUserHexEncodedPublicKey(_ db: Database? = nil, dependencies: Dependencies = Dependencies()) -> String {
+    if let cachedKey: String = dependencies.generalCache.wrappedValue.encodedPublicKey { return cachedKey }
     
     if let publicKey: Data = Identity.fetchUserPublicKey(db) { // Can be nil under some circumstances
         let sessionId: SessionId = SessionId(.standard, publicKey: publicKey.bytes)
         
-        General.cache.mutate { $0.encodedPublicKey = sessionId.hexString }
+        dependencies.generalCache.mutate { $0.encodedPublicKey = sessionId.hexString }
         return sessionId.hexString
     }
     

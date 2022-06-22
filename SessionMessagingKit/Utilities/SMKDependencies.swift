@@ -5,23 +5,11 @@ import Sodium
 import SessionSnodeKit
 import SessionUtilitiesKit
 
-public class Dependencies {
+public class SMKDependencies: Dependencies {
     internal var _onionApi: OnionRequestAPIType.Type?
     public var onionApi: OnionRequestAPIType.Type {
         get { Dependencies.getValueSettingIfNull(&_onionApi) { OnionRequestAPI.self } }
         set { _onionApi = newValue }
-    }
-    
-    internal var _generalCache: Atomic<GeneralCacheType>?
-    public var generalCache: Atomic<GeneralCacheType> {
-        get { Dependencies.getValueSettingIfNull(&_generalCache) { General.cache } }
-        set { _generalCache = newValue }
-    }
-    
-    internal var _storage: GRDBStorage?
-    public var storage: GRDBStorage {
-        get { Dependencies.getValueSettingIfNull(&_storage) { GRDBStorage.shared } }
-        set { _storage = newValue }
     }
     
     internal var _sodium: SodiumType?
@@ -72,18 +60,6 @@ public class Dependencies {
         set { _nonceGenerator24 = newValue }
     }
     
-    internal var _standardUserDefaults: UserDefaultsType?
-    public var standardUserDefaults: UserDefaultsType {
-        get { Dependencies.getValueSettingIfNull(&_standardUserDefaults) { UserDefaults.standard } }
-        set { _standardUserDefaults = newValue }
-    }
-    
-    internal var _date: Date?
-    public var date: Date {
-        get { Dependencies.getValueSettingIfNull(&_date) { Date() } }
-        set { _date = newValue }
-    }
-    
     // MARK: - Initialization
     
     public init(
@@ -102,8 +78,6 @@ public class Dependencies {
         date: Date? = nil
     ) {
         _onionApi = onionApi
-        _generalCache = generalCache
-        _storage = storage
         _sodium = sodium
         _box = box
         _genericHash = genericHash
@@ -112,19 +86,12 @@ public class Dependencies {
         _ed25519 = ed25519
         _nonceGenerator16 = nonceGenerator16
         _nonceGenerator24 = nonceGenerator24
-        _standardUserDefaults = standardUserDefaults
-        _date = date
-    }
-    
-    // MARK: - Convenience
-
-    internal static func getValueSettingIfNull<T>(_ maybeValue: inout T?, _ valueGenerator: () -> T) -> T {
-        guard let value: T = maybeValue else {
-            let value: T = valueGenerator()
-            maybeValue = value
-            return value
-        }
         
-        return value
+        super.init(
+            generalCache: generalCache,
+            storage: storage,
+            standardUserDefaults: standardUserDefaults,
+            date: date
+        )
     }
 }

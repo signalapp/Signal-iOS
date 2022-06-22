@@ -41,18 +41,13 @@ class PhotoCapture: NSObject {
         self.session = AVCaptureSession()
         self.captureOutput = CaptureOutput()
     }
-    
-    // MARK: - Dependencies
-    var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
-    }
 
     // MARK: -
     var audioDeviceInput: AVCaptureDeviceInput?
     func startAudioCapture() throws {
         assertIsOnSessionQueue()
 
-        guard audioSession.startAudioActivity(recordingAudioActivity) else {
+        guard Environment.shared?.audioSession.startAudioActivity(recordingAudioActivity) == true else {
             throw PhotoCaptureError.assertionError(description: "unable to capture audio activity")
         }
 
@@ -83,7 +78,7 @@ class PhotoCapture: NSObject {
         }
         session.removeInput(audioDeviceInput)
         self.audioDeviceInput = nil
-        audioSession.endAudioActivity(recordingAudioActivity)
+        Environment.shared?.audioSession.endAudioActivity(recordingAudioActivity)
     }
 
     func startCapture() -> Promise<Void> {

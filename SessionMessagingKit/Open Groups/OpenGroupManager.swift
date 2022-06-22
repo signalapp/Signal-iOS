@@ -67,7 +67,7 @@ public final class OpenGroupManager: NSObject {
     public func startPolling(using dependencies: OGMDependencies = OGMDependencies()) {
         guard !dependencies.cache.isPolling else { return }
         
-        let servers: Set<String> = GRDBStorage.shared
+        let servers: Set<String> = dependencies.storage
             .read { db in
                 // The default room promise creates an OpenGroup with an empty `roomToken` value,
                 // we don't want to start a poller for this as the user hasn't actually joined a room
@@ -85,11 +85,16 @@ public final class OpenGroupManager: NSObject {
             cache.isPolling = true
             cache.pollers = servers
                 .reduce(into: [:]) { result, server in
-                    result[server]?.stop() // Should never occur
-                    
-                    result[server] = OpenGroupAPI.Poller(for: server)
-                    result[server]?.startIfNeeded(using: dependencies)
+                    result[server.lowercased()]?.stop() // Should never occur
+                    result[server.lowercased()] = OpenGroupAPI.Poller(for: server.lowercased())
                 }
+            
+            // Note: We loop separately here because when the cache is mocked-out for tests it
+            // doesn't actually store the value (meaning the pollers won't be started), but if
+            // we do it in the 'reduce' function, the 'reduce' result will actually store the
+            // poller value resulting in a bunch of OpenGroup pollers running in a way that can't
+            // be stopped during unit tests
+            cache.pollers.forEach { _, poller in poller.startIfNeeded(using: dependencies) }
         }
     }
 
@@ -104,13 +109,13 @@ public final class OpenGroupManager: NSObject {
     // MARK: - Adding & Removing
     
     public func hasExistingOpenGroup(_ db: Database, roomToken: String, server: String, publicKey: String, dependencies: OGMDependencies = OGMDependencies()) -> Bool {
-        guard let serverUrl: URL = URL(string: server) else { return false }
+        guard let serverUrl: URL = URL(string: server.lowercased()) else { return false }
         
-        let serverHost: String = (serverUrl.host ?? server)
+        let serverHost: String = (serverUrl.host ?? server.lowercased())
         let serverPort: String = (serverUrl.port.map { ":\($0)" } ?? "")
         let defaultServerHost: String = OpenGroupAPI.defaultServer.substring(from: "http://".count)
         var serverOptions: Set<String> = Set([
-            server,
+            server.lowercased(),
             "\(serverHost)\(serverPort)",
             "http://\(serverHost)\(serverPort)",
             "https://\(serverHost)\(serverPort)"
@@ -252,13 +257,13 @@ public final class OpenGroupManager: NSObject {
         // Note: The default room promise creates an OpenGroup with an empty `roomToken` value,
         // we don't want to start a poller for this as the user hasn't actually joined a room
         let numActiveRooms: Int = (try? OpenGroup
-            .filter(OpenGroup.Columns.server == server)
+            .filter(OpenGroup.Columns.server == server?.lowercased())
             .filter(OpenGroup.Columns.roomToken != "")
             .filter(OpenGroup.Columns.isActive)
             .fetchCount(db))
             .defaulting(to: 1)
         
-        if numActiveRooms == 1, let server: String = server {
+        if numActiveRooms == 1, let server: String = server?.lowercased() {
             let poller = dependencies.cache.pollers[server]
             poller?.stop()
             dependencies.mutableCache.mutate { $0.pollers[server] = nil }
@@ -297,13 +302,13 @@ public final class OpenGroupManager: NSObject {
     ) {
         // Remove old capabilities first
         _ = try? Capability
-            .filter(Capability.Columns.openGroupServer == server)
+            .filter(Capability.Columns.openGroupServer == server.lowercased())
             .deleteAll(db)
         
         // Then insert the new capabilities (both present and missing)
         capabilities.capabilities.forEach { capability in
             _ = try? Capability(
-                openGroupServer: server,
+                openGroupServer: server.lowercased(),
                 variant: Capability.Variant(from: capability.rawValue),
                 isMissing: false
             )
@@ -311,7 +316,7 @@ public final class OpenGroupManager: NSObject {
         }
         capabilities.missing?.forEach { capability in
             _ = try? Capability(
-                openGroupServer: server,
+                openGroupServer: server.lowercased(),
                 variant: Capability.Variant(from: capability.rawValue),
                 isMissing: true
             )
@@ -336,6 +341,7 @@ public final class OpenGroupManager: NSObject {
         
         let updatedOpenGroup: OpenGroup = try openGroup
             .with(
+                publicKey: maybePublicKey,
                 name: pollInfo.details?.name,
                 roomDescription: pollInfo.details?.roomDescription,
                 imageId: pollInfo.details?.imageId.map { "\($0)" },
@@ -369,10 +375,10 @@ public final class OpenGroupManager: NSObject {
         
         db.afterNextTransactionCommit { db in
             // Start the poller if needed
-            if dependencies.cache.pollers[server] == nil {
+            if dependencies.cache.pollers[server.lowercased()] == nil {
                 dependencies.mutableCache.mutate {
-                    $0.pollers[server] = OpenGroupAPI.Poller(for: server)
-                    $0.pollers[server]?.startIfNeeded(using: dependencies)
+                    $0.pollers[server.lowercased()] = OpenGroupAPI.Poller(for: server.lowercased())
+                    $0.pollers[server.lowercased()]?.startIfNeeded(using: dependencies)
                 }
             }
             
@@ -507,7 +513,7 @@ public final class OpenGroupManager: NSObject {
     ) {
         // Don't need to do anything if we have no messages (it's a valid case)
         guard !messages.isEmpty else { return }
-        guard let openGroup: OpenGroup = try? OpenGroup.filter(OpenGroup.Columns.server == server).fetchOne(db) else {
+        guard let openGroup: OpenGroup = try? OpenGroup.filter(OpenGroup.Columns.server == server.lowercased()).fetchOne(db) else {
             SNLog("Couldn't receive inbox message.")
             return
         }
@@ -522,12 +528,12 @@ public final class OpenGroupManager: NSObject {
         // Update the 'latestMessageId' value
         if fromOutbox {
             _ = try? OpenGroup
-                .filter(OpenGroup.Columns.server == server)
+                .filter(OpenGroup.Columns.server == server.lowercased())
                 .updateAll(db, OpenGroup.Columns.outboxLatestMessageId.set(to: latestMessageId))
         }
         else {
             _ = try? OpenGroup
-                .filter(OpenGroup.Columns.server == server)
+                .filter(OpenGroup.Columns.server == server.lowercased())
                 .updateAll(db, OpenGroup.Columns.inboxLatestMessageId.set(to: latestMessageId))
         }
 
@@ -644,7 +650,7 @@ public final class OpenGroupManager: NSObject {
                 
                 // Conveniently the logic for these different cases works in order so we can fallthrough each
                 // case with only minor efficiency losses
-                let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                let userPublicKey: String = getUserHexEncodedPublicKey(db, dependencies: dependencies)
                 
                 switch sessionId.prefix {
                     case .standard:
@@ -796,7 +802,7 @@ public final class OpenGroupManager: NSObject {
         let updateInterval: TimeInterval = (7 * 24 * 60 * 60)
         
         if
-            server == OpenGroupAPI.defaultServer,
+            server.lowercased() == OpenGroupAPI.defaultServer,
             timeSinceLastUpdate < updateInterval,
             let data = try? OpenGroup
                 .select(.imageData)
@@ -805,7 +811,7 @@ public final class OpenGroupManager: NSObject {
                 .fetchOne(db)
         { return Promise.value(data) }
         
-        if let promise = dependencies.cache.groupImagePromises["\(server).\(roomToken)"] {
+        if let promise = dependencies.cache.groupImagePromises[threadId] {
             return promise
         }
         
@@ -814,7 +820,7 @@ public final class OpenGroupManager: NSObject {
         // Trigger the download on a background queue
         DispatchQueue.global(qos: .background).async {
             dependencies.storage
-                .writeAsync { db in
+                .read { db in
                     OpenGroupAPI
                         .downloadFile(
                             db,
@@ -824,8 +830,8 @@ public final class OpenGroupManager: NSObject {
                             using: dependencies
                         )
                 }
-                .done(on: OpenGroupAPI.workQueue) { _, imageData in
-                    if server == OpenGroupAPI.defaultServer {
+                .done { _, imageData in
+                    if server.lowercased() == OpenGroupAPI.defaultServer {
                         dependencies.storage.write { db in
                             _ = try OpenGroup
                                 .filter(id: threadId)
@@ -841,7 +847,7 @@ public final class OpenGroupManager: NSObject {
         }
         
         dependencies.mutableCache.mutate { cache in
-            cache.groupImagePromises["\(server).\(roomToken)"] = promise
+            cache.groupImagePromises[threadId] = promise
         }
         
         return promise
@@ -880,7 +886,7 @@ public final class OpenGroupManager: NSObject {
 // MARK: - OGMDependencies
 
 extension OpenGroupManager {
-    public class OGMDependencies: Dependencies {
+    public class OGMDependencies: SMKDependencies {
         internal var _mutableCache: Atomic<OGMCacheType>?
         public var mutableCache: Atomic<OGMCacheType> {
             get { Dependencies.getValueSettingIfNull(&_mutableCache) { OpenGroupManager.shared.mutableCache } }

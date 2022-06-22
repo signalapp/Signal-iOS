@@ -23,7 +23,7 @@ class OpenGroupAPISpec: QuickSpec {
         var mockEd25519: MockEd25519!
         var mockNonce16Generator: MockNonce16Generator!
         var mockNonce24Generator: MockNonce24Generator!
-        var dependencies: Dependencies!
+        var dependencies: SMKDependencies!
         
         var response: (OnionRequestResponseInfoType, Codable)? = nil
         var pollResponse: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable?)]?
@@ -33,7 +33,13 @@ class OpenGroupAPISpec: QuickSpec {
             // MARK: - Configuration
             
             beforeEach {
-                mockStorage = GRDBStorage(customWriter: DatabaseQueue())
+                mockStorage = GRDBStorage(
+                    customWriter: DatabaseQueue(),
+                    customMigrations: [
+                        SNUtilitiesKit.migrations(),
+                        SNMessagingKit.migrations()
+                    ]
+                )
                 mockSodium = MockSodium()
                 mockAeadXChaCha20Poly1305Ietf = MockAeadXChaCha20Poly1305Ietf()
                 mockSign = MockSign()
@@ -41,7 +47,7 @@ class OpenGroupAPISpec: QuickSpec {
                 mockNonce16Generator = MockNonce16Generator()
                 mockNonce24Generator = MockNonce24Generator()
                 mockEd25519 = MockEd25519()
-                dependencies = Dependencies(
+                dependencies = SMKDependencies(
                     onionApi: TestOnionRequestAPI.self,
                     storage: mockStorage,
                     sodium: mockSodium,
@@ -204,9 +210,9 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         // Validate request data
                         let requestData: TestOnionRequestAPI.RequestData? = (pollResponse?[.capabilities]?.0 as? TestOnionRequestAPI.ResponseInfo)?.requestData
-                        expect(requestData?.urlString).to(equal("testServer/batch"))
+                        expect(requestData?.urlString).to(equal("testserver/batch"))
                         expect(requestData?.httpMethod).to(equal("POST"))
-                        expect(requestData?.server).to(equal("testServer"))
+                        expect(requestData?.server).to(equal("testserver"))
                         expect(requestData?.publicKey).to(equal("88672ccb97f40bb57238989226cf429b575ba355443f47bc76c5ab144a96c65b"))
                     }
                     
@@ -840,8 +846,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate request data
                     let requestData: TestOnionRequestAPI.RequestData? = (response?.info as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("GET"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/capabilities"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/capabilities"))
                 }
             }
             
@@ -911,8 +917,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate request data
                     let requestData: TestOnionRequestAPI.RequestData? = (response?.info as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("GET"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/rooms"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/rooms"))
                 }
             }
             
@@ -1005,8 +1011,8 @@ class OpenGroupAPISpec: QuickSpec {
                         // Validate request data
                         let requestData: TestOnionRequestAPI.RequestData? = (response?.capabilities.info as? TestOnionRequestAPI.ResponseInfo)?.requestData
                         expect(requestData?.httpMethod).to(equal("POST"))
-                        expect(requestData?.server).to(equal("testServer"))
-                        expect(requestData?.urlString).to(equal("testServer/sequence"))
+                        expect(requestData?.server).to(equal("testserver"))
+                        expect(requestData?.urlString).to(equal("testserver/sequence"))
                     }
                 }
                 
@@ -1641,8 +1647,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate request data
                     let requestData: TestOnionRequestAPI.RequestData? = (response?.info as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("GET"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/message/123"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/room/testRoom/message/123"))
                 }
             }
             
@@ -1693,8 +1699,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate signature headers
                     let requestData: TestOnionRequestAPI.RequestData? = (response?.0 as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("PUT"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/message/123"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/room/testRoom/message/123"))
                 }
                 
                 context("when unblinded") {
@@ -1717,7 +1723,7 @@ class OpenGroupAPISpec: QuickSpec {
                                         plaintext: "test".data(using: .utf8)!,
                                         fileIds: nil,
                                         in: "testRoom",
-                                        on: "testServer",
+                                        on: "testserver",
                                         using: dependencies
                                     )
                             }
@@ -1861,7 +1867,7 @@ class OpenGroupAPISpec: QuickSpec {
                                         plaintext: "test".data(using: .utf8)!,
                                         fileIds: nil,
                                         in: "testRoom",
-                                        on: "testServer",
+                                        on: "testserver",
                                         using: dependencies
                                     )
                             }
@@ -1974,7 +1980,7 @@ class OpenGroupAPISpec: QuickSpec {
                                         plaintext: "test".data(using: .utf8)!,
                                         fileIds: nil,
                                         in: "testRoom",
-                                        on: "testServer",
+                                        on: "testserver",
                                         using: dependencies
                                     )
                             }
@@ -2027,8 +2033,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate request data
                     let requestData: TestOnionRequestAPI.RequestData? = (response?.info as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("DELETE"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/message/123"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/room/testRoom/message/123"))
                 }
             }
             
@@ -2054,7 +2060,7 @@ class OpenGroupAPISpec: QuickSpec {
                                     db,
                                     sessionId: "testUserId",
                                     in: "testRoom",
-                                    on: "testServer",
+                                    on: "testserver",
                                     using: dependencies
                                 )
                         }
@@ -2072,8 +2078,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate request data
                     let requestData: TestOnionRequestAPI.RequestData? = (response?.info as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("DELETE"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/all/testUserId"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/room/testRoom/all/testUserId"))
                 }
             }
             
@@ -2113,8 +2119,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate request data
                     let requestData: TestOnionRequestAPI.RequestData? = (response as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/pin/123"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/room/testRoom/pin/123"))
                 }
             }
             
@@ -2152,8 +2158,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate request data
                     let requestData: TestOnionRequestAPI.RequestData? = (response as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/unpin/123"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/room/testRoom/unpin/123"))
                 }
             }
             
@@ -2190,8 +2196,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate request data
                     let requestData: TestOnionRequestAPI.RequestData? = (response as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/unpin/all"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/room/testRoom/unpin/all"))
                 }
             }
             
@@ -2231,8 +2237,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate signature headers
                     let requestData: TestOnionRequestAPI.RequestData? = (response?.0 as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/file"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/room/testRoom/file"))
                 }
                 
                 it("doesn't add a fileName to the content-disposition header when not provided") {
@@ -2342,8 +2348,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate signature headers
                     let requestData: TestOnionRequestAPI.RequestData? = (response?.0 as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("GET"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/file/1"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/room/testRoom/file/1"))
                 }
             }
             
@@ -2403,8 +2409,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate signature headers
                     let requestData: TestOnionRequestAPI.RequestData? = (response?.0 as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/inbox/testUserId"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/inbox/testUserId"))
                 }
             }
             
@@ -2451,8 +2457,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate request data
                     let requestData: TestOnionRequestAPI.RequestData? = (response?.info as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/user/testUserId/ban"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/user/testUserId/ban"))
                 }
                 
                 it("does a global ban if no room tokens are provided") {
@@ -2560,8 +2566,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate request data
                     let requestData: TestOnionRequestAPI.RequestData? = (response?.info as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/user/testUserId/unban"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/user/testUserId/unban"))
                 }
                 
                 it("does a global ban if no room tokens are provided") {
@@ -2670,8 +2676,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate request data
                     let requestData: TestOnionRequestAPI.RequestData? = (response?.info as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/user/testUserId/moderator"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/user/testUserId/moderator"))
                 }
                 
                 it("does a global update if no room tokens are provided") {
@@ -2832,8 +2838,8 @@ class OpenGroupAPISpec: QuickSpec {
                     // Validate request data
                     let requestData: TestOnionRequestAPI.RequestData? = (response?.first as? TestOnionRequestAPI.ResponseInfo)?.requestData
                     expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/sequence"))
+                    expect(requestData?.server).to(equal("testserver"))
+                    expect(requestData?.urlString).to(equal("testserver/sequence"))
                 }
                 
                 it("bans the user from the specified room rather than globally") {
@@ -3001,13 +3007,13 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         // Validate signature headers
                         let requestData: TestOnionRequestAPI.RequestData? = (response?.0 as? TestOnionRequestAPI.ResponseInfo)?.requestData
-                        expect(requestData?.urlString).to(equal("testServer/rooms"))
+                        expect(requestData?.urlString).to(equal("testserver/rooms"))
                         expect(requestData?.httpMethod).to(equal("GET"))
-                        expect(requestData?.server).to(equal("testServer"))
+                        expect(requestData?.server).to(equal("testserver"))
                         expect(requestData?.publicKey).to(equal("88672ccb97f40bb57238989226cf429b575ba355443f47bc76c5ab144a96c65b"))
                         expect(requestData?.headers).to(haveCount(4))
                         expect(requestData?.headers[Header.sogsPubKey.rawValue])
-                            .to(equal("0088672ccb97f40bb57238989226cf429b575ba355443f47bc76c5ab144a96c65b"))
+                            .to(equal("00bac6e71efd7dfa4a83c98ed24f254ab2c267f9ccdb172a5280a0444ad24e89cc"))
                         expect(requestData?.headers[Header.sogsTimestamp.rawValue]).to(equal("1234567890"))
                         expect(requestData?.headers[Header.sogsNonce.rawValue]).to(equal("pK6YRtQApl4NhECGizF0Cg=="))
                         expect(requestData?.headers[Header.sogsSignature.rawValue]).to(equal("TestSignature".bytes.toBase64()))
@@ -3071,9 +3077,9 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         // Validate signature headers
                         let requestData: TestOnionRequestAPI.RequestData? = (response?.0 as? TestOnionRequestAPI.ResponseInfo)?.requestData
-                        expect(requestData?.urlString).to(equal("testServer/rooms"))
+                        expect(requestData?.urlString).to(equal("testserver/rooms"))
                         expect(requestData?.httpMethod).to(equal("GET"))
-                        expect(requestData?.server).to(equal("testServer"))
+                        expect(requestData?.server).to(equal("testserver"))
                         expect(requestData?.publicKey).to(equal("88672ccb97f40bb57238989226cf429b575ba355443f47bc76c5ab144a96c65b"))
                         expect(requestData?.headers).to(haveCount(4))
                         expect(requestData?.headers[Header.sogsPubKey.rawValue]).to(equal("1588672ccb97f40bb57238989226cf429b575ba355443f47bc76c5ab144a96c65b"))

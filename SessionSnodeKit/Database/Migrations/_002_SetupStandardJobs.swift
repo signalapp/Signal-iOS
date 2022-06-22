@@ -21,6 +21,6 @@ enum _002_SetupStandardJobs: Migration {
             ).inserted(db)
         }
         
-        GRDBStorage.shared.update(progress: 1, for: self, in: target) // In case this is the last migration
+        GRDBStorage.update(progress: 1, for: self, in: target) // In case this is the last migration
     }
 }

@@ -140,7 +140,7 @@ extension MessageReceiver {
         ClosedGroupPoller.shared.startPolling(for: groupPublicKey)
         
         // Notify the PN server
-        let _ = PushNotificationAPI.performOperation(.subscribe, for: groupPublicKey, publicKey: getUserHexEncodedPublicKey())
+        let _ = PushNotificationAPI.performOperation(.subscribe, for: groupPublicKey, publicKey: getUserHexEncodedPublicKey(db))
     }
 
     /// Extracts and adds the new encryption key pair to our list of key pairs if there is one for our public key, AND the message was

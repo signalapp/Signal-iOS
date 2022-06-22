@@ -6,7 +6,7 @@ import SessionUtilitiesKit
 
 @testable import SessionMessagingKit
 
-extension Dependencies {
+extension SMKDependencies {
     public func with(
         onionApi: OnionRequestAPIType.Type? = nil,
         generalCache: Atomic<GeneralCacheType>? = nil,
@@ -21,8 +21,8 @@ extension Dependencies {
         nonceGenerator24: NonceGenerator24ByteType? = nil,
         standardUserDefaults: UserDefaultsType? = nil,
         date: Date? = nil
-    ) -> Dependencies {
-        return Dependencies(
+    ) -> SMKDependencies {
+        return SMKDependencies(
             onionApi: (onionApi ?? self._onionApi),
             generalCache: (generalCache ?? self._generalCache),
             storage: (storage ?? self._storage),

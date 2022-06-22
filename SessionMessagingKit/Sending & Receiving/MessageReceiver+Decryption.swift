@@ -8,7 +8,7 @@ import Curve25519Kit
 import SessionUtilitiesKit
 
 extension MessageReceiver {
-    internal static func decryptWithSessionProtocol(ciphertext: Data, using x25519KeyPair: Box.KeyPair, dependencies: Dependencies = Dependencies()) throws -> (plaintext: Data, senderX25519PublicKey: String) {
+    internal static func decryptWithSessionProtocol(ciphertext: Data, using x25519KeyPair: Box.KeyPair, dependencies: SMKDependencies = SMKDependencies()) throws -> (plaintext: Data, senderX25519PublicKey: String) {
         let recipientX25519PrivateKey = x25519KeyPair.secretKey
         let recipientX25519PublicKey = x25519KeyPair.publicKey
         let signatureSize = dependencies.sign.Bytes
@@ -46,7 +46,7 @@ extension MessageReceiver {
         return (Data(plaintext), SessionId(.standard, publicKey: senderX25519PublicKey).hexString)
     }
     
-    internal static func decryptWithSessionBlindingProtocol(data: Data, isOutgoing: Bool, otherBlindedPublicKey: String, with openGroupPublicKey: String, userEd25519KeyPair: Box.KeyPair, using dependencies: Dependencies = Dependencies()) throws -> (plaintext: Data, senderX25519PublicKey: String) {
+    internal static func decryptWithSessionBlindingProtocol(data: Data, isOutgoing: Bool, otherBlindedPublicKey: String, with openGroupPublicKey: String, userEd25519KeyPair: Box.KeyPair, using dependencies: SMKDependencies = SMKDependencies()) throws -> (plaintext: Data, senderX25519PublicKey: String) {
         /// Ensure the data is at least long enough to have the required components
         guard
             data.count > (dependencies.nonceGenerator24.NonceBytes + 2),

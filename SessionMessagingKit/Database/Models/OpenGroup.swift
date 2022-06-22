@@ -140,6 +140,7 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
 
 public extension OpenGroup {
     func with(
+        publicKey: String? = nil,
         isActive: Bool? = nil,
         name: String? = nil,
         roomDescription: String? = nil,
@@ -152,7 +153,7 @@ public extension OpenGroup {
         return OpenGroup(
             server: self.server,
             roomToken: self.roomToken,
-            publicKey: self.publicKey,
+            publicKey: (publicKey ?? self.publicKey),
             isActive: (isActive ?? self.isActive),
             name: (name ?? self.name),
             roomDescription: (roomDescription ?? self.roomDescription),
@@ -184,7 +185,7 @@ extension OpenGroup: CustomStringConvertible, CustomDebugStringConvertible {
             "roomToken: \"\(roomToken)\"",
             "id: \"\(id)\"",
             "publicKey: \"\(publicKey)\"",
-            "isActive: \"\(isActive)\"",
+            "isActive: \(isActive)",
             "name: \"\(name)\"",
             "roomDescription: \(roomDescription.map { "\"\($0)\"" } ?? "null")",
             "imageId: \(imageId ?? "null")",

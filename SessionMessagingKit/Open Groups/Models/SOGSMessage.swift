@@ -48,7 +48,7 @@ extension OpenGroupAPI.Message {
             guard let sender: String = maybeSender, let data = Data(base64Encoded: base64EncodedData), let signature = Data(base64Encoded: base64EncodedSignature) else {
                 throw HTTP.Error.parsingFailed
             }
-            guard let dependencies: Dependencies = decoder.userInfo[Dependencies.userInfoKey] as? Dependencies else {
+            guard let dependencies: SMKDependencies = decoder.userInfo[Dependencies.userInfoKey] as? SMKDependencies else {
                 throw HTTP.Error.parsingFailed
             }
             

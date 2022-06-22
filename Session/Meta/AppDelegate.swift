@@ -85,8 +85,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 
                 DeviceSleepManager.sharedInstance.removeBlock(blockObject: strongSelf)
                 AppVersion.sharedInstance().mainAppLaunchDidComplete()
-                Environment.shared.audioSession.setup()
-                Environment.shared.reachabilityManager.setup()
+                Environment.shared?.audioSession.setup()
+                Environment.shared?.reachabilityManager.setup()
                 
                 GRDBStorage.shared.writeAsync { db in
                     // Disable the SAE until the main app has successfully completed launch process

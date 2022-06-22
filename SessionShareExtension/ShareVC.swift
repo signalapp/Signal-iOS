@@ -44,7 +44,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
         AppSetup.setupEnvironment(
             appSpecificBlock: {
-                Environment.shared.notificationsManager.mutate {
+                Environment.shared?.notificationsManager.mutate {
                     $0 = NoopNotificationsManager()
                 }
             },

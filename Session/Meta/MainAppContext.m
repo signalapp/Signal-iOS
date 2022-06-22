@@ -245,7 +245,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 - (BOOL)isRunningTests
 {
-    return (NSProcessInfo.processInfo.environment[@"XCInjectBundleInto"] != nil);
+    return (NSProcessInfo.processInfo.environment[@"XCTestConfigurationFilePath"] != nil);
 }
 
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value
@@ -294,11 +294,6 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
     OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
-}
-
-- (id<SSKKeychainStorage>)keychainStorage
-{
-    return [SSKDefaultKeychainStorage shared];
 }
 
 - (NSString *)appDocumentDirectoryPath

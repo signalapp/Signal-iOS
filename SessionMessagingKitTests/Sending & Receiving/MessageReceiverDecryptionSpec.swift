@@ -21,11 +21,17 @@ class MessageReceiverDecryptionSpec: QuickSpec {
         var mockSign: MockSign!
         var mockAeadXChaCha: MockAeadXChaCha20Poly1305Ietf!
         var mockNonce24Generator: MockNonce24Generator!
-        var dependencies: Dependencies!
+        var dependencies: SMKDependencies!
         
         describe("a MessageReceiver") {
             beforeEach {
-                mockStorage = GRDBStorage(customWriter: DatabaseQueue())
+                mockStorage = GRDBStorage(
+                    customWriter: DatabaseQueue(),
+                    customMigrations: [
+                        SNUtilitiesKit.migrations(),
+                        SNMessagingKit.migrations()
+                    ]
+                )
                 mockSodium = MockSodium()
                 mockBox = MockBox()
                 mockGenericHash = MockGenericHash()
@@ -37,7 +43,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                     .when { $0.encrypt(message: anyArray(), secretKey: anyArray(), nonce: anyArray()) }
                     .thenReturn(nil)
                 
-                dependencies = Dependencies(
+                dependencies = SMKDependencies(
                     storage: mockStorage,
                     sodium: mockSodium,
                     box: mockBox,
@@ -111,7 +117,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                             publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
                             secretKey: Data.data(fromHex: TestConstants.privateKey)!.bytes
                         ),
-                        dependencies: Dependencies()
+                        dependencies: SMKDependencies()
                     )
                     
                     expect(String(data: (result?.plaintext ?? Data()), encoding: .utf8)).to(equal("TestMessage"))
@@ -217,7 +223,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
                             publicKey: Data.data(fromHex: TestConstants.edPublicKey)!.bytes,
                             secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
                         ),
-                        using: Dependencies()
+                        using: SMKDependencies()
                     )
                     
                     expect(String(data: (result?.plaintext ?? Data()), encoding: .utf8)).to(equal("TestMessage"))

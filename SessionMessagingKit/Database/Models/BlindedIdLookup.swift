@@ -74,7 +74,7 @@ public extension BlindedIdLookup {
         blindedId: String,
         openGroupServer: String,
         openGroupPublicKey: String,
-        dependencies: Dependencies = Dependencies()
+        dependencies: SMKDependencies = SMKDependencies()
     ) throws -> BlindedIdLookup {
         var lookup: BlindedIdLookup = (try? BlindedIdLookup
             .fetchOne(db, id: blindedId))

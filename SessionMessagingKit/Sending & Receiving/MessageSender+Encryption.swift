@@ -5,7 +5,11 @@ import Sodium
 import SessionUtilitiesKit
 
 extension MessageSender {
-    internal static func encryptWithSessionProtocol(_ plaintext: Data, for recipientHexEncodedX25519PublicKey: String, using dependencies: Dependencies = Dependencies()) throws -> Data {
+    internal static func encryptWithSessionProtocol(
+        _ plaintext: Data,
+        for recipientHexEncodedX25519PublicKey: String,
+        using dependencies: SMKDependencies = SMKDependencies()
+    ) throws -> Data {
         guard let userEd25519KeyPair: Box.KeyPair = dependencies.storage.read({ db in Identity.fetchUserEd25519KeyPair(db) }) else {
             throw MessageSenderError.noUserED25519KeyPair
         }
@@ -25,7 +29,12 @@ extension MessageSender {
         return Data(ciphertext)
     }
     
-    internal static func encryptWithSessionBlindingProtocol(_ plaintext: Data, for recipientBlindedId: String, openGroupPublicKey: String, using dependencies: Dependencies = Dependencies()) throws -> Data {
+    internal static func encryptWithSessionBlindingProtocol(
+        _ plaintext: Data,
+        for recipientBlindedId: String,
+        openGroupPublicKey: String,
+        using dependencies: SMKDependencies = SMKDependencies()
+    ) throws -> Data {
         guard SessionId.Prefix(from: recipientBlindedId) == .blinded else { throw MessageSenderError.signingFailed }
         guard let userEd25519KeyPair: Box.KeyPair = dependencies.storage.read({ db in Identity.fetchUserEd25519KeyPair(db) }) else {
             throw MessageSenderError.noUserED25519KeyPair

@@ -4,6 +4,7 @@
 
 import Foundation
 import AVFoundation
+import SessionMessagingKit
 
 public protocol OWSVideoPlayerDelegate: AnyObject {
     func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer)
@@ -26,23 +27,17 @@ public class OWSVideoPlayer {
                                                object: avPlayer.currentItem)
     }
 
-    // MARK: Dependencies
-
-    var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
-    }
-
     // MARK: Playback Controls
 
     @objc
     public func pause() {
         avPlayer.pause()
-        audioSession.endAudioActivity(self.audioActivity)
+        Environment.shared?.audioSession.endAudioActivity(self.audioActivity)
     }
 
     @objc
     public func play() {
-        let success = audioSession.startAudioActivity(self.audioActivity)
+        let success = (Environment.shared?.audioSession.startAudioActivity(self.audioActivity) == true)
         assert(success)
 
         guard let item = avPlayer.currentItem else {
@@ -62,7 +57,7 @@ public class OWSVideoPlayer {
     public func stop() {
         avPlayer.pause()
         avPlayer.seek(to: CMTime.zero, toleranceBefore: .zero, toleranceAfter: .zero)
-        audioSession.endAudioActivity(self.audioActivity)
+        Environment.shared?.audioSession.endAudioActivity(self.audioActivity)
     }
 
     @objc(seekToTime:)
@@ -75,6 +70,6 @@ public class OWSVideoPlayer {
     @objc
     private func playerItemDidPlayToCompletion(_ notification: Notification) {
         self.delegate?.videoPlayerDidPlayToCompletion(self)
-        audioSession.endAudioActivity(self.audioActivity)
+        Environment.shared?.audioSession.endAudioActivity(self.audioActivity)
     }
 }

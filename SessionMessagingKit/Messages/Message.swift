@@ -291,7 +291,7 @@ public extension Message {
         openGroupServerPublicKey: String,
         message: OpenGroupAPI.Message,
         data: Data,
-        dependencies: Dependencies = Dependencies()
+        dependencies: SMKDependencies = SMKDependencies()
     ) throws -> ProcessedMessage? {
         // Need a sender in order to process the message
         guard let sender: String = message.sender else { return nil }
@@ -325,7 +325,7 @@ public extension Message {
         data: Data,
         isOutgoing: Bool? = nil,
         otherBlindedPublicKey: String? = nil,
-        dependencies: Dependencies = Dependencies()
+        dependencies: SMKDependencies = SMKDependencies()
     ) throws -> ProcessedMessage? {
         // Note: The `posted` value is in seconds but all messages in the database use milliseconds for timestamps
         let envelopeBuilder = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(message.posted * 1000)))
@@ -362,7 +362,7 @@ public extension Message {
         isOutgoing: Bool? = nil,
         otherBlindedPublicKey: String? = nil,
         handleClosedGroupKeyUpdateMessages: Bool,
-        dependencies: Dependencies = Dependencies()
+        dependencies: SMKDependencies = SMKDependencies()
     ) throws -> ProcessedMessage? {
         let (message, proto, threadId) = try MessageReceiver.parse(
             db,

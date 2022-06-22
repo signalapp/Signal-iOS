@@ -53,8 +53,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     var scrollDistanceToBottomBeforeUpdate: CGFloat?
     var baselineKeyboardHeight: CGFloat = 0
 
-    var audioSession: OWSAudioSession { Environment.shared.audioSession }
-    
     /// This flag is used to temporarily prevent the ConversationVC from becoming the first responder (primarily used with
     /// custom transitions from preventing them from being buggy
     var delayFirstResponder: Bool = false

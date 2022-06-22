@@ -18,7 +18,7 @@ class SOGSMessageSpec: QuickSpec {
             var decoder: JSONDecoder!
             var mockSign: MockSign!
             var mockEd25519: MockEd25519!
-            var dependencies: Dependencies!
+            var dependencies: SMKDependencies!
             
             beforeEach {
                 messageJson = """
@@ -37,7 +37,7 @@ class SOGSMessageSpec: QuickSpec {
                 messageData = messageJson.data(using: .utf8)!
                 mockSign = MockSign()
                 mockEd25519 = MockEd25519()
-                dependencies = Dependencies(
+                dependencies = SMKDependencies(
                     sign: mockSign,
                     ed25519: mockEd25519
                 )

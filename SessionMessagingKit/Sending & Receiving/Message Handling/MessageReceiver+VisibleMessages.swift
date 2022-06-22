@@ -46,7 +46,7 @@ extension MessageReceiver {
         }
         
         // Store the message variant so we can run variant-specific behaviours
-        let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
+        let currentUserPublicKey: String = getUserHexEncodedPublicKey(db, dependencies: dependencies)
         let thread: SessionThread = try SessionThread
             .fetchOrCreate(db, id: threadInfo.id, variant: threadInfo.variant)
         let variant: Interaction.Variant = {
@@ -273,7 +273,7 @@ extension MessageReceiver {
         guard variant == .standardIncoming else { return interactionId }
         
         // Use the same identifier for notifications when in backgroud polling to prevent spam
-        Environment.shared.notificationsManager.wrappedValue?
+        Environment.shared?.notificationsManager.wrappedValue?
             .notifyUser(
                 db,
                 for: interaction,

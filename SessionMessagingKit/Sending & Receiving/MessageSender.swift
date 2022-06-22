@@ -306,7 +306,7 @@ public final class MessageSender {
         message: Message,
         to destination: Message.Destination,
         interactionId: Int64?,
-        dependencies: Dependencies = Dependencies()
+        dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         let threadId: String
@@ -445,10 +445,10 @@ public final class MessageSender {
         message: Message,
         to destination: Message.Destination,
         interactionId: Int64?,
-        dependencies: Dependencies = Dependencies()
+        dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
-        let userPublicKey: String = getUserHexEncodedPublicKey(db)
+        let userPublicKey: String = getUserHexEncodedPublicKey(db, dependencies: dependencies)
         
         guard case .openGroupInbox(let server, let openGroupPublicKey, let recipientBlindedPublicKey) = destination else {
             preconditionFailure()
@@ -615,7 +615,7 @@ public final class MessageSender {
         // • it's a visible message or an expiration timer update
         // • the destination was a contact
         // • we didn't sync it already
-        let userPublicKey = getUserHexEncodedPublicKey()
+        let userPublicKey = getUserHexEncodedPublicKey(db)
         if case .contact(let publicKey) = destination, !isSyncMessage {
             if let message = message as? VisibleMessage { message.syncTarget = publicKey }
             if let message = message as? ExpirationTimerUpdate { message.syncTarget = publicKey }

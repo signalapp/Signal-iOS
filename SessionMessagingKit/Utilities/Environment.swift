@@ -4,7 +4,7 @@ import Foundation
 import SessionUtilitiesKit
 
 public class Environment {
-    public static var shared: Environment!
+    public static var shared: Environment?
     
     public let reachabilityManager: SSKReachabilityManager
     
@@ -55,8 +55,8 @@ public class Environment {
 public class SMKEnvironment: NSObject {
     @objc public static let shared: SMKEnvironment = SMKEnvironment()
     
-    @objc public var audioSession: OWSAudioSession { Environment.shared.audioSession }
-    @objc public var windowManager: OWSWindowManager { Environment.shared.windowManager }
+    @objc public var audioSession: OWSAudioSession? { Environment.shared?.audioSession }
+    @objc public var windowManager: OWSWindowManager? { Environment.shared?.windowManager }
     
-    @objc public var isRequestingPermission: Bool { Environment.shared.isRequestingPermission }
+    @objc public var isRequestingPermission: Bool { (Environment.shared?.isRequestingPermission == true) }
 }

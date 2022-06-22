@@ -58,7 +58,7 @@ public enum SUKLegacy {
         guard SUKLegacy.database == nil else { return true }
         
         /// Ensure the databaseKeySpec exists
-        var maybeKeyData: Data? = try? CurrentAppContext().keychainStorage().data(
+        var maybeKeyData: Data? = try? SSKDefaultKeychainStorage.shared.data(
             forService: keychainService,
             key: keychainDBCipherKeySpec
         )
@@ -75,7 +75,7 @@ public enum SUKLegacy {
         options.cipherKeySpecBlock = {
             /// To avoid holding the keySpec in memory too long we load it as needed, since we have already confirmed
             /// it's existence we can force-try here (the database will crash if it's invalid anyway)
-            var keySpec: Data = try! CurrentAppContext().keychainStorage().data(
+            var keySpec: Data = try! SSKDefaultKeychainStorage.shared.data(
                 forService: keychainService,
                 key: keychainDBCipherKeySpec
             )
