@@ -1304,8 +1304,9 @@ enum _003_YDBToGRDBMigration: Migration {
                     return
                 }
                 guard processedAttachmentIds.contains(legacyJob.attachmentID) else {
-                    SNLog("[Migration Error] attachmentDownload job unable to find attachment")
-                    throw StorageError.migrationFailed
+                    // Unsure how this case can occur but it seemed to happen when testing internally
+                    SNLog("[Migration Warning] attachmentDownload job unable to find attachment - ignoring")
+                    return
                 }
                 
                 _ = try Job(

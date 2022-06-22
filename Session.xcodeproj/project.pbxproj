@@ -741,7 +741,6 @@
 		FDC290A827D9B46D005DAE71 /* NimbleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC290A727D9B46D005DAE71 /* NimbleExtensions.swift */; };
 		FDC290A927D9B46D005DAE71 /* NimbleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC290A727D9B46D005DAE71 /* NimbleExtensions.swift */; };
 		FDC290AA27D9B6FD005DAE71 /* Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC290A527D860CE005DAE71 /* Mock.swift */; };
-		FDC290AC27DB0B1C005DAE71 /* MockedExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC290AB27DB0B1C005DAE71 /* MockedExtensions.swift */; };
 		FDC290B327DFF9F5005DAE71 /* TestOnionRequestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC290B227DFF9F5005DAE71 /* TestOnionRequestAPI.swift */; };
 		FDC4380927B31D4E00C60D73 /* SOGSError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4380827B31D4E00C60D73 /* SOGSError.swift */; };
 		FDC4381527B329CE00C60D73 /* NonceGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381427B329CE00C60D73 /* NonceGenerator.swift */; };
@@ -1778,7 +1777,6 @@
 		FDC2909D27D85751005DAE71 /* OpenGroupManagerSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupManagerSpec.swift; sourceTree = "<group>"; };
 		FDC290A527D860CE005DAE71 /* Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mock.swift; sourceTree = "<group>"; };
 		FDC290A727D9B46D005DAE71 /* NimbleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NimbleExtensions.swift; sourceTree = "<group>"; };
-		FDC290AB27DB0B1C005DAE71 /* MockedExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockedExtensions.swift; sourceTree = "<group>"; };
 		FDC290B227DFF9F5005DAE71 /* TestOnionRequestAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestOnionRequestAPI.swift; sourceTree = "<group>"; };
 		FDC4380827B31D4E00C60D73 /* SOGSError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOGSError.swift; sourceTree = "<group>"; };
 		FDC4381427B329CE00C60D73 /* NonceGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonceGenerator.swift; sourceTree = "<group>"; };
@@ -3862,7 +3860,6 @@
 				FD83B9D127D59495005E1583 /* MockUserDefaults.swift */,
 				FD078E4C27E17156000769AF /* MockOGMCache.swift */,
 				FDC290B227DFF9F5005DAE71 /* TestOnionRequestAPI.swift */,
-				FDC290AB27DB0B1C005DAE71 /* MockedExtensions.swift */,
 				FD078E4E27E175F1000769AF /* DependencyExtensions.swift */,
 				FD078E5127E1760A000769AF /* OGMDependencyExtensions.swift */,
 			);
@@ -5451,7 +5448,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FDC290AC27DB0B1C005DAE71 /* MockedExtensions.swift in Sources */,
 				FD3C905C27E3FBEF00CD579F /* BatchRequestInfoSpec.swift in Sources */,
 				FD859EFA27C2F5C500510D0C /* MockGenericHash.swift in Sources */,
 				FDC2909427D710B4005DAE71 /* SOGSEndpointSpec.swift in Sources */,
