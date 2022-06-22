@@ -16,6 +16,8 @@ SIGNAL_DEBUG_PAYLOAD_DBPATH_KEY = "dbPath"
 SIGNAL_DEBUG_PAYLOAD_PASSPHRASE_KEY = "key"
 SIGNAL_FALLBACK_DATABASE_PATH = "grdb/signal.sqlite"
 
+DB_BROWSER_FOR_SQLITE_BUNDLEID = "net.sourceforge.sqlitebrowser"
+
 quietMode=False
 def failWithError(string):
     print("Error: " + string, file=sys.stderr)
@@ -25,10 +27,10 @@ def printInfo(string = ""):
     if quietMode == False:
         print(string)
 
-def runCommand(cmd):
-    result = subprocess.run(cmd.split(), text=True, capture_output=True)
+def runCommand(cmdList):
+    result = subprocess.run(cmdList, text=True, capture_output=True)
     if result.returncode != 0:
-        failWithError("Failed to run \"" + cmd + "\". Status: " + str(result.returncode) + "\n" + result.stderr)
+        failWithError("Failed to run \"" + " ".join(cmdList) + "\". Status: " + str(result.returncode) + "\n" + result.stderr)
     return result.stdout
 
 
@@ -37,7 +39,7 @@ class Simulator:
 
         # Get JSON list of simulators matching searchString
         cmd = "xcrun simctl list -j devices " + searchString
-        resultString = runCommand(cmd)
+        resultString = runCommand(cmd.split())
         simDict = json.loads(resultString)
         devicesByRuntime = simDict["devices"]
 
@@ -124,7 +126,7 @@ class Simulator:
     @staticmethod
     def fetchGroupContainer(udid, groupID):
         cmd = "xcrun simctl get_app_container {} {} {}".format(udid, SIGNAL_BUNDLEID, groupID)
-        result = runCommand(cmd)
+        result = runCommand(cmd.split())
         return result.rstrip()
 
 def preparePassphrase(passphrase):
@@ -133,6 +135,15 @@ def preparePassphrase(passphrase):
     else:
         return "x'" + passphrase + "'"
 
+def writeGuiEnvFile(passphrase, dbPath):
+    dbName = os.path.basename(dbPath)
+    envFilePath = os.path.join(os.path.dirname(dbPath), ".env")
+
+    with open(envFilePath, "w", encoding="utf-8") as envFile:
+        envFile.write(dbName + " = " + passphrase + "\n")
+        envFile.write(dbName + "_plaintextHeaderSize = 32\n")
+
+    return envFilePath
 
 parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -146,16 +157,38 @@ parser = argparse.ArgumentParser(
 
                     Alternatively, you can provide a sqlcipher path directly via command line arguments. In this case,
                     you'll be required to provide a database key through an argument or stdin.
+
+                    If --use-gui is specified, this script will attempt to open the database using the "DB Browser for
+                    SQLite" (DBBfS) application.
+
+                    If --gui-auto-decrypt-with-plaintext-key is passed alongside --use-gui, the script will place the
+                    passphrase in a file next to the database file such that DBBfS is able to automatically decrypt and
+                    open the databse. Note that this file is in plaintext, and *ONLY USE* with databases containing
+                    test data.
                 '''),
-        usage="%(prog)s [--simulator simID [--staging] | --path dbPath] [--passphrase passphrase] [--quiet]")
+        usage="%(prog)s [--simulator simID [--staging] | --path dbPath] [--passphrase passphrase] [--quiet] [--use-gui [--gui-auto-decrypt-with-plaintext-key] [--gui-app-path guiAppPath]]")
 
 group = parser.add_mutually_exclusive_group()
 group.add_argument("--simulator", metavar="SIM", help="A string identifiying a simulator instance. (default: %(default)s).", default="booted")
 group.add_argument("--path", help="An sqlcipher path")
 parser.add_argument("--passphrase", metavar="PASS", help="The passphrase encrypting the database")
 parser.add_argument("--staging", action='store_true', help="If a simulator is being targeted, specifies that the staging database should be used")
-parser.add_argument("remainder", nargs=argparse.REMAINDER, metavar="--", help="All subsequent args will be interpreted as SQL. You probably want quotes here. Be careful with \"*\" since your shell will probably replace it.")
+parser.add_argument("remainder", nargs=argparse.REMAINDER, metavar="--", help="All subsequent args will be interpreted as SQL. You probably want quotes here. Be careful with \"*\" since your shell will probably replace it. Ignored if using GUI")
 parser.add_argument("--quiet", action='store_true', help="Suppress non-failing output")
+parser.add_argument(
+    "--use-gui",
+    action='store_true',
+    help="Tells the script to try and open DB Browser for SQLite"
+)
+parser.add_argument(
+    "--gui-auto-decrypt-with-plaintext-key",
+    action='store_true',
+    help=(
+        "Tells the script to try and have DB Browser for SQLite auto-decrypt the database by "
+        "placing the key in plaintext next to the DB file. ONLY USE with DBs guaranteed to "
+        "only contain test data"
+    )
+)
 args = parser.parse_args()
 
 quietMode=args.quiet
@@ -179,23 +212,41 @@ if args.passphrase:
 if passphrase == None:
     passphrase = getpass.getpass("Please enter the passphrase. Alternatively, set up a plaintext database key in Debug UI > Misc > Save plaintext database key. Then, rerun the command. ")
 
-if passphrase == None or len(passphrase) == 0:
-    failWithError("No valid sqlcipher passphrase")
+if args.use_gui:
+    if args.gui_auto_decrypt_with_plaintext_key:
+        if passphrase == None or len(passphrase) == 0:
+            failWithError("Missing sqlcipher passphrase for auto-decryption")
 
-passphrase = preparePassphrase(passphrase)
-sqlArgs = args.remainder
-if len(sqlArgs) > 0 and sqlArgs[0] == "--":
-    sqlArgs.pop(0)
-sqlArgString = " ".join(sqlArgs)
+        passphrase = preparePassphrase(passphrase)
+        envFilePath = writeGuiEnvFile(passphrase, dbPath)
 
-allArgs = [
-    "sqlcipher",
-    "-cmd", "PRAGMA key = \"" + passphrase + "\";",
-    "-cmd", "PRAGMA cipher_plaintext_header_size = 32;",
-    dbPath
-]
-if len(sqlArgString) > 0:
-    allArgs.append(sqlArgString)
+        printInfo("Warning: saved passphrase to " + envFilePath + " for auto-decryption.")
+    else:
+        printInfo(textwrap.dedent('''\
+            When prompted for the passphrase, select the SQLCipher 4 default settings.
+            Then, select "Custom" and set the "Plaintext Header Size" to 32 from 0.
+            Finally, select "Raw Key" instead of "Passphrase", manually enter "0x", and paste the key.
+        '''))
 
-os.execvp("sqlcipher", allArgs)
+    runCommand(["open", "-b", DB_BROWSER_FOR_SQLITE_BUNDLEID, dbPath])
+else:
+    if passphrase == None or len(passphrase) == 0:
+        failWithError("No valid sqlcipher passphrase")
 
+    passphrase = preparePassphrase(passphrase)
+
+    sqlArgs = args.remainder
+    if len(sqlArgs) > 0 and sqlArgs[0] == "--":
+        sqlArgs.pop(0)
+    sqlArgString = " ".join(sqlArgs)
+
+    allArgs = [
+        "sqlcipher",
+        "-cmd", "PRAGMA key = \"" + passphrase + "\";",
+        "-cmd", "PRAGMA cipher_plaintext_header_size = 32;",
+        dbPath
+    ]
+    if len(sqlArgString) > 0:
+        allArgs.append(sqlArgString)
+
+    os.execvp("sqlcipher", allArgs)
