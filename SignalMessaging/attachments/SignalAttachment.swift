@@ -268,7 +268,11 @@ public class SignalAttachment: NSObject {
     }
 
     public func cloneAttachment() throws -> SignalAttachment {
-        let sourceUrl = dataUrl!
+        guard let sourceUrl = dataUrl else {
+            owsFailDebug("Missing data URL for attachment!")
+            return SignalAttachment.empty()
+        }
+
         let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: sourceUrl.pathExtension)
         try FileManager.default.copyItem(at: sourceUrl, to: newUrl)
 

@@ -168,7 +168,12 @@ public class AttachmentMultisend: Dependencies {
                 thread.donateSendMessageIntent(for: message, transaction: transaction)
             }
 
+            // Let N be the number of attachments, and M be the number of conversations each attachment
+            // is being sent to. We should now have an array of N sub-arrays of size M, where each sub-array
+            // represents a given attachment and contains the IDs of that attachment for each conversation
+            // it is being sent to.
             owsAssertDebug(correspondingAttachmentIds.count == attachmentsToUpload.count)
+            owsAssertDebug(correspondingAttachmentIds.allSatisfy({ attachmentIds in attachmentIds.count == conversations.count }))
 
             for (index, attachmentInfo) in attachmentsToUpload.enumerated() {
                 do {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -84,8 +84,12 @@ public extension OWSFileSystem {
             }
         }
     }
+}
 
-    // MARK: - Temporary Files
+// MARK: - Temporary Files
+
+@objc
+public extension OWSFileSystem {
 
     class func temporaryFileUrl(fileExtension: String? = nil,
                                 isAvailableWhileDeviceLocked: Bool = false) -> URL {
@@ -99,10 +103,7 @@ public extension OWSFileSystem {
 
     class func temporaryFilePath(fileExtension: String? = nil,
                                  isAvailableWhileDeviceLocked: Bool = false) -> String {
-
-        let tempDirPath = (isAvailableWhileDeviceLocked
-            ? OWSTemporaryDirectoryAccessibleAfterFirstAuth()
-            : OWSTemporaryDirectory())
+        let tempDirPath = tempDirPath(availableWhileDeviceLocked: isAvailableWhileDeviceLocked)
         var fileName = UUID().uuidString
         if let fileExtension = fileExtension,
             !fileExtension.isEmpty {
@@ -110,6 +111,12 @@ public extension OWSFileSystem {
         }
         let filePath = (tempDirPath as NSString).appendingPathComponent(fileName)
         return filePath
+    }
+
+    private class func tempDirPath(availableWhileDeviceLocked: Bool) -> String {
+        return availableWhileDeviceLocked
+            ? OWSTemporaryDirectoryAccessibleAfterFirstAuth()
+            : OWSTemporaryDirectory()
     }
 }
 

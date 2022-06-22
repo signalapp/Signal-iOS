@@ -854,6 +854,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         return Promise.when(fulfilled: attachmentPromises)
     }
 
+    /// Creates an attachment with from a generic "loaded item". The data source
+    /// backing the returned attachment must "own" the data it provides - i.e.,
+    /// it must not refer to data/files that other components refer to.
     private func buildAttachment(loadedItem: LoadedItem) -> Promise<SignalAttachment> {
         let itemProvider = loadedItem.itemProvider
         switch loadedItem.payload {
@@ -872,25 +875,26 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeText as String)
             attachment.isConvertibleToTextMessage = true
             return Promise.value(attachment)
-        case .fileUrl(let itemUrl):
-            var url = itemUrl
+        case .fileUrl(let originalItemUrl):
+            var itemUrl = originalItemUrl
             do {
                 if isVideoNeedingRelocation(itemProvider: itemProvider, itemUrl: itemUrl) {
-                    url = try SignalAttachment.copyToVideoTempDir(url: itemUrl)
+                    itemUrl = try SignalAttachment.copyToVideoTempDir(url: itemUrl)
                 }
             } catch {
                 let error = ShareViewControllerError.assertionError(description: "Could not copy video")
                 return Promise(error: error)
             }
 
-            guard let dataSource = try? DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false) else {
-                let error = ShareViewControllerError.assertionError(description: "Unable to read attachment data")
+            guard let dataSource = try? DataSourcePath.dataSource(with: itemUrl, shouldDeleteOnDeallocation: false) else {
+                let error = ShareViewControllerError.assertionError(description: "Attachment URL was not a file URL")
                 return Promise(error: error)
             }
-            dataSource.sourceFilename = url.lastPathComponent
-            let utiType = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) ?? kUTTypeData as String
+            dataSource.sourceFilename = itemUrl.lastPathComponent
 
-            guard !SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: utiType) else {
+            let utiType = MIMETypeUtil.utiType(forFileExtension: itemUrl.pathExtension) ?? kUTTypeData as String
+
+            if SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: utiType) {
                 // This can happen, e.g. when sharing a quicktime-video from iCloud drive.
 
                 let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: utiType)
@@ -913,7 +917,22 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             }
 
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: utiType)
-            return Promise.value(attachment)
+
+            // If we already own the attachment's data - i.e. we have copied it
+            // from the URL originally passed in, and therefore no one else can
+            // be referencing it - we can return the attachment as-is...
+            if attachment.dataUrl != originalItemUrl {
+                return Promise.value(attachment)
+            }
+
+            // ...otherwise, we should clone the attachment to ensure we aren't
+            // touching data someone else might be referencing.
+            do {
+                return Promise.value(try attachment.cloneAttachment())
+            } catch {
+                let error = ShareViewControllerError.assertionError(description: "Failed to clone attachment")
+                return Promise(error: error)
+            }
         case .inMemoryImage(let image):
             guard let pngData = image.pngData() else {
                 return Promise(error: OWSAssertionError("pngData was unexpectedly nil"))

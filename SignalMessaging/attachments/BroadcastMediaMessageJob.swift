@@ -205,9 +205,10 @@ public enum BroadcastMediaUploader: Dependencies {
         SDSDatabaseStorage.shared.write { transaction in
             var messageIdsToSend: Set<String> = Set()
 
-            // the attachments we've uploaded don't appear in any thread. Once they're
-            // uploaded, update the potentially many corresponding attachments in each thread with
-            // the details of that upload.
+            // The attachments we've uploaded don't appear in any thread. Once they're
+            // uploaded, update the potentially many corresponding attachments (one per
+            // thread that the attachment was uploaded to) with the details of that
+            // upload.
             for uploadedAttachment in uploadedAttachments {
                 guard let correspondingAttachments = attachmentIdMap[uploadedAttachment.uniqueId] else {
                     owsFailDebug("correspondingAttachments was unexpectedly nil")
@@ -265,6 +266,25 @@ public enum BroadcastMediaUploader: Dependencies {
                 }
                 return message
             }
+
+            // The attachment we uploaded should not be associated with any actual
+            // messages/threads, and is effectively orphaned.
+            owsAssertDebug(uploadedAttachments.allSatisfy { $0.albumMessageId == nil })
+#if DEBUG
+            for uploadedAttachment in uploadedAttachments {
+                guard let uploadedAttachmentInDb = TSAttachmentStream.anyFetchAttachmentStream(
+                    uniqueId: uploadedAttachment.uniqueId,
+                    transaction: transaction
+                ) else {
+                    owsFailDebug("Unexpectedly missing uploaded attachment from DB")
+                    continue
+                }
+
+                owsAssertDebug(uploadedAttachmentInDb.albumMessageId == nil)
+            }
+#endif
+
+            // TODO: should we delete the orphaned attachments from the DB and disk here, now that we're done with them?
         }
 
         return messagesToSend
