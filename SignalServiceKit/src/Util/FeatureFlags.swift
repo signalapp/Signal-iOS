@@ -98,7 +98,7 @@ public class FeatureFlags: BaseFlags {
     public static let groupAbuse = build.includes(.beta)
 
     @objc
-    public static let giftBadgeReceiving = false
+    public static let giftBadgeReceiving = build.includes(.qa)
 
     @objc
     public static let giftBadgeSending = build.includes(.qa)
