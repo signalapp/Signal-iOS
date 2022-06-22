@@ -1168,7 +1168,7 @@ extension SubscriptionManager {
         getBadge(level: .giftBadge)
     }
 
-    private class func getBadge(level: OneTimeBadgeLevel) -> Promise<ProfileBadge> {
+    public class func getBadge(level: OneTimeBadgeLevel) -> Promise<ProfileBadge> {
         let request = OWSRequestFactory.boostBadgesRequest()
 
         return firstly {

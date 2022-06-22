@@ -25,6 +25,7 @@ public struct CVItemViewState: Equatable {
     let footerState: CVComponentFooter.State?
     let dateHeaderState: CVComponentDateHeader.State?
     let bodyTextState: CVComponentBodyText.State?
+    let giftBadgeState: CVComponentGiftBadge.TimeState?
     let nextAudioAttachment: AudioAttachment?
 
     let uiMode: ConversationUIMode
@@ -44,6 +45,7 @@ public struct CVItemViewState: Equatable {
         var footerState: CVComponentFooter.State?
         var dateHeaderState: CVComponentDateHeader.State?
         var bodyTextState: CVComponentBodyText.State?
+        var giftBadgeState: CVComponentGiftBadge.TimeState?
         var nextAudioAttachment: AudioAttachment?
         var uiMode: ConversationUIMode = .normal
         var previousUIMode: ConversationUIMode = .normal
@@ -59,6 +61,7 @@ public struct CVItemViewState: Equatable {
                             footerState: footerState,
                             dateHeaderState: dateHeaderState,
                             bodyTextState: bodyTextState,
+                            giftBadgeState: giftBadgeState,
                             nextAudioAttachment: nextAudioAttachment,
                             uiMode: uiMode,
                             previousUIMode: previousUIMode)
@@ -251,6 +254,10 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         }()
         itemViewState.footerState = CVComponentFooter.buildState(interaction: interaction,
                                                                  hasTapForMore: hasTapForMore)
+
+        if let giftBadge = item.componentState.giftBadge {
+            itemViewState.giftBadgeState = CVComponentGiftBadge.buildTimeState(giftBadge)
+        }
 
         if interaction.interactionType == .dateHeader {
             itemViewState.dateHeaderState = CVComponentDateHeader.buildState(interaction: interaction)

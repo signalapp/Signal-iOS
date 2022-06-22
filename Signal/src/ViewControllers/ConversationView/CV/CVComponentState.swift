@@ -171,7 +171,8 @@ public class CVComponentState: Equatable, Dependencies {
     let linkPreview: LinkPreview?
 
     struct GiftBadge: Equatable {
-        // TODO: (GB)
+        let loader: GiftBadgeView.BadgeLoader
+        let expirationDate: Date
     }
     let giftBadge: GiftBadge?
 
@@ -1137,7 +1138,13 @@ fileprivate extension CVComponentState.Builder {
     }
 
     private mutating func buildGiftBadge(giftBadge: OWSGiftBadge) throws -> CVComponentState {
-        self.giftBadge = GiftBadge()
+        let (rawLevel, expirationDate) = try giftBadge.getReceiptDetails()
+        // TODO: (GB) What should we do with unexpected/malformed gifts? Ignore them? Show an error?
+        guard let level = OneTimeBadgeLevel(rawValue: rawLevel), level == .giftBadge else {
+            throw OWSAssertionError("Gift message doesn't contain a gift badge")
+        }
+        let badgeLoader = GiftBadgeView.BadgeLoader(level: level)
+        self.giftBadge = GiftBadge(loader: badgeLoader, expirationDate: expirationDate)
         return build()
     }
 }

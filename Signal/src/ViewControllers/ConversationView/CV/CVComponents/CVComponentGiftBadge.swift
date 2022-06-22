@@ -8,14 +8,35 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
 
     public var componentKey: CVComponentKey { .giftBadge }
 
-    private let giftBadgeState: CVComponentState.GiftBadge
+    private let giftBadge: CVComponentState.GiftBadge
 
-    private var viewState: GiftBadgeView.State {
-        GiftBadgeView.State()
+    private let timeState: TimeState
+
+    // Component state objects are derived from TSInteractions, and they're
+    // only updated when the underlying interaction changes. The "N days
+    // remaining" label depends on the current time, so we need to use
+    // CVItemViewState, which is refreshed even when the underlying interaction
+    // hasn't changed. This is similar to how the time in the footer works.
+    struct TimeState: Equatable {
+        let timeRemainingText: String
     }
 
-    init(itemModel: CVItemModel, giftBadgeState: CVComponentState.GiftBadge) {
-        self.giftBadgeState = giftBadgeState
+    static func buildTimeState(_ giftBadge: CVComponentState.GiftBadge) -> TimeState {
+        return TimeState(timeRemainingText: GiftBadgeView.timeRemainingText(for: giftBadge.expirationDate))
+    }
+
+    private var viewState: GiftBadgeView.State {
+        GiftBadgeView.State(
+            badgeLoader: self.giftBadge.loader,
+            timeRemainingText: self.timeState.timeRemainingText,
+            isIncoming: self.isIncoming,
+            conversationStyle: self.conversationStyle
+        )
+    }
+
+    init(itemModel: CVItemModel, giftBadge: CVComponentState.GiftBadge, timeState: TimeState) {
+        self.giftBadge = giftBadge
+        self.timeState = timeState
         super.init(itemModel: itemModel)
     }
 
@@ -41,16 +62,38 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
         return GiftBadgeView.measurement(for: self.viewState, maxWidth: maxWidth, measurementBuilder: measurementBuilder)
     }
 
+    public override func handleTap(
+        sender: UITapGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem
+    ) -> Bool {
+
+        guard let componentView = componentView as? CVComponentViewGiftBadge else {
+            owsFailDebug("unexpected componentView")
+            return false
+        }
+
+        let buttonView = componentView.giftBadgeView.buttonStack
+        guard buttonView.bounds.contains(sender.location(in: buttonView)) else {
+            return false
+        }
+
+        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+        componentDelegate.cvc_didTapGiftBadge(itemViewModel)
+        return true
+    }
+
     public class CVComponentViewGiftBadge: NSObject, CVComponentView {
         fileprivate let giftBadgeView = GiftBadgeView(name: "GiftBadgeView")
 
-        // TODO: (GB)
         public var isDedicatedCellView = false
 
         public var rootView: UIView { giftBadgeView }
 
-        // TODO: (GB)
-        public func setIsCellVisible(_ isCellVisible: Bool) {}
+        public func setIsCellVisible(_ isCellVisible: Bool) {
+            // TODO: (GB) Start/stop the gift wrap animation, as needed.
+        }
 
         public func reset() {
             giftBadgeView.reset()

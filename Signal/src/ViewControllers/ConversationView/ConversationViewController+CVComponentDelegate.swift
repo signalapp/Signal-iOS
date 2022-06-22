@@ -309,6 +309,12 @@ extension ConversationViewController: CVComponentDelegate {
         GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)
     }
 
+    public func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl) {
+        AssertIsOnMainThread()
+
+        Logger.debug("Tapped Gift Badge!")
+    }
+
     public func cvc_didTapSignalMeLink(url: URL) {
         SignalMe.openChat(url: url, fromViewController: self)
     }

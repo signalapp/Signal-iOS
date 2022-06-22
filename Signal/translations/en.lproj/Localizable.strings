@@ -406,6 +406,9 @@
 /* Indicates that a contact cannot receive badges because they need to update Signal */
 "BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
 
+/* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
+"BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
+
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
 
@@ -430,8 +433,14 @@
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
+/* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
+"BADGE_GIFTING_REDEEM" = "Redeem";
+
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+
+/* A button shown on a gift message you send to view additional details about the badge. */
+"BADGE_GIFTING_VIEW" = "View";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";

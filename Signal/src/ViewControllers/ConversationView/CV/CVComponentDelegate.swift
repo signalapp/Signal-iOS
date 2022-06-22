@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -87,6 +87,8 @@ public protocol CVComponentDelegate {
     func cvc_didTapStickerPack(_ stickerPackInfo: StickerPackInfo)
 
     func cvc_didTapGroupInviteLink(url: URL)
+
+    func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl)
 
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl)
 

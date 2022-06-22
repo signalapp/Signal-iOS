@@ -47,6 +47,22 @@ public class OWSGiftBadge: MTLModel {
         super.init(coder: coder)
     }
 
+    private func getReceiptCredentialPresentation() throws -> ReceiptCredentialPresentation {
+        guard let rcPresentationData = self.redemptionCredential else {
+            throw GiftBadgeError.malformed
+        }
+        return try ReceiptCredentialPresentation(contents: [UInt8](rcPresentationData))
+    }
+
+    public func getReceiptDetails() throws -> (UInt64, Date) {
+        let rcPresentation = try self.getReceiptCredentialPresentation()
+
+        let receiptLevel = try rcPresentation.getReceiptLevel()
+        let receiptExpiration = try rcPresentation.getReceiptExpirationTime()
+
+        return (receiptLevel, Date(timeIntervalSince1970: TimeInterval(receiptExpiration)))
+    }
+
     @objc(maybeBuildFromDataMessage:)
     public class func maybeBuild(from dataMessage: SSKProtoDataMessage) -> OWSGiftBadge? {
         do {

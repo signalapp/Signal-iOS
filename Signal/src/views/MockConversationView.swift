@@ -343,6 +343,8 @@ extension MockConversationView: CVComponentDelegate {
 
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {}
 
+    func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl) {}
+
     func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
 
     func cvc_beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation {
