@@ -3,6 +3,7 @@ import Foundation
 public enum General {
     public enum Cache {
         public static var cachedEncodedPublicKey: Atomic<String?> = Atomic(nil)
+        public static var recentReactionTimestamps: Atomic<[UInt64]> = Atomic([])
     }
 }
 

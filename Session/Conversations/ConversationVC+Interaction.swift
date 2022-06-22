@@ -862,6 +862,17 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         reactMessage.sender = getUserHexEncodedPublicKey()
         let thread = self.thread
         let sentTimestamp: UInt64 = NSDate.millisecondTimestamp()
+        General.Cache.recentReactionTimestamps.mutate{ $0.append(sentTimestamp) }
+        // Rate Limit
+        if General.Cache.recentReactionTimestamps.wrappedValue.count > 20 {
+            let firstTimestamp = General.Cache.recentReactionTimestamps.wrappedValue.first!
+            if sentTimestamp - firstTimestamp < 60 * 1000 {
+                General.Cache.recentReactionTimestamps.mutate{ $0.removeLast() }
+                return
+            } else {
+                General.Cache.recentReactionTimestamps.mutate{ $0.removeFirst() }
+            }
+        }
         let visibleMessage = VisibleMessage()
         visibleMessage.sentTimestamp = sentTimestamp
         visibleMessage.reaction = .from(reactMessage)
