@@ -8,7 +8,6 @@ import PassKit
 import SignalUI
 import LibSignalClient
 
-// TODO (GB) This view is unfinished.
 class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     // MARK: - View state
 
@@ -33,6 +32,8 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         self.shouldAvoidKeyboard = true
 
         super.viewDidLoad()
+
+        databaseStorage.appendDatabaseChangeDelegate(self)
 
         title = NSLocalizedString("BADGE_GIFTING_CONFIRMATION_TITLE",
                                   comment: "Title on the screen where you confirm sending of a gift badge, and can write a message")
@@ -66,6 +67,29 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     // MARK: - Table contents
 
     private lazy var avatarViewDataSource: ConversationAvatarDataSource = .thread(self.thread)
+
+    private lazy var contactCellView: UIStackView = {
+        let view = UIStackView()
+        view.distribution = .equalSpacing
+        return view
+    }()
+
+    private lazy var disappearingMessagesTimerLabelView: UILabel = {
+        let labelView = UILabel()
+        labelView.font = .ows_dynamicTypeBody2
+        labelView.textAlignment = .center
+        labelView.minimumScaleFactor = 0.8
+        return labelView
+    }()
+
+    private lazy var disappearingMessagesTimerView: UIView = {
+        let iconView = UIImageView(image: Theme.iconImage(.settingsTimer))
+        iconView.contentMode = .scaleAspectFit
+
+        let view = UIStackView(arrangedSubviews: [iconView, disappearingMessagesTimerLabelView])
+        view.spacing = 4
+        return view
+    }()
 
     private lazy var messageTextView: TextViewWithPlaceholder = {
         let view = TextViewWithPlaceholder()
@@ -107,30 +131,32 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             let avatarView = ConversationAvatarView(sizeClass: .thirtySix,
                                                     localUserDisplayMode: .asUser,
                                                     badged: true)
-            let recipientName = self.databaseStorage.read { transaction -> String in
+            let (recipientName, disappearingMessagesDuration) = self.databaseStorage.read { transaction -> (String, UInt32) in
                 avatarView.update(transaction) { config in
                     config.dataSource = avatarViewDataSource
                 }
 
                 let recipientName = self.contactsManager.displayName(for: thread, transaction: transaction)
+                let disappearingMessagesDuration = thread.disappearingMessagesDuration(with: transaction)
 
-                return recipientName
+                return (recipientName, disappearingMessagesDuration)
             }
 
             let nameLabel = UILabel()
             nameLabel.text = recipientName
             nameLabel.font = .ows_dynamicTypeBody
             nameLabel.numberOfLines = 0
+            nameLabel.minimumScaleFactor = 0.5
 
             let avatarAndNameView = UIStackView(arrangedSubviews: [avatarView, nameLabel])
             avatarAndNameView.spacing = ContactCellView.avatarTextHSpacing
 
-            let contactCellView = UIStackView(arrangedSubviews: [avatarAndNameView])
-            contactCellView.distribution = .equalSpacing
+            let contactCellView = self.contactCellView
+            contactCellView.removeAllSubviews()
+            contactCellView.addArrangedSubview(avatarAndNameView)
+            self.updateDisappearingMessagesTimerView(durationSeconds: disappearingMessagesDuration)
             cell.contentView.addSubview(contactCellView)
             contactCellView.autoPinEdgesToSuperviewMargins()
-
-            // TODO (GB) Show disappearing messages timer
 
             return cell
         }))
@@ -169,6 +195,19 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                                                recipientSection,
                                                messageInfoSection,
                                                messageTextSection])
+    }
+
+    private func updateDisappearingMessagesTimerLabelView(durationSeconds: UInt32) {
+        disappearingMessagesTimerLabelView.text = NSString.formatDurationSeconds(durationSeconds, useShortFormat: true)
+    }
+
+    private func updateDisappearingMessagesTimerView(durationSeconds: UInt32) {
+        updateDisappearingMessagesTimerLabelView(durationSeconds: durationSeconds)
+
+        disappearingMessagesTimerView.removeFromSuperview()
+        if durationSeconds != 0 {
+            contactCellView.addArrangedSubview(disappearingMessagesTimerView)
+        }
     }
 
     // MARK: - Footer
@@ -222,6 +261,29 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             view.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
             view.autoPinWidthToSuperview(withMargin: 23)
         }
+    }
+}
+
+// MARK: - Database observer delegate
+
+extension BadgeGiftingConfirmationViewController: DatabaseChangeDelegate {
+    private func updateDisappearingMessagesTimerWithSneakyTransaction() {
+        let durationSeconds = databaseStorage.read { self.thread.disappearingMessagesDuration(with: $0) }
+        updateDisappearingMessagesTimerView(durationSeconds: durationSeconds)
+    }
+
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
+        if databaseChanges.didUpdate(thread: thread) {
+            updateDisappearingMessagesTimerWithSneakyTransaction()
+        }
+    }
+
+    func databaseChangesDidUpdateExternally() {
+        updateDisappearingMessagesTimerWithSneakyTransaction()
+    }
+
+    func databaseChangesDidReset() {
+        updateDisappearingMessagesTimerWithSneakyTransaction()
     }
 }
 
