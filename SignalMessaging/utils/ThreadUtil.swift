@@ -38,8 +38,7 @@ public extension ThreadUtil {
                               thread: TSThread) -> TSOutgoingMessage {
 
         let message: TSOutgoingMessage = databaseStorage.read { transaction in
-            let dmConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
-            builder.expiresInSeconds = dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0
+            builder.expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
             return builder.build(transaction: transaction)
         }
 
@@ -57,8 +56,7 @@ public extension ThreadUtil {
                               thread: TSThread,
                               transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
 
-        let dmConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
-        builder.expiresInSeconds = dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0
+        builder.expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
 
         let message = builder.build(transaction: transaction)
         message.anyInsert(transaction: transaction)

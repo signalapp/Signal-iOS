@@ -209,8 +209,7 @@ extension SharingThreadPickerViewController {
                     return self.databaseStorage.write { transaction in
                         let builder = TSOutgoingMessageBuilder(thread: thread)
                         builder.contactShare = contactShare.dbRecord
-                        let dmConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
-                        builder.expiresInSeconds = dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0
+                        builder.expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
                         let message = builder.build(transaction: transaction)
                         message.anyInsert(transaction: transaction)
                         self.outgoingMessages.append(message)

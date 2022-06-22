@@ -56,8 +56,7 @@ extension StoryReplySheet {
             ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(thread: thread, setDefaultTimerIfNecessary: shouldUseThreadDMTimer, transaction: transaction)
 
             if shouldUseThreadDMTimer {
-                let dmConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
-                builder.expiresInSeconds = dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0
+                builder.expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
             }
 
             let message = builder.build(transaction: transaction)

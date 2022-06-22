@@ -86,10 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block TSOutgoingMessage *message;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        OWSDisappearingMessagesConfiguration *configuration =
-            [thread disappearingMessagesConfigurationWithTransaction:transaction];
-        uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-        builder.expiresInSeconds = expiresInSeconds;
+        builder.expiresInSeconds = [thread disappearingMessagesDurationWithTransaction:transaction];
         message = [builder buildWithTransaction:transaction];
     }];
 
