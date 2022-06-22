@@ -155,10 +155,10 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "သင့်စက်သည် သိုလှောင်မှု နေရာနည်းနေသဖြင့် Signal ဖွင့်၍ မရနိုင်ပါ။ Signal ကို သုံးရန် ဆက်တင်တွင် သင့်သိုလှောင်မှုကို စီမံခန့်ခွဲ၍ နေရာလွတ် ရှင်းပေးပါ။";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "သိုလှောင်မှု နေရာနည်းနေခြင်း";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "သင့် စက်အဟောင်းမှ လွှဲပြောင်းထားသော ဒေတာများကို ပြန်မရယူနိုင်ပါ။ ကျွန်ုပ်တို့မှ ပြဿနာ ဖြေရှင်းပေးရန် support@signal.org သို့ ပျက်ကွက်မှု မှတ်တမ်းပေးပို့ပေးပါ။ သင်မှ Signal ကို ပြန်ထည့်သွင်းလျှင် သင့် မက်ဆေ့ချ်ရာဇဝင် ပျောက်သွားနိုင်ပါသည်။";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "သင်၏ Boost ဘဲ့ဂျ်သည် သက်တမ်းကုန်သွားပြီဖြစ်ပြီး သင့်ပရိုဖိုင်တွင် ဖော်ပြနိုင်တော့မည် မဟုတ်ပါ။\n\nSignal ကို ဆက်သုံးနိုင်သော်လည်း သင့်အတွက် ဖန်တီးထားသည့် နည်းပညာကို ပံ့ပိုးနိုင်ရန် လစဉ် လှူဒါန်းခြင်းဖြင့် ပါဝင်အားဖြည့်သူ လုပ်ရန် စဉ်းစားကြည့်ပေးပါ။";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "သင်၏ Boost ဘဲ့ဂျ်သည် သက်တမ်းကုန်သွားပြီဖြစ်ပြီး သင့်ပရိုဖိုင်တွင် ဖော်ပြနိုင်တော့မည် မဟုတ်ပါ။\n\nတစ်ကြိမ်စာ လှူဒါန်းမှုဖြင့် သင့် Boost ဘဲ့ဂျ်ကို နောက်ထပ် ရက် ၃၀ စာ ပြန်လည်သက်ဝင်အောင် လုပ်ဆောင်နိုင်ပါသည်။";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Become a Sustainer";
@@ -406,6 +406,9 @@
 /* Indicates that a contact cannot receive badges because they need to update Signal */
 "BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
 
+/* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
+"BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
+
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
 
@@ -430,8 +433,20 @@
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
+/* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+
+/* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+
+/* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
+"BADGE_GIFTING_REDEEM" = "Redeem";
+
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+
+/* A button shown on a gift message you send to view additional details about the badge. */
+"BADGE_GIFTING_VIEW" = "ကြည့်မယ်";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
@@ -1079,7 +1094,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "လူများ";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Stories";
+"CONVERSATION_PICKER_SECTION_STORIES" = "စတိုရီ";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "လက်ခံသူများ";
@@ -3524,13 +3539,13 @@
 "MUTED_BADGE" = "အသံပိတ်ထား";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Updates to your story will show up here.";
+"MY_STORIES_NO_STORIES" = "သင့်စတိုရီ အပ်ဒိတ်များကို ဤတွင် ပြသပါမည်။";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "My Stories";
+"MY_STORIES_TITLE" = "ကျွန်ုပ်၏ စတိုရီများ";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "My Story";
+"MY_STORY_NAME" = "ကျွန်ုပ်၏ စတိုရီ";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "မကြာသေးမီက ပရိုဖိုင်းအမည်ကို %1$@ မှ %2$@ သို့ ပြောင်းထားခဲ့ပါသည်။";
@@ -4604,13 +4619,13 @@
 "READ_ACTION" = "ဖတ်ပြီး";
 
 /* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "၎င်း သုံးသူသည် Signal ကို အပ်ဒိတ်မလုပ်သည်အထိ အဖွဲ့ထဲသို့ မထည့်နိုင်ပါ။";
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "၎င်း သုံးသူသည် Signal ကို အဆင့်မြှင့်တင်မှု မလုပ်မချင်း အဖွဲ့ထဲသို့ မထည့်နိုင်ပါ။";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "သုံးသူအား ရွေးချယ်၍မရပါ";
 
 /* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "၎င်း သုံးသူသည် Signal ကို အဆင့်မြှင့်တင်မှု မလုပ်မချင်း လက်ဆောင်များ လက်ခံရယူနိုင်မည် မဟုတ်ပါ။";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "PIN ကို မေ့သွားပြီ။";
@@ -5906,28 +5921,28 @@
 "STORIES_HIDE_STORY_ACTION" = "Hide Story";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "လက်ရှိတွင် ပြသရန် အပ်ဒိတ်များ မရှိပါ။\nသင့်စတိုရီတွင် ပေါင်းထည့်ရန် + ကို နှိပ်ပါ။";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "No replies yet";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "သီးသန့် စတိုရီ အသစ်";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "သီးသန့် စတိုရီများကို သင် ပေါင်းထည့်ထားသူများသာ မြင်ရပါမည်။ စတိုရီအမည်ကို သင်တစ်ဦးတည်းသာ မြင်ရပါမည်။";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "သီးသန့် စတိုရီများ";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "စတိုရီ ကိုယ်ပိုင်အချက်အလက်";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "ဝေမျှမယ်";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "စတိုရီ";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";

@@ -155,10 +155,10 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Tidak Dapat Membuka Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal tidak bisa dibuka karena ruang penyimpanan di perangkat Anda hampir habis. Untuk menggunakan Signal, kosongkan ruang dengan mengelola penyimpanan di Pengaturan.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Ruang Penyimpanan Hampir Habis";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Data yang ditransfer dari perangkat lama Anda tidak dapat dipulihkan. Mohon kirimkan catatan awakutu ke support@signal.org sehingga kami dapat menyelesaikan masalah ini. Jika kamu memasang ulang Signal, riwayat pesan Anda mungkin hilang.";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Beri Penguat untuk Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Lencana Boost Anda telah kedaluwarsa dan tidak dapat lagi ditampilkan di profil.\n\nAnda dapat terus menggunakan Signal, tetapi untuk mendukung teknologi yang dikembangkan untuk Anda, mohon pertimbangkan untuk menjadi penyokong dengan memberikan donasi bulanan.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Lencana Boost Anda telah kedaluwarsa dan tidak dapat lagi ditampilkan di profil.\n\nAnda dapat mengaktifkan kembali lencana Boost untuk 30 hari ke depan dengan kontribusi satu kali.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Menjadi Penyokong";
@@ -406,6 +406,9 @@
 /* Indicates that a contact cannot receive badges because they need to update Signal */
 "BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Harus memperbaharui Signal untuk menerima hadiah";
 
+/* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
+"BADGE_GIFTING_CHAT_EXPIRED" = "Kadaluwarsa";
+
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Hadiahkan seseorang sebuah lencana dengan membuat donasi ke Signal atas nama mereka. Mereka akan mendapatkan lencana untuk diperlihatkan pada foto profil mereka.";
 
@@ -416,7 +419,7 @@
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Pilih Penerima";
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Konfirmasi Hadiah";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Kirim sebuah lencana hadiah";
@@ -425,13 +428,25 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Donasi satu kali";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Pembayaran Anda tidak dapat diproses, jadi penagihan gagal. Mohon coba lagi.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Pembayaran Gagal";
+
+/* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+
+/* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+
+/* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
+"BADGE_GIFTING_REDEEM" = "Tukarkan";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Terakhir %@";
+
+/* A button shown on a gift message you send to view additional details about the badge. */
+"BADGE_GIFTING_VIEW" = "Lihat";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Donasi bulanan berulang Anda telah dibatalkan secara otomatis. %@ Lencana %@ Anda tidak lagi terlihat pada profil Anda.";
@@ -1625,31 +1640,31 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Coba metode pembayaran lain atau hubungi bank Anda untuk informasi lebih lanjut.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Periksa apakah metode pembayaran Anda telah diperbarui di Apple Pay. Jika belum, perbarui dan coba lagi. Jika masalah tetap terjadi, hubungi bank Anda.";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Kartu Anda tidak mendukung pembelian jenis ini. Coba metode pembayaran lain atau hubungi bank Anda untuk informasi lebih lanjut.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Kartu Anda kedaluwarsa. Periksa apakah metode pembayaran Anda telah diperbarui di Apple Pay. Jika belum, perbarui dan coba lagi.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Nomor kartu Anda salah. Periksa apakah metode pembayaran Anda telah dimasukkan dengan benar di Apple Pay. Jika salah, perbarui dan coba lagi.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Nomor CVC Anda salah. Periksa apakah nomor CVC Anda dimasukkan dengan benar di Apple Pay. Jika salah, perbarui dan coba lagi.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Dana di kartu Anda tidak cukup untuk menyelesaikan pembelian ini. Coba metode pembayaran lain atau hubungi bank untuk informasi selengkapnya.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Bulan kedaluwarsa di metode pembayaran Anda salah. Perbarui di Apple Pay dan coba lagi.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "Tahun kedaluwarsa di metode pembayaran Anda salah. Perbarui di Apple dan coba lagi.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Nomor kartu Anda salah. Perbarui di Apple Pay dan coba lagi.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
 "DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Coba selesaikan pembayaran lagi atau hubungi bank Anda untuk informasi lebih lanjut.";
@@ -1658,7 +1673,7 @@
 "DONATION_PAYMENT_ERROR_OTHER" = "Coba metode pembayaran lain atau hubungi bank Anda untuk informasi lebih lanjut.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Periksa apakah metode pembayaran Anda telah diperbarui di Apple Pay. Jika belum, perbarui dan coba lagi.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Jumlah";
@@ -1670,10 +1685,10 @@
 "DONATION_RECEIPT_DETAILS" = "Detail";
 
 /* Text on the button that exports the receipt */
-"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Share Receipt";
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Bagikan Resi";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Terima kasih telah mendukung Signal. Kontribusi Anda membantu misi kami untuk mengembangkan teknologi privasi sumber terbuka yang melindungi kebebasan berekspresi dan memungkinkan komunikasi secara global bagi jutaan pengguna di seluruh dunia. Jika Anda warga Amerika Serikat, harap simpan resi ini untuk pencatatan pajak Anda. Signal Technology Foundation adalah organisasi nirlaba bebas pajak di Amerika Serikat menurut pasal 501c3 di Undang-undang Pendapatan Internal (IRC). ID Pajak Federal kami adalah 82-4506840.";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "Sekali saja";
@@ -1685,7 +1700,7 @@
 "DONATION_RECEIPT_TITLE" = "Resi donasi";
 
 /* Section title for donation type on receipts */
-"DONATION_RECEIPT_TYPE" = "Type";
+"DONATION_RECEIPT_TYPE" = "Tipe";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
 "DONATION_RECEIPTS" = "Resi donasi";
@@ -1724,7 +1739,7 @@
 "DONATION_VIEW_ONE_TIME_DONATION" = "Donasi satu-kali";
 
 /* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Cara Lain Memberi Dukungan";
 
 /* Title for the 'receipts' section on the donation screen */
 "DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Resi";
@@ -2996,10 +3011,10 @@
 "IN_CALL_TERMINATED" = "Panggilan Berakhir.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Percakapan dibisukan yang diarsipkan akan tetap diarsipkan saat pesan baru masuk.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Percakapan diarsipkan akan pindah ke Kotak Masuk saat pesan baru masuk.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Tidak ada pesan.\nMulailah dengan mengirim pesan kepada seorang teman.";
@@ -3239,10 +3254,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Panggil";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Audio FaceTime";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Video FaceTime";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Kirim Pesan Teks";
@@ -3524,7 +3539,7 @@
 "MUTED_BADGE" = "Disenyapkan";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Pembaruan ke cerita Anda akan muncul di sini.";
+"MY_STORIES_NO_STORIES" = "Pembaruan pada cerita Anda akan muncul di sini.";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Cerita saya";
@@ -4535,10 +4550,10 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Bereaksi terhadap cerita Anda";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Bereaksi ke cerita %@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Story";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "Cerita . %@";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Lampiran";
@@ -4604,13 +4619,13 @@
 "READ_ACTION" = "Terbaca";
 
 /* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Pengguna ini tidak dapat ditambahkan ke dalam grup sampai dia memperbarui Signal.";
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Pengguna ini tidak dapat ditambahkan ke grup sampai dia mengupgrade Signal.";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Pengguna tidak dapat dipilih.";
 
 /* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "Pengguna ini tidak dapat menerima hadiah sebelum dia mengupgrade Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Saya lupa PIN saya.";
@@ -4913,10 +4928,10 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Matikan";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "Anda akan kehilangan foto atau video apa pun yang diambil.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Nonaktifkan multi-mode?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Undang teman melalui SMS tidak aman?";
@@ -5162,10 +5177,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Suara Pesan";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Percakapan dibisukan yang diarsipkan akan tetap diarsipkan saat pesan baru masuk.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Biar Percakapan Dibisukan Diarsipkan";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Syarat & Kebijakan Privasi";
@@ -5900,28 +5915,28 @@
 "STORIES_FORWARD_STORY_ACTION" = "Teruskan";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
+"STORIES_GO_TO_CHAT_ACTION" = "Buka Percakapan";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Hide Story";
+"STORIES_HIDE_STORY_ACTION" = "Sembunyikan Cerita";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "Tidak ada pembaruan yang dapat ditampilkan sekarang.\nKetuk + untuk menambahkan ke cerita Anda.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Belum ada balasan";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "Cerita Privat Baru";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Cerita privat hanya bisa dilihat oleh orang yang Anda tambahkan ke cerita Anda. Hanya Anda yang dapat melihat nama cerita.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Cerita privat hanya bisa dilihat oleh orang yang Anda tambahkan ke cerita. Hanya Anda yang dapat melihat nama cerita.";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Cerita Privat";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "Privasi Cerita";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Bagikan";
@@ -5939,10 +5954,10 @@
 "STORY_PRIVACY_SETTINGS" = "Privasi";
 
 /* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";
+"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> balasan";
 
 /* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> replies";
+"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> balasan";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Balas";
@@ -6032,10 +6047,10 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal adalah perusahaan nonprofit tanpa pengiklan atau investor, disokong hanya dengan mereka yang menggunakan dan menghargainya. Buat donasi bulanan berulang dan dapatkan lencana profil untuk membagikan dukungan Anda.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal berkomitmen untuk mengembangkan teknologi privasi sumber terbuka yang melindungi kebebasan berekspresi dan memungkinkan komunikasi aman secara global.\n\nDonasi Anda mendukung misi kami dan mendanai pengembangan dan pengoperasian aplikasi yang digunakan oleh jutaan pengguna untuk berkomunikasi secara privat. Tanpa iklan. Tanpa pelacak. Tanpa lelucon.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Dukung teknologi yang dikembangkan untuk Anda—bukan untuk data Anda—dengan bergabung dalam komunitas yang mendukungnya.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Mengapa Berdonasi?";
@@ -6092,7 +6107,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Memproses Transaksi...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read more.";
+"SUSTAINER_VIEW_READ_MORE" = "Baca selengkapnya.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Perbarui %@";

@@ -155,10 +155,10 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "మీ పరికరంపై స్టోరేజీ స్థలం తక్కువగా ఉండటం వల్ల Signal ఓపెన్ అవ్వద్దు. Signal ఉపయోగించడానికి, సెట్టింగ్‌ల్లో మీ స్టోరేజీ నిర్వహించడం ద్వారా స్థలాన్ని ఖాళీ చేయండి.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "స్టోరేజీ స్థలం తక్కువగా ఉంది";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "మీ పాత పరికరం నుండి బదిలీ చేయబడిన డేటా పునరుద్ధరించబడలేదు. దయచేసి డీబగ్ లాగ్‌ను support@signal.org కు పంపండి, తద్వారా మేము ఈ సమస్యను పరిష్కరించుకుంటాము. మీరు Signal ‌ను తిరిగి ఇన్‌స్టాల్ చేస్తే మీ సందేశ చరిత్ర పోవచ్చు.";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "మీ బూస్ట్ బ్యాడ్జీలు గడువు తీరాయి మరియు మీ ప్రొఫైల్‌పై ప్రదర్శించడానికి ఇక ఏమాత్రం లభ్యం కావు.\n\nమీరు signalని ఉపయోగించడం కొనసాగించవచ్చు కానీ, మీ కొరకు రూపొందించిన టెక్నాలజీకి మద్దతు ఇవ్వడానికి, నెలవారీ విరాళం ఇవ్వడం ద్వారా పోషకుడిగా మారడాన్ని పరిగణించండి..";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "మీ బూస్టర్ బ్యాడ్జీ గడువు తీరింది మరియు మీ ప్రొపైల్‌పై ప్రదర్శించడానికి లభ్యం కావడం లేదు.\n\nఒక్కసారి కంట్రిబ్యూషన్‌తో మరో 30 రోజులకు మీ బూస్ట్ బ్యాడ్జీని మీరు తిరిగి యాక్టివేట్ చేయవచ్చు.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Become a Sustainer";
@@ -406,6 +406,9 @@
 /* Indicates that a contact cannot receive badges because they need to update Signal */
 "BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
 
+/* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
+"BADGE_GIFTING_CHAT_EXPIRED" = "గడువు తీరింది";
+
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
 
@@ -430,8 +433,20 @@
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
+/* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+
+/* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+
+/* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
+"BADGE_GIFTING_REDEEM" = "Redeem";
+
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+
+/* A button shown on a gift message you send to view additional details about the badge. */
+"BADGE_GIFTING_VIEW" = "వీక్షణ";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
@@ -1079,7 +1094,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "ప్రజలు";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Stories";
+"CONVERSATION_PICKER_SECTION_STORIES" = "స్టోరీలు";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "గ్రహీతలను ఎంచుకోండి";
@@ -2348,7 +2363,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "సందేశాలను పంపడానికి నిర్వాహకులను మాత్రమే అనుమతించడానికి %@ సమూహ సెట్టింగులను మార్చారు.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "అడ్మిన్ మిమ్మల్ని తొలగించడం వల్ల మీరు గ్రూపు లింక్ ద్వారా ఈ గ్రూపులో చేరలేరు.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ఈ సమూహ లింక్ ఇకపై చెల్లదు.";
@@ -3524,13 +3539,13 @@
 "MUTED_BADGE" = "మ్యూట్ చేయబడింది";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Updates to your story will show up here.";
+"MY_STORIES_NO_STORIES" = "మీ స్టోరీకి అప్‌డేట్‌లు ఇక్కడ కనిపిస్తాయి.";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "My Stories";
+"MY_STORIES_TITLE" = "నా స్టోరీలు";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "My Story";
+"MY_STORY_NAME" = "నా స్టోరీ";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "ఇటీవల వారి ప్రొఫైల్ పేరును %1$@ నుండి %2$@ గా మార్చారు";
@@ -4610,7 +4625,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "వినియోగదారుని ఎన్నుకోలేరు.";
 
 /* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "ఈ యూజర్ వారి Signal అప్‌గ్రేడ్ చేసేంత వరకు బహుమతులను అందుకోలేడు.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "నేను పిన్ను మరచిపోయాను.";
@@ -5888,7 +5903,7 @@
 "STICKERS_UNINSTALL_BUTTON" = "అన్ఇన్స్టాల్";
 
 /* Text indication a story caption can be tapped to read more. */
-"STORIES_CAPTION_READ_MORE" = "Read more";
+"STORIES_CAPTION_READ_MORE" = "మరింత చదవండి";
 
 /* Context menu action to copy the selected story reply */
 "STORIES_COPY_REPLY_ACTION" = "నకలు";
@@ -5906,28 +5921,28 @@
 "STORIES_HIDE_STORY_ACTION" = "Hide Story";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "ప్రస్తుతం చూపించడానికి ఎలాంటి అప్‌డేట్‌లు లేవు.\nమీ స్టోరీని జోడించడానికి +ని తట్టండి.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "No replies yet";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "కొత్త ప్రైవేట్ స్టోరీ";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "ప్రైవేట్ స్టోరీలను వాటికి మీరు జోడించిన వ్యక్తులు మాత్రమే చూడవచ్చు. కేవలం మీరు స్టోరీ పేరును చూడవచ్చు.";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "ప్రైవేట్ స్టోరీలు";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "స్టోరీ గోప్యత";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "పంచుకోండి";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "స్టోరీలు";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";

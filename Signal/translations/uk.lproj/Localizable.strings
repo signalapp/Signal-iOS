@@ -56,7 +56,7 @@
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Поділитися своїм профілем із групою?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Додати користувача до своїх контактів?";
+"ADD_TO_CONTACTS_OFFER" = "Додати цього користувача до своїх контактів?";
 
 /* Label for button or row which allows users to add to another group. */
 "ADD_TO_GROUP" = "Додати в іншу групу";
@@ -86,7 +86,7 @@
 "ADD_TO_GROUP_TITLE" = "Додати до групи";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Поділитися своїм профілем із користувачем?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Поділитися своїм профілем із цим користувачем?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Зрозуміло";
@@ -155,10 +155,10 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Не вдається відкрити Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Не вдалося відкрити Signal, бо на пристрої не вистачає пам'яті. Звільніть місце у налаштуваннях сховища.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Немає місця в сховищі";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Не вдалося відновити дані, перенесені з вашого старого пристрою. Будь ласка, надішліть журнал зневадження на support@signal.org, щоб ми змогли виправити цю проблему. Якщо ви перевстановите Signal, історія повідомлень може бути втрачена.";
@@ -239,7 +239,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Вкладення";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Помилка надсилання долучення";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Помилка надсилання вкладення";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Неможливо конвертувати зображення.";
@@ -260,13 +260,13 @@
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Вкладення завелике.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Долучення містить хибний вміст.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Вкладення містить хибний вміст.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Долучення має хибний формат файлу.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Вкладення має хибний формат файлу.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Долучення порожнє.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "Вкладення порожнє.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Вибрати медіа для надсилання";
@@ -296,13 +296,13 @@
 "ATTACHMENT_KEYBOARD_PAYMENT" = "Платіж";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Долучення";
+"ATTACHMENT_LABEL" = "Вкладення";
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Не вдалося вибрати документ.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Створіть стиснутий архів цього файлу чи теки і спробуйте надіслати знову.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Створіть стиснутий архів цього файлу чи каталог і спробуйте надіслати знову.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Непідтримуваний файл";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Надайте Signal можливість розвитку";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Термін дії вашого Значка підтримки скінчився, тож він більше не відображається в профілі.\n\nВи можете і надалі користуватися Signal, але ми були би дуже вдячні, якщо б ви зробили місячний донат. Так ви допоможете нам підтримувати застосунок для вас.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Термін дії вашого Значка підтримки скінчився, тож він більше не відображається в профілі.\n\nВи можете поновити дію Значка ще на 30 днів, підтримавши нас разовим внеском.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Стати підтримувачем";
@@ -406,6 +406,9 @@
 /* Indicates that a contact cannot receive badges because they need to update Signal */
 "BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Має оновити Signal для отримання подарунків";
 
+/* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
+"BADGE_GIFTING_CHAT_EXPIRED" = "Строк дії закінчився";
+
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Подаруйте комусь емблему, зробивши внесок у Signal. Ця особа отримає емблему, яку зможе показувати на своєму фото профілю.";
 
@@ -430,8 +433,20 @@
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Помилка платежу";
 
+/* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+
+/* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+
+/* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
+"BADGE_GIFTING_REDEEM" = "Redeem";
+
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Діє %@";
+
+/* A button shown on a gift message you send to view additional details about the badge. */
+"BADGE_GIFTING_VIEW" = "Переглянути";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Ваш регулярний щомісячний платіж було автоматично скасовано. %@ Ваша %@ емблема більше не показуватиметься у профілі.";
@@ -647,7 +662,7 @@
 "CALL_RETURN_BUTTON" = "Повернутись до виклику";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "Без відповіді";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Немає відповіді";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -698,7 +713,7 @@
 "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ отримає запит від вас. Ви зможете телефонувати коли запит буде прийнято.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Змінити камеру";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Змінити напрямок камери";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Перемкнутися на аудіовиклик";
@@ -722,7 +737,7 @@
 "CAMERA_BUTTON_LABEL" = "Камера";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Цього користувача неможливо завірити, допоки ви не обміняєтесь повідомленнями.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Цього користувача неможливо верифікувати, допоки ви не обміняєтесь повідомленнями.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Помилка";
@@ -830,7 +845,7 @@
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Ви не зможете надсилати чи одержувати повідомлення в цій групі.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Ви дійсно хочете покинути?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Ви дійсно хочете вийти?";
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Привязати новий пристрій";
@@ -845,7 +860,7 @@
 "CONTACT_CELL_IS_BLOCKED" = "Заблоковано";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Не завірено";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Не верифіковано";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Незареєстрований номер";
@@ -854,7 +869,7 @@
 "CONTACT_EDIT_NAME_BUTTON" = "Редагувати";
 
 /* Label for a contact's email address. */
-"CONTACT_EMAIL" = "Е-пошта";
+"CONTACT_EMAIL" = "Електронна пошта";
 
 /* Label for the 'city' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_CITY" = "Місто";
@@ -923,7 +938,7 @@
 "CONTACT_PHONE" = "Телефон";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Е-пошти немає.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Електронної пошти немає.";
 
 /* table cell subtitle when contact card has no known phone number */
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Номера телефону немає.";
@@ -1016,7 +1031,7 @@
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Відкрити у Картах";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Надіслати е-лист";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Відправити електронний лист";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Безіменний контакт";
@@ -1079,7 +1094,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Люди";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Історії";
+"CONVERSATION_PICKER_SECTION_STORIES" = "Сторіз";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Обрати одержувачів";
@@ -1367,7 +1382,7 @@
 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Не вдалося вивантажити логи.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "Що зробити із посиланням на ваші логи помилок?";
+"DEBUG_LOG_ALERT_MESSAGE" = "Що ви хочете зробити із посиланням на логи помилок?";
 
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "Неможливо знайти логи.";
@@ -1379,7 +1394,7 @@
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Копіювати посилання";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Написати е-листа до підтримки";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Написати електронного листа до підтримки";
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
 "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Експортувати журнали";
@@ -1769,7 +1784,7 @@
 "EMAIL_INVITE_BODY" = "Привіт,\n\nОстаннім часом я користуюсь Signal, щоб усі чати на моєму iPhone залишались приватними. Хотів би бачити його встановленим і на твоєму пристрої, щоб бути впевненими, що лише ми вдвох маємо доступ до наших повідомлень та дзвінків.\n\nSignal доступний для iPhone та Android. Завантажувати тут: %@\n\nSignal працює як твій поточний месенджер. Ми можемо: відправити фото та відео, дзвонити один одному та створювати групові дзвінки. А найкраще те, що ніхто окрім нас цього не бачитиме чи чутиме, навіть творці Signal!\n\nБільше про Open Whisper Systems — людей, які створюють Signal, тут: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Перейдімо на Signal";
+"EMAIL_INVITE_SUBJECT" = "Перейдемо до Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_MESSAGE" = "На вашому пристрої не налаштовано та з нього не можна відправити електронну пошту. Щоб відправити запит на підтримку, налаштуйте електронну пошту на своєму пристрої, або напишіть на support@signal.org";
@@ -1961,7 +1976,7 @@
 "FEATURED_BADGE_SETTINGS_TITLE" = "Обрана відзнака";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Завірити";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Верифікувати";
 
 /* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Скинути сеанс";
@@ -1997,13 +2012,13 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "У цьому чаті немає медіа-файлів.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Довантаження медіа...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Довантаження нових медіа...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Довантаження медіа...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Довантаження старих медіа...";
 
 /* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "Долучення";
+"GENERIC_ATTACHMENT_LABEL" = "Вкладення";
 
 /* notification title indicating the user generically has a new message */
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Нове повідомлення!";
@@ -3302,7 +3317,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Пропущено";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Вивантаження";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Завантаження";
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Переглянули";
@@ -3470,7 +3485,7 @@
 "MESSAGE_STATUS_SENT" = "Надіслано";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Вивантаження...";
+"MESSAGE_STATUS_UPLOADING" = "Завантаження...";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Переглянуто";
@@ -3479,13 +3494,13 @@
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Нове повідомлення";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ більше не завірений. Натисніть для опцій.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ більше не верифікований. Натисніть для опцій.";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ більше не завірений. Натисніть для опцій.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ більше не верифікований. Натисніть для опцій.";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "У цій групі понад один учасник більше не позначений як підтверджений. Натисніть для опцій.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "У цій групі понад один учасник більше не позначений як верифікований. Натисніть для опцій.";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Нові повідомлення";
@@ -3524,13 +3539,13 @@
 "MUTED_BADGE" = "Сповіщення вимкнені";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Оновлення вашої історії показуватимуться тут.";
+"MY_STORIES_NO_STORIES" = "Оновлення ваших сторіз показуватимуться тут.";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "Мої історії";
+"MY_STORIES_TITLE" = "Мої сторіз";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "Моя історія";
+"MY_STORY_NAME" = "Моя сторі";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Нещодавно змінив ім'я профілю з %1$@ на %2$@.";
@@ -4379,19 +4394,19 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Відтворити медіа";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Ви не завірили %@.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Ви не верифікували %@.";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Завірено";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Верифіковано";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ завірено.";
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ верифіковано.";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Натисніть, щоб сканувати";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Очистити завірення";
+"PRIVACY_UNVERIFY_BUTTON" = "Очистити верифікацію";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Це не схоже на ваш код безпеки із %@. Ви підтверджуєте саме той контакт, який хотіли?";
@@ -4403,13 +4418,13 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal не зміг знайти код безпеки у вашому буфері обміну. Ви правильно його скопіювали?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Кожна пара користувачів Signal має різні пари кодів безпеки. Переконайтеся, що в %@ показує такий ж код безпеки, що й у *вас.*";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Кожна пара користувачів Signal має різні пари кодів безпеки. Переконайтеся, що в %@ показує такий ж код безпеки, що й у *вас*.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Ваша версія Signal застаріла. Перед завіренням необхідно оновитися.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Ваша версія Signal застаріла. Перед верифікацією необхідно оновитися.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Ваш співрозмовник користується застарілою версією Signal. Перед звіренням необхідно оновитися.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Ваш співрозмовник користується застарілою версією Signal. Перед верифікацією необхідно оновитися.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Відсканований код не схожий на код безпеки. Ви обидва користуєтеся останньою версією Signal?";
@@ -4421,7 +4436,7 @@
 "PRIVACY_VERIFICATION_TITLE" = "Підтвердити код безпеки";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Завірити";
+"PRIVACY_VERIFY_BUTTON" = "Верифікувати";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Продовжити";
@@ -4604,16 +4619,16 @@
 "READ_ACTION" = "Прочитано";
 
 /* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Цей користувач не може бути доданий до групи, поки не оновить Signal.";
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Цей користувач не може бути доданий до групи, доки не оновить Signal.";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Користувач не може бути обраний.";
 
 /* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "Користувач не може отримувати подарунки, доки не оновить Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "Я забув PIN.";
+"REGISTER_2FA_FORGOT_PIN" = "Я забув свій PIN-код.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Потрібна Допомога?";
@@ -4646,7 +4661,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Забагато спроб. Зачекайте хвилину і спробуйте знову.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Не вдалося заново реєструватися для одержання push-сповіщень.";
+"REGISTRATION_BODY" = "Не вдалося заново зареєструватися для одержання push-сповіщень.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Код країни";
@@ -5906,22 +5921,22 @@
 "STORIES_HIDE_STORY_ACTION" = "Сховати історію";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "Наразі немає оновлень.\nНатисніть +, щоб створити сторіз.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Ще немає відповідей";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "Нова приватна сторі";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Тільки обрані вами користувачі можуть переглядати приватні сторіз. Назву сторіз бачите тільки ви.";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Приватні сторіз";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "Приватність сторіз";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Поділитися";

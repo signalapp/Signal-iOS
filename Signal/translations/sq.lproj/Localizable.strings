@@ -155,10 +155,10 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "S’u Hap Dot Signal-i";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal nuk mund të hapet pasi telefoni nuk ka hapësirë ruajtëse. Për të përdorur Signal, liro hapësirë duke menaxhuar hapësirën tek \"Cilësimet\".";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Pak hapësirë ruajtëse";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Të dhënat e transferuara prej pajisjes tuaj të vjetër s’u rikthyen dot. Ju lutemi, dërgoni një regjistër diagnostikimesh te support@signal.org që të mund të merremi me këtë çështje. Nëse riinstaloni Signal-in, mund të humbë historiku i mesazheve tuaj.";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Jepini Sinjalit Pak Fuqizim";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Distinktivi Boost ka skaduar dhe nuk disponohet më që të shfaqet në profil.\n\nTi mund të vazhdosh ta përdorësh Signal, por në mënyrë që të mbështesësh teknologjinë e krijuar për përdoruesit, ku përfshihesh edhe ti, konsidero opsionin e përkrahësit duke bërë një donacion mujor.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Distinktivi Boost ka skaduar dhe nuk disponohet më që të shfaqet në profil.\n\nDisktintivi Boost mund të riaktivizohet edhe për 30 ditë të tjera me vetëm një kontribut.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Bëhuni një Mbështetës";
@@ -404,7 +404,10 @@
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Shtoni një mesazh";
 
 /* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Duhet të përditësohet Signal për të marrë dhurata";
+
+/* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
+"BADGE_GIFTING_CHAT_EXPIRED" = "Skaduar";
 
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Dhurojini dikujt një stemë, duke bërë një dhurim për Signal-ni në emër të tyre. Do të marrin një stemë për ta shfaqur në foton e tyre të profilit.";
@@ -416,25 +419,37 @@
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Zgjidhni Marrës";
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Konfirmoni dhuratën";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Dërgo një distinktiv dhuratë";
 
 /* Text telling the user that their gift is a one-time donation */
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Dhurim Një Herë";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Pagesa juaj nuk mund të përpunohej dhe nuk jeni tarifuar. Ju lutemi provoni përsëri.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Pagesa dështoi";
+
+/* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+
+/* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+
+/* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
+"BADGE_GIFTING_REDEEM" = "Përdor";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "%@ të fundit";
+
+/* A button shown on a gift message you send to view additional details about the badge. */
+"BADGE_GIFTING_VIEW" = "Shihni";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Dhurimi mujor i përsëritur u anulua automatikisht. %@Distinktivi  juaj %@ nuk është më i dukshëm në profilin tuaj.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Dhurimi juaj ripërsëritës i përmuajshëm u anulua automatikisht, ngaqë keni qenë jo aktiv për një kohë të gjatë. Stema juaj %@ s’është më e dukshme në profilin tuaj.\n\nMund të vazhdoni të përdorni Signal-in, por që të përkrahni aplikacionin dhe riaktivizoni stemën tuaj, rinovojeni tani.";
@@ -1079,7 +1094,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Persona";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Histori";
+"CONVERSATION_PICKER_SECTION_STORIES" = "Postime të përkohshme";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Zgjidhni Marrës";
@@ -1625,31 +1640,31 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Provoni një metodë tjetër pagese, ose lidhuni me bankën tuaj për më tepër informacion.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Kontrolloni për të parë nëse mënyra juaj e pagesës është e përditësuar në Apple Pay. Nëse nuk është, përditësojeni dhe provoni përsëri. Nëse keni ende probleme, kontaktoni bankën tuaj.";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Karta juaj nuk e mbështet këtë lloj blerjeje. Provoni një mënyrë tjetër pagese ose kontaktoni bankën tuaj për më shumë informacion.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Karta juaj ka skaduar. Kontrolloni për të parë nëse mënyra juaj e pagesës është e përditësuar në Apple Pay. Nëse nuk është, përditësojeni dhe provoni përsëri.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Numri i kartës suaj është i pasaktë. Kontrolloni për të parë nëse mënyra juaj e pagesës është futur saktë në Apple Pay. Nëse nuk është, përditësojeni dhe provoni përsëri.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Numri juaj CVC është i pasaktë. Kontrolloni për të parë nëse numri juaj CVC është futur saktë në Apple Pay. Nëse nuk është, përditësojeni dhe provoni përsëri.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Karta juaj nuk ka fonde të mjaftueshme për të përfunduar këtë blerje. Provoni një mënyrë tjetër pagese ose kontaktoni bankën tuaj për më shumë informacion.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Muaji i skadimit në mënyrën tuaj të pagesës është i pasaktë. Përditësoje në Apple Pay dhe provo sërish.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "Viti i skadimit në mënyrën tuaj të pagesës është i pasaktë. Përditësoje në Apple Pay dhe provo sërish.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Numri i kartës suaj është i pasaktë. Përditësoje në Apple Pay dhe provo sërish.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
 "DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Riprovoni të plotësoni pagesën, ose lidhuni me bankën tuaj për më tepër informacion.";
@@ -1658,7 +1673,7 @@
 "DONATION_PAYMENT_ERROR_OTHER" = "Provoni një metodë tjetër pagese, ose lidhuni me bankën tuaj për më tepër informacion.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Kontrolloni për të parë nëse mënyra juaj e pagesës është e përditësuar në Apple Pay. Nëse nuk është, përditësojeni dhe provoni përsëri.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Sasi";
@@ -2996,10 +3011,10 @@
 "IN_CALL_TERMINATED" = "Thirrja Përfundoi.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Bisedat pa zë që janë arkivuar do të mbeten të arkivuara edhe kur të mbërrijë një mesazh i ri.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Bisedat e arkivuara do të zhvendosen në kutinë hyrëse kur të mbërrijë një mesazh i ri.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Ende pa fjalosje.\nFillojani duke i dërguar një mesazh një shoku.";
@@ -3050,7 +3065,7 @@
 "JOIN_CALL_PILL_BUTTON" = "Merrni pjesë";
 
 /* Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot */
-"JOINED_WITH_DOT" = "%@ · %@";
+"JOINED_WITH_DOT" = "%@ . %@";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Shko te Krejt Mediat";
@@ -3524,13 +3539,13 @@
 "MUTED_BADGE" = "Pa zë";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Këtu do të shfaqen përditësime te historia juaj.";
+"MY_STORIES_NO_STORIES" = "Përditësimet e postimeve të përkohshme do të shfaqen këtu.";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "Historitë e Mia";
+"MY_STORIES_TITLE" = "Postimet e mia të përkohshme";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "Historia Ime";
+"MY_STORY_NAME" = "Postimi im i përkohshëm";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Ndryshim së fundi i emrit të profilit nga %1$@ në %2$@.";
@@ -4046,7 +4061,7 @@
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Marrës i Pavlefshëm";
 
 /* Label for 'transfer out' payments. */
-"PAYMENTS_TRANSFER_OUT_PAYMENT" = "Transfer Out";
+"PAYMENTS_TRANSFER_OUT_PAYMENT" = "Transfero jashtë";
 
 /* Indicator for unidentified incoming payments. */
 "PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "U mor Pagesë";
@@ -4604,13 +4619,13 @@
 "READ_ACTION" = "U lexua";
 
 /* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Ky përdorues s’mund të shtohet te grupi, para se të përmirësojë Signal-in.";
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Ky përdorues nuk mund të shtohet në grup derisa të përditësojë Signal.";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Përdoruesi s’mund të përzgjidhet.";
 
 /* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "Ky përdorues nuk mund të marrë dhurata derisa të përditësojë Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Harrova PIN-in tim.";
@@ -5162,10 +5177,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Tingull Mesazhesh";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Bisedat pa zë që janë arkivuar do të mbeten të arkivuara edhe kur të mbërrijë një mesazh i ri.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Mbani të arkivuara bisedat pa zë";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Kushte & Rregulla Privatësie";
@@ -5906,22 +5921,22 @@
 "STORIES_HIDE_STORY_ACTION" = "Fshihe Historikun";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "Nuk ka përditësime për t'u shfaqur për momentin.\nKliko + për ta shtuar në postimin tënd të përkohshëm.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Ende pa përgjigje";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "Postim i ri i përkohshëm privat";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Historitë private mund të shihen vetëm nga persona që shtoni në to. Emrin e historisë mund ta shihni vetëm ju.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Postimet e përkohshme private mund të shihen vetëm nga personat që ti zgjedh. Emri i postimit të përkohshëm mund të shihet vetëm nga ti.";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Postime të përkohshme private";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "Privatësia e postimit të përkohshëm";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Ndajeni Me të Tjerë";
@@ -5936,7 +5951,7 @@
 "STORY_NO_LONGER_AVAILABLE" = "S’mund të kihet më";
 
 /* Button to access the story privacy settings menu */
-"STORY_PRIVACY_SETTINGS" = "Privatësi";
+"STORY_PRIVACY_SETTINGS" = "Privatësia";
 
 /* Button for replying to a story with a single existing reply. */
 "STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> përgjigje";

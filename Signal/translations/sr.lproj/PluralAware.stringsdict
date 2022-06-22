@@ -643,10 +643,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Grupna priča · Gledalaca: %d</string>
 			<key>one</key>
-			<string>Group Story · 1 Viewer</string>
+			<string>Grupna priča · Gledalaca: 1</string>
 			<key>other</key>
-			<string>Group Story · %d Viewers</string>
+			<string>Grupna priča · Gledalaca: %d </string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -803,10 +805,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Gledalaca: %d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>Gledalaca: 1</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>Gledalaca: %d</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -947,10 +951,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Privatna priča · Gledalaca: %d</string>
 			<key>one</key>
-			<string>Private Story · 1 Viewer</string>
+			<string>Privatna priča · Gledalaca: 1</string>
 			<key>other</key>
-			<string>Private Story · %d Viewers</string>
+			<string>Privatna priča · Gledalaca: %d </string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -995,10 +1001,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Pregleda: %d</string>
 			<key>one</key>
-			<string>1 view</string>
+			<string>Pregleda: 1</string>
 			<key>other</key>
-			<string>%d views</string>
+			<string>Pregleda: %d</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

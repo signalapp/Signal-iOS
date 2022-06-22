@@ -134,10 +134,10 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "បញ្ហា";
 
 /* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
+"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "ដំណើរការការត្រួតពិនិត្យភាពត្រឹមត្រូវនៃមូលដ្ឋានទិន្នន័យ";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "Open Signal Instead";
+"APP_LAUNCH_FAILURE_CONTINUE" = "បើក Signal ជំនួសវិញ";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "មិនអាចផ្ទុកទិន្នន័យ";
@@ -149,16 +149,16 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "ជំនាន់ទិន្នន័យមិនស្គាល់។";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal had a problem while trying to open. Please send a debug log to support@signal.org to help troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal មានបញ្ហាពេលកំពុងបើក។ សូមផ្ញើកំណត់ហេតុលុបបំបាត់បញ្ហាទៅ support@signal.org ដើម្បីជួយដោះស្រាយបញ្ហានេះ។";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "មិនអាចបើក Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal មិនអាចបើកបានទេ ដោយសារឧបករណ៍របស់អ្នកមានទំហំផ្ទុកតិច។ ដើម្បីប្រើ Signal សូមបង្កើនទំហំផ្ទុកដោយគ្រប់គ្រងទំហំផ្ទុករបស់អ្នកនៅក្នុងការកំណត់។";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "ទំហំផ្ទុកតិច";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "ទិន្នន័យបញ្ជូនពីឧបករណ៍ចាស់របស់អ្នក មិនអាចស្តារវិញបានទេ។ សូមផ្ញើកំណត់ត្រាបញ្ហាទៅកាន់ support@signal.org ទើមយើងអាចពិនិត្យបញ្ហានេះ។ បើអ្នកដំឡើង Signal ឡើងវិញ ប្រវត្តិសាររបស់អ្នកអាចត្រូវបាត់បង់។ ";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "អោយ Signal នូវការជំរុញមួយ";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "ស្លាកទ្រទ្រង់របស់អ្នកបានផុតកំណត់ និងលែងមានសម្រាប់បង្ហាញនៅលើប្រូហ្វាល់របស់អ្នក​ទៀតហើយ។\n\nអ្នកអាចបន្តប្រើប្រាស់ Signal បាន ប៉ុន្តែដើម្បីគាំទ្របច្ចេកវិទ្យាដែលបង្កើតឡើងសម្រាប់អ្នក សូមពិចារណាក្លាយជាអ្នកទ្រទ្រង់ដោយធ្វើការបរិច្ចាគប្រចាំខែ។";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "ស្លាកទ្រទ្រង់របស់អ្នកបានផុតកំណត់ និងលែងមានសម្រាប់បង្ហាញនៅលើប្រូហ្វាល់របស់អ្នក​ទៀតហើយ។\n\nអ្នកអាចដំណើរការស្លាកទ្រទ្រង់របស់អ្នកឡើងវិញបានរយៈពេល 30 ថ្ងៃទៀតតាមរយៈ​ការរួមចំណែកតែមួយដង។";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "ក្លាយជាទ្រទ្រង់ម្នាក់";
@@ -389,55 +389,70 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "ស្លាកសម្គាល់អស់សុពលភាព";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "Learn more.";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "ស្វែងយល់បន្ថែម។";
 
 /* Button text when a badge expires, asking you to renew your subscription */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "ការជាវឡើងវិញ";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "ការបរិច្ចាគប្រចាំខែត្រូវបានលុបចោល";
 
 /* Text telling the user that they can add a message along with their gift badge */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "កាដូរបស់អ្នកនឹងត្រូវបានផ្ញើនៅក្នុងសារមួយទល់នឹងមួយទៅកាន់អ្នកទទួល។ សូមបញ្ចូលសារផ្ទាល់ខ្លួនរបស់អ្នកនៅខាងក្រោម។";
 
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "បន្ថែមសារ";
 
 /* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "ត្រូវតែដំឡើងកំណែ Signal ដើម្បីទទួលបានកាដូ";
+
+/* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
+"BADGE_GIFTING_CHAT_EXPIRED" = "បានផុតកំណត់";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "ផ្តល់ស្លាកជូនទៅនរណាម្នាក់ដោយធ្វើការបរិច្ចាគទៅ Signal ក្នុងនាមរបស់ពួកគេ។ ពួកគេនឹងទទួលបានស្លាកដើម្បីបង្ហាញនៅលើរូបថតប្រូហ្វាល់របស់ពួកគេ។";
 
 /* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "ផ្តល់ជូនស្លាកជាកាដូ";
 
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "ជ្រើសរើសអ្នកទទួល";
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "បញ្ជាក់កាដូ";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "ផ្ញើស្លាកកាដូ";
 
 /* Text telling the user that their gift is a one-time donation */
-"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "One-time Donation";
+"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "ការបរិច្ចាគតែមួយដង";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "ការទូទាត់របស់អ្នកមិនអាចដំណើរការបាន ហើយអ្នកមិនត្រូវបានគិតប្រាក់ទេ។ សូម​ព្យាយាម​ម្តង​ទៀត។";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "ការទូទាត់មិនបានជោគជ័យ";
+
+/* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+
+/* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+
+/* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
+"BADGE_GIFTING_REDEEM" = "ប្តូរ";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "មាន​រយៈពេល %@";
+
+/* A button shown on a gift message you send to view additional details about the badge. */
+"BADGE_GIFTING_VIEW" = "បង្ហាញ";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "ការបរិច្ចាគប្រចាំខែរបស់អ្នកត្រូវបានលុបចោលដោយស្វ័យប្រវត្តិ។ %@ ស្លាក %@ របស់អ្នកមិនអាចមើលឃើញនៅលើប្រូហ្វាល់របស់អ្នកទៀតទេ។";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "ការបរិច្ចាគប្រចាំខែរបស់អ្នកត្រូវបានលុបចោលដោយស្វ័យប្រវត្តិ ដោយសារអ្នកអសកម្មយូរពេក។ ស្លាក %@ របស់អ្នកមិនអាចមើលឃើញនៅលើប្រូហ្វាល់របស់អ្នកទៀតទេ។\n\nអ្នកអាចបន្តប្រើប្រាស់ Signal បាន ប៉ុន្តែដើម្បីគាំទ្រកម្មវិធី និងបើកដំណើរការស្លាករបស់អ្នកឡើងវិញ សូមបន្តជាថ្មីឥឡូវនេះ។";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "អរគុណសម្រាប់ការជំរុញ!";
@@ -455,7 +470,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "នៅពេលអ្នកទទួលបានស្លាកសម្គាល់លើសពីមួយ អ្នកអាចជ្រើសយកស្លាកមួយណាក៏បានដើម្បីបង្ហាញអោយអ្នកដទៃបានឃើញលើគណនីអ្នក";
 
 /* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "អ្នកទទួលបានស្លាក %@។ បង្ហាញស្លាកនេះនៅលើប្រូហ្វាល់របស់អ្នកដើម្បីបង្កើនការយល់ដឹងសម្រាប់ការបរិច្ចាគទៅ Signal។";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "បិទផ្ទាំងបដា";
@@ -533,7 +548,7 @@
 "BLUR_TOOLTIP" = "ថ្មី៖ ព្រិលមុខ ឬ គូរកន្លែងណាដើម្បីឱ្យព្រិល។";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "ធ្វើការបរិច្ចាគតែមួយដងដើម្បីទទួលបានស្លាកទ្រទ្រង់សម្រាប់រយៈពេល 30 ថ្ងៃ។";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "ស្លាកសម្គាល់ជម្រុញរបស់អ្នកនឹងអស់សុពលភាពថ្ងៃទី %@។";
@@ -623,16 +638,16 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 ការហៅចូលជាសំឡេង…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call at %@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 ខកមិនបានទទួលការហៅជាសំឡេងនៅម៉ោង %@";
 
 /* notification body for a call that was just missed */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 ខកខានហៅចូលជាសំឡេង";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 ខកមិនបានទទួលការហៅជាសំឡេងនៅ %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 ខកមិនបានទទួលការហៅជាសំឡេងនៅថ្ងៃ%@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "អ្នកអាចបើកការអនុញ្ញាតចូលទៅប្រើប្រាស់មីក្រូហ្វូន នៅក្នុងការកំណត់របស់ iOS app ដើម្បីអាចធ្វើការហៅ និងថតសារជាសំឡេងក្នុង Signal។";
@@ -665,16 +680,16 @@
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 កំពុងហៅចូលជាវីដេអូ…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call at %@";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 ខកមិនបានទទួលការហៅជាវីដេអូនៅម៉ោង %@";
 
 /* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 ខកខានហៅចូលជាវីដេអូ";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 ខកមិនបានទទួលការហៅជាវីដេអូនៅ %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 ខកមិនបានទទួលការហៅជាវីដេអូនៅថ្ងៃ%@";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "ឆ្លើយតបដោយគ្មានវីដេអូ";
@@ -947,10 +962,10 @@
 "CONTACT_SUPPORT" = "ទាក់ទងជំនួយ";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "ការបរិច្ចាគ និងស្លាក";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "ការបរិច្ចាគ និងស្លាក";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "ខ្ញុំចង់ស្នើសុំមុខងារថ្មីមួយ";
@@ -1079,7 +1094,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "មនុស្ស";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Stories";
+"CONVERSATION_PICKER_SECTION_STORIES" = "រឿងរ៉ាវ";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "ជ្រើសរើសអ្នកទទួល";
@@ -1331,19 +1346,19 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "អូសដើម្បីប្ដូរទិសដៅនៃជម្រាលពណ៌";
 
 /* Button to run the database integrity check */
-"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Run";
+"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "ដំណើរការ";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "វា​អាច​ចំណាយ​ពេលបន្តិច (ពីរបីនាទី ឬ​យូរ​ជាង​នេះ) អាស្រ័យ​លើ​ថាតើអ្នក​បាន​ប្រើ Signal ច្រើនប៉ុនណា។ ប្រសិនបើវាចំណាយពេលយូរពេក អ្នកអាចបិទ Signal សិន ដើម្បីសុវត្ថិភាព។";
 
 /* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
+"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "បញ្ចូលទៅកំណត់ហេតុលុបបំបាត់បញ្ហា";
 
 /* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Integrity check results";
+"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "លទ្ធផលត្រួតពិនិត្យភាពត្រឹមត្រូវ";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database integrity check?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "ដំណើរការការត្រួតពិនិត្យភាពត្រឹមត្រូវនៃមូលដ្ឋានទិន្នន័យឬ?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "វាអាចចំណាយពេលប៉ុន្មានទាទី។";
@@ -1625,31 +1640,31 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "សាកល្បងវិធីទូទាត់ប្រាក់ផ្សេង ឬទាក់ទងទៅធនាគាររបស់អ្នកសម្រាប់ព័ត៌មានបន្ថែម";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "ពិនិត្យមើលថាតើវិធីបង់ប្រាក់របស់អ្នកទាន់សម័យកាលនៅក្នុង Apple Pay ដែរឬទេ។ ប្រសិនបើមិនទាន់ទេ សូមធ្វើបច្ចុប្បន្នភាពវា ហើយព្យាយាមម្តងទៀត។ ប្រសិនបើអ្នកនៅតែមានបញ្ហា សូមទាក់ទងធនាគាររបស់អ្នក។";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "កាតរបស់អ្នកមិនអាចប្រើបានចំពោះការទិញប្រភេទនេះទេ។ សូមសាកល្បងវិធីបង់ប្រាក់មួយផ្សេងទៀត ឬទាក់ទងធនាគាររបស់អ្នកសម្រាប់ព័ត៌មានបន្ថែម។";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "កាតរបស់អ្នកបានផុតកំណត់ហើយ។ ពិនិត្យមើលថាតើវិធីបង់ប្រាក់របស់អ្នកទាន់សម័យកាលនៅក្នុង Apple Pay ដែរឬទេ។ ប្រសិនបើមិនទាន់ទេ សូមធ្វើបច្ចុប្បន្នភាពវា ហើយព្យាយាមម្តងទៀត។";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "លេខកាតរបស់អ្នកមិនត្រឹមត្រូវទេ។ ពិនិត្យមើលថាតើវិធីបង់ប្រាក់របស់អ្នកត្រូវបានបញ្ចូលយ៉ាងត្រឹមត្រូវនៅក្នុង Apple Pay ដែរឬទេ។ ប្រសិនបើមិនបានបញ្ចូលត្រឹមត្រូវទេ សូមធ្វើបច្ចុប្បន្នភាពវា ហើយព្យាយាមម្តងទៀត។";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "លេខ CVC របស់អ្នកមិនត្រឹមត្រូវទេ។ ពិនិត្យមើលថាតើលេខ CVC របស់អ្នកត្រូវបានបញ្ចូលយ៉ាងត្រឹមត្រូវនៅក្នុង Apple Pay ដែរឬទេ។ ប្រសិនបើមិនបានបញ្ចូលត្រឹមត្រូវទេ សូមធ្វើបច្ចុប្បន្នភាពវា ហើយព្យាយាមម្តងទៀត។";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "កាតរបស់អ្នកមានទឹកប្រាក់មិនគ្រប់គ្រាន់ដើម្បីបញ្ចប់ការទិញនេះទេ។ សូមសាកល្បងវិធីបង់ប្រាក់មួយផ្សេងទៀត ឬទាក់ទងធនាគាររបស់អ្នកសម្រាប់ព័ត៌មានបន្ថែម។";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "ខែផុតកំណត់នៅលើវិធីបង់ប្រាក់របស់អ្នកមិនត្រឹមត្រូវទេ។ សូមធ្វើបច្ចុប្បន្នភាពវានៅក្នុង Apple Pay ហើយព្យាយាមម្តងទៀត។";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "ឆ្នាំផុតកំណត់នៅលើវិធីបង់ប្រាក់របស់អ្នកមិនត្រឹមត្រូវទេ។ សូមធ្វើបច្ចុប្បន្នភាពវានៅក្នុង Apple Pay ហើយព្យាយាមម្តងទៀត។";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "លេខកាតរបស់អ្នកមិនត្រឹមត្រូវទេ។ សូមធ្វើបច្ចុប្បន្នភាពវានៅក្នុង Apple Pay ហើយព្យាយាមម្តងទៀត។";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
 "DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "ព្យាយាមបញ្ចប់ការទូទាត់ប្រាក់ម្ដងទៀត ឬទាក់ទងទៅធនាគារអ្នកសម្រាប់ព័ត៌មានបន្ថែម";
@@ -1658,40 +1673,40 @@
 "DONATION_PAYMENT_ERROR_OTHER" = "សាកល្បងវិធីទូទាត់ប្រាក់ផ្សេង ឬទាក់ទងទៅធនាគាររបស់អ្នកសម្រាប់ព័ត៌មានបន្ថែម";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "ពិនិត្យមើលថាតើវិធីបង់ប្រាក់របស់អ្នកទាន់សម័យកាលនៅក្នុង Apple Pay ដែរឬទេ។ ប្រសិនបើមិនទាន់ទេ សូមធ្វើបច្ចុប្បន្នភាពវា ហើយព្យាយាមម្តងទៀត។";
 
 /* Section title for donation amount on receipts */
-"DONATION_RECEIPT_AMOUNT" = "Amount";
+"DONATION_RECEIPT_AMOUNT" = "ចំនួនទឹកប្រាក់";
 
 /* Section title for donation date on receipts */
-"DONATION_RECEIPT_DATE_PAID" = "Date paid";
+"DONATION_RECEIPT_DATE_PAID" = "កាលបរិច្ឆេទបង់ប្រាក់";
 
 /* Title on the view where you can see a single receipt */
 "DONATION_RECEIPT_DETAILS" = "លម្អិត";
 
 /* Text on the button that exports the receipt */
-"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Share Receipt";
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "ចែករំលែកបង្កាន់ដៃ";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "សូមអរគុណចំពោះការគាំទ្រ Signal ។ ការរួមចំណែករបស់អ្នកជួយជំរុញដល់បេសកកម្មនៃ​ការអភិវឌ្ឍបច្ចេកវិទ្យាឯកជនភាពប្រភពបើកចំហដែលការពារការបញ្ចេញមតិដោយសេរី និងអាចធ្វើឲ្យមានការប្រាស្រ័យទាក់ទងគ្នាក្នុងសាកលលោក​ប្រកបដោយសុវត្ថិភាព​សម្រាប់មនុស្សរាប់លាននាក់នៅជុំវិញពិភពលោក។ ប្រសិនបើអ្នកជាអ្នករស់នៅសហរដ្ឋអាមេរិក សូមរក្សាទុកបង្កាន់ដៃនេះសម្រាប់កំណត់ត្រាពន្ធរបស់អ្នក។ Signal Technology Foundation គឺជាអង្គការមិនរកប្រាក់ចំណេញដែលទទួលបានការលើកលែងពន្ធនៅក្នុងសហរដ្ឋអាមេរិក​យោងតាមផ្នែក 501c3 នៃក្រមស្តីពីចំណូលផ្ទៃក្នុង។ លេខអត្តសញ្ញាណកម្មពន្ធសហព័ន្ធ​របស់យើងគឺ 82-4506840។";
 
 /* Title for one-time donation receipts */
-"DONATION_RECEIPT_ONE_TIME" = "One-time";
+"DONATION_RECEIPT_ONE_TIME" = "តែមួយដង";
 
 /* Title for recurring donation receipts */
-"DONATION_RECEIPT_RECURRING" = "Recurring";
+"DONATION_RECEIPT_RECURRING" = "ជាប្រចាំ";
 
 /* Title on donation receipts */
-"DONATION_RECEIPT_TITLE" = "Donation receipt";
+"DONATION_RECEIPT_TITLE" = "បង្កាន់ដៃបរិច្ចាគ";
 
 /* Section title for donation type on receipts */
-"DONATION_RECEIPT_TYPE" = "Type";
+"DONATION_RECEIPT_TYPE" = "ប្រភេទ";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
-"DONATION_RECEIPTS" = "Donation Receipts";
+"DONATION_RECEIPTS" = "បង្កាន់ដៃបរិច្ចាគ";
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
-"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
+"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "ប្រសិនបើអ្នកបានដំឡើង Signal ឡើងវិញ បង្កាន់ដៃពីការបរិច្ចាគមុនៗនឹងមិនមានទេ។";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "ឧបត្ថម្ភទៅ Signal";
@@ -1700,13 +1715,13 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "ឧបត្ថម្ភទៅ Signal";
 
 /* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "Gift a Badge";
+"DONATION_VIEW_GIFT" = "ផ្តល់ជូនស្លាកជាកាដូ";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "បណ្ដាញមានបញ្ហា។ សូមពិនិត្យការភ្ជាប់របស់អ្នក ហើយសាកល្បងម្ដងទៀត";
 
 /* Text of the 'make a monthly donation' button on the donation screen */
-"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "ធ្វើការបរិច្ចាគប្រចាំខែ";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "ស្លាកសម្គាល់";
@@ -1721,13 +1736,13 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "ការគាំទ្ររបស់ខ្ញុំ";
 
 /* Title for the 'one-time donation' link in the donation view */
-"DONATION_VIEW_ONE_TIME_DONATION" = "One-time donation";
+"DONATION_VIEW_ONE_TIME_DONATION" = "ការបរិច្ចាគតែមួយដង";
 
 /* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "វិធីផ្សេងទៀតក្នុងការផ្តល់ជូន";
 
 /* Title for the 'receipts' section on the donation screen */
-"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Receipts";
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "បង្កាន់ដៃ";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "សំណួរដែលសួរញឺកញាប់អំពីការជាវ";
@@ -2348,7 +2363,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@បានផ្លាស់ប្ដូរការកំណត់ក្រុមដែលមានតែអ្នកអភិបាលក្រុមទើបអាចផ្ញើសារបាន។";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "អ្នកមិនអាចចូលរួមក្រុមនេះ​តាម​រយៈ​តំណ​ក្រុម​បាន​ទេ ព្រោះ​អ្នក​គ្រប់គ្រង​បាន​ដក​អ្នក​ចេញ។";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "តំណភ្ជាប់ក្រុមនេះ លែងមានសុពលភាពហើយ។";
@@ -2642,7 +2657,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "សំណើ និងការអញ្ជើញ";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
-"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
+"GROUP_STORY_NAME_FORMAT" = "%1$@ ទៅ %2$@";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "បានធ្វើបច្ចុប្បន្នភាពក្រុម។";
@@ -2996,10 +3011,10 @@
 "IN_CALL_TERMINATED" = "ការហៅបានបញ្ចប់។";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "ការជជែកដែលបានបិទសំឡេងដែលត្រូវបានទុកក្នុងបណ្ណសារនឹងនៅតែរក្សាទុកក្នុងបណ្ណសារដដែល នៅពេលសារថ្មីមកដល់។";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "ការជជែកដែលបានទុកក្នុងបណ្ណសារនឹងផ្លាស់ទីទៅប្រអប់សារនៅពេលសារថ្មីមកដល់។";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "មិនមានការជជែកទេ។\nបានចាប់ផ្តើមដោយផ្ញើសារទៅកាន់មិត្តភក្តិ។";
@@ -3239,10 +3254,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "ហៅចេញ";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime ជាសំឡេង";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime ជាវីដេអូ ";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "ផ្ញើសារជាអក្សរ";
@@ -3524,13 +3539,13 @@
 "MUTED_BADGE" = "បានបិទសម្លេង";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Updates to your story will show up here.";
+"MY_STORIES_NO_STORIES" = "ការធ្វើបច្ចុប្បន្នភាពចំពោះរឿងរ៉ាវរបស់អ្នកនឹងបង្ហាញនៅទីនេះ។";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "My Stories";
+"MY_STORIES_TITLE" = "រឿងរ៉ាវរបស់ខ្ញុំ";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "My Story";
+"MY_STORY_NAME" = "រឿងរ៉ាវរបស់ខ្ញុំ";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "ថ្មីៗនេះ %1$@បានប្ដូរឈ្មោះគណនីទៅ %2$@។";
@@ -4532,13 +4547,13 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "សារដើមរកមិនឃើញ។";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "បានប្រតិកម្មទៅនឹងរឿងរ៉ាវរបស់អ្នក";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "បានប្រតិកម្មទៅនឹងរឿងរ៉ាវរបស់ %@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Story";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · រឿងរ៉ាវ";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "ការភ្ជាប់";
@@ -4604,13 +4619,13 @@
 "READ_ACTION" = "អាន";
 
 /* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "អ្នកប្រើប្រាសម្នាក់នេះ មិនអាចបន្ថែមចូលក្នុងក្រុមបានទេ លុះត្រាគេបានដំឡើង Signal។";
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "អ្នកប្រើប្រាស់ម្នាក់នេះមិនអាចបញ្ចូលក្នុងក្រុមបានទេ លុះត្រាតែគេដំឡើងកំណែ Signal សិន។";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "អ្នកប្រើប្រាស់មិនអាចជ្រើសរើស។";
 
 /* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "អ្នក​ប្រើ​ប្រាស់នេះ​មិន​អាច​ទទួលកាដូបាន​ទេ​ លុះត្រា​តែគេ​ដំឡើង​កំណែ Signal សិន។";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "ខ្ញុំបានភ្លេចលេខPIN ។";
@@ -4913,10 +4928,10 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "បិទ";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "អ្នកនឹងបាត់បង់រូបថត ឬវីដេអូដែលបានថត។";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "បិទពហុមុខងារឬ?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "អញ្ជើញមិត្តភក្តិតាម SMS ដែលមិនមានសុវត្ថិភាព?";
@@ -5162,10 +5177,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "សំឡេងសារ";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "ការជជែកដែលបានបិទសំឡេងដែលត្រូវបានទុកក្នុងបណ្ណសារនឹងនៅតែរក្សាទុកក្នុងបណ្ណសារដដែល នៅពេលសារថ្មីមកដល់។";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "បន្តទុកក្នុងបណ្ណសារនូវការជជែកដែលបិទសំឡេង";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "គោលការណ៍ឯកជន និងលក្ខខណ្ឌ";
@@ -5900,55 +5915,55 @@
 "STORIES_FORWARD_STORY_ACTION" = "បញ្ជូនបន្ត";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
+"STORIES_GO_TO_CHAT_ACTION" = "ចូលទៅការជជែក";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Hide Story";
+"STORIES_HIDE_STORY_ACTION" = "លាក់រឿងរ៉ាវ";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "មិនមានព័ត៌មានថ្មីសម្រាប់បង្ហាញនៅពេលនេះទេ។\nសូមចុច + ដើម្បីបញ្ចូលទៅរឿងរ៉ាវរបស់អ្នក។";
 
 /* Indicates that this story has no replies yet */
-"STORIES_NO_REPLIES_YET" = "No replies yet";
+"STORIES_NO_REPLIES_YET" = "មិនទាន់មានការឆ្លើយតបទេ";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "រឿងរ៉ាវឯកជនថ្មី";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "មានតែមនុស្សដែលអ្នកបានបញ្ចូលប៉ុណ្ណោះទើបអាចមើលឃើញរឿងរ៉ាវឯកជនបាន។ មានតែអ្នកទេដែលអាចមើលឃើញឈ្មោះរឿងរ៉ាវ។";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "រឿងរ៉ាវឯកជន";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "ឯកជនភាពនៃរឿងរ៉ាវ";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "ចែករំលែក";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "រឿងរ៉ាវ";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "ចូលមើលតំណ";
 
 /* Text indicating a story that was replied to is no longer available. */
-"STORY_NO_LONGER_AVAILABLE" = "No longer available";
+"STORY_NO_LONGER_AVAILABLE" = "លែងមានទៀតហើយ";
 
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "ឯកជនភាព";
 
 /* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";
+"STORY_REPLY_BUTTON_WITH_1_REPLY" = "ចំនួនឆ្លើយតប <bold>1</bold> ";
 
 /* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> replies";
+"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "ចំនួនឆ្លើយតប <bold>%@</bold>";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "ឆ្លើយតប";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reacted to the story";
+"STORY_REPLY_REACTION" = "បានប្រតិកម្មទៅនឹងរឿងរ៉ាវ";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "ឆ្លើយតប";
@@ -5960,7 +5975,7 @@
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "ឧបត្ថម្ភ";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal អាចដំណើរការបានដោយសារមនុស្សដូចអ្នក។ បរិច្ចាគរួចនឹងទទួលបានស្លាកមួយ។";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "មិនមែនឥឡូវនេះ";
@@ -5969,7 +5984,7 @@
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "ក្លាយជាទ្រទ្រង់ម្នាក់";
 
 /* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "បានចម្លងលេខសម្គាល់អ្នកជាវទៅឃ្លីបបត";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "លេខសុវត្ថិភាពរបស់អ្នក ជាមួយ %@ ត្រូវគ្នា។ អ្នកអាចដាក់លេខទំនាក់ទំនងនេះ ថាបានផ្ទៀងផ្ទាត់។";
@@ -6029,13 +6044,13 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "កំពុងផ្ទុក";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal គឺជាអង្គការមិនរកប្រាក់ចំណេញ ដែលគ្មានអ្នកផ្សាយពាណិជ្ជកម្ម ឬអ្នកវិនិយោគទេ ហើយទ្រទ្រង់ដោយមនុស្សដែលប្រើប្រាស់ និងផ្តល់តម្លៃដល់វាតែប៉ុណ្ណោះ។ សូមធ្វើការបរិច្ចាគប្រចាំខែ រួចអ្នកនឹងទទួលបានស្លាកប្រូហ្វាល់មួយដើម្បីបង្ហាញការគាំទ្រ​របស់អ្នក។";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal ប្តេជ្ញាអភិវឌ្ឍបច្ចេកវិទ្យាឯកជនភាពប្រភពបើកចំហដែលការពារការបញ្ចេញមតិដោយ​សេរី និងធ្វើឲ្យមានការប្រាស្រ័យទាក់ទងគ្នាដោយសុវត្ថិភាពជាសាកល។\n\nការបរិច្ចាគរបស់អ្នកនឹងជួយដល់បុព្វហេតុនេះ និងជួយបង់ថ្លៃចំណាយសម្រាប់ការអភិវឌ្ឍ និងដំណើរការរបស់កម្មវិធីដែលត្រូវបានប្រើដោយមនុស្សរាប់លាននាក់សម្រាប់ការប្រាស្រ័យទាក់ទងគ្នាជាលក្ខណៈឯកជន។ គ្មានការផ្សាយពាណិជ្ជកម្ម គ្មានកម្មវិធីតាមដាន ហើយក៏មិននិយាយលេងដែរ!";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "គាំទ្របច្ចេកវិទ្យាដែលត្រូវបានបង្កើតឡើងសម្រាប់អ្នក មិនមែនសម្រាប់ទិន្នន័យរបស់អ្នកទេ ដោយចូលរួមសហគមន៍ដែលទ្រទ្រង់វា។";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "ហេតុអ្វីត្រូវឧបត្ថម្ភ?";
@@ -6092,7 +6107,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "កំពុងដំណើការប្រតិបត្តិការ";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read more.";
+"SUSTAINER_VIEW_READ_MORE" = "អានបន្ថែម។";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "បន្ត%@";
@@ -6119,7 +6134,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "បច្ចុប្បន្នភាព";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "ធ្វើការបរិច្ចាគប្រចាំខែទៅកាន់ Signal ដើម្បីគាំទ្របច្ចេកវិទ្យាដែលបង្កើតឡើងសម្រាប់អ្នក មិនមែនទិន្នន័យរបស់អ្នកទេ។";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "បិទ";

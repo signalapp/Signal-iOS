@@ -1,5 +1,5 @@
 NSAppleMusicUsageDescription = "میڈیا کے اٹیچمنٹ کو چلانے کیلئے Signal کو Apple Music کا استعمال کرنے کی ضرورت ہے۔";
-NSCameraUsageDescription = "Signal آپ کے کیمرا کو فوٹو لینے اور ویڈیو کالوں کے لیئے استعمال کرتا ہے۔";
+NSCameraUsageDescription = "Signal آپ کے کیمرا کو فوٹو لینے اور ویڈیو کالز کے لیے استعمال کرتا ہے۔";
 NSContactsUsageDescription = "Signal آپ کے روابط استعمال کرنے والے صارفین کو تلاش کرنے کے لیئے آپ کے روابط کا استعمال کرتا ہے۔ ہم آپ کے روابط سرور پر اسٹور نہیں کرتے ہیں۔";
 NSFaceIDUsageDescription = "Signal کا اسکرین لاک Face ID استعمال کرتا ہے۔";
 NSLocationWhenInUseUsageDescription = "Signal کو آپ کے موجودہ مقام کا اشتراک کرنے کے لیئے آپ کے مقام تک رسائی کی ضرورت ہے۔";

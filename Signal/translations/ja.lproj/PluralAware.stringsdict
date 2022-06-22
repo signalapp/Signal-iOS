@@ -547,10 +547,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>Group Story · 1 Viewer</string>
 			<key>other</key>
-			<string>Group Story · %d Viewers</string>
+			<string>グループストーリー · 閲覧 %d人</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -695,10 +693,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 Viewer</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>閲覧者 %d人</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -827,10 +823,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>Private Story · 1 Viewer</string>
 			<key>other</key>
-			<string>Private Story · %d Viewers</string>
+			<string>プライベートストーリー · 閲覧 %d人</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -873,10 +867,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 view</string>
 			<key>other</key>
-			<string>%d views</string>
+			<string>閲覧 %d件</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

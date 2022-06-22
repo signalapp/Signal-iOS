@@ -155,10 +155,10 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "לא היה ניתן לפתוח את Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal לא יכול להיפתח כי למכשיר שלך אין מספיק נפח אחסון פנוי. כדי להשתמש ב-Signal, צריך לפנות מקום על ידי ניהול האחסון שלך באזור ההגדרות.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "נפח אחסון נמוך";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "הנתונים שהועברו מהמכשיר הישן שלך לא יכלו להשתחזר. אנא שלח יומן ניפוי תקלים אל support@signal.org כך שנוכל לפתור סוגייה זו. אם תתקין מחדש את Signal, היסטורית ההודעות שלך תאבד.";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "תן אל Signal תמריץ";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "תג התרומה שלך יצא מתוקף ואינו זמין יותר לתצוגה בפרופיל שלך.\n\n אפשר להמשיך להשתמש ב-Signal, אבל כדי לעזור לטכנולוגיה שנבנתה עבורך, כדאי לשקול להפוך לתומך/ת באמצעות העברת תרומה חודשית.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "תג התרומה שלך יצא מתוקף ואינו זמין יותר לתצוגה בפרופיל שלך.\n\n אפשר להפעיל מחדש את תג התרומה שלך למשך 30 יום נוספים באמצעות תרומה חד-פעמית.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "הפוך אל מחזיק";
@@ -406,6 +406,9 @@
 /* Indicates that a contact cannot receive badges because they need to update Signal */
 "BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "חייב/ת לעדכן את Signal כדי לקבל שיים";
 
+/* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
+"BADGE_GIFTING_CHAT_EXPIRED" = "פג";
+
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "תן תג כשי למישהו ע״י ביצוע תרומה אל Signal בשמו. הוא יקבל תג להציג אותו בתמונת הפרופיל שלו.";
 
@@ -430,8 +433,20 @@
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "תשלום נכשל";
 
+/* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+
+/* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+
+/* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
+"BADGE_GIFTING_REDEEM" = "ממש";
+
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "נמשך %@";
+
+/* A button shown on a gift message you send to view additional details about the badge. */
+"BADGE_GIFTING_VIEW" = "הצג";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "התרומה החודשית המחזורית שלך בוטלה באופן אוטומטי. %@ תג ה%@ שלך אינו גלוי יותר בפרופיל שלך.";
@@ -1079,7 +1094,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "אנשים";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "סיפורים";
+"CONVERSATION_PICKER_SECTION_STORIES" = "סטוריז";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "בחר מקבלים";
@@ -3524,13 +3539,13 @@
 "MUTED_BADGE" = "מושתק";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "עדכונים אל הסיפור שלך יופיעו כאן.";
+"MY_STORIES_NO_STORIES" = "עדכונים של הסטורי שלך יופיעו כאן.";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "הסיפורים שלי";
+"MY_STORIES_TITLE" = "הסטוריז שלי";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "הסיפור שלי";
+"MY_STORY_NAME" = "הסטורי שלי";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "שינה/שינתה לאחרונה את שם הפרופיל מן %1$@ אל %2$@.";
@@ -4604,13 +4619,13 @@
 "READ_ACTION" = "נקרא";
 
 /* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "משתמש זה אינו יכול להתווסף אל הקבוצה עד שהוא ישדרג את Signal.";
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "אי אפשר להוסיף משתמש או משתמשת אלו לקבוצה עד שהם ישדרגו את Signal.";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "המשתמש אינו יכול להיבחר.";
 
 /* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "אי אפשר לתת מתנות למשתמש או המשתמשת עד שהם ישדרגו את Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "שכחתי את ה־PIN שלי.";
@@ -5906,22 +5921,22 @@
 "STORIES_HIDE_STORY_ACTION" = "הסתר סיפור";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "אין לנו עדכונים להראות לך כרגע.\nאפשר ללחוץ על + כדי להוסיף לסטורי שלך.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "אין תשובות עדין";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "סטורי פרטי חדש";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "סיפורים פרטיים יכולים להיראות רק ע״י האנשים שאתה מוסיף אליהם. רק אתה רואה את שם הסיפור.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "סטוריז פרטיים יכולים להיראות רק על ידי האנשים שאתם מוסיפים אליהם. שם הסיפור גלוי רק לך.";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "סטוריז פרטיים";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "פרטיות של סטורי";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "שתף";

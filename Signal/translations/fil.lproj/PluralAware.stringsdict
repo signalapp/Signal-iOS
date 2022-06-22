@@ -618,7 +618,7 @@
 			<key>one</key>
 			<string>Group Story · 1 Viewer</string>
 			<key>other</key>
-			<string>Group Story · %d Viewers</string>
+			<string>Group Story · %d Viewer</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -778,7 +778,7 @@
 			<key>one</key>
 			<string>1 Viewer</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d Viewer</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -920,9 +920,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Private Story · 1 Viewer</string>
+			<string>Pribadong Story · 1 Viewer</string>
 			<key>other</key>
-			<string>Private Story · %d Viewers</string>
+			<string>Pribadong Story · %d Viewer</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -970,7 +970,7 @@
 			<key>one</key>
 			<string>1 view</string>
 			<key>other</key>
-			<string>%d views</string>
+			<string>%d view</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

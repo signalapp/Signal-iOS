@@ -406,6 +406,9 @@
 /* Indicates that a contact cannot receive badges because they need to update Signal */
 "BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "必須更新 Signal 才可收到禮品";
 
+/* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
+"BADGE_GIFTING_CHAT_EXPIRED" = "已過期";
+
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "以其之名捐款給 Signal，饋贈一枚徽章給那特別的人。對方將獲得一枚徽章，可於其個人資料中展覽。";
 
@@ -430,8 +433,20 @@
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
+/* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+
+/* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+
+/* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
+"BADGE_GIFTING_REDEEM" = "換領";
+
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "為期 %@";
+
+/* A button shown on a gift message you send to view additional details about the badge. */
+"BADGE_GIFTING_VIEW" = "檢視";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "您的每月定期捐款已自動取消。%@ 您的「%@」徽章不再在您的個人資料中看見。";
@@ -3524,7 +3539,7 @@
 "MUTED_BADGE" = "已靜音";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "您的限時動態更新將顯示於此。";
+"MY_STORIES_NO_STORIES" = "你的限時動態更新將在此顯示。";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "我的限時動態";
@@ -4604,7 +4619,7 @@
 "READ_ACTION" = "已讀取";
 
 /* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "無法新增此用戶到群組直至他們更新 Signal。";
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "此用戶必須更新 Signal，方可加入此群組。";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "無法選擇使用者。";
@@ -5915,7 +5930,7 @@
 "STORIES_SETTINGS_NEW_STORY" = "New Private Story";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "個人限時動態僅限您新增的人觀看。只有您見到限時動態名稱。";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "個人限時動態只供您新增的用戶查看。只有您可以看到限時動態的名稱。";
 
 /* Header for the 'Private Stories' section of the stories settings */
 "STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
