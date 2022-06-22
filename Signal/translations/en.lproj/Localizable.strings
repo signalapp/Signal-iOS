@@ -439,6 +439,12 @@
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
 
+/* Text shown on the list of chats when the most recent message is a gift you received from someone else. */
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+
+/* Text shown on the list of chats when the most recent message is a gift you sent to someone else. */
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
+
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
 "BADGE_GIFTING_REDEEM" = "Redeem";
 
