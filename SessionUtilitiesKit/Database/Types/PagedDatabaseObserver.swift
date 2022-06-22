@@ -378,7 +378,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
                             let targetIndex: Int = maybeIndex.map({ max(0, min(totalCount, $0)) }),
                             (
                                 targetIndex < currentPageInfo.pageOffset ||
-                                targetIndex > cacheCurrentEndIndex
+                                targetIndex >= cacheCurrentEndIndex
                             )
                         else { return nil }
                         

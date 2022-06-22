@@ -715,10 +715,10 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                     
                     // If anything was inserted at the top then we need to maintain the current
                     // offset so always return a 'top' insert location
-                    switch (insertedAtTop, insertedAtBot) {
-                        case (true, _): return .top
-                        case (false, true): return .bottom
-                        case (false, false): return .other
+                    switch (insertedAtTop, insertedAtBot, isLoadingMore) {
+                        case (true, _, true), (true, false, false): return .top
+                        case (false, true, _): return .bottom
+                        case (false, false, _), (true, true, false): return .other
                     }
                 }(),
                 wasCloseToBottom: isCloseToBottom,
@@ -737,7 +737,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         ///
         /// Unfortunately the UITableView also does some weird things when updating (where it won't have updated it's internal data until
         /// after it performs the next layout); the below code checks a condition on layout and if it passes it calls a closure
-        if itemChangeInfo.insertLocation != .none {
+        if itemChangeInfo.insertLocation == .top {
             let cellSorting: (MessageCell, MessageCell) -> Bool = { lhs, rhs -> Bool in
                 if !lhs.isHidden && rhs.isHidden { return true }
                 if lhs.isHidden && !rhs.isHidden { return false }
@@ -750,9 +750,12 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 .first(where: { cell -> Bool in cell.viewModel?.id == itemChangeInfo.visibleInteractionId })?
                 .frame)
                 .defaulting(to: self.tableView.rectForRow(at: itemChangeInfo.oldVisibleIndexPath))
-            let oldContentSize: CGSize = self.tableView.contentSize
-            let oldOffsetFromTop: CGFloat = (self.tableView.contentOffset.y - oldRect.minY)
-            let oldOffsetFromBottom: CGFloat = (oldContentSize.height - self.tableView.contentOffset.y)
+            
+            // The the user triggered the 'scrollToTop' animation (by tapping in the nav bar) then we
+            // need to stop the animation before attempting to lock the offset (otherwise things break)
+            if itemChangeInfo.firstIndexIsVisible {
+                self.tableView.setContentOffset(self.tableView.contentOffset, animated: false)
+            }
             
             // Wait until the tableView has completed a layout and reported the correct number of
             // sections/rows and then update the contentOffset
@@ -763,63 +766,26 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 },
                 then: { [weak self] in
                     UIView.performWithoutAnimation {
-                        self?.tableView.scrollToRow(
-                            at: (itemChangeInfo.insertLocation == .top ?
-                                itemChangeInfo.visibleIndexPath :
-                                itemChangeInfo.lastVisibleIndexPath
-                            ),
-                            at: (itemChangeInfo.insertLocation == .top ?
-                                .top :
-                                .bottom
-                            ),
-                            animated: false
-                        )
-                        self?.tableView.layoutIfNeeded()
-                        
-                        let newContentSize: CGSize = (self?.tableView.contentSize)
-                            .defaulting(to: oldContentSize)
-                        
-                        /// **Note:** I wasn't able to get a prober equation to handle both "insert" and "insert at top off screen", it
-                        /// seems that the 'contentOffset' value won't expose negative values (eg. when you over-scroll and trigger
-                        /// the bounce effect) and this results in requiring the conditional logic below
-                        if itemChangeInfo.insertLocation == .top {
-                            let newRect: CGRect = (self?.tableView.subviews
-                                .compactMap { $0 as? MessageCell }
-                                .sorted(by: cellSorting)
-                                .first(where: { $0.viewModel?.id == itemChangeInfo.visibleInteractionId })?
-                                .frame)
-                                .defaulting(to: oldRect)
-                            let heightDiff: CGFloat = (oldRect.height - newRect.height)
-                            
-                            if itemChangeInfo.firstIndexIsVisible {
-                                self?.tableView.contentOffset.y = (newRect.minY - (oldRect.minY + heightDiff))
+                        let calculatedRowHeights: CGFloat = (0..<itemChangeInfo.visibleIndexPath.row)
+                            .reduce(into: 0) { result, next in
+                                result += (self?.tableView
+                                    .rectForRow(
+                                        at: IndexPath(
+                                            row: next,
+                                            section: itemChangeInfo.visibleIndexPath.section
+                                        )
+                                    )
+                                    .height)
+                                    .defaulting(to: 0)
                             }
-                            else {
-                                self?.tableView.contentOffset.y = ((newRect.minY + heightDiff) + oldOffsetFromTop)
-                            }
-                        }
-                        else {
-                            self?.tableView.contentOffset.y = (newContentSize.height - oldOffsetFromBottom)
-                        }
-                        
-                        /// **Note:** There is yet another weird issue where the tableView will layout again shortly after the initial
-                        /// layout with a slightly different contentSize (usually about 8pt off), this catches that case and prevents it
-                        /// from affecting the UI
-                        if !itemChangeInfo.firstIndexIsVisible {
-                            self?.tableView.afterNextLayoutSubviews(
-                                when: { _, _, contentSize in (contentSize.height != newContentSize.height) },
-                                then: { [weak self] in
-                                    let finalContentSize: CGSize = (self?.tableView.contentSize)
-                                        .defaulting(to: newContentSize)
-                                    
-                                    self?.tableView.contentOffset.y += (finalContentSize.height - newContentSize.height)
-                                }
-                            )
-                        }
+                        let newTargetRect: CGRect? = self?.tableView.rectForRow(at: itemChangeInfo.visibleIndexPath)
+                        let heightDiff: CGFloat = (oldRect.height - (newTargetRect ?? oldRect).height)
+
+                        self?.tableView.contentOffset.y += (calculatedRowHeights - heightDiff)
                     }
                     
-                    DispatchQueue.main.async { [weak self] in
-                        if let focusedInteractionId: Int64 = self?.focusedInteractionId {
+                    if let focusedInteractionId: Int64 = self?.focusedInteractionId {
+                        DispatchQueue.main.async { [weak self] in
                             // If we had a focusedInteractionId then scroll to it (and hide the search
                             // result bar loading indicator)
                             self?.searchController.resultsBar.stopLoading()
@@ -829,11 +795,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                                 highlight: (self?.shouldHighlightNextScrollToInteraction == true)
                             )
                         }
-                        else if itemChangeInfo.sentMessageBeforeUpdate || itemChangeInfo.wasCloseToBottom {
-                            // Scroll to the bottom if an interaction was just inserted and we either
-                            // just sent a message or are close enough to the bottom
-                            self?.scrollToBottom(isAnimated: true)
-                        }
                     }
 
                     // Complete page loading
@@ -841,6 +802,26 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                     self?.autoLoadNextPageIfNeeded()
                 }
             )
+        }
+        else if itemChangeInfo.insertLocation == .bottom || itemChangeInfo.insertLocation == .other {
+            CATransaction.begin()
+            CATransaction.setCompletionBlock { [weak self] in
+                if let focusedInteractionId: Int64 = self?.focusedInteractionId {
+                    // If we had a focusedInteractionId then scroll to it (and hide the search
+                    // result bar loading indicator)
+                    self?.searchController.resultsBar.stopLoading()
+                    self?.scrollToInteractionIfNeeded(
+                        with: focusedInteractionId,
+                        isAnimated: true,
+                        highlight: (self?.shouldHighlightNextScrollToInteraction == true)
+                    )
+                }
+                else if itemChangeInfo.sentMessageBeforeUpdate || itemChangeInfo.wasCloseToBottom {
+                    // Scroll to the bottom if an interaction was just inserted and we either
+                    // just sent a message or are close enough to the bottom
+                    self?.scrollToBottom(isAnimated: true)
+                }
+            }
         }
         
         // Reload the table content (animate changes if we aren't inserting at the top)
@@ -855,6 +836,10 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             interrupt: { itemChangeInfo.insertLocation == .top || $0.changeCount > ConversationViewModel.pageSize }
         ) { [weak self] updatedData in
             self?.viewModel.updateInteractionData(updatedData)
+        }
+        
+        if itemChangeInfo.insertLocation == .bottom || itemChangeInfo.insertLocation == .other {
+            CATransaction.commit()
         }
         
         // Mark received messages as read

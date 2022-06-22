@@ -218,12 +218,15 @@ public final class SearchResultsBar: UIView {
     }
 
     func updateResults(results: [Int64]?) {
-        if let results: [Int64] = results, !results.isEmpty {
-            currentIndex = min(currentIndex ?? 0, results.count - 1)
-        }
-        else {
-            currentIndex = nil
-        }
+        currentIndex = {
+            guard let results: [Int64] = results, !results.isEmpty else { return nil }
+            
+            if let currentIndex: Int = currentIndex {
+                return max(0, min(currentIndex, results.count - 1))
+            }
+            
+            return 0
+        }()
 
         self.results = results
 
