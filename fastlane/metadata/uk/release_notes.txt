@@ -1,3 +1,3 @@
-• Made some improvements to voice messages, both when recording your own and listening to someone else's. There are some extra fixes for users on right-to-left languages
-• Sending messages to large groups should now be faster.
-• Інші виправлення помилок та вдосконалення продуктивності, що допомагають програмі надійно працювати.
+• Replying to a message with just emoji? Now emoji-only responses will now appear larger in the chat.
+• We’ve improved sharing and forwarding of audio attachments. Keep sending those songs!
+• Other bug fixes to keep your app running smoothly.
