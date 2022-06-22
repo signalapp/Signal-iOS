@@ -868,7 +868,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             let firstTimestamp = General.Cache.recentReactionTimestamps.wrappedValue.first!
             if sentTimestamp - firstTimestamp < 60 * 1000 {
                 General.Cache.recentReactionTimestamps.mutate{ $0.removeLast() }
-                return
+                return // Reach the limit 20 reacts per 60s
             } else {
                 General.Cache.recentReactionTimestamps.mutate{ $0.removeFirst() }
             }
