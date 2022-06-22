@@ -15,19 +15,16 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     private let badge: ProfileBadge
     private let price: UInt
     private let currencyCode: Currency.Code
-    private let recipientAddress: SignalServiceAddress
-    private let recipientName: String
+    private let thread: TSContactThread
 
     public init(badge: ProfileBadge,
                 price: UInt,
                 currencyCode: Currency.Code,
-                recipientAddress: SignalServiceAddress,
-                recipientName: String) {
+                thread: TSContactThread) {
         self.badge = badge
         self.price = price
         self.currencyCode = currencyCode
-        self.recipientAddress = recipientAddress
-        self.recipientName = recipientName
+        self.thread = thread
     }
 
     // MARK: - Callbacks
@@ -68,7 +65,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
     // MARK: - Table contents
 
-    private lazy var avatarViewDataSource: ConversationAvatarDataSource = .address(self.recipientAddress)
+    private lazy var avatarViewDataSource: ConversationAvatarDataSource = .thread(self.thread)
 
     private lazy var messageTextView: TextViewWithPlaceholder = {
         let view = TextViewWithPlaceholder()
@@ -87,7 +84,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         let price = price
         let currencyCode = currencyCode
         let avatarViewDataSource = avatarViewDataSource
-        let recipientName = recipientName
+        let thread = thread
         let messageTextView = messageTextView
 
         let badgeSection = OWSTableSection()
@@ -110,10 +107,14 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             let avatarView = ConversationAvatarView(sizeClass: .thirtySix,
                                                     localUserDisplayMode: .asUser,
                                                     badged: true)
-            self.databaseStorage.read { transaction in
+            let recipientName = self.databaseStorage.read { transaction -> String in
                 avatarView.update(transaction) { config in
                     config.dataSource = avatarViewDataSource
                 }
+
+                let recipientName = self.contactsManager.displayName(for: thread, transaction: transaction)
+
+                return recipientName
             }
 
             let nameLabel = UILabel()
@@ -273,11 +274,8 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                 request: receiptCredentialRequest,
                 expectedBadgeLevel: .giftBadge
             )
-        }.then { (receiptCredentialPresentation: ReceiptCredentialPresentation) -> Promise<TSContactThread> in
-            let (thread, messagesPromise) = self.databaseStorage.write { transaction -> (TSContactThread, Promise<Void>) in
-                let thread = TSContactThread.getOrCreateThread(withContactAddress: self.recipientAddress,
-                                                               transaction: transaction)
-
+        }.then { (receiptCredentialPresentation: ReceiptCredentialPresentation) -> Promise<Void> in
+            self.databaseStorage.write { transaction -> Promise<Void> in
                 func send(_ preparer: OutgoingMessagePreparer) -> Promise<Void> {
                     preparer.insertMessage(linkPreviewDraft: nil, transaction: transaction)
                     return ThreadUtil.enqueueMessagePromise(message: preparer.unpreparedMessage,
@@ -286,7 +284,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
 
                 let giftMessagePromise = send(OutgoingMessagePreparer(
                     giftBadgeReceiptCredentialPresentation: receiptCredentialPresentation,
-                    thread: thread,
+                    thread: self.thread,
                     transaction: transaction
                 ))
 
@@ -297,19 +295,18 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                     let textMessagePromise = send(OutgoingMessagePreparer(
                         messageBody: MessageBody(text: self.messageText, ranges: .empty),
                         mediaAttachments: [],
-                        thread: thread,
+                        thread: self.thread,
                         quotedReplyModel: nil,
                         transaction: transaction
                     ))
                     messagesPromise = giftMessagePromise.then { textMessagePromise }
                 }
 
-                return (thread, messagesPromise)
+                return messagesPromise.asVoid()
             }
-            return messagesPromise.map { thread }
-        }.done(on: .main) { (thread: TSContactThread) in
+        }.done(on: .main) {
             completion(.init(status: .success, errors: nil))
-            SignalApp.shared().presentConversation(for: thread, action: .none, animated: false)
+            SignalApp.shared().presentConversation(for: self.thread, action: .none, animated: false)
             self.dismiss(animated: true)
             controller.dismiss()
         }.catch(on: .main) { error in

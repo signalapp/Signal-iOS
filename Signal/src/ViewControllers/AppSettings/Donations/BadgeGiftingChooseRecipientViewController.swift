@@ -126,14 +126,11 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
                 owsFail("Recipient is missing address, but we expected one")
             }
 
-            let recipientName = databaseStorage.read { transaction -> String in
-                contactsManager.displayName(for: address, transaction: transaction)
-            }
+            let thread = databaseStorage.write { TSContactThread.getOrCreateThread(withContactAddress: address, transaction: $0) }
             let vc = BadgeGiftingConfirmationViewController(badge: badge,
                                                             price: price,
                                                             currencyCode: currencyCode,
-                                                            recipientAddress: address,
-                                                            recipientName: recipientName)
+                                                            thread: thread)
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
