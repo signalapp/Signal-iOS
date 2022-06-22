@@ -492,7 +492,7 @@
 			<key>one</key>
 			<string>%2$@, %3$@, in 1 drug so v tem klicu</string>
 			<key>other</key>
-			<string>%2$@, %3$@, in %d drugih je v tem klicu</string>
+			<string>%2$@, %3$@ in %d drugih je v tem klicu</string>
 			<key>two</key>
 			<string>%2$@, %3$@, in %d druga so v tem klicu</string>
 		</dict>
@@ -592,7 +592,7 @@
 			<key>one</key>
 			<string>1 član skupine ima podobno ime. Spodaj preverite člana ali izberite ukrep.</string>
 			<key>other</key>
-			<string>%d članov skupine imajo podobno ime. Spodaj preverite člane ali izberite ukrep.</string>
+			<string>%d članov skupine ima podobno ime. Spodaj preverite člane ali izberite ukrep.</string>
 			<key>two</key>
 			<string>%d člana skupine imata podobni imeni. Spodaj preverite člana ali izberite ukrep.</string>
 		</dict>

@@ -1079,7 +1079,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "人";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "是日花生";
+"CONVERSATION_PICKER_SECTION_STORIES" = "限時動態";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "揀選收件人";
@@ -3524,13 +3524,13 @@
 "MUTED_BADGE" = "已避靜";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "您放送嘅是日花生有咩新動靜，就會喺呢處出現。";
+"MY_STORIES_NO_STORIES" = "您嘅限時動態更新會喺呢度顯示。";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "我嘅是日花生";
+"MY_STORIES_TITLE" = "我嘅限時動態";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "我嘅是日花生";
+"MY_STORY_NAME" = "我嘅限時動態";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "最近將佢先前個人資料嘅名 %1$@ 轉咗做 %2$@";
@@ -4604,7 +4604,7 @@
 "READ_ACTION" = "睇咗";
 
 /* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "喺呢個使用者升級 Signal 之前，都唔能夠加佢入個谷度。";
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "喺呢位用戶升級 Signal 之前，都唔可以將佢加入谷。";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "個使用者揀選唔到。";

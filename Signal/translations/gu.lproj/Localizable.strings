@@ -155,10 +155,10 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal ઓપન ન થઈ શકી કારણ કે તમારા ડિવાઇસ પર સ્ટોરેજ ઓછું છે. Signalનો ઉપયોગ કરવા માટે, સેટિંગ્સમાં તમારા સ્ટોરેજને મેનેજ કરીને સ્પેસ ખાલી કરો.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "સ્ટોરેજ સ્પેસ ઓછી છે";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "તમારા જૂના ડિવાઇસમાંથી ટ્રાન્સફર કરેલ ડેટા રિસ્ટોર કરી શકાયો નહીં. કૃપા કરીને support@signal.org પર ડિબગ લૉગ મોકલો જેથી અમે આ સમસ્યાને નિવારણ કરી શકીએ. જો તમે Signal ને ફરીથી ઇન્સ્ટોલ કરો છો તો તમારી મેસેજ હિસ્ટ્રી ખોવાઈ શકે છે";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "તમારા બૂસ્ટ બૅજની સમયસીમા સમાપ્ત થઈ ગઈ છે અને હવે તે તમારી પ્રોફાઇલ પર પ્રદર્શિત થવા માટે ઉપલબ્ધ નથી.\n\nતમે Signalનો ઉપયોગ કરવાનું ચાલુ રાખી શકો છો પરંતુ તમારા માટે નિર્મિત ટેકનૉલોજીને સમર્થન આપવા માટે, એક માસિક દાન આપીને સસ્ટેનર બનવાનું વિચાર કરો.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "તમારા બૂસ્ટ બૅજની સમયસીમા સમાપ્ત થઈ ગઈ છે અને હવે તે તમારી પ્રોફાઇલ પર પ્રદર્શિત થવા માટે ઉપલબ્ધ નથી.\n\nતમે એક-વખતના યોગદાન દ્વારા તમારા બૂસ્ટ બૅજને બીજા 30 દિવસ માટે ફરીથી સક્રિય કરી શકો છો.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Become a Sustainer";
@@ -1079,7 +1079,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "લોકો";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Stories";
+"CONVERSATION_PICKER_SECTION_STORIES" = "સ્ટોરી";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "પ્રાપ્તકર્તાઓ પસંદ કરો";
@@ -3524,13 +3524,13 @@
 "MUTED_BADGE" = "મ્યૂટ કરેલ છે";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Updates to your story will show up here.";
+"MY_STORIES_NO_STORIES" = "તમારી સ્ટોરી પરના અપડેટ્સ અહીં દેખાશે.";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "My Stories";
+"MY_STORIES_TITLE" = "મારી સ્ટોરી";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "My Story";
+"MY_STORY_NAME" = "મારી સ્ટોરી";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "તાજેતરમાં જ તેમનું પ્રોફાઇલ નામ %1$@માંથી %2$@માં બદલ્યું.";
@@ -4610,7 +4610,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "વપરાશકર્તા પસંદ કરી શકાતા નથી.";
 
 /* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "આ ઉપયોગકર્તા Signalને અપગ્રેડ ન કરે ત્યાં સુધી ગિફ્ટ પ્રાપ્ત નહીં કરી શકે.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "હું મારો પિન ભૂલી ગયો";
@@ -5906,28 +5906,28 @@
 "STORIES_HIDE_STORY_ACTION" = "Hide Story";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "હાલમાં દર્શાવી શકાય તેવા કોઈ અપડેટ્સ નથી.\nતમારી સ્ટોરી પર ઉમેરવા માટે + ટૅપ કરો.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "No replies yet";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "નવી ખાનગી સ્ટોરી";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "ખાનગી સ્ટોરી એ જ લોકો જોઈ શકે છે જેમને તમે ઉમેરો છો. ફક્ત તમે જ સ્ટોરીનું નામ જોઈ શકો છો.";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "ખાનગી સ્ટોરી";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "સ્ટોરીની પ્રાઇવસી";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "શેર કરો";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "સ્ટોરી";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";

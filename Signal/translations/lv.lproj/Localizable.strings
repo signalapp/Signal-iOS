@@ -5912,16 +5912,16 @@
 "STORIES_NO_REPLIES_YET" = "Vēl nav atbilžu";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "Jauns privātais stāsts";
 
 /* Footer for the 'Private Stories' section of the stories settings */
 "STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Privātus stāstus var apskatīt tikai cilvēki, kurus jūs tiem pievienojat. Tikai jūs varat redzēt stāsta nosaukumu.";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Privātie stāsti";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "Stāsta privātums";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Kopīgot";

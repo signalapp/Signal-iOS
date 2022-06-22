@@ -155,10 +155,10 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal ತರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ ಯಾಕೆಂದರೆ ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಟೋರೇಜ್ ಸ್ಥಳ ಕಡಿಮೆಯಿದೆ. Signal ಅನ್ನು ಬಳಸಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ನಲ್ಲಿ ನಿಮ್ಮ ಸ್ಟೋರೇಜ್ ಅನ್ನು ನಿರ್ವಹಿಸುವ ಮೂಲಕ ಸ್ಥಳ ಖಾಲಿ ಮಾಡಿ.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "ಸ್ಟೋರೇಜ್ ಸ್ಥಳ ಕಡಿಮೆಯಿದೆ";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "ನಿಮ್ಮ ಹಳೆಯ ಸಾಧನದಿಂದ ವರ್ಗಾಯಿಸಿದ ಡೇಟಾವನ್ನು ಮರುಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಿರುವುದಿಲ್ಲ. support@signal.org ಗೆ ದಯವಿಟ್ಟು ಡೀಬಗ್ ಲಾಗ್ ಅನ್ನು ಕಳುಹಿಸಿ ಇದರಿಂದ ನಾವು ಸಮಸ್ಯೆಯನ್ನು ಪರಿಹರಿಸಲು ಸಾಧ್ಯವಿರುತ್ತದೆ. ನೀವು Signal  ಪುನಃ ಇನ್‌‌ಸ್ಟಾಲ್ ಮಾಡಿದಲ್ಲಿ ಸಂದೇಶದ ಹಿನ್ನೆಲೆಯು ಕಳೆದುಹೋಗಬಹುದು.";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "ನಿಮ್ಮ ಬೂಸ್ಟ್ ಬ್ಯಾಡ್ಜ್ ಅವಧಿ ಮೀರಿದೆ ಮತ್ತು ಅದಿನ್ನು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಪ್ರದರ್ಶಿಸಲು ಲಭ್ಯವಿರುವುದಿಲ್ಲ.\n\nನೀವು Signal ಅನ್ನು ಬಳಸುತ್ತಿರಬಹುದು ಆದರೆ ನಿಮಗಾಗಿ ನಿರ್ಮಾಣಗೊಂಡ ತಂತ್ರಜ್ಞಾನವನ್ನು ಬೆಂಬಲಿಸಲು, ಮಾಸಿಕ ದೇಣಿಗೆಯನ್ನು ನೀಡುವ ಮೂಲಕ ಸಸ್ಟೈನರ್ ಆಗುವುದನ್ನು ಪರಿಗಣಿಸಿ.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "ನಿಮ್ಮ ಬೂಸ್ಟ್ ಬ್ಯಾಡ್ಜ್ ಅವಧಿ ಮೀರಿದೆ ಮತ್ತು ಅದಿನ್ನು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಪ್ರದರ್ಶಿಸಲು ಲಭ್ಯವಿರುವುದಿಲ್ಲ.\n\nಒಂದು ಬಾರಿಯ ಕೊಡುಗೆಯೊಂದಿಗೆ ಇನ್ನೊಂದು 30 ದಿನಗಳಿಗೆ ನಿಮ್ಮ ಬೂಸ್ಟ್ ಬ್ಯಾಡ್ಜ್ ಅನ್ನು ನೀವು ಮರುಸಕ್ರಿಯಗೊಳಿಸಬಹುದು.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Become a Sustainer";
@@ -1079,7 +1079,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "ಜನರು";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Stories";
+"CONVERSATION_PICKER_SECTION_STORIES" = "ಸ್ಟೋರೀಸ್";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "ಸ್ವೀಕರಿಸುವವರನ್ನು ಆಯ್ಕೆ ಮಾಡಿ";
@@ -3524,13 +3524,13 @@
 "MUTED_BADGE" = "ಮ್ಯೂಟ್ ಮಾಡಲಾಗಿದೆ";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Updates to your story will show up here.";
+"MY_STORIES_NO_STORIES" = "ನಿಮ್ಮ ಸ್ಟೋರಿಯ ಪರಿಷ್ಕರಣೆಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "My Stories";
+"MY_STORIES_TITLE" = "ನನ್ನ ಸ್ಟೋರೀಸ್";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "My Story";
+"MY_STORY_NAME" = "ನನ್ನ ಸ್ಟೋರಿ";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "ಇತ್ತೀಚೆಗೆ ಅವರು ತಮ್ಮ ಹೆಸರನ್ನು %1$@ ನಿಂದ %2$@ಕ್ಕೆ ಬದಲಾಯಿಸಿದ್ದಾರೆ.";
@@ -4610,7 +4610,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "ಬಳಕೆದಾರರನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗದು.";
 
 /* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "ಈ ಬಳಕೆದಾರರು Signal ಅನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡುವ ತನಕ ಅವರು ಉಡುಗೊರೆಗಳನ್ನು ಸ್ವೀಕರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "ನಾನು ನನ್ನ  ಪಿನ್ ಮರೆತಿದ್ದೇನೆ.";
@@ -5906,28 +5906,28 @@
 "STORIES_HIDE_STORY_ACTION" = "Hide Story";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "ಪ್ರಸ್ತುತ ತೋರಿಸಲು ಯಾವುದೇ ಪರಿಷ್ಕರಣೆಗಳಿಲ್ಲ.\nನಿಮ್ಮ ಸ್ಟೋರಿಗೆ ಸೇರಿಸಲು ಟ್ಯಾಪ್ + ";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "No replies yet";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "ಹೊಸ ಗೌಪ್ಯ ಸ್ಟೋರಿ";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "ಗೌಪ್ಯ ಸ್ಟೋರೀಸ್ ಅನ್ನು ನೀವು ಸೇರಿಸುವ ಜನರು ಮಾತ್ರ ನೋಡಬಹುದು. ಸ್ಟೋರಿ ಹೆಸರನ್ನು ನೀವು ಮಾತ್ರ ನೋಡಬಹುದು.";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "ಗೌಪ್ಯ ಸ್ಟೋರೀಸ್";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "ಸ್ಟೋರಿ ಗೌಪ್ಯತೆ";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "ಹಂಚಿಕೊಳ್ಳಿ ";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "ಸ್ಟೋರೀಸ್";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";

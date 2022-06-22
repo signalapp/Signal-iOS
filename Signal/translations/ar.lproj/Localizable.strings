@@ -155,10 +155,10 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "لقد تعذر فتح Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "تعذّر فتح Signal لأن مساحة تخزين جهازك مُنخفضة. لاستخدام Signal، يُرجى إفراغ المساحة عن طريق إدارة التخزين في الإعدادات.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "مساحة التخزين مُنخفضة";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "تعذَّرت استعادة البيانات المنقولة من جهازك القديم. يُرجى إرسال سِجل التصحيح إلى support@signal.org حتى نتمكن من مُساعَفتك حول هذه المُشكلة. إذا قمت بإعادة تثبيت Signal  قد تُفقًد محفوظات رسائلك.";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "دعم Signal ";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "انتهت صلاحية شارة الدعم الخاصة بك ولم تعد مُتوفرة لعرضها على حسابك الشخصي.\n\n يمكنك الاستمرار في استخدام Signal ولكن لدعم التكنولوجيا المصممة لك، فكّر في أن تصبح داعمًا من خلال تقديم تبرّع شهري.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "انتهت صلاحية شارة الدعم الخاصة بك ولم تعد مُتوفرة لِعرضها على حسابك الشخصي.\n\n يُمكنك إعادة تفعيل شارة الدعم الخاصة بك لمدة 30 يومًا أخرى بتقديم مساهمة لمرة واحدة.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "كن من الداعمين";
@@ -671,7 +671,7 @@
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "‫📹 مكالمة بالصورة فائتة";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞مكالمة مرئية فائتة على بتاريخ %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞مكالمة مرئية فائتة بتاريخ %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
 "CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞مكالمة مرئية فائتة يوم %@";
@@ -815,7 +815,7 @@
 "CONFIGURE_REACTIONS" = "ضبط ردود الفعل";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "سَوفَ يُؤدِّي هَذَا إلى إعادة تَعيِين التَّطبيق عَن طَريق حَذف رَسائِلك. سَوفَ يَتِمّ إغلاق التَّطبيق بَعدَ اِكتِمال هَذِهِ العَمَليَّة.";
+"CONFIRM_DELETE_DATA_TEXT" = "سَيُؤدِّي هَذَا إلى إعادة تَعيِين التَّطبيق عَن طَريق حَذف رَسائِلك. سَيَتِمّ إغلاق التَّطبيق بَعدَ اِكتِمال هَذِهِ العَمَليَّة.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = " هَل أنتَ مُتأكِد مِن رَغبَتك في حَذف جَميع البَيانات؟";
@@ -3524,13 +3524,13 @@
 "MUTED_BADGE" = "مكتوم";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "سوف يظهر تحديث قصتك هنا.";
+"MY_STORIES_NO_STORIES" = "سَيظهر تحديث قِصتك هنا.";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "قصصي";
+"MY_STORIES_TITLE" = "قِصصي";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "قصتي";
+"MY_STORY_NAME" = "قِصتي";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "مُؤخَّرًا غَيَّرَ اِسمَ مَلَفِّهِ الشَّخصِيِ مِن %1$@ إلى %2$@.";
@@ -4610,7 +4610,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "يتعذّر تحديد المُستخدم.";
 
 /* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "لا يمكن لهذا المستخدم تلقي الهدايا حتى يقوم بترقية Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "لقد نسيت رقمي التعريفي الشخصي.";
@@ -5906,22 +5906,22 @@
 "STORIES_HIDE_STORY_ACTION" = "إخفاء القصة";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "لا توجد تحديثات لِعرضها الآن.\nانقر على + للإضافة إلى قصتك.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "لا جواب حاليا";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "قِصة خاصة جديدة";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "يكمن فقط للأشخاص الذين قمت بإضافتهم مشاهدة القِصص الخاصة. وأنت فقط من يمكنه رؤية اسم القصة.";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "قِصص خاصة";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "إعدادات خصوصية القِصة";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "المُشاركة";

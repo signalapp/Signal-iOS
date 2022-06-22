@@ -1,3 +1,3 @@
-• Fixes to voice memos for people who use right-to-left languages like Arabic, Farsi, and Hebrew.
-• Speeding up messages for big group chats.
-• Various other bug fixes and performance improvements to help keep your app running smoothly.
+• Hem millorat les notes de veu per a les persones que parlin en idiomes de dreta a esquerra, com ara l'àrab, el farsi o l'hebreu.
+• Hem accelerat els missatges per als grups de xat grans.
+• Hem arreglat diversos errors i millorat el funcionament per a ajudar-te a que l'app funcioni sense entrebancs.

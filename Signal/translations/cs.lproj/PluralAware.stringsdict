@@ -668,10 +668,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Skupinový příběh · %d zobrazení</string>
+			<key>many</key>
+			<string>Skupinový příběh · %d zobrazení</string>
 			<key>one</key>
-			<string>Group Story · 1 Viewer</string>
+			<string>Skupinový příběh · 1 zobrazení</string>
 			<key>other</key>
-			<string>Group Story · %d Viewers</string>
+			<string>Skupinový příběh · %d zobrazení</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -836,10 +840,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d zobrazení</string>
+			<key>many</key>
+			<string>%d zobrazení</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 zobrazení</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d zbrazení</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -980,10 +988,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Soukromý příběh · %d zobrazení</string>
+			<key>many</key>
+			<string>Soukromý příběh · %d zobrazení</string>
 			<key>one</key>
-			<string>Private Story · 1 Viewer</string>
+			<string>Soukromý příběh · 1 zobrazení</string>
 			<key>other</key>
-			<string>Private Story · %d Viewers</string>
+			<string>Soukromý příběh · %d zobrazení</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1028,10 +1040,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d zobrazení</string>
+			<key>many</key>
+			<string>%d zobrazení</string>
 			<key>one</key>
-			<string>1 view</string>
+			<string>1 zobrazení</string>
 			<key>other</key>
-			<string>%d views</string>
+			<string>%d zobrazení</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

@@ -623,10 +623,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>قصة جماعية · %d مشاهدين</string>
+			<key>many</key>
+			<string>قصة جماعية · %d مشاهدين</string>
 			<key>one</key>
-			<string>Group Story · 1 Viewer</string>
+			<string>قصة جماعية · 1 مشاهد</string>
 			<key>other</key>
-			<string>Group Story · %d Viewers</string>
+			<string>قِصة جماعية · %d مشاهدين</string>
+			<key>two</key>
+			<string>قصة جماعية · %d مشاهدين</string>
+			<key>zero</key>
+			<string>قصة جماعية · %d مشاهدين</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -783,10 +791,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d مشاهدين</string>
+			<key>many</key>
+			<string>%d مشاهدين</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 مشاهد</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d مشاهدين</string>
+			<key>two</key>
+			<string>%d مشاهدين</string>
+			<key>zero</key>
+			<string>%d مشاهدين</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -927,10 +943,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>قصة خاصة · %d مشاهدين</string>
+			<key>many</key>
+			<string>قصة خاصة · %d مشاهدين</string>
 			<key>one</key>
-			<string>Private Story · 1 Viewer</string>
+			<string>قصة خاصة · 1 مشاهد</string>
 			<key>other</key>
-			<string>Private Story · %d Viewers</string>
+			<string>قِصة خاصة · %d مشاهدين</string>
+			<key>two</key>
+			<string>قصة خاصة · %d مشاهدين</string>
+			<key>zero</key>
+			<string>قصة خاصة ·  %d مشاهدين</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -975,10 +999,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d مشاهدات</string>
+			<key>many</key>
+			<string>%d مشاهدات</string>
 			<key>one</key>
-			<string>1 view</string>
+			<string>1 مشاهدة</string>
 			<key>other</key>
-			<string>%d views</string>
+			<string>%d مشاهدات</string>
+			<key>two</key>
+			<string>%d مشاهدات</string>
+			<key>zero</key>
+			<string>%d مشاهدات</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

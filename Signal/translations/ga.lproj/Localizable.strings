@@ -4217,7 +4217,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Albam Gan Ainm";
 
 /* Pressing this button pins a thread */
-"PIN_ACTION" = "Pin";
+"PIN_ACTION" = "Greamaigh";
 
 /* Error body indicating that the attempt to change a PIN failed. */
 "PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
@@ -6275,7 +6275,7 @@
 "UNNAMED_DEVICE" = "Gléas Gan Ainm";
 
 /* Pressing this button un-pins a thread */
-"UNPIN_ACTION" = "Unpin";
+"UNPIN_ACTION" = "Scoráil";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "Comhráite";

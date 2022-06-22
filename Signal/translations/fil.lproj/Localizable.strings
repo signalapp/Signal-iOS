@@ -14,7 +14,7 @@
 "ACCESSIBILITY_LABEL_AUDIO" = "Audio";
 
 /* Accessibility label for contact. */
-"ACCESSIBILITY_LABEL_CONTACT" = "Kontak";
+"ACCESSIBILITY_LABEL_CONTACT" = "Contact";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
 "ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
@@ -35,7 +35,7 @@
 "ACTION_AUDIO_CALL" = "Tawag sa Signal";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Anyayahan sa Signal";
+"ACTION_INVITE" = "Imbitahan sa Signal";
 
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Ipadala ang Mensahe";
@@ -50,13 +50,13 @@
 "ACTION_VIDEO_CALL" = "Video na Tawag";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Magdagdag ng mga Kasapi";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Magdagdag ng mga miyembro";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Nais mo bang ibahagi ang iyong profile sa grupong ito?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Nais mo bang idagdag ang user na ito sa iyong mga kontak?";
+"ADD_TO_CONTACTS_OFFER" = "Nais mo bang idagdag ang user na ito sa iyong mga contact?";
 
 /* Label for button or row which allows users to add to another group. */
 "ADD_TO_GROUP" = "Add to Another Group";
@@ -68,7 +68,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
 
 /* The title on the 'add to group' confirmation action sheet. */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Magdagdag ng Bagong Kasapi";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Magdagdag ng Bagong Miyembro";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
 "ADD_TO_GROUP_ALREADY_A_MEMBER" = "Already a member";
@@ -77,7 +77,7 @@
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
 
 /* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "Bagong mga Chat ";
+"ADD_TO_GROUP_RECENTS_TITLE" = "Mga Chat Kamakailan";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
@@ -89,7 +89,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Nais mo bang ibahagi ang iyong profile sa user ito?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "Nakuha na";
+"ALERT_ACTION_ACKNOWLEDGE" = "Got it";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
@@ -128,7 +128,7 @@
 "APN_Message" = "Maaaring may mga bago kang mensahe";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Hindi mapatakbo ang Signal. Pakiusap na magpadala ng debug log sa support@signal.org upang ma-troubleshoot ang issue na ito.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Hindi mailunsad ang Signal. Pakiusap na magpadala ng debug log sa support@signal.org upang ma-troubleshoot ang issue na ito.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Error";
@@ -155,10 +155,10 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Hindi mabuksan ang Signal dahil kulang na sa storage space ang device mo. Para magamit ang Signal, dagdagan ang space mo sa pamamagitan ng pag-manage ng storage sa Settings. ";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Kulang na ang Storage Space";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Ang data na inilipat mula sa luma mong device ay hindi ma-restore. Paki-padala ang debug log sa support@signal.org para solusyunan namin ang isyu. Kung mag-reinstall ka ng Signal ay maaaring mawala ang dati mo nang mga mensahe.";
@@ -257,7 +257,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Hindi ma-resize ang imahe.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Masyadong malaki ang kalakip.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Masyadong malaki ang nakalakip.";
 
 /* Attachment error message for attachments with invalid data */
 "ATTACHMENT_ERROR_INVALID_DATA" = "May kasamang invalid na content and kalakip.";
@@ -275,7 +275,7 @@
 "ATTACHMENT_KEYBOARD_CAMERA" = "Camera";
 
 /* A button to select a contact from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_CONTACT" = "Kontak";
+"ATTACHMENT_KEYBOARD_CONTACT" = "Contact";
 
 /* A button to select a file from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_FILE" = "File";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Nag-expire na ang Boost badge mo at hindi mo na ito maipapakita sa profile mo.\n\nMaaari mo pa ring magamit ang Signal pero para suportahan ang teknolohiyang ginawa para sa iyo, maaari kang maging supporter sa pamamagitan ng pagbigay ng buwanang donasyon.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Nag-expire na ang Boost badge mo at hindi mo na ito maipapakita sa profile mo.\n\nMaaari mong ibalik ang Boost badge mo nang karagdagang 30 araw sa pamamagitan ng pagbigay ng donasyon.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Become a Sustainer";
@@ -464,7 +464,7 @@
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Hindi ka na muling makakatanggap ng mga mensahe at update mula sa grupong ito.";
 
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "Hadlangan";
+"BLOCK_LIST_BLOCK_BUTTON" = "Block";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "I-block at Lisanin ang grupong \"%@\"?";
@@ -491,10 +491,10 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Magagawa nyong magpadala ng mensahe at tawagan ang isa't-isa.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Maidaragdag kang muli sa grupo ng mga kasalukuyang kasapi.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Maidaragdag kang muli sa grupo ng mga kasalukuyang miyembro.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Ang mga kasapi ng grupong ito ay maaaring isali kang muli sa grupong ito.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Ang mga miyembro ng grupong ito ay maaaring isali kang muli sa grupong ito.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "I-unblock ang Grupong Ito?";
@@ -524,7 +524,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ ay hindi na naka-block.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Ang naririyan nang mga kasapi ay magagawa na ngayong idagdag kang muli sa grupo.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Ang naririyan nang mga miyembro ay magagawa na ngayong idagdag kang muli sa grupo.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Ang mga user na naka-block ay hindi magagawang tawagan ka o padalhan ka ng mga mensahe.";
@@ -611,7 +611,7 @@
 "BUTTON_UNMUTE" = "I-unmute";
 
 /* Label for the 'view' button. */
-"BUTTON_VIEW" = "View";
+"BUTTON_VIEW" = "Tingnan";
 
 /* Label for the 'yes' button. */
 "BUTTON_YES" = "Oo";
@@ -692,7 +692,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "Tapusin ang Tawag";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Patahimikin";
+"CALL_VIEW_MUTE_LABEL" = "Mute";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
 "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
@@ -797,7 +797,7 @@
 "COMPOSE_BUTTON_LABEL" = "Magsulat";
 
 /* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Mga Kontak";
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Mga Contacts";
 
 /* Table section header for group listing when composing a new message */
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Mga Grupo";
@@ -809,7 +809,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Maghanap ng Username";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Maaari mong paganahin ang access sa mga kontak sa Settings app ng iOS upang makita kung sino sa iyong mga kontak ang gumagamit ng Signal.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Maaari mong paganahin ang access sa mga kontak sa Settings app ng iOS upang makita kung sino sa iyong mga contact ang gumagamit ng Signal.";
 
 /* Configure reactions title text */
 "CONFIGURE_REACTIONS" = "Configure Reactions";
@@ -857,7 +857,7 @@
 "CONTACT_EMAIL" = "Email";
 
 /* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "Syudad";
+"CONTACT_FIELD_ADDRESS_CITY" = "Siyudad";
 
 /* Label for the 'country' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_COUNTRY" = "Bansa";
@@ -929,19 +929,19 @@
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Walang available na numero ng telepono";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "Pumili ng Kontak";
+"CONTACT_PICKER_TITLE" = "Pumili ng Contact";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Ibahagi ang Kontak";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Ibahagi ang Contact";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "I-edit ang Pangalan";
 
 /* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "Hindi valid ang kontak.";
+"CONTACT_SHARE_INVALID_CONTACT" = "Hindi valid ang contact.";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Wala ni-isang field ng kontak ang napili na.";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Wala ni-isang field ng contact ang napili na.";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "Makipag-ugnayan sa Suporta";
@@ -1079,7 +1079,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Mga Tao";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Stories";
+"CONVERSATION_PICKER_SECTION_STORIES" = "Mga Story";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Pumili ng mga Tatanggap";
@@ -1091,13 +1091,13 @@
 "CONVERSATION_SETTINGS" = "Chat Settings";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Magdagdag ng mga Kasapi";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Magdagdag ng mga miyembro";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Idagdag sa Naririyan nang Kontak";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Idagdag sa Naririyan nang Contact";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Idagdag sa mga System na Kontak";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Idagdag sa mga System na Contact";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
@@ -1142,13 +1142,13 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Mga Admin Lamang";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Lahat ng Kasapi";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Lahat ng Miyembro";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Magdagdag ng mga Kasapi";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Magdagdag ng mga Miyembro";
 
 /* Description for the 'edit membership access'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Pumili kung sino ang pwedeng mag-edit ng kasapian ng grupo.";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Pumili kung sino ang pwedeng mag-edit ng mga miyembro ng grupo.";
 
 /* Label for 'group link' action in conversation settings view. */
 "CONVERSATION_SETTINGS_GROUP_LINK" = "Group Link";
@@ -1226,7 +1226,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Muted until %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Gumawa ng Bagong Kontak";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Gumawa ng Bagong Contact";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
 "CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No Groups in Common";
@@ -1250,7 +1250,7 @@
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
 
 /* Label for button that sets 'send messages permission' for a group to 'all members'. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Lahat ng Kasapi";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Lahat ng Miyembro";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Choose who can send messages and start calls in this group.";
@@ -1280,7 +1280,7 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Ibahagi ang Profile";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Idagdag sa mga Kontak";
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Idagdag sa mga Contact";
 
 /* Format for sender info for accessibility label for message. Embeds {{ the sender name }}. */
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%@ sent:";
@@ -1742,7 +1742,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Mapapagana mo ang access sa Settings app ng iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Kailangan ng Signal ng Access sa Kontak upang Ma-edit ang Impormasyon ng Kontak";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Kailangan ng Signal ng Access sa Contact upang Ma-edit ang Impormasyon ng Contact";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "I-edit ang Grupo";
@@ -1805,10 +1805,10 @@
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Paglalakbay at mga Lugar";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Walang sinuman sa iyong mga kontak ang may Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Walang sinuman sa iyong mga contact ang may Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Bakit hindi mo anyayahan ang sinuman?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Bakit hindi mo imbitahan ang sinuman?";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Busy";
@@ -1817,7 +1817,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Bigo ang Tawag.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Hindi ma-access ang mga kontak.";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Hindi ma-access ang mga contact.";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
@@ -1877,7 +1877,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "May hindi-tukoy na error ang naganap.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Ang kontak ay hindi user ng Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Ang contact ay hindi user ng Signal.";
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Nabigo ang pag-download ng kalakip.";
@@ -1901,7 +1901,7 @@
 "ERROR_MESSAGE_INVALID_VERSION" = "Nakatanggap ng mensahe na hindi akma sa bersyon na ito.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "Walang session na available para sa kontak.";
+"ERROR_MESSAGE_NO_SESSION" = "Walang session na available para sa contact.";
 
 /* Shown when signal users safety numbers changed */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Nagbago ang numerong pangkaligtasan.";
@@ -1946,7 +1946,7 @@
 "EXPIRATION_WARNING_TODAY" = "Ang iyong bersyon ng Signal ay mag-e-expire ngayong araw. Pindutin upang mag-update sa pinakabagong bersyon.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Napakarami nang kabiguan sa kontak na ito. Pakiusap na subukang muli kinalaunan.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Napakarami nang kabiguan sa contact na ito. Pakiusap na subukang muli kinalaunan.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Ang iyong numerong pangkaligtasan kay %@ ay kakabago lang. Maaari mong iberipika ito bago mo ipadalang muli ang mensaheng ito.";
@@ -1970,7 +1970,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "Tapusin ang paggawa ng grupo";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "I-forward ang Kontak";
+"FORWARD_CONTACT" = "I-forward ang Contact";
 
 /* Label and title for 'message forwarding' views. */
 "FORWARD_MESSAGE" = "I-forward ang Mensahe";
@@ -2078,10 +2078,10 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Binago mo kung sino ang maaaring mag-edit ng kasapian ng grupo sa “%@“.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "Binago ni %1$@ kung sino ang maaaring mag-edit ng kasapian ng grupo sa “%2$@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "Binago ni %1$@ kung sino ang maaaring mag-edit ng miyembro ng grupo sa “%2$@“.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Ang kasapian ng grupo ay mababago sa “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Ang pagiging miyembro ng grupo ay mababago sa “%@“.";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
@@ -2213,7 +2213,7 @@
 "GROUP_CREATED_BY_UNKNOWN_USER" = "Ang grupo ay nagawa.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Hindi lahat ng mga kasapi ay maidadagdag sa grupo.";
+"GROUP_CREATION_FAILED" = "Hindi lahat ng mga miyembro ay maidadagdag sa grupo.";
 
 /* Text indication the user can tap to view the full group description */
 "GROUP_DESCRIPTION_MORE" = "more";
@@ -2369,7 +2369,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Pakisegurong ikaw ay online tapos ay subukang muli.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Pakisigurong ikaw ay online tapos ay subukang muli.";
 
 /* Error message the attempt to request to join the group failed. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Please try again.";
@@ -2525,13 +2525,13 @@
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "You can add or invite friends after creating this group.";
 
 /* Title for the 'members' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Mga Kasapi";
+"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Mga Miyembro";
 
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Tap to review";
 
 /* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Kasapi";
+"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Miyembro";
 
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Review Members";
@@ -2813,7 +2813,7 @@
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "New Groups";
 
 /* Label for the 'add members' button in the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Magdagdag ng mga Kasapi";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Magdagdag ng mga Miyembro";
 
 /* Title for the 're-add dropped group members' alert view. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Add Member?";
@@ -2822,7 +2822,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Add Members?";
 
 /* Label for the 'add members' button in the 're-add dropped groups members' banner. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Magdagdag ng mga Kasapi";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Magdagdag ng mga Miyembro";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
@@ -2912,13 +2912,13 @@
 "HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Ilan sa iyong mga kontak ay nasa Signal na, kasama si %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Ilan sa iyong mga contact ay nasa Signal na, kasama si %@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Ilan sa iyong mga kontak ay nasa Signal na, kasama sina %@ at %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Ilan sa iyong mga contact ay nasa Signal na, kasama sina %@ at %@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Ilan sa iyong mga kontak ay nasa Signal na, kasama sina %@, %@ at %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Ilan sa iyong mga contact ay nasa Signal na, kasama sina %@, %@ at %@.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first chat here.";
@@ -2963,10 +2963,10 @@
 "IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Not seeing your photos?";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Nabigo na makapili ng attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Nabigo na makapili ng kalakip.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Umuugnay...";
+"IN_CALL_CONNECTING" = "Kumokonekta...";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Nasagot sa ibang device.";
@@ -3029,10 +3029,10 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Ang file na audio ay hindi valid.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Maaari mong paganahin ang access sa mga kontak sa Settings app ng iOS upang maimbitahan ang iyong mga kaibigan na sumali sa Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Maaari mong paganahin ang access sa mga contact sa Settings app ng iOS upang maimbitahan ang iyong mga kaibigan na sumali sa Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Pahintulutan ang Access sa Kontak";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Pahintulutan ang Access sa Contact";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Imbitahan ang mga Kaibigan sa Signal";
@@ -3095,7 +3095,7 @@
 "KEY_COMMAND_UNARCHIVE" = "Unarchive Chat";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "Matuto pa ng Marami";
+"LEARN_MORE" = "Matuto pa ";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Umalis";
@@ -3485,7 +3485,7 @@
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "Si %@ ay hindi na markadong beripikado. Pindutin para sa mga pagpipilian.";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Mahigit sa isang kasapi ng grupong ito ay hindi na markadong beripikado. Pindutin para sa mga pagpipilian.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Mahigit sa isang miyembro ng grupong ito ay hindi na markadong beripikado. Pindutin para sa mga pagpipilian.";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Bagong mga Mensahe";
@@ -3524,13 +3524,13 @@
 "MUTED_BADGE" = "Muted";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Updates to your story will show up here.";
+"MY_STORIES_NO_STORIES" = "Lalabas dito ang mga update sa story mo.";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "My Stories";
+"MY_STORIES_TITLE" = "Mga Story Ko";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "My Story";
+"MY_STORY_NAME" = "Story Ko";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
@@ -3572,7 +3572,7 @@
 "NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Does not support New Groups";
 
 /* Message for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Kailangang ng pangalan ng grupo.";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Kailangan ng pangalan ng grupo.";
 
 /* Title for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Walang Pangalan ng Grupo";
@@ -3590,7 +3590,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Ibang mga User";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Pumili ng mga Kasapi";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Pumili ng mga Miyembro";
 
 /* No comment provided by engineer. */
 "new_message" = "Bagong Mensahe";
@@ -3602,7 +3602,7 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Hanapin ang User";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Maghanap ng kontak sa Pamamagitan ng Numero ng Telepono";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Maghanap ng contact sa Pamamagitan ng Numero ng Telepono";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "No groups in common";
@@ -3611,7 +3611,7 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "No other groups in common.";
 
 /* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "Pumili ng kontak o grupo para simulan ang pakikipag-chat.";
+"NO_SELECTED_CONVERSATION_DESCRIPTION" = "Pumili ng contact o grupo para simulan ang pakikipag-chat.";
 
 /* Title welcoming to the app */
 "NO_SELECTED_CONVERSATION_TITLE" = "Welcome sa Signal";
@@ -3707,7 +3707,7 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Lampasan ang paglalagay ng PIN?";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Lagyan ng haplos ng pagiging-tao ang iyong mga mensahe";
+"ONBOARDING_CAPTCHA_TITLE" = "Lagyan ng bahid ng pagiging-tao ang iyong mga mensahe";
 
 /* Explanation on the 'onboarding after dropped YDB' view. */
 "ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
@@ -3737,7 +3737,7 @@
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Madi-disable ang Signal sa iba pang mga device na kasalukuyang nakarehistro sa parehong numero ng telepono kung irerehistro ang iPad na ito.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Hindi minumungkahi na i-link ang iPhone na ito dahil maglilimita ito sa core na functionality.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Hindi minumungkahi na i-link ang iPhone na ito dahil maglilimita ito sa core functionality.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Permissions";
@@ -3779,7 +3779,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "Upang protektahan ang iyong privacy at seguridad ng iyong account, ni-lock namin ito ng 7 araw.\n\nMakalipas ang 7 araw ng kawalang-aktibidad, mairerehistro mo ang numero ng teleponong ito ng hindi na kailangan ang iyong PIN. Ang lahat ng iyong content ay buburahin.";
 
 /* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Magdagdag ng kaalaman tunngkol sa mga na-lock na account.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Magdagdag ng kaalaman tungkol sa mga na-lock na account.";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "Na-lock ang Account ";
@@ -4097,7 +4097,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Bawiin ang imbitasyon sa grupo para kay “%@“?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Ang mga detalye ng mga taong inimbitahan ng ibang kasapi ng grupo ay hindi ipinakita. Kung piliing sumali ng mga inimbitahan, ang kanilang impormasyon ay maibabahagi sa grupo sa puntong iyon. Hindi nila makikita ang anumang mga mensahe sa grupo hanggang sila ay sumali.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Ang mga detalye ng mga taong inimbitahan ng ibang miyembro ng grupo ay hindi ipinakita. Kung piliing sumali ng mga inimbitahan, ang kanilang impormasyon ay maibabahagi sa grupo sa puntong iyon. Hindi nila makikita ang anumang mga mensahe sa grupo hanggang sila ay sumali.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the group link.";
@@ -4121,10 +4121,10 @@
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Media";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Isahang-tingin na larawan";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "View-once na larawan";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Isahang-tingin na video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "View-once na video";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Tignan ang Larawan";
@@ -4304,7 +4304,7 @@
 "PIN_CREATION_SKIP" = "Disable PIN";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Lhain ang iyong PIN";
+"PIN_CREATION_TITLE" = "Lumikha ang iyong PIN";
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Pumili ng mas malakas na PIN";
@@ -4394,7 +4394,7 @@
 "PRIVACY_UNVERIFY_BUTTON" = "I-clear ang Beripikasyon";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Mukhang hindi ito ang iyong numerong pangkaligtasan kay %@. Bineberipika mo ba ang tamang kontak?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Mukhang hindi ito ang iyong numerong pangkaligtasan kay %@. Bineberipika mo ba ang tamang contact?";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
@@ -4571,7 +4571,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Nag-react ng %@ sa iyong audio";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Nag-react ng %@ sa iyong pagbahagi ng kontak";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Nag-react ng %@ sa iyong pagbahagi ng contact";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Nag-react ng %@ sa iyong file";
@@ -4610,7 +4610,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "hindi mapili ang user.";
 
 /* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "Hindi makakatanggap ng mga gift ang user na ito hangga't hindi pa nila ina-upgrade ang Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Nakalimutan ko ang aking PIN";
@@ -4685,7 +4685,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Ang isinumite mong numero ay hindi nagtugma sa aming pinadala. Maaari mo bang tignang muli? ";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Mali ang Lock PIN ng Rehistrasyon";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Mali ang Lock PIN ng Registration";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Pakiusap na maglagay ng valid na numero ng telepono upang makapagrehistro.";
@@ -4754,7 +4754,7 @@
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
 
 /* View safety number action for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "View";
+"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Tingnan";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Ang ating Numerong Pangkaligtasan sa Signal:\n%@";
@@ -4763,13 +4763,13 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Ang iyong numerong pangkaligtasan kay %@ ay nagbago na. Baka nais mong iberipika ito.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "I-scan ang QR Code sa device ng iyong kontak.";
+"SCAN_CODE_INSTRUCTIONS" = "I-scan ang QR Code sa device ng iyong contact.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "I-scan ang QR Code";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Kagyat";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
 "SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Hindi ma-access ang authentication.";
@@ -4808,7 +4808,7 @@
 "SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Hanapin";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
-"SEARCH_SECTION_CONTACTS" = "Iba pang mga Kontak";
+"SEARCH_SECTION_CONTACTS" = "Iba pang mga Contact";
 
 /* section header for search results that match existing 1:1 chats */
 "SEARCH_SECTION_CONVERSATIONS" = "Mga chat";
@@ -4865,7 +4865,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Wala akong Signal sa aking telepono...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Pumunta sa App Store ng iyong phone, i-install ang Signal, kumpletuhin ang proseso ng rehistrasyon, at pagkatapos ay ma-i-li-link mo ang iyong iPad sa parehong account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Pumunta sa App Store ng iyong phone, i-install ang Signal, kumpletuhin ang proseso ng registration, at pagkatapos ay ma-i-li-link mo ang iyong iPad sa parehong account.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "I-install ang Signal sa Iyong Telepono";
@@ -5012,7 +5012,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Idagdag ang Naka-block na User";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Wala kang mga kontak sa Signal.";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Wala kang mga contact sa Signal.";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Walang Resulta ang Paghahanap";
@@ -5024,7 +5024,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Laging padaain ang Tawag sa server ng Signal";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Padaanin ang lahat ng tawag sa server ng Signal upang maiwasang mailantad sa iyong kontak ang iyong IP address. Mababawasan ang kalidad ng tawag kapag pinagana ito.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Padaanin ang lahat ng tawag sa server ng Signal upang maiwasang mailantad sa iyong contact ang iyong IP address. Mababawasan ang kalidad ng tawag kapag pinagana ito.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
@@ -5669,13 +5669,13 @@
 "SETTINGS_PRIVACY_TITLE" = "Privacy";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Read Receipts";
+"SETTINGS_READ_RECEIPT" = "Basahin ang Receipts";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Patayin";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Patayin ang Lock ng Rehistrasyon";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Patayin ang Lock ng Registration";
 
 /* Action to turn on registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Buksan";
@@ -5906,22 +5906,22 @@
 "STORIES_HIDE_STORY_ACTION" = "Hide Story";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "Wala pang maipapakitang mga update ngayon.\nI-tap ang + para magbahagi ng story mo.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "No replies yet";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "Bagong Pribadong Story";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Ang mga pribadong story ay makikita lang ng mga taong in-add mo dito. Ikaw lang ang makakakita ng pangalan ng story.";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Mga Private na Story";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "Pagkapribado ng Story";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Ibahagi";
@@ -5972,10 +5972,10 @@
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ang iyong numerong pangkaligtasan kay %@ ay nagtugma. Maaari mong markahang beripikado ang knotak na ito.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ang iyong numerong pangkaligtasan kay %@ ay nagtugma. Maaari mong markahang beripikado ang contact na ito.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Magtugma ang Numerong Pangkaligtasan!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Nagtugma ang Numerong Pangkaligtasan!";
 
 /* Header of support description field */
 "SUPPORT_CONTACT_US_HEADER" = "Makipag-ugnayan sa Amin";
@@ -6152,16 +6152,16 @@
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Kasapi ng %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Miyembro ng %@";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
-"THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "View";
+"THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Tingnan";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Kasapi ng %@, %@, at %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Miyembro ng %@, %@, at %@";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Kasapi ng %@ at %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Miyembro ng %@ at %@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ araw";
@@ -6209,16 +6209,16 @@
 "TXT_CANCEL_TITLE" = "Kanselahin";
 
 /* Label for the delete button in an alert or action sheet. */
-"TXT_DELETE_TITLE" = "Delete";
+"TXT_DELETE_TITLE" = "Burahin";
 
 /* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "I-unarchive";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Wala sa iyong mga kontak ang user. Nais mo bang i-block ang user na ito?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Wala sa iyong mga contact ang user. Nais mo bang i-block ang user na ito?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
-"UNKNOWN_CONTACT_NAME" = "Hindi tukoy na kontak";
+"UNKNOWN_CONTACT_NAME" = "Hindi tukoy na contact";
 
 /* Label for unknown countries. */
 "UNKNOWN_COUNTRY_NAME" = "Hindi Tukoy na Bansa";
@@ -6245,7 +6245,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Maaari mong hingin sa nagpadala na ipadalang muli ang mensaheng ito ngayong gumagamit ka na ng up-to-date na bersyon ng Signal.";
 
 /* Label indicating an unknown user. */
-"UNKNOWN_USER" = "Hindi alam";
+"UNKNOWN_USER" = "Hindi tukoy";
 
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Ang naglalahong mga mensahe ay naka-disable.";

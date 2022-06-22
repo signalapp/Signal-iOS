@@ -4604,7 +4604,7 @@
 "READ_ACTION" = "Prebrano";
 
 /* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Uporabnik/ca ne more biti dodan/a v skupino dokler ne nadgradi aplikacije Signal.";
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Uporabnik/ca ne more biti dodan/a v skupino, dokler ne nadgradi aplikacije Signal.";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Uporabnik/ca ne more biti izbran/a.";

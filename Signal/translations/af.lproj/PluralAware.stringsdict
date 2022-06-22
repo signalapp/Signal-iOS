@@ -15,7 +15,7 @@
 			<key>one</key>
 			<string>Voice message 1 second</string>
 			<key>other</key>
-			<string>Voice message %d seconds</string>
+			<string>Stemboodskap %d sekondes</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -616,9 +616,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Group Story · 1 Viewer</string>
+			<string>Groepstorie · 1 Kyker</string>
 			<key>other</key>
-			<string>Group Story · %d Viewers</string>
+			<string>Groepstorie · %d Kykers</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -776,9 +776,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 Kyker</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d Kykers</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -920,9 +920,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Private Story · 1 Viewer</string>
+			<string>Private Storie · 1 Kyker</string>
 			<key>other</key>
-			<string>Private Story · %d Viewers</string>
+			<string>Privaatstorie · %d Kykers</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -968,9 +968,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 view</string>
+			<string>1 kykslag</string>
 			<key>other</key>
-			<string>%d views</string>
+			<string>%d kykslae</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

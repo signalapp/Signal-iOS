@@ -3524,7 +3524,7 @@
 "MUTED_BADGE" = "已靜音";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "您的限時動態更新將顯示於此。";
+"MY_STORIES_NO_STORIES" = "你的限時動態更新將在此顯示。";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "我的限時動態";
@@ -4604,7 +4604,7 @@
 "READ_ACTION" = "已讀取";
 
 /* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "無法新增此用戶到群組直至他們更新 Signal。";
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "此用戶必須更新 Signal，方可加入此群組。";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "無法選擇使用者。";
@@ -5915,7 +5915,7 @@
 "STORIES_SETTINGS_NEW_STORY" = "New Private Story";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "個人限時動態僅限您新增的人觀看。只有您見到限時動態名稱。";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "個人限時動態只供您新增的用戶查看。只有您可以看到限時動態的名稱。";
 
 /* Header for the 'Private Stories' section of the stories settings */
 "STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
