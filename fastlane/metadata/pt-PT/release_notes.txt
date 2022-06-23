@@ -1,3 +1,3 @@
-• Replying to a message with just emoji? Now emoji-only responses will now appear larger in the chat.
-• We’ve improved sharing and forwarding of audio attachments. Keep sending those songs!
-• Other bug fixes to keep your app running smoothly.
+• Queres responder só com emojis? Agora, as mensagens só com emojis vão aparecer maiores no chat.
+• We’ve improved sharing and forwarding of audio messages and attachments. Keep sending those voice memos!
+• Outras bug fixes para manter o bom funcionamento da tua app.
