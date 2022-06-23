@@ -55,7 +55,7 @@ class MyStoriesViewController: OWSTableViewController2 {
 
         let outgoingStories = databaseStorage.read { transaction in
             StoryFinder.outgoingStories(transaction: transaction)
-                .compactMap { OutgoingStoryItem(message: $0, transaction: transaction) }
+                .flatMap { OutgoingStoryItem.build(message: $0, transaction: transaction) }
         }
 
         emptyStateLabel.isHidden = !outgoingStories.isEmpty
@@ -92,18 +92,9 @@ class MyStoriesViewController: OWSTableViewController2 {
                     cell.contentView.addSubview(hStackView)
                     hStackView.autoPinEdgesToSuperviewEdges()
 
-                    let thumbnailView = UIImageView()
+                    let thumbnailView = StoryThumbnailView(attachment: story.attachment)
                     thumbnailView.autoSetDimensions(to: CGSize(width: 56, height: 84))
-                    thumbnailView.contentMode = .scaleAspectFill
-                    thumbnailView.clipsToBounds = true
-                    thumbnailView.layer.cornerRadius = 12
-                    thumbnailView.backgroundColor = Theme.washColor
                     hStackView.addArrangedSubview(thumbnailView)
-
-                    // TODO: Non-image attachments
-                    if let attachmentStream = story.fileAttachment as? TSAttachmentStream {
-                        thumbnailView.image = attachmentStream.thumbnailImageSmallSync()
-                    }
 
                     hStackView.addArrangedSubview(.spacer(withWidth: 16))
 
@@ -143,27 +134,16 @@ class MyStoriesViewController: OWSTableViewController2 {
 
 private struct OutgoingStoryItem {
     let message: StoryMessage
-    let fileAttachment: TSAttachment?
+    let attachment: StoryThumbnailView.Attachment
     let thread: TSThread
 
-    init?(message: StoryMessage, transaction: SDSAnyReadTransaction) {
-        self.message = message
-
-        guard case .outgoing(let threadId, _) = message.manifest else {
-            owsFailDebug("Unexpected story manifest")
-            return nil
+    static func build(message: StoryMessage, transaction: SDSAnyReadTransaction) -> [OutgoingStoryItem] {
+        message.threads(transaction: transaction).map {
+            .init(
+                message: message,
+                attachment: .from(message.attachment, transaction: transaction),
+                thread: $0
+            )
         }
-
-        if case .file(let attachmentId) = message.attachment {
-            fileAttachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
-        } else {
-            fileAttachment = nil
-        }
-
-        guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
-            owsFailDebug("Unexpectedly missing thread for story")
-            return nil
-        }
-        self.thread = thread
     }
 }

@@ -40,6 +40,7 @@
 #import <SignalServiceKit/OWSOutgoingPaymentMessage.h>
 #import <SignalServiceKit/OWSOutgoingReceiptManager.h>
 #import <SignalServiceKit/OWSOutgoingResendRequest.h>
+#import <SignalServiceKit/OWSOutgoingSentMessageTranscript.h>
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
 #import <SignalServiceKit/OWSReceiptCredentialRedemptionJobRecord.h>
 #import <SignalServiceKit/OWSReceiptManager.h>

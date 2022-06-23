@@ -2846,6 +2846,17 @@ struct SignalServiceProtos_SyncMessage {
     /// Clears the value of `isRecipientUpdate`. Subsequent reads from it will return its default value.
     mutating func clearIsRecipientUpdate() {self._isRecipientUpdate = nil}
 
+    var storyMessage: SignalServiceProtos_StoryMessage {
+      get {return _storyMessage ?? SignalServiceProtos_StoryMessage()}
+      set {_storyMessage = newValue}
+    }
+    /// Returns true if `storyMessage` has been explicitly set.
+    var hasStoryMessage: Bool {return self._storyMessage != nil}
+    /// Clears the value of `storyMessage`. Subsequent reads from it will return its default value.
+    mutating func clearStoryMessage() {self._storyMessage = nil}
+
+    var storyMessageRecipients: [SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient] = []
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     struct UnidentifiedDeliveryStatus {
@@ -2889,6 +2900,39 @@ struct SignalServiceProtos_SyncMessage {
       fileprivate var _unidentified: Bool? = nil
     }
 
+    struct StoryMessageRecipient {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      var destinationUuid: String {
+        get {return _destinationUuid ?? String()}
+        set {_destinationUuid = newValue}
+      }
+      /// Returns true if `destinationUuid` has been explicitly set.
+      var hasDestinationUuid: Bool {return self._destinationUuid != nil}
+      /// Clears the value of `destinationUuid`. Subsequent reads from it will return its default value.
+      mutating func clearDestinationUuid() {self._destinationUuid = nil}
+
+      var distributionListIds: [String] = []
+
+      var isAllowedToReply: Bool {
+        get {return _isAllowedToReply ?? false}
+        set {_isAllowedToReply = newValue}
+      }
+      /// Returns true if `isAllowedToReply` has been explicitly set.
+      var hasIsAllowedToReply: Bool {return self._isAllowedToReply != nil}
+      /// Clears the value of `isAllowedToReply`. Subsequent reads from it will return its default value.
+      mutating func clearIsAllowedToReply() {self._isAllowedToReply = nil}
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+
+      fileprivate var _destinationUuid: String? = nil
+      fileprivate var _isAllowedToReply: Bool? = nil
+    }
+
     init() {}
 
     fileprivate var _destinationE164: String? = nil
@@ -2897,6 +2941,7 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _message: SignalServiceProtos_DataMessage? = nil
     fileprivate var _expirationStartTimestamp: UInt64? = nil
     fileprivate var _isRecipientUpdate: Bool? = nil
+    fileprivate var _storyMessage: SignalServiceProtos_StoryMessage? = nil
   }
 
   struct Contacts {
@@ -4580,6 +4625,7 @@ extension SignalServiceProtos_Verified.State: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.Sent: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.Contacts: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.Groups: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.Blocked: @unchecked Sendable {}
@@ -7522,6 +7568,8 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
     4: .same(proto: "expirationStartTimestamp"),
     5: .same(proto: "unidentifiedStatus"),
     6: .same(proto: "isRecipientUpdate"),
+    8: .same(proto: "storyMessage"),
+    9: .same(proto: "storyMessageRecipients"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7537,6 +7585,8 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
       case 5: try { try decoder.decodeRepeatedMessageField(value: &self.unidentifiedStatus) }()
       case 6: try { try decoder.decodeSingularBoolField(value: &self._isRecipientUpdate) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self._destinationUuid) }()
+      case 8: try { try decoder.decodeSingularMessageField(value: &self._storyMessage) }()
+      case 9: try { try decoder.decodeRepeatedMessageField(value: &self.storyMessageRecipients) }()
       default: break
       }
     }
@@ -7568,6 +7618,12 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
     try { if let v = self._destinationUuid {
       try visitor.visitSingularStringField(value: v, fieldNumber: 7)
     } }()
+    try { if let v = self._storyMessage {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+    } }()
+    if !self.storyMessageRecipients.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.storyMessageRecipients, fieldNumber: 9)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -7579,6 +7635,8 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
     if lhs._expirationStartTimestamp != rhs._expirationStartTimestamp {return false}
     if lhs.unidentifiedStatus != rhs.unidentifiedStatus {return false}
     if lhs._isRecipientUpdate != rhs._isRecipientUpdate {return false}
+    if lhs._storyMessage != rhs._storyMessage {return false}
+    if lhs.storyMessageRecipients != rhs.storyMessageRecipients {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -7627,6 +7685,54 @@ extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: Swift
     if lhs._destinationE164 != rhs._destinationE164 {return false}
     if lhs._destinationUuid != rhs._destinationUuid {return false}
     if lhs._unidentified != rhs._unidentified {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.Sent.protoMessageName + ".StoryMessageRecipient"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "destinationUuid"),
+    2: .same(proto: "distributionListIds"),
+    3: .same(proto: "isAllowedToReply"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self._destinationUuid) }()
+      case 2: try { try decoder.decodeRepeatedStringField(value: &self.distributionListIds) }()
+      case 3: try { try decoder.decodeSingularBoolField(value: &self._isAllowedToReply) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._destinationUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    } }()
+    if !self.distributionListIds.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.distributionListIds, fieldNumber: 2)
+    }
+    try { if let v = self._isAllowedToReply {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 3)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient, rhs: SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient) -> Bool {
+    if lhs._destinationUuid != rhs._destinationUuid {return false}
+    if lhs.distributionListIds != rhs.distributionListIds {return false}
+    if lhs._isAllowedToReply != rhs._isAllowedToReply {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

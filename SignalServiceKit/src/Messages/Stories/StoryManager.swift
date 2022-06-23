@@ -65,6 +65,33 @@ public class StoryManager: NSObject {
     }
 
     @objc
+    public class func processStoryMessageTranscript(
+        _ proto: SSKProtoSyncMessageSent,
+        transaction: SDSAnyWriteTransaction
+    ) throws {
+        // Drop all story messages until the feature is enabled.
+        guard FeatureFlags.stories else { return }
+
+        if let existingStory = StoryFinder.story(
+            timestamp: proto.timestamp,
+            author: tsAccountManager.localAddress!,
+            transaction: transaction
+        ) {
+            owsAssertDebug(proto.isRecipientUpdate)
+            existingStory.updateRecipients(proto.storyMessageRecipients, transaction: transaction)
+        } else {
+            guard let message = try StoryMessage.create(withSentTranscript: proto, transaction: transaction) else { return }
+
+            // TODO: Optimistic downloading of story attachments.
+            attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(message, transaction: transaction)
+
+            OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: message.timestamp + storyLifetimeMillis)
+
+            earlyMessageManager.applyPendingMessages(for: message, transaction: transaction)
+        }
+    }
+
+    @objc
     public class func deleteExpiredStories(transaction: SDSAnyWriteTransaction) -> UInt {
         var removedCount: UInt = 0
         StoryFinder.enumerateExpiredStories(transaction: transaction) { message, _ in

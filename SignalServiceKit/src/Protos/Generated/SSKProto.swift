@@ -10348,6 +10348,197 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder {
 
 #endif
 
+// MARK: - SSKProtoSyncMessageSentStoryMessageRecipient
+
+@objc
+public class SSKProtoSyncMessageSentStoryMessageRecipient: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient
+
+    @objc
+    public var destinationUuid: String? {
+        guard hasDestinationUuid else {
+            return nil
+        }
+        return proto.destinationUuid
+    }
+    @objc
+    public var hasDestinationUuid: Bool {
+        return proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
+    }
+
+    @objc
+    public var distributionListIds: [String] {
+        return proto.distributionListIds
+    }
+
+    @objc
+    public var isAllowedToReply: Bool {
+        return proto.isAllowedToReply
+    }
+    @objc
+    public var hasIsAllowedToReply: Bool {
+        return proto.hasIsAllowedToReply
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient) throws {
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessageSentStoryMessageRecipient -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessageSentStoryMessageRecipient -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoSyncMessageSentStoryMessageRecipient {
+    @objc
+    public static func builder() -> SSKProtoSyncMessageSentStoryMessageRecipientBuilder {
+        return SSKProtoSyncMessageSentStoryMessageRecipientBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageSentStoryMessageRecipientBuilder {
+        let builder = SSKProtoSyncMessageSentStoryMessageRecipientBuilder()
+        if let _value = destinationUuid {
+            builder.setDestinationUuid(_value)
+        }
+        builder.setDistributionListIds(distributionListIds)
+        if hasIsAllowedToReply {
+            builder.setIsAllowedToReply(isAllowedToReply)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoSyncMessageSentStoryMessageRecipientBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setDestinationUuid(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.destinationUuid = valueParam
+    }
+
+    public func setDestinationUuid(_ valueParam: String) {
+        proto.destinationUuid = valueParam
+    }
+
+    @objc
+    public func addDistributionListIds(_ valueParam: String) {
+        proto.distributionListIds.append(valueParam)
+    }
+
+    @objc
+    public func setDistributionListIds(_ wrappedItems: [String]) {
+        proto.distributionListIds = wrappedItems
+    }
+
+    @objc
+    public func setIsAllowedToReply(_ valueParam: Bool) {
+        proto.isAllowedToReply = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> SSKProtoSyncMessageSentStoryMessageRecipient {
+        return try SSKProtoSyncMessageSentStoryMessageRecipient(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoSyncMessageSentStoryMessageRecipient(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoSyncMessageSentStoryMessageRecipient {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageSentStoryMessageRecipientBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageSentStoryMessageRecipient? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessageSent
 
 @objc
@@ -10360,6 +10551,12 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
 
     @objc
     public let unidentifiedStatus: [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus]
+
+    @objc
+    public let storyMessage: SSKProtoStoryMessage?
+
+    @objc
+    public let storyMessageRecipients: [SSKProtoSyncMessageSentStoryMessageRecipient]
 
     @objc
     public var destinationE164: String? {
@@ -10429,10 +10626,14 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
 
     private init(proto: SignalServiceProtos_SyncMessage.Sent,
                  message: SSKProtoDataMessage?,
-                 unidentifiedStatus: [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus]) {
+                 unidentifiedStatus: [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus],
+                 storyMessage: SSKProtoStoryMessage?,
+                 storyMessageRecipients: [SSKProtoSyncMessageSentStoryMessageRecipient]) {
         self.proto = proto
         self.message = message
         self.unidentifiedStatus = unidentifiedStatus
+        self.storyMessage = storyMessage
+        self.storyMessageRecipients = storyMessageRecipients
 
         let hasDestinationUuid = proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
         let hasDestinationE164 = proto.hasDestinationE164 && !proto.destinationE164.isEmpty
@@ -10490,13 +10691,23 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
         var unidentifiedStatus: [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus] = []
         unidentifiedStatus = try proto.unidentifiedStatus.map { try SSKProtoSyncMessageSentUnidentifiedDeliveryStatus($0) }
 
+        var storyMessage: SSKProtoStoryMessage?
+        if proto.hasStoryMessage {
+            storyMessage = try SSKProtoStoryMessage(proto.storyMessage)
+        }
+
+        var storyMessageRecipients: [SSKProtoSyncMessageSentStoryMessageRecipient] = []
+        storyMessageRecipients = try proto.storyMessageRecipients.map { try SSKProtoSyncMessageSentStoryMessageRecipient($0) }
+
         // MARK: - Begin Validation Logic for SSKProtoSyncMessageSent -
 
         // MARK: - End Validation Logic for SSKProtoSyncMessageSent -
 
         self.init(proto: proto,
                   message: message,
-                  unidentifiedStatus: unidentifiedStatus)
+                  unidentifiedStatus: unidentifiedStatus,
+                  storyMessage: storyMessage,
+                  storyMessageRecipients: storyMessageRecipients)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -10564,6 +10775,10 @@ extension SSKProtoSyncMessageSent {
         if hasIsRecipientUpdate {
             builder.setIsRecipientUpdate(isRecipientUpdate)
         }
+        if let _value = storyMessage {
+            builder.setStoryMessage(_value)
+        }
+        builder.setStoryMessageRecipients(storyMessageRecipients)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -10643,6 +10858,27 @@ public class SSKProtoSyncMessageSentBuilder: NSObject {
     @objc
     public func setIsRecipientUpdate(_ valueParam: Bool) {
         proto.isRecipientUpdate = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setStoryMessage(_ valueParam: SSKProtoStoryMessage?) {
+        guard let valueParam = valueParam else { return }
+        proto.storyMessage = valueParam.proto
+    }
+
+    public func setStoryMessage(_ valueParam: SSKProtoStoryMessage) {
+        proto.storyMessage = valueParam.proto
+    }
+
+    @objc
+    public func addStoryMessageRecipients(_ valueParam: SSKProtoSyncMessageSentStoryMessageRecipient) {
+        proto.storyMessageRecipients.append(valueParam.proto)
+    }
+
+    @objc
+    public func setStoryMessageRecipients(_ wrappedItems: [SSKProtoSyncMessageSentStoryMessageRecipient]) {
+        proto.storyMessageRecipients = wrappedItems.map { $0.proto }
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

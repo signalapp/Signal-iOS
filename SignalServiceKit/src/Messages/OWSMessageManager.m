@@ -1608,138 +1608,149 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Invalid timestamp.");
             return;
         }
-        if (![SDS fitsInInt64:syncMessage.sent.expirationStartTimestamp]) {
-            OWSFailDebug(@"Invalid expirationStartTimestamp.");
-            return;
-        }
 
-        OWSIncomingSentMessageTranscript *_Nullable transcript =
-            [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent
-                                                    serverTimestamp:envelope.serverTimestamp
-                                                        transaction:transaction];
-        if (!transcript) {
-            OWSFailDebug(@"Couldn't parse transcript.");
-            return;
-        }
-
-        SSKProtoDataMessage *_Nullable dataMessage = syncMessage.sent.message;
-        if (!dataMessage) {
-            OWSFailDebug(@"Missing dataMessage.");
-            return;
-        }
-        SignalServiceAddress *destination = syncMessage.sent.destinationAddress;
-        if (dataMessage && destination.isValid && dataMessage.hasProfileKey) {
-            // If we observe a linked device sending our profile key to another
-            // user, we can infer that that user belongs in our profile whitelist.
-            NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
-            if (groupId != nil) {
-                [self.profileManager addGroupIdToProfileWhitelist:groupId];
-            } else {
-                [self.profileManager addUserToProfileWhitelist:destination];
-            }
-        }
-
-        SSKProtoGroupContext *_Nullable groupContextV1 = dataMessage.group;
-        BOOL isV1GroupStateChange = (groupContextV1 != nil && groupContextV1.hasType
-            && (groupContextV1.unwrappedType == SSKProtoGroupContextTypeUpdate
-                || groupContextV1.unwrappedType == SSKProtoGroupContextTypeQuit));
-
-        if (isV1GroupStateChange) {
-            [self handleGroupStateChangeWithEnvelope:envelope
-                                         dataMessage:dataMessage
-                                        groupContext:groupContextV1
-                                         transaction:transaction];
-        } else if (dataMessage.reaction != nil) {
-            TSThread *_Nullable thread = nil;
-
-            NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
-            if (groupId != nil) {
-                thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-            } else {
-                thread = [TSContactThread getOrCreateThreadWithContactAddress:syncMessage.sent.destinationAddress
-                                                                  transaction:transaction];
-            }
-            if (thread == nil) {
-                OWSFailDebug(@"Could not process reaction from sync transcript.");
+        if (syncMessage.sent.message) {
+            if (![SDS fitsInInt64:syncMessage.sent.expirationStartTimestamp]) {
+                OWSFailDebug(@"Invalid expirationStartTimestamp.");
                 return;
             }
-            OWSReactionProcessingResult result = [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                                                                      thread:thread
-                                                                                     reactor:envelope.sourceAddress
-                                                                                   timestamp:syncMessage.sent.timestamp
-                                                                             serverTimestamp:envelope.serverTimestamp
-                                                                            expiresInSeconds:dataMessage.expireTimer
-                                                                                 transaction:transaction];
-            switch (result) {
-                case OWSReactionProcessingResultSuccess:
-                case OWSReactionProcessingResultInvalidReaction:
-                    break;
-                case OWSReactionProcessingResultAssociatedMessageMissing:
-                    [self.earlyMessageManager recordEarlyEnvelope:envelope
-                                                    plainTextData:plaintextData
-                                                  wasReceivedByUD:wasReceivedByUD
-                                          serverDeliveryTimestamp:serverDeliveryTimestamp
-                                       associatedMessageTimestamp:dataMessage.reaction.timestamp
-                                          associatedMessageAuthor:dataMessage.reaction.authorAddress
-                                                      transaction:transaction];
-                    break;
-            }
-        } else if (dataMessage.delete != nil) {
-            TSThread *_Nullable thread = nil;
 
-            NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
-            if (groupId != nil) {
-                thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-            } else {
-                thread = [TSContactThread getOrCreateThreadWithContactAddress:syncMessage.sent.destinationAddress
-                                                                  transaction:transaction];
-            }
-            if (thread == nil) {
-                OWSFailDebug(@"Could not process delete from sync transcript.");
+            OWSIncomingSentMessageTranscript *_Nullable transcript =
+                [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent
+                                                        serverTimestamp:envelope.serverTimestamp
+                                                            transaction:transaction];
+            if (!transcript) {
+                OWSFailDebug(@"Couldn't parse transcript.");
                 return;
             }
-            OWSRemoteDeleteProcessingResult result =
-                [TSMessage tryToRemotelyDeleteMessageFromAddress:envelope.sourceAddress
-                                                 sentAtTimestamp:dataMessage.delete.targetSentTimestamp
-                                                  threadUniqueId:thread.uniqueId
-                                                 serverTimestamp:envelope.serverTimestamp
-                                                     transaction:transaction];
 
-            switch (result) {
-                case OWSRemoteDeleteProcessingResultSuccess:
-                    break;
-                case OWSRemoteDeleteProcessingResultInvalidDelete:
-                    OWSLogError(@"Failed to remotely delete message: %llu", dataMessage.delete.targetSentTimestamp);
-                    break;
-                case OWSRemoteDeleteProcessingResultDeletedMessageMissing:
-                    [self.earlyMessageManager recordEarlyEnvelope:envelope
-                                                    plainTextData:plaintextData
-                                                  wasReceivedByUD:wasReceivedByUD
-                                          serverDeliveryTimestamp:serverDeliveryTimestamp
-                                       associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
-                                          associatedMessageAuthor:envelope.sourceAddress
-                                                      transaction:transaction];
-                    break;
+            SSKProtoDataMessage *_Nullable dataMessage = syncMessage.sent.message;
+            if (!dataMessage) {
+                OWSFailDebug(@"Missing dataMessage.");
+                return;
             }
-        } else if (dataMessage.groupCallUpdate != nil) {
-            TSGroupThread *_Nullable groupThread = nil;
-            NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
-            if (groupId) {
-                groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+            SignalServiceAddress *destination = syncMessage.sent.destinationAddress;
+            if (dataMessage && destination.isValid && dataMessage.hasProfileKey) {
+                // If we observe a linked device sending our profile key to another
+                // user, we can infer that that user belongs in our profile whitelist.
+                NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
+                if (groupId != nil) {
+                    [self.profileManager addGroupIdToProfileWhitelist:groupId];
+                } else {
+                    [self.profileManager addUserToProfileWhitelist:destination];
+                }
             }
 
-            if (groupThread) {
-                PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"GroupCallUpdate"];
-                [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate
-                                                              forThread:groupThread
-                                                serverReceivedTimestamp:envelope.timestamp
-                                                             completion:^{ [pendingTask complete]; }];
+            SSKProtoGroupContext *_Nullable groupContextV1 = dataMessage.group;
+            BOOL isV1GroupStateChange = (groupContextV1 != nil && groupContextV1.hasType
+                && (groupContextV1.unwrappedType == SSKProtoGroupContextTypeUpdate
+                    || groupContextV1.unwrappedType == SSKProtoGroupContextTypeQuit));
+
+            if (isV1GroupStateChange) {
+                [self handleGroupStateChangeWithEnvelope:envelope
+                                             dataMessage:dataMessage
+                                            groupContext:groupContextV1
+                                             transaction:transaction];
+            } else if (dataMessage.reaction != nil) {
+                TSThread *_Nullable thread = nil;
+
+                NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
+                if (groupId != nil) {
+                    thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+                } else {
+                    thread = [TSContactThread getOrCreateThreadWithContactAddress:syncMessage.sent.destinationAddress
+                                                                      transaction:transaction];
+                }
+                if (thread == nil) {
+                    OWSFailDebug(@"Could not process reaction from sync transcript.");
+                    return;
+                }
+                OWSReactionProcessingResult result =
+                    [OWSReactionManager processIncomingReaction:dataMessage.reaction
+                                                         thread:thread
+                                                        reactor:envelope.sourceAddress
+                                                      timestamp:syncMessage.sent.timestamp
+                                                serverTimestamp:envelope.serverTimestamp
+                                               expiresInSeconds:dataMessage.expireTimer
+                                                    transaction:transaction];
+                switch (result) {
+                    case OWSReactionProcessingResultSuccess:
+                    case OWSReactionProcessingResultInvalidReaction:
+                        break;
+                    case OWSReactionProcessingResultAssociatedMessageMissing:
+                        [self.earlyMessageManager recordEarlyEnvelope:envelope
+                                                        plainTextData:plaintextData
+                                                      wasReceivedByUD:wasReceivedByUD
+                                              serverDeliveryTimestamp:serverDeliveryTimestamp
+                                           associatedMessageTimestamp:dataMessage.reaction.timestamp
+                                              associatedMessageAuthor:dataMessage.reaction.authorAddress
+                                                          transaction:transaction];
+                        break;
+                }
+            } else if (dataMessage.delete != nil) {
+                TSThread *_Nullable thread = nil;
+
+                NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
+                if (groupId != nil) {
+                    thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+                } else {
+                    thread = [TSContactThread getOrCreateThreadWithContactAddress:syncMessage.sent.destinationAddress
+                                                                      transaction:transaction];
+                }
+                if (thread == nil) {
+                    OWSFailDebug(@"Could not process delete from sync transcript.");
+                    return;
+                }
+                OWSRemoteDeleteProcessingResult result =
+                    [TSMessage tryToRemotelyDeleteMessageFromAddress:envelope.sourceAddress
+                                                     sentAtTimestamp:dataMessage.delete.targetSentTimestamp
+                                                      threadUniqueId:thread.uniqueId
+                                                     serverTimestamp:envelope.serverTimestamp
+                                                         transaction:transaction];
+
+                switch (result) {
+                    case OWSRemoteDeleteProcessingResultSuccess:
+                        break;
+                    case OWSRemoteDeleteProcessingResultInvalidDelete:
+                        OWSLogError(@"Failed to remotely delete message: %llu", dataMessage.delete.targetSentTimestamp);
+                        break;
+                    case OWSRemoteDeleteProcessingResultDeletedMessageMissing:
+                        [self.earlyMessageManager recordEarlyEnvelope:envelope
+                                                        plainTextData:plaintextData
+                                                      wasReceivedByUD:wasReceivedByUD
+                                              serverDeliveryTimestamp:serverDeliveryTimestamp
+                                           associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
+                                              associatedMessageAuthor:envelope.sourceAddress
+                                                          transaction:transaction];
+                        break;
+                }
+            } else if (dataMessage.groupCallUpdate != nil) {
+                TSGroupThread *_Nullable groupThread = nil;
+                NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
+                if (groupId) {
+                    groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+                }
+
+                if (groupThread) {
+                    PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"GroupCallUpdate"];
+                    [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate
+                                                                  forThread:groupThread
+                                                    serverReceivedTimestamp:envelope.timestamp
+                                                                 completion:^{ [pendingTask complete]; }];
+                } else {
+                    OWSLogWarn(@"Received GroupCallUpdate for unknown groupId: %@", groupId);
+                }
+
             } else {
-                OWSLogWarn(@"Received GroupCallUpdate for unknown groupId: %@", groupId);
+                [OWSRecordTranscriptJob processIncomingSentMessageTranscript:transcript transaction:transaction];
             }
-
-        } else {
-            [OWSRecordTranscriptJob processIncomingSentMessageTranscript:transcript transaction:transaction];
+        } else if (syncMessage.sent.storyMessage) {
+            NSError *error;
+            [StoryManager processStoryMessageTranscript:syncMessage.sent transaction:transaction error:&error];
+            if (error) {
+                OWSFailDebug(@"Failed to process story message transcript %@", error.localizedDescription);
+                return;
+            }
         }
     } else if (syncMessage.request) {
         if (!syncMessage.request.hasType) {

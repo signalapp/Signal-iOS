@@ -208,10 +208,11 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarDataFixed
         case dataMigration_repairAvatar
         case dataMigration_dropEmojiAvailabilityStore
+        case dataMigration_dropSentStories
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 37
+    public static let grdbSchemaVersionLatest: UInt = 38
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2120,6 +2121,18 @@ public class GRDBSchemaMigrator: NSObject {
             // but for now this should drop 2000 or so rows for free.
             SDSKeyValueStore(collection: "Emoji+availableStore").removeAll(transaction: transaction.asAnyWrite)
             SDSKeyValueStore(collection: "Emoji+metadataStore").removeAll(transaction: transaction.asAnyWrite)
+        }
+
+        migrator.registerMigration(.dataMigration_dropSentStories) { db in
+            let sql = """
+                DELETE FROM \(StoryMessage.databaseTableName)
+                WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.outgoing.rawValue)
+            """
+            do {
+                try db.execute(sql: sql)
+            } catch {
+                owsFail("Error \(error)")
+            }
         }
     }
 }

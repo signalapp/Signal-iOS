@@ -6,7 +6,7 @@ import Foundation
 
 public class OutgoingStoryMessage: TSOutgoingMessage {
     @objc
-    public private(set) var storyMessageId: String?
+    public private(set) var storyMessageId: String!
 
     public init(thread: TSThread, storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) {
         self.storyMessageId = storyMessage.uniqueId
@@ -29,7 +29,6 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         transaction: SDSAnyWriteTransaction
     ) -> OutgoingStoryMessage {
         let storyManifest: StoryManifest = .outgoing(
-            threadId: thread.uniqueId,
             recipientStates: thread.recipientAddresses(with: transaction)
                 .lazy
                 .compactMap { $0.uuid }
@@ -61,10 +60,6 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         return false
     }
 
-    public override func shouldSyncTranscript() -> Bool {
-        false // TODO: Story sync transcripts
-    }
-
     override var shouldRecordSendLog: Bool {
         false // TODO: story MSL support
     }
@@ -73,6 +68,17 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         thread: TSThread,
         transaction: SDSAnyReadTransaction
     ) -> SSKProtoContentBuilder? {
+        guard let storyMessage = storyMessageProto(with: thread, transaction: transaction) else {
+            owsFailDebug("Missing story message proto")
+            return nil
+        }
+        let builder = SSKProtoContent.builder()
+        builder.setStoryMessage(storyMessage)
+        return builder
+    }
+
+    @objc
+    public func storyMessageProto(with thread: TSThread, transaction: SDSAnyReadTransaction) -> SSKProtoStoryMessage? {
         guard let storyMessageId = storyMessageId,
               let storyMessage = StoryMessage.anyFetch(uniqueId: storyMessageId, transaction: transaction) else {
             Logger.warn("Missing story message for outgoing story.")
@@ -103,11 +109,8 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
                 builder.setGroup(try groupsV2.buildGroupContextV2Proto(groupModel: groupModel, changeActionsProtoData: nil))
             }
 
-            let contentBuilder = SSKProtoContent.builder()
-
-            contentBuilder.setStoryMessage(try builder.build())
-            return contentBuilder
-        } catch let error {
+            return try builder.build()
+        } catch {
             owsFailDebug("failed to build protobuf: \(error)")
             return nil
         }

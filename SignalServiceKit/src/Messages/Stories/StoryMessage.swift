@@ -52,7 +52,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         switch manifest {
         case .incoming:
             return 0
-        case .outgoing(_, let recipientStates):
+        case .outgoing(let recipientStates):
             return recipientStates.values.lazy.filter { $0.viewedTimestamp != nil }.count
         }
     }
@@ -159,6 +159,58 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         return record
     }
 
+    @discardableResult
+    public static func create(
+        withSentTranscript proto: SSKProtoSyncMessageSent,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> StoryMessage? {
+        Logger.info("Processing StoryMessage from transcript with timestamp \(proto.timestamp)")
+
+        guard let storyMessage = proto.storyMessage else {
+            throw OWSAssertionError("Missing story message on transcript")
+        }
+
+        let groupId: Data?
+        if let masterKey = storyMessage.group?.masterKey {
+            let groupContext = try Self.groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+            groupId = groupContext.groupId
+        } else {
+            groupId = nil
+        }
+
+        let manifest = StoryManifest.outgoing(recipientStates: Dictionary(uniqueKeysWithValues: try proto.storyMessageRecipients.map { recipient in
+            guard let uuidString = recipient.destinationUuid,
+                  let uuid = UUID(uuidString: uuidString) else {
+                throw OWSAssertionError("Invalid UUID on story recipient \(String(describing: recipient.destinationUuid))")
+            }
+            return (uuid, StoryRecipientState(allowsReplies: recipient.isAllowedToReply, contexts: recipient.distributionListIds))
+        }))
+
+        let attachment: StoryMessageAttachment
+        if let fileAttachment = storyMessage.fileAttachment {
+            guard let attachmentPointer = TSAttachmentPointer(fromProto: fileAttachment, albumMessage: nil) else {
+                throw OWSAssertionError("Invalid file attachment for StoryMessage.")
+            }
+            attachmentPointer.anyInsert(transaction: transaction)
+            attachment = .file(attachmentId: attachmentPointer.uniqueId)
+        } else if let textAttachmentProto = storyMessage.textAttachment {
+            attachment = .text(attachment: try TextAttachment(from: textAttachmentProto, transaction: transaction))
+        } else {
+            throw OWSAssertionError("Missing attachment for StoryMessage.")
+        }
+
+        let record = StoryMessage(
+            timestamp: proto.timestamp,
+            authorUuid: tsAccountManager.localUuid!,
+            groupId: groupId,
+            manifest: manifest,
+            attachment: attachment
+        )
+        record.anyInsert(transaction: transaction)
+
+        return record
+    }
+
     // MARK: -
 
     @objc
@@ -175,7 +227,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     @objc
     public func markAsViewed(at timestamp: UInt64, by recipient: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
         anyUpdate(transaction: transaction) { record in
-            guard case .outgoing(let threadId, var recipientStates) = record.manifest else {
+            guard case .outgoing(var recipientStates) = record.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark incoming message as viewed with wrong method.")
             }
 
@@ -186,8 +238,52 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             recipientState.viewedTimestamp = timestamp
             recipientStates[recipientUuid] = recipientState
 
-            record.manifest = .outgoing(threadId: threadId, recipientStates: recipientStates)
+            record.manifest = .outgoing(recipientStates: recipientStates)
         }
+    }
+
+    public func updateRecipients(_ recipients: [SSKProtoSyncMessageSentStoryMessageRecipient], transaction: SDSAnyWriteTransaction) {
+        anyUpdate(transaction: transaction) { message in
+            guard case .outgoing(var recipientStates) = message.manifest else {
+                return owsFailDebug("Unexpectedly tried to mark incoming message as viewed with wrong method.")
+            }
+
+            for recipient in recipients {
+                guard let uuidString = recipient.destinationUuid, let uuid = UUID(uuidString: uuidString) else {
+                    owsFailDebug("Missing UUID for story recipient")
+                    continue
+                }
+
+                if var recipientState = recipientStates[uuid] {
+                    recipientState.contexts = recipient.distributionListIds
+                    recipientStates[uuid] = recipientState
+                } else {
+                    recipientStates[uuid] = .init(allowsReplies: recipient.isAllowedToReply, contexts: recipient.distributionListIds)
+                }
+            }
+
+            message.manifest = .outgoing(recipientStates: recipientStates)
+        }
+    }
+
+    public func threads(transaction: SDSAnyReadTransaction) -> [TSThread] {
+        var threads = [TSThread]()
+
+        if let groupId = groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+            threads.append(groupThread)
+        }
+
+        if case .outgoing(let recipientStates) = manifest {
+            for context in Set(recipientStates.values.flatMap({ $0.contexts })) {
+                guard let thread = TSPrivateStoryThread.anyFetch(uniqueId: context, transaction: transaction) else {
+                    owsFailDebug("Missing thread for story context \(context)")
+                    continue
+                }
+                threads.append(thread)
+            }
+        }
+
+        return threads
     }
 
     // MARK: -
@@ -253,7 +349,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
 
 public enum StoryManifest: Codable {
     case incoming(allowsReplies: Bool, viewedTimestamp: UInt64?)
-    case outgoing(threadId: String, recipientStates: [UUID: StoryRecipientState])
+    case outgoing(recipientStates: [UUID: StoryRecipientState])
 }
 
 public struct StoryRecipientState: Codable {
