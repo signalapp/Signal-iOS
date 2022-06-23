@@ -81,5 +81,5 @@ protocol MessageCellDelegate : ReactionDelegate {
     func handleReplyButtonTapped(for viewItem: ConversationViewItem)
     func showUserDetails(for sessionID: String)
     func showReactionList(_ viewItem: ConversationViewItem, selectedReaction: EmojiWithSkinTones?)
-    func needsLayout()
+    func needsLayout(for viewItem: ConversationViewItem, expandingReactions: Bool)
 }

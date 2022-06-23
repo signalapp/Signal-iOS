@@ -468,6 +468,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 }
             }
         }
+        reactionContainerView.showingAllReactions = viewItem.reactionShouldExpanded
         reactionContainerView.update(reactions.orderedItems.map { ReactionViewModel(emoji: $0.0, value: $0.1.0, showBorder:$0.1.1 )}, isOutgoingMessage: direction == .outgoing, showNumbers: thread!.isGroupThread())
     }
     
@@ -579,11 +580,11 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             }
             if let expandButton = reactionContainerView.expandButton, expandButton.frame.contains(convertedLocation) {
                 reactionContainerView.showAllEmojis()
-                delegate?.needsLayout()
+                delegate?.needsLayout(for: viewItem, expandingReactions: true)
             }
             if reactionContainerView.collapseButton.frame.contains(convertedLocation) {
                 reactionContainerView.showLessEmojis()
-                delegate?.needsLayout()
+                delegate?.needsLayout(for: viewItem, expandingReactions: false)
             }
         } else {
             delegate?.handleViewItemTapped(viewItem, gestureRecognizer: gestureRecognizer)

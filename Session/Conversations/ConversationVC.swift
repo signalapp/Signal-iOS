@@ -39,6 +39,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     var baselineKeyboardHeight: CGFloat = 0
     // Reaction
     var showingReactionListForMessageId: String?
+    var reactionExpandedMessageIds: Set<String> = []
 
     var audioSession: OWSAudioSession { Environment.shared.audioSession }
     var dbConnection: YapDatabaseConnection { OWSPrimaryStorage.shared().uiDatabaseConnection }
@@ -454,6 +455,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let viewItem = viewItems[indexPath.row]
+        viewItem.reactionShouldExpanded = reactionExpandedMessageIds.contains(viewItem.interaction.uniqueId ?? "")
         let cell = tableView.dequeueReusableCell(withIdentifier: MessageCell.getCellType(for: viewItem).identifier) as! MessageCell
         cell.delegate = self
         cell.thread = thread
@@ -767,11 +769,18 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         return UITableView.automaticDimension
     }
     
-    func needsLayout() {
+    func needsLayout(for viewItem: ConversationViewItem, expandingReactions: Bool) {
         UIView.setAnimationsEnabled(false)
         messagesTableView.beginUpdates()
         messagesTableView.endUpdates()
         UIView.setAnimationsEnabled(true)
+        if let messageId = viewItem.interaction.uniqueId {
+            if expandingReactions {
+                reactionExpandedMessageIds.insert(messageId)
+            } else {
+                reactionExpandedMessageIds.remove(messageId)
+            }
+        }
     }
 
     func getMediaCache() -> NSCache<NSString, AnyObject> {

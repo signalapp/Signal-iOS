@@ -121,6 +121,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @synthesize lastAudioMessageView = _lastAudioMessageView;
 @synthesize senderName = _senderName;
 @synthesize shouldHideFooter = _shouldHideFooter;
+@synthesize reactionShouldExpanded = _reactionShouldExpanded;
 
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
@@ -292,6 +293,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     _unreadIndicator = unreadIndicator;
 
+    [self clearCachedLayoutState];
+}
+
+- (void)setReactionShouldExpanded:(BOOL)reactionShouldExpanded
+{
+    _reactionShouldExpanded = reactionShouldExpanded;
+    
     [self clearCachedLayoutState];
 }
 

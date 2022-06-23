@@ -121,6 +121,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 @property (nonatomic, readonly, nullable) NSString *systemMessageText;
 
+@property (nonatomic) BOOL reactionShouldExpanded;
+
 // NOTE: This property is only set for incoming messages.
 @property (nonatomic, readonly, nullable) NSString *authorConversationColorName;
 

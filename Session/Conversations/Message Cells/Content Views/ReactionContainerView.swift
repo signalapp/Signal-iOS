@@ -16,7 +16,7 @@ final class ReactionContainerView : UIView {
         return result
     }()
     
-    private var showingAllReactions = false
+    var showingAllReactions = false
     private var isOutgoingMessage = false
     private var showNumbers = true
     private var maxEmojisPerLine = isIPhone6OrSmaller ? 5 : 6
