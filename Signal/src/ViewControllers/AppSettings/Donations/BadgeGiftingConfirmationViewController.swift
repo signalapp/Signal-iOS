@@ -49,18 +49,87 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         setUpBottomFooter()
     }
 
-    @objc
-    private func requestApplePayDonation() {
-        let request = DonationUtilities.newPaymentRequest(for: NSDecimalNumber(value: price), currencyCode: currencyCode)
+    /// Queries the database to see if the recipient can receive gift badges.
+    private func canReceiveGiftBadgesViaDatabase() -> Bool {
+        databaseStorage.read { transaction -> Bool in
+            self.profileManager.getUserProfile(for: self.thread.contactAddress, transaction: transaction)?.canReceiveGiftBadges ?? false
+        }
+    }
 
-        let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
-        paymentController.delegate = self
-        paymentController.present { presented in
-            if !presented {
-                // This can happen under normal conditions if the user double-taps the button,
-                // but may also indicate a problem.
-                Logger.warn("Failed to present payment controller")
+    enum ProfileFetchError: Error { case timeout }
+
+    /// Fetches the recipient's profile, then queries the database to see if they can receive gift badges.
+    /// Times out after 30 seconds.
+    private func canReceiveGiftBadgesViaProfileFetch() -> Promise<Bool> {
+        firstly {
+            profileManager.fetchProfile(forAddressPromise: self.thread.contactAddress)
+        }.timeout(seconds: 30) {
+            ProfileFetchError.timeout
+        }.map { [weak self] _ in
+            self?.canReceiveGiftBadgesViaDatabase() ?? false
+        }
+    }
+
+    /// Look up whether the recipient can receive gift badges.
+    /// If the operation takes more half a second, we show a spinner.
+    /// We first consult the database.
+    /// If they are capable there, we don't need to fetch their profile.
+    /// If they aren't (or we have no profile saved), we fetch the profile because we might have stale data.
+    private func canReceiveGiftBadgesWithUi() -> Promise<Bool> {
+        if canReceiveGiftBadgesViaDatabase() {
+            return Promise.value(true)
+        }
+
+        let (resultPromise, resultFuture) = Promise<Bool>.pending()
+
+        ModalActivityIndicatorViewController.present(fromViewController: self,
+                                                     canCancel: false,
+                                                     presentationDelay: 0.5) { modal in
+            firstly {
+                self.canReceiveGiftBadgesViaProfileFetch()
+            }.done(on: .main) { canReceiveGiftBadges in
+                modal.dismiss { resultFuture.resolve(canReceiveGiftBadges) }
+            }.catch(on: .main) { error in
+                modal.dismiss { resultFuture.reject(error) }
             }
+        }
+
+        return resultPromise
+    }
+
+    @objc
+    private func checkRecipientCapabilityAndRequestApplePay() {
+        firstly(on: .main) { [weak self] () -> Promise<Bool> in
+            guard let self = self else { return Promise.value(false) }
+            return self.canReceiveGiftBadgesWithUi()
+        }.done(on: .main) { [weak self] canReceiveGiftBadges in
+            guard let self = self else { return }
+
+            guard canReceiveGiftBadges else {
+                OWSActionSheets.showActionSheet(title: NSLocalizedString("BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE",
+                                                                         comment: "Title for error message dialog indicating that a user can't receive gifts."),
+                                                message: NSLocalizedString("BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY",
+                                                                           comment: "Error message indicating that a user can't receive gifts."))
+                return
+            }
+
+            let request = DonationUtilities.newPaymentRequest(for: NSDecimalNumber(value: self.price), currencyCode: self.currencyCode)
+
+            let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
+            paymentController.delegate = self
+            paymentController.present { presented in
+                if !presented {
+                    // This can happen under normal conditions if the user double-taps the button,
+                    // but may also indicate a problem.
+                    Logger.warn("Failed to present payment controller")
+                }
+            }
+        }.catch { error in
+            owsFailDebugUnlessNetworkFailure(error)
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE",
+                                                                     comment: "Title for error message dialog indicating that you can't send the gift badge for some reason."),
+                                            message: NSLocalizedString("BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY",
+                                                                       comment: "Error message indicating that you can't send the gift badge for some reason."))
         }
     }
 
@@ -254,7 +323,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         }()
 
         let applePayButton = ApplePayButton { [weak self] in
-            self?.requestApplePayDonation()
+            self?.checkRecipientCapabilityAndRequestApplePay()
         }
 
         for view in [amountView, applePayButton] {

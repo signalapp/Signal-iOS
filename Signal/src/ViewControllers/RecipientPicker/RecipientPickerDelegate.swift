@@ -11,7 +11,6 @@ public enum RecipientPickerRecipientState: Int {
     case userAlreadyInBlocklist
     case conversationAlreadyInBlocklist
     case userLacksGroupCapability
-    case userLacksGiftBadgeCapability
     case unknownError
 }
 
@@ -169,9 +168,6 @@ extension RecipientPickerViewController {
         case .userLacksGroupCapability:
             errorMessage = NSLocalizedString("RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT",
                                              comment: "Error message indicating that a user can't be added to a group until they upgrade their app.")
-        case .userLacksGiftBadgeCapability:
-            errorMessage = NSLocalizedString("RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES",
-                                             comment: "Error message indicating that a user can't receive gifts.")
         }
         OWSActionSheets.showErrorAlert(message: errorMessage)
         return
