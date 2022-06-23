@@ -181,7 +181,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         if tsAccountManager.isRegistered {
             DispatchQueue.main.async { [weak self] in
-                guard let _ = self else { return }
+                guard self != nil else { return }
                 Logger.info("running post launch block for registered user: \(String(describing: TSAccountManager.localAddress))")
 
                 // We don't need to use the SocketManager in the SAE.
@@ -428,7 +428,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // If no view has been presented yet, do nothing.
             return
         }
-        if let _ = firstViewController as? SAEFailedViewController {
+        if firstViewController is SAEFailedViewController {
             // If root view is an error view, do nothing.
             return
         }
