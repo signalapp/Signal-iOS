@@ -89,14 +89,6 @@ class SubscriptionViewController: OWSTableViewController2 {
 
     private var applePayButton: ApplePayButton?
 
-    private lazy var redemptionLoadingSpinner: AnimationView = {
-        let loadingAnimationView = AnimationView(name: "indeterminate_spinner_blue")
-        loadingAnimationView.loopMode = .loop
-        loadingAnimationView.contentMode = .scaleAspectFit
-        loadingAnimationView.play()
-        return loadingAnimationView
-    }()
-
     private lazy var statusLabel: LinkingTextView = LinkingTextView()
     private lazy var descriptionTextView = LinkingTextView()
 
