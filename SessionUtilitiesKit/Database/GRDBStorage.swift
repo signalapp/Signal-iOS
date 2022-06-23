@@ -32,10 +32,6 @@ public final class GRDBStorage {
     
     // MARK: - Initialization
     
-//        if CurrentAppContext().isMainApp {
-//            GRDBStorage.deleteDatabaseFiles() // TODO: Remove this.
-//            try! GRDBStorage.deleteDbKeys() // TODO: Remove this.
-//        }
     public init(
         customWriter: DatabaseWriter? = nil,
         customMigrations: [TargetMigrations]? = nil
@@ -184,6 +180,7 @@ public final class GRDBStorage {
             self?.hasCompletedMigrations = true
             self?.migrationProgressUpdater = nil
             SUKLegacy.clearLegacyDatabaseInstance()
+//            SUKLegacy.deleteLegacyDatabaseFilesAndKey() // TODO: Delete legacy database after the migration is done
             
             if let error = error {
                 SNLog("[Migration Error] Migration failed with error: \(error)")

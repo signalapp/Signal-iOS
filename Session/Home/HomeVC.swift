@@ -263,6 +263,10 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
             updatedState.sections.contains(where: { !$0.elements.isEmpty })
         )
         
+        if updatedState.userProfile != self.viewModel.state.userProfile {
+            updateNavBarButtons()
+        }
+        
         // Update the 'view seed' UI
         if updatedState.showViewedSeedBanner != self.viewModel.state.showViewedSeedBanner {
             tableViewTopConstraint.isActive = false

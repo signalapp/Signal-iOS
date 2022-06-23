@@ -13,14 +13,17 @@ public class HomeViewModel {
     
     public struct State: Equatable {
         let showViewedSeedBanner: Bool
+        let userProfile: Profile?
         let sections: [ArraySection<Section, SessionThreadViewModel>]
         
         func with(
             showViewedSeedBanner: Bool? = nil,
+            userProfile: Profile? = nil,
             sections: [ArraySection<Section, SessionThreadViewModel>]? = nil
         ) -> State {
             return State(
                 showViewedSeedBanner: (showViewedSeedBanner ?? self.showViewedSeedBanner),
+                userProfile: (userProfile ?? self.userProfile),
                 sections: (sections ?? self.sections)
             )
         }
@@ -29,6 +32,7 @@ public class HomeViewModel {
     /// This value is the current state of the view
     public private(set) var state: State = State(
         showViewedSeedBanner: !GRDBStorage.shared[.hasViewedSeed],
+        userProfile: nil,
         sections: []
     )
     
@@ -71,17 +75,18 @@ public class HomeViewModel {
             ],
             fetch: { db -> State in
                 let hasViewedSeed: Bool = db[.hasViewedSeed]
-                let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                let userProfile: Profile = Profile.fetchOrCreateCurrentUser(db)
                 let unreadMessageRequestCount: Int = try SessionThread
-                    .unreadMessageRequestsQuery(userPublicKey: userPublicKey)
+                    .unreadMessageRequestsQuery(userPublicKey: userProfile.id)
                     .fetchCount(db)
                 let finalUnreadMessageRequestCount: Int = (db[.hasHiddenMessageRequests] ? 0 : unreadMessageRequestCount)
                 let threads: [SessionThreadViewModel] = try SessionThreadViewModel
-                    .homeQuery(userPublicKey: userPublicKey)
+                    .homeQuery(userPublicKey: userProfile.id)
                     .fetchAll(db)
                 
                 return State(
                     showViewedSeedBanner: !hasViewedSeed,
+                    userProfile: userProfile,
                     sections: [
                         ArraySection(
                             model: .messageRequests,

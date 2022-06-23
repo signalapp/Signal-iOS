@@ -655,4 +655,4 @@
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
 "ALERT_ERROR_TITLE" = "エラー";
 "LOADING_CONVERSATIONS" = "Loading Conversations...";
-"DATABASE_MIGRATION_FAILED" = "An error occurred when optimising the database";
+"DATABASE_MIGRATION_FAILED" = "An error occurred when optimising the database\n\nYou can export your application logs to be able to share for troubleshooting or you can restore our device\n\nWarning: Restoring your device will result in loss of any data older than two weeks";

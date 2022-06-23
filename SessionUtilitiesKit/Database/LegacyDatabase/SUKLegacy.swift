@@ -109,6 +109,13 @@ public enum SUKLegacy {
         self.database = nil
     }
     
+    public static func deleteLegacyDatabaseFilesAndKey() throws {
+        OWSFileSystem.deleteFile(legacyDatabaseFilepath)
+        OWSFileSystem.deleteFile("\(legacyDatabaseFilepath)-shm")
+        OWSFileSystem.deleteFile("\(legacyDatabaseFilepath)-wal")
+        try SSKDefaultKeychainStorage.shared.remove(service: keychainService, key: keychainDBCipherKeySpec)
+    }
+    
     // MARK: - UnknownDBObject
     
     @objc(LegacyUnknownDBObject)

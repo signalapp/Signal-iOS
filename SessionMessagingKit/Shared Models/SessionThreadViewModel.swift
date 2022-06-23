@@ -343,6 +343,7 @@ public extension SessionThreadViewModel {
                     SUM(\(interaction[.wasRead]) = false AND \(interaction[.hasMention]) = true) AS \(ViewModel.threadUnreadMentionCountKey)
                 
                 FROM \(Interaction.self)
+                WHERE \(SQL("\(interaction[.variant]) != \(Interaction.Variant.standardIncomingDeleted)"))
                 GROUP BY \(interaction[.threadId])
             ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
             
@@ -492,8 +493,6 @@ public extension SessionThreadViewModel {
         let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
-        let interactionIdLiteral: SQL = SQL(stringLiteral: Interaction.Columns.id.name)
-        let interactionThreadIdLiteral: SQL = SQL(stringLiteral: Interaction.Columns.threadId.name)
         let closedGroupUserCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.closedGroupUserCountString)_table")
         let groupMemberGroupIdColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.groupId.name)
         let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)

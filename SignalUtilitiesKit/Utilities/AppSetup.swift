@@ -45,22 +45,40 @@ public enum AppSetup {
             
             /// `performMainSetup` **MUST** run before `perform(migrations:)`
             Configuration.performMainSetup()
-            GRDBStorage.shared.perform(
-                migrations: [
-                    SNUtilitiesKit.migrations(),
-                    SNSnodeKit.migrations(),
-                    SNMessagingKit.migrations()
-                ],
-                onProgressUpdate: migrationProgressChanged,
-                onComplete: { success, needsConfigSync in
-                    DispatchQueue.main.async {
-                        migrationsCompletion(success, needsConfigSync)
-                        
-                        // The 'if' is only there to prevent the "variable never read" warning from showing
-                        if backgroundTask != nil { backgroundTask = nil }
-                    }
-                }
+            
+            runPostSetupMigrations(
+                backgroundTask: backgroundTask,
+                migrationProgressChanged: migrationProgressChanged,
+                migrationsCompletion: migrationsCompletion
             )
+            
+            // The 'if' is only there to prevent the "variable never read" warning from showing
+            if backgroundTask != nil { backgroundTask = nil }
         }
+    }
+    
+    public static func runPostSetupMigrations(
+        backgroundTask: OWSBackgroundTask? = nil,
+        migrationProgressChanged: ((CGFloat, TimeInterval) -> ())? = nil,
+        migrationsCompletion: @escaping (Bool, Bool) -> ()
+    ) {
+        var backgroundTask: OWSBackgroundTask? = (backgroundTask ?? OWSBackgroundTask(labelStr: #function))
+        
+        GRDBStorage.shared.perform(
+            migrations: [
+                SNUtilitiesKit.migrations(),
+                SNSnodeKit.migrations(),
+                SNMessagingKit.migrations()
+            ],
+            onProgressUpdate: migrationProgressChanged,
+            onComplete: { success, needsConfigSync in
+                DispatchQueue.main.async {
+                    migrationsCompletion(success, needsConfigSync)
+                    
+                    // The 'if' is only there to prevent the "variable never read" warning from showing
+                    if backgroundTask != nil { backgroundTask = nil }
+                }
+            }
+        )
     }
 }

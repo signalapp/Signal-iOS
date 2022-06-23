@@ -22,7 +22,8 @@ extension MessageReceiver {
             .defaulting(to: Date(timeIntervalSince1970: 0))
             .timeIntervalSince1970
         
-        // Profile
+        // Profile (also force-approve the current user in case the account got into a weird state or
+        // restored directly from a migration)
         try MessageReceiver.updateProfileIfNeeded(
             db,
             publicKey: userPublicKey,
@@ -31,6 +32,12 @@ extension MessageReceiver {
             profileKey: OWSAES256Key(data: message.profileKey),
             sentTimestamp: messageSentTimestamp
         )
+        try Contact(id: userPublicKey)
+            .with(
+                isApproved: true,
+                didApproveMe: true
+            )
+            .save(db)
         
         if isInitialSync || messageSentTimestamp > lastConfigTimestamp {
             if isInitialSync {

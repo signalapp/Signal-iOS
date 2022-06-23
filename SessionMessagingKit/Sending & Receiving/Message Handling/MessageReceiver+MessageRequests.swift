@@ -120,14 +120,18 @@ extension MessageReceiver {
             guard
                 let threadId: String = threadId,
                 let thread: SessionThread = try? SessionThread.fetchOne(db, id: threadId),
-                !thread.isNoteToSelf(db),
-                let contact: Contact = try? thread.contact.fetchOne(db),
-                !contact.isApproved
+                !thread.isNoteToSelf(db)
             else { return }
             
-            try? contact
+            // Sending a message to someone flags them as approved so create the contact record if
+            // it doesn't exist
+            let contact: Contact = Contact.fetchOrCreate(db, id: threadId)
+            
+            guard !contact.isApproved else { return }
+            
+            _ = try? contact
                 .with(isApproved: true)
-                .update(db)
+                .saved(db)
         }
         else {
             // The message was sent to the current user so flag their 'didApproveMe' as true (can't send a message to

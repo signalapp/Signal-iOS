@@ -593,9 +593,19 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     }
     
     @objc private func remigrateDatabase() {
-        GRDBStorage.deleteDatabaseFiles()
-        try? GRDBStorage.deleteDbKeys()
-        exit(1)
+        let alert = UIAlertController(
+            title: "Session",
+            message: "Are you sure you want to re-migrate from your old database state?\n\nWarning: If you had a migration error and picked the \"Restore your account\" option this will result in a complete loss of data and the need to manually restore from the seed",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Re-migrate", style: .destructive) { _ in
+            GRDBStorage.deleteDatabaseFiles()
+            try? GRDBStorage.deleteDbKeys()
+            exit(1)
+        })
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default))
+        
+        navigationController?.present(alert, animated: true)
     }
     
     @objc private func showPath() {

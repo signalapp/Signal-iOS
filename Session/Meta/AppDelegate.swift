@@ -19,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var backgroundSnapshotBlockerWindow: UIWindow?
     var appStartupWindow: UIWindow?
     var hasInitialRootViewController: Bool = false
+    private var loadingViewController: LoadingViewController?
     
     /// This needs to be a lazy variable to ensure it doesn't get initialized before it actually needs to be used
     lazy var poller: Poller = Poller()
@@ -41,7 +42,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         DeviceSleepManager.sharedInstance.addBlock(blockObject: self)
         
         let mainWindow: UIWindow = UIWindow(frame: UIScreen.main.bounds)
-        let loadingViewController: LoadingViewController = LoadingViewController()
+        self.loadingViewController = LoadingViewController()
         
         AppSetup.setupEnvironment(
             appSpecificBlock: {
@@ -59,57 +60,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     OWSScreenLockUI.sharedManager().startObserving()
                 }
             },
-            migrationProgressChanged: { progress, minEstimatedTotalTime in
-                loadingViewController.updateProgress(
+            migrationProgressChanged: { [weak self] progress, minEstimatedTotalTime in
+                self?.loadingViewController?.updateProgress(
                     progress: progress,
                     minEstimatedTotalTime: minEstimatedTotalTime
                 )
             },
             migrationsCompletion: { [weak self] successful, needsConfigSync in
-                guard let strongSelf = self else { return }
                 guard successful else {
                     self?.showFailedMigrationAlert()
                     return
                 }
                 
-                Configuration.performMainSetup()
-                JobRunner.add(executor: SyncPushTokensJob.self, for: .syncPushTokens)
-                
-                // Trigger any launch-specific jobs and start the JobRunner
-                JobRunner.appDidFinishLaunching()
-                
-                // Note that this does much more than set a flag;
-                // it will also run all deferred blocks (including the JobRunner
-                // 'appDidBecomeActive' method)
-                AppReadiness.setAppIsReady()
-                
-                DeviceSleepManager.sharedInstance.removeBlock(blockObject: strongSelf)
-                AppVersion.sharedInstance().mainAppLaunchDidComplete()
-                Environment.shared?.audioSession.setup()
-                Environment.shared?.reachabilityManager.setup()
-                
-                GRDBStorage.shared.writeAsync { db in
-                    // Disable the SAE until the main app has successfully completed launch process
-                    // at least once in the post-SAE world.
-                    db[.isReadyForAppExtensions] = true
-                    
-                    if Identity.userExists(db) {
-                        let appVersion: AppVersion = AppVersion.sharedInstance()
-                        
-                        // If the device needs to sync config or the user updated to a new version
-                        if
-                            needsConfigSync || (
-                                (appVersion.lastAppVersion?.count ?? 0) > 0 &&
-                                appVersion.lastAppVersion != appVersion.currentAppVersion
-                            )
-                        {
-                            try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
-                        }
-                    }
-                }
-                
-                // Setup the UI
-                self?.ensureRootViewController()
+                self?.completePostMigrationSetup(needsConfigSync: needsConfigSync)
             }
         )
         
@@ -122,7 +85,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         CurrentAppContext().mainWindow = mainWindow
         
         // Show LoadingViewController until the async database view registrations are complete.
-        mainWindow.rootViewController = loadingViewController
+        mainWindow.rootViewController = self.loadingViewController
         mainWindow.makeKeyAndVisible()
 
         adapt(appMode: AppModeManager.getAppModeOrSystemDefault())
@@ -221,13 +184,51 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     // MARK: - App Readiness
     
+    private func completePostMigrationSetup(needsConfigSync: Bool) {
+        Configuration.performMainSetup()
+        JobRunner.add(executor: SyncPushTokensJob.self, for: .syncPushTokens)
+        
+        // Trigger any launch-specific jobs and start the JobRunner
+        JobRunner.appDidFinishLaunching()
+        
+        // Note that this does much more than set a flag;
+        // it will also run all deferred blocks (including the JobRunner
+        // 'appDidBecomeActive' method)
+        AppReadiness.setAppIsReady()
+        
+        DeviceSleepManager.sharedInstance.removeBlock(blockObject: self)
+        AppVersion.sharedInstance().mainAppLaunchDidComplete()
+        Environment.shared?.audioSession.setup()
+        Environment.shared?.reachabilityManager.setup()
+        
+        GRDBStorage.shared.writeAsync { db in
+            // Disable the SAE until the main app has successfully completed launch process
+            // at least once in the post-SAE world.
+            db[.isReadyForAppExtensions] = true
+            
+            if Identity.userExists(db) {
+                let appVersion: AppVersion = AppVersion.sharedInstance()
+                
+                // If the device needs to sync config or the user updated to a new version
+                if
+                    needsConfigSync || (
+                        (appVersion.lastAppVersion?.count ?? 0) > 0 &&
+                        appVersion.lastAppVersion != appVersion.currentAppVersion
+                    )
+                {
+                    try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                }
+            }
+        }
+        
+        // Setup the UI
+        self.ensureRootViewController()
+    }
+    
     private func showFailedMigrationAlert() {
         let alert = UIAlertController(
             title: "Session",
-            message: [
-                "DATABASE_MIGRATION_FAILED".localized(),
-                "modal_share_logs_explanation".localized()
-            ].joined(separator: "\n\n"),
+            message: "DATABASE_MIGRATION_FAILED".localized(),
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "modal_share_logs_title".localized(), style: .default) { _ in
@@ -235,7 +236,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 self?.showFailedMigrationAlert()
             }
         })
-        alert.addAction(UIAlertAction(title: "Close", style: .destructive) { _ in
+        alert.addAction(UIAlertAction(title: "vc_restore_title".localized(), style: .destructive) { _ in
+            // Remove the legacy database and any message hashes that have been migrated to the new DB
+            try? SUKLegacy.deleteLegacyDatabaseFilesAndKey()
+            
+            GRDBStorage.shared.write { db in
+                try SnodeReceivedMessageInfo.deleteAll(db)
+            }
+            
+            // The re-run the migration (should succeed since there is no data)
+            AppSetup.runPostSetupMigrations(
+                migrationProgressChanged: { [weak self] progress, minEstimatedTotalTime in
+                    self?.loadingViewController?.updateProgress(
+                        progress: progress,
+                        minEstimatedTotalTime: minEstimatedTotalTime
+                    )
+                },
+                migrationsCompletion: { [weak self] successful, needsConfigSync in
+                    guard successful else {
+                        self?.showFailedMigrationAlert()
+                        return
+                    }
+                    
+                    self?.completePostMigrationSetup(needsConfigSync: needsConfigSync)
+                }
+            )
+        })
+        alert.addAction(UIAlertAction(title: "Close", style: .default) { _ in
             DDLog.flushLog()
             exit(0)
         })
