@@ -280,8 +280,9 @@ extension MessageReceiver {
             }
             
             // Remove any 'zombie' versions of the added members (in case they were re-added)
-            _ = try closedGroup
-                .zombies
+            _ = try GroupMember
+                .filter(GroupMember.Columns.groupId == id)
+                .filter(GroupMember.Columns.role == GroupMember.Role.zombie)
                 .filter(addedMembers.contains(GroupMember.Columns.profileId))
                 .deleteAll(db)
             
@@ -333,6 +334,13 @@ extension MessageReceiver {
                 return SNLog("Ignoring invalid closed group update.")
             }
             
+            // Delete the removed members
+            try GroupMember
+                .filter(GroupMember.Columns.groupId == id)
+                .filter(removedMembers.contains(GroupMember.Columns.profileId))
+                .filter([ GroupMember.Role.standard, GroupMember.Role.zombie ].contains(GroupMember.Columns.role))
+                .deleteAll(db)
+            
             // If the current user was removed:
             // • Stop polling for the group
             // • Remove the key pairs associated with the group
@@ -343,10 +351,6 @@ extension MessageReceiver {
             if wasCurrentUserRemoved {
                 ClosedGroupPoller.shared.stopPolling(for: id)
                 
-                try closedGroup
-                    .allMembers
-                    .deleteAll(db)
-                
                 _ = try closedGroup
                     .keyPairs
                     .deleteAll(db)
@@ -356,15 +360,6 @@ extension MessageReceiver {
                     for: id,
                     publicKey: userPublicKey
                 )
-            }
-            else {
-                // Remove the member from the group and it's zombies
-                try closedGroup.members
-                    .filter(removedMembers.contains(GroupMember.Columns.profileId))
-                    .deleteAll(db)
-                try closedGroup.zombies
-                    .filter(removedMembers.contains(GroupMember.Columns.profileId))
-                    .deleteAll(db)
             }
             
             // Notify the user if needed
@@ -418,14 +413,15 @@ extension MessageReceiver {
                 .asSet()
                 .subtracting(membersToRemove.map { $0.profileId })
             
+            // Delete the members to remove
+            try GroupMember
+                .filter(GroupMember.Columns.groupId == id)
+                .filter(updatedMemberIds.contains(GroupMember.Columns.profileId))
+                .deleteAll(db)
             
             if didAdminLeave || sender == userPublicKey {
                 // Remove the group from the database and unsubscribe from PNs
                 ClosedGroupPoller.shared.stopPolling(for: id)
-                
-                try closedGroup
-                    .allMembers
-                    .deleteAll(db)
                 
                 _ = try closedGroup
                     .keyPairs
@@ -438,12 +434,7 @@ extension MessageReceiver {
                 )
             }
             else {
-                // Delete all old user roles and re-add them as a zombie
-                try closedGroup
-                    .allMembers
-                    .filter(GroupMember.Columns.profileId == sender)
-                    .deleteAll(db)
-                
+                // Re-add the removed member as a zombie
                 try GroupMember(
                     groupId: id,
                     profileId: sender,

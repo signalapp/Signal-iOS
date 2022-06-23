@@ -419,6 +419,15 @@ enum _003_YDBToGRDBMigration: Migration {
                     legacyBlockedSessionIds.contains(legacyContact.sessionID)
                 )
                 
+                /// Looks like there are some cases where conversations would be visible in the old version but wouldn't in the new version
+                /// it seems to be related to the `isApproved` and `didApproveMe` not being set correctly somehow, this logic is to
+                /// ensure the flags are set correctly based on sent/received messages
+                let interactionsForContact: [SMKLegacy._DBInteraction] = (interactions["\(SMKLegacy.contactThreadPrefix)\(legacyContact.sessionID)"] ?? [])
+                let shouldForceIsApproved: Bool = interactionsForContact
+                    .contains(where: { $0 is SMKLegacy._DBOutgoingMessage })
+                let shouldForceDidApproveMe: Bool = interactionsForContact
+                    .contains(where: { $0 is SMKLegacy._DBIncomingMessage })
+                
                 // Determine if this contact is a "real" contact (don't want to create contacts for
                 // every user in the new structure but still want profiles for every user)
                 if
@@ -430,7 +439,9 @@ enum _003_YDBToGRDBMigration: Migration {
                     legacyContact.hasBeenBlocked ||
                     shouldForceTrustContact ||
                     shouldForceApproveContact ||
-                    shouldForceBlockContact
+                    shouldForceBlockContact ||
+                    shouldForceIsApproved ||
+                    shouldForceDidApproveMe
                 {
                     // Create the contact
                     try Contact(
@@ -443,7 +454,8 @@ enum _003_YDBToGRDBMigration: Migration {
                         isApproved: (
                             isCurrentUser ||
                             legacyContact.isApproved ||
-                            shouldForceApproveContact
+                            shouldForceApproveContact ||
+                            shouldForceIsApproved
                         ),
                         isBlocked: (
                             !isCurrentUser && (
@@ -454,7 +466,8 @@ enum _003_YDBToGRDBMigration: Migration {
                         didApproveMe: (
                             isCurrentUser ||
                             legacyContact.didApproveMe ||
-                            shouldForceApproveContact
+                            shouldForceApproveContact ||
+                            shouldForceDidApproveMe
                         ),
                         hasBeenBlocked: (!isCurrentUser && (legacyContact.hasBeenBlocked || legacyContact.isBlocked))
                     ).insert(db)
@@ -599,33 +612,30 @@ enum _003_YDBToGRDBMigration: Migration {
                         ).insert(db)
                     }
                     
-                    // Only create the 'GroupMember' models if the current user is actually a member
-                    // of the group (if the user has left the group or been removed from it we now
-                    // delete all of these records so want this to behave the same way)
-                    if groupModel.groupMemberIds.contains(currentUserPublicKey) {
-                        try groupModel.groupMemberIds.forEach { memberId in
-                            try GroupMember(
-                                groupId: threadId,
-                                profileId: memberId,
-                                role: .standard
-                            ).insert(db)
-                        }
-                        
-                        try groupModel.groupAdminIds.forEach { adminId in
-                            try GroupMember(
-                                groupId: threadId,
-                                profileId: adminId,
-                                role: .admin
-                            ).insert(db)
-                        }
-                        
-                        try (closedGroupZombieMemberIds[legacyThread.uniqueId] ?? []).forEach { zombieId in
-                            try GroupMember(
-                                groupId: threadId,
-                                profileId: zombieId,
-                                role: .zombie
-                            ).insert(db)
-                        }
+                    // Create the 'GroupMember' models for the group (even if the current user is no longer
+                    // a member as these objects are used to generate the group avatar icon)
+                    try groupModel.groupMemberIds.forEach { memberId in
+                        try GroupMember(
+                            groupId: threadId,
+                            profileId: memberId,
+                            role: .standard
+                        ).insert(db)
+                    }
+                    
+                    try groupModel.groupAdminIds.forEach { adminId in
+                        try GroupMember(
+                            groupId: threadId,
+                            profileId: adminId,
+                            role: .admin
+                        ).insert(db)
+                    }
+                    
+                    try (closedGroupZombieMemberIds[legacyThread.uniqueId] ?? []).forEach { zombieId in
+                        try GroupMember(
+                            groupId: threadId,
+                            profileId: zombieId,
+                            role: .zombie
+                        ).insert(db)
                     }
                 }
                 
@@ -746,27 +756,53 @@ enum _003_YDBToGRDBMigration: Migration {
                                 // way to determine who actually triggered the info message
                                 authorId = currentUserPublicKey
                                 body = {
-                                    // Note: The 'DisappearingConfigurationUpdateInfoMessage' stored additional info and constructed
-                                    // a string at display time so we want to continue that behaviour
-                                    guard
-                                        infoMessage.messageType == .disappearingMessagesUpdate,
-                                        let updateMessage: SMKLegacy._DisappearingConfigurationUpdateInfoMessage = infoMessage as? SMKLegacy._DisappearingConfigurationUpdateInfoMessage,
-                                        let infoMessageData: Data = try? JSONEncoder().encode(
-                                            DisappearingMessagesConfiguration.MessageInfo(
-                                                senderName: updateMessage.createdByRemoteName,
-                                                isEnabled: updateMessage.configurationIsEnabled,
-                                                durationSeconds: TimeInterval(updateMessage.configurationDurationSeconds)
+                                    // Note: Some message types stored additional info and constructed a string
+                                    // at display time, instead we encode the data into the body of the message
+                                    // as JSON so we want to continue that behaviour but not change the database
+                                    // structure for some edge cases
+                                    switch infoMessage.messageType {
+                                        case .disappearingMessagesUpdate:
+                                            guard
+                                                let updateMessage: SMKLegacy._DisappearingConfigurationUpdateInfoMessage = infoMessage as? SMKLegacy._DisappearingConfigurationUpdateInfoMessage,
+                                                let infoMessageData: Data = try? JSONEncoder().encode(
+                                                    DisappearingMessagesConfiguration.MessageInfo(
+                                                        senderName: updateMessage.createdByRemoteName,
+                                                        isEnabled: updateMessage.configurationIsEnabled,
+                                                        durationSeconds: TimeInterval(updateMessage.configurationDurationSeconds)
+                                                    )
+                                                ),
+                                                let infoMessageString: String = String(data: infoMessageData, encoding: .utf8)
+                                            else { break }
+                                            
+                                            return infoMessageString
+                                            
+                                        case .call:
+                                            let messageInfo: CallMessage.MessageInfo = CallMessage.MessageInfo(
+                                                state: {
+                                                    switch infoMessage.callState {
+                                                        case .incoming: return .incoming
+                                                        case .outgoing: return .outgoing
+                                                        case .missed: return .missed
+                                                        case .permissionDenied: return .permissionDenied
+                                                        case .unknown: return .unknown
+                                                    }
+                                                }()
                                             )
-                                        ),
-                                        let infoMessageString: String = String(data: infoMessageData, encoding: .utf8)
-                                    else {
-                                        return ((infoMessage.body ?? "").isEmpty ?
-                                            infoMessage.customMessage :
-                                            infoMessage.body
-                                        )
+                                            
+                                            guard
+                                                let messageInfoData: Data = try? JSONEncoder().encode(messageInfo),
+                                                let messageInfoDataString: String = String(data: messageInfoData, encoding: .utf8)
+                                            else { break }
+                                            
+                                            return messageInfoDataString
+                                            
+                                        default: break
                                     }
                                     
-                                    return infoMessageString
+                                    return ((infoMessage.body ?? "").isEmpty ?
+                                        infoMessage.customMessage :
+                                        infoMessage.body
+                                    )
                                 }()
                                 wasRead = infoMessage.wasRead
                                 expiresInSeconds = nil    // Info messages don't expire

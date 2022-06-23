@@ -409,19 +409,11 @@ extension MessageSender {
             .map { $0.profileId }
         let members: Set<String> = Set(groupMemberIds).subtracting(removedMembers)
         
-        // Update zombie * member list
-        let profileIdsToRemove: Set<String> = allGroupMembers
-            .filter { member in
-                removedMembers.contains(member.profileId) && (
-                    member.role == .standard ||
-                    member.role == .zombie
-                )
-            }
-            .map { $0.profileId }
-            .asSet()
+        // Update zombie & member list
         try GroupMember
             .filter(GroupMember.Columns.groupId == thread.id)
-            .filter(profileIdsToRemove.contains(GroupMember.Columns.profileId))
+            .filter(removedMembers.contains(GroupMember.Columns.profileId))
+            .filter([ GroupMember.Role.standard, GroupMember.Role.zombie ].contains(GroupMember.Columns.role))
             .deleteAll(db)
         
         let interactionId: Int64?
@@ -522,7 +514,7 @@ extension MessageSender {
                 ClosedGroupPoller.shared.stopPolling(for: groupPublicKey)
                 
                 GRDBStorage.shared.write { db in
-                    _ = try closedGroup
+                    try closedGroup
                         .keyPairs
                         .deleteAll(db)
                     
@@ -535,10 +527,24 @@ extension MessageSender {
             }
             .map { _ in }
         
-        // Update the group
-        _ = try closedGroup
-            .allMembers
-            .deleteAll(db)
+        // Update the group (if the admin leaves the group is disbanded)
+        let wasAdminUser: Bool = try GroupMember
+            .filter(GroupMember.Columns.groupId == thread.id)
+            .filter(GroupMember.Columns.profileId == userPublicKey)
+            .filter(GroupMember.Columns.role == GroupMember.Role.admin)
+            .isNotEmpty(db)
+        
+        if wasAdminUser {
+            try GroupMember
+                .filter(GroupMember.Columns.groupId == thread.id)
+                .deleteAll(db)
+        }
+        else {
+            try GroupMember
+                .filter(GroupMember.Columns.groupId == thread.id)
+                .filter(GroupMember.Columns.profileId == userPublicKey)
+                .deleteAll(db)
+        }
         
         // Return
         return promise

@@ -53,9 +53,27 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     // MARK: - Initialization
     
     init(threadId: String, threadVariant: SessionThread.Variant, focusedInteractionId: Int64?) {
+        // If we have a specified 'focusedInteractionId' then use that, otherwise retrieve the oldest
+        // unread interaction and start focused around that one
+        let targetInteractionId: Int64? = {
+            if let focusedInteractionId: Int64 = focusedInteractionId { return focusedInteractionId }
+            
+            return GRDBStorage.shared.read { db in
+                let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+                
+                return try Interaction
+                    .select(.id)
+                    .filter(interaction[.wasRead] == false)
+                    .filter(interaction[.threadId] == threadId)
+                    .order(interaction[.timestampMs].asc)
+                    .asRequest(of: Int64.self)
+                    .fetchOne(db)
+            }
+        }()
+        
         self.threadId = threadId
         self.initialThreadVariant = threadVariant
-        self.focusedInteractionId = focusedInteractionId
+        self.focusedInteractionId = targetInteractionId
         self.pagedDataObserver = nil
         
         // Note: Since this references self we need to finish initializing before setting it, we
@@ -68,7 +86,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         DispatchQueue.global(qos: .default).async { [weak self] in
             // If we don't have a `initialFocusedId` then default to `.pageBefore` (it'll query
             // from a `0` offset)
-            guard let initialFocusedId: Int64 = focusedInteractionId else {
+            guard let initialFocusedId: Int64 = targetInteractionId else {
                 self?.pagedDataObserver?.load(.pageBefore)
                 return
             }
@@ -216,8 +234,11 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                                 prevModel: (index > 0 ? sortedData[index - 1] : nil),
                                 nextModel: (index < (sortedData.count - 1) ? sortedData[index + 1] : nil),
                                 isLast: (
+                                    // The database query sorts by timestampMs descending so the "last"
+                                    // interaction will actually have a 'pageOffset' of '0' even though
+                                    // it's the last element in the 'sortedData' array
                                     index == (sortedData.count - 1) &&
-                                    pageInfo.currentCount == pageInfo.totalCount
+                                    pageInfo.pageOffset == 0
                                 )
                             )
                         }

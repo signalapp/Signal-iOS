@@ -125,8 +125,15 @@ extension MessageReceiver {
                 linkPreviewUrl: (message.linkPreview?.url ?? message.openGroupInvitation?.url),
                 // Keep track of the open group server message ID ↔ message ID relationship
                 openGroupServerMessageId: message.openGroupServerMessageId.map { Int64($0) },
-                openGroupWhisperMods: false,
-                openGroupWhisperTo: nil
+                openGroupWhisperMods: (message.recipient?.contains(".mods") == true),
+                openGroupWhisperTo: {
+                    guard
+                        let recipientParts: [String] = message.recipient?.components(separatedBy: "."),
+                        recipientParts.count >= 3  // 'server.roomToken.whisperTo.whisperMods'
+                    else { return nil }
+                    
+                    return recipientParts[2]
+                }()
             ).inserted(db)
         }
         catch {
@@ -170,7 +177,7 @@ extension MessageReceiver {
             variant: variant,
             syncTarget: message.syncTarget
         )
-            
+        
         // Parse & persist attachments
         let attachments: [Attachment] = try dataMessage.attachments
             .compactMap { proto -> Attachment? in

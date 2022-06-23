@@ -49,6 +49,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     
     // Scrolling & paging
     var isUserScrolling = false
+    var hasPerformedInitialScroll = false
     var didFinishInitialLayout = false
     var scrollDistanceToBottomBeforeUpdate: CGFloat?
     var baselineKeyboardHeight: CGFloat = 0
@@ -420,16 +421,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        // Perform the initial scroll and highlight if needed (if we started with a focused message
-        // this will have already been called to instantly snap to the destination but we don't
-        // trigger the highlight until after the screen has appeared to make it more obvious)
-        performInitialScrollIfNeeded()
-        
         // Flag that the initial layout has been completed (the flag blocks and unblocks a number
         // of different behaviours)
-        //
-        // Note: This MUST be set after the above 'performInitialScrollIfNeeded' is called as it
-        // won't run if this flag is set to true
         didFinishInitialLayout = true
         
         if delayFirstResponder || isShowingSearchUI {
@@ -516,13 +509,16 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 
                 // The default scheduler emits changes on the main thread
                 self?.handleThreadUpdates(threadData)
-                self?.performInitialScrollIfNeeded()
+                
+                // Note: We want to load the interaction data into the UI after the initial thread data
+                // has loaded to prevent an issue where the conversation loads with the wrong offset
+                if self?.viewModel.onInteractionChange == nil {
+                    self?.viewModel.onInteractionChange = { [weak self] updatedInteractionData in
+                        self?.handleInteractionUpdates(updatedInteractionData)
+                    }
+                }
             }
         )
-        
-        self.viewModel.onInteractionChange = { [weak self] updatedInteractionData in
-            self?.handleInteractionUpdates(updatedInteractionData)
-        }
     }
     
     private func stopObservingChanges() {
@@ -617,42 +613,42 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             return
         }
         
-        // Determine if we are inserting content at the top of the collectionView
-        struct ItemChangeInfo {
-            enum InsertLocation {
-                case top
-                case bottom
-                case other
-                case none
-            }
+        // Mark received messages as read
+        let didSendMessageBeforeUpdate: Bool = self.viewModel.sentMessageBeforeUpdate
+        self.viewModel.markAllAsRead()
+        self.viewModel.sentMessageBeforeUpdate = false
+        
+        // When sending a message we want to reload the UI instantly (with any form of animation the message
+        // sending feels somewhat unresponsive but an instant update feels snappy)
+        guard !didSendMessageBeforeUpdate else {
+            self.viewModel.updateInteractionData(updatedData)
+            self.tableView.reloadData()
             
-            let insertLocation: InsertLocation
-            let wasCloseToBottom: Bool
-            let sentMessageBeforeUpdate: Bool
+            // Note: The scroll button alpha won't get set correctly in this case so we forcibly set it to
+            // have an alpha of 0 to stop it appearing buggy
+            self.scrollToBottom(isAnimated: false)
+            self.scrollButton.alpha = 0
+            self.unreadCountView.alpha = scrollButton.alpha
+            return
+        }
+        
+        // Reload the table content animating changes if they'll look good
+        struct ItemChangeInfo {
+            let isInsertAtTop: Bool
             let firstIndexIsVisible: Bool
-            let visibleInteractionId: Int64
             let visibleIndexPath: IndexPath
             let oldVisibleIndexPath: IndexPath
-            let lastVisibleIndexPath: IndexPath
             
             init(
-                insertLocation: InsertLocation,
-                wasCloseToBottom: Bool,
-                sentMessageBeforeUpdate: Bool,
+                isInsertAtTop: Bool = false,
                 firstIndexIsVisible: Bool = false,
-                visibleInteractionId: Int64 = -1,
                 visibleIndexPath: IndexPath = IndexPath(row: 0, section: 0),
-                oldVisibleIndexPath: IndexPath = IndexPath(row: 0, section: 0),
-                lastVisibleIndexPath: IndexPath = IndexPath(row: 0, section: 0)
+                oldVisibleIndexPath: IndexPath = IndexPath(row: 0, section: 0)
             ) {
-                self.insertLocation = insertLocation
-                self.wasCloseToBottom = wasCloseToBottom
-                self.sentMessageBeforeUpdate = sentMessageBeforeUpdate
+                self.isInsertAtTop = isInsertAtTop
                 self.firstIndexIsVisible = firstIndexIsVisible
-                self.visibleInteractionId = visibleInteractionId
                 self.visibleIndexPath = visibleIndexPath
                 self.oldVisibleIndexPath = oldVisibleIndexPath
-                self.lastVisibleIndexPath = lastVisibleIndexPath
             }
         }
         
@@ -660,76 +656,70 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             source: viewModel.interactionData,
             target: updatedData
         )
+        let isInsert: Bool = (changeset.map({ $0.elementInserted.count }).reduce(0, +) > 0)
+        let wasLoadingMore: Bool = self.isLoadingMore
+        let wasOffsetCloseToBottom: Bool = self.isCloseToBottom
         let numItemsInUpdatedData: [Int] = updatedData.map { $0.elements.count }
-        let itemChangeInfo: ItemChangeInfo = {
+        let itemChangeInfo: ItemChangeInfo? = {
             guard
-                changeset.map({ $0.elementInserted.count }).reduce(0, +) > 0,
+                isInsert,
                 let oldSectionIndex: Int = self.viewModel.interactionData.firstIndex(where: { $0.model == .messages }),
                 let newSectionIndex: Int = updatedData.firstIndex(where: { $0.model == .messages }),
                 let newFirstItemIndex: Int = updatedData[newSectionIndex].elements
                     .firstIndex(where: { item -> Bool in
                         item.id == self.viewModel.interactionData[oldSectionIndex].elements.first?.id
                     }),
-                let newLastItemIndex: Int = updatedData[newSectionIndex].elements
-                    .lastIndex(where: { item -> Bool in
-                        item.id == self.viewModel.interactionData[oldSectionIndex].elements.last?.id
-                    }),
                 let firstVisibleIndexPath: IndexPath = self.tableView.indexPathsForVisibleRows?
                     .filter({ $0.section == oldSectionIndex })
                     .sorted()
                     .first,
-                let lastVisibleIndexPath: IndexPath = self.tableView.indexPathsForVisibleRows?
-                    .filter({ $0.section == oldSectionIndex })
-                    .sorted()
-                    .last,
                 let newVisibleIndex: Int = updatedData[newSectionIndex].elements
                     .firstIndex(where: { item in
                         item.id == self.viewModel.interactionData[oldSectionIndex]
                             .elements[firstVisibleIndexPath.row]
                             .id
-                    }),
-                let newLastVisibleIndex: Int = updatedData[newSectionIndex].elements
-                    .firstIndex(where: { item in
-                        item.id == self.viewModel.interactionData[oldSectionIndex]
-                            .elements[lastVisibleIndexPath.row]
-                            .id
                     })
-            else {
-                return ItemChangeInfo(
-                    insertLocation: .none,
-                    wasCloseToBottom: isCloseToBottom,
-                    sentMessageBeforeUpdate: self.viewModel.sentMessageBeforeUpdate
-                )
-            }
+            else { return nil }
             
             return ItemChangeInfo(
-                insertLocation: {
-                    let insertedAtTop: Bool = (
-                        newSectionIndex > oldSectionIndex ||
-                        newFirstItemIndex > 0
-                    )
-                    let insertedAtBot: Bool = (
-                        newSectionIndex < oldSectionIndex ||
-                        newLastItemIndex < (updatedData[newSectionIndex].elements.count - 1)
-                    )
-                    
-                    // If anything was inserted at the top then we need to maintain the current
-                    // offset so always return a 'top' insert location
-                    switch (insertedAtTop, insertedAtBot, isLoadingMore) {
-                        case (true, _, true), (true, false, false): return .top
-                        case (false, true, _): return .bottom
-                        case (false, false, _), (true, true, false): return .other
-                    }
-                }(),
-                wasCloseToBottom: isCloseToBottom,
-                sentMessageBeforeUpdate: self.viewModel.sentMessageBeforeUpdate,
+                isInsertAtTop: (
+                    newSectionIndex > oldSectionIndex ||
+                    newFirstItemIndex > 0
+                ),
                 firstIndexIsVisible: (firstVisibleIndexPath.row == 0),
-                visibleInteractionId: updatedData[newSectionIndex].elements[newVisibleIndex].id,
                 visibleIndexPath: IndexPath(row: newVisibleIndex, section: newSectionIndex),
-                oldVisibleIndexPath: firstVisibleIndexPath,
-                lastVisibleIndexPath: IndexPath(row: newLastVisibleIndex, section: newSectionIndex)
+                oldVisibleIndexPath: firstVisibleIndexPath
             )
         }()
+        
+        guard !isInsert || wasLoadingMore || itemChangeInfo?.isInsertAtTop == true else {
+            self.viewModel.updateInteractionData(updatedData)
+            self.tableView.reloadData()
+            
+            // Animate to the target interaction (or the bottom) after a slightly delay to prevent buggy
+            // animation conflicts
+            if let focusedInteractionId: Int64 = self.focusedInteractionId {
+                // If we had a focusedInteractionId then scroll to it (and hide the search
+                // result bar loading indicator)
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [weak self] in
+                    self?.searchController.resultsBar.stopLoading()
+                    self?.scrollToInteractionIfNeeded(
+                        with: focusedInteractionId,
+                        isAnimated: true,
+                        highlight: (self?.shouldHighlightNextScrollToInteraction == true)
+                    )
+                }
+            }
+            else if wasOffsetCloseToBottom {
+                // Scroll to the bottom if an interaction was just inserted and we either
+                // just sent a message or are close enough to the bottom (wait a tiny fraction
+                // to avoid buggy animation behaviour)
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [weak self] in
+                    self?.scrollToBottom(isAnimated: true)
+                }
+            }
+            return
+        }
         
         /// UITableView doesn't really support bottom-aligned content very well and as such jumps around a lot when inserting content but
         /// we want to maintain the current offset from before the data was inserted (except when adding at the bottom while the user is at
@@ -737,19 +727,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         ///
         /// Unfortunately the UITableView also does some weird things when updating (where it won't have updated it's internal data until
         /// after it performs the next layout); the below code checks a condition on layout and if it passes it calls a closure
-        if itemChangeInfo.insertLocation == .top {
-            let cellSorting: (MessageCell, MessageCell) -> Bool = { lhs, rhs -> Bool in
-                if !lhs.isHidden && rhs.isHidden { return true }
-                if lhs.isHidden && !rhs.isHidden { return false }
-                
-                return (lhs.frame.minY < rhs.frame.minY)
-            }
-            let oldRect: CGRect = (self.tableView.subviews
-                .compactMap { $0 as? MessageCell }
-                .sorted(by: cellSorting)
-                .first(where: { cell -> Bool in cell.viewModel?.id == itemChangeInfo.visibleInteractionId })?
-                .frame)
-                .defaulting(to: self.tableView.rectForRow(at: itemChangeInfo.oldVisibleIndexPath))
+        if let itemChangeInfo: ItemChangeInfo = itemChangeInfo, (itemChangeInfo.isInsertAtTop || wasLoadingMore) {
+            let oldCellHeight: CGFloat = self.tableView.rectForRow(at: itemChangeInfo.oldVisibleIndexPath).height
             
             // The the user triggered the 'scrollToTop' animation (by tapping in the nav bar) then we
             // need to stop the animation before attempting to lock the offset (otherwise things break)
@@ -778,8 +757,10 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                                     .height)
                                     .defaulting(to: 0)
                             }
-                        let newTargetRect: CGRect? = self?.tableView.rectForRow(at: itemChangeInfo.visibleIndexPath)
-                        let heightDiff: CGFloat = (oldRect.height - (newTargetRect ?? oldRect).height)
+                        let newTargetHeight: CGFloat? = self?.tableView
+                            .rectForRow(at: itemChangeInfo.visibleIndexPath)
+                            .height
+                        let heightDiff: CGFloat = (oldCellHeight - (newTargetHeight ?? oldCellHeight))
 
                         self?.tableView.contentOffset.y += (calculatedRowHeights - heightDiff)
                     }
@@ -803,61 +784,31 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 }
             )
         }
-        else if itemChangeInfo.insertLocation == .bottom || itemChangeInfo.insertLocation == .other {
-            CATransaction.begin()
-            CATransaction.setCompletionBlock { [weak self] in
-                if let focusedInteractionId: Int64 = self?.focusedInteractionId {
-                    // If we had a focusedInteractionId then scroll to it (and hide the search
-                    // result bar loading indicator)
-                    self?.searchController.resultsBar.stopLoading()
-                    self?.scrollToInteractionIfNeeded(
-                        with: focusedInteractionId,
-                        isAnimated: true,
-                        highlight: (self?.shouldHighlightNextScrollToInteraction == true)
-                    )
-                }
-                else if itemChangeInfo.sentMessageBeforeUpdate || itemChangeInfo.wasCloseToBottom {
-                    // Scroll to the bottom if an interaction was just inserted and we either
-                    // just sent a message or are close enough to the bottom
-                    self?.scrollToBottom(isAnimated: true)
-                }
-            }
-        }
         
-        // Reload the table content (animate changes if we aren't inserting at the top)
         self.tableView.reload(
             using: changeset,
             deleteSectionsAnimation: .none,
             insertSectionsAnimation: .none,
             reloadSectionsAnimation: .none,
             deleteRowsAnimation: .bottom,
-            insertRowsAnimation: .bottom,
+            insertRowsAnimation: .none,
             reloadRowsAnimation: .none,
-            interrupt: { itemChangeInfo.insertLocation == .top || $0.changeCount > ConversationViewModel.pageSize }
+            interrupt: { itemChangeInfo?.isInsertAtTop == true || $0.changeCount > ConversationViewModel.pageSize }
         ) { [weak self] updatedData in
             self?.viewModel.updateInteractionData(updatedData)
         }
-        
-        if itemChangeInfo.insertLocation == .bottom || itemChangeInfo.insertLocation == .other {
-            CATransaction.commit()
-        }
-        
-        // Mark received messages as read
-        viewModel.markAllAsRead()
-        viewModel.sentMessageBeforeUpdate = false
     }
     
     private func performInitialScrollIfNeeded() {
-        guard !didFinishInitialLayout && hasLoadedInitialThreadData && hasLoadedInitialInteractionData else { return }
+        guard !hasPerformedInitialScroll && hasLoadedInitialThreadData && hasLoadedInitialInteractionData else {
+            return
+        }
         
         // Scroll to the last unread message if possible; otherwise scroll to the bottom.
         // When the unread message count is more than the number of view items of a page,
         // the screen will scroll to the bottom instead of the first unread message
         if let focusedInteractionId: Int64 = self.viewModel.focusedInteractionId {
             self.scrollToInteractionIfNeeded(with: focusedInteractionId, isAnimated: false, highlight: true)
-        }
-        else if let firstUnreadInteractionId: Int64 = self.viewModel.threadData.threadFirstUnreadInteractionId {
-            self.scrollToInteractionIfNeeded(with: firstUnreadInteractionId, position: .top, isAnimated: false)
             self.unreadCountView.alpha = self.scrollButton.alpha
         }
         else {
@@ -865,6 +816,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
 
         self.scrollButton.alpha = self.getScrollButtonOpacity()
+        self.hasPerformedInitialScroll = true
         
         // Now that the data has loaded we need to check if either of the "load more" sections are
         // visible and trigger them if so
@@ -1187,7 +1139,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     }
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        guard self.didFinishInitialLayout && !self.isLoadingMore else { return }
+        guard self.hasPerformedInitialScroll && !self.isLoadingMore else { return }
         
         let section: ConversationViewModel.SectionModel = self.viewModel.interactionData[section]
         
@@ -1264,6 +1216,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             self.shouldHighlightNextScrollToInteraction
         else {
             self.focusedInteractionId = nil
+            self.shouldHighlightNextScrollToInteraction = false
             return
         }
         
@@ -1439,16 +1392,16 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 animated: (self.didFinishInitialLayout && isAnimated)
             )
             
-            // Don't clear these values if we have't done the initial layout (we will call this
-            // method a second time to trigger the highlight after the screen appears)
-            guard self.didFinishInitialLayout else { return }
-            
-            self.focusedInteractionId = nil
-            self.shouldHighlightNextScrollToInteraction = false
-            
+            // If we haven't finished the initial layout then we want to delay the highlight slightly
+            // so it doesn't look buggy with the push transition
             if highlight {
-                self.highlightCellIfNeeded(interactionId: interactionId)
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(self.didFinishInitialLayout ? 0 : 150)) { [weak self] in
+                    self?.highlightCellIfNeeded(interactionId: interactionId)
+                }
             }
+            
+            self.shouldHighlightNextScrollToInteraction = false
+            self.focusedInteractionId = nil
             return
         }
         

@@ -652,8 +652,6 @@ public final class MessageSender {
                     mostRecentFailureText: error.localizedDescription
                 ).save(db)
             }
-        
-        // Remove the message timestamps if it fails
     }
     
     // MARK: - Convenience

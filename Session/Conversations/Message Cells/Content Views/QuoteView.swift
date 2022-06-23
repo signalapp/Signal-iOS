@@ -84,7 +84,7 @@ final class QuoteView: UIView {
         
         // Subtract smallSpacing twice; once for the spacing in between the stack view elements and
         // once for the trailing margin.
-        if attachment != nil {
+        if attachment == nil {
             availableWidth = maxWidth - 2 * hInset - Values.accentLineThickness - 2 * smallSpacing
         }
         else {

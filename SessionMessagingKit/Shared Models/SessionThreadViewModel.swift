@@ -30,7 +30,6 @@ public struct SessionThreadViewModel: FetchableRecord, Decodable, Equatable, Has
     public static let threadContactIsTypingKey: SQL = SQL(stringLiteral: CodingKeys.threadContactIsTyping.stringValue)
     public static let threadUnreadCountKey: SQL = SQL(stringLiteral: CodingKeys.threadUnreadCount.stringValue)
     public static let threadUnreadMentionCountKey: SQL = SQL(stringLiteral: CodingKeys.threadUnreadMentionCount.stringValue)
-    public static let threadFirstUnreadInteractionIdKey: SQL = SQL(stringLiteral: CodingKeys.threadFirstUnreadInteractionId.stringValue)
     public static let contactProfileKey: SQL = SQL(stringLiteral: CodingKeys.contactProfile.stringValue)
     public static let closedGroupNameKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupName.stringValue)
     public static let closedGroupUserCountKey: SQL = SQL(stringLiteral: CodingKeys.closedGroupUserCount.stringValue)
@@ -57,7 +56,6 @@ public struct SessionThreadViewModel: FetchableRecord, Decodable, Equatable, Has
     
     public static let threadUnreadCountString: String = CodingKeys.threadUnreadCount.stringValue
     public static let threadUnreadMentionCountString: String = CodingKeys.threadUnreadMentionCount.stringValue
-    public static let threadFirstUnreadInteractionIdString: String = CodingKeys.threadFirstUnreadInteractionId.stringValue
     public static let closedGroupUserCountString: String = CodingKeys.closedGroupUserCount.stringValue
     public static let openGroupUserCountString: String = CodingKeys.openGroupUserCount.stringValue
     public static let contactProfileString: String = CodingKeys.contactProfile.stringValue
@@ -86,7 +84,6 @@ public struct SessionThreadViewModel: FetchableRecord, Decodable, Equatable, Has
     public let threadContactIsTyping: Bool?
     public let threadUnreadCount: UInt?
     public let threadUnreadMentionCount: UInt?
-    public let threadFirstUnreadInteractionId: Int64?
     
     // Thread display info
     
@@ -214,7 +211,6 @@ public extension SessionThreadViewModel {
         self.threadContactIsTyping = nil
         self.threadUnreadCount = unreadCount
         self.threadUnreadMentionCount = nil
-        self.threadFirstUnreadInteractionId = nil
         
         // Thread display info
         
@@ -496,7 +492,6 @@ public extension SessionThreadViewModel {
         let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
-        let firstUnreadInteractionTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.threadFirstUnreadInteractionIdString)_table")
         let interactionIdLiteral: SQL = SQL(stringLiteral: Interaction.Columns.id.name)
         let interactionThreadIdLiteral: SQL = SQL(stringLiteral: Interaction.Columns.threadId.name)
         let closedGroupUserCountTableLiteral: SQL = SQL(stringLiteral: "\(ViewModel.closedGroupUserCountString)_table")
@@ -508,7 +503,7 @@ public extension SessionThreadViewModel {
         /// parse and might throw
         ///
         /// Explicitly set default values for the fields ignored for search results
-        let numColumnsBeforeProfiles: Int = 15
+        let numColumnsBeforeProfiles: Int = 13
         let request: SQLRequest<ViewModel> = """
             SELECT
                 \(thread[.id]) AS \(ViewModel.threadIdKey),
@@ -540,8 +535,6 @@ public extension SessionThreadViewModel {
                 \(thread[.messageDraft]) AS \(ViewModel.threadMessageDraftKey),
         
                 \(Interaction.self).\(ViewModel.threadUnreadCountKey),
-                \(Interaction.self).\(ViewModel.threadUnreadMentionCountKey),
-                \(firstUnreadInteractionTableLiteral).\(interactionIdLiteral) AS \(ViewModel.threadFirstUnreadInteractionIdKey),
             
                 \(ViewModel.contactProfileKey).*,
                 \(closedGroup[.name]) AS \(ViewModel.closedGroupNameKey),
@@ -550,7 +543,6 @@ public extension SessionThreadViewModel {
                 \(openGroup[.name]) AS \(ViewModel.openGroupNameKey),
                 \(openGroup[.server]) AS \(ViewModel.openGroupServerKey),
                 \(openGroup[.roomToken]) AS \(ViewModel.openGroupRoomTokenKey),
-                \(openGroup[.imageData]) AS \(ViewModel.openGroupProfilePictureDataKey),
                 \(openGroup[.userCount]) AS \(ViewModel.openGroupUserCountKey),
         
                 \(Interaction.self).\(ViewModel.interactionIdKey),
@@ -566,23 +558,11 @@ public extension SessionThreadViewModel {
                     \(interaction[.threadId]),
                     MAX(\(interaction[.timestampMs])),
                     
-                    SUM(\(interaction[.wasRead]) = false) AS \(ViewModel.threadUnreadCountKey),
-                    SUM(\(interaction[.wasRead]) = false AND \(interaction[.hasMention]) = true) AS \(ViewModel.threadUnreadMentionCountKey)
+                    SUM(\(interaction[.wasRead]) = false) AS \(ViewModel.threadUnreadCountKey)
                 
                 FROM \(Interaction.self)
                 GROUP BY \(interaction[.threadId])
             ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
-            LEFT JOIN (
-                SELECT
-                    \(interaction[.id]),
-                    \(interaction[.threadId]),
-                    MIN(\(interaction[.timestampMs]))
-                FROM \(Interaction.self)
-                WHERE (
-                    \(interaction[.wasRead]) = false AND
-                    \(SQL("\(interaction[.threadId]) = \(threadId)"))
-                )
-            ) AS \(firstUnreadInteractionTableLiteral) ON \(firstUnreadInteractionTableLiteral).\(interactionThreadIdLiteral) = \(thread[.id])
         
             LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
             LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(thread[.id])

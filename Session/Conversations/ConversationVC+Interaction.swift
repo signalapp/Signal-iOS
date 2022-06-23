@@ -360,6 +360,9 @@ extension ConversationVC:
                         return
                     }
                     
+                    // Let the viewModel know we are about to send a message
+                    self?.viewModel.sentMessageBeforeUpdate = true
+                    
                     // Update the thread to be visible
                     _ = try SessionThread
                         .filter(id: threadId)
@@ -391,11 +394,9 @@ extension ConversationVC:
                             )
                         ).insert(db)
                     }
-
-                    guard let interactionId: Int64 = interaction.id else { return }
-
+                    
                     // If there is a Quote the insert it now
-                    if let quoteModel: QuotedReplyModel = quoteModel {
+                    if let interactionId: Int64 = interaction.id, let quoteModel: QuotedReplyModel = quoteModel {
                         try Quote(
                             interactionId: interactionId,
                             authorId: quoteModel.authorId,
@@ -412,7 +413,6 @@ extension ConversationVC:
                     )
                 },
                 completion: { [weak self] _, _ in
-                    self?.viewModel.sentMessageBeforeUpdate = true
                     self?.handleMessageSent()
                 }
             )
@@ -457,6 +457,9 @@ extension ConversationVC:
                         return
                     }
                     
+                    // Let the viewModel know we are about to send a message
+                    self?.viewModel.sentMessageBeforeUpdate = true
+                    
                     // Update the thread to be visible
                     _ = try SessionThread
                         .filter(id: threadId)
@@ -480,7 +483,6 @@ extension ConversationVC:
                     )
                 },
                 completion: { [weak self] _, _ in
-                    self?.viewModel.sentMessageBeforeUpdate = true
                     self?.handleMessageSent()
                     
                     // Attachment successfully sent - dismiss the screen

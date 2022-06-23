@@ -299,6 +299,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
         
+        self.hasInitialRootViewController = true
         self.window?.rootViewController = OWSNavigationController(
             rootViewController: (Identity.userExists() ?
                 HomeVC() :

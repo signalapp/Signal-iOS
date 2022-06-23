@@ -1312,18 +1312,50 @@ public enum SMKLegacy {
             case call
             case messageRequestAccepted = 99
         }
+        public enum _InfoMessageCallState: Int {
+            case incoming
+            case outgoing
+            case missed
+            case permissionDenied
+            case unknown
+        }
         
         public var wasRead: Bool
         public var messageType: _InfoMessageType
+        public var callState: _InfoMessageCallState
         public var customMessage: String?
         
         // MARK: NSCoder
         
         public required init(coder: NSCoder) {
+            let parsedMessageType: _InfoMessageType = _InfoMessageType(rawValue: (coder.decodeObject(forKey: "messageType") as! NSNumber).intValue)!
+            let rawCallState: Int? = (coder.decodeObject(forKey: "callState") as? NSNumber)?.intValue
+            
             self.wasRead = (coder.decodeObject(forKey: "read") as? Bool)  // Note: 'read' is the correct key
                 .defaulting(to: false)
-            self.messageType = _InfoMessageType(rawValue: (coder.decodeObject(forKey: "messageType") as! NSNumber).intValue)!
             self.customMessage = coder.decodeObject(forKey: "customMessage") as? String
+            
+            switch (parsedMessageType, rawCallState) {
+                // Note: There was a period of time where the 'messageType' value for both 'call' and
+                // 'messageRequestAccepted' was the same, this code is here to handle any messages which
+                // might have been mistakenly identified as 'call' messages when they should be seen as
+                // 'messageRequestAccepted' messages (hard-coding a timestamp to be sure that any calls
+                // after the value was changed are correctly identified as 'unknown')
+                case (.call, .none):
+                    guard (coder.decodeObject(forKey: "timestamp") as? UInt64 ?? 0) < 1647500000000 else {
+                        fallthrough
+                    }
+                    
+                    self.messageType = .messageRequestAccepted
+                    self.callState = .unknown
+                    
+                default:
+                    self.messageType = parsedMessageType
+                    self.callState = _InfoMessageCallState(
+                        rawValue: (rawCallState ?? _InfoMessageCallState.unknown.rawValue)
+                    )
+                    .defaulting(to: .unknown)
+            }
             
             super.init(coder: coder)
         }
