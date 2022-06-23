@@ -299,6 +299,8 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
             return button
         }
         
+        let debugReMigrateButton = getSettingButton(withTitle: "DEBUG - Re-Migrate Database", color: Colors.destructive, action: #selector(remigrateDatabase))
+        
         let pathButton = getSettingButton(withTitle: NSLocalizedString("vc_path_title", comment: ""), color: Colors.text, action: #selector(showPath))
         let pathStatusView = PathStatusView()
         pathStatusView.set(.width, to: PathStatusView.size)
@@ -309,6 +311,8 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         pathStatusView.autoVCenterInSuperview()
         
         return [
+            getSeparator(),
+            debugReMigrateButton,
             getSeparator(),
             pathButton,
             getSeparator(),
@@ -586,6 +590,12 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
             shareVC.popoverPresentationController?.sourceRect = self.view.bounds
         }
         navigationController!.present(shareVC, animated: true, completion: nil)
+    }
+    
+    @objc private func remigrateDatabase() {
+        GRDBStorage.deleteDatabaseFiles()
+        try? GRDBStorage.deleteDbKeys()
+        exit(1)
     }
     
     @objc private func showPath() {

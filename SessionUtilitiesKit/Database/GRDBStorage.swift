@@ -297,13 +297,13 @@ public final class GRDBStorage {
         // TODO: Delete Profiles on Disk?
     }
     
-    private static func deleteDatabaseFiles() {
+    public/*private*/ static func deleteDatabaseFiles() {
         OWSFileSystem.deleteFile(databasePath)
         OWSFileSystem.deleteFile(databasePathShm)
         OWSFileSystem.deleteFile(databasePathWal)
     }
     
-    private static func deleteDbKeys() throws {
+    public/*private*/ static func deleteDbKeys() throws {
         try SSKDefaultKeychainStorage.shared.remove(service: keychainService, key: dbCipherKeySpecKey)
     }
     
