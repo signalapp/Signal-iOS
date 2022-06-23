@@ -95,6 +95,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         let view = TextViewWithPlaceholder()
         view.placeholderText = NSLocalizedString("BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER",
                                                  comment: "Placeholder in the text field where you can add text for a message along with your gift")
+        view.returnKeyType = .done
         view.delegate = self
         return view
     }()
@@ -308,7 +309,12 @@ extension BadgeGiftingConfirmationViewController: TextViewWithPlaceholderDelegat
     func textView(_ textView: TextViewWithPlaceholder,
                   uiTextView: UITextView,
                   shouldChangeTextIn range: NSRange,
-                  replacementText text: String) -> Bool { true }
+                  replacementText text: String) -> Bool {
+        if text == "\n" {
+            uiTextView.resignFirstResponder()
+        }
+        return true
+    }
 }
 
 // MARK: - Apple Pay delegate

@@ -46,6 +46,11 @@ public class TextViewWithPlaceholder: UIView {
         }
     }
 
+    public var returnKeyType: UIReturnKeyType {
+        get { textView.returnKeyType }
+        set { textView.returnKeyType = newValue }
+    }
+
     public var dataDetectorTypes: UIDataDetectorTypes {
         get { textView.dataDetectorTypes }
         set { textView.dataDetectorTypes = newValue }
