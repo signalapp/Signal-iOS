@@ -1,9 +1,19 @@
 import UIKit
 
-final class ReactionButton : UIView {
+public struct ReactionViewModel: Hashable {
     let emoji: EmojiWithSkinTones
     let number: Int
     let showBorder: Bool
+    
+    init(emoji: EmojiWithSkinTones, value: Int, showBorder: Bool) {
+        self.emoji = emoji
+        self.number = value
+        self.showBorder = showBorder
+    }
+}
+
+final class ReactionButton: UIView {
+    let viewModel: ReactionViewModel
     let showNumber: Bool
     
     // MARK: Settings
@@ -13,10 +23,8 @@ final class ReactionButton : UIView {
     private var spacing: CGFloat = Values.verySmallSpacing
     
     // MARK: Lifecycle
-    init(emoji: EmojiWithSkinTones, value: Int, showBorder: Bool = false, showNumber: Bool = true) {
-        self.emoji = emoji
-        self.number = value
-        self.showBorder = showBorder
+    init(viewModel: ReactionViewModel, showNumber: Bool = true) {
+        self.viewModel = viewModel
         self.showNumber = showNumber
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
@@ -32,7 +40,7 @@ final class ReactionButton : UIView {
     
     private func setUpViewHierarchy() {
         let emojiLabel = UILabel()
-        emojiLabel.text = emoji.rawValue
+        emojiLabel.text = viewModel.emoji.rawValue
         emojiLabel.font = .systemFont(ofSize: fontSize)
         
         let stackView = UIStackView(arrangedSubviews: [ emojiLabel ])
@@ -48,13 +56,13 @@ final class ReactionButton : UIView {
         backgroundColor = Colors.receivedMessageBackground
         layer.cornerRadius = self.height / 2
         
-        if showBorder {
+        if viewModel.showBorder {
             self.addBorder(with: Colors.accent)
         }
         
-        if showNumber || self.number > 1 {
+        if showNumber || viewModel.number > 1 {
             let numberLabel = UILabel()
-            numberLabel.text = self.number < 1000 ? "\(number)" : String(format: "%.1f", Float(number) / 1000) + "k"
+            numberLabel.text = viewModel.number < 1000 ? "\(viewModel.number)" : String(format: "%.1f", Float(viewModel.number) / 1000) + "k"
             numberLabel.font = .systemFont(ofSize: fontSize)
             numberLabel.textColor = Colors.text
             stackView.addArrangedSubview(numberLabel)

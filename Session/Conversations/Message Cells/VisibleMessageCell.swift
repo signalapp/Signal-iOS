@@ -468,7 +468,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 }
             }
         }
-        reactionContainerView.update(reactions.orderedItems, isOutgoingMessage: direction == .outgoing, showNumbers: thread!.isGroupThread())
+        reactionContainerView.update(reactions.orderedItems.map { ReactionViewModel(emoji: $0.0, value: $0.1.0, showBorder:$0.1.1 )}, isOutgoingMessage: direction == .outgoing, showNumbers: thread!.isGroupThread())
     }
     
     override func layoutSubviews() {
@@ -545,7 +545,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             let convertedLocation = reactionContainerView.convert(location, from: self)
             for reactionView in reactionContainerView.reactionViews {
                 if reactionContainerView.convert(reactionView.frame, from: reactionView.superview).contains(convertedLocation) {
-                    delegate?.showReactionList(viewItem, selectedReaction: reactionView.emoji)
+                    delegate?.showReactionList(viewItem, selectedReaction: reactionView.viewModel.emoji)
                     break
                 }
             }
@@ -569,10 +569,10 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             let convertedLocation = reactionContainerView.convert(location, from: self)
             for reactionView in reactionContainerView.reactionViews {
                 if reactionContainerView.convert(reactionView.frame, from: reactionView.superview).contains(convertedLocation) {
-                    if reactionView.showBorder {
-                        delegate?.cancelReact(viewItem, for: reactionView.emoji)
+                    if reactionView.viewModel.showBorder {
+                        delegate?.cancelReact(viewItem, for: reactionView.viewModel.emoji)
                     } else {
-                        delegate?.quickReact(viewItem, with: reactionView.emoji)
+                        delegate?.quickReact(viewItem, with: reactionView.viewModel.emoji)
                     }
                     return
                 }

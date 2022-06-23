@@ -21,7 +21,7 @@ final class ReactionContainerView : UIView {
     private var showNumbers = true
     private var maxEmojisPerLine = isIPhone6OrSmaller ? 5 : 6
     
-    var reactions: [(EmojiWithSkinTones, (Int, Bool))] = []
+    var reactions: [ReactionViewModel] = []
     var reactionViews: [ReactionButton] = []
     var expandButton: ExpandingReactionButton?
     var collapseButton: UIStackView = {
@@ -58,7 +58,7 @@ final class ReactionContainerView : UIView {
         mainStackView.pin(to: self)
     }
     
-    public func update(_ reactions: [(EmojiWithSkinTones, (Int, Bool))], isOutgoingMessage: Bool, showNumbers: Bool) {
+    public func update(_ reactions: [ReactionViewModel], isOutgoingMessage: Bool, showNumbers: Bool) {
         self.reactions = reactions
         self.isOutgoingMessage = isOutgoingMessage
         self.showNumbers = showNumbers
@@ -70,7 +70,7 @@ final class ReactionContainerView : UIView {
         }
     }
     
-    private func updateCollapsedReactions(_ reactions: [(EmojiWithSkinTones, (Int, Bool))]) {
+    private func updateCollapsedReactions(_ reactions: [ReactionViewModel]) {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = Values.smallSpacing
@@ -83,19 +83,19 @@ final class ReactionContainerView : UIView {
             reactionContainerView.semanticContentAttribute = .unspecified
         }
         
-        var displayedReactions: [(EmojiWithSkinTones, (Int, Bool))]
+        var displayedReactions: [ReactionViewModel]
         var expandButtonReactions: [EmojiWithSkinTones]
         
         if reactions.count > maxEmojisPerLine {
             displayedReactions = Array(reactions[0...(maxEmojisPerLine - 3)])
-            expandButtonReactions = Array(reactions[(maxEmojisPerLine - 2)...maxEmojisPerLine]).map{ $0.0 }
+            expandButtonReactions = Array(reactions[(maxEmojisPerLine - 2)...maxEmojisPerLine]).map{ $0.emoji }
         } else {
             displayedReactions = reactions
             expandButtonReactions = []
         }
         
         for reaction in displayedReactions {
-            let reactionView = ReactionButton(emoji: reaction.0, value: reaction.1.0, showBorder: reaction.1.1, showNumber: showNumbers)
+            let reactionView = ReactionButton(viewModel: reaction, showNumber: showNumbers)
             stackView.addArrangedSubview(reactionView)
             reactionViews.append(reactionView)
         }
@@ -112,7 +112,7 @@ final class ReactionContainerView : UIView {
         var reactions = self.reactions
         var numberOfLines = 0
         while reactions.count > 0 {
-            var line: [(EmojiWithSkinTones, (Int, Bool))] = []
+            var line: [ReactionViewModel] = []
             while reactions.count > 0 && line.count < maxEmojisPerLine {
                 line.append(reactions.removeFirst())
             }
