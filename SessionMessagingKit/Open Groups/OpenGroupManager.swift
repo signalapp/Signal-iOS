@@ -73,8 +73,8 @@ public final class OpenGroupManager: NSObject {
                 // we don't want to start a poller for this as the user hasn't actually joined a room
                 try OpenGroup
                     .select(.server)
+                    .filter(OpenGroup.Columns.isActive == true)
                     .filter(OpenGroup.Columns.roomToken != "")
-                    .filter(OpenGroup.Columns.isActive)
                     .distinct()
                     .asRequest(of: String.self)
                     .fetchSet(db)
@@ -166,33 +166,25 @@ public final class OpenGroupManager: NSObject {
         // Store the open group information
         let threadId: String = OpenGroup.idFor(roomToken: roomToken, server: server)
         
+        // Optionally try to insert a new version of the OpenGroup (it will fail if there is already an
+        // inactive one but that won't matter as we then activate it
         _ = try? SessionThread.fetchOrCreate(db, id: threadId, variant: .openGroup)
+        
+        if (try? OpenGroup.exists(db, id: threadId)) == false {
+            try? OpenGroup
+                .fetchOrCreate(db, server: server, roomToken: roomToken, publicKey: publicKey)
+                .save(db)
+        }
+        
+        // Set the group to active and reset the sequenceNumber (handle groups which have
+        // been deactivated)
         _ = try? OpenGroup
-            .fetchOne(db, id: threadId)
-            .defaulting(
-                to: OpenGroup(
-                    server: server,
-                    roomToken: roomToken,
-                    publicKey: publicKey,
-                    isActive: true,
-                    name: "",
-                    roomDescription: nil,
-                    imageId: nil,
-                    imageData: nil,
-                    userCount: 0,
-                    infoUpdates: -1,
-                    sequenceNumber: 0,
-                    inboxLatestMessageId: 0,
-                    outboxLatestMessageId: 0
-                )
+            .filter(id: OpenGroup.idFor(roomToken: roomToken, server: server))
+            .updateAll(
+                db,
+                OpenGroup.Columns.isActive.set(to: true),
+                OpenGroup.Columns.sequenceNumber.set(to: 0)
             )
-            .with(
-                // Set the group to active and reset the sequenceNumber (handle groups which have
-                // been deactivated)
-                isActive: true,
-                sequenceNumber: 0
-            )
-            .saved(db)
         
         let (promise, seal) = Promise<Void>.pending()
         
@@ -339,16 +331,39 @@ public final class OpenGroupManager: NSObject {
         
         guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else { return }
         
-        let updatedOpenGroup: OpenGroup = try openGroup
-            .with(
-                publicKey: maybePublicKey,
-                name: pollInfo.details?.name,
-                roomDescription: pollInfo.details?.roomDescription,
-                imageId: pollInfo.details?.imageId.map { "\($0)" },
-                userCount: pollInfo.activeUsers,
-                infoUpdates: pollInfo.details?.infoUpdates
+        // Only update the database columns which have changed (this is to prevent the UI from triggering
+        // updates due to changing database columns to the existing value)
+        try OpenGroup
+            .filter(id: openGroup.id)
+            .updateAll(
+                db,
+                [
+                    (openGroup.publicKey != maybePublicKey ?
+                        maybePublicKey.map { OpenGroup.Columns.publicKey.set(to: $0) } :
+                        nil
+                    ),
+                    (openGroup.name != pollInfo.details?.name ?
+                        (pollInfo.details?.name).map { OpenGroup.Columns.name.set(to: $0) } :
+                        nil
+                    ),
+                    (openGroup.roomDescription != pollInfo.details?.roomDescription ?
+                        (pollInfo.details?.roomDescription).map { OpenGroup.Columns.roomDescription.set(to: $0) } :
+                        nil
+                    ),
+                    (openGroup.imageId != pollInfo.details?.imageId.map { "\($0)" } ?
+                        (pollInfo.details?.imageId).map { OpenGroup.Columns.roomDescription.set(to: "\($0)") } :
+                        nil
+                    ),
+                    (openGroup.userCount != pollInfo.activeUsers ?
+                        OpenGroup.Columns.userCount.set(to: pollInfo.activeUsers) :
+                        nil
+                    ),
+                    (openGroup.infoUpdates != pollInfo.details?.infoUpdates ?
+                        (pollInfo.details?.infoUpdates).map { OpenGroup.Columns.infoUpdates.set(to: $0) } :
+                        nil
+                    )
+                ].compactMap { $0 }
             )
-            .saved(db)
         
         // Update the admin/moderator group members
         if let roomDetails: OpenGroupAPI.Room = pollInfo.details {
@@ -384,10 +399,10 @@ public final class OpenGroupManager: NSObject {
             
             /// Start downloading the room image (if we don't have one or it's been updated)
             if
-                let imageId: Int64 = Int64(updatedOpenGroup.imageId ?? ""),
+                let imageId: Int64 = pollInfo.details?.imageId,
                 (
-                    updatedOpenGroup.imageData == nil ||
-                    updatedOpenGroup.imageId != openGroup.imageId
+                    openGroup.imageData == nil ||
+                    openGroup.imageId != "\(imageId)"
                 )
             {
                 OpenGroupManager.roomImage(db, fileId: imageId, for: roomToken, on: server, using: dependencies)
@@ -713,7 +728,7 @@ public final class OpenGroupManager: NSObject {
         let (promise, seal) = Promise<[OpenGroupAPI.Room]>.pending()
 
         // Try to retrieve the default rooms 8 times
-        attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
+        attempt(maxRetryCount: 8, recoveringOn: OpenGroupAPI.workQueue) {
             dependencies.storage.read { db in
                 OpenGroupAPI.rooms(db, server: OpenGroupAPI.defaultServer, using: dependencies)
             }

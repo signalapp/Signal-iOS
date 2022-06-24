@@ -167,7 +167,12 @@ final class DisplayNameVC: BaseVC {
         }
         
         // Try to save the user name but ignore the result
-        ProfileManager.updateLocal(profileName: displayName, avatarImage: nil, requiredSync: false)
+        ProfileManager.updateLocal(
+            queue: DispatchQueue.global(qos: .default),
+            profileName: displayName,
+            avatarImage: nil,
+            requiredSync: false
+        )
         let pnModeVC = PNModeVC()
         navigationController?.pushViewController(pnModeVC, animated: true)
     }

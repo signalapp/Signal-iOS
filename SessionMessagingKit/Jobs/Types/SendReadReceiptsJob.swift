@@ -13,6 +13,7 @@ public enum SendReadReceiptsJob: JobExecutor {
     
     public static func run(
         _ job: Job,
+        queue: DispatchQueue,
         success: @escaping (Job, Bool) -> (),
         failure: @escaping (Job, Error?, Bool) -> (),
         deferred: @escaping (Job) -> ()
@@ -45,7 +46,7 @@ public enum SendReadReceiptsJob: JobExecutor {
                     interactionId: nil
                 )
             }
-            .done {
+            .done(on: queue) {
                 // When we complete the 'SendReadReceiptsJob' we want to immediately schedule
                 // another one for the same thread but with a 'nextRunTimestamp' set to the
                 // 'minRunFrequency' value to throttle the read receipt requests
@@ -79,7 +80,7 @@ public enum SendReadReceiptsJob: JobExecutor {
                 
                 success(updatedJob ?? job, shouldFinishCurrentJob)
             }
-            .catch { error in failure(job, error, false) }
+            .catch(on: queue) { error in failure(job, error, false) }
             .retainUntilComplete()
     }
 }

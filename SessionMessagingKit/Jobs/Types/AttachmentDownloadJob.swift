@@ -13,6 +13,7 @@ public enum AttachmentDownloadJob: JobExecutor {
     
     public static func run(
         _ job: Job,
+        queue: DispatchQueue,
         success: @escaping (Job, Bool) -> (),
         failure: @escaping (Job, Error?, Bool) -> (),
         deferred: @escaping (Job) -> ()
@@ -71,7 +72,7 @@ public enum AttachmentDownloadJob: JobExecutor {
         }()
         
         downloadPromise
-            .then { data -> Promise<Void> in
+            .then(on: queue) { data -> Promise<Void> in
                 try data.write(to: temporaryFileUrl, options: .atomic)
                 
                 let plaintext: Data = try {
@@ -96,7 +97,7 @@ public enum AttachmentDownloadJob: JobExecutor {
                 
                 return Promise.value(())
             }
-            .done {
+            .done(on: queue) {
                 // Remove the temporary file
                 OWSFileSystem.deleteFile(temporaryFileUrl.path)
                 
@@ -119,7 +120,7 @@ public enum AttachmentDownloadJob: JobExecutor {
                 
                 success(job, false)
             }
-            .catch { error in
+            .catch(on: queue) { error in
                 OWSFileSystem.deleteFile(temporaryFileUrl.path)
                 
                 switch error {

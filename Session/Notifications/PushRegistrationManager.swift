@@ -241,6 +241,7 @@ public enum PushRegistrationError: Error {
         owsAssertDebug(CurrentAppContext().isMainApp)
         owsAssertDebug(type == .voIP)
         let payload = payload.dictionaryPayload
+        
         if let uuid = payload["uuid"] as? String, let caller = payload["caller"] as? String, let timestampMs = payload["timestamp"] as? Int64 {
             let call: SessionCall? = GRDBStorage.shared.write { db in
                 let messageInfo: CallMessage.MessageInfo = CallMessage.MessageInfo(

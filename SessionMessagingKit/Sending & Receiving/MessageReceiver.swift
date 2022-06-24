@@ -283,7 +283,8 @@ public enum MessageReceiver {
         dependencies: Dependencies = Dependencies()
     ) throws {
         let isCurrentUser = (publicKey == getUserHexEncodedPublicKey(db, dependencies: dependencies))
-        var profile: Profile = Profile.fetchOrCreate(id: publicKey)
+        let profile: Profile = Profile.fetchOrCreate(id: publicKey)
+        var updatedProfile: Profile = profile
         
         // Name
         if let name = name, name != profile.name {
@@ -303,7 +304,7 @@ public enum MessageReceiver {
                     UserDefaults.standard[.lastDisplayNameUpdate] = Date(timeIntervalSince1970: sentTimestamp)
                 }
                 
-                profile = profile.with(name: name)
+                updatedProfile = updatedProfile.with(name: name)
             }
         }
         
@@ -330,15 +331,17 @@ public enum MessageReceiver {
                     UserDefaults.standard[.lastProfilePictureUpdate] = Date(timeIntervalSince1970: sentTimestamp)
                 }
                 
-                profile = profile.with(
+                updatedProfile = updatedProfile.with(
                     profilePictureUrl: .update(profilePictureUrl),
                     profileEncryptionKey: .update(profileKey)
                 )
             }
         }
         
-        // Persist changes
-        try profile.save(db)
+        // Persist any changes
+        if updatedProfile != profile {
+            try updatedProfile.save(db)
+        }
         
         // Download the profile picture if needed
         db.afterNextTransactionCommit { _ in

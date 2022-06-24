@@ -12,6 +12,7 @@ public enum RetrieveDefaultOpenGroupRoomsJob: JobExecutor {
     
     public static func run(
         _ job: Job,
+        queue: DispatchQueue,
         success: @escaping (Job, Bool) -> (),
         failure: @escaping (Job, Error?, Bool) -> (),
         deferred: @escaping (Job) -> ()
@@ -24,7 +25,11 @@ public enum RetrieveDefaultOpenGroupRoomsJob: JobExecutor {
         
         // The OpenGroupAPI won't make any API calls if there is no entry for an OpenGroup
         // in the database so we need to create a dummy one to retrieve the default room data
+        let defaultGroupId: String = OpenGroup.idFor(roomToken: "", server: OpenGroupAPI.defaultServer)
+        
         GRDBStorage.shared.write { db in
+            guard try OpenGroup.exists(db, id: defaultGroupId) == false else { return }
+            
             _ = try OpenGroup(
                 server: OpenGroupAPI.defaultServer,
                 roomToken: "",
@@ -38,8 +43,8 @@ public enum RetrieveDefaultOpenGroupRoomsJob: JobExecutor {
         }
         
         OpenGroupManager.getDefaultRoomsIfNeeded()
-            .done { _ in success(job, false) }
-            .catch { error in failure(job, error, false) }
+            .done(on: queue) { _ in success(job, false) }
+            .catch(on: queue) { error in failure(job, error, false) }
             .retainUntilComplete()
     }
 }

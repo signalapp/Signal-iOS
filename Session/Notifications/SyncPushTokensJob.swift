@@ -14,6 +14,7 @@ public enum SyncPushTokensJob: JobExecutor {
     
     public static func run(
         _ job: Job,
+        queue: DispatchQueue,
         success: @escaping (Job, Bool) -> (),
         failure: @escaping (Job, Error?, Bool) -> (),
         deferred: @escaping (Job) -> ()
@@ -28,11 +29,35 @@ public enum SyncPushTokensJob: JobExecutor {
         // the main thread then swap to it
         guard Thread.isMainThread else {
             DispatchQueue.main.async {
-                run(job, success: success, failure: failure, deferred: deferred)
+                run(job, queue: queue, success: success, failure: failure, deferred: deferred)
             }
             return
         }
-        guard !UIApplication.shared.isRegisteredForRemoteNotifications else {
+        let isRegisteredForRemoteNotifications: Bool = UIApplication.shared.isRegisteredForRemoteNotifications
+        
+        // Swap back to the correct queue before continuing (don't want to inadvertantly do stuff on the main
+        // thread that could block the user)
+        queue.async {
+            SyncPushTokensJob.internalRun(
+                job,
+                queue: queue,
+                isRegisteredForRemoteNotifications: isRegisteredForRemoteNotifications,
+                success: success,
+                failure: failure,
+                deferred: deferred
+            )
+        }
+    }
+    
+    private static func internalRun(
+        _ job: Job,
+        queue: DispatchQueue,
+        isRegisteredForRemoteNotifications: Bool,
+        success: @escaping (Job, Bool) -> (),
+        failure: @escaping (Job, Error?, Bool) -> (),
+        deferred: @escaping (Job) -> ()
+    ) {
+        guard !isRegisteredForRemoteNotifications else {
             deferred(job) // Don't need to do anything if push notifications are already registered
             return
         }
@@ -41,7 +66,6 @@ public enum SyncPushTokensJob: JobExecutor {
         
         // Determine if we want to upload only if stale (Note: This should default to true, and be true if
         // 'details' isn't provided)
-        // TODO: Double check on a real device
         let uploadOnlyIfStale: Bool = ((try? JSONDecoder().decode(Details.self, from: job.details ?? Data()))?.uploadOnlyIfStale ?? true)
         
         // Get the app version info (used to determine if we want to update the push tokens)
@@ -49,7 +73,7 @@ public enum SyncPushTokensJob: JobExecutor {
         let currentAppVersion: String? = AppVersion.sharedInstance().currentAppVersion
         
         PushRegistrationManager.shared.requestPushTokens()
-            .then { (pushToken: String, voipToken: String) -> Promise<Void> in
+            .then(on: queue) { (pushToken: String, voipToken: String) -> Promise<Void> in
                 let lastPushToken: String? = GRDBStorage.shared[.lastRecordedPushToken]
                 let lastVoipToken: String? = GRDBStorage.shared[.lastRecordedVoipToken]
                 let shouldUploadTokens: Bool = (
@@ -82,7 +106,7 @@ public enum SyncPushTokensJob: JobExecutor {
                         }
                     }
             }
-            .ensure { success(job, false) }    // We want to complete this job regardless of success or failure
+            .ensure(on: queue) { success(job, false) }    // We want to complete this job regardless of success or failure
             .retainUntilComplete()
     }
     
@@ -97,6 +121,7 @@ public enum SyncPushTokensJob: JobExecutor {
                                  
         SyncPushTokensJob.run(
             job,
+            queue: DispatchQueue.global(qos: .default),
             success: { _, _ in },
             failure: { _, _, _ in },
             deferred: { _ in }

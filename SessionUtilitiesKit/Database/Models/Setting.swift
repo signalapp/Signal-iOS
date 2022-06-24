@@ -21,7 +21,9 @@ public struct Setting: Codable, Identifiable, FetchableRecord, PersistableRecord
 }
 
 extension Setting {
-    fileprivate init?<T>(key: String, value: T?) {
+    // MARK: - Numeric Setting
+    
+    fileprivate init?<T: Numeric>(key: String, value: T?) {
         guard let value: T = value else { return nil }
         
         var targetValue: T = value
@@ -30,7 +32,7 @@ extension Setting {
         self.value = Data(bytes: &targetValue, count: MemoryLayout.size(ofValue: targetValue))
     }
     
-    fileprivate func value<T>(as type: T.Type) -> T? {
+    fileprivate func value<T: Numeric>(as type: T.Type) -> T? {
         // Note: The 'assumingMemoryBound' is essentially going to try to convert
         // the memory into the provided type so can result in invalid data being
         // returned if the type is incorrect. But it does seem safer than the 'load'
@@ -38,6 +40,43 @@ extension Setting {
         return value.withUnsafeBytes {
             $0.baseAddress?.assumingMemoryBound(to: T.self).pointee
         }
+    }
+    
+    // MARK: - Bool Setting
+    
+    fileprivate init?(key: String, value: Bool?) {
+        guard let value: Bool = value else { return nil }
+        
+        var targetValue: Bool = value
+        
+        self.key = key
+        self.value = Data(bytes: &targetValue, count: MemoryLayout.size(ofValue: targetValue))
+    }
+    
+    fileprivate func value(as type: Bool.Type) -> Bool? {
+        // Note: The 'assumingMemoryBound' is essentially going to try to convert
+        // the memory into the provided type so can result in invalid data being
+        // returned if the type is incorrect. But it does seem safer than the 'load'
+        // method which crashed under certain circumstances (an `Int` value of 0)
+        return value.withUnsafeBytes {
+            $0.baseAddress?.assumingMemoryBound(to: Bool.self).pointee
+        }
+    }
+    
+    // MARK: - String Setting
+    
+    fileprivate init?(key: String, value: String?) {
+        guard
+            let value: String = value,
+            let valueData: Data = value.data(using: .utf8)
+        else { return nil }
+        
+        self.key = key
+        self.value = valueData
+    }
+    
+    fileprivate func value(as type: String.Type) -> String? {
+        return String(data: value, encoding: .utf8)
     }
 }
 

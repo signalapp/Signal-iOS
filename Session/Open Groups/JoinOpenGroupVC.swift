@@ -311,7 +311,7 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         
         return (
             (!suggestionGrid.isHidden && !suggestionGrid.frame.contains(location)) ||
-            location.y > urlTextView.frame.maxY
+            (suggestionGrid.isHidden && location.y > urlTextView.frame.maxY)
         )
     }
     

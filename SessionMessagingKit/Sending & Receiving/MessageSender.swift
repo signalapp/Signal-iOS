@@ -211,13 +211,13 @@ public final class MessageSender {
                 isClosedGroupMessage: (kind == .closedGroupMessage),
                 isConfigMessage: (message is ConfigurationMessage)
             )
-            .done(on: DispatchQueue.global(qos: .userInitiated)) { promises in
+            .done(on: DispatchQueue.global(qos: .default)) { promises in
                 let promiseCount = promises.count
                 var isSuccess = false
                 var errorCount = 0
 
                 promises.forEach {
-                    let _ = $0.done(on: DispatchQueue.global(qos: .userInitiated)) { responseData in
+                    let _ = $0.done(on: DispatchQueue.global(qos: .default)) { responseData in
                         guard !isSuccess else { return } // Succeed as soon as the first promise succeeds
                         isSuccess = true
 
@@ -261,6 +261,7 @@ public final class MessageSender {
                             else if let job: Job = job {
                                 NotifyPushServerJob.run(
                                     job,
+                                    queue: DispatchQueue.global(qos: .default),
                                     success: { _, _ in seal.fulfill(()) },
                                     failure: { _, _, _ in
                                         // Always fulfill because the notify PN server job isn't critical.
@@ -278,7 +279,7 @@ public final class MessageSender {
                             }
                         }
                     }
-                    $0.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+                    $0.catch(on: DispatchQueue.global(qos: .default)) { error in
                         errorCount += 1
                         guard errorCount == promiseCount else { return } // Only error out if all promises failed
                         
@@ -288,7 +289,7 @@ public final class MessageSender {
                     }
                 }
             }
-            .catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+            .catch(on: DispatchQueue.global(qos: .default)) { error in
                 SNLog("Couldn't send message due to error: \(error).")
                 
                 GRDBStorage.shared.write { db in
@@ -416,7 +417,7 @@ public final class MessageSender {
                 fileIds: fileIds,
                 using: dependencies
             )
-            .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
+            .done(on: DispatchQueue.global(qos: .default)) { responseInfo, data in
                 message.openGroupServerMessageId = UInt64(data.id)
 
                 dependencies.storage.write { db in
@@ -431,7 +432,7 @@ public final class MessageSender {
                     seal.fulfill(())
                 }
             }
-            .catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+            .catch(on: DispatchQueue.global(qos: .default)) { error in
                 dependencies.storage.write { db in
                     handleFailure(db, with: .other(error))
                 }
@@ -528,7 +529,7 @@ public final class MessageSender {
                 on: server,
                 using: dependencies
             )
-            .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
+            .done(on: DispatchQueue.global(qos: .default)) { responseInfo, data in
                 message.openGroupServerMessageId = UInt64(data.id)
                 
                 dependencies.storage.write { transaction in
@@ -541,7 +542,7 @@ public final class MessageSender {
                     seal.fulfill(())
                 }
             }
-            .catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+            .catch(on: DispatchQueue.global(qos: .default)) { error in
                 dependencies.storage.write { db in
                     handleFailure(db, with: .other(error))
                 }

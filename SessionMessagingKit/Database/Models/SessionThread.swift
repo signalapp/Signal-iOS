@@ -196,21 +196,15 @@ public extension SessionThread {
         """
     }
     
-    static func unreadMessageRequestsQuery(userPublicKey: String) -> SQLRequest<SessionThread> {
+    static func unreadMessageRequestsThreadIdQuery(userPublicKey: String) -> SQLRequest<Int64> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
-        let contact: TypedTableAlias<Contact> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        let contact: TypedTableAlias<Contact> = TypedTableAlias()
         
         return """
-            SELECT \(thread.allColumns())
+            SELECT \(thread[.id])
             FROM \(SessionThread.self)
-            JOIN (
-                SELECT
-                    \(interaction[.threadId]),
-                    MIN(\(interaction[.wasRead])) AS \(SQL(stringLiteral: "\(Interaction.Columns.wasRead.name)"))
-                FROM \(Interaction.self)
-                GROUP BY \(interaction[.threadId])
-            ) AS \(Interaction.self) ON (
+            JOIN \(Interaction.self) ON (
                 \(interaction[.threadId]) = \(thread[.id]) AND
                 \(interaction[.wasRead]) = false
             )
@@ -218,6 +212,7 @@ public extension SessionThread {
             WHERE (
                 \(SessionThread.isMessageRequest(userPublicKey: userPublicKey))
             )
+            GROUP BY \(thread[.id])
         """
     }
     

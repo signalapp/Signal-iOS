@@ -53,6 +53,7 @@ public enum SMKLegacy {
     internal static let preferencesKeyLastRecordedPushToken = "LastRecordedPushToken"
     internal static let preferencesKeyLastRecordedVoipToken = "LastRecordedVoipToken"
     internal static let preferencesKeyAreLinkPreviewsEnabled = "areLinkPreviewsEnabled"
+    internal static let preferencesKeyAreCallsEnabled = "areCallsEnabled"
     internal static let preferencesKeyNotificationPreviewType = "preferencesKeyNotificationPreviewType"
     internal static let preferencesKeyNotificationSoundInForeground = "NotificationSoundInForeground"
     internal static let preferencesKeyHasSavedThreadKey = "hasSavedThread"
@@ -1342,7 +1343,7 @@ public enum SMKLegacy {
                 // 'messageRequestAccepted' messages (hard-coding a timestamp to be sure that any calls
                 // after the value was changed are correctly identified as 'unknown')
                 case (.call, .none):
-                    guard (coder.decodeObject(forKey: "timestamp") as? UInt64 ?? 0) < 1647500000000 else {
+                    guard (coder.decodeObject(forKey: "timestamp") as? UInt64 ?? 0) < 1648000000000 else {
                         fallthrough
                     }
                     

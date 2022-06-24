@@ -12,6 +12,7 @@ public enum UpdateProfilePictureJob: JobExecutor {
     
     public static func run(
         _ job: Job,
+        queue: DispatchQueue,
         success: @escaping (Job, Bool) -> (),
         failure: @escaping (Job, Error?, Bool) -> (),
         deferred: @escaping (Job) -> ()
@@ -36,6 +37,7 @@ public enum UpdateProfilePictureJob: JobExecutor {
         let profilePicture: UIImage? = ProfileManager.profileAvatar(id: profile.id)
         
         ProfileManager.updateLocal(
+            queue: queue,
             profileName: profile.name,
             avatarImage: profilePicture,
             requiredSync: true,

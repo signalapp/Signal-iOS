@@ -136,35 +136,34 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
     }
 }
 
-// MARK: - Mutation
+// MARK: - GRDB Interactions
 
 public extension OpenGroup {
-    func with(
-        publicKey: String? = nil,
-        isActive: Bool? = nil,
-        name: String? = nil,
-        roomDescription: String? = nil,
-        imageId: String? = nil,
-        imageData: Data? = nil,
-        userCount: Int64? = nil,
-        infoUpdates: Int64? = nil,
-        sequenceNumber: Int64? = nil
+    static func fetchOrCreate(
+        _ db: Database,
+        server: String,
+        roomToken: String,
+        publicKey: String
     ) -> OpenGroup {
-        return OpenGroup(
-            server: self.server,
-            roomToken: self.roomToken,
-            publicKey: (publicKey ?? self.publicKey),
-            isActive: (isActive ?? self.isActive),
-            name: (name ?? self.name),
-            roomDescription: (roomDescription ?? self.roomDescription),
-            imageId: (imageId ?? self.imageId),
-            imageData: (imageData ?? self.imageData),
-            userCount: (userCount ?? self.userCount),
-            infoUpdates: (infoUpdates ?? self.infoUpdates),
-            sequenceNumber: (sequenceNumber ?? self.sequenceNumber),
-            inboxLatestMessageId: self.inboxLatestMessageId,
-            outboxLatestMessageId: self.outboxLatestMessageId
-        )
+        guard let existingGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: OpenGroup.idFor(roomToken: roomToken, server: server)) else {
+            return OpenGroup(
+                server: server,
+                roomToken: roomToken,
+                publicKey: publicKey,
+                isActive: false,
+                name: "",
+                roomDescription: nil,
+                imageId: nil,
+                imageData: nil,
+                userCount: 0,
+                infoUpdates: -1,
+                sequenceNumber: 0,
+                inboxLatestMessageId: 0,
+                outboxLatestMessageId: 0
+            )
+        }
+        
+        return existingGroup
     }
 }
 

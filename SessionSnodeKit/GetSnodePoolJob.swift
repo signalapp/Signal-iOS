@@ -12,6 +12,7 @@ public enum GetSnodePoolJob: JobExecutor {
     
     public static func run(
         _ job: Job,
+        queue: DispatchQueue,
         success: @escaping (Job, Bool) -> (),
         failure: @escaping (Job, Error?, Bool) -> (),
         deferred: @escaping (Job) -> ()
@@ -34,14 +35,15 @@ public enum GetSnodePoolJob: JobExecutor {
         }
         
         SnodeAPI.getSnodePool()
-            .done { _ in success(job, false) }
-            .catch { error in failure(job, error, false) }
+            .done(on: queue) { _ in success(job, false) }
+            .catch(on: queue) { error in failure(job, error, false) }
             .retainUntilComplete()
     }
     
     public static func run() {
         GetSnodePoolJob.run(
             Job(variant: .getSnodePool),
+            queue: DispatchQueue.global(qos: .background),
             success: { _, _ in },
             failure: { _, _, _ in },
             deferred: { _ in }

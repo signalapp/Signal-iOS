@@ -13,7 +13,8 @@ fileprivate typealias ViewModel = SessionThreadViewModel
 ///
 /// **Note:** When updating the UI make sure to check the actual queries being run as some fields will have incorrect default values
 /// in order to optimise their queries to only include the required data
-public struct SessionThreadViewModel: FetchableRecord, Decodable, Equatable, Hashable, Differentiable {
+public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equatable, Hashable, Identifiable, Differentiable {
+    public static let rowIdKey: SQL = SQL(stringLiteral: CodingKeys.rowId.stringValue)
     public static let threadIdKey: SQL = SQL(stringLiteral: CodingKeys.threadId.stringValue)
     public static let threadVariantKey: SQL = SQL(stringLiteral: CodingKeys.threadVariant.stringValue)
     public static let threadCreationDateTimestampKey: SQL = SQL(stringLiteral: CodingKeys.threadCreationDateTimestamp.stringValue)
@@ -65,7 +66,9 @@ public struct SessionThreadViewModel: FetchableRecord, Decodable, Equatable, Has
     public static let interactionAttachmentDescriptionInfoString: String = CodingKeys.interactionAttachmentDescriptionInfo.stringValue
     
     public var differenceIdentifier: String { threadId }
+    public var id: String { threadId }
     
+    public let rowId: Int64
     public let threadId: String
     public let threadVariant: SessionThread.Variant
     private let threadCreationDateTimestamp: TimeInterval
@@ -193,6 +196,7 @@ public struct SessionThreadViewModel: FetchableRecord, Decodable, Equatable, Has
 public extension SessionThreadViewModel {
     // Note: This init method is only used system-created cells or empty states
     init(unreadCount: UInt = 0) {
+        self.rowId = -1
         self.threadId = "INVALID_THREAD_ID"
         self.threadVariant = .contact
         self.threadCreationDateTimestamp = 0
@@ -247,239 +251,263 @@ public extension SessionThreadViewModel {
 
 // MARK: - HomeVC & MessageRequestsViewController
 
+// MARK: --SessionThreadViewModel
+
 public extension SessionThreadViewModel {
-    private static func baseQuery(
+    static func baseQuery(
         userPublicKey: String,
-        filters: SQL,
-        ordering: SQL
-    ) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
+        filterSQL: SQL,
+        groupSQL: SQL,
+        orderSQL: SQL
+    ) -> (([Int64]) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>>) {
+        return { rowIds -> AdaptedFetchRequest<SQLRequest<ViewModel>> in
+            let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+            let contact: TypedTableAlias<Contact> = TypedTableAlias()
+            let typingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias()
+            let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
+            let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
+            let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
+            let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+            let recipientState: TypedTableAlias<RecipientState> = TypedTableAlias()
+            let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
+            let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
+            let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
+            let profile: TypedTableAlias<Profile> = TypedTableAlias()
+            
+            let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
+            let firstInteractionAttachmentLiteral: SQL = SQL(stringLiteral: "firstInteractionAttachment")
+            let interactionAttachmentAttachmentIdColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.attachmentId.name)
+            let interactionAttachmentInteractionIdColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.interactionId.name)
+            let interactionAttachmentAlbumIndexColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.albumIndex.name)
+            
+            /// **Note:** The `numColumnsBeforeProfiles` value **MUST** match the number of fields before
+            /// the `ViewModel.contactProfileKey` entry below otherwise the query will fail to
+            /// parse and might throw
+            ///
+            /// Explicitly set default values for the fields ignored for search results
+            let numColumnsBeforeProfiles: Int = 12
+            let numColumnsBetweenProfilesAndAttachmentInfo: Int = 10 // The attachment info columns will be combined
+            
+            let request: SQLRequest<ViewModel> = """
+                SELECT
+                    \(thread.alias[Column.rowID]) AS \(ViewModel.rowIdKey),
+                    \(thread[.id]) AS \(ViewModel.threadIdKey),
+                    \(thread[.variant]) AS \(ViewModel.threadVariantKey),
+                    \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
+                    
+                    (\(SQL("\(thread[.id]) = \(userPublicKey)"))) AS \(ViewModel.threadIsNoteToSelfKey),
+                    \(thread[.isPinned]) AS \(ViewModel.threadIsPinnedKey),
+                    \(contact[.isBlocked]) AS \(ViewModel.threadIsBlockedKey),
+                    \(thread[.mutedUntilTimestamp]) AS \(ViewModel.threadMutedUntilTimestampKey),
+                    \(thread[.onlyNotifyForMentions]) AS \(ViewModel.threadOnlyNotifyForMentionsKey),
+            
+                    (\(typingIndicator[.threadId]) IS NOT NULL) AS \(ViewModel.threadContactIsTypingKey),
+                    \(Interaction.self).\(ViewModel.threadUnreadCountKey),
+                    \(Interaction.self).\(ViewModel.threadUnreadMentionCountKey),
+                
+                    \(ViewModel.contactProfileKey).*,
+                    \(ViewModel.closedGroupProfileFrontKey).*,
+                    \(ViewModel.closedGroupProfileBackKey).*,
+                    \(ViewModel.closedGroupProfileBackFallbackKey).*,
+                    \(closedGroup[.name]) AS \(ViewModel.closedGroupNameKey),
+                    (\(groupMember[.profileId]) IS NOT NULL) AS \(ViewModel.currentUserIsClosedGroupAdminKey),
+                    \(openGroup[.name]) AS \(ViewModel.openGroupNameKey),
+                    \(openGroup[.imageData]) AS \(ViewModel.openGroupProfilePictureDataKey),
+                
+                    \(Interaction.self).\(ViewModel.interactionIdKey),
+                    \(Interaction.self).\(ViewModel.interactionVariantKey),
+                    \(Interaction.self).\(ViewModel.interactionTimestampMsKey),
+                    \(Interaction.self).\(ViewModel.interactionBodyKey),
+                    
+                    -- Default to 'sending' assuming non-processed interaction when null
+                    IFNULL(MIN(\(recipientState[.state])), \(SQL("\(RecipientState.State.sending)"))) AS \(ViewModel.interactionStateKey),
+                    (\(linkPreview[.url]) IS NOT NULL) AS \(ViewModel.interactionIsOpenGroupInvitationKey),
+            
+                    -- These 4 properties will be combined into 'Attachment.DescriptionInfo'
+                    \(attachment[.id]),
+                    \(attachment[.variant]),
+                    \(attachment[.contentType]),
+                    \(attachment[.sourceFilename]),
+                    COUNT(\(interactionAttachment[.interactionId])) AS \(ViewModel.interactionAttachmentCountKey),
+            
+                    \(interaction[.authorId]),
+                    IFNULL(\(profile[.nickname]), \(profile[.name])) AS \(ViewModel.authorNameInternalKey),
+                    \(SQL("\(userPublicKey)")) AS \(ViewModel.currentUserPublicKeyKey)
+                
+                FROM \(SessionThread.self)
+                LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
+                LEFT JOIN \(ThreadTypingIndicator.self) ON \(typingIndicator[.threadId]) = \(thread[.id])
+                LEFT JOIN (
+                    -- Fetch all interaction-specific data in a subquery to be more efficient
+                    SELECT
+                        \(interaction[.id]) AS \(ViewModel.interactionIdKey),
+                        \(interaction[.threadId]),
+                        \(interaction[.variant]) AS \(ViewModel.interactionVariantKey),
+                        MAX(\(interaction[.timestampMs])) AS \(ViewModel.interactionTimestampMsKey),
+                        \(interaction[.body]) AS \(ViewModel.interactionBodyKey),
+                        \(interaction[.authorId]),
+                        \(interaction[.linkPreviewUrl]),
+            
+                        SUM(\(interaction[.wasRead]) = false) AS \(ViewModel.threadUnreadCountKey),
+                        SUM(\(interaction[.wasRead]) = false AND \(interaction[.hasMention]) = true) AS \(ViewModel.threadUnreadMentionCountKey)
+                    
+                    FROM \(Interaction.self)
+                    WHERE \(SQL("\(interaction[.variant]) != \(Interaction.Variant.standardIncomingDeleted)"))
+                    GROUP BY \(interaction[.threadId])
+                ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
+                
+                LEFT JOIN \(RecipientState.self) ON (
+                    -- Ignore 'skipped' states
+                    \(SQL("\(recipientState[.state]) != \(RecipientState.State.skipped)")) AND
+                    \(recipientState[.interactionId]) = \(Interaction.self).\(ViewModel.interactionIdKey)
+                )
+                LEFT JOIN \(LinkPreview.self) ON (
+                    \(linkPreview[.url]) = \(interaction[.linkPreviewUrl]) AND
+                    \(SQL("\(linkPreview[.variant]) = \(LinkPreview.Variant.openGroupInvitation)")) AND
+                    \(Interaction.linkPreviewFilterLiteral(timestampColumn: ViewModel.interactionTimestampMsKey))
+                )
+                LEFT JOIN \(InteractionAttachment.self) AS \(firstInteractionAttachmentLiteral) ON (
+                    \(firstInteractionAttachmentLiteral).\(interactionAttachmentAlbumIndexColumnLiteral) = 0 AND
+                    \(firstInteractionAttachmentLiteral).\(interactionAttachmentInteractionIdColumnLiteral) = \(Interaction.self).\(ViewModel.interactionIdKey)
+                )
+                LEFT JOIN \(Attachment.self) ON \(attachment[.id]) = \(firstInteractionAttachmentLiteral).\(interactionAttachmentAttachmentIdColumnLiteral)
+                LEFT JOIN \(InteractionAttachment.self) ON \(interactionAttachment[.interactionId]) = \(Interaction.self).\(ViewModel.interactionIdKey)
+                LEFT JOIN \(Profile.self) ON \(profile[.id]) = \(interaction[.authorId])
+            
+                -- Thread naming & avatar content
+            
+                LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
+                LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(thread[.id])
+                LEFT JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
+                LEFT JOIN \(GroupMember.self) ON (
+                    \(SQL("\(groupMember[.role]) = \(GroupMember.Role.admin)")) AND
+                    \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
+                    \(SQL("\(groupMember[.profileId]) = \(userPublicKey)"))
+                )
+            
+                LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON (
+                    \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
+                        SELECT MIN(\(groupMember[.profileId]))
+                        FROM \(GroupMember.self)
+                        WHERE (
+                            \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
+                            \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
+                            \(SQL("\(groupMember[.profileId]) != \(userPublicKey)"))
+                        )
+                    )
+                )
+                LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackKey) ON (
+                    \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) != \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) AND
+                    \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) = (
+                        SELECT MAX(\(groupMember[.profileId]))
+                        FROM \(GroupMember.self)
+                        WHERE (
+                            \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
+                            \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
+                            \(SQL("\(groupMember[.profileId]) != \(userPublicKey)"))
+                        )
+                    )
+                )
+                LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackFallbackKey) ON (
+                    \(closedGroup[.threadId]) IS NOT NULL AND
+                    \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) IS NULL AND
+                    \(ViewModel.closedGroupProfileBackFallbackKey).\(profileIdColumnLiteral) = \(SQL("\(userPublicKey)"))
+                )
+                
+                WHERE \(thread.alias[Column.rowID]) IN \(rowIds)
+                \(groupSQL)
+                ORDER BY \(orderSQL)
+            """
+            
+            return request.adapted { db in
+                let adapters = try splittingRowAdapters(columnCounts: [
+                    numColumnsBeforeProfiles,
+                    Profile.numberOfSelectedColumns(db),
+                    Profile.numberOfSelectedColumns(db),
+                    Profile.numberOfSelectedColumns(db),
+                    Profile.numberOfSelectedColumns(db),
+                    numColumnsBetweenProfilesAndAttachmentInfo,
+                    Attachment.DescriptionInfo.numberOfSelectedColumns()
+                ])
+                
+                return ScopeAdapter([
+                    ViewModel.contactProfileString: adapters[1],
+                    ViewModel.closedGroupProfileFrontString: adapters[2],
+                    ViewModel.closedGroupProfileBackString: adapters[3],
+                    ViewModel.closedGroupProfileBackFallbackString: adapters[4],
+                    ViewModel.interactionAttachmentDescriptionInfoString: adapters[6]
+                ])
+            }
+        }
+    }
+    
+    static var optimisedJoinSQL: SQL = {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
-        let typingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias()
-        let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
-        let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
-        let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
-        let recipientState: TypedTableAlias<RecipientState> = TypedTableAlias()
-        let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
-        let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
-        let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
-        let profile: TypedTableAlias<Profile> = TypedTableAlias()
         
-        let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
-        let firstInteractionAttachmentLiteral: SQL = SQL(stringLiteral: "firstInteractionAttachment")
-        let interactionAttachmentAttachmentIdColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.attachmentId.name)
-        let interactionAttachmentInteractionIdColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.interactionId.name)
-        let interactionAttachmentAlbumIndexColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.albumIndex.name)
-        
-        /// **Note:** The `numColumnsBeforeProfiles` value **MUST** match the number of fields before
-        /// the `ViewModel.contactProfileKey` entry below otherwise the query will fail to
-        /// parse and might throw
-        ///
-        /// Explicitly set default values for the fields ignored for search results
-        let numColumnsBeforeProfiles: Int = 11
-        let numColumnsBetweenProfilesAndAttachmentInfo: Int = 10 // The attachment info columns will be combined
-        
-        let request: SQLRequest<ViewModel> = """
-            SELECT
-                \(thread[.id]) AS \(ViewModel.threadIdKey),
-                \(thread[.variant]) AS \(ViewModel.threadVariantKey),
-                \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
-                
-                (\(SQL("\(thread[.id]) = \(userPublicKey)"))) AS \(ViewModel.threadIsNoteToSelfKey),
-                \(thread[.isPinned]) AS \(ViewModel.threadIsPinnedKey),
-                \(contact[.isBlocked]) AS \(ViewModel.threadIsBlockedKey),
-                \(thread[.mutedUntilTimestamp]) AS \(ViewModel.threadMutedUntilTimestampKey),
-                \(thread[.onlyNotifyForMentions]) AS \(ViewModel.threadOnlyNotifyForMentionsKey),
-        
-                (\(typingIndicator[.threadId]) IS NOT NULL) AS \(ViewModel.threadContactIsTypingKey),
-                \(Interaction.self).\(ViewModel.threadUnreadCountKey),
-                \(Interaction.self).\(ViewModel.threadUnreadMentionCountKey),
-            
-                \(ViewModel.contactProfileKey).*,
-                \(ViewModel.closedGroupProfileFrontKey).*,
-                \(ViewModel.closedGroupProfileBackKey).*,
-                \(ViewModel.closedGroupProfileBackFallbackKey).*,
-                \(closedGroup[.name]) AS \(ViewModel.closedGroupNameKey),
-                (\(groupMember[.profileId]) IS NOT NULL) AS \(ViewModel.currentUserIsClosedGroupAdminKey),
-                \(openGroup[.name]) AS \(ViewModel.openGroupNameKey),
-                \(openGroup[.imageData]) AS \(ViewModel.openGroupProfilePictureDataKey),
-            
-                \(Interaction.self).\(ViewModel.interactionIdKey),
-                \(Interaction.self).\(ViewModel.interactionVariantKey),
-                \(Interaction.self).\(ViewModel.interactionTimestampMsKey),
-                \(Interaction.self).\(ViewModel.interactionBodyKey),
-                
-                -- Default to 'sending' assuming non-processed interaction when null
-                IFNULL(MIN(\(recipientState[.state])), \(SQL("\(RecipientState.State.sending)"))) AS \(ViewModel.interactionStateKey),
-                (\(linkPreview[.url]) IS NOT NULL) AS \(ViewModel.interactionIsOpenGroupInvitationKey),
-        
-                -- These 4 properties will be combined into 'Attachment.DescriptionInfo'
-                \(attachment[.id]),
-                \(attachment[.variant]),
-                \(attachment[.contentType]),
-                \(attachment[.sourceFilename]),
-                COUNT(\(interactionAttachment[.interactionId])) AS \(ViewModel.interactionAttachmentCountKey),
-        
-                \(interaction[.authorId]),
-                IFNULL(\(profile[.nickname]), \(profile[.name])) AS \(ViewModel.authorNameInternalKey),
-                \(SQL("\(userPublicKey)")) AS \(ViewModel.currentUserPublicKeyKey)
-            
-            FROM \(SessionThread.self)
+        return """
             LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
-            LEFT JOIN \(ThreadTypingIndicator.self) ON \(typingIndicator[.threadId]) = \(thread[.id])
             LEFT JOIN (
-                -- Fetch all interaction-specific data in a subquery to be more efficient
                 SELECT
-                    \(interaction[.id]) AS \(ViewModel.interactionIdKey),
                     \(interaction[.threadId]),
-                    \(interaction[.variant]) AS \(ViewModel.interactionVariantKey),
-                    MAX(\(interaction[.timestampMs])) AS \(ViewModel.interactionTimestampMsKey),
-                    \(interaction[.body]) AS \(ViewModel.interactionBodyKey),
-                    \(interaction[.authorId]),
-                    \(interaction[.linkPreviewUrl]),
-        
-                    SUM(\(interaction[.wasRead]) = false) AS \(ViewModel.threadUnreadCountKey),
-                    SUM(\(interaction[.wasRead]) = false AND \(interaction[.hasMention]) = true) AS \(ViewModel.threadUnreadMentionCountKey)
-                
+                    MAX(\(interaction[.timestampMs])) AS \(ViewModel.interactionTimestampMsKey)
                 FROM \(Interaction.self)
                 WHERE \(SQL("\(interaction[.variant]) != \(Interaction.Variant.standardIncomingDeleted)"))
                 GROUP BY \(interaction[.threadId])
             ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
-            
-            LEFT JOIN \(RecipientState.self) ON (
-                -- Ignore 'skipped' states
-                \(SQL("\(recipientState[.state]) != \(RecipientState.State.skipped)")) AND
-                \(recipientState[.interactionId]) = \(Interaction.self).\(ViewModel.interactionIdKey)
-            )
-            LEFT JOIN \(LinkPreview.self) ON (
-                \(linkPreview[.url]) = \(interaction[.linkPreviewUrl]) AND
-                \(SQL("\(linkPreview[.variant]) = \(LinkPreview.Variant.openGroupInvitation)")) AND
-                \(Interaction.linkPreviewFilterLiteral(timestampColumn: ViewModel.interactionTimestampMsKey))
-            )
-            LEFT JOIN \(InteractionAttachment.self) AS \(firstInteractionAttachmentLiteral) ON (
-                \(firstInteractionAttachmentLiteral).\(interactionAttachmentAlbumIndexColumnLiteral) = 0 AND
-                \(firstInteractionAttachmentLiteral).\(interactionAttachmentInteractionIdColumnLiteral) = \(Interaction.self).\(ViewModel.interactionIdKey)
-            )
-            LEFT JOIN \(Attachment.self) ON \(attachment[.id]) = \(firstInteractionAttachmentLiteral).\(interactionAttachmentAttachmentIdColumnLiteral)
-            LEFT JOIN \(InteractionAttachment.self) ON \(interactionAttachment[.interactionId]) = \(Interaction.self).\(ViewModel.interactionIdKey)
-            LEFT JOIN \(Profile.self) ON \(profile[.id]) = \(interaction[.authorId])
-        
-            -- Thread naming & avatar content
-        
-            LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
-            LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(thread[.id])
-            LEFT JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
-            LEFT JOIN \(GroupMember.self) ON (
-                \(SQL("\(groupMember[.role]) = \(GroupMember.Role.admin)")) AND
-                \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
-                \(SQL("\(groupMember[.profileId]) = \(userPublicKey)"))
-            )
-        
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON (
-                \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
-                    SELECT MIN(\(groupMember[.profileId]))
-                    FROM \(GroupMember.self)
-                    WHERE (
-                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
-                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
-                        \(SQL("\(groupMember[.profileId]) != \(userPublicKey)"))
-                    )
-                )
-            )
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackKey) ON (
-                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) != \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) AND
-                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) = (
-                    SELECT MAX(\(groupMember[.profileId]))
-                    FROM \(GroupMember.self)
-                    WHERE (
-                        \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
-                        \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
-                        \(SQL("\(groupMember[.profileId]) != \(userPublicKey)"))
-                    )
-                )
-            )
-            LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileBackFallbackKey) ON (
-                \(closedGroup[.threadId]) IS NOT NULL AND
-                \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) IS NULL AND
-                \(ViewModel.closedGroupProfileBackFallbackKey).\(profileIdColumnLiteral) = \(SQL("\(userPublicKey)"))
-            )
-            
-            WHERE (
-                \(filters)
-            )
-        
-            GROUP BY \(thread[.id])
-            ORDER BY \(ordering)
         """
-        
-        return request.adapted { db in
-            let adapters = try splittingRowAdapters(columnCounts: [
-                numColumnsBeforeProfiles,
-                Profile.numberOfSelectedColumns(db),
-                Profile.numberOfSelectedColumns(db),
-                Profile.numberOfSelectedColumns(db),
-                Profile.numberOfSelectedColumns(db),
-                numColumnsBetweenProfilesAndAttachmentInfo,
-                Attachment.DescriptionInfo.numberOfSelectedColumns()
-            ])
-            
-            return ScopeAdapter([
-                ViewModel.contactProfileString: adapters[1],
-                ViewModel.closedGroupProfileFrontString: adapters[2],
-                ViewModel.closedGroupProfileBackString: adapters[3],
-                ViewModel.closedGroupProfileBackFallbackString: adapters[4],
-                ViewModel.interactionAttachmentDescriptionInfoString: adapters[6]
-            ])
-        }
-    }
+    }()
     
-    static func homeQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
+    static func homeFilterSQL(userPublicKey: String) -> SQL {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         
-        return baseQuery(
-            userPublicKey: userPublicKey,
-            filters: """
-                \(thread[.shouldBeVisible]) = true AND (
-                    -- Is not a message request
-                    \(SQL("\(thread[.variant]) != \(SessionThread.Variant.contact)")) OR
-                    \(SQL("\(thread[.id]) = \(userPublicKey)")) OR
-                    \(contact[.isApproved]) = true
-                ) AND (
-                    -- Only show the 'Note to Self' thread if it has an interaction
-                    \(SQL("\(thread[.id]) != \(userPublicKey)")) OR
-                    \(Interaction.self).\(ViewModel.interactionIdKey) IS NOT NULL
-                )
-            """,
-            ordering: """
-                \(thread[.isPinned]) DESC, IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), \(thread[.creationDateTimestamp])) DESC
-            """
-        )
+        return """
+            \(thread[.shouldBeVisible]) = true AND (
+                -- Is not a message request
+                \(SQL("\(thread[.variant]) != \(SessionThread.Variant.contact)")) OR
+                \(SQL("\(thread[.id]) = \(userPublicKey)")) OR
+                \(contact[.isApproved]) = true
+            ) AND (
+                -- Only show the 'Note to Self' thread if it has an interaction
+                \(SQL("\(thread[.id]) != \(userPublicKey)")) OR
+                \(Interaction.self).\(ViewModel.interactionTimestampMsKey) IS NOT NULL
+            )
+        """
     }
     
-    static func messageRequestsQuery(userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
+    static func messageRequestsFilterSQL(userPublicKey: String) -> SQL {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         
-        return baseQuery(
-            userPublicKey: userPublicKey,
-            filters: """
-                \(thread[.shouldBeVisible]) = true AND (
-                    -- Is a message request
-                    \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND
-                    \(SQL("\(thread[.id]) != \(userPublicKey)")) AND (
-                        -- A '!= true' check doesn't work properly so we need to be explicit
-                        \(contact[.isApproved]) IS NULL OR
-                        \(contact[.isApproved]) = false
-                    )
-                )
-            """,
-            ordering: """
-                IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), \(thread[.creationDateTimestamp])) DESC
-            """
-        )
+        return """
+            \(thread[.shouldBeVisible]) = true AND (
+                -- Is a message request
+                \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND
+                \(SQL("\(thread[.id]) != \(userPublicKey)")) AND
+                IFNULL(\(contact[.isApproved]), false) = false
+            )
+        """
     }
+    
+    static let groupSQL: SQL = {
+        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        
+        return SQL("GROUP BY \(thread[.id])")
+    }()
+    
+    static let homeOrderSQL: SQL = {
+        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        
+        return SQL("\(thread[.isPinned]) DESC, IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), \(thread[.creationDateTimestamp])) DESC")
+    }()
+    
+    static let messageRequetsOrderSQL: SQL = {
+        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        
+        return SQL("IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), \(thread[.creationDateTimestamp])) DESC")
+    }()
 }
 
 // MARK: - ConversationVC
@@ -502,9 +530,10 @@ public extension SessionThreadViewModel {
         /// parse and might throw
         ///
         /// Explicitly set default values for the fields ignored for search results
-        let numColumnsBeforeProfiles: Int = 13
+        let numColumnsBeforeProfiles: Int = 14
         let request: SQLRequest<ViewModel> = """
             SELECT
+                \(thread.alias[Column.rowID]) AS \(ViewModel.rowIdKey),
                 \(thread[.id]) AS \(ViewModel.threadIdKey),
                 \(thread[.variant]) AS \(ViewModel.threadVariantKey),
                 \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
@@ -612,9 +641,10 @@ public extension SessionThreadViewModel {
         /// parse and might throw
         ///
         /// Explicitly set default values for the fields ignored for search results
-        let numColumnsBeforeProfiles: Int = 5
+        let numColumnsBeforeProfiles: Int = 6
         let request: SQLRequest<ViewModel> = """
             SELECT
+                \(thread.alias[Column.rowID]) AS \(ViewModel.rowIdKey),
                 \(thread[.id]) AS \(ViewModel.threadIdKey),
                 \(thread[.variant]) AS \(ViewModel.threadVariantKey),
                 \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
@@ -749,9 +779,10 @@ public extension SessionThreadViewModel {
         /// parse and might throw
         ///
         /// Explicitly set default values for the fields ignored for search results
-        let numColumnsBeforeProfiles: Int = 5
+        let numColumnsBeforeProfiles: Int = 6
         let request: SQLRequest<ViewModel> = """
             SELECT
+                \(interaction.alias[Column.rowID]) AS \(ViewModel.rowIdKey),
                 \(thread[.id]) AS \(ViewModel.threadIdKey),
                 \(thread[.variant]) AS \(ViewModel.threadVariantKey),
                 \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
@@ -879,12 +910,13 @@ public extension SessionThreadViewModel {
         /// We use `IFNULL(rank, 100)` because the custom `Note to Self` like comparison will get a null
         /// `rank` value which ends up as the first result, by defaulting to `100` it will always be ranked last compared
         /// to any relevance-based results
-        let numColumnsBeforeProfiles: Int = 7
+        let numColumnsBeforeProfiles: Int = 8
         var sqlQuery: SQL = ""
         let selectQuery: SQL = """
             SELECT
                 IFNULL(\(Column.rank), 100) AS \(Column.rank),
                 
+                \(thread.alias[Column.rowID]) AS \(ViewModel.rowIdKey),
                 \(thread[.id]) AS \(ViewModel.threadIdKey),
                 \(thread[.variant]) AS \(ViewModel.threadVariantKey),
                 \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
@@ -1221,11 +1253,12 @@ public extension SessionThreadViewModel {
         /// **Note:** The `numColumnsBeforeProfiles` value **MUST** match the number of fields before
         /// the `ViewModel.contactProfileKey` entry below otherwise the query will fail to
         /// parse and might throw
-        let numColumnsBeforeProfiles: Int = 7
+        let numColumnsBeforeProfiles: Int = 8
         let request: SQLRequest<ViewModel> = """
             SELECT
                 100 AS \(Column.rank),
                 
+                \(thread.alias[Column.rowID]) AS \(ViewModel.rowIdKey),
                 \(thread[.id]) AS \(ViewModel.threadIdKey),
                 \(thread[.variant]) AS \(ViewModel.threadVariantKey),
                 \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
@@ -1277,10 +1310,11 @@ public extension SessionThreadViewModel {
         /// parse and might throw
         ///
         /// Explicitly set default values for the fields ignored for search results
-        let numColumnsBeforeProfiles: Int = 6
+        let numColumnsBeforeProfiles: Int = 7
         
         let request: SQLRequest<ViewModel> = """
             SELECT
+                \(thread.alias[Column.rowID]) AS \(ViewModel.rowIdKey),
                 \(thread[.id]) AS \(ViewModel.threadIdKey),
                 \(thread[.variant]) AS \(ViewModel.threadVariantKey),
                 \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),

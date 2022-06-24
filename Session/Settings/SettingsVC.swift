@@ -443,6 +443,7 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self, displayNameToBeUploaded, profilePictureToBeUploaded] modalActivityIndicator in
             ProfileManager.updateLocal(
+                queue: DispatchQueue.global(qos: .default),
                 profileName: (name ?? ""),
                 avatarImage: profilePicture,
                 requiredSync: true,

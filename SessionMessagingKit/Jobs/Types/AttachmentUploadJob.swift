@@ -13,6 +13,7 @@ public enum AttachmentUploadJob: JobExecutor {
     
     public static func run(
         _ job: Job,
+        queue: DispatchQueue,
         success: @escaping (Job, Bool) -> (),
         failure: @escaping (Job, Error?, Bool) -> (),
         deferred: @escaping (Job) -> ()
@@ -37,6 +38,7 @@ public enum AttachmentUploadJob: JobExecutor {
         // issues when the success/failure closures get called before the upload as the JobRunner will attempt to
         // update the state of the job immediately
         attachment.upload(
+            queue: queue,
             using: { db, data in
                 if let openGroup: OpenGroup = openGroup {
                     return OpenGroupAPI

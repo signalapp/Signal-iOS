@@ -474,7 +474,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let tileViewController: MediaTileViewController = MediaGalleryViewModel.createTileViewController(
             threadId: self.viewModel.threadId,
             threadVariant: self.viewModel.threadVariant,
-            focusedAttachmentId: currentItem.attachment.id
+            focusedAttachmentId: currentItem.attachment.id,
+            performInitialQuerySync: true
         )
         
         let navController: MediaGalleryNavigationController = MediaGalleryNavigationController()

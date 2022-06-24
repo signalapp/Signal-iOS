@@ -82,7 +82,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         // distinct stutter)
         self.pagedDataObserver = self.setupPagedObserver(for: threadId)
         
-        // Run the initial query on a backgorund thread so we don't block the push transition
+        // Run the initial query on a background thread so we don't block the push transition
         DispatchQueue.global(qos: .default).async { [weak self] in
             // If we don't have a `initialFocusedId` then default to `.pageBefore` (it'll query
             // from a `0` offset)
@@ -159,10 +159,11 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                 )
             ],
             filterSQL: MessageViewModel.filterSQL(threadId: threadId),
+            groupSQL: MessageViewModel.groupSQL,
             orderSQL: MessageViewModel.orderSQL,
             dataQuery: MessageViewModel.baseQuery(
                 orderSQL: MessageViewModel.orderSQL,
-                baseFilterSQL: MessageViewModel.filterSQL(threadId: threadId)
+                groupSQL: MessageViewModel.groupSQL
             ),
             associatedRecords: [
                 AssociatedRecord<MessageViewModel.AttachmentInteractionInfo, MessageViewModel>(
@@ -388,13 +389,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     }
     
     public func markAllAsRead() {
-        guard
-            let lastInteractionId: Int64 = self.interactionData
-                .first(where: { $0.model == .messages })?
-                .elements
-                .last?
-                .id
-        else { return }
+        guard let lastInteractionId: Int64 = self.threadData.interactionId else { return }
         
         let threadId: String = self.threadData.threadId
         let trySendReadReceipt: Bool = (self.threadData.threadIsMessageRequest == false)

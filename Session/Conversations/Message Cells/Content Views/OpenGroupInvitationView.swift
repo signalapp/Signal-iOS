@@ -65,9 +65,13 @@ final class OpenGroupInvitationView: UIView {
         // Icon
         let iconSize = OpenGroupInvitationView.iconSize
         let iconName = (isOutgoing ? "Globe" : "Plus")
-        let icon = UIImage(named: iconName)?.withTint(.white)?.resizedImage(to: CGSize(width: iconSize, height: iconSize))
         let iconImageViewSize = OpenGroupInvitationView.iconImageViewSize
-        let iconImageView = UIImageView(image: icon)
+        let iconImageView = UIImageView(
+            image: UIImage(named: iconName)?
+                .withRenderingMode(.alwaysTemplate)
+                .resizedImage(to: CGSize(width: iconSize, height: iconSize))
+        )
+        iconImageView.tintColor = .white
         iconImageView.contentMode = .center
         iconImageView.layer.cornerRadius = iconImageViewSize / 2
         iconImageView.layer.masksToBounds = true

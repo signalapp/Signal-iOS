@@ -196,13 +196,14 @@ public struct ProfileManager {
     // MARK: - Current User Profile
     
     public static func updateLocal(
+        queue: DispatchQueue,
         profileName: String,
         avatarImage: UIImage?,
         requiredSync: Bool,
         success: ((Database, Profile) throws -> ())? = nil,
         failure: ((ProfileManagerError) -> ())? = nil
     ) {
-        DispatchQueue.global(qos: .default).async {
+        queue.async {
             // If the profile avatar was updated or removed then encrypt with a new profile key
             // to ensure that other users know that our profile picture was updated
             let newProfileKey: OWSAES256Key = OWSAES256Key.generateRandom()
@@ -260,10 +261,8 @@ public struct ProfileManager {
             }
 
             guard let data: Data = image.jpegData(compressionQuality: 0.95) else {
-                DispatchQueue.main.async {
-                    SNLog("Updating service with profile failed.")
-                    failure?(.avatarWriteFailed)
-                }
+                SNLog("Updating service with profile failed.")
+                failure?(.avatarWriteFailed)
                 return
             }
             
@@ -271,11 +270,9 @@ public struct ProfileManager {
                 // Our avatar dimensions are so small that it's incredibly unlikely we wouldn't
                 // be able to fit our profile photo (eg. generating pure noise at our resolution
                 // compresses to ~200k)
-                DispatchQueue.main.async {
-                    SNLog("Suprised to find profile avatar was too large. Was it scaled properly? image: \(image)")
-                    SNLog("Updating service with profile failed.")
-                    failure?(.avatarImageTooLarge)
-                }
+                SNLog("Suprised to find profile avatar was too large. Was it scaled properly? image: \(image)")
+                SNLog("Updating service with profile failed.")
+                failure?(.avatarImageTooLarge)
                 return
             }
             
@@ -285,26 +282,22 @@ public struct ProfileManager {
             // Write the avatar to disk
             do { try data.write(to: URL(fileURLWithPath: filePath), options: [.atomic]) }
             catch {
-                DispatchQueue.main.async {
-                    SNLog("Updating service with profile failed.")
-                    failure?(.avatarWriteFailed)
-                }
+                SNLog("Updating service with profile failed.")
+                failure?(.avatarWriteFailed)
                 return
             }
             
             // Encrypt the avatar for upload
             guard let encryptedAvatarData: Data = encryptProfileData(data: data, key: newProfileKey) else {
-                DispatchQueue.main.async {
-                    SNLog("Updating service with profile failed.")
-                    failure?(.avatarEncryptionFailed)
-                }
+                SNLog("Updating service with profile failed.")
+                failure?(.avatarEncryptionFailed)
                 return
             }
             
             // Upload the avatar to the FileServer
             FileServerAPI
                 .upload(encryptedAvatarData)
-                .done { fileId in
+                .done(on: queue) { fileId in
                     let downloadUrl: String = "\(FileServerAPI.server)/files/\(fileId)"
                     UserDefaults.standard[.lastProfilePictureUpload] = Date()
                     
@@ -326,16 +319,14 @@ public struct ProfileManager {
                         try success?(db, profile)
                     }
                 }
-                .recover { error in
-                    DispatchQueue.main.async {
-                        SNLog("Updating service with profile failed.")
-                        
-                        let isMaxFileSizeExceeded: Bool = ((error as? HTTP.Error) == HTTP.Error.maxFileSizeExceeded)
-                        failure?(isMaxFileSizeExceeded ?
-                            .avatarUploadMaxFileSizeExceeded :
-                            .avatarUploadFailed
-                        )
-                    }
+                .recover(on: queue) { error in
+                    SNLog("Updating service with profile failed.")
+                    
+                    let isMaxFileSizeExceeded: Bool = ((error as? HTTP.Error) == HTTP.Error.maxFileSizeExceeded)
+                    failure?(isMaxFileSizeExceeded ?
+                        .avatarUploadMaxFileSizeExceeded :
+                        .avatarUploadFailed
+                    )
                 }
                 .retainUntilComplete()
         }

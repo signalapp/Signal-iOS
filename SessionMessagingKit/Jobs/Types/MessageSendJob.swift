@@ -14,6 +14,7 @@ public enum MessageSendJob: JobExecutor {
     
     public static func run(
         _ job: Job,
+        queue: DispatchQueue,
         success: @escaping (Job, Bool) -> (),
         failure: @escaping (Job, Error?, Bool) -> (),
         deferred: @escaping (Job) -> ()
@@ -138,8 +139,8 @@ public enum MessageSendJob: JobExecutor {
                 interactionId: job.interactionId
             )
         }
-        .done2 { _ in success(job, false) }
-        .catch2 { error in
+        .done(on: queue) { _ in success(job, false) }
+        .catch(on: queue) { error in
             SNLog("Couldn't send message due to error: \(error).")
             
             switch error {

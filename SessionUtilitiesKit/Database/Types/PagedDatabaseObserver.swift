@@ -13,8 +13,9 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
     
     private let pagedTableName: String
     private let idColumnName: String
-    private var pageInfo: Atomic<PagedData.PageInfo>
+    public var pageInfo: Atomic<PagedData.PageInfo>
     
+    private let observedTableChangeTypes: [String: PagedData.ObservedChanges]
     private let allObservedTableNames: Set<String>
     private let observedInserts: Set<String>
     private let observedUpdateColumns: [String: Set<String>]
@@ -22,8 +23,9 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
     
     private let joinSQL: SQL?
     private let filterSQL: SQL
+    private let groupSQL: SQL?
     private let orderSQL: SQL
-    private let dataQuery: (SQL?, SQL?) -> AdaptedFetchRequest<SQLRequest<T>>
+    private let dataQuery: ([Int64]) -> AdaptedFetchRequest<SQLRequest<T>>
     private let associatedRecords: [ErasedAssociatedRecord]
     
     private var dataCache: Atomic<DataCache<T>> = Atomic(DataCache())
@@ -40,8 +42,9 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         observedChanges: [PagedData.ObservedChanges],
         joinSQL: SQL? = nil,
         filterSQL: SQL,
+        groupSQL: SQL? = nil,
         orderSQL: SQL,
-        dataQuery: @escaping (SQL?, SQL?) -> AdaptedFetchRequest<SQLRequest<T>>,
+        dataQuery: @escaping ([Int64]) -> AdaptedFetchRequest<SQLRequest<T>>,
         associatedRecords: [ErasedAssociatedRecord] = [],
         onChangeUnsorted: @escaping ([T], PagedData.PageInfo) -> ()
     ) {
@@ -53,12 +56,15 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         self.pageInfo = Atomic(PagedData.PageInfo(pageSize: pageSize))
         self.joinSQL = joinSQL
         self.filterSQL = filterSQL
+        self.groupSQL = groupSQL
         self.orderSQL = orderSQL
         self.dataQuery = dataQuery
         self.associatedRecords = associatedRecords
         self.onChangeUnsorted = onChangeUnsorted
         
         // Combine the various observed changes into a single set
+        self.observedTableChangeTypes = observedChanges
+            .reduce(into: [:]) { result, next in result[next.databaseTableName] = next }
         let allObservedChanges: [PagedData.ObservedChanges] = observedChanges
             .appending(contentsOf: associatedRecords.flatMap { $0.observedChanges })
         self.allObservedTableNames = allObservedChanges
@@ -124,6 +130,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         // updated rows
         guard !committedChanges.isEmpty else { return }
         
+        let joinSQL: SQL? = self.joinSQL
         let orderSQL: SQL = self.orderSQL
         let filterSQL: SQL = self.filterSQL
         let associatedRecords: [ErasedAssociatedRecord] = self.associatedRecords
@@ -166,18 +173,25 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             }
         }
         
-        // Determing if there were any relevant paged data changes
-        let relevantChanges: Set<PagedData.TrackedChange> = committedChanges
+        // Determing if there were any direct or related data changes
+        let directChanges: Set<PagedData.TrackedChange> = committedChanges
             .filter { $0.tableName == pagedTableName }
+        let relatedChanges: [String: [PagedData.TrackedChange]] = committedChanges
+            .filter { $0.tableName != pagedTableName }
+            .reduce(into: [:]) { result, next in
+                guard observedTableChangeTypes[next.tableName] != nil else { return }
+                
+                result[next.tableName] = (result[next.tableName] ?? []).appending(next)
+            }
         
-        guard !relevantChanges.isEmpty else {
+        guard !directChanges.isEmpty || !relatedChanges.isEmpty else {
             updateDataAndCallbackIfNeeded(self.dataCache.wrappedValue, self.pageInfo.wrappedValue, false)
             return
         }
         
         var updatedPageInfo: PagedData.PageInfo = self.pageInfo.wrappedValue
         var updatedDataCache: DataCache<T> = self.dataCache.wrappedValue
-        let deletionChanges: [Int64] = relevantChanges
+        let deletionChanges: [Int64] = directChanges
             .filter { $0.kind == .delete }
             .map { $0.rowId }
         let oldDataCount: Int = dataCache.wrappedValue.count
@@ -200,10 +214,39 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         }
         
         // If there are no inserted/updated rows then trigger the update callback and stop here
-        let changesToQuery: [PagedData.TrackedChange] = relevantChanges
+        let changesToQuery: [PagedData.TrackedChange] = directChanges
             .filter { $0.kind != .delete }
         
-        guard !changesToQuery.isEmpty else {
+        guard !changesToQuery.isEmpty || !relatedChanges.isEmpty else {
+            updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, !deletionChanges.isEmpty)
+            return
+        }
+        
+        // First we need to get the rowIds for the paged data connected to any of the related changes
+        let pagedRowIdsForRelatedChanges: Set<Int64> = {
+            guard !relatedChanges.isEmpty else { return [] }
+            
+            return relatedChanges
+                .reduce(into: []) { result, next in
+                    guard
+                        let observedChange: PagedData.ObservedChanges = observedTableChangeTypes[next.key],
+                        let joinToPagedType: SQL = observedChange.joinToPagedType
+                    else { return }
+                    
+                    let pagedRowIds: [Int64] = PagedData.pagedRowIdsForRelatedRowIds(
+                        db,
+                        tableName: next.key,
+                        pagedTableName: pagedTableName,
+                        relatedRowIds: Array(next.value.map { $0.rowId }.asSet()),
+                        joinToPagedType: joinToPagedType
+                    )
+                    
+                    result.append(contentsOf: pagedRowIds)
+                }
+                .asSet()
+        }()
+        
+        guard !changesToQuery.isEmpty || !pagedRowIdsForRelatedChanges.isEmpty else {
             updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, !deletionChanges.isEmpty)
             return
         }
@@ -213,6 +256,15 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             db,
             rowIds: changesToQuery.map { $0.rowId },
             tableName: pagedTableName,
+            requiredJoinSQL: joinSQL,
+            orderSQL: orderSQL,
+            filterSQL: filterSQL
+        )
+        let relatedChangeIndexes: [Int64] = PagedData.indexes(
+            db,
+            rowIds: Array(pagedRowIdsForRelatedChanges),
+            tableName: pagedTableName,
+            requiredJoinSQL: joinSQL,
             orderSQL: orderSQL,
             filterSQL: filterSQL
         )
@@ -221,23 +273,34 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         // which shouldn't - values less than 'currentCount' or if there is at least one value less than
         // 'currentCount' and the indexes are sequential (ie. more than the current loaded content was
         // added at once)
-        let itemIndexesAreSequential: Bool = (itemIndexes.map { $0 - 1 }.dropFirst() == itemIndexes.dropLast())
-        let hasOneValidIndex: Bool = itemIndexes.contains(where: { index -> Bool in
-            index >= updatedPageInfo.pageOffset && (
-                index < updatedPageInfo.currentCount ||
-                updatedPageInfo.currentCount == 0
+        func determineValidChanges<T>(for indexes: [Int64], with data: [T]) -> [T] {
+            let indexesAreSequential: Bool = (indexes.map { $0 - 1 }.dropFirst() == indexes.dropLast())
+            let hasOneValidIndex: Bool = indexes.contains(where: { index -> Bool in
+                index >= updatedPageInfo.pageOffset && (
+                    index < updatedPageInfo.currentCount ||
+                    updatedPageInfo.currentCount == 0
+                )
+            })
+            
+            return (indexesAreSequential && hasOneValidIndex ?
+                data :
+                zip(indexes, data)
+                    .filter { index, _ -> Bool in
+                        index >= updatedPageInfo.pageOffset && (
+                            index < updatedPageInfo.currentCount ||
+                            updatedPageInfo.currentCount == 0
+                        )
+                    }
+                    .map { _, value -> T in value }
             )
-        })
-        let validChanges: [PagedData.TrackedChange] = (itemIndexesAreSequential && hasOneValidIndex ?
-            changesToQuery :
-            zip(itemIndexes, changesToQuery)
-                .filter { index, _ -> Bool in
-                    index >= updatedPageInfo.pageOffset && (
-                        index < updatedPageInfo.currentCount ||
-                        updatedPageInfo.currentCount == 0
-                    )
-                }
-                .map { _, change -> PagedData.TrackedChange in change }
+        }
+        let validChanges: [PagedData.TrackedChange] = determineValidChanges(
+            for: itemIndexes,
+            with: changesToQuery
+        )
+        let validRelatedChangeRowIds: [Int64] = determineValidChanges(
+            for: relatedChangeIndexes,
+            with: Array(pagedRowIdsForRelatedChanges)
         )
         let countBefore: Int = itemIndexes.filter { $0 < updatedPageInfo.pageOffset }.count
         
@@ -252,14 +315,14 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
 
         // If there are no valid row ids then stop here (trigger updates though since the page info
         // has changes)
-        guard !validChanges.isEmpty else {
+        guard !validChanges.isEmpty || !validRelatedChangeRowIds.isEmpty else {
             updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, true)
             return
         }
 
         // Fetch the inserted/updated rows
-        let additionalFilters: SQL = SQL(validChanges.map { $0.rowId }.contains(Column.rowID))
-        let updatedItems: [T] = (try? dataQuery(additionalFilters, nil)
+        let targetRowIds: [Int64] = Array((validChanges.map { $0.rowId } + validRelatedChangeRowIds).asSet())
+        let updatedItems: [T] = (try? dataQuery(targetRowIds)
             .fetchAll(db))
             .defaulting(to: [])
 
@@ -302,12 +365,18 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         let idColumnName: String = self.idColumnName
         let joinSQL: SQL? = self.joinSQL
         let filterSQL: SQL = self.filterSQL
+        let groupSQL: SQL? = self.groupSQL
         let orderSQL: SQL = self.orderSQL
-        let dataQuery: (SQL?, SQL?) -> AdaptedFetchRequest<SQLRequest<T>> = self.dataQuery
+        let dataQuery: ([Int64]) -> AdaptedFetchRequest<SQLRequest<T>> = self.dataQuery
         
         let loadedPage: (data: [T]?, pageInfo: PagedData.PageInfo)? = GRDBStorage.shared.read { [weak self] db in
-            let totalCount: Int = try dataQuery(filterSQL, nil)
-                .fetchCount(db)
+            let totalCount: Int = PagedData.totalCount(
+                db,
+                tableName: pagedTableName,
+                requiredJoinSQL: joinSQL,
+                filterSQL: filterSQL
+            )
+            
             let queryInfo: (limit: Int, offset: Int, updatedCacheOffset: Int)? = {
                 switch target {
                     case .initialPageAround(let targetId):
@@ -420,8 +489,17 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             }
             
             // Fetch the desired data
-            let limitSQL: SQL = SQL(stringLiteral: "LIMIT \(queryInfo.limit) OFFSET \(queryInfo.offset)")
-            let newData: [T] = try dataQuery(filterSQL, limitSQL)
+            let pageRowIds: [Int64] = PagedData.rowIds(
+                db,
+                tableName: pagedTableName,
+                requiredJoinSQL: joinSQL,
+                filterSQL: filterSQL,
+                groupSQL: groupSQL,
+                orderSQL: orderSQL,
+                limit: queryInfo.limit,
+                offset: queryInfo.offset
+            )
+            let newData: [T] = try dataQuery(pageRowIds)
                 .fetchAll(db)
             let updatedLimitInfo: PagedData.PageInfo = PagedData.PageInfo(
                 pageSize: currentPageInfo.pageSize,
@@ -498,8 +576,9 @@ public extension PagedDatabaseObserver {
         observedChanges: [PagedData.ObservedChanges],
         joinSQL: SQL? = nil,
         filterSQL: SQL,
+        groupSQL: SQL? = nil,
         orderSQL: SQL,
-        dataQuery: @escaping (SQL?, SQL?) -> SQLRequest<T>,
+        dataQuery: @escaping ([Int64]) -> SQLRequest<T>,
         associatedRecords: [ErasedAssociatedRecord] = [],
         onChangeUnsorted: @escaping ([T], PagedData.PageInfo) -> ()
     ) {
@@ -510,10 +589,9 @@ public extension PagedDatabaseObserver {
             observedChanges: observedChanges,
             joinSQL: joinSQL,
             filterSQL: filterSQL,
+            groupSQL: groupSQL,
             orderSQL: orderSQL,
-            dataQuery: { additionalFilters, limit in
-                dataQuery(additionalFilters, limit).adapted { _ in ScopeAdapter([:]) }
-            },
+            dataQuery: { rowIds in dataQuery(rowIds).adapted { _ in ScopeAdapter([:]) } },
             associatedRecords: associatedRecords,
             onChangeUnsorted: onChangeUnsorted
         )
@@ -697,15 +775,18 @@ public enum PagedData {
         public let databaseTableName: String
         public let events: [DatabaseEvent.Kind]
         public let columns: [String]
+        public let joinToPagedType: SQL?
         
         public init<T: TableRecord & ColumnExpressible>(
             table: T.Type,
             events: [DatabaseEvent.Kind] = [.insert, .update, .delete],
-            columns: [T.Columns]
+            columns: [T.Columns],
+            joinToPagedType: SQL? = nil
         ) {
             self.databaseTableName = table.databaseTableName
             self.events = events
             self.columns = columns.map { $0.name }
+            self.joinToPagedType = joinToPagedType
         }
     }
 
@@ -724,6 +805,49 @@ public enum PagedData {
     }
     
     // MARK: - Internal Functions
+    
+    fileprivate static func totalCount(
+        _ db: Database,
+        tableName: String,
+        requiredJoinSQL: SQL? = nil,
+        filterSQL: SQL
+    ) -> Int {
+        let tableNameLiteral: SQL = SQL(stringLiteral: tableName)
+        let request: SQLRequest<Int> = """
+            SELECT \(tableNameLiteral).rowId
+            FROM \(tableNameLiteral)
+            \(requiredJoinSQL ?? "")
+            WHERE \(filterSQL)
+        """
+        
+        return (try? request.fetchCount(db))
+            .defaulting(to: 0)
+    }
+    
+    fileprivate static func rowIds(
+        _ db: Database,
+        tableName: String,
+        requiredJoinSQL: SQL? = nil,
+        filterSQL: SQL,
+        groupSQL: SQL? = nil,
+        orderSQL: SQL,
+        limit: Int,
+        offset: Int
+    ) -> [Int64] {
+        let tableNameLiteral: SQL = SQL(stringLiteral: tableName)
+        let request: SQLRequest<Int64> = """
+            SELECT \(tableNameLiteral).rowId
+            FROM \(tableNameLiteral)
+            \(requiredJoinSQL ?? "")
+            WHERE \(filterSQL)
+            \(groupSQL ?? "")
+            ORDER BY \(orderSQL)
+            LIMIT \(limit) OFFSET \(offset)
+        """
+        
+        return (try? request.fetchAll(db))
+            .defaulting(to: [])
+    }
     
     fileprivate static func index<ID: SQLExpressible>(
         _ db: Database,
@@ -766,6 +890,8 @@ public enum PagedData {
         joinToPagedType: SQL? = nil,
         groupPagedType: SQL? = nil
     ) -> [Int64] {
+        guard !rowIds.isEmpty else { return [] }
+        
         let tableNameLiteral: SQL = SQL(stringLiteral: tableName)
         
         /// **Note:** `ROW_NUMBER` works by returning the index of the row in a given query, unfortunately when dealing
@@ -826,6 +952,8 @@ public enum PagedData {
         pagedTypeRowIds: [Int64],
         joinToPagedType: SQL
     ) -> [Int64] {
+        guard !pagedTypeRowIds.isEmpty else { return [] }
+        
         let tableNameLiteral: SQL = SQL(stringLiteral: tableName)
         let pagedTableNameLiteral: SQL = SQL(stringLiteral: pagedTableName)
         let request: SQLRequest<Int64> = """
@@ -833,6 +961,29 @@ public enum PagedData {
             FROM \(tableNameLiteral)
             \(joinToPagedType)
             WHERE \(pagedTableNameLiteral).rowId IN \(pagedTypeRowIds)
+        """
+        
+        return (try? request.fetchAll(db))
+            .defaulting(to: [])
+    }
+    
+    /// Returns the rowIds for the paged type based on the specified relatedRowIds
+    fileprivate static func pagedRowIdsForRelatedRowIds(
+        _ db: Database,
+        tableName: String,
+        pagedTableName: String,
+        relatedRowIds: [Int64],
+        joinToPagedType: SQL
+    ) -> [Int64] {
+        guard !relatedRowIds.isEmpty else { return [] }
+        
+        let tableNameLiteral: SQL = SQL(stringLiteral: tableName)
+        let pagedTableNameLiteral: SQL = SQL(stringLiteral: pagedTableName)
+        let request: SQLRequest<Int64> = """
+            SELECT \(pagedTableNameLiteral).rowid AS rowid
+            FROM \(pagedTableNameLiteral)
+            \(joinToPagedType)
+            WHERE \(tableNameLiteral).rowId IN \(relatedRowIds)
         """
         
         return (try? request.fetchAll(db))

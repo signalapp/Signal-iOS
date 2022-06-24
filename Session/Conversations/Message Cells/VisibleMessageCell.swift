@@ -98,7 +98,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         let size = VisibleMessageCell.replyButtonSize
         result.set(.width, to: size)
         result.set(.height, to: size)
-        result.image = UIImage(named: "ic_reply")!.withTint(Colors.text)
+        result.image = UIImage(named: "ic_reply")?.withRenderingMode(.alwaysTemplate)
+        result.tintColor = Colors.text
         return result
     }()
 
@@ -726,7 +727,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         guard let cellViewModel: MessageViewModel = self.viewModel else { return }
         
         let viewsToMove: [UIView] = [
-            bubbleView, profilePictureView, replyButton, timerView, messageStatusImageView
+            bubbleView, bubbleBackgroundView, profilePictureView, replyButton, timerView, messageStatusImageView
         ]
         let translationX = gestureRecognizer.translation(in: self).x.clamp(-CGFloat.greatestFiniteMagnitude, 0)
         

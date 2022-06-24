@@ -12,6 +12,7 @@ public enum NotifyPushServerJob: JobExecutor {
     
     public static func run(
         _ job: Job,
+        queue: DispatchQueue,
         success: @escaping (Job, Bool) -> (),
         failure: @escaping (Job, Error?, Bool) -> (),
         deferred: @escaping (Job) -> ()
@@ -42,7 +43,7 @@ public enum NotifyPushServerJob: JobExecutor {
         request.allHTTPHeaderFields = [ Header.contentType.rawValue: "application/json" ]
         request.httpBody = body
         
-        attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
+        attempt(maxRetryCount: 4, recoveringOn: queue) {
             OnionRequestAPI
                 .sendOnionRequest(
                     request,
@@ -52,12 +53,8 @@ public enum NotifyPushServerJob: JobExecutor {
                 )
                 .map { _ in }
         }
-        .done { _ in
-            success(job, false)
-        }
-        .`catch` { error in
-            failure(job, error, false)
-        }
+        .done(on: queue) { _ in success(job, false) }
+        .catch(on: queue) { error in failure(job, error, false) }
         .retainUntilComplete()
     }
 }

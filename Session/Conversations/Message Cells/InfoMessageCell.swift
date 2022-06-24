@@ -72,7 +72,8 @@ final class InfoMessageCell: MessageCell {
         }()
         
         if let icon = icon {
-            iconImageView.image = icon.withTint(Colors.text)
+            iconImageView.image = icon.withRenderingMode(.alwaysTemplate)
+            iconImageView.tintColor = Colors.text
         }
         
         iconImageViewWidthConstraint.constant = (icon != nil) ? InfoMessageCell.iconSize : 0

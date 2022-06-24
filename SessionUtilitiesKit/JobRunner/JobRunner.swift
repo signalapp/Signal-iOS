@@ -28,6 +28,7 @@ public protocol JobExecutor {
     ///   updated `job`)
     static func run(
         _ job: Job,
+        queue: DispatchQueue,
         success: @escaping (Job, Bool) -> (),
         failure: @escaping (Job, Error?, Bool) -> (),
         deferred: @escaping (Job) -> ()
@@ -38,7 +39,7 @@ public final class JobRunner {
     private static let blockingQueue: Atomic<JobQueue?> = Atomic(
         JobQueue(
             type: .blocking,
-            qos: .userInitiated,
+            qos: .default,
             jobVariants: [],
             onQueueDrained: {
                 // Once all blocking jobs have been completed we want to start running
@@ -686,6 +687,7 @@ private final class JobQueue {
         
         jobExecutor.run(
             nextJob,
+            queue: internalQueue,
             success: handleJobSucceeded,
             failure: handleJobFailed,
             deferred: handleJobDeferred

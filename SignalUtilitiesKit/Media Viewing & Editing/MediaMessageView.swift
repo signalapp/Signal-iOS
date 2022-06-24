@@ -162,7 +162,8 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         }
         else if attachment.isUrl {
             view.clipsToBounds = true
-            view.image = UIImage(named: "Link")?.withTint(Colors.text)
+            view.image = UIImage(named: "Link")?.withRenderingMode(.alwaysTemplate)
+            view.tintColor = Colors.text
             view.contentMode = .center
             view.backgroundColor = (isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06))
             view.layer.cornerRadius = 8

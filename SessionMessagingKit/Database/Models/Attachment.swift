@@ -920,6 +920,7 @@ extension Attachment {
 extension Attachment {
     internal func upload(
         _ db: Database? = nil,
+        queue: DispatchQueue,
         using upload: (Database, Data) -> Promise<String>,
         encrypt: Bool,
         success: (() -> Void)?,
@@ -1037,7 +1038,7 @@ extension Attachment {
         }()
         
         uploadPromise
-            .done(on: DispatchQueue.global(qos: .userInitiated)) { fileId in
+            .done(on: queue) { fileId in
                 // Save the final upload info
                 let uploadedAttachment: Attachment? = GRDBStorage.shared.write { db in
                     try updatedAttachment?
@@ -1061,7 +1062,7 @@ extension Attachment {
                     
                 success?()
             }
-            .catch { error in
+            .catch(on: queue) { error in
                 GRDBStorage.shared.write { db in
                     try updatedAttachment?
                         .with(state: .failedUpload)

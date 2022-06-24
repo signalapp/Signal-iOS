@@ -1404,6 +1404,7 @@ enum _003_YDBToGRDBMigration: Migration {
             .defaulting(to: (15 * 60))
         db[.appSwitcherPreviewEnabled] = (legacyPreferences[SMKLegacy.preferencesKeyScreenSecurityDisabled] as? Bool == false)
         db[.areLinkPreviewsEnabled] = (legacyPreferences[SMKLegacy.preferencesKeyAreLinkPreviewsEnabled] as? Bool == true)
+        db[.areCallsEnabled] = (legacyPreferences[SMKLegacy.preferencesKeyAreCallsEnabled] as? Bool == true)
         db[.hasHiddenMessageRequests] = CurrentAppContext().appUserDefaults()
             .bool(forKey: SMKLegacy.userDefaultsHasHiddenMessageRequests)
         

@@ -67,6 +67,8 @@ public enum OpenGroupAPI {
             // Per-room requests
             contentsOf: (try? OpenGroup
                 .filter(OpenGroup.Columns.server == server.lowercased()) // Note: The `OpenGroup` type converts to lowercase in init
+                .filter(OpenGroup.Columns.isActive == true)
+                .filter(OpenGroup.Columns.roomToken != "")
                 .fetchAll(db))
                 .defaulting(to: [])
                 .flatMap { openGroup -> [BatchRequestInfoType] in

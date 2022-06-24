@@ -51,18 +51,26 @@ extension MessageReceiver {
             try message.contacts.forEach { contactInfo in
                 guard let sessionId: String = contactInfo.publicKey else { return }
                 
+                // Note: We only update the contact and profile records if the data has actually changed
+                // in order to avoid triggering UI updates for every thread on the home screen
                 let contact: Contact = Contact.fetchOrCreate(db, id: sessionId)
                 let profile: Profile = Profile.fetchOrCreate(db, id: sessionId)
                 
-                try profile
-                    .with(
-                        name: contactInfo.displayName,
-                        profilePictureUrl: .updateIf(contactInfo.profilePictureUrl),
-                        profileEncryptionKey: .updateIf(
-                            contactInfo.profileKey.map { OWSAES256Key(data: $0) }
+                if
+                    profile.name != contactInfo.displayName ||
+                    profile.profilePictureUrl != contactInfo.profilePictureUrl ||
+                    profile.profileEncryptionKey != contactInfo.profileKey.map({ OWSAES256Key(data: $0) })
+                {
+                    try profile
+                        .with(
+                            name: contactInfo.displayName,
+                            profilePictureUrl: .updateIf(contactInfo.profilePictureUrl),
+                            profileEncryptionKey: .updateIf(
+                                contactInfo.profileKey.map { OWSAES256Key(data: $0) }
+                            )
                         )
-                    )
-                    .save(db)
+                        .save(db)
+                }
                 
                 /// We only update these values if the proto actually has values for them (this is to prevent an
                 /// edge case where an old client could override the values with default values since they aren't included)
@@ -70,22 +78,28 @@ extension MessageReceiver {
                 /// **Note:** Since message requests have no reverse, we should only handle setting `isApproved`
                 /// and `didApproveMe` to `true`. This may prevent some weird edge cases where a config message
                 /// swapping `isApproved` and `didApproveMe` to `false`
-                try contact
-                    .with(
-                        isApproved: (contactInfo.hasIsApproved && contactInfo.isApproved ?
-                            true :
-                            .existing
-                        ),
-                        isBlocked: (contactInfo.hasIsBlocked ?
-                            .update(contactInfo.isBlocked) :
-                            .existing
-                        ),
-                        didApproveMe: (contactInfo.hasDidApproveMe && contactInfo.didApproveMe ?
-                            true :
-                            .existing
+                if
+                    (contactInfo.hasIsApproved && (contact.isApproved != contactInfo.isApproved)) ||
+                    (contactInfo.hasIsBlocked && (contact.isBlocked != contactInfo.isBlocked)) ||
+                    (contactInfo.hasDidApproveMe && (contact.didApproveMe != contactInfo.didApproveMe))
+                {
+                    try contact
+                        .with(
+                            isApproved: (contactInfo.hasIsApproved && contactInfo.isApproved ?
+                                true :
+                                .existing
+                            ),
+                            isBlocked: (contactInfo.hasIsBlocked ?
+                                .update(contactInfo.isBlocked) :
+                                .existing
+                            ),
+                            didApproveMe: (contactInfo.hasDidApproveMe && contactInfo.didApproveMe ?
+                                true :
+                                .existing
+                            )
                         )
-                    )
-                    .save(db)
+                        .save(db)
+                }
                 
                 // If the contact is blocked
                 if contactInfo.hasIsBlocked && contactInfo.isBlocked {

@@ -8,14 +8,25 @@ import SessionUtilitiesKit
 import SignalUtilitiesKit
 
 final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
-    typealias Section = HomeViewModel.Section
-    typealias Item = SessionThreadViewModel
+    private static let loadingHeaderHeight: CGFloat = 20
     
     private let viewModel: HomeViewModel = HomeViewModel()
     private var dataChangeObservable: DatabaseCancellable?
-    private var hasLoadedInitialData: Bool = false
+    private var hasLoadedInitialStateData: Bool = false
+    private var hasLoadedInitialThreadData: Bool = false
+    private var isLoadingMore: Bool = false
     
     // MARK: - Intialization
+    
+    init() {
+        GRDBStorage.shared.addObserver(viewModel.pagedDataObserver)
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        preconditionFailure("Use init() instead.")
+    }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -70,6 +81,10 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         result.register(view: FullConversationCell.self)
         result.dataSource = self
         result.delegate = self
+        
+        if #available(iOS 15.0, *) {
+            result.sectionHeaderTopPadding = 0
+        }
         
         return result
     }()
@@ -151,7 +166,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
             tableViewTopConstraint = tableView.pin(.top, to: .bottom, of: seedReminderView)
         }
         else {
-            tableViewTopConstraint = tableView.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
+            tableViewTopConstraint = tableView.pin(.top, to: .top, of: view)
         }
         tableView.pin(.trailing, to: .trailing, of: view)
         tableView.pin(.bottom, to: .bottom, of: view)
@@ -211,8 +226,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        // Stop observing database changes
-        dataChangeObservable?.cancel()
+        stopObservingChanges()
     }
     
     @objc func applicationDidBecomeActive(_ notification: Notification) {
@@ -220,8 +234,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     }
     
     @objc func applicationDidResignActive(_ notification: Notification) {
-        // Stop observing database changes
-        dataChangeObservable?.cancel()
+        stopObservingChanges()
     }
     
     // MARK: - Updating
@@ -233,7 +246,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
             // If we haven't done the initial load the trigger it immediately (blocking the main
             // thread so we remain on the launch screen until it completes to be consistent with
             // the old behaviour)
-            scheduling: (hasLoadedInitialData ?
+            scheduling: (hasLoadedInitialStateData ?
                 .async(onQueue: .main) :
                 .immediate
             ),
@@ -243,25 +256,26 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 self?.handleUpdates(state)
             }
         )
+        
+        self.viewModel.onThreadChange = { [weak self] updatedThreadData in
+            self?.handleThreadUpdates(updatedThreadData)
+        }
     }
     
-    private func handleUpdates(_ updatedState: HomeViewModel.State) {
+    private func stopObservingChanges() {
+        // Stop observing database changes
+        dataChangeObservable?.cancel()
+        self.viewModel.onThreadChange = nil
+    }
+    
+    private func handleUpdates(_ updatedState: HomeViewModel.State, initialLoad: Bool = false) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
-        guard hasLoadedInitialData else {
-            hasLoadedInitialData = true
-            UIView.performWithoutAnimation { handleUpdates(updatedState) }
+        guard hasLoadedInitialStateData else {
+            hasLoadedInitialStateData = true
+            UIView.performWithoutAnimation { handleUpdates(updatedState, initialLoad: true) }
             return
         }
-        
-        // Hide the 'loading conversations' label (now that we have received conversation data)
-        loadingConversationsLabel.isHidden = true
-        
-        // Show the empty state if there is no data
-        emptyStateView.isHidden = (
-            !updatedState.sections.isEmpty &&
-            updatedState.sections.contains(where: { !$0.elements.isEmpty })
-        )
         
         if updatedState.userProfile != self.viewModel.state.userProfile {
             updateNavBarButtons()
@@ -280,9 +294,36 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
             }
         }
         
+        self.viewModel.updateState(updatedState)
+    }
+    
+    private func handleThreadUpdates(_ updatedData: [HomeViewModel.SectionModel], initialLoad: Bool = false) {
+        // Ensure the first load runs without animations (if we don't do this the cells will animate
+        // in from a frame of CGRect.zero)
+        guard hasLoadedInitialThreadData else {
+            hasLoadedInitialThreadData = true
+            UIView.performWithoutAnimation { handleThreadUpdates(updatedData, initialLoad: true) }
+            return
+        }
+        
+        // Hide the 'loading conversations' label (now that we have received conversation data)
+        loadingConversationsLabel.isHidden = true
+        
+        // Show the empty state if there is no data
+        emptyStateView.isHidden = (
+            !updatedData.isEmpty &&
+            updatedData.contains(where: { !$0.elements.isEmpty })
+        )
+        
+        CATransaction.begin()
+        CATransaction.setCompletionBlock { [weak self] in
+            // Complete page loading
+            self?.isLoadingMore = false
+        }
+        
         // Reload the table content (animate changes after the first load)
         tableView.reload(
-            using: StagedChangeset(source: viewModel.state.sections, target: updatedState.sections),
+            using: StagedChangeset(source: viewModel.threadData, target: updatedData),
             deleteSectionsAnimation: .none,
             insertSectionsAnimation: .none,
             reloadSectionsAnimation: .none,
@@ -290,15 +331,11 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
             insertRowsAnimation: .top,
             reloadRowsAnimation: .none,
             interrupt: { $0.changeCount > 100 }    // Prevent too many changes from causing performance issues
-        ) { [weak self] updatedSections in
-            guard let currentState: HomeViewModel.State = self?.viewModel.state else { return }
-            
-            self?.viewModel.updateState(currentState.with(sections: updatedSections))
+        ) { [weak self] updatedData in
+            self?.viewModel.updateThreadData(updatedData)
         }
         
-        self.viewModel.updateState(
-            self.viewModel.state.with(showViewedSeedBanner: updatedState.showViewedSeedBanner)
-        )
+        CATransaction.commit()
     }
     
     private func updateNavBarButtons() {
@@ -357,35 +394,87 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     // MARK: - UITableViewDataSource
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.state.sections.count
+        return viewModel.threadData.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.state.sections[section].elements.count
+        let section: HomeViewModel.SectionModel = viewModel.threadData[section]
+        
+        return section.elements.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let section: ArraySection<Section, Item> = viewModel.state.sections[indexPath.section]
+        let section: HomeViewModel.SectionModel = viewModel.threadData[indexPath.section]
         
         switch section.model {
             case .messageRequests:
+                let threadViewModel: SessionThreadViewModel = section.elements[indexPath.row]
                 let cell: MessageRequestsCell = tableView.dequeue(type: MessageRequestsCell.self, for: indexPath)
-                cell.update(with: Int(section.elements[indexPath.row].threadUnreadCount ?? 0))
+                cell.update(with: Int(threadViewModel.threadUnreadCount ?? 0))
                 return cell
                 
             case .threads:
+                let threadViewModel: SessionThreadViewModel = section.elements[indexPath.row]
                 let cell: FullConversationCell = tableView.dequeue(type: FullConversationCell.self, for: indexPath)
-                cell.update(with: section.elements[indexPath.row])
+                cell.update(with: threadViewModel)
                 return cell
+                
+            default: preconditionFailure("Other sections should have no content")
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let section: HomeViewModel.SectionModel = viewModel.threadData[section]
+        
+        switch section.model {
+            case .loadMore:
+                let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(style: .medium)
+                loadingIndicator.tintColor = Colors.text
+                loadingIndicator.alpha = 0.5
+                loadingIndicator.startAnimating()
+                
+                let view: UIView = UIView()
+                view.addSubview(loadingIndicator)
+                loadingIndicator.center(in: view)
+                
+                return view
+            
+            default: return nil
         }
     }
     
     // MARK: - UITableViewDelegate
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        let section: HomeViewModel.SectionModel = viewModel.threadData[section]
+        
+        switch section.model {
+            case .loadMore: return HomeVC.loadingHeaderHeight
+            default: return 0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard self.hasLoadedInitialThreadData && !self.isLoadingMore else { return }
+        
+        let section: HomeViewModel.SectionModel = self.viewModel.threadData[section]
+        
+        switch section.model {
+            case .loadMore:
+                self.isLoadingMore = true
+                
+                DispatchQueue.global(qos: .default).async { [weak self] in
+                    self?.viewModel.pagedDataObserver?.load(.pageAfter)
+                }
+                
+            default: break
+        }
+    }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let section: ArraySection<Section, Item> = viewModel.state.sections[indexPath.section]
+        let section: HomeViewModel.SectionModel = self.viewModel.threadData[indexPath.section]
         
         switch section.model {
             case .messageRequests:
@@ -393,13 +482,16 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 self.navigationController?.pushViewController(viewController, animated: true)
                 
             case .threads:
+                let threadViewModel: SessionThreadViewModel = section.elements[indexPath.row]
                 show(
-                    section.elements[indexPath.row].threadId,
-                    variant: section.elements[indexPath.row].threadVariant,
+                    threadViewModel.threadId,
+                    variant: threadViewModel.threadVariant,
                     with: .none,
                     focusedInteractionId: nil,
                     animated: true
                 )
+                
+            default: break
         }
     }
     
@@ -408,7 +500,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let section: ArraySection<Section, Item> = viewModel.state.sections[indexPath.section]
+        let section: HomeViewModel.SectionModel = self.viewModel.threadData[indexPath.section]
         
         switch section.model {
             case .messageRequests:
@@ -420,12 +512,12 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 return [hide]
                 
             case .threads:
-                let cellViewModel: SessionThreadViewModel = section.elements[indexPath.row]
+                let threadViewModel: SessionThreadViewModel = section.elements[indexPath.row]
                 let delete: UITableViewRowAction = UITableViewRowAction(
                     style: .destructive,
                     title: "TXT_DELETE_TITLE".localized()
                 ) { [weak self] _, _ in
-                    let message = (cellViewModel.currentUserIsClosedGroupAdmin == true ?
+                    let message = (threadViewModel.currentUserIsClosedGroupAdmin == true ?
                         "admin_group_leave_warning".localized() :
                         "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE".localized()
                     )
@@ -440,20 +532,20 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                         style: .destructive
                     ) { _ in
                         GRDBStorage.shared.writeAsync { db in
-                            switch cellViewModel.threadVariant {
+                            switch threadViewModel.threadVariant {
                                 case .closedGroup:
                                     try MessageSender
-                                        .leave(db, groupPublicKey: cellViewModel.threadId)
+                                        .leave(db, groupPublicKey: threadViewModel.threadId)
                                         .retainUntilComplete()
                                     
                                 case .openGroup:
-                                    OpenGroupManager.shared.delete(db, openGroupId: cellViewModel.threadId)
+                                    OpenGroupManager.shared.delete(db, openGroupId: threadViewModel.threadId)
                                     
                                 default: break
                             }
                             
                             _ = try SessionThread
-                                .filter(id: cellViewModel.threadId)
+                                .filter(id: threadViewModel.threadId)
                                 .deleteAll(db)
                         }
                     })
@@ -468,36 +560,36 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
 
                 let pin: UITableViewRowAction = UITableViewRowAction(
                     style: .normal,
-                    title: (cellViewModel.threadIsPinned ?
+                    title: (threadViewModel.threadIsPinned ?
                         "UNPIN_BUTTON_TEXT".localized() :
                         "PIN_BUTTON_TEXT".localized()
                     )
                 ) { _, _ in
                     GRDBStorage.shared.writeAsync { db in
                         try SessionThread
-                            .filter(id: cellViewModel.threadId)
-                            .updateAll(db, SessionThread.Columns.isPinned.set(to: !cellViewModel.threadIsPinned))
+                            .filter(id: threadViewModel.threadId)
+                            .updateAll(db, SessionThread.Columns.isPinned.set(to: !threadViewModel.threadIsPinned))
                     }
                 }
                 
-                guard cellViewModel.threadVariant == .contact && !cellViewModel.threadIsNoteToSelf else {
+                guard threadViewModel.threadVariant == .contact && !threadViewModel.threadIsNoteToSelf else {
                     return [ delete, pin ]
                 }
 
                 let block: UITableViewRowAction = UITableViewRowAction(
                     style: .normal,
-                    title: (cellViewModel.threadIsBlocked == true ?
+                    title: (threadViewModel.threadIsBlocked == true ?
                         "BLOCK_LIST_UNBLOCK_BUTTON".localized() :
                         "BLOCK_LIST_BLOCK_BUTTON".localized()
                     )
                 ) { _, _ in
                     GRDBStorage.shared.writeAsync { db in
                         try Contact
-                            .filter(id: cellViewModel.threadId)
+                            .filter(id: threadViewModel.threadId)
                             .updateAll(
                                 db,
                                 Contact.Columns.isBlocked.set(
-                                    to: (cellViewModel.threadIsBlocked == false ?
+                                    to: (threadViewModel.threadIsBlocked == false ?
                                         true:
                                         false
                                     )
@@ -510,6 +602,8 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 block.backgroundColor = Colors.unimportant
                 
                 return [ delete, block, pin ]
+                
+            default: return []
         }
     }
     

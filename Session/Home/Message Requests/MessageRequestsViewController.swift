@@ -8,9 +8,28 @@ import SessionMessagingKit
 import SignalUtilitiesKit
 
 class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDataSource {
+    private static let loadingHeaderHeight: CGFloat = 20
+    
     private let viewModel: MessageRequestsViewModel = MessageRequestsViewModel()
     private var dataChangeObservable: DatabaseCancellable?
-    private var hasLoadedInitialData: Bool = false
+    private var hasLoadedInitialThreadData: Bool = false
+    private var isLoadingMore: Bool = false
+    
+    // MARK: - Intialization
+    
+    init() {
+        GRDBStorage.shared.addObserver(viewModel.pagedDataObserver)
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        preconditionFailure("Use init() instead.")
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
     // MARK: - UI
 
@@ -26,6 +45,10 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         let bottomInset = Values.newConversationButtonBottomOffset + NewConversationButtonSet.expandedButtonSize + Values.largeSpacing + NewConversationButtonSet.collapsedButtonSize
         result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
         result.showsVerticalScrollIndicator = false
+        
+        if #available(iOS 15.0, *) {
+            result.sectionHeaderTopPadding = 0
+        }
 
         return result
     }()
@@ -122,10 +145,6 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         // Stop observing database changes
         dataChangeObservable?.cancel()
     }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
 
     // MARK: - Layout
 
@@ -159,33 +178,27 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     // MARK: - Updating
     
     private func startObservingChanges() {
-        // Start observing for data changes
-        dataChangeObservable = GRDBStorage.shared.start(
-            viewModel.observableViewData,
-            onError: { _ in },
-            onChange: { [weak self] viewData in
-                // The defaul scheduler emits changes on the main thread
-                self?.handleUpdates(viewData)
-            }
-        )
+        self.viewModel.onThreadChange = { [weak self] updatedThreadData in
+            self?.handleThreadUpdates(updatedThreadData)
+        }
     }
     
-    private func handleUpdates(_ updatedViewData: [SessionThreadViewModel]) {
+    private func handleThreadUpdates(_ updatedData: [MessageRequestsViewModel.SectionModel], initialLoad: Bool = false) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
-        guard hasLoadedInitialData else {
-            hasLoadedInitialData = true
-            UIView.performWithoutAnimation { handleUpdates(updatedViewData) }
+        guard hasLoadedInitialThreadData else {
+            hasLoadedInitialThreadData = true
+            UIView.performWithoutAnimation { handleThreadUpdates(updatedData, initialLoad: true) }
             return
         }
         
         // Show the empty state if there is no data
-        clearAllButton.isHidden = updatedViewData.isEmpty
-        emptyStateLabel.isHidden = !updatedViewData.isEmpty
+        clearAllButton.isHidden = updatedData.isEmpty
+        emptyStateLabel.isHidden = !updatedData.isEmpty
         
         // Reload the table content (animate changes after the first load)
         tableView.reload(
-            using: StagedChangeset(source: viewModel.viewData, target: updatedViewData),
+            using: StagedChangeset(source: viewModel.threadData, target: updatedData),
             deleteSectionsAnimation: .none,
             insertSectionsAnimation: .none,
             reloadSectionsAnimation: .none,
@@ -194,7 +207,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             reloadRowsAnimation: .none,
             interrupt: { $0.changeCount > 100 }    // Prevent too many changes from causing performance issues
         ) { [weak self] updatedData in
-            self?.viewModel.updateData(updatedData)
+            self?.viewModel.updateThreadData(updatedData)
         }
     }
 
@@ -208,26 +221,94 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     
     // MARK: - UITableViewDataSource
 
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return viewModel.threadData.count
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.viewData.count
+        let section: MessageRequestsViewModel.SectionModel = viewModel.threadData[section]
+        
+        return section.elements.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: FullConversationCell = tableView.dequeue(type: FullConversationCell.self, for: indexPath)
-        cell.update(with: viewModel.viewData[indexPath.row])
-        return cell
+        let section: MessageRequestsViewModel.SectionModel = viewModel.threadData[indexPath.section]
+        
+        switch section.model {
+            case .threads:
+                let threadViewModel: SessionThreadViewModel = section.elements[indexPath.row]
+                let cell: FullConversationCell = tableView.dequeue(type: FullConversationCell.self, for: indexPath)
+                cell.update(with: threadViewModel)
+                return cell
+                
+            default: preconditionFailure("Other sections should have no content")
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let section: MessageRequestsViewModel.SectionModel = viewModel.threadData[section]
+        
+        switch section.model {
+            case .loadMore:
+                let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(style: .medium)
+                loadingIndicator.tintColor = Colors.text
+                loadingIndicator.alpha = 0.5
+                loadingIndicator.startAnimating()
+                
+                let view: UIView = UIView()
+                view.addSubview(loadingIndicator)
+                loadingIndicator.center(in: view)
+                
+                return view
+            
+            default: return nil
+        }
     }
 
     // MARK: - UITableViewDelegate
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        let section: MessageRequestsViewModel.SectionModel = viewModel.threadData[section]
+        
+        switch section.model {
+            case .loadMore: return MessageRequestsViewController.loadingHeaderHeight
+            default: return 0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard self.hasLoadedInitialThreadData && !self.isLoadingMore else { return }
+        
+        let section: MessageRequestsViewModel.SectionModel = self.viewModel.threadData[section]
+        
+        switch section.model {
+            case .loadMore:
+                self.isLoadingMore = true
+                
+                DispatchQueue.global(qos: .default).async { [weak self] in
+                    self?.viewModel.pagedDataObserver?.load(.pageAfter)
+                }
+                
+            default: break
+        }
+    }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let conversationVC: ConversationVC = ConversationVC(
-            threadId: viewModel.viewData[indexPath.row].threadId,
-            threadVariant: viewModel.viewData[indexPath.row].threadVariant
-        )
-        self.navigationController?.pushViewController(conversationVC, animated: true)
+        let section: MessageRequestsViewModel.SectionModel = self.viewModel.threadData[indexPath.section]
+        
+        switch section.model {
+            case .threads:
+                let threadViewModel: SessionThreadViewModel = section.elements[indexPath.row]
+                let conversationVC: ConversationVC = ConversationVC(
+                    threadId: threadViewModel.threadId,
+                    threadVariant: threadViewModel.threadVariant
+                )
+                self.navigationController?.pushViewController(conversationVC, animated: true)
+                
+            default: break
+        }
     }
 
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -235,24 +316,35 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     }
 
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let threadId: String = viewModel.viewData[indexPath.row].threadId
-        let delete = UITableViewRowAction(
-            style: .destructive,
-            title: "TXT_DELETE_TITLE".localized()
-        ) { [weak self] _, _ in
-            self?.delete(threadId)
-        }
-        delete.backgroundColor = Colors.destructive
+        let section: MessageRequestsViewModel.SectionModel = self.viewModel.threadData[indexPath.section]
+        
+        switch section.model {
+            case .threads:
+                let threadId: String = section.elements[indexPath.row].threadId
+                let delete = UITableViewRowAction(
+                    style: .destructive,
+                    title: "TXT_DELETE_TITLE".localized()
+                ) { [weak self] _, _ in
+                    self?.delete(threadId)
+                }
+                delete.backgroundColor = Colors.destructive
 
-        return [ delete ]
+                return [ delete ]
+                
+            default: return []
+        }
     }
 
     // MARK: - Interaction
     
     @objc private func clearAllTapped() {
-        guard !viewModel.viewData.isEmpty else { return }
+        guard viewModel.threadData.first { $0.model == .threads }?.elements.isEmpty == false else { return }
         
-        let threadIds: [String] = viewModel.viewData.map { $0.threadId }
+        let threadIds: [String] = (viewModel.threadData
+            .first { $0.model == .threads }?
+            .elements
+            .map { $0.threadId })
+            .defaulting(to: [])
         let alertVC: UIAlertController = UIAlertController(
             title: "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE".localized(),
             message: nil,

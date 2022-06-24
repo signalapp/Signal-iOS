@@ -250,6 +250,7 @@ public final class ClosedGroupPoller {
                                             // Note: In the background we just want jobs to fail silently
                                             MessageReceiveJob.run(
                                                 job,
+                                                queue: queue,
                                                 success: { _, _ in seal.fulfill(()) },
                                                 failure: { _, _, _ in seal.fulfill(()) },
                                                 deferred: { _ in seal.fulfill(()) }

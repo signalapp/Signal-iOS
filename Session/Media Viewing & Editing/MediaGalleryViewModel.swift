@@ -55,7 +55,8 @@ public class MediaGalleryViewModel {
         threadVariant: SessionThread.Variant,
         isPagedData: Bool,
         pageSize: Int = 1,
-        focusedAttachmentId: String? = nil
+        focusedAttachmentId: String? = nil,
+        performInitialQuerySync: Bool = false
     ) {
         self.threadId = threadId
         self.threadVariant = threadVariant
@@ -68,7 +69,6 @@ public class MediaGalleryViewModel {
         // also want to skip the initial query and trigger it async so that the push animation
         // doesn't stutter (it should load basically immediately but without this there is a
         // distinct stutter)
-        let filterSQL: SQL = Item.filterSQL(threadId: threadId)
         self.pagedDataObserver = PagedDatabaseObserver(
             pagedTable: Attachment.self,
             pageSize: pageSize,
@@ -80,9 +80,9 @@ public class MediaGalleryViewModel {
                 )
             ],
             joinSQL: Item.joinSQL,
-            filterSQL: filterSQL,
+            filterSQL: Item.filterSQL(threadId: threadId),
             orderSQL: Item.galleryOrderSQL,
-            dataQuery: Item.baseQuery(orderSQL: Item.galleryOrderSQL, baseFilterSQL: filterSQL),
+            dataQuery: Item.baseQuery(orderSQL: Item.galleryOrderSQL),
             onChangeUnsorted: { [weak self] updatedData, updatedPageInfo in
                 guard let updatedGalleryData: [SectionModel] = self?.process(data: updatedData, for: updatedPageInfo) else {
                     return
@@ -102,7 +102,7 @@ public class MediaGalleryViewModel {
         )
         
         // Run the initial query on a backgorund thread so we don't block the push transition
-        DispatchQueue.global(qos: .default).async { [weak self] in
+        let loadInitialData: () -> () = { [weak self] in
             // If we don't have a `initialFocusedId` then default to `.pageBefore` (it'll query
             // from a `0` offset)
             guard let initialFocusedId: String = focusedAttachmentId else {
@@ -111,6 +111,20 @@ public class MediaGalleryViewModel {
             }
             
             self?.pagedDataObserver?.load(.initialPageAround(id: initialFocusedId))
+        }
+        
+        // We have a custom transition when going from an attachment detail screen to the tile gallery
+        // so in that case we want to perform the initial query synchronously so that we have the content
+        // to do the transition (we don't clear the 'unobservedGalleryDataChanges' after setting it as
+        // we don't want to mess with the initial view controller behaviour)
+        guard !performInitialQuerySync else {
+            loadInitialData()
+            updateGalleryData(self.unobservedGalleryDataChanges ?? [])
+            return
+        }
+        
+        DispatchQueue.global(qos: .default).async {
+            loadInitialData()
         }
     }
     
@@ -258,30 +272,26 @@ public class MediaGalleryViewModel {
             return SQL("\(interaction[.timestampMs]), \(interactionAttachment[.albumIndex].desc)")
         }()
         
-        fileprivate static func baseQuery(orderSQL: SQL, baseFilterSQL: SQL) -> ((SQL?, SQL?) -> AdaptedFetchRequest<SQLRequest<Item>>) {
-            return { additionalFilters, limitSQL -> AdaptedFetchRequest<SQLRequest<Item>> in
+        fileprivate static func baseQuery(orderSQL: SQL, customFilters: SQL? = nil) -> (([Int64]) -> AdaptedFetchRequest<SQLRequest<Item>>) {
+            return { rowIds -> AdaptedFetchRequest<SQLRequest<Item>> in
                 let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
                 let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
                 let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
                 
+                let numColumnsBeforeLinkedRecords: Int = 6
                 let finalFilterSQL: SQL = {
-                    guard let additionalFilters: SQL = additionalFilters else {
+                    guard let customFilters: SQL = customFilters else {
                         return """
-                            WHERE (
-                                \(baseFilterSQL)
-                            )
+                            WHERE \(attachment.alias[Column.rowID]) IN \(rowIds)
                         """
                     }
 
                     return """
                         WHERE (
-                            \(baseFilterSQL) AND
-                            \(additionalFilters)
+                            \(customFilters)
                         )
                     """
                 }()
-                let finalLimitSQL: SQL = (limitSQL ?? SQL(stringLiteral: ""))
-                let numColumnsBeforeLinkedRecords: Int = 6
                 let request: SQLRequest<Item> = """
                     SELECT
                         \(interaction[.id]) AS \(Item.interactionIdKey),
@@ -296,7 +306,6 @@ public class MediaGalleryViewModel {
                     \(joinSQL)
                     \(finalFilterSQL)
                     ORDER BY \(orderSQL)
-                    \(finalLimitSQL)
                 """
                 
                 return request.adapted { db in
@@ -312,8 +321,8 @@ public class MediaGalleryViewModel {
             }
         }
         
-        fileprivate static func baseQuery(orderSQL: SQL, baseFilterSQL: SQL) -> AdaptedFetchRequest<SQLRequest<Item>> {
-            return Item.baseQuery(orderSQL: orderSQL, baseFilterSQL: baseFilterSQL)(nil, nil)
+        fileprivate static func baseQuery(orderSQL: SQL, customFilters: SQL) -> AdaptedFetchRequest<SQLRequest<Item>> {
+            return Item.baseQuery(orderSQL: orderSQL, customFilters: customFilters)([])
         }
 
         func thumbnailImage(async: @escaping (UIImage) -> ()) {
@@ -348,7 +357,7 @@ public class MediaGalleryViewModel {
                 return try Item
                     .baseQuery(
                         orderSQL: SQL(interactionAttachment[.albumIndex]),
-                        baseFilterSQL: SQL("""
+                        customFilters: SQL("""
                             \(attachment[.isValid]) = true AND
                             \(interaction[.id]) = \(interactionId)
                         """)
@@ -372,7 +381,7 @@ public class MediaGalleryViewModel {
                 let newAlbumData: [Item] = try Item
                     .baseQuery(
                         orderSQL: SQL(interactionAttachment[.albumIndex]),
-                        baseFilterSQL: SQL("""
+                        customFilters: SQL("""
                             \(attachment[.isValid]) = true AND
                             \(interaction[.id]) = \(interactionId)
                         """)
@@ -386,13 +395,13 @@ public class MediaGalleryViewModel {
                 let itemBefore: Item? = try Item
                     .baseQuery(
                         orderSQL: Item.galleryReverseOrderSQL,
-                        baseFilterSQL: SQL("\(interaction[.timestampMs]) > \(albumTimestampMs)")
+                        customFilters: SQL("\(interaction[.timestampMs]) > \(albumTimestampMs)")
                     )
                     .fetchOne(db)
                 let itemAfter: Item? = try Item
                     .baseQuery(
                         orderSQL: Item.galleryOrderSQL,
-                        baseFilterSQL: SQL("\(interaction[.timestampMs]) < \(albumTimestampMs)")
+                        customFilters: SQL("\(interaction[.timestampMs]) < \(albumTimestampMs)")
                     )
                     .fetchOne(db)
                 
@@ -523,14 +532,16 @@ public class MediaGalleryViewModel {
     public static func createTileViewController(
         threadId: String,
         threadVariant: SessionThread.Variant,
-        focusedAttachmentId: String?
+        focusedAttachmentId: String?,
+        performInitialQuerySync: Bool = false
     ) -> MediaTileViewController {
         let viewModel: MediaGalleryViewModel = MediaGalleryViewModel(
             threadId: threadId,
             threadVariant: threadVariant,
             isPagedData: true,
             pageSize: MediaTileViewController.itemPageSize,
-            focusedAttachmentId: focusedAttachmentId
+            focusedAttachmentId: focusedAttachmentId,
+            performInitialQuerySync: performInitialQuerySync
         )
         
         return MediaTileViewController(

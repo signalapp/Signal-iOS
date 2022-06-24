@@ -27,13 +27,14 @@ final class DeletedMessageView: UIView {
     private func setUpViewHierarchy(textColor: UIColor) {
         // Image view
         let icon = UIImage(named: "ic_trash")?
-            .withTint(textColor)?
+            .withRenderingMode(.alwaysTemplate)
             .resizedImage(to: CGSize(
                 width: DeletedMessageView.iconSize,
                 height: DeletedMessageView.iconSize
             ))
         
         let imageView = UIImageView(image: icon)
+        imageView.tintColor = textColor
         imageView.contentMode = .center
         imageView.set(.width, to: DeletedMessageView.iconImageViewSize)
         imageView.set(.height, to: DeletedMessageView.iconImageViewSize)

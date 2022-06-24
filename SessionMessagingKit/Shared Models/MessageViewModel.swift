@@ -416,7 +416,7 @@ public extension MessageViewModel {
 // MARK: - Convenience Initialization
 
 public extension MessageViewModel {
-    static let genericId: Int64 = -2
+    static let genericId: Int64 = -1
     static let typingIndicatorId: Int64 = -2
     
     // Note: This init method is only used system-created cells or empty states
@@ -521,14 +521,20 @@ public extension MessageViewModel {
         return SQL("\(interaction[.threadId]) = \(threadId)")
     }
     
+    static let groupSQL: SQL = {
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        
+        return SQL("GROUP BY \(interaction[.id])")
+    }()
+    
     static let orderSQL: SQL = {
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
         return SQL("\(interaction[.timestampMs].desc)")
     }()
     
-    static func baseQuery(orderSQL: SQL, baseFilterSQL: SQL) -> ((SQL?, SQL?) -> AdaptedFetchRequest<SQLRequest<MessageViewModel>>) {
-        return { additionalFilters, limitSQL -> AdaptedFetchRequest<SQLRequest<ViewModel>> in
+    static func baseQuery(orderSQL: SQL, groupSQL: SQL?) -> (([Int64]) -> AdaptedFetchRequest<SQLRequest<MessageViewModel>>) {
+        return { rowIds -> AdaptedFetchRequest<SQLRequest<ViewModel>> in
             let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
             let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
             let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
@@ -548,21 +554,6 @@ public extension MessageViewModel {
             let groupMemberProfileIdColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.profileId.name)
             let groupMemberRoleColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.role.name)
             
-            let finalFilterSQL: SQL = {
-                guard let additionalFilters: SQL = additionalFilters else {
-                    return """
-                        WHERE \(baseFilterSQL)
-                    """
-                }
-                
-                return """
-                    WHERE (
-                        \(baseFilterSQL) AND
-                        \(additionalFilters)
-                    )
-                """
-            }()
-            let finalLimitSQL: SQL = (limitSQL ?? SQL(stringLiteral: ""))
             let numColumnsBeforeLinkedRecords: Int = 18
             let request: SQLRequest<ViewModel> = """
                 SELECT
@@ -641,10 +632,9 @@ public extension MessageViewModel {
                     \(groupMemberAdminTableLiteral).\(groupMemberProfileIdColumnLiteral) = \(interaction[.authorId]) AND
                     \(SQL("\(groupMemberAdminTableLiteral).\(groupMemberRoleColumnLiteral) = \(GroupMember.Role.admin)"))
                 )
-                \(finalFilterSQL)
-                GROUP BY \(interaction[.id])
+                WHERE \(interaction.alias[Column.rowID]) IN \(rowIds)
+                \(groupSQL ?? "")
                 ORDER BY \(orderSQL)
-                \(finalLimitSQL)
             """
             
             return request.adapted { db in

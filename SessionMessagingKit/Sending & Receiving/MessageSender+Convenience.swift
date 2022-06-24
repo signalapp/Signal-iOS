@@ -129,6 +129,7 @@ extension MessageSender {
     
                     attachment.upload(
                         db,
+                        queue: DispatchQueue.global(qos: .userInitiated),
                         using: { db, data in
                             if let openGroup: OpenGroup = openGroup {
                                 return OpenGroupAPI
