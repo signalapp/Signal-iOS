@@ -4,6 +4,8 @@ disabled_rules:
 - cyclomatic_complexity
 - file_length
 - for_where
+- force_cast
+- force_try
 - function_body_length
 - function_parameter_count
 - identifier_name
