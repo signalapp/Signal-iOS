@@ -59,6 +59,15 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 // --- CODE GENERATION MARKER
 
+- (void)updateWithStoryViewMode:(TSThreadStoryViewMode)storyViewMode
+                      addresses:(NSArray<SignalServiceAddress *> *)addresses
+                    transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(updateWithStoryViewMode(_:addresses:transaction:));
+
+- (void)updateWithAllowsReplies:(BOOL)allowsReplies
+                    transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(updateWithAllowsReplies(_:transaction:));
+
 @end
 
 NS_ASSUME_NONNULL_END

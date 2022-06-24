@@ -133,4 +133,23 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     return _name;
 }
 
+- (void)updateWithStoryViewMode:(TSThreadStoryViewMode)storyViewMode
+                      addresses:(NSArray<SignalServiceAddress *> *)addresses
+                    transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdatePrivateStoryThreadWithTransaction:transaction
+                                               block:^(TSPrivateStoryThread *thread) {
+                                                   thread.storyViewMode = storyViewMode;
+                                                   thread.addresses = addresses;
+                                               }];
+}
+
+- (void)updateWithAllowsReplies:(BOOL)allowsReplies transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdatePrivateStoryThreadWithTransaction:transaction
+                                               block:^(TSPrivateStoryThread *thread) {
+                                                   thread.allowsReplies = allowsReplies;
+                                               }];
+}
+
 @end

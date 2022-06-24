@@ -51,8 +51,9 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
             cell.accessoryType = .disclosureIndicator
 
             return cell
-            }) { [weak self] in
-                                    // TODO:
+        }) { [weak self] in
+            let vc = MyStorySettingsViewController()
+            self?.navigationController?.pushViewController(vc, animated: true)
         })
 
         let privateStoriesSection = OWSTableSection()

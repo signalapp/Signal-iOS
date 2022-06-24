@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -53,6 +53,14 @@ public struct OrderedSet<Element> where Element: Hashable {
 
     public var first: Element? {
         return orderedMembers.first
+    }
+
+    public static func ==(lhs: OrderedSet<Element>, rhs: OrderedSet<Element>) -> Bool {
+        lhs.set == rhs.set
+    }
+
+    public static func !=(lhs: OrderedSet<Element>, rhs: OrderedSet<Element>) -> Bool {
+        lhs.set != rhs.set
     }
 
     // TODO: I only implemented the minimum API that I needed. There's lots more that could

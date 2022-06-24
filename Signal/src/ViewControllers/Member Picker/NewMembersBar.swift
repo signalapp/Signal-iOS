@@ -5,7 +5,7 @@
 import Foundation
 import SignalUI
 
-struct NewGroupMember {
+struct NewMember {
     let recipient: PickedRecipient
     let address: SignalServiceAddress
     let displayName: String
@@ -15,19 +15,19 @@ struct NewGroupMember {
 
 // MARK: -
 
-public protocol NewGroupMembersBarDelegate: NewGroupMemberCellDelegate {
+public protocol NewMembersBarDelegate: NewMemberCellDelegate {
 }
 
 // MARK: -
 
 @objc
-public class NewGroupMembersBar: UIView {
+public class NewMembersBar: UIView {
 
-    weak var delegate: NewGroupMembersBarDelegate?
+    weak var delegate: NewMembersBarDelegate?
 
-    private var members = [NewGroupMember]()
+    private var members = [NewMember]()
 
-    func setMembers(_ members: [NewGroupMember]) {
+    func setMembers(_ members: [NewMember]) {
         var addedEntries: [IndexPath] = []
         var removedEntries: [IndexPath] = []
         let oldMemberHashes: [PickedRecipient] = self.members.map { $0.recipient }
@@ -54,7 +54,7 @@ public class NewGroupMembersBar: UIView {
     }
 
     private let collectionView: UICollectionView
-    private let collectionViewLayout = NewGroupMembersBarLayout()
+    private let collectionViewLayout = NewMembersBarLayout()
 
     private var heightConstraint: NSLayoutConstraint?
 
@@ -79,7 +79,7 @@ public class NewGroupMembersBar: UIView {
         collectionView.dataSource = self
         collectionView.delegate = self
 
-        collectionView.register(NewGroupMemberCell.self, forCellWithReuseIdentifier: NewGroupMemberCell.reuseIdentifier)
+        collectionView.register(NewMemberCell.self, forCellWithReuseIdentifier: NewMemberCell.reuseIdentifier)
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
 
@@ -130,7 +130,7 @@ public class NewGroupMembersBar: UIView {
 
 // MARK: -
 
-extension NewGroupMembersBar: UICollectionViewDataSource {
+extension NewMembersBar: UICollectionViewDataSource {
 
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return members.count
@@ -141,14 +141,14 @@ extension NewGroupMembersBar: UICollectionViewDataSource {
     }
 
     fileprivate func memberCell(at indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewGroupMemberCell.reuseIdentifier, for: indexPath) as? NewGroupMemberCell else {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewMemberCell.reuseIdentifier, for: indexPath) as? NewMemberCell else {
             owsFail("Missing or invalid cell.")
         }
         configure(cell: cell, indexPath: indexPath)
         return cell
     }
 
-    fileprivate func configure(cell: NewGroupMemberCell, indexPath: IndexPath) {
+    fileprivate func configure(cell: NewMemberCell, indexPath: IndexPath) {
         guard let member = members[safe: indexPath.row] else {
             owsFailDebug("Missing member.")
             return
@@ -167,26 +167,26 @@ extension NewGroupMembersBar: UICollectionViewDataSource {
 
 // MARK: -
 
-extension NewGroupMembersBar: UICollectionViewDelegate {
+extension NewMembersBar: UICollectionViewDelegate {
 }
 
 // MARK: -
 
-public protocol NewGroupMemberCellDelegate: AnyObject {
+public protocol NewMemberCellDelegate: AnyObject {
     func removeRecipient(_ recipient: PickedRecipient)
 }
 
 // MARK: -
 
-private class NewGroupMemberCell: UICollectionViewCell {
+private class NewMemberCell: UICollectionViewCell {
 
-    static let reuseIdentifier = "NewGroupMemberCell"
+    static let reuseIdentifier = "NewMemberCell"
 
     private let avatarView = ConversationAvatarView(sizeClass: avatarSizeClass, localUserDisplayMode: .asUser)
     private let textLabel = UILabel(frame: .zero)
 
-    fileprivate weak var delegate: NewGroupMemberCellDelegate?
-    fileprivate var member: NewGroupMember?
+    fileprivate weak var delegate: NewMemberCellDelegate?
+    fileprivate var member: NewMember?
 
     static let avatarSizeClass = ConversationAvatarView.Configuration.SizeClass.customDiameter(32)
     static let vMargin: CGFloat = 6
@@ -204,7 +204,7 @@ private class NewGroupMemberCell: UICollectionViewCell {
         contentView.layoutMargins = .zero
         contentView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
 
-        textLabel.font = NewGroupMemberCell.nameFont
+        textLabel.font = NewMemberCell.nameFont
         textLabel.textColor = Theme.primaryTextColor
         textLabel.numberOfLines = 1
         textLabel.lineBreakMode = .byTruncatingTail
@@ -252,7 +252,7 @@ private class NewGroupMemberCell: UICollectionViewCell {
         super.init(coder: aDecoder)
     }
 
-    func configure(member: NewGroupMember) {
+    func configure(member: NewMember) {
         self.member = member
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(member.address)
@@ -281,9 +281,9 @@ private class NewGroupMemberCell: UICollectionViewCell {
 
 // MARK: -
 
-extension NewGroupMembersBar: NewGroupMembersBarLayoutDelegate {
+extension NewMembersBar: NewMembersBarLayoutDelegate {
     func cellForLayoutMeasurement(at indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = NewGroupMemberCell()
+        let cell = NewMemberCell()
         configure(cell: cell, indexPath: indexPath)
         return cell
     }
@@ -291,16 +291,16 @@ extension NewGroupMembersBar: NewGroupMembersBarLayoutDelegate {
 
 // MARK: -
 
-private protocol NewGroupMembersBarLayoutDelegate: AnyObject {
+private protocol NewMembersBarLayoutDelegate: AnyObject {
     func cellForLayoutMeasurement(at indexPath: IndexPath) -> UICollectionViewCell
 }
 
 // MARK: -
 
 // A simple horizontal layout.
-private class NewGroupMembersBarLayout: UICollectionViewLayout {
+private class NewMembersBarLayout: UICollectionViewLayout {
 
-    fileprivate weak var layoutDelegate: NewGroupMembersBarLayoutDelegate?
+    fileprivate weak var layoutDelegate: NewMembersBarLayoutDelegate?
 
     private var itemAttributesMap = [UICollectionViewLayoutAttributes]()
 
