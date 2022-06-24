@@ -79,7 +79,6 @@ class StoriesViewController: OWSViewController {
                     break
                 default:
                     owsFailDebug("Unexpected story type")
-                    break
                 }
             }
         }
@@ -137,7 +136,6 @@ class StoriesViewController: OWSViewController {
                 break
             default:
                 owsFailDebug("Unexpected story type")
-                break
             }
         }
 

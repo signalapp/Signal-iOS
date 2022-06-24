@@ -609,7 +609,6 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             }
         case .privateStory:
             owsFailDebug("Unexpectedly attempted to show unblock UI for story thread")
-            break
         }
     }
 
