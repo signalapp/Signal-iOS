@@ -12,8 +12,6 @@ class BadgeGiftingChooseRecipientViewController: OWSViewController {
 
     private let recipientPicker = RecipientPickerViewController()
 
-    private lazy var threadFinder: AnyThreadFinder = AnyThreadFinder()
-
     public init(badge: ProfileBadge, price: UInt, currencyCode: Currency.Code) {
         self.badge = badge
         self.price = price
