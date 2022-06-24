@@ -118,30 +118,12 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
     return [content contentDescription];
 }
 
-- (NSString *)descriptionForCallMessage:(SSKProtoCallMessage *)callMessage
-{
-    return [callMessage contentDescription];
-}
-
-- (NSString *)descriptionForCallMessageOpaqueUrgency:(SSKProtoCallMessageOpaqueUrgency)urgency
-{
-    return [SSKProtoCallMessageOpaque urgencyDescription:urgency];
-}
-
 /**
  * We don't want to just log `dataMessage.description` because we'd potentially log message contents
  */
 - (NSString *)descriptionForDataMessage:(SSKProtoDataMessage *)dataMessage
 {
     return [dataMessage contentDescription];
-}
-
-/**
- * We don't want to just log `syncMessage.description` because we'd potentially log message contents in sent transcripts
- */
-- (NSString *)descriptionForSyncMessage:(SSKProtoSyncMessage *)syncMessage
-{
-    return [syncMessage contentDescription];
 }
 
 @end

@@ -547,13 +547,6 @@ extension SSKProtoSyncMessage {
     }
 }
 
-extension SSKProtoCallMessageOpaque {
-    @objc
-    static func urgencyDescription(_ value: SSKProtoCallMessageOpaqueUrgency) -> String {
-        return value.contentDescription
-    }
-}
-
 @objc
 class MessageManagerRequest: NSObject {
     @objc let envelope: SSKProtoEnvelope
