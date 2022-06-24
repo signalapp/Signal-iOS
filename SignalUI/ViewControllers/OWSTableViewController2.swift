@@ -16,12 +16,12 @@ open class OWSTableViewController2: OWSViewController {
 
     @objc
     public var contents: OWSTableContents {
+        get {
+            _contents
+        }
         set {
             _contents = newValue
             applyContents()
-        }
-        get {
-            _contents
         }
     }
 

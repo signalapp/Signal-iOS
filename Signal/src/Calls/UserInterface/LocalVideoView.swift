@@ -8,8 +8,8 @@ class LocalVideoView: UIView {
     private let localVideoCapturePreview = RTCCameraPreviewView()
 
     var captureSession: AVCaptureSession? {
-        set { localVideoCapturePreview.captureSession = newValue }
         get { localVideoCapturePreview.captureSession }
+        set { localVideoCapturePreview.captureSession = newValue }
     }
 
     override var contentMode: UIView.ContentMode {
@@ -79,22 +79,6 @@ extension RTCCameraPreviewView {
     }
 
     open override var contentMode: UIView.ContentMode {
-        set {
-            guard let previewLayer = previewLayer else {
-                return owsFailDebug("missing preview layer")
-            }
-
-            switch newValue {
-            case .scaleAspectFill:
-                previewLayer.videoGravity = .resizeAspectFill
-            case .scaleAspectFit:
-                previewLayer.videoGravity = .resizeAspect
-            case .scaleToFill:
-                previewLayer.videoGravity = .resize
-            default:
-                owsFailDebug("Unexpected contentMode")
-            }
-        }
         get {
             guard let previewLayer = previewLayer else {
                 owsFailDebug("missing preview layer")
@@ -111,6 +95,22 @@ extension RTCCameraPreviewView {
             default:
                 owsFailDebug("Unexpected contentMode")
                 return .scaleToFill
+            }
+        }
+        set {
+            guard let previewLayer = previewLayer else {
+                return owsFailDebug("missing preview layer")
+            }
+
+            switch newValue {
+            case .scaleAspectFill:
+                previewLayer.videoGravity = .resizeAspectFill
+            case .scaleAspectFit:
+                previewLayer.videoGravity = .resizeAspect
+            case .scaleToFill:
+                previewLayer.videoGravity = .resize
+            default:
+                owsFailDebug("Unexpected contentMode")
             }
         }
     }

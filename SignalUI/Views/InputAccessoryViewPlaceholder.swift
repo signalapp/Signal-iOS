@@ -77,6 +77,9 @@ public class InputAccessoryViewPlaceholder: UIView {
     /// dismissals.
     @objc
     public var desiredHeight: CGFloat {
+        get {
+            return heightConstraint.constant
+        }
         set {
             guard newValue != desiredHeight else { return }
             heightConstraint.constant = newValue
@@ -85,9 +88,6 @@ public class InputAccessoryViewPlaceholder: UIView {
                 self.layoutIfNeeded()
                 superview?.layoutIfNeeded()
             }
-        }
-        get {
-            return heightConstraint.constant
         }
     }
 

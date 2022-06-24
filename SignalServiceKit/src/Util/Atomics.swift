@@ -353,8 +353,8 @@ public class AtomicDictionary<Key: Hashable, Value> {
     }
 
     public subscript(_ key: Key) -> Value? {
-        set { lock.perform { self.values[key] = newValue } }
         get { lock.perform { self.values[key] } }
+        set { lock.perform { self.values[key] = newValue } }
     }
 
     public func pop(_ key: Key) -> Value? {

@@ -803,18 +803,6 @@ private class QRCodeScanPreviewView: UIView {
     }
 
     override var contentMode: UIView.ContentMode {
-        set {
-            switch newValue {
-            case .scaleAspectFill:
-                previewLayer.videoGravity = .resizeAspectFill
-            case .scaleAspectFit:
-                previewLayer.videoGravity = .resizeAspect
-            case .scaleToFill:
-                previewLayer.videoGravity = .resize
-            default:
-                owsFailDebug("Unexpected contentMode")
-            }
-        }
         get {
             switch previewLayer.videoGravity {
             case .resizeAspectFill:
@@ -826,6 +814,18 @@ private class QRCodeScanPreviewView: UIView {
             default:
                 owsFailDebug("Unexpected contentMode")
                 return .scaleToFill
+            }
+        }
+        set {
+            switch newValue {
+            case .scaleAspectFill:
+                previewLayer.videoGravity = .resizeAspectFill
+            case .scaleAspectFit:
+                previewLayer.videoGravity = .resizeAspect
+            case .scaleToFill:
+                previewLayer.videoGravity = .resize
+            default:
+                owsFailDebug("Unexpected contentMode")
             }
         }
     }

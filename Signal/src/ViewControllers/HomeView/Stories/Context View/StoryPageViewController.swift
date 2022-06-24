@@ -12,10 +12,10 @@ protocol StoryPageViewControllerDataSource: AnyObject {
 
 class StoryPageViewController: UIPageViewController {
     var currentContext: StoryContext {
+        get { currentContextViewController.context }
         set {
             setViewControllers([StoryContextViewController(context: newValue, delegate: self)], direction: .forward, animated: false)
         }
-        get { currentContextViewController.context }
     }
     var currentContextViewController: StoryContextViewController {
         viewControllers!.first as! StoryContextViewController

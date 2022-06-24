@@ -322,11 +322,11 @@ public class ActionSheetAction: NSObject {
     }
 
     public var trailingIcon: ThemeIcon? {
-        set {
-            button.trailingIcon = newValue
-        }
         get {
             return button.trailingIcon
+        }
+        set {
+            button.trailingIcon = newValue
         }
     }
 
@@ -343,11 +343,11 @@ public class ActionSheetAction: NSObject {
     }
 
     public var leadingIcon: ThemeIcon? {
-        set {
-            button.leadingIcon = newValue
-        }
         get {
             return button.leadingIcon
+        }
+        set {
+            button.leadingIcon = newValue
         }
     }
 

@@ -83,8 +83,8 @@ class DeviceTransferService: NSObject {
     private let serialQueue = DispatchQueue(label: "DeviceTransferService")
     private var _transferState: TransferState = .idle
     var transferState: TransferState {
-        set { serialQueue.sync { _transferState = newValue } }
         get { serialQueue.sync { _transferState } }
+        set { serialQueue.sync { _transferState = newValue } }
     }
 
     private(set) var identity: SecIdentity?

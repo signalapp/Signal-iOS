@@ -252,6 +252,7 @@ extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPage
     }
 
     fileprivate var currentPage: WallpaperPage? {
+        get { pageViewController.viewControllers?.first as? WallpaperPage }
         set {
             let viewControllers: [UIViewController]
             if let newValue = newValue {
@@ -261,7 +262,6 @@ extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPage
             }
             pageViewController.setViewControllers(viewControllers, direction: .forward, animated: false)
         }
-        get { pageViewController.viewControllers?.first as? WallpaperPage }
     }
 
     func wallpaper(after: Wallpaper) -> Wallpaper {

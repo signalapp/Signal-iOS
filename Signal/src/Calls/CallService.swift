@@ -46,6 +46,11 @@ public final class CallService: LightweightCallManager {
     private var _currentCall: SignalCall?
     @objc
     public private(set) var currentCall: SignalCall? {
+        get {
+            _currentCallLock.withLock {
+                _currentCall
+            }
+        }
         set {
             AssertIsOnMainThread()
 
@@ -92,11 +97,6 @@ public final class CallService: LightweightCallManager {
                 for observer in observers.elements {
                     observer.didUpdateCall(from: oldValue, to: newValue)
                 }
-            }
-        }
-        get {
-            _currentCallLock.withLock {
-                _currentCall
             }
         }
     }

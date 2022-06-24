@@ -17,12 +17,12 @@ public class OWSFlatButton: UIView {
 
     @objc
     public var cornerRadius: CGFloat {
+        get {
+            button.layer.cornerRadius
+        }
         set {
             button.layer.cornerRadius = newValue
             button.clipsToBounds = newValue > 0
-        }
-        get {
-            button.layer.cornerRadius
         }
     }
 
@@ -43,20 +43,20 @@ public class OWSFlatButton: UIView {
     }
 
     public var titleEdgeInsets: UIEdgeInsets {
-        set {
-            button.titleEdgeInsets = newValue
-        }
         get {
             return button.titleEdgeInsets
+        }
+        set {
+            button.titleEdgeInsets = newValue
         }
     }
 
     public var contentEdgeInsets: UIEdgeInsets {
-        set {
-            button.contentEdgeInsets = newValue
-        }
         get {
             return button.contentEdgeInsets
+        }
+        set {
+            button.contentEdgeInsets = newValue
         }
     }
 

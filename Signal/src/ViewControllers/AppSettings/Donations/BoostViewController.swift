@@ -746,11 +746,11 @@ private class CustomValueTextField: UIView {
     }
 
     var text: String? {
+        get { textField.text }
         set {
             textField.text = newValue
             updateVisibility()
         }
-        get { textField.text }
     }
 
     var decimalNumber: NSDecimalNumber? {
@@ -760,26 +760,26 @@ private class CustomValueTextField: UIView {
     }
 
     var font: UIFont? {
+        get { textField.font }
         set {
             textField.font = newValue
             placeholderLabel.font = newValue
             symbolLabel.font = newValue
         }
-        get { textField.font }
     }
 
     var textColor: UIColor? {
+        get { textField.textColor }
         set {
             textField.textColor = newValue
             placeholderLabel.textColor = newValue
             symbolLabel.textColor = newValue
         }
-        get { textField.textColor }
     }
 
     var placeholder: String? {
-        set { placeholderLabel.text = newValue }
         get { placeholderLabel.text }
+        set { placeholderLabel.text = newValue }
     }
 
     private lazy var symbol: DonationUtilities.Symbol = .currencyCode
