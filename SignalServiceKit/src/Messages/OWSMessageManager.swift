@@ -453,6 +453,12 @@ extension SSKProtoSyncMessage {
         if sent != nil {
             return "SentTranscript"
         }
+        if contacts != nil {
+            return "Contacts"
+        }
+        if groups != nil {
+            return "Groups"
+        }
         if let request = self.request {
             if !request.hasType {
                 return "Unknown sync request."
@@ -475,17 +481,17 @@ extension SSKProtoSyncMessage {
                 return "UnknownRequest"
             }
         }
+        if !read.isEmpty {
+            return "ReadReceipt"
+        }
         if blocked != nil {
             return "Blocked"
         }
-        if pniIdentity != nil {
-            return "PniIdentity"
-        }
-        if read.count > 0 {
-            return "ReadReceipt"
-        }
         if let verified = verified {
             return "Verification for: \(String(describing: verified.destinationAddress))"
+        }
+        if configuration != nil {
+            return "Configuration"
         }
         if !stickerPackOperation.isEmpty {
             var operationTypes = [String]()
@@ -505,6 +511,9 @@ extension SSKProtoSyncMessage {
             }
             return "StickerPackOperation: \(operationTypes.joined(separator: ", "))"
         }
+        if viewOnceOpen != nil {
+            return "ViewOnceOpen"
+        }
         if let fetchLatest = fetchLatest {
             switch fetchLatest.unwrappedType {
             case .unknown:
@@ -516,10 +525,24 @@ extension SSKProtoSyncMessage {
             case .subscriptionStatus:
                 return "FetchLatest_SubscriptionStatus"
             }
-        } else {
-            owsFailDebug("Unknown sync message type")
-            return "Unknown"
         }
+        if keys != nil {
+            return "Keys"
+        }
+        if messageRequestResponse != nil {
+            return "MessageRequestResponse"
+        }
+        if outgoingPayment != nil {
+            return "OutgoingPayment"
+        }
+        if !viewed.isEmpty {
+            return "ViewedReceipt"
+        }
+        if pniIdentity != nil {
+            return "PniIdentity"
+        }
+        owsFailDebug("Unknown sync message type")
+        return "Unknown"
 
     }
 }
