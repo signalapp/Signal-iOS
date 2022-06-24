@@ -1017,7 +1017,7 @@ class StorageServiceOperation: OWSOperation {
             }
 
             let localAccountIdentifiers = newOrUpdatedItems.filter { $0.type == .account }
-            assert(localAccountIdentifiers.count == 1)
+            assert(localAccountIdentifiers.count <= 1)
 
             guard let newLocalAccountIdentifier = localAccountIdentifiers.first else {
                 owsFailDebug("remote manifest is missing local account, mark it for update")
