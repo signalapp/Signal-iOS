@@ -110,6 +110,8 @@ struct StorageServiceProtos_ManifestRecord {
   /// @required
   var version: UInt64 = 0
 
+  var sourceDevice: UInt32 = 0
+
   var keys: [StorageServiceProtos_ManifestRecord.Key] = []
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -889,6 +891,7 @@ extension StorageServiceProtos_ManifestRecord: SwiftProtobuf.Message, SwiftProto
   static let protoMessageName: String = _protobuf_package + ".ManifestRecord"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "version"),
+    3: .same(proto: "sourceDevice"),
     2: .same(proto: "keys"),
   ]
 
@@ -900,6 +903,7 @@ extension StorageServiceProtos_ManifestRecord: SwiftProtobuf.Message, SwiftProto
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularUInt64Field(value: &self.version) }()
       case 2: try { try decoder.decodeRepeatedMessageField(value: &self.keys) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.sourceDevice) }()
       default: break
       }
     }
@@ -912,11 +916,15 @@ extension StorageServiceProtos_ManifestRecord: SwiftProtobuf.Message, SwiftProto
     if !self.keys.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.keys, fieldNumber: 2)
     }
+    if self.sourceDevice != 0 {
+      try visitor.visitSingularUInt32Field(value: self.sourceDevice, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: StorageServiceProtos_ManifestRecord, rhs: StorageServiceProtos_ManifestRecord) -> Bool {
     if lhs.version != rhs.version {return false}
+    if lhs.sourceDevice != rhs.sourceDevice {return false}
     if lhs.keys != rhs.keys {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

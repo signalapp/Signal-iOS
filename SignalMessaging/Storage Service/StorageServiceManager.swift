@@ -784,6 +784,7 @@ class StorageServiceOperation: OWSOperation {
         let identifiers = StorageService.StorageIdentifier.deduplicate(identifiersParam)
         var manifestBuilder = StorageServiceProtoManifestRecord.builder(version: manifestVersion)
         manifestBuilder.setKeys(try identifiers.map { try $0.buildRecord() })
+        manifestBuilder.setSourceDevice(tsAccountManager.storedDeviceId())
         return try manifestBuilder.build()
     }
 
@@ -1180,7 +1181,7 @@ class StorageServiceOperation: OWSOperation {
 
                     remainingItems -= batch.count
 
-                    Logger.info("Successfully merged \(batch.count) items from remote manifest version: \(manifest.version). \(remainingItems) items remaining to merge.")
+                    Logger.info("Successfully merged \(batch.count) items from remote manifest version: \(manifest.version) with source device \(manifest.hasSourceDevice ? String(manifest.sourceDevice) : "(unspecified)"). \(remainingItems) items remaining to merge.")
 
                     // Saving here records the new storage identifiers with the *old* manifest version. This allows us to
                     // incrementally work through changes in a manifest, even if we fail part way through the update we'll
@@ -1561,8 +1562,8 @@ class StorageServiceOperation: OWSOperation {
         var manifestVersion: UInt64 = 0
         private var _refetchLatestManifest: Bool?
         var refetchLatestManifest: Bool {
-            set { _refetchLatestManifest = newValue }
             get { _refetchLatestManifest ?? false }
+            set { _refetchLatestManifest = newValue }
         }
 
         var consecutiveConflicts: Int = 0
@@ -1574,24 +1575,24 @@ class StorageServiceOperation: OWSOperation {
         var accountIdToIdentifierMap: [AccountId: StorageService.StorageIdentifier] = [:]
         private var _accountIdToRecordWithUnknownFields: [AccountId: StorageServiceProtoContactRecord]?
         var accountIdToRecordWithUnknownFields: [AccountId: StorageServiceProtoContactRecord] {
-            set { _accountIdToRecordWithUnknownFields = newValue }
             get { _accountIdToRecordWithUnknownFields ?? [:] }
+            set { _accountIdToRecordWithUnknownFields = newValue }
         }
 
         @BidirectionalLegacyDecoding
         var groupV1IdToIdentifierMap: [Data: StorageService.StorageIdentifier] = [:]
         private var _groupV1IdToRecordWithUnknownFields: [Data: StorageServiceProtoGroupV1Record]?
         var groupV1IdToRecordWithUnknownFields: [Data: StorageServiceProtoGroupV1Record] {
-            set { _groupV1IdToRecordWithUnknownFields = newValue }
             get { _groupV1IdToRecordWithUnknownFields ?? [:] }
+            set { _groupV1IdToRecordWithUnknownFields = newValue }
         }
 
         @BidirectionalLegacyDecoding
         var groupV2MasterKeyToIdentifierMap: [Data: StorageService.StorageIdentifier] = [:]
         private var _groupV2MasterKeyToRecordWithUnknownFields: [Data: StorageServiceProtoGroupV2Record]?
         var groupV2MasterKeyToRecordWithUnknownFields: [Data: StorageServiceProtoGroupV2Record] {
-            set { _groupV2MasterKeyToRecordWithUnknownFields = newValue }
             get { _groupV2MasterKeyToRecordWithUnknownFields ?? [:] }
+            set { _groupV2MasterKeyToRecordWithUnknownFields = newValue }
         }
 
         var unknownIdentifiersTypeMap: [StorageServiceProtoManifestRecordKeyType: [StorageService.StorageIdentifier]] = [:]

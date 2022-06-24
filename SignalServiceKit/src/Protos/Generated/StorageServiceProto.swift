@@ -887,6 +887,13 @@ public struct StorageServiceProtoManifestRecord: Codable, CustomDebugStringConve
 
     public let keys: [StorageServiceProtoManifestRecordKey]
 
+    public var sourceDevice: UInt32 {
+        return proto.sourceDevice
+    }
+    public var hasSourceDevice: Bool {
+        return true
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -950,6 +957,9 @@ extension StorageServiceProtoManifestRecord {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> StorageServiceProtoManifestRecordBuilder {
         var builder = StorageServiceProtoManifestRecordBuilder(version: version)
+        if hasSourceDevice {
+            builder.setSourceDevice(sourceDevice)
+        }
         builder.setKeys(keys)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -971,6 +981,10 @@ public struct StorageServiceProtoManifestRecordBuilder {
 
     public mutating func setVersion(_ valueParam: UInt64) {
         proto.version = valueParam
+    }
+
+    public mutating func setSourceDevice(_ valueParam: UInt32) {
+        proto.sourceDevice = valueParam
     }
 
     public mutating func addKeys(_ valueParam: StorageServiceProtoManifestRecordKey) {

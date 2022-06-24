@@ -55,6 +55,7 @@ message ManifestRecord {
 
   // @required
            uint64 version = 1;
+           uint32 sourceDevice = 3;
   repeated Key    keys    = 2;
 }
 
