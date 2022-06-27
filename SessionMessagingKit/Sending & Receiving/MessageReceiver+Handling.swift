@@ -403,7 +403,9 @@ extension MessageReceiver {
             case .none:
                 break
             }
-            SSKEnvironment.shared.notificationsManager?.notifyUser(forReaction: reactMessage, in: thread, transaction: transaction)
+            if message.sender != getUserHexEncodedPublicKey() {
+                SSKEnvironment.shared.notificationsManager?.notifyUser(forReaction: reactMessage, in: thread, transaction: transaction)
+            }
             return ""
         }
         // Parse quote if needed
