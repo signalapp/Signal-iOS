@@ -1,3 +1,5 @@
+import CoreGraphics
+import UIKit
 
 final class ContextMenuVC : UIViewController {
     private let snapshot: UIView
@@ -86,10 +88,6 @@ final class ContextMenuVC : UIViewController {
         snapshot.layer.shadowOpacity = 0.4
         snapshot.layer.shadowRadius = 4
         view.addSubview(snapshot)
-        snapshot.pin(.left, to: .left, of: view, withInset: frame.origin.x)
-        snapshot.pin(.top, to: .top, of: view, withInset: frame.origin.y)
-        snapshot.set(.width, to: frame.width)
-        snapshot.set(.height, to: frame.height)
         // Timestamp
         view.addSubview(timestampLabel)
         timestampLabel.center(.vertical, in: snapshot)
@@ -142,14 +140,13 @@ final class ContextMenuVC : UIViewController {
         // Constrains
         let menuHeight = CGFloat(actionViews.count) * ContextMenuVC.actionViewHeight
         let spacing = Values.smallSpacing
-        let margin = max(UIApplication.shared.keyWindow!.safeAreaInsets.bottom, Values.mediumSpacing)
-        if frame.maxY + spacing + menuHeight > UIScreen.main.bounds.height - margin {
-            emojiBar.pin(.bottom, to: .top, of: snapshot, withInset: -spacing)
-            menuView.pin(.bottom, to: .top, of: emojiBar, withInset: -spacing)
-        } else {
-            emojiBar.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
-            menuView.pin(.top, to: .bottom, of: emojiBar, withInset: spacing)
-        }
+        let frame = calculateFrame(menuHeight: menuHeight, spacing: spacing)
+        snapshot.pin(.left, to: .left, of: view, withInset: frame.origin.x)
+        snapshot.pin(.top, to: .top, of: view, withInset: frame.origin.y)
+        snapshot.set(.width, to: frame.width)
+        snapshot.set(.height, to: frame.height)
+        emojiBar.pin(.bottom, to: .top, of: snapshot, withInset: -spacing)
+        menuView.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
         switch viewItem.interaction.interactionType() {
         case .outgoingMessage:
             menuView.pin(.right, to: .right, of: snapshot)
@@ -170,6 +167,26 @@ final class ContextMenuVC : UIViewController {
             self.blurView.effect = UIBlurEffect(style: .regular)
             self.menuView.alpha = 1
         }
+    }
+    
+    func calculateFrame(menuHeight: CGFloat, spacing: CGFloat) -> CGRect {
+        var finalFrame = frame
+        let ratio = frame.width / frame.height
+        let topMargin = max(UIApplication.shared.keyWindow!.safeAreaInsets.top, Values.mediumSpacing)
+        let bottomMargin = max(UIApplication.shared.keyWindow!.safeAreaInsets.bottom, Values.mediumSpacing)
+        let diffY = finalFrame.height + menuHeight + Self.actionViewHeight + 2 * spacing + topMargin + bottomMargin - UIScreen.main.bounds.height
+        if diffY > 0 {
+            finalFrame.size.height -= diffY
+            let newWidth = ratio * finalFrame.size.height
+            if viewItem.interaction.interactionType() == .outgoingMessage {
+                finalFrame.origin.x += finalFrame.size.width - newWidth
+            }
+            finalFrame.size.width = newWidth
+            finalFrame.origin.y = UIScreen.main.bounds.height - finalFrame.size.height - menuHeight - bottomMargin - spacing
+        } else {
+            finalFrame.origin.y = (UIScreen.main.bounds.height - finalFrame.size.height) / 2
+        }
+        return finalFrame
     }
 
     // MARK: Updating
