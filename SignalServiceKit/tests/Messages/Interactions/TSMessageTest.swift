@@ -77,6 +77,22 @@ class TSMessageTest: SSKBaseTestSwift {
 
         do {
             let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread)
+            builder.timestamp = now + kMinuteInMs
+            let message = builder.buildWithSneakyTransaction()
+
+            XCTAssertTrue(message.canBeRemotelyDeleted)
+        }
+
+        do {
+            let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread)
+            builder.timestamp = now + (4 * kHourInMs)
+            let message = builder.buildWithSneakyTransaction()
+
+            XCTAssertTrue(message.canBeRemotelyDeleted)
+        }
+
+        do {
+            let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread)
             builder.timestamp = now - (4 * kHourInMs)
             let message = builder.buildWithSneakyTransaction()
 
