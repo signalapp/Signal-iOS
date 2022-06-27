@@ -135,10 +135,6 @@ public class ReactionManager: NSObject {
             owsFailDebug("Received invalid emoji")
             return .invalidReaction
         }
-        if DebugFlags.internalLogging {
-            let base64 = emoji.data(using: .utf8)?.base64EncodedString() ?? "?"
-            Logger.info("Processing reaction: \(emoji), \(base64), message.timestamp: \(reaction.timestamp)")
-        }
         guard emoji.isSingleEmoji else {
             owsFailDebug("Received invalid emoji")
             return .invalidReaction
