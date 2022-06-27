@@ -462,7 +462,24 @@ public extension Interaction {
         }
         
         // If we aren't including older interactions then update and save the current one
-        guard includingOlder else {
+        struct InteractionReadInfo: Decodable, FetchableRecord {
+            let timestampMs: Int64
+            let wasRead: Bool
+        }
+        
+        // Since there is no guarantee on the order messages are inserted into the database
+        // fetch the timestamp for the interaction and set everything before that as read
+        let maybeInteractionInfo: InteractionReadInfo? = try Interaction
+            .select(.timestampMs, .wasRead)
+            .filter(id: interactionId)
+            .asRequest(of: InteractionReadInfo.self)
+            .fetchOne(db)
+        
+        guard includingOlder, let interactionInfo: InteractionReadInfo = maybeInteractionInfo else {
+            // Only mark as read and trigger the subsequent jobs if the interaction is
+            // actually not read (no point updating and triggering db changes otherwise)
+            guard maybeInteractionInfo?.wasRead == false else { return }
+            
             _ = try Interaction
                 .filter(id: interactionId)
                 .updateAll(db, Columns.wasRead.set(to: true))
@@ -472,9 +489,9 @@ public extension Interaction {
         }
         
         let interactionQuery = Interaction
-            .filter(Columns.threadId == threadId)
-            .filter(Columns.id <= interactionId)
-            .filter(Columns.wasRead == false)
+            .filter(Interaction.Columns.threadId == threadId)
+            .filter(Interaction.Columns.timestampMs <= interactionInfo.timestampMs)
+            .filter(Interaction.Columns.wasRead == false)
             // The `wasRead` flag doesn't apply to `standardOutgoing` or `standardIncomingDeleted`
             .filter(Columns.variant != Variant.standardOutgoing && Columns.variant != Variant.standardIncomingDeleted)
         let interactionIdsToMarkAsRead: [Int64] = try interactionQuery

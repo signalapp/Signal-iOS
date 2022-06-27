@@ -381,6 +381,9 @@ public final class FullConversationCell: UITableViewCell {
     // MARK: - Snippet generation
 
     private func getSnippet(cellViewModel: SessionThreadViewModel) -> NSMutableAttributedString {
+        // If we don't have an interaction then do nothing
+        guard cellViewModel.interactionId != nil else { return NSMutableAttributedString() }
+        
         let result = NSMutableAttributedString()
         
         if Date().timeIntervalSince1970 < (cellViewModel.threadMutedUntilTimestamp ?? 0) {

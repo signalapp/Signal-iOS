@@ -35,8 +35,6 @@ public enum GarbageCollectionJob: JobExecutor {
         }
         
         let timestampNow: TimeInterval = Date().timeIntervalSince1970
-        var attachmentLocalRelativePaths: Set<String> = []
-        var profileAvatarFilenames: Set<String> = []
         
         GRDBStorage.shared.writeAsync(
             updates: { db in
@@ -203,109 +201,127 @@ public enum GarbageCollectionJob: JobExecutor {
                         )
                     """)
                 }
-                
-                /// Orphaned attachment files - attachment files which don't have an associated record in the database
-                if details.typesToCollect.contains(.orphanedAttachmentFiles) {
-                    /// **Note:** Thumbnails are stored in the `NSCachesDirectory` directory which should be automatically manage
-                    /// it's own garbage collection so we can just ignore it according to the various comments in the following stack overflow
-                    /// post, the directory will be cleared during app updates as well as if the system is running low on memory (if the app isn't running)
-                    /// https://stackoverflow.com/questions/6879860/when-are-files-from-nscachesdirectory-removed
-                    attachmentLocalRelativePaths = try Attachment
-                        .select(.localRelativeFilePath)
-                        .filter(Attachment.Columns.localRelativeFilePath != nil)
-                        .asRequest(of: String.self)
-                        .fetchSet(db)
-                }
-                
-                /// Orphaned profile avatar files - profile avatar files which don't have an associated record in the database
-                if details.typesToCollect.contains(.orphanedProfileAvatars) {
-                    profileAvatarFilenames = try Profile
-                        .select(.profilePictureFileName)
-                        .filter(Profile.Columns.profilePictureFileName != nil)
-                        .asRequest(of: String.self)
-                        .fetchSet(db)
-                }
             },
-            completion: { _, result in
-                // If any of the above failed then we don't want to continue (we would end up deleting all files since
-                // neither of the arrays would have been populated correctly)
-                guard case .success = result else {
-                    SNLog("[GarbageCollectionJob] Database queries failed, skipping file cleanup")
-                    return
-                }
-                
-                var deletionErrors: [Error] = []
-                
-                // Orphaned attachment files (actual deletion)
-                if details.typesToCollect.contains(.orphanedAttachmentFiles) {
-                    // Note: Looks like in order to recursively look through files we need to use the
-                    // enumerator method
-                    let fileEnumerator = FileManager.default.enumerator(
-                        at: URL(fileURLWithPath: Attachment.attachmentsFolder),
-                        includingPropertiesForKeys: nil,
-                        options: .skipsHiddenFiles  // Ignore the `.DS_Store` for the simulator
-                    )
-                    
-                    let allAttachmentFilePaths: Set<String> = (fileEnumerator?
-                        .allObjects
-                        .compactMap { Attachment.localRelativeFilePath(from: ($0 as? URL)?.path) })
-                        .defaulting(to: [])
-                        .asSet()
-                    
-                    // Note: Directories will have their own entries in the list, if there is a folder with content
-                    // the file will include the directory in it's path with a forward slash so we can use this to
-                    // distinguish empty directories from ones with content so we don't unintentionally delete a
-                    // directory which contains content to keep as well as delete (directories which end up empty after
-                    // this clean up will be removed during the next run)
-                    let directoryNamesContainingContent: [String] = allAttachmentFilePaths
-                        .filter { path -> Bool in path.contains("/") }
-                        .compactMap { path -> String? in path.components(separatedBy: "/").first }
-                    let orphanedAttachmentFiles: Set<String> = allAttachmentFilePaths
-                        .subtracting(attachmentLocalRelativePaths)
-                        .subtracting(directoryNamesContainingContent)
-                    
-                    orphanedAttachmentFiles.forEach { filepath in
-                        // We don't want a single deletion failure to block deletion of the other files so try
-                        // each one and store the error to be used to determine success/failure of the job
-                        do {
-                            try FileManager.default.removeItem(
-                                atPath: URL(fileURLWithPath: Attachment.attachmentsFolder)
-                                    .appendingPathComponent(filepath)
-                                    .path
-                            )
-                        }
-                        catch { deletionErrors.append(error) }
+            completion: { _, _ in
+                // Dispatch async so we can swap from the write queue to a read one (we are done writing)
+                queue.async {
+                    // Retrieve a list of all valid attachmnet and avatar file paths
+                    struct FileInfo {
+                        let attachmentLocalRelativePaths: Set<String>
+                        let profileAvatarFilenames: Set<String>
                     }
-                }
-                
-                // Orphaned profile avatar files (actual deletion)
-                if details.typesToCollect.contains(.orphanedProfileAvatars) {
-                    let allAvatarProfileFilenames: Set<String> = (try? FileManager.default
-                        .contentsOfDirectory(atPath: ProfileManager.sharedDataProfileAvatarsDirPath))
-                        .defaulting(to: [])
-                        .asSet()
-                    let orphanedAvatarFiles: Set<String> = allAvatarProfileFilenames
-                        .subtracting(profileAvatarFilenames)
                     
-                    orphanedAvatarFiles.forEach { filename in
-                        // We don't want a single deletion failure to block deletion of the other files so try
-                        // each one and store the error to be used to determine success/failure of the job
-                        do {
-                            try FileManager.default.removeItem(
-                                atPath: ProfileManager.profileAvatarFilepath(filename: filename)
-                            )
+                    let maybeFileInfo: FileInfo? = GRDBStorage.shared.read { db -> FileInfo in
+                        var attachmentLocalRelativePaths: Set<String> = []
+                        var profileAvatarFilenames: Set<String> = []
+                        
+                        /// Orphaned attachment files - attachment files which don't have an associated record in the database
+                        if details.typesToCollect.contains(.orphanedAttachmentFiles) {
+                            /// **Note:** Thumbnails are stored in the `NSCachesDirectory` directory which should be automatically manage
+                            /// it's own garbage collection so we can just ignore it according to the various comments in the following stack overflow
+                            /// post, the directory will be cleared during app updates as well as if the system is running low on memory (if the app isn't running)
+                            /// https://stackoverflow.com/questions/6879860/when-are-files-from-nscachesdirectory-removed
+                            attachmentLocalRelativePaths = try Attachment
+                                .select(.localRelativeFilePath)
+                                .filter(Attachment.Columns.localRelativeFilePath != nil)
+                                .asRequest(of: String.self)
+                                .fetchSet(db)
                         }
-                        catch { deletionErrors.append(error) }
+
+                        /// Orphaned profile avatar files - profile avatar files which don't have an associated record in the database
+                        if details.typesToCollect.contains(.orphanedProfileAvatars) {
+                            profileAvatarFilenames = try Profile
+                                .select(.profilePictureFileName)
+                                .filter(Profile.Columns.profilePictureFileName != nil)
+                                .asRequest(of: String.self)
+                                .fetchSet(db)
+                        }
+                        
+                        return FileInfo(
+                            attachmentLocalRelativePaths: attachmentLocalRelativePaths,
+                            profileAvatarFilenames: profileAvatarFilenames
+                        )
                     }
+                    
+                    // If we couldn't get the file lists then fail (invalid state and don't want to delete all attachment/profile files)
+                    guard let fileInfo: FileInfo = maybeFileInfo else {
+                        failure(job, StorageError.generic, false)
+                        return
+                    }
+                        
+                    var deletionErrors: [Error] = []
+                    
+                    // Orphaned attachment files (actual deletion)
+                    if details.typesToCollect.contains(.orphanedAttachmentFiles) {
+                        // Note: Looks like in order to recursively look through files we need to use the
+                        // enumerator method
+                        let fileEnumerator = FileManager.default.enumerator(
+                            at: URL(fileURLWithPath: Attachment.attachmentsFolder),
+                            includingPropertiesForKeys: nil,
+                            options: .skipsHiddenFiles  // Ignore the `.DS_Store` for the simulator
+                        )
+                        
+                        let allAttachmentFilePaths: Set<String> = (fileEnumerator?
+                            .allObjects
+                            .compactMap { Attachment.localRelativeFilePath(from: ($0 as? URL)?.path) })
+                            .defaulting(to: [])
+                            .asSet()
+                        
+                        // Note: Directories will have their own entries in the list, if there is a folder with content
+                        // the file will include the directory in it's path with a forward slash so we can use this to
+                        // distinguish empty directories from ones with content so we don't unintentionally delete a
+                        // directory which contains content to keep as well as delete (directories which end up empty after
+                        // this clean up will be removed during the next run)
+                        let directoryNamesContainingContent: [String] = allAttachmentFilePaths
+                            .filter { path -> Bool in path.contains("/") }
+                            .compactMap { path -> String? in path.components(separatedBy: "/").first }
+                        let orphanedAttachmentFiles: Set<String> = allAttachmentFilePaths
+                            .subtracting(fileInfo.attachmentLocalRelativePaths)
+                            .subtracting(directoryNamesContainingContent)
+                        
+                        orphanedAttachmentFiles.forEach { filepath in
+                            // We don't want a single deletion failure to block deletion of the other files so try
+                            // each one and store the error to be used to determine success/failure of the job
+                            do {
+                                try FileManager.default.removeItem(
+                                    atPath: URL(fileURLWithPath: Attachment.attachmentsFolder)
+                                        .appendingPathComponent(filepath)
+                                        .path
+                                )
+                            }
+                            catch { deletionErrors.append(error) }
+                        }
+                    }
+                    
+                    // Orphaned profile avatar files (actual deletion)
+                    if details.typesToCollect.contains(.orphanedProfileAvatars) {
+                        let allAvatarProfileFilenames: Set<String> = (try? FileManager.default
+                            .contentsOfDirectory(atPath: ProfileManager.sharedDataProfileAvatarsDirPath))
+                            .defaulting(to: [])
+                            .asSet()
+                        let orphanedAvatarFiles: Set<String> = allAvatarProfileFilenames
+                            .subtracting(fileInfo.profileAvatarFilenames)
+                        
+                        orphanedAvatarFiles.forEach { filename in
+                            // We don't want a single deletion failure to block deletion of the other files so try
+                            // each one and store the error to be used to determine success/failure of the job
+                            do {
+                                try FileManager.default.removeItem(
+                                    atPath: ProfileManager.profileAvatarFilepath(filename: filename)
+                                )
+                            }
+                            catch { deletionErrors.append(error) }
+                        }
+                    }
+                    
+                    // Report a single file deletion as a job failure (even if other content was successfully removed)
+                    guard deletionErrors.isEmpty else {
+                        failure(job, (deletionErrors.first ?? StorageError.generic), false)
+                        return
+                    }
+                    
+                    success(job, false)
                 }
-                
-                // Report a single file deletion as a job failure (even if other content was successfully removed)
-                guard deletionErrors.isEmpty else {
-                    failure(job, (deletionErrors.first ?? StorageError.generic), false)
-                    return
-                }
-                
-                success(job, false)
             }
         )
     }

@@ -500,13 +500,13 @@ public extension SessionThreadViewModel {
     static let homeOrderSQL: SQL = {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         
-        return SQL("\(thread[.isPinned]) DESC, IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), \(thread[.creationDateTimestamp])) DESC")
+        return SQL("\(thread[.isPinned]) DESC, IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), (\(thread[.creationDateTimestamp]) * 1000)) DESC")
     }()
     
     static let messageRequetsOrderSQL: SQL = {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         
-        return SQL("IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), \(thread[.creationDateTimestamp])) DESC")
+        return SQL("IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), (\(thread[.creationDateTimestamp]) * 1000)) DESC")
     }()
 }
 
@@ -1388,7 +1388,7 @@ public extension SessionThreadViewModel {
             )
         
             GROUP BY \(thread[.id])
-            ORDER BY IFNULL(\(interaction[.timestampMs]), \(thread[.creationDateTimestamp])) DESC
+            ORDER BY IFNULL(\(interaction[.timestampMs]), (\(thread[.creationDateTimestamp]) * 1000)) DESC
         """
         
         return request.adapted { db in

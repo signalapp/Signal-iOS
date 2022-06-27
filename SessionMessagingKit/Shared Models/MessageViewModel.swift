@@ -101,6 +101,8 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     public let authorName: String
 
     /// This value will be used to populate the author label, if it's null then the label will be hidden
+    ///
+    /// **Note:** This will only be populated for incoming messages
     public let senderName: String?
 
     /// A flag indicating whether the profile view should be displayed
@@ -328,6 +330,11 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
             senderName: {
                 // Only show for group threads
                 guard self.threadVariant == .openGroup || self.threadVariant == .closedGroup else {
+                    return nil
+                }
+                
+                // Only show for incoming messages
+                guard self.variant == .standardIncoming || self.variant == .standardIncomingDeleted else {
                     return nil
                 }
                     

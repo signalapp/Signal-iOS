@@ -169,6 +169,7 @@ public final class OpenGroupManager: NSObject {
         // Optionally try to insert a new version of the OpenGroup (it will fail if there is already an
         // inactive one but that won't matter as we then activate it
         _ = try? SessionThread.fetchOrCreate(db, id: threadId, variant: .openGroup)
+        _ = try? SessionThread.filter(id: threadId).updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
         
         if (try? OpenGroup.exists(db, id: threadId)) == false {
             try? OpenGroup
