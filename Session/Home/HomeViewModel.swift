@@ -19,7 +19,7 @@ public class HomeViewModel {
     
     // MARK: - Variables
     
-    public static let pageSize: Int = 14
+    public static let pageSize: Int = 15
     
     public struct State: Equatable {
         let showViewedSeedBanner: Bool

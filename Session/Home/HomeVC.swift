@@ -15,6 +15,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     private var hasLoadedInitialStateData: Bool = false
     private var hasLoadedInitialThreadData: Bool = false
     private var isLoadingMore: Bool = false
+    private var isAutoLoadingNextPage: Bool = false
     
     // MARK: - Intialization
     
@@ -319,6 +320,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         CATransaction.setCompletionBlock { [weak self] in
             // Complete page loading
             self?.isLoadingMore = false
+            self?.autoLoadNextPageIfNeeded()
         }
         
         // Reload the table content (animate changes after the first load)
@@ -328,7 +330,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
             insertSectionsAnimation: .none,
             reloadSectionsAnimation: .none,
             deleteRowsAnimation: .bottom,
-            insertRowsAnimation: .top,
+            insertRowsAnimation: .none,
             reloadRowsAnimation: .none,
             interrupt: { $0.changeCount > 100 }    // Prevent too many changes from causing performance issues
         ) { [weak self] updatedData in
@@ -336,6 +338,36 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         }
         
         CATransaction.commit()
+    }
+    
+    private func autoLoadNextPageIfNeeded() {
+        guard !self.isAutoLoadingNextPage && !self.isLoadingMore else { return }
+        
+        self.isAutoLoadingNextPage = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + PagedData.autoLoadNextPageDelay) { [weak self] in
+            self?.isAutoLoadingNextPage = false
+            
+            // Note: We sort the headers as we want to prioritise loading newer pages over older ones
+            let sections: [(HomeViewModel.Section, CGRect)] = (self?.viewModel.threadData
+                .enumerated()
+                .map { index, section in (section.model, (self?.tableView.rectForHeader(inSection: index) ?? .zero)) })
+                .defaulting(to: [])
+            let shouldLoadMore: Bool = sections
+                .contains { section, headerRect in
+                    section == .loadMore &&
+                    headerRect != .zero &&
+                    (self?.tableView.bounds.contains(headerRect) == true)
+                }
+            
+            guard shouldLoadMore else { return }
+            
+            self?.isLoadingMore = true
+            
+            DispatchQueue.global(qos: .default).async { [weak self] in
+                self?.viewModel.pagedDataObserver?.load(.pageAfter)
+            }
+        }
     }
     
     private func updateNavBarButtons() {

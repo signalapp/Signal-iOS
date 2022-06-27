@@ -374,7 +374,7 @@ public final class FullConversationCell: UITableViewCell {
                 statusIndicatorView.isHidden = false
             
             default:
-                statusIndicatorView.isHidden = false
+                statusIndicatorView.isHidden = true
         }
     }
     

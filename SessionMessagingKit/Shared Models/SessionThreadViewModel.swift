@@ -194,11 +194,18 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
 // MARK: - Convenience Initialization
 
 public extension SessionThreadViewModel {
+    static let invalidId: String = "INVALID_THREAD_ID"
+    
     // Note: This init method is only used system-created cells or empty states
-    init(unreadCount: UInt = 0) {
+    init(
+        threadId: String? = nil,
+        threadVariant: SessionThread.Variant? = nil,
+        currentUserIsClosedGroupMember: Bool? = nil,
+        unreadCount: UInt = 0
+    ) {
         self.rowId = -1
-        self.threadId = "INVALID_THREAD_ID"
-        self.threadVariant = .contact
+        self.threadId = (threadId ?? SessionThreadViewModel.invalidId)
+        self.threadVariant = (threadVariant ?? .contact)
         self.threadCreationDateTimestamp = 0
         self.threadMemberNames = nil
         
@@ -224,7 +231,7 @@ public extension SessionThreadViewModel {
         self.closedGroupProfileBackFallback = nil
         self.closedGroupName = nil
         self.closedGroupUserCount = nil
-        self.currentUserIsClosedGroupMember = nil
+        self.currentUserIsClosedGroupMember = currentUserIsClosedGroupMember
         self.currentUserIsClosedGroupAdmin = nil
         self.openGroupName = nil
         self.openGroupServer = nil

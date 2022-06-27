@@ -356,13 +356,18 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
                             return
                         }
                         
-                        try members.forEach { member in
-                            try RecipientState(
-                                interactionId: interactionId,
-                                recipientId: member.profileId,
-                                state: .sending
-                            ).insert(db)
-                        }
+                        // Exclude the current user when creating recipient states (as they will never
+                        // receive the message resulting in the message getting flagged as failed)
+                        let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                        try members
+                            .filter { member -> Bool in member.profileId != userPublicKey }
+                            .forEach { member in
+                                try RecipientState(
+                                    interactionId: interactionId,
+                                    recipientId: member.profileId,
+                                    state: .sending
+                                ).insert(db)
+                            }
                         
                     case .openGroup:
                         // Since we use the 'RecipientState' type to manage the message state

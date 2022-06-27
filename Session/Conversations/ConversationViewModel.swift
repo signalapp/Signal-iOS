@@ -98,7 +98,20 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     // MARK: - Thread Data
     
     /// This value is the current state of the view
-    public private(set) var threadData: SessionThreadViewModel = SessionThreadViewModel()
+    public private(set) lazy var threadData: SessionThreadViewModel = SessionThreadViewModel(
+        threadId: self.threadId,
+        threadVariant: self.initialThreadVariant,
+        currentUserIsClosedGroupMember: (self.initialThreadVariant != .closedGroup ?
+            nil :
+            GRDBStorage.shared.read { db in
+                try GroupMember
+                    .filter(GroupMember.Columns.groupId == self.threadId)
+                    .filter(GroupMember.Columns.profileId == getUserHexEncodedPublicKey(db))
+                    .filter(GroupMember.Columns.role == GroupMember.Role.standard)
+                    .isNotEmpty(db)
+            }
+        )
+    )
     
     /// This is all the data the screen needs to populate itself, please see the following link for tips to help optimise
     /// performance https://github.com/groue/GRDB.swift#valueobservation-performance

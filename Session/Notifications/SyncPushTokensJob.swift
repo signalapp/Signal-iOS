@@ -33,31 +33,8 @@ public enum SyncPushTokensJob: JobExecutor {
             }
             return
         }
-        let isRegisteredForRemoteNotifications: Bool = UIApplication.shared.isRegisteredForRemoteNotifications
         
-        // Swap back to the correct queue before continuing (don't want to inadvertantly do stuff on the main
-        // thread that could block the user)
-        queue.async {
-            SyncPushTokensJob.internalRun(
-                job,
-                queue: queue,
-                isRegisteredForRemoteNotifications: isRegisteredForRemoteNotifications,
-                success: success,
-                failure: failure,
-                deferred: deferred
-            )
-        }
-    }
-    
-    private static func internalRun(
-        _ job: Job,
-        queue: DispatchQueue,
-        isRegisteredForRemoteNotifications: Bool,
-        success: @escaping (Job, Bool) -> (),
-        failure: @escaping (Job, Error?, Bool) -> (),
-        deferred: @escaping (Job) -> ()
-    ) {
-        guard !isRegisteredForRemoteNotifications else {
+        guard !UIApplication.shared.isRegisteredForRemoteNotifications else {
             deferred(job) // Don't need to do anything if push notifications are already registered
             return
         }
@@ -97,7 +74,7 @@ public enum SyncPushTokensJob: JobExecutor {
                 )
                 
                 return promise
-                    .done { _ in
+                    .done(on: queue) { _ in
                         Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
 
                         GRDBStorage.shared.write { db in

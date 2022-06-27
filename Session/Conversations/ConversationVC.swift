@@ -591,12 +591,13 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             snInputView.text = draft
         }
         
+        // Now we have done all the needed diffs, update the viewModel with the latest data
+        self.viewModel.updateThreadData(updatedThreadData)
+        
+        /// **Note:** This needs to happen **after** we have update the viewModel's thread data
         if viewModel.threadData.currentUserIsClosedGroupMember != updatedThreadData.currentUserIsClosedGroupMember {
             reloadInputViews()
         }
-        
-        // Now we have done all the needed diffs, update the viewModel with the latest data
-        self.viewModel.updateThreadData(updatedThreadData)
     }
     
     private func handleInteractionUpdates(_ updatedData: [ConversationViewModel.SectionModel], initialLoad: Bool = false) {
@@ -837,7 +838,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             // Note: We sort the headers as we want to prioritise loading newer pages over older ones
             let sections: [(ConversationViewModel.Section, CGRect)] = (self?.viewModel.interactionData
                 .enumerated()
-                .map { index, section in (section.model, (self?.tableView.rectForHeader(inSection: 0) ?? .zero)) })
+                .map { index, section in (section.model, (self?.tableView.rectForHeader(inSection: index) ?? .zero)) })
                 .defaulting(to: [])
             let shouldLoadOlder: Bool = sections
                 .contains { section, headerRect in
