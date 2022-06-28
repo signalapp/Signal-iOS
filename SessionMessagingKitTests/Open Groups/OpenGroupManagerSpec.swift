@@ -1578,6 +1578,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                 isActive: true,
                                 name: "Test",
                                 imageId: "12",
+                                imageData: Data([1, 2, 3]),
                                 userCount: 0,
                                 infoUpdates: 10
                             ).insert(db)
@@ -3004,7 +3005,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                 .asRequest(of: String.self)
                                 .fetchOne(db)
                         }
-                    ).to(equal("http://116.203.70.33"))
+                    ).to(equal("https://open.getsession.org"))
                     expect(
                         mockStorage.read { db in
                             try OpenGroup

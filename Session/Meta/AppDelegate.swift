@@ -191,6 +191,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Trigger any launch-specific jobs and start the JobRunner
         JobRunner.appDidFinishLaunching()
         
+        /// Setup the UI
+        ///
+        /// **Note:** This **MUST** be run before calling `AppReadiness.setAppIsReady()` otherwise if
+        /// we are launching the app from a push notification the HomeVC won't be setup yet and it won't open the
+        /// related thread
+        self.ensureRootViewController(isPreAppReadyCall: true)
+        
         // Note that this does much more than set a flag;
         // it will also run all deferred blocks (including the JobRunner
         // 'appDidBecomeActive' method)
@@ -220,9 +227,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
         }
-        
-        // Setup the UI
-        self.ensureRootViewController()
     }
     
     private func showFailedMigrationAlert() {
@@ -321,8 +325,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
-    private func ensureRootViewController() {
-        guard AppReadiness.isAppReady() && GRDBStorage.shared.isValid && !hasInitialRootViewController else {
+    private func ensureRootViewController(isPreAppReadyCall: Bool = false) {
+        guard (AppReadiness.isAppReady() || isPreAppReadyCall) && GRDBStorage.shared.isValid && !hasInitialRootViewController else {
             return
         }
         
@@ -334,6 +338,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             )
         )
         UIViewController.attemptRotationToDeviceOrientation()
+        
+        /// **Note:** There is an annoying case when starting the app by interacting with a push notification where
+        /// the `HomeVC` won't have completed loading it's view which means the `SessionApp.homeViewController`
+        /// won't have been set - we set the value directly here to resolve this edge case
+        if let homeViewController: HomeVC = (self.window?.rootViewController as? UINavigationController)?.viewControllers.first as? HomeVC {
+            SessionApp.homeViewController.mutate { $0 = homeViewController }
+        }
     }
     
     // MARK: - Notifications

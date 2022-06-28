@@ -60,8 +60,8 @@ public final class PushNotificationAPI : NSObject {
                     guard let response: UpdateRegistrationResponse = try? response?.decoded(as: UpdateRegistrationResponse.self) else {
                         return SNLog("Couldn't unregister from push notifications.")
                     }
-                    guard response.code != 0 else {
-                        return SNLog("Couldn't unregister from push notifications due to error: \(response.message ?? "nil").")
+                    guard response.body.code != 0 else {
+                        return SNLog("Couldn't unregister from push notifications due to error: \(response.body.message ?? "nil").")
                     }
                 }
         }
@@ -119,8 +119,8 @@ public final class PushNotificationAPI : NSObject {
                     guard let response: UpdateRegistrationResponse = try? response?.decoded(as: UpdateRegistrationResponse.self) else {
                         return SNLog("Couldn't register device token.")
                     }
-                    guard response.code != 0 else {
-                        return SNLog("Couldn't register device token due to error: \(response.message ?? "nil").")
+                    guard response.body.code != 0 else {
+                        return SNLog("Couldn't register device token due to error: \(response.body.message ?? "nil").")
                     }
                     
                     userDefaults[.deviceToken] = hexEncodedToken
@@ -180,8 +180,8 @@ public final class PushNotificationAPI : NSObject {
                     guard let response: UpdateRegistrationResponse = try? response?.decoded(as: UpdateRegistrationResponse.self) else {
                         return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey).")
                     }
-                    guard response.code != 0 else {
-                        return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey) due to error: \(response.message ?? "nil").")
+                    guard response.body.code != 0 else {
+                        return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey) due to error: \(response.body.message ?? "nil").")
                     }
                 }
         }

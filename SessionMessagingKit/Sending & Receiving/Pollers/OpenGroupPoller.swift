@@ -43,11 +43,15 @@ extension OpenGroupAPI {
         
         @discardableResult
         public func poll(using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()) -> Promise<Void> {
-            return poll(isBackgroundPoll: false, using: dependencies)
+            return poll(isBackgroundPoll: false, isPostCapabilitiesRetry: false, using: dependencies)
         }
 
         @discardableResult
-        public func poll(isBackgroundPoll: Bool, using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()) -> Promise<Void> {
+        public func poll(
+            isBackgroundPoll: Bool,
+            isPostCapabilitiesRetry: Bool,
+            using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()
+        ) -> Promise<Void> {
             guard !self.isPolling else { return Promise.value(()) }
             
             self.isPolling = true
@@ -83,11 +87,89 @@ extension OpenGroupAPI {
                         seal.fulfill(())
                     }
                     .catch(on: OpenGroupAPI.workQueue) { [weak self] error in
-                        SNLog("Open group polling failed due to error: \(error).")
-                        self?.isPolling = false
-                        seal.fulfill(()) // The promise is just used to keep track of when we're done
+                        // If we are retrying then the error is being handled so no need to continue (this
+                        // method will always resolve)
+                        self?.updateCapabilitiesAndRetryIfNeeded(
+                            server: server,
+                            isBackgroundPoll: isBackgroundPoll,
+                            isPostCapabilitiesRetry: isPostCapabilitiesRetry,
+                            error: error
+                        )
+                        .done(on: OpenGroupAPI.workQueue) { [weak self] didHandleError in
+                            if !didHandleError {
+                                SNLog("Open group polling failed due to error: \(error).")
+                            }
+                            
+                            self?.isPolling = false
+                            seal.fulfill(()) // The promise is just used to keep track of when we're done
+                        }
+                        .retainUntilComplete()
                     }
             }
+            
+            return promise
+        }
+        
+        private func updateCapabilitiesAndRetryIfNeeded(
+            server: String,
+            isBackgroundPoll: Bool,
+            isPostCapabilitiesRetry: Bool,
+            error: Error,
+            using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()
+        ) -> Promise<Bool> {
+            /// We want to custom handle a '400' error code due to not having blinded auth as it likely means that we join the
+            /// OpenGroup before blinding was enabled and need to update it's capabilities
+            ///
+            /// **Note:** To prevent an infinite loop caused by a server-side bug we want to prevent this capabilities request from
+            /// happening multiple times in a row
+            guard
+                !isPostCapabilitiesRetry,
+                let error: OnionRequestAPIError = error as? OnionRequestAPIError,
+                case .httpRequestFailedAtDestination(let statusCode, let data, _) = error,
+                statusCode == 400,
+                let dataString: String = String(data: data, encoding: .utf8),
+                dataString.contains("Invalid authentication: this server requires the use of blinded idse")
+            else { return Promise.value(false) }
+            
+            let (promise, seal) = Promise<Bool>.pending()
+            
+            dependencies.storage
+                .read { db in
+                    OpenGroupAPI.capabilities(
+                        db,
+                        server: server,
+                        authenticated: false,
+                        using: dependencies
+                    )
+                }
+                .then(on: OpenGroupAPI.workQueue) { [weak self] _, responseBody -> Promise<Void> in
+                    guard let strongSelf = self else { return Promise.value(()) }
+                    
+                    // Handle the updated capabilities and re-trigger the poll
+                    strongSelf.isPolling = false
+                    
+                    dependencies.storage.write { db in
+                        OpenGroupManager.handleCapabilities(
+                            db,
+                            capabilities: responseBody,
+                            on: server
+                        )
+                    }
+                    
+                    // Regardless of the outcome we can just resolve this
+                    // immediately as it'll handle it's own response
+                    return strongSelf.poll(
+                        isBackgroundPoll: isBackgroundPoll,
+                        isPostCapabilitiesRetry: true,
+                        using: dependencies
+                    )
+                    .ensure { seal.fulfill(true) }
+                }
+                .catch(on: OpenGroupAPI.workQueue) { error in
+                    SNLog("Open group updating capabilities failed due to error: \(error).")
+                    seal.fulfill(true)
+                }
+                .retainUntilComplete()
             
             return promise
         }

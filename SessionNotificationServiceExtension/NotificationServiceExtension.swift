@@ -299,8 +299,12 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
     private func pollForOpenGroups() -> [Promise<Void>] {
         let promises: [Promise<Void>] = GRDBStorage.shared
             .read { db in
+                // The default room promise creates an OpenGroup with an empty `roomToken` value,
+                // we don't want to start a poller for this as the user hasn't actually joined a room
                 try OpenGroup
                     .select(.server)
+                    .filter(OpenGroup.Columns.roomToken != "")
+                    .filter(OpenGroup.Columns.isActive)
                     .distinct()
                     .asRequest(of: String.self)
                     .fetchSet(db)
@@ -308,7 +312,7 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
             .defaulting(to: [])
             .map { server in
                 OpenGroupAPI.Poller(for: server)
-                    .poll(isBackgroundPoll: true)
+                    .poll(isBackgroundPoll: true, isPostCapabilitiesRetry: false)
                     .timeout(
                         seconds: 20,
                         timeoutError: NotificationServiceError.timeout

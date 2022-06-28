@@ -659,7 +659,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         }
         
         let conversationVC: ConversationVC = ConversationVC(threadId: threadId, threadVariant: variant, focusedInteractionId: focusedInteractionId)
-        self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
+        self.navigationController?.setViewControllers([ self, conversationVC ], animated: animated)
     }
     
     @objc private func openSettings() {

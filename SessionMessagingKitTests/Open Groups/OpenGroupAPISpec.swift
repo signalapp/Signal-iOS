@@ -1364,7 +1364,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -1399,7 +1399,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -1432,7 +1432,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -1512,7 +1512,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -1547,7 +1547,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -1588,7 +1588,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -1772,7 +1772,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -1806,7 +1806,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -1838,7 +1838,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -1916,7 +1916,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -1950,7 +1950,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -1990,7 +1990,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -2915,7 +2915,7 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     expect(error?.localizedDescription)
                         .toEventually(
-                            equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                            equal(OpenGroupAPIError.signingFailed.localizedDescription),
                             timeout: .milliseconds(100)
                         )
                     
@@ -2942,7 +2942,7 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     expect(error?.localizedDescription)
                         .toEventually(
-                            equal(OpenGroupAPI.Error.noPublicKey.localizedDescription),
+                            equal(OpenGroupAPIError.noPublicKey.localizedDescription),
                             timeout: .milliseconds(100)
                         )
                     
@@ -2969,7 +2969,7 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     expect(error?.localizedDescription)
                         .toEventually(
-                            equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                            equal(OpenGroupAPIError.signingFailed.localizedDescription),
                             timeout: .milliseconds(100)
                         )
                     
@@ -3037,7 +3037,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -3108,7 +3108,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         
@@ -3135,7 +3135,7 @@ class OpenGroupAPISpec: QuickSpec {
                         
                         expect(error?.localizedDescription)
                             .toEventually(
-                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                equal(OpenGroupAPIError.signingFailed.localizedDescription),
                                 timeout: .milliseconds(100)
                             )
                         

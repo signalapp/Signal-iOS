@@ -13,11 +13,11 @@ class SOGSErrorSpec: QuickSpec {
     override func spec() {
         describe("a SOGSError") {
             it("generates the error description correctly") {
-                expect(OpenGroupAPI.Error.decryptionFailed.errorDescription)
+                expect(OpenGroupAPIError.decryptionFailed.errorDescription)
                     .to(equal("Couldn't decrypt response."))
-                expect(OpenGroupAPI.Error.signingFailed.errorDescription)
+                expect(OpenGroupAPIError.signingFailed.errorDescription)
                     .to(equal("Couldn't sign message."))
-                expect(OpenGroupAPI.Error.noPublicKey.errorDescription)
+                expect(OpenGroupAPIError.noPublicKey.errorDescription)
                     .to(equal("Couldn't find server public key."))
             }
         }

@@ -491,7 +491,7 @@ class NotificationActionHandler {
         // If this happens when the the app is not, visible we skip the animation so the thread
         // can be visible to the user immediately upon opening the app, rather than having to watch
         // it animate in from the homescreen.
-        let shouldAnimate = UIApplication.shared.applicationState == .active
+        let shouldAnimate: Bool = (UIApplication.shared.applicationState == .active)
         SessionApp.presentConversation(for: threadId, animated: shouldAnimate)
         return Promise.value(())
     }

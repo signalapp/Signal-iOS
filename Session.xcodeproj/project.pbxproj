@@ -742,7 +742,7 @@
 		FDC290A927D9B46D005DAE71 /* NimbleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC290A727D9B46D005DAE71 /* NimbleExtensions.swift */; };
 		FDC290AA27D9B6FD005DAE71 /* Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC290A527D860CE005DAE71 /* Mock.swift */; };
 		FDC290B327DFF9F5005DAE71 /* TestOnionRequestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC290B227DFF9F5005DAE71 /* TestOnionRequestAPI.swift */; };
-		FDC4380927B31D4E00C60D73 /* SOGSError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4380827B31D4E00C60D73 /* SOGSError.swift */; };
+		FDC4380927B31D4E00C60D73 /* OpenGroupAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4380827B31D4E00C60D73 /* OpenGroupAPIError.swift */; };
 		FDC4381527B329CE00C60D73 /* NonceGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381427B329CE00C60D73 /* NonceGenerator.swift */; };
 		FDC4381727B32EC700C60D73 /* Personalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381627B32EC700C60D73 /* Personalization.swift */; };
 		FDC4382027B36ADC00C60D73 /* SOGSEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381F27B36ADC00C60D73 /* SOGSEndpoint.swift */; };
@@ -1778,7 +1778,7 @@
 		FDC290A527D860CE005DAE71 /* Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mock.swift; sourceTree = "<group>"; };
 		FDC290A727D9B46D005DAE71 /* NimbleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NimbleExtensions.swift; sourceTree = "<group>"; };
 		FDC290B227DFF9F5005DAE71 /* TestOnionRequestAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestOnionRequestAPI.swift; sourceTree = "<group>"; };
-		FDC4380827B31D4E00C60D73 /* SOGSError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOGSError.swift; sourceTree = "<group>"; };
+		FDC4380827B31D4E00C60D73 /* OpenGroupAPIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupAPIError.swift; sourceTree = "<group>"; };
 		FDC4381427B329CE00C60D73 /* NonceGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonceGenerator.swift; sourceTree = "<group>"; };
 		FDC4381627B32EC700C60D73 /* Personalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Personalization.swift; sourceTree = "<group>"; };
 		FDC4381F27B36ADC00C60D73 /* SOGSEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOGSEndpoint.swift; sourceTree = "<group>"; };
@@ -3756,7 +3756,7 @@
 			isa = PBXGroup;
 			children = (
 				FDC4381F27B36ADC00C60D73 /* SOGSEndpoint.swift */,
-				FDC4380827B31D4E00C60D73 /* SOGSError.swift */,
+				FDC4380827B31D4E00C60D73 /* OpenGroupAPIError.swift */,
 				FDC4381627B32EC700C60D73 /* Personalization.swift */,
 				FDC4381427B329CE00C60D73 /* NonceGenerator.swift */,
 				FDC438C227BB512200C60D73 /* SodiumProtocols.swift */,
@@ -5191,7 +5191,7 @@
 				FD716E682850318E00C96BF4 /* CallMode.swift in Sources */,
 				FD09799527FE7B8E00936362 /* Interaction.swift in Sources */,
 				FD5C72FF284F0F120029977D /* MessageReceiver+ConfigurationMessages.swift in Sources */,
-				FDC4380927B31D4E00C60D73 /* SOGSError.swift in Sources */,
+				FDC4380927B31D4E00C60D73 /* OpenGroupAPIError.swift in Sources */,
 				FDC4382027B36ADC00C60D73 /* SOGSEndpoint.swift in Sources */,
 				FDC438C927BB706500C60D73 /* SendDirectMessageRequest.swift in Sources */,
 				C3A71D1F25589AC30043A11F /* WebSocketResources.pb.swift in Sources */,

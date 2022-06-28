@@ -42,6 +42,7 @@ enum _003_YDBToGRDBMigration: Migration {
         var closedGroupModel: [String: SMKLegacy._GroupModel] = [:]
         var closedGroupZombieMemberIds: [String: Set<String>] = [:]
         
+        var openGroupServer: [String: String] = [:]
         var openGroupInfo: [String: SMKLegacy._OpenGroup] = [:]
         var openGroupUserCount: [String: Int64] = [:]
         var openGroupImage: [String: Data] = [:]
@@ -171,10 +172,25 @@ enum _003_YDBToGRDBMigration: Migration {
                         return
                     }
                     
+                    // We want to migrate everyone over to using the domain name for open group
+                    // servers rather than the IP, also best to use HTTPS over HTTP where possible
+                    // so catch the case where we have the domain with HTTP (the 'defaultServer'
+                    // value contains a HTTPS scheme so we get IP HTTP -> HTTPS for free as well)
+                    let processedOpenGroupServer: String = {
+                        // Check if the server is a Session-run one based on it's
+                        guard
+                            openGroup.server.contains(OpenGroupAPI.legacyDefaultServerIP) ||
+                            openGroup.server == OpenGroupAPI.defaultServer
+                                .replacingOccurrences(of: "https://", with: "http://")
+                        else { return openGroup.server }
+                        
+                        return OpenGroupAPI.defaultServer
+                    }()
                     legacyThreadIdToIdMap[thread.uniqueId] = OpenGroup.idFor(
                         roomToken: openGroup.room,
-                        server: openGroup.server
+                        server: processedOpenGroupServer
                     )
+                    openGroupServer[thread.uniqueId] = processedOpenGroupServer
                     openGroupInfo[thread.uniqueId] = openGroup
                     openGroupUserCount[thread.uniqueId] = ((transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupUserCountCollection) as? Int64) ?? 0)
                     openGroupImage[thread.uniqueId] = transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupImageCollection) as? Data
@@ -641,13 +657,16 @@ enum _003_YDBToGRDBMigration: Migration {
                 
                 // Open Groups
                 if legacyThread.isOpenGroup {
-                    guard let openGroup: SMKLegacy._OpenGroup = openGroupInfo[legacyThread.uniqueId] else {
+                    guard
+                        let openGroup: SMKLegacy._OpenGroup = openGroupInfo[legacyThread.uniqueId],
+                        let targetOpenGroupServer: String = openGroupServer[legacyThread.uniqueId]
+                    else {
                         SNLog("[Migration Error] Open group missing required data")
                         throw StorageError.migrationFailed
                     }
                     
                     try OpenGroup(
-                        server: openGroup.server,
+                        server: targetOpenGroupServer,
                         roomToken: openGroup.room,
                         publicKey: openGroup.publicKey,
                         isActive: true,

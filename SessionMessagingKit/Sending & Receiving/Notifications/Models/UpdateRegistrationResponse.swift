@@ -4,8 +4,12 @@ import Foundation
 
 extension PushNotificationAPI {
     struct UpdateRegistrationResponse: Codable {
-        let body: String
-        let code: Int
-        let message: String?
+        struct Body: Codable {
+            let code: Int
+            let message: String?
+        }
+        
+        let status: Int
+        let body: Body
     }
 }

@@ -11,8 +11,8 @@ import SessionUtilitiesKit
 public enum OpenGroupAPI {
     // MARK: - Settings
     
-    public static let legacyDefaultServerDNS = "open.getsession.org"
-    public static let defaultServer = "http://116.203.70.33"
+    public static let legacyDefaultServerIP = "116.203.70.33"
+    public static let defaultServer = "https://open.getsession.org"
     public static let defaultServerPublicKey = "a03c383cf63c3c4efe67acc52112a6dd734b3a946b9545f488aaa93da7991238"
 
     public static let workQueue = DispatchQueue(label: "OpenGroupAPI.workQueue", qos: .userInitiated) // It's important that this is a serial queue
@@ -225,6 +225,7 @@ public enum OpenGroupAPI {
     public static func capabilities(
         _ db: Database,
         server: String,
+        authenticated: Bool = true,
         using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Capabilities)> {
         return OpenGroupAPI
@@ -234,6 +235,7 @@ public enum OpenGroupAPI {
                     server: server,
                     endpoint: .capabilities
                 ),
+                authenticated: authenticated,
                 using: dependencies
             )
             .decoded(as: Capabilities.self, on: OpenGroupAPI.workQueue, using: dependencies)
@@ -394,7 +396,7 @@ public enum OpenGroupAPI {
         using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Message)> {
         guard let signResult: (publicKey: String, signature: Bytes) = sign(db, messageBytes: plaintext.bytes, for: server, fallbackSigningType: .standard, using: dependencies) else {
-            return Promise(error: Error.signingFailed)
+            return Promise(error: OpenGroupAPIError.signingFailed)
         }
         
         return OpenGroupAPI
@@ -450,7 +452,7 @@ public enum OpenGroupAPI {
         using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         guard let signResult: (publicKey: String, signature: Bytes) = sign(db, messageBytes: plaintext.bytes, for: server, fallbackSigningType: .standard, using: dependencies) else {
-            return Promise(error: Error.signingFailed)
+            return Promise(error: OpenGroupAPIError.signingFailed)
         }
         
         return OpenGroupAPI
@@ -1223,7 +1225,7 @@ public enum OpenGroupAPI {
             .asRequest(of: String.self)
             .fetchOne(db)
         
-        guard let publicKey: String = maybePublicKey else { return Promise(error: Error.noPublicKey) }
+        guard let publicKey: String = maybePublicKey else { return Promise(error: OpenGroupAPIError.noPublicKey) }
         
         // If we don't want to authenticate the request then send it immediately
         guard authenticated else {
@@ -1232,7 +1234,7 @@ public enum OpenGroupAPI {
         
         // Attempt to sign the request with the new auth
         guard let signedRequest: URLRequest = sign(db, request: urlRequest, for: request.server, with: publicKey, using: dependencies) else {
-            return Promise(error: Error.signingFailed)
+            return Promise(error: OpenGroupAPIError.signingFailed)
         }
         
         return dependencies.onionApi.sendOnionRequest(signedRequest, to: request.server, with: publicKey)

@@ -36,7 +36,7 @@ public final class BackgroundPoller: NSObject {
                         let poller: OpenGroupAPI.Poller = OpenGroupAPI.Poller(for: server)
                         poller.stop()
                         
-                        return poller.poll(isBackgroundPoll: true)
+                        return poller.poll(isBackgroundPoll: true, isPostCapabilitiesRetry: false)
                     }
             )
         

@@ -715,16 +715,9 @@ public extension MessageViewModel.AttachmentInteractionInfo {
         let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
         
         return """
-            JOIN \(InteractionAttachment.self) ON \(interactionAttachment[.attachmentId]) = \(attachment[.id])
-            JOIN \(Interaction.self) ON
-                \(interaction[.id]) = \(interactionAttachment[.interactionId])
+            JOIN \(InteractionAttachment.self) ON \(interactionAttachment[.interactionId]) = \(interaction[.id])
+            JOIN \(Attachment.self) ON \(attachment[.id]) = \(interactionAttachment[.attachmentId])
         """
-    }()
-    
-    static var groupViewModelQuerySQL: SQL = {
-        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
-        
-        return "\(interaction[.id])"
     }()
     
     static func createAssociateDataClosure() -> (DataCache<MessageViewModel.AttachmentInteractionInfo>, DataCache<MessageViewModel>) -> DataCache<MessageViewModel> {
@@ -786,7 +779,7 @@ public extension MessageViewModel.TypingIndicatorInfo {
         let threadTypingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias()
         
         return """
-            JOIN \(Interaction.self) ON \(interaction[.threadId]) = \(threadTypingIndicator[.threadId])
+            JOIN \(ThreadTypingIndicator.self) ON \(threadTypingIndicator[.threadId]) = \(interaction[.threadId])
         """
     }()
     

@@ -113,7 +113,7 @@ public final class OpenGroupManager: NSObject {
         
         let serverHost: String = (serverUrl.host ?? server.lowercased())
         let serverPort: String = (serverUrl.port.map { ":\($0)" } ?? "")
-        let defaultServerHost: String = OpenGroupAPI.defaultServer.substring(from: "http://".count)
+        let defaultServerHost: String = OpenGroupAPI.defaultServer.substring(from: "https://".count)
         var serverOptions: Set<String> = Set([
             server.lowercased(),
             "\(serverHost)\(serverPort)",
@@ -121,21 +121,15 @@ public final class OpenGroupManager: NSObject {
             "https://\(serverHost)\(serverPort)"
         ])
         
-        if serverHost == OpenGroupAPI.legacyDefaultServerDNS {
-            let defaultServerOptions: Set<String> = Set([
-                defaultServerHost,
-                OpenGroupAPI.defaultServer,
-                "https://\(defaultServerHost)"
-            ])
-            serverOptions = serverOptions.union(defaultServerOptions)
+        if serverHost == OpenGroupAPI.legacyDefaultServerIP {
+            serverOptions.insert(defaultServerHost)
+            serverOptions.insert("http://\(defaultServerHost)")
+            serverOptions.insert(OpenGroupAPI.defaultServer)
         }
         else if serverHost == defaultServerHost {
-            let legacyServerOptions: Set<String> = Set([
-                OpenGroupAPI.legacyDefaultServerDNS,
-                "http://\(OpenGroupAPI.legacyDefaultServerDNS)",
-                "https://\(OpenGroupAPI.legacyDefaultServerDNS)"
-            ])
-            serverOptions = serverOptions.union(legacyServerOptions)
+            serverOptions.insert(OpenGroupAPI.legacyDefaultServerIP)
+            serverOptions.insert("http://\(OpenGroupAPI.legacyDefaultServerIP)")
+            serverOptions.insert("https://\(OpenGroupAPI.legacyDefaultServerIP)")
         }
         
         // First check if there is no poller for the specified server
@@ -352,7 +346,7 @@ public final class OpenGroupManager: NSObject {
                         nil
                     ),
                     (openGroup.imageId != pollInfo.details?.imageId.map { "\($0)" } ?
-                        (pollInfo.details?.imageId).map { OpenGroup.Columns.roomDescription.set(to: "\($0)") } :
+                        (pollInfo.details?.imageId).map { OpenGroup.Columns.imageId.set(to: "\($0)") } :
                         nil
                     ),
                     (openGroup.userCount != pollInfo.activeUsers ?

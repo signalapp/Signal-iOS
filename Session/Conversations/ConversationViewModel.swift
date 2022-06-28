@@ -169,6 +169,16 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                     columns: Interaction.Columns
                         .allCases
                         .filter { $0 != .wasRead }
+                ),
+                PagedData.ObservedChanges(
+                    table: Contact.self,
+                    columns: [.isTrusted],
+                    joinToPagedType: {
+                        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+                        let contact: TypedTableAlias<Contact> = TypedTableAlias()
+                        
+                        return SQL("LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(interaction[.threadId])")
+                    }()
                 )
             ],
             filterSQL: MessageViewModel.filterSQL(threadId: threadId),
@@ -189,7 +199,6 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                     ],
                     dataQuery: MessageViewModel.AttachmentInteractionInfo.baseQuery,
                     joinToPagedType: MessageViewModel.AttachmentInteractionInfo.joinToViewModelQuerySQL,
-                    groupPagedType: MessageViewModel.AttachmentInteractionInfo.groupViewModelQuerySQL,
                     associateData: MessageViewModel.AttachmentInteractionInfo.createAssociateDataClosure()
                 ),
                 AssociatedRecord<MessageViewModel.TypingIndicatorInfo, MessageViewModel>(
