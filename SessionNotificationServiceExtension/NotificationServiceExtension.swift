@@ -104,7 +104,7 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
                             
                             guard case .preOffer = callMessage.kind else { return self.completeSilenty() }
                             
-                            if db[.areCallsEnabled] {
+                            if !db[.areCallsEnabled] {
                                 if let sender: String = callMessage.sender, let interaction: Interaction = try MessageReceiver.insertCallInfoMessage(db, for: callMessage, state: .permissionDenied) {
                                     let thread: SessionThread = try SessionThread.fetchOrCreate(db, id: sender, variant: .contact)
 

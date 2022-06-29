@@ -607,7 +607,6 @@
 		FD17D7B327F51E5B00122BE0 /* SSKSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7B227F51E5B00122BE0 /* SSKSetting.swift */; };
 		FD17D7B827F51ECA00122BE0 /* Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7B727F51ECA00122BE0 /* Migration.swift */; };
 		FD17D7BA27F51F2100122BE0 /* TargetMigrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7B927F51F2100122BE0 /* TargetMigrations.swift */; };
-		FD17D7BD27F51F6900122BE0 /* GRDB+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7BC27F51F6900122BE0 /* GRDB+Notifications.swift */; };
 		FD17D7BF27F51F8200122BE0 /* ColumnExpressible.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7BE27F51F8200122BE0 /* ColumnExpressible.swift */; };
 		FD17D7C127F5200100122BE0 /* TypedTableDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7C027F5200100122BE0 /* TypedTableDefinition.swift */; };
 		FD17D7C327F5204C00122BE0 /* Database+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7C227F5204C00122BE0 /* Database+Utilities.swift */; };
@@ -785,6 +784,7 @@
 		FDD2506E283711D600198BDA /* DifferenceKit+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD2506D283711D600198BDA /* DifferenceKit+Utilities.swift */; };
 		FDD250702837199200198BDA /* GarbageCollectionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD2506F2837199200198BDA /* GarbageCollectionJob.swift */; };
 		FDD250722837234B00198BDA /* MediaGalleryNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD250712837234B00198BDA /* MediaGalleryNavigationController.swift */; };
+		FDE72118286C156E0093DF33 /* ChatSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDE72117286C156E0093DF33 /* ChatSettingsViewController.swift */; };
 		FDE77F6B280FEB28002CFC5D /* ControlMessageProcessRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDE77F6A280FEB28002CFC5D /* ControlMessageProcessRecord.swift */; };
 		FDED2E3C282E1B5D00B2CD2A /* UICollectionView+ReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDED2E3B282E1B5D00B2CD2A /* UICollectionView+ReusableView.swift */; };
 		FDF0B73C27FFD3D6004C14C5 /* LinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF0B73B27FFD3D6004C14C5 /* LinkPreview.swift */; };
@@ -1671,7 +1671,6 @@
 		FD17D7B227F51E5B00122BE0 /* SSKSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKSetting.swift; sourceTree = "<group>"; };
 		FD17D7B727F51ECA00122BE0 /* Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Migration.swift; sourceTree = "<group>"; };
 		FD17D7B927F51F2100122BE0 /* TargetMigrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetMigrations.swift; sourceTree = "<group>"; };
-		FD17D7BC27F51F6900122BE0 /* GRDB+Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GRDB+Notifications.swift"; sourceTree = "<group>"; };
 		FD17D7BE27F51F8200122BE0 /* ColumnExpressible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColumnExpressible.swift; sourceTree = "<group>"; };
 		FD17D7C027F5200100122BE0 /* TypedTableDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypedTableDefinition.swift; sourceTree = "<group>"; };
 		FD17D7C227F5204C00122BE0 /* Database+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Database+Utilities.swift"; sourceTree = "<group>"; };
@@ -1819,6 +1818,7 @@
 		FDD2506D283711D600198BDA /* DifferenceKit+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DifferenceKit+Utilities.swift"; sourceTree = "<group>"; };
 		FDD2506F2837199200198BDA /* GarbageCollectionJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarbageCollectionJob.swift; sourceTree = "<group>"; };
 		FDD250712837234B00198BDA /* MediaGalleryNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryNavigationController.swift; sourceTree = "<group>"; };
+		FDE72117286C156E0093DF33 /* ChatSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSettingsViewController.swift; sourceTree = "<group>"; };
 		FDE77F68280F9EDA002CFC5D /* JobRunnerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobRunnerError.swift; sourceTree = "<group>"; };
 		FDE77F6A280FEB28002CFC5D /* ControlMessageProcessRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlMessageProcessRecord.swift; sourceTree = "<group>"; };
 		FDED2E3B282E1B5D00B2CD2A /* UICollectionView+ReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+ReusableView.swift"; sourceTree = "<group>"; };
@@ -2798,6 +2798,7 @@
 				B886B4A62398B23E00211ABE /* QRCodeVC.swift */,
 				B86BD08523399CEF000F5AE3 /* SeedModal.swift */,
 				B8CCF6422397711F0091D419 /* SettingsVC.swift */,
+				FDE72117286C156E0093DF33 /* ChatSettingsViewController.swift */,
 				7B7CB18A270591630079FF93 /* ShareLogsModal.swift */,
 			);
 			path = Settings;
@@ -3544,7 +3545,6 @@
 				FD17D7C427F5206300122BE0 /* ColumnDefinition+Utilities.swift */,
 				FD17D7C227F5204C00122BE0 /* Database+Utilities.swift */,
 				FD17D7C627F5207C00122BE0 /* DatabaseMigrator+Utilities.swift */,
-				FD17D7BC27F51F6900122BE0 /* GRDB+Notifications.swift */,
 				FDF22210281B5E0B000A4995 /* TableRecord+Utilities.swift */,
 				FDF2220E281B55E6000A4995 /* QueryInterfaceRequest+Utilities.swift */,
 			);
@@ -5011,7 +5011,6 @@
 				FD9004152818B46300ABAAF6 /* JobRunner.swift in Sources */,
 				C3A7211A2558BCA10043A11F /* DiffieHellman.swift in Sources */,
 				C3A7225E2558C38D0043A11F /* Promise+Retaining.swift in Sources */,
-				FD17D7BD27F51F6900122BE0 /* GRDB+Notifications.swift in Sources */,
 				FD17D7CA27F546D900122BE0 /* _001_InitialSetupMigration.swift in Sources */,
 				C3D9E4D12567777D0040E4F3 /* OWSMediaUtils.swift in Sources */,
 				C3BBE0AA2554D4DE0050F1E3 /* Dictionary+Utilities.swift in Sources */,
@@ -5276,6 +5275,7 @@
 				EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */,
 				45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */,
 				B83524A525C3BA4B0089A44F /* InfoMessageCell.swift in Sources */,
+				FDE72118286C156E0093DF33 /* ChatSettingsViewController.swift in Sources */,
 				B84A89BC25DE328A0040017D /* ProfilePictureVC.swift in Sources */,
 				34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */,
 				FDCDB8E02811007F00352A0C /* HomeViewModel.swift in Sources */,

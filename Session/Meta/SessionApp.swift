@@ -63,6 +63,7 @@ public struct SessionApp {
 
         GRDBStorage.resetAllStorage()
         ProfileManager.resetProfileStorage()
+        Attachment.resetAttachmentStorage()
         AppEnvironment.shared.notificationPresenter.clearAllNotifications()
 
         onReset?()

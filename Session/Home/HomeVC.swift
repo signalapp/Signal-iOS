@@ -627,6 +627,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                                     )
                                 )
                             )
+                        
                         try MessageSender.syncConfiguration(db, forceSyncNow: true)
                             .retainUntilComplete()
                     }

@@ -263,6 +263,7 @@ extension Attachment: CustomStringConvertible {
         // We only support multi-attachment sending of images so we can just default to the image attachment
         // if there were multiple attachments
         guard count == 1 else { return "\(emoji(for: OWSMimeTypeImageJpeg)) \("ATTACHMENT".localized())" }
+        
         if MIMETypeUtil.isAudio(descriptionInfo.contentType) {
             // a missing filename is the legacy way to determine if an audio attachment is
             // a voice note vs. other arbitrary audio attachments.
@@ -583,12 +584,9 @@ extension Attachment {
         return attachmentsFolder
     }()
     
-    private static var thumbnailsFolder: String = {
-        let attachmentsFolder: String = sharedDataAttachmentsDirPath
-        OWSFileSystem.ensureDirectoryExists(attachmentsFolder)
-        
-        return attachmentsFolder
-    }()
+    public static func resetAttachmentStorage() {
+        try? FileManager.default.removeItem(atPath: Attachment.sharedDataAttachmentsDirPath)
+    }
     
     public static func originalFilePath(id: String, mimeType: String, sourceFilename: String?) -> String? {
         return MIMETypeUtil.filePath(

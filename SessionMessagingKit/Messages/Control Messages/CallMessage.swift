@@ -235,24 +235,24 @@ public extension CallMessage {
         
         // MARK: - Content
         
-        func previewText(authorDisplayName: String) -> String {
+        func previewText(threadContactDisplayName: String) -> String {
             switch state {
                 case .incoming:
                     return String(
                         format: "call_incoming".localized(),
-                        authorDisplayName
+                        threadContactDisplayName
                     )
                     
                 case .outgoing:
                     return String(
                         format: "call_outgoing".localized(),
-                        authorDisplayName
+                        threadContactDisplayName
                     )
                     
                 case .missed, .permissionDenied:
                     return String(
                         format: "call_missed".localized(),
-                        authorDisplayName
+                        threadContactDisplayName
                     )
                 
                 // TODO: We should do better here

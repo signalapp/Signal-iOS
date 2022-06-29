@@ -942,7 +942,8 @@ extension ConversationVC:
                     db,
                     blindedId: sessionId,
                     openGroupServer: openGroupServer,
-                    openGroupPublicKey: openGroupPublicKey
+                    openGroupPublicKey: openGroupPublicKey,
+                    isCheckingForOutbox: false
                 )
             
             return try SessionThread

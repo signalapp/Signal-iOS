@@ -41,6 +41,9 @@ public extension Setting.BoolKey {
     /// Controls whether Calls are enabled
     static let areCallsEnabled: Setting.BoolKey = "areCallsEnabled"
     
+    /// Controls whether open group messages older than 6 months should be deleted
+    static let trimOpenGroupMessagesOlderThanSixMonths: Setting.BoolKey = "trimOpenGroupMessagesOlderThanSixMonths"
+    
     /// Controls whether the message requests item has been hidden on the home screen
     static let hasHiddenMessageRequests: Setting.BoolKey = "hasHiddenMessageRequests"
     

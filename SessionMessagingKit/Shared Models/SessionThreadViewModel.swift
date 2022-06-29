@@ -52,6 +52,7 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
     public static let interactionIsOpenGroupInvitationKey: SQL = SQL(stringLiteral: CodingKeys.interactionIsOpenGroupInvitation.stringValue)
     public static let interactionAttachmentDescriptionInfoKey: SQL = SQL(stringLiteral: CodingKeys.interactionAttachmentDescriptionInfo.stringValue)
     public static let interactionAttachmentCountKey: SQL = SQL(stringLiteral: CodingKeys.interactionAttachmentCount.stringValue)
+    public static let threadContactNameInternalKey: SQL = SQL(stringLiteral: CodingKeys.threadContactNameInternal.stringValue)
     public static let authorNameInternalKey: SQL = SQL(stringLiteral: CodingKeys.authorNameInternal.stringValue)
     public static let currentUserPublicKeyKey: SQL = SQL(stringLiteral: CodingKeys.currentUserPublicKey.stringValue)
     
@@ -75,11 +76,15 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
     public let threadMemberNames: String?
     
     public let threadIsNoteToSelf: Bool
-    public var threadIsMessageRequest: Bool?
+    
+    /// This flag indicates whether the thread is an outgoing message request
+    public let threadIsMessageRequest: Bool?
+    
+    /// This flag indicates whether the thread is an incoming message request
     public let threadRequiresApproval: Bool?
     public let threadShouldBeVisible: Bool?
     public let threadIsPinned: Bool
-    public var threadIsBlocked: Bool?
+    public let threadIsBlocked: Bool?
     public let threadMutedUntilTimestamp: TimeInterval?
     public let threadOnlyNotifyForMentions: Bool?
     public let threadMessageDraft: String?
@@ -116,6 +121,7 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
     public let interactionAttachmentCount: Int?
     
     public let authorId: String?
+    private let threadContactNameInternal: String?
     private let authorNameInternal: String?
     public let currentUserPublicKey: String
     
@@ -170,6 +176,21 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
             case .closedGroup: return closedGroupUserCount
             case .openGroup: return openGroupUserCount
         }
+    }
+    
+    /// This function returns the thread contact profile name formatted for the specific type of thread provided
+    ///
+    /// **Note:** The 'threadVariant' parameter is used for profile context but in the search results we actually want this
+    /// to always behave as the `contact` variant which is why this needs to be a function instead of just using the provided
+    /// parameter
+    public func threadContactName() -> String {
+        return Profile.displayName(
+            for: .contact,
+            id: threadId,
+            name: threadContactNameInternal,
+            nickname: nil,  // Folded into 'threadContactNameInternal' within the Query
+            customFallback: "Anonymous"
+        )
     }
     
     /// This function returns the profile name formatted for the specific type of thread provided
@@ -251,6 +272,7 @@ public extension SessionThreadViewModel {
         self.interactionAttachmentCount = nil
         
         self.authorId = nil
+        self.threadContactNameInternal = nil
         self.authorNameInternal = nil
         self.currentUserPublicKey = getUserHexEncodedPublicKey()
     }
@@ -282,6 +304,8 @@ public extension SessionThreadViewModel {
             let profile: TypedTableAlias<Profile> = TypedTableAlias()
             
             let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
+            let profileNicknameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.nickname.name)
+            let profileNameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.name.name)
             let firstInteractionAttachmentLiteral: SQL = SQL(stringLiteral: "firstInteractionAttachment")
             let interactionAttachmentAttachmentIdColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.attachmentId.name)
             let interactionAttachmentInteractionIdColumnLiteral: SQL = SQL(stringLiteral: InteractionAttachment.Columns.interactionId.name)
@@ -338,6 +362,7 @@ public extension SessionThreadViewModel {
                     COUNT(\(interactionAttachment[.interactionId])) AS \(ViewModel.interactionAttachmentCountKey),
             
                     \(interaction[.authorId]),
+                    IFNULL(\(ViewModel.contactProfileKey).\(profileNicknameColumnLiteral), \(ViewModel.contactProfileKey).\(profileNameColumnLiteral)) AS \(ViewModel.threadContactNameInternalKey),
                     IFNULL(\(profile[.nickname]), \(profile[.name])) AS \(ViewModel.authorNameInternalKey),
                     \(SQL("\(userPublicKey)")) AS \(ViewModel.currentUserPublicKeyKey)
                 
@@ -549,11 +574,8 @@ public extension SessionThreadViewModel {
                 (
                     \(thread[.shouldBeVisible]) = true AND
                     \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND
-                    \(SQL("\(thread[.id]) != \(userPublicKey)")) AND (
-                        -- A '!= true' check doesn't work properly so we need to be explicit
-                        \(contact[.isApproved]) IS NULL OR
-                        \(contact[.isApproved]) = false
-                    )
+                    \(SQL("\(thread[.id]) != \(userPublicKey)")) AND
+                    IFNULL(\(contact[.isApproved]), false) = false
                 ) AS \(ViewModel.threadIsMessageRequestKey),
                 (
                     \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND (

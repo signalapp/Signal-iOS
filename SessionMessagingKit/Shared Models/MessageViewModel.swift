@@ -10,11 +10,13 @@ fileprivate typealias AttachmentInteractionInfo = MessageViewModel.AttachmentInt
 fileprivate typealias TypingIndicatorInfo = MessageViewModel.TypingIndicatorInfo
 
 public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, Hashable, Identifiable, Differentiable {
+    public static let threadIdKey: SQL = SQL(stringLiteral: CodingKeys.threadId.stringValue)
     public static let threadVariantKey: SQL = SQL(stringLiteral: CodingKeys.threadVariant.stringValue)
     public static let threadIsTrustedKey: SQL = SQL(stringLiteral: CodingKeys.threadIsTrusted.stringValue)
     public static let threadHasDisappearingMessagesEnabledKey: SQL = SQL(stringLiteral: CodingKeys.threadHasDisappearingMessagesEnabled.stringValue)
     public static let threadOpenGroupServerKey: SQL = SQL(stringLiteral: CodingKeys.threadOpenGroupServer.stringValue)
     public static let threadOpenGroupPublicKeyKey: SQL = SQL(stringLiteral: CodingKeys.threadOpenGroupPublicKey.stringValue)
+    public static let threadContactNameInternalKey: SQL = SQL(stringLiteral: CodingKeys.threadContactNameInternal.stringValue)
     public static let rowIdKey: SQL = SQL(stringLiteral: CodingKeys.rowId.stringValue)
     public static let authorNameInternalKey: SQL = SQL(stringLiteral: CodingKeys.authorNameInternal.stringValue)
     public static let stateKey: SQL = SQL(stringLiteral: CodingKeys.state.stringValue)
@@ -58,11 +60,13 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     
     // Thread Info
     
+    public let threadId: String
     public let threadVariant: SessionThread.Variant
     public let threadIsTrusted: Bool
     public let threadHasDisappearingMessagesEnabled: Bool
     public let threadOpenGroupServer: String?
     public let threadOpenGroupPublicKey: String?
+    private let threadContactNameInternal: String?
     
     // Interaction Info
     
@@ -133,11 +137,13 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     
     public func with(attachments: [Attachment]) -> MessageViewModel {
         return MessageViewModel(
+            threadId: self.threadId,
             threadVariant: self.threadVariant,
             threadIsTrusted: self.threadIsTrusted,
             threadHasDisappearingMessagesEnabled: self.threadHasDisappearingMessagesEnabled,
             threadOpenGroupServer: self.threadOpenGroupServer,
             threadOpenGroupPublicKey: self.threadOpenGroupPublicKey,
+            threadContactNameInternal: self.threadContactNameInternal,
             rowId: self.rowId,
             id: self.id,
             variant: self.variant,
@@ -281,11 +287,13 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
         }()
         
         return ViewModel(
+            threadId: self.threadId,
             threadVariant: self.threadVariant,
             threadIsTrusted: self.threadIsTrusted,
             threadHasDisappearingMessagesEnabled: self.threadHasDisappearingMessagesEnabled,
             threadOpenGroupServer: self.threadOpenGroupServer,
             threadOpenGroupPublicKey: self.threadOpenGroupPublicKey,
+            threadContactNameInternal: self.threadContactNameInternal,
             rowId: self.rowId,
             id: self.id,
             variant: self.variant,
@@ -298,6 +306,12 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
                 Interaction.previewText(
                     variant: self.variant,
                     body: self.body,
+                    threadContactDisplayName: Profile.displayName(
+                        for: self.threadVariant,
+                        id: self.threadId,
+                        name: self.threadContactNameInternal,
+                        nickname: nil  // Folded into 'threadContactNameInternal' within the Query
+                    ),
                     authorDisplayName: authorDisplayName,
                     attachmentDescriptionInfo: self.attachments?.first.map { firstAttachment in
                         Attachment.DescriptionInfo(
@@ -428,11 +442,13 @@ public extension MessageViewModel {
     
     // Note: This init method is only used system-created cells or empty states
     init(isTypingIndicator: Bool? = nil) {
+        self.threadId = "INVALID_THREAD_ID"
         self.threadVariant = .contact
         self.threadIsTrusted = false
         self.threadHasDisappearingMessagesEnabled = false
         self.threadOpenGroupServer = nil
         self.threadOpenGroupPublicKey = nil
+        self.threadContactNameInternal = nil
         
         // Interaction Info
         
@@ -552,6 +568,10 @@ public extension MessageViewModel {
             let quote: TypedTableAlias<Quote> = TypedTableAlias()
             let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
             
+            let threadProfileTableLiteral: SQL = SQL(stringLiteral: "threadProfile")
+            let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
+            let profileNicknameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.nickname.name)
+            let profileNameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.name.name)
             let interactionStateInteractionIdColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.interactionId.name)
             let readReceiptTableLiteral: SQL = SQL(stringLiteral: "readReceipt")
             let readReceiptReadTimestampMsColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.readTimestampMs.name)
@@ -561,9 +581,10 @@ public extension MessageViewModel {
             let groupMemberProfileIdColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.profileId.name)
             let groupMemberRoleColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.role.name)
             
-            let numColumnsBeforeLinkedRecords: Int = 18
+            let numColumnsBeforeLinkedRecords: Int = 20
             let request: SQLRequest<ViewModel> = """
                 SELECT
+                    \(thread[.id]) AS \(ViewModel.threadIdKey),
                     \(thread[.variant]) AS \(ViewModel.threadVariantKey),
                     -- Default to 'true' for non-contact threads
                     IFNULL(\(contact[.isTrusted]), true) AS \(ViewModel.threadIsTrustedKey),
@@ -571,6 +592,7 @@ public extension MessageViewModel {
                     IFNULL(\(disappearingMessagesConfig[.isEnabled]), false) AS \(ViewModel.threadHasDisappearingMessagesEnabledKey),
                     \(openGroup[.server]) AS \(ViewModel.threadOpenGroupServerKey),
                     \(openGroup[.publicKey]) AS \(ViewModel.threadOpenGroupPublicKeyKey),
+                    IFNULL(\(threadProfileTableLiteral).\(profileNicknameColumnLiteral), \(threadProfileTableLiteral).\(profileNameColumnLiteral)) AS \(ViewModel.threadContactNameInternalKey),
             
                     \(interaction.alias[Column.rowID]) AS \(ViewModel.rowIdKey),
                     \(interaction[.id]),
@@ -610,6 +632,7 @@ public extension MessageViewModel {
                 FROM \(Interaction.self)
                 JOIN \(SessionThread.self) ON \(thread[.id]) = \(interaction[.threadId])
                 LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(interaction[.threadId])
+                LEFT JOIN \(Profile.self) AS \(threadProfileTableLiteral) ON \(threadProfileTableLiteral).\(profileIdColumnLiteral) = \(interaction[.threadId])
                 LEFT JOIN \(DisappearingMessagesConfiguration.self) ON \(disappearingMessagesConfig[.threadId]) = \(interaction[.threadId])
                 LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(interaction[.threadId])
                 LEFT JOIN \(Profile.self) ON \(profile[.id]) = \(interaction[.authorId])

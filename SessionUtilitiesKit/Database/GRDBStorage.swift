@@ -280,18 +280,16 @@ public final class GRDBStorage {
     // MARK: - File Management
     
     public static func resetAllStorage() {
-        NotificationCenter.default.post(name: .resetStorage, object: nil)
+        // Just in case they haven't been removed for some reason, delete the legacy database & keys
+        SUKLegacy.clearLegacyDatabaseInstance()
+        try? SUKLegacy.deleteLegacyDatabaseFilesAndKey()
         
-        // This might be redundant but in the spirit of thoroughness...
+        GRDBStorage.shared.isValid = false
+        GRDBStorage.shared.hasCompletedMigrations = false
+        GRDBStorage.shared.dbWriter = nil
+        
         self.deleteDatabaseFiles()
-
         try? self.deleteDbKeys()
-
-        if CurrentAppContext().isMainApp {
-//            TSAttachmentStream.deleteAttachments()
-        }
-
-        // TODO: Delete Profiles on Disk?
     }
     
     public/*private*/ static func deleteDatabaseFiles() {

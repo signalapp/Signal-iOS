@@ -74,6 +74,7 @@ public extension BlindedIdLookup {
         blindedId: String,
         openGroupServer: String,
         openGroupPublicKey: String,
+        isCheckingForOutbox: Bool,
         dependencies: SMKDependencies = SMKDependencies()
     ) throws -> BlindedIdLookup {
         var lookup: BlindedIdLookup = (try? BlindedIdLookup
@@ -92,11 +93,11 @@ public extension BlindedIdLookup {
         // We now need to try to match the blinded id to an existing contact, this can only be done by looping
         // through all approved contacts and generating a blinded id for the provided open group for each to
         // see if it matches the provided blindedId
-        let approvedContactCursor: RecordCursor<Contact> = try Contact
-            .filter(Contact.Columns.isApproved == true)
+        let contactsThatApprovedMeCursor: RecordCursor<Contact> = try Contact
+            .filter(Contact.Columns.didApproveMe == true)
             .fetchCursor(db)
-            
-        while let contact: Contact = try approvedContactCursor.next() {
+        
+        while let contact: Contact = try contactsThatApprovedMeCursor.next() {
             guard dependencies.sodium.sessionId(contact.id, matchesBlindedId: blindedId, serverPublicKey: openGroupPublicKey, genericHash: dependencies.genericHash) else {
                 continue
             }
@@ -105,6 +106,16 @@ public extension BlindedIdLookup {
             lookup = try lookup
                 .with(sessionId: contact.id)
                 .saved(db)
+            
+            // There is an edge-case where the contact might not have their 'isApproved' flag set to true
+            // but if we have a `BlindedIdLookup` for them and are performing the lookup from the outbox
+            // then that means we sent them a message request and the 'isApproved' flag should be true
+            if isCheckingForOutbox && !contact.isApproved {
+                try Contact
+                    .filter(id: contact.id)
+                    .updateAll(db, Contact.Columns.isApproved.set(to: true))
+            }
+            
             break
         }
         

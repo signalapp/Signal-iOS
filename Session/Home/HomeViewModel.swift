@@ -268,6 +268,7 @@ public class HomeViewModel {
                 SectionModel(
                     section: .threads,
                     elements: data
+                        .filter { $0.id != SessionThreadViewModel.invalidId }
                         .sorted { lhs, rhs -> Bool in
                             if lhs.threadIsPinned && !rhs.threadIsPinned { return true }
                             if !lhs.threadIsPinned && rhs.threadIsPinned { return false }

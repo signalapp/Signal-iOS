@@ -233,10 +233,18 @@ public final class MessageSender {
                                 isSyncMessage: isSyncMessage
                             )
                             
-                            let shouldNotify = (
-                                (message is VisibleMessage || message is UnsendRequest) &&
-                                !isSyncMessage
-                            )
+                            let shouldNotify: Bool = {
+                                switch message {
+                                    case is VisibleMessage, is UnsendRequest: return !isSyncMessage
+                                    case let callMessage as CallMessage:
+                                        switch callMessage.kind {
+                                            case .preOffer: return true
+                                            default: return false
+                                        }
+                                        
+                                    default: return false
+                                }
+                            }()
                             
                             /*
                             if let closedGroupControlMessage = message as? ClosedGroupControlMessage, case .new = closedGroupControlMessage.kind {

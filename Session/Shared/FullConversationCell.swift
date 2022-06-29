@@ -433,6 +433,7 @@ public final class FullConversationCell: UITableViewCell {
                 in: Interaction.previewText(
                     variant: (cellViewModel.interactionVariant ?? .standardIncoming),
                     body: cellViewModel.interactionBody,
+                    threadContactDisplayName: cellViewModel.threadContactName(),
                     authorDisplayName: cellViewModel.authorName(for: cellViewModel.threadVariant),
                     attachmentDescriptionInfo: cellViewModel.interactionAttachmentDescriptionInfo,
                     attachmentCount: cellViewModel.interactionAttachmentCount,

@@ -169,6 +169,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
                     return seal.reject(error)
                 }
             }
+            
             GRDBStorage.shared
                 .writeAsync { db in
                     try MessageSender

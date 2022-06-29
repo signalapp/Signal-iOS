@@ -51,6 +51,20 @@ extension MessageReceiver {
             try message.contacts.forEach { contactInfo in
                 guard let sessionId: String = contactInfo.publicKey else { return }
                 
+                // If the contact is a blinded contact then only add them if they haven't already been
+                // unblinded
+                if SessionId.Prefix(from: sessionId) == .blinded {
+                    let hasUnblindedContact: Bool = (try? BlindedIdLookup
+                        .filter(BlindedIdLookup.Columns.blindedId == sessionId)
+                        .filter(BlindedIdLookup.Columns.sessionId != nil)
+                        .isNotEmpty(db))
+                        .defaulting(to: false)
+                    
+                    if hasUnblindedContact {
+                        return
+                    }
+                }
+                
                 // Note: We only update the contact and profile records if the data has actually changed
                 // in order to avoid triggering UI updates for every thread on the home screen
                 let contact: Contact = Contact.fetchOrCreate(db, id: sessionId)

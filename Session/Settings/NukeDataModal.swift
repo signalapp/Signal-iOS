@@ -157,11 +157,8 @@ final class NukeDataModal: Modal {
             GRDBStorage.shared
                 .writeAsync { db in try MessageSender.syncConfiguration(db, forceSyncNow: true) }
                 .ensure(on: DispatchQueue.main) {
+                    self?.deleteAllLocalData()
                     self?.dismiss(animated: true, completion: nil) // Dismiss the loader
-                    
-                    UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later
-                    General.cache.mutate { $0.encodedPublicKey = nil } // Remove the cached key so it gets re-cached on next access
-                    NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
                 }
                 .retainUntilComplete()
         }
@@ -177,9 +174,7 @@ final class NukeDataModal: Modal {
                         let potentiallyMaliciousSnodes = confirmations.compactMap { $0.value == false ? $0.key : nil }
                         
                         if potentiallyMaliciousSnodes.isEmpty {
-                            General.cache.mutate { $0.encodedPublicKey = nil } // Remove the cached key so it gets re-cached on next access
-                            UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later
-                            NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
+                            self?.deleteAllLocalData()
                         }
                         else {
                             let message: String
@@ -204,5 +199,37 @@ final class NukeDataModal: Modal {
                         self?.presentAlert(alert)
                     }
             }
+    }
+    
+    private func deleteAllLocalData() {
+        // Unregister push notifications if needed
+        let isUsingFullAPNs: Bool = UserDefaults.standard[.isUsingFullAPNs]
+        let maybeDeviceToken: String? = UserDefaults.standard[.deviceToken]
+        
+        if isUsingFullAPNs, let deviceToken: String = maybeDeviceToken {
+            let data: Data = Data(hex: deviceToken)
+            PushNotificationAPI.unregister(data).retainUntilComplete()
+        }
+        
+        // Clear out the user defaults
+        UserDefaults.removeAll()
+        
+        // Remove the cached key so it gets re-cached on next access
+        General.cache.mutate { $0.encodedPublicKey = nil }
+        
+        // Clear the Snode pool
+        SnodeAPI.clearSnodePool()
+        
+        // Stop any pollers
+        (UIApplication.shared.delegate as? AppDelegate)?.stopPollers()
+        
+        // Call through to the SessionApp's "resetAppData" which will wipe out logs, database and
+        // profile storage
+        let wasUnlinked: Bool = UserDefaults.standard[.wasUnlinked]
+        
+        SessionApp.resetAppData {
+            // Resetting the data clears the old user defaults. We need to restore the unlink default.
+            UserDefaults.standard[.wasUnlinked] = wasUnlinked
+        }
     }
 }

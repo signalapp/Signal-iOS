@@ -6,8 +6,6 @@ public extension Notification.Name {
     static let contactOnlineStatusChanged = Notification.Name("contactOnlineStatusChanged")
     static let threadDeleted = Notification.Name("threadDeleted")
     static let threadSessionRestoreDevicesChanged = Notification.Name("threadSessionRestoreDevicesChanged")
-    // Interaction
-    static let dataNukeRequested = Notification.Name("dataNukeRequested")
 }
 
 @objc public extension NSNotification {
@@ -16,6 +14,4 @@ public extension Notification.Name {
     @objc static let contactOnlineStatusChanged = Notification.Name.contactOnlineStatusChanged.rawValue as NSString
     @objc static let threadDeleted = Notification.Name.threadDeleted.rawValue as NSString
     @objc static let threadSessionRestoreDevicesChanged = Notification.Name.threadSessionRestoreDevicesChanged.rawValue as NSString
-    // Interaction
-    @objc static let dataNukeRequested = Notification.Name.dataNukeRequested.rawValue as NSString
 }

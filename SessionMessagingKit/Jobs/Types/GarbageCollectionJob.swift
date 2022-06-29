@@ -52,7 +52,7 @@ public enum GarbageCollectionJob: JobExecutor {
                 }
                 
                 /// Remove any old open group messages - open group messages which are older than six months
-                if details.typesToCollect.contains(.oldOpenGroupMessages) {
+                if details.typesToCollect.contains(.oldOpenGroupMessages) && db[.trimOpenGroupMessagesOlderThanSixMonths] {
                     let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
                     let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
                     

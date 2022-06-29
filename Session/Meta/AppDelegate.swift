@@ -104,12 +104,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(handleDataNukeRequested),   // TODO: This differently???
-            name: .dataNukeRequested,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
             selector: #selector(showMissedCallTipsIfNeeded(_:)),
             name: .missedCall,
             object: nil
@@ -455,35 +449,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Notification Handling
     
     @objc private func registrationStateDidChange() {
-        enableBackgroundRefreshIfNecessary()
-
-        guard Identity.userExists() else { return }
-        
-        startPollersIfNeeded()
-    }
-    
-    @objc public func handleDataNukeRequested() {
-        let isUsingFullAPNs: Bool = UserDefaults.standard[.isUsingFullAPNs]
-        let maybeDeviceToken: String? = UserDefaults.standard[.deviceToken]
-        // TODO: Clean up how this works
-        if isUsingFullAPNs, let deviceToken: String = maybeDeviceToken {
-            let data: Data = Data(hex: deviceToken)
-            PushNotificationAPI.unregister(data).retainUntilComplete()
-        }
-        
-        GRDBStorage.shared.write { db in
-            _ = try SessionThread.deleteAll(db)
-            _ = try Identity.deleteAll(db)
-        }
-        
-        SnodeAPI.clearSnodePool()
-        stopPollers()
-        
-        let wasUnlinked: Bool = UserDefaults.standard[.wasUnlinked]
-        SessionApp.resetAppData {
-            // Resetting the data clears the old user defaults. We need to restore the unlink default.
-            UserDefaults.standard[.wasUnlinked] = wasUnlinked
-        }
+        handleActivation()
     }
     
     @objc public func showMissedCallTipsIfNeeded(_ notification: Notification) {

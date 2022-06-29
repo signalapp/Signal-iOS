@@ -254,7 +254,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         }
         
         // Fetch the indexes of the rowIds so we can determine whether they should be added to the screen
-        let itemIndexes: [Int64] = PagedData.indexes(
+        let itemIndexes: [PagedData.RowIndexInfo] = PagedData.indexes(
             db,
             rowIds: changesToQuery.map { $0.rowId },
             tableName: pagedTableName,
@@ -262,7 +262,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             orderSQL: orderSQL,
             filterSQL: filterSQL
         )
-        let relatedChangeIndexes: [Int64] = PagedData.indexes(
+        let relatedChangeIndexes: [PagedData.RowIndexInfo] = PagedData.indexes(
             db,
             rowIds: Array(pagedRowIdsForRelatedChanges),
             tableName: pagedTableName,
@@ -275,36 +275,34 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         // which shouldn't - values less than 'currentCount' or if there is at least one value less than
         // 'currentCount' and the indexes are sequential (ie. more than the current loaded content was
         // added at once)
-        func determineValidChanges<T>(for indexes: [Int64], with data: [T]) -> [T] {
+        func determineValidChanges(for indexInfo: [PagedData.RowIndexInfo]) -> [Int64] {
+            let indexes: [Int64] = Array(indexInfo
+                .map { $0.rowIndex }
+                .sorted()
+                .asSet())
             let indexesAreSequential: Bool = (indexes.map { $0 - 1 }.dropFirst() == indexes.dropLast())
-            let hasOneValidIndex: Bool = indexes.contains(where: { index -> Bool in
-                index >= updatedPageInfo.pageOffset && (
-                    index < updatedPageInfo.currentCount ||
+            let hasOneValidIndex: Bool = indexInfo.contains(where: { info -> Bool in
+                info.rowIndex >= updatedPageInfo.pageOffset && (
+                    info.rowIndex < updatedPageInfo.currentCount ||
                     updatedPageInfo.currentCount == 0
                 )
             })
             
             return (indexesAreSequential && hasOneValidIndex ?
-                data :
-                zip(indexes, data)
-                    .filter { index, _ -> Bool in
-                        index >= updatedPageInfo.pageOffset && (
-                            index < updatedPageInfo.currentCount ||
+                indexInfo.map { $0.rowId } :
+                indexInfo
+                    .filter { info -> Bool in
+                        info.rowIndex >= updatedPageInfo.pageOffset && (
+                            info.rowIndex < updatedPageInfo.currentCount ||
                             updatedPageInfo.currentCount == 0
                         )
                     }
-                    .map { _, value -> T in value }
+                    .map { info -> Int64 in info.rowId }
             )
         }
-        let validChanges: [PagedData.TrackedChange] = determineValidChanges(
-            for: itemIndexes,
-            with: changesToQuery
-        )
-        let validRelatedChangeRowIds: [Int64] = determineValidChanges(
-            for: relatedChangeIndexes,
-            with: Array(pagedRowIdsForRelatedChanges)
-        )
-        let countBefore: Int = itemIndexes.filter { $0 < updatedPageInfo.pageOffset }.count
+        let validChangeRowIds: [Int64] = determineValidChanges(for: itemIndexes)
+        let validRelatedChangeRowIds: [Int64] = determineValidChanges(for: relatedChangeIndexes)
+        let countBefore: Int = itemIndexes.filter { $0.rowIndex < updatedPageInfo.pageOffset }.count
         
         // Update the offset and totalCount even if the rows are outside of the current page (need to
         // in order to ensure the 'load more' sections are accurate)
@@ -312,18 +310,24 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             pageSize: updatedPageInfo.pageSize,
             pageOffset: (updatedPageInfo.pageOffset + countBefore),
             currentCount: updatedPageInfo.currentCount,
-            totalCount: (updatedPageInfo.totalCount + validChanges.filter { $0.kind == .insert }.count)
+            totalCount: (
+                updatedPageInfo.totalCount +
+                changesToQuery
+                    .filter { $0.kind == .insert }
+                    .filter { validChangeRowIds.contains($0.rowId) }
+                    .count
+            )
         )
 
         // If there are no valid row ids then stop here (trigger updates though since the page info
         // has changes)
-        guard !validChanges.isEmpty || !validRelatedChangeRowIds.isEmpty else {
+        guard !validChangeRowIds.isEmpty || !validRelatedChangeRowIds.isEmpty else {
             updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, true)
             return
         }
 
         // Fetch the inserted/updated rows
-        let targetRowIds: [Int64] = Array((validChanges.map { $0.rowId } + validRelatedChangeRowIds).asSet())
+        let targetRowIds: [Int64] = Array((validChangeRowIds + validRelatedChangeRowIds).asSet())
         let updatedItems: [T] = (try? dataQuery(targetRowIds)
             .fetchAll(db))
             .defaulting(to: [])
@@ -808,6 +812,11 @@ public enum PagedData {
         }
     }
     
+    fileprivate struct RowIndexInfo: Decodable, FetchableRecord {
+        let rowId: Int64
+        let rowIndex: Int64
+    }
+    
     // MARK: - Internal Functions
     
     fileprivate static func totalCount(
@@ -891,12 +900,13 @@ public enum PagedData {
         requiredJoinSQL: SQL? = nil,
         orderSQL: SQL,
         filterSQL: SQL
-    ) -> [Int64] {
+    ) -> [RowIndexInfo] {
         guard !rowIds.isEmpty else { return [] }
         
         let tableNameLiteral: SQL = SQL(stringLiteral: tableName)
-        let request: SQLRequest<Int64> = """
+        let request: SQLRequest<RowIndexInfo> = """
             SELECT
+                data.rowId AS rowId,
                 (data.rowIndex - 1) AS rowIndex -- Converting from 1-Indexed to 0-indexed
             FROM (
                 SELECT
@@ -1057,7 +1067,7 @@ public class AssociatedRecord<T, PagedType>: ErasedAssociatedRecord where T: Fet
         // If the associated data change isn't related to the paged type then no need to continue
         guard !pagedRowIds.isEmpty else { return (oldCount != countAfterDeletions) }
         
-        let pagedItemIndexes: [Int64] = PagedData.indexes(
+        let pagedItemIndexes: [PagedData.RowIndexInfo] = PagedData.indexes(
             db,
             rowIds: pagedRowIds,
             tableName: pagedTableName,
@@ -1078,9 +1088,9 @@ public class AssociatedRecord<T, PagedType>: ErasedAssociatedRecord where T: Fet
         /// Instead of following the pattern the `PagedDatabaseObserver` does where we get the proper `validRowIds` we
         /// basically have to check if there is a single valid index, and if so retrieve and store all data related to the changes for this
         /// commit - this will mean in some cases we cache data which is actually unrelated to the filtered paged data
-        let hasOneValidIndex: Bool = pagedItemIndexes.contains(where: { index -> Bool in
-            index >= pageInfo.pageOffset && (
-                index < pageInfo.currentCount ||
+        let hasOneValidIndex: Bool = pagedItemIndexes.contains(where: { info -> Bool in
+            info.rowIndex >= pageInfo.pageOffset && (
+                info.rowIndex < pageInfo.currentCount ||
                 pageInfo.currentCount == 0
             )
         })

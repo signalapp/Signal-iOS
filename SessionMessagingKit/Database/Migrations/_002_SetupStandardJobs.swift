@@ -48,7 +48,7 @@ enum _002_SetupStandardJobs: Migration {
             
             _ = try Job(
                 variant: .garbageCollection,
-                behaviour: .recurringOnLaunch,
+                behaviour: .recurringOnActive,
                 details: GarbageCollectionJob.Details(
                     typesToCollect: GarbageCollectionJob.Types.allCases
                 )

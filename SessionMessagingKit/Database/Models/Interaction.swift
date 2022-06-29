@@ -690,6 +690,7 @@ public extension Interaction {
     static func previewText(
         variant: Variant,
         body: String?,
+        threadContactDisplayName: String = "",
         authorDisplayName: String = "",
         attachmentDescriptionInfo: Attachment.DescriptionInfo? = nil,
         attachmentCount: Int? = nil,
@@ -764,7 +765,7 @@ public extension Interaction {
                     )
                 else { return (body ?? "") }
                 
-                return messageInfo.previewText(authorDisplayName: authorDisplayName)
+                return messageInfo.previewText(threadContactDisplayName: threadContactDisplayName)
         }
     }
     

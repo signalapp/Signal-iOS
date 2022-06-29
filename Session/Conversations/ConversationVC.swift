@@ -571,6 +571,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
         
         if initialLoad || viewModel.threadData.threadIsMessageRequest != updatedThreadData.threadIsMessageRequest {
+            messageRequestView.isHidden = (updatedThreadData.threadIsMessageRequest == false)
             scrollButtonMessageRequestsBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == true)
             scrollButtonBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == false)
         }
@@ -595,8 +596,13 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         self.viewModel.updateThreadData(updatedThreadData)
         
         /// **Note:** This needs to happen **after** we have update the viewModel's thread data
-        if viewModel.threadData.currentUserIsClosedGroupMember != updatedThreadData.currentUserIsClosedGroupMember {
-            reloadInputViews()
+        if initialLoad || viewModel.threadData.currentUserIsClosedGroupMember != updatedThreadData.currentUserIsClosedGroupMember {
+            if !self.isFirstResponder {
+                self.becomeFirstResponder()
+            }
+            else {
+                self.reloadInputViews()
+            }
         }
     }
     

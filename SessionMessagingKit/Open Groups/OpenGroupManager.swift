@@ -582,7 +582,9 @@ public final class OpenGroupManager: NSObject {
                             db,
                             blindedId: message.recipient,
                             openGroupServer: server.lowercased(),
-                            openGroupPublicKey: openGroup.publicKey
+                            openGroupPublicKey: openGroup.publicKey,
+                            isCheckingForOutbox: true,
+                            dependencies: dependencies
                         )
                     }()
                     let syncTarget: String = (lookup.sessionId ?? message.recipient)
