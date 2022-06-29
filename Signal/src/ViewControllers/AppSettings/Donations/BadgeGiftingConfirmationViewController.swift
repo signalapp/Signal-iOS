@@ -296,7 +296,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         bottomFooterStackView.spacing = 16
         bottomFooterStackView.isLayoutMarginsRelativeArrangement = true
         bottomFooterStackView.preservesSuperviewLayoutMargins = true
-        bottomFooterStackView.layoutMargins = UIEdgeInsets(margin: 16)
+        bottomFooterStackView.layoutMargins = UIEdgeInsets(top: 0, leading: 16, bottom: 16, trailing: 16)
         bottomFooterStackView.removeAllSubviews()
 
         let amountView: UIStackView = {
@@ -308,14 +308,12 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
             let priceLabel = UILabel()
             priceLabel.text = DonationUtilities.formatCurrency(NSDecimalNumber(value: price), currencyCode: currencyCode)
-            priceLabel.font = .ows_dynamicTypeBody
+            priceLabel.font = .ows_dynamicTypeBody.ows_semibold
             priceLabel.numberOfLines = 0
 
             let view = UIStackView(arrangedSubviews: [descriptionLabel, priceLabel])
             view.axis = .horizontal
             view.distribution = .equalSpacing
-            view.layer.cornerRadius = 10
-            view.layer.backgroundColor = (Theme.isDarkThemeEnabled ? UIColor.black : UIColor.white).cgColor
             view.layoutMargins = cellOuterInsets
             view.isLayoutMarginsRelativeArrangement = true
 
