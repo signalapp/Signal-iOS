@@ -11,7 +11,7 @@ extension MessageReceiver {
         dependencies: SMKDependencies
     ) throws {
         let userPublicKey = getUserHexEncodedPublicKey(db, dependencies: dependencies)
-        var hadBlindedContact: Bool = false
+        var blindedContactIds: [String] = []
         
         // Ignore messages which were sent from the current user
         guard message.sender != userPublicKey else { return }
@@ -52,9 +52,8 @@ extension MessageReceiver {
                 .with(sessionId: senderId)
                 .saved(db)
             
-            // Flag that we had a blinded contact and add the `blindedThreadId` to an array so we can remove
-            // them at the end of processing
-            hadBlindedContact = true
+            // Add the `blindedId` to an array so we can remove them at the end of processing
+            blindedContactIds.append(blindedIdLookup.blindedId)
             
             // Update all interactions to be on the new thread
             // Note: Pending `MessageSendJobs` _shouldn't_ be an issue as even if they are sent after the
@@ -74,12 +73,17 @@ extension MessageReceiver {
             db,
             senderSessionId: senderId,
             threadId: nil,
-            forceConfigSync: !hadBlindedContact // Sync here if there were no blinded contacts
+            forceConfigSync: blindedContactIds.isEmpty // Sync here if there were no blinded contacts
         )
         
-        // If there were blinded contacts then we need to assume that the 'sender' is a newly create contact and hence
-        // need to update it's `isApproved` state
-        if hadBlindedContact {
+        // If there were blinded contacts which have now been resolved to this contact then we should remove
+        // the blinded contact and we also need to assume that the 'sender' is a newly created contact and
+        // hence need to update it's `isApproved` state
+        if !blindedContactIds.isEmpty {
+            _ = try? Contact
+                .filter(ids: blindedContactIds)
+                .deleteAll(db)
+            
             try updateContactApprovalStatusIfNeeded(
                 db,
                 senderSessionId: userPublicKey,
