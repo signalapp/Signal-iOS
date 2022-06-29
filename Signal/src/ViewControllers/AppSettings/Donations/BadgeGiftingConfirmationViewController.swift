@@ -522,6 +522,10 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
             }
 
             self.databaseStorage.write { transaction in
+                // If we've gotten this far, we want to snooze the megaphone.
+                ExperienceUpgradeManager.snoozeExperienceUpgrade(.subscriptionMegaphone,
+                                                                 transaction: transaction.unwrapGrdbWrite)
+
                 DonationUtilities.sendGiftBadgeJobQueue.addJob(jobRecord, transaction: transaction)
             }
 
