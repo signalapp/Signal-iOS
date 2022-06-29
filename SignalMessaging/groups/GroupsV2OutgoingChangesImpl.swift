@@ -97,29 +97,38 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
     // Non-nil if dm state changed.
     private var newDisappearingMessageToken: DisappearingMessageToken?
 
-    @objc
-    public required init(groupId: Data,
-                         groupSecretParamsData: Data) {
+    public init(groupId: Data, groupSecretParamsData: Data) {
         self.groupId = groupId
         self.groupSecretParamsData = groupSecretParamsData
     }
 
-    @objc
-    public required init(for groupModel: TSGroupModelV2) throws {
+    public init(for groupModel: TSGroupModelV2) {
         self.groupId = groupModel.groupId
         self.groupSecretParamsData = groupModel.secretParamsData
     }
 
     // MARK: - Original Intent
 
+    public class func buildForDiffBetween(
+        oldGroupModel: TSGroupModelV2,
+        newGroupModel: TSGroupModelV2
+    ) throws -> GroupsV2OutgoingChangesImpl {
+        let changes = GroupsV2OutgoingChangesImpl(for: oldGroupModel)
+
+        try changes.calculateDiffBetween(
+            oldGroupModel: oldGroupModel,
+            newGroupModel: newGroupModel
+        )
+
+        return changes
+    }
+
     // Calculate the intended changes of the local user
     // by diffing two group models.
-    @objc
-    public func buildChangeSet(oldGroupModel: TSGroupModelV2,
-                               newGroupModel: TSGroupModelV2,
-                               oldDMConfiguration: OWSDisappearingMessagesConfiguration,
-                               newDMConfiguration: OWSDisappearingMessagesConfiguration,
-                               transaction: SDSAnyReadTransaction) throws {
+    private func calculateDiffBetween(
+        oldGroupModel: TSGroupModelV2,
+        newGroupModel: TSGroupModelV2
+    ) throws {
         guard groupId == oldGroupModel.groupId else {
             throw OWSAssertionError("Mismatched groupId.")
         }
@@ -220,12 +229,6 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         }
         if oldAccess.addFromInviteLink != newAccess.addFromInviteLink {
             owsFailDebug("We should never change the invite link access by diffing group models.")
-        }
-
-        let oldDisappearingMessageToken = oldDMConfiguration.asToken
-        let newDisappearingMessageToken = newDMConfiguration.asToken
-        if oldDisappearingMessageToken != newDisappearingMessageToken {
-            setNewDisappearingMessageToken(newDisappearingMessageToken)
         }
 
         if oldGroupModel.isAnnouncementsOnly != newGroupModel.isAnnouncementsOnly {

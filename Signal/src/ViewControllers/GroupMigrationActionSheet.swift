@@ -598,10 +598,8 @@ private extension GroupMigrationActionSheet {
             }
             return newGroupModel
         }.then(on: .global()) { (newGroupModel) in
-            // dmConfiguration: nil means don't change disappearing messages configuration.
             GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
                                                   newGroupModel: newGroupModel,
-                                                  dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
         }.asVoid()
     }

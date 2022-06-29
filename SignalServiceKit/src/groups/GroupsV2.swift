@@ -106,10 +106,7 @@ public protocol GroupsV2Swift: GroupsV2 {
     func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot>
 
     func buildChangeSet(oldGroupModel: TSGroupModelV2,
-                        newGroupModel: TSGroupModelV2,
-                        oldDMConfiguration: OWSDisappearingMessagesConfiguration,
-                        newDMConfiguration: OWSDisappearingMessagesConfiguration,
-                        transaction: SDSAnyReadTransaction) throws -> GroupsV2OutgoingChanges
+                        newGroupModel: TSGroupModelV2) throws -> GroupsV2OutgoingChanges
 
     // On success returns a group thread model that reflects the
     // latest state in the service, which (due to races) might
@@ -556,10 +553,7 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
     }
 
     public func buildChangeSet(oldGroupModel: TSGroupModelV2,
-                               newGroupModel: TSGroupModelV2,
-                               oldDMConfiguration: OWSDisappearingMessagesConfiguration,
-                               newDMConfiguration: OWSDisappearingMessagesConfiguration,
-                               transaction: SDSAnyReadTransaction) throws -> GroupsV2OutgoingChanges {
+                               newGroupModel: TSGroupModelV2) throws -> GroupsV2OutgoingChanges {
         owsFail("Not implemented.")
     }
 

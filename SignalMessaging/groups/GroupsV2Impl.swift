@@ -1334,17 +1334,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
     // MARK: - Change Set
 
     public func buildChangeSet(oldGroupModel: TSGroupModelV2,
-                               newGroupModel: TSGroupModelV2,
-                               oldDMConfiguration: OWSDisappearingMessagesConfiguration,
-                               newDMConfiguration: OWSDisappearingMessagesConfiguration,
-                               transaction: SDSAnyReadTransaction) throws -> GroupsV2OutgoingChanges {
-        let changes = try GroupsV2OutgoingChangesImpl(for: oldGroupModel)
-        try changes.buildChangeSet(oldGroupModel: oldGroupModel,
-                                   newGroupModel: newGroupModel,
-                                   oldDMConfiguration: oldDMConfiguration,
-                                   newDMConfiguration: newDMConfiguration,
-                                   transaction: transaction)
-        return changes
+                               newGroupModel: TSGroupModelV2) throws -> GroupsV2OutgoingChanges {
+        try GroupsV2OutgoingChangesImpl.buildForDiffBetween(
+            oldGroupModel: oldGroupModel,
+            newGroupModel: newGroupModel
+        )
     }
 
     // MARK: - Protos

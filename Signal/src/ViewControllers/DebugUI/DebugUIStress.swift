@@ -185,7 +185,6 @@ public extension DebugUIStress {
 
             return GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
                                                          newGroupModel: newGroupModel,
-                                                         dmConfiguration: nil,
                                                          groupUpdateSourceAddress: localAddress)
         }.done { (groupThread) in
             Logger.info("Complete.")
@@ -236,10 +235,8 @@ public extension DebugUIStress {
             return GroupManager.messageProcessingPromise(for: oldGroupModel,
                                                          description: self.logTag())
         }.then(on: .global()) { _ in
-            // dmConfiguration: nil means don't change disappearing messages configuration.
             GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
                                                   newGroupModel: newGroupModel,
-                                                  dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
         }.done(on: .global()) { (_) in
             Logger.info("Complete.")

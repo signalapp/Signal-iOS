@@ -163,10 +163,8 @@ private extension AddGroupMembersViewController {
             return GroupManager.messageProcessingPromise(for: oldGroupModel,
                                                          description: self.logTag)
         }.then(on: .global()) { _ in
-            // dmConfiguration: nil means don't change disappearing messages configuration.
             GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
                                                   newGroupModel: newGroupModel,
-                                                  dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
         }.asVoid()
     }

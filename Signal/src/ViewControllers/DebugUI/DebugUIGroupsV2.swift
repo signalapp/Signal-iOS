@@ -556,7 +556,6 @@ class DebugUIGroupsV2: DebugUIPage {
             }
             return GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
                                                          newGroupModel: newGroupModel,
-                                                         dmConfiguration: nil,
                                                          groupUpdateSourceAddress: localAddress)
         }.done { (_) -> Void in
             Logger.info("Success.")
