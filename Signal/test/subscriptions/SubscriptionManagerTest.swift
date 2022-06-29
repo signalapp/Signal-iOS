@@ -85,3 +85,35 @@ class SubscriptionTest: XCTestCase {
         }
     }
 }
+
+class BadgeIdsTest: XCTestCase {
+    func testSubscriptionContains() {
+        let testCases: [(String, Bool)] = [
+            ("R_LOW", true),
+            ("R_MED", true),
+            ("R_HIGH", true),
+            ("BOOST", false),
+            ("GIFT", false),
+            ("OTHER", false),
+            ("", false)
+        ]
+        for (badgeId, shouldMatch) in testCases {
+            XCTAssertEqual(SubscriptionBadgeIds.contains(badgeId), shouldMatch, "\(badgeId)")
+        }
+    }
+
+    func testBoostContains() {
+        let testCases: [(String, Bool)] = [
+            ("R_LOW", false),
+            ("R_MED", false),
+            ("R_HIGH", false),
+            ("BOOST", true),
+            ("GIFT", false),
+            ("OTHER", false),
+            ("", false)
+        ]
+        for (badgeId, shouldMatch) in testCases {
+            XCTAssertEqual(BoostBadgeIds.contains(badgeId), shouldMatch, "\(badgeId)")
+        }
+    }
+}

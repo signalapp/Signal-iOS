@@ -14,21 +14,21 @@ public enum OneTimeBadgeLevel: UInt64 {
 
 private let SUBSCRIPTION_CHARGE_FAILURE_FALLBACK_CODE = "__signal_charge_failure_fallback_code__"
 
-public enum SubscriptionBadgeIds: String, CaseIterable {
+public enum SubscriptionBadgeIds: String {
     case low = "R_LOW"
     case med = "R_MED"
     case high = "R_HIGH"
 
     public static func contains(_ id: String) -> Bool {
-        allCases.lazy.map { $0.rawValue }.contains(id)
+        return Self(rawValue: id) != nil
     }
 }
 
-public enum BoostBadgeIds: String, CaseIterable {
+public enum BoostBadgeIds: String {
     case boost = "BOOST"
 
     public static func contains(_ id: String) -> Bool {
-        allCases.lazy.map { $0.rawValue }.contains(id)
+        return Self(rawValue: id) != nil
     }
 }
 
