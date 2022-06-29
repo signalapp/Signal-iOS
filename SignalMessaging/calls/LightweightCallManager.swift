@@ -59,6 +59,10 @@ open class LightweightCallManager: NSObject, Dependencies {
         }.catch(on: .sharedUtility) { error in
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
+            } else if !TSConstants.isUsingProductionService {
+                // Staging uses the production credentials, so trying to send a request
+                // with the staging credentials is expected to fail.
+                Logger.warn("Expected failure to fetch PeekInfo for \(thread.uniqueId): \(error)")
             } else {
                 owsFailDebug("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
             }
