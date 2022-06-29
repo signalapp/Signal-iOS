@@ -1,3 +1,3 @@
-• Replying to a message with just emoji? Now emoji-only responses will appear larger in the chat. We love a big response.
-• We’ve improved sharing and forwarding of audio messages and attachments. Keep sending those voice memos!
-• Other bug fixes to keep your app running smoothly.
+אוהבים להגיב להודעה רק עם אימוג׳יז? מעכשיו תגובות שמכילות רק אימוג׳י יופיעו בגודל גדול יותר בצ׳אט. אנחנו אוהבים שמגיבים בגדול.
+שיפרנו את אפשרויות השיתוף וההעברה של הודעות אודיו וקבצים מצורפים. תמשיכו לשלוח הודעות קוליות!
+תיקוני באגים נוספים שיעזרו לאפליקציה שלכם להמשיך לעבוד חלק.

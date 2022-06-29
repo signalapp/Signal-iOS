@@ -1,3 +1,3 @@
-• Replying to a message with just emoji? Now emoji-only responses will appear larger in the chat. We love a big response.
-• We’ve improved sharing and forwarding of audio messages and attachments. Keep sending those voice memos!
-• Other bug fixes to keep your app running smoothly.
+• केवल इमोजी से किसी संदेश का जवाब देना है? अब चैट में केवल इमोजी वाले जवाब अधिक बड़े दिखेंगे। हमें एक बड़ा जवाब पसंद है।
+• हमने ऑडियो संदेश व अटैचमेंट को शेयर व फॉरवर्ड करना बेहतर बना दिया है। वे वॉयस मेमो आराम से भेजते रहें!
+• आपके ऐप को सुचारू रूप से चलाते रहने के लिए  अन्य बग फ़िक्स।

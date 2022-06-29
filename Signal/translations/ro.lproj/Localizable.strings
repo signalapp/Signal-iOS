@@ -1,11 +1,11 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Nu acum";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Nu Acum";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Despre Signal";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Acceptă noul număr de siguranță";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Acceptă Noul Număr de Siguranță";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Atașament";

@@ -155,7 +155,7 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal не може да стартува бидејќи твојот уред нема доволно меморија. За да користиш Signal, смени ги поставувањата за меморија.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal не може да стартува бидејќи твојот уред нема доволно меморија. За да користиш Signal, ослободи простор во Подесувањата.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Недоволно меморија";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Дајте му поттик на Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Твојат Беџ за поддршка истече и повеќе нема да биде прикажан на твојот профил.\n\nМожеш да продолжиш да користиш Signal, но за да поддржиш технологија која е направена за тебе, размисли за можноста да станеш поддржувач со давање месечна донација.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Твојот Беџ за поддршка истече и повеќе нема да биде прикажан на твојот профил.\n\nМожеш да продолжиш да користиш Signal, но за да поддржиш технологија која е направена за тебе, размисли за можноста да станеш поддржувач со давање месечна донација.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Твојат Беџ за поддршка истече и повеќе нема да биде прикажан на твојот профил.\n\nМожеш да го реактивираш твојот беџ за поддршка за уште 30 дена со еднократeн придонес.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Твојот Беџ за поддршка истече и повеќе нема да биде прикажан на твојот профил.\n\nМожеш да го реактивираш твојот беџ за поддршка за уште 30 дена со еднократeн придонес.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Станете поддржувач";
@@ -4619,7 +4619,7 @@
 "READ_ACTION" = "Прочитано";
 
 /* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Овој корисник не може да биде додаден во групата додека не го надгради својот Signal.";
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Овој корисник не може да биде додаден во групата додека не го надгради Signal.";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Корисникот не може да биде избран.";

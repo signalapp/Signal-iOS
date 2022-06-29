@@ -1,3 +1,3 @@
-• Replying to a message with just emoji? Now emoji-only responses will appear larger in the chat. We love a big response.
-• We’ve improved sharing and forwarding of audio messages and attachments. Keep sending those voice memos!
-• Other bug fixes to keep your app running smoothly.
+• 이모지로만 회신하시나요? 이제 이모지만 써서 응답할 경우 채팅에서 이모지가 크게 표시됩니다. 반응은 클수록 좋은 법이죠.
+• 오디오 메시지 및 첨부 파일의 공유와 전달 기능을 개선했습니다. 계속해서 음성 메모를 보내세요!
+• 앱의 원활한 실행을 위해 그 외 몇 가지 버그를 수정했습니다.

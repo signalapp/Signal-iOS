@@ -4625,7 +4625,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Пользователь не может быть выбран.";
 
 /* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "Этот пользователь не может быть добавлен в группу, пока он не обновит Signal.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "Этот пользователь не может получать подарки, пока он не обновит Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Я забыл свой PIN-код.";
@@ -5936,7 +5936,7 @@
 "STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Частные истории";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Настройки приватности истории.";
+"STORIES_SETTINGS_TITLE" = "Настройки приватности историй";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Поделиться";

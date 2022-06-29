@@ -1,3 +1,3 @@
-• Replying to a message with just emoji? Now emoji-only responses will appear larger in the chat. We love a big response.
-• We’ve improved sharing and forwarding of audio messages and attachments. Keep sending those voice memos!
-• Other bug fixes to keep your app running smoothly.
+・絵文字だけでメッセージに返信しますか？絵文字だけの返信は、チャットで大きく表示されるようになりました。大げさなぐらいがいいですよね。
+・音声メッセージや添付ファイルの共有・転送を改善しました。これからもボイスメモを送り続けましょう！
+• Appをスムーズに実行し続けるためのその他のバグ修正。

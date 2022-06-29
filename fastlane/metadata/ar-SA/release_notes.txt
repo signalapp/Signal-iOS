@@ -1,3 +1,3 @@
-• Replying to a message with just emoji? Now emoji-only responses will appear larger in the chat. We love a big response.
-• We’ve improved sharing and forwarding of audio messages and attachments. Keep sending those voice memos!
-• Other bug fixes to keep your app running smoothly.
+• تُجيب على رسالة باستخدام وجه مُعبِّر؟ ستظهر الآن الوجوه المُعبِّرة بشكل أكبر في الدردشة. نحن نحب الإجابات التي لها وقع أكبر.
+•  لقد قمنا بتحسين مشاركة وإعادة توجيه الرسائل الصوتية والمرفقات. استمر في إرسال تلك الملفات الصوتية!
+• نقوم بإصلاحات أخرى للحفاظ على تشغيل تطبيقك بسلاسة.

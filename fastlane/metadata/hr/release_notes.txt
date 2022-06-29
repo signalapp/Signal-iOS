@@ -1,3 +1,3 @@
-• Replying to a message with just emoji? Now emoji-only responses will appear larger in the chat. We love a big response.
-• We’ve improved sharing and forwarding of audio messages and attachments. Keep sending those voice memos!
-• Other bug fixes to keep your app running smoothly.
+• Ako se vaš odgovor na poruku sastoji samo od smajlića, on će u razgovoru biti povećan. Volimo velike odgovore.
+• Poboljšali smo dijeljenje i prosljeđivanje zvučnih poruka i privitaka. Slobodno šaljite svoje glasovne poruke!
+• Ispravili smo i ostale bugove za nesmetano korištenje aplikacije.

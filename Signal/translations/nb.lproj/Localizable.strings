@@ -3539,7 +3539,7 @@
 "MUTED_BADGE" = "Dempet";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Oppdateringer om storyen din vil vises her.";
+"MY_STORIES_NO_STORIES" = "Oppdateringer om storyen din vises her.";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Mine stories";
@@ -4619,7 +4619,7 @@
 "READ_ACTION" = "Lest";
 
 /* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Denne brukeren kan ikke bli lagt til i gruppen før de oppgraderer Signal-versjonen sin.";
+"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Denne brukeren kan ikke bli lagt til i gruppen før vedkommende oppgraderer Signal-appen.";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Brukeren kan ikke velges.";

@@ -410,7 +410,7 @@
 "BADGE_GIFTING_CHAT_EXPIRED" = "Skaduar";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Dhurojini dikujt një stemë, duke bërë një dhurim për Signal-ni në emër të tyre. Do të marrin një stemë për ta shfaqur në foton e tyre të profilit.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Dhuroji dikujt një stemë përmes dhurimit në Signal në emër të tij. Ai do ta marrë stemën për ta shfaqur në foton e profilit.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Dhuroni një Stemë";
@@ -428,16 +428,16 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Dhurim Një Herë";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Pagesa juaj nuk mund të përpunohej dhe nuk jeni tarifuar. Ju lutemi provoni përsëri.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Pagesa nuk mund të kryhej dhe nuk je tarifuar. Provo përsëri.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Pagesa dështoi";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Pagesa u krye, por Signal nuk e dërgoi dot stemën tënde dhuratë. Kontakto asistencën.";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Dhurata stemë nuk u dërgua";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
 "BADGE_GIFTING_REDEEM" = "Përdor";
@@ -449,7 +449,7 @@
 "BADGE_GIFTING_VIEW" = "Shihni";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Dhurimi mujor i përsëritur u anulua automatikisht. %@Distinktivi  juaj %@ nuk është më i dukshëm në profilin tuaj.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Dhurimi mujor i përsëritur u anulua automatikisht. %@Stema %@ nuk duket më në profil.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Dhurimi juaj ripërsëritës i përmuajshëm u anulua automatikisht, ngaqë keni qenë jo aktiv për një kohë të gjatë. Stema juaj %@ s’është më e dukshme në profilin tuaj.\n\nMund të vazhdoni të përdorni Signal-in, por që të përkrahni aplikacionin dhe riaktivizoni stemën tuaj, rinovojeni tani.";
@@ -1640,28 +1640,28 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Provoni një metodë tjetër pagese, ose lidhuni me bankën tuaj për më tepër informacion.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Kontrolloni për të parë nëse mënyra juaj e pagesës është e përditësuar në Apple Pay. Nëse nuk është, përditësojeni dhe provoni përsëri. Nëse keni ende probleme, kontaktoni bankën tuaj.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Kontrollo nëse mënyra e pagesës është e përditësuar në Apple Pay. Nëse jo, përditësoje dhe provo përsëri. Nëse vazhdon të kesh ende probleme, kontakto bankën.";
 
 /* Donation payment error for decline failures where the card is not supported. */
 "DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Karta juaj nuk e mbështet këtë lloj blerjeje. Provoni një mënyrë tjetër pagese ose kontaktoni bankën tuaj për më shumë informacion.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Karta juaj ka skaduar. Kontrolloni për të parë nëse mënyra juaj e pagesës është e përditësuar në Apple Pay. Nëse nuk është, përditësojeni dhe provoni përsëri.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Karta ka skaduar. Kontrollo nëse mënyra e pagesës është e përditësuar në Apple Pay. Nëse jo, përditësoje dhe provo përsëri.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Numri i kartës suaj është i pasaktë. Kontrolloni për të parë nëse mënyra juaj e pagesës është futur saktë në Apple Pay. Nëse nuk është, përditësojeni dhe provoni përsëri.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Numri i kartës është i pasaktë. Kontrollo nëse mënyra e pagesës është futur saktë në Apple Pay. Nëse jo, përditësoje dhe provo përsëri.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
 "DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Numri juaj CVC është i pasaktë. Kontrolloni për të parë nëse numri juaj CVC është futur saktë në Apple Pay. Nëse nuk është, përditësojeni dhe provoni përsëri.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Karta juaj nuk ka fonde të mjaftueshme për të përfunduar këtë blerje. Provoni një mënyrë tjetër pagese ose kontaktoni bankën tuaj për më shumë informacion.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Karta nuk ka fonde të mjaftueshme për ta bërë këtë blerje. Provo një mënyrë tjetër pagese ose kontakto bankën për më shumë informacion.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Muaji i skadimit në mënyrën tuaj të pagesës është i pasaktë. Përditësoje në Apple Pay dhe provo sërish.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Muaji i skadimit në mënyrën e pagesës është i pasaktë. Përditësoje në Apple Pay dhe provo sërish.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "Viti i skadimit në mënyrën tuaj të pagesës është i pasaktë. Përditësoje në Apple Pay dhe provo sërish.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "Viti i skadimit në mënyrën e pagesës është i pasaktë. Përditësoje në Apple Pay dhe provo sërish.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Numri i kartës suaj është i pasaktë. Përditësoje në Apple Pay dhe provo sërish.";
@@ -3011,10 +3011,10 @@
 "IN_CALL_TERMINATED" = "Thirrja Përfundoi.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Bisedat pa zë që janë arkivuar do të mbeten të arkivuara edhe kur të mbërrijë një mesazh i ri.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Bisedat pa zë të arkivuara do të mbeten të tilla edhe kur të vijë një mesazh i ri.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Bisedat e arkivuara do të zhvendosen në kutinë hyrëse kur të mbërrijë një mesazh i ri.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Bisedat e arkivuara do të zhvendosen te dosja e mesazheve hyrëse kur të vijë një mesazh i ri.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Ende pa fjalosje.\nFillojani duke i dërguar një mesazh një shoku.";
@@ -4931,7 +4931,7 @@
 "SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "Do të humbni çfarëdo fotosh ose videosh të bëra.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Të çaktivizohet mënyra e shumëfishtë?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Të çaktivizohet modaliteti i shumëfishtë?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Të ftohet një shok përmes SMS-s të pasigurt?";
@@ -5177,10 +5177,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Tingull Mesazhesh";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Bisedat pa zë që janë arkivuar do të mbeten të arkivuara edhe kur të mbërrijë një mesazh i ri.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Bisedat pa zë të arkivuara do të mbeten të të tilla edhe kur të vijë një mesazh i ri.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Mbani të arkivuara bisedat pa zë";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Mbaj të arkivuara bisedat pa zë";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Kushte & Rregulla Privatësie";

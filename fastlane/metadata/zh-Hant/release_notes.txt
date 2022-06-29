@@ -1,3 +1,3 @@
-• Replying to a message with just emoji? Now emoji-only responses will appear larger in the chat. We love a big response.
-• We’ve improved sharing and forwarding of audio messages and attachments. Keep sending those voice memos!
-• Other bug fixes to keep your app running smoothly.
+• 只想用表情符號回訊息嗎？現在，聊天畫面會放大顯示純表情符號的訊息。你我一定會對各種表情符號愛不釋手！
+• 我們已改善語音訊息/附件的共用與轉發功能，方便各位更輕鬆地傳送語音訊息！
+• 修復了其他問題，提升 App 運作的順暢度。

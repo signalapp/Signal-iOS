@@ -312,9 +312,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
+			<string>Talde hau ezin izan da sortu kide 1 Signal bertsio zahar bat erabiltzen ari delako. Estilo berriko talde bat sortu dezakezu Signal eguneratzen badute, edo haiek ezabatu taldea sortu aurretik. %2$@</string>
 			<key>other</key>
-			<string>This group cannot be created because %d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
+			<string>Talde hau ezin izan da sortu %d kide Signal bertsio zahar bat erabiltzen ari delako. Estilo berriko talde bat sortu dezakezu Signal eguneratzen badute, edo haiek ezabatu taldea sortu aurretik. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -328,9 +328,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
+			<string>Talde hau ezin izan da sortu kide 1 Signal bertsio zahar bat erabiltzen ari delako. Estilo berriko talde bat sortzeko Signal eguneratu beharko dute, edo horiek ezabatu taldea sortu aurretik.</string>
 			<key>other</key>
-			<string>This group cannot be created because %d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
+			<string>Talde hau ezin izan da sortu %d kide Signal bertsio zahar bat erabiltzen ari delako. Estilo berriko talde bat sortzeko Signal eguneratu beharko dute, edo horiek ezabatu taldea sortu aurretik.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -344,9 +344,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 member couldn’t be re-added to the New Group. Do you want to add them now?</string>
+			<string>Kide 1 ezin izan da talde berrira birgehitu. Gehitu nahi duzu orain?</string>
 			<key>other</key>
-			<string>%d members couldn’t be re-added to the New Group. Do you want to add them now?</string>
+			<string>%d kide ezin izan dira talde berrira birgehitu. Gehitu nahi dituzu orain?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal groups perform best with 1 member or less. Adding more members will cause delays sending and receiving messages.</string>
+			<string>Signal taldeen errendimendurik onena kide 1 edo gutxiago dituenean da. Kide gehiago gehitzeak atzerapenak sortuko ditu mezuak bidaltzerakoan eta jasotzerakoan.</string>
 			<key>other</key>
-			<string>Signal groups perform best with %d members or less. Adding more members will cause delays sending and receiving messages.</string>
+			<string>Signal taldeen errendimendurik onena %d kide edo gutxiago dituenean lortzen da. Kide gehiago gehitzeak atzerapenak sortuko ditu mezuak bidaltzerakoan eta jasotzerakoan.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -632,9 +632,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A member couldn’t be added to the New Group and has been removed from the group.</string>
+			<string>Kide 1 ezin izan da talde berrira gehitu eta taldetik ezabatua izan da.</string>
 			<key>other</key>
-			<string>%d members couldn’t be added to the New Group and have been removed from the group.</string>
+			<string>%d kide ezin izan dira talde berrira gehitu eta taldetik ezabatuak izan dira.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -648,9 +648,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A member couldn’t be added to the New Group and has been invited to join.</string>
+			<string>Kide 1 ezin izan da talde berrira gehitu eta sartzeko gonbidapena bidali zaio.</string>
 			<key>other</key>
-			<string>%d members couldn’t be added to the New Group and have been invited to join.</string>
+			<string>%d kide ezin izan dira talde berrira gehitu eta sartzeko gonbidapena bidali zaie.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -664,9 +664,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can’t share more than 1 item.</string>
+			<string>Ezin duzu elementu 1 baino gehiago partekatu.</string>
 			<key>other</key>
-			<string>You can’t share more than %d items.</string>
+			<string>Ezin duzu %d elementu baino gehiago partekatu.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 group in common</string>
+			<string>Talde komun 1 zuen artean</string>
 			<key>other</key>
-			<string>%d groups in common</string>
+			<string>%d talde komun zuen artean</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -696,9 +696,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete 1 Message</string>
+			<string>Ezabatu mezu 1</string>
 			<key>other</key>
-			<string>Delete %d Messages</string>
+			<string>%d mezu ezabatu</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -712,9 +712,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Photo</string>
+			<string>Argazki 1</string>
 			<key>other</key>
-			<string>%d Photos</string>
+			<string>%d argazki</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -728,9 +728,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Item</string>
+			<string>Elementu 1</string>
 			<key>other</key>
-			<string>%d Items</string>
+			<string>%d elementu</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -744,9 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You Blocked 1 Member of This Group</string>
+			<string>Talde honetako partaide 1 blokeatu duzu</string>
 			<key>other</key>
-			<string>You Blocked %d Members of This Group</string>
+			<string>Talde honetako %d partaide blokeatu dituzu</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -760,9 +760,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Selected</string>
+			<string>1 hautatua</string>
 			<key>other</key>
-			<string>%d Selected</string>
+			<string>%d hautatua</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_%d</key>
@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Member</string>
+			<string>Kide 1</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>%d kide</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -808,9 +808,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Incorrect PIN. 1 attempt remaining.</string>
+			<string>PIN okerra. Saiakera 1 daukazu.</string>
 			<key>other</key>
-			<string>Incorrect PIN. %d attempts remaining.</string>
+			<string>PIN okerra. %d saiakera dauzkazu.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -824,9 +824,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ invited 1 person</string>
+			<string>%2$@ erabiltzaileak pertsona 1 gonbidatu du</string>
 			<key>other</key>
-			<string>%2$@ invited %d people</string>
+			<string>%2$@ erabiltzaileak %d  pertsona gonbidatu ditu</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -840,9 +840,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 pending member request.</string>
+			<string>Kide eskaera 1 falta da</string>
 			<key>other</key>
-			<string>%d pending member requests.</string>
+			<string>%d dira falta diren kideen eskaerak</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -856,9 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoke invalid invite</string>
+			<string>Ezeztatu baliogabeko gonbidapena</string>
 			<key>other</key>
-			<string>Revoke %d invalid invites</string>
+			<string>Ezeztatu %d baliogabeko gonbidapen</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -872,9 +872,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoke Invite</string>
+			<string>Ezeztatu gonbidapena</string>
 			<key>other</key>
-			<string>Revoke Invites</string>
+			<string>Ezeztatu gonbidapenak</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -888,9 +888,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoke group invite sent by “%2$@”?</string>
+			<string>Ezeztatu %2$@ erabiltzaileak bidalitako gonbidapena?</string>
 			<key>other</key>
-			<string>Revoke %d invites sent by “%2$@”?</string>
+			<string>Ezeztatu "%2$@" erabiltzaileak bidalitako %d gonbidapen?</string>
 		</dict>
 	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
@@ -904,9 +904,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in 1 day.</string>
+			<string>Beranduago gogoraraziko dizugu. PIN bat sortzea beharrezkoa izango da egun 1ean.</string>
 			<key>other</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in %d days.</string>
+			<string>Beranduago gogoraraziko dizugu. PIN bat sortzea beharrezkoa izango da %d egunetan.</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -936,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
+			<string>Saiakera 1 falta zaizu. Saiakerarik gabe gelditzen bazara, PIN berri bat sortu dezakeu. Zure kontua erregistratu eta erabili dezakezu, baina gordetako ezarpen batzuk galduko dituzu, hala nola profilari buruzko informazio.</string>
 			<key>other</key>
-			<string>You have %d attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
+			<string>%d saiakera falta zaizkizu. Saiakerarik gabe gelditzen bazara, PIN berri bat sortu dezakeu. Zure kontua erregistratu eta erabili dezakezu, baina gordetako ezarpen batzuk galduko dituzu, hala nola profilari buruzko informazio.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -952,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
+			<string>Saiakera 1 falta zaizu. Saiakerarik gabe gelditzen bazara, zure kontua blokeatuko da. Aktibitaterik gabe 7 egunez egon ondoren, zure PIN-a erabili gabe birerregistratu dezakezu telefono zenbakia. Zure kontua eta datu guztiak erabat ezabatuko dira.</string>
 			<key>other</key>
-			<string>You have %d attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
+			<string>%d saiakera falta zaizkizu. Saiakerarik gabe gelditzen bazara, zure kontua blokeatuko da. Aktibitaterik gabe 7 egunez egon ondoren, zure PIN-a erabili gabe birerregistratu dezakezu telefono zenbakia. Zure kontua eta datu guztiak erabat ezabatuko dira.</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -984,9 +984,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Member of %2$@, %3$@, and 1 additional group</string>
+			<string>%2$@, %3$@, eta talde gehigarri 1eko kidea</string>
 			<key>other</key>
-			<string>Member of %2$@, %3$@, and %d additional groups</string>
+			<string>%2$@, %3$@, eta %d talde gehigarrietako kidea</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -1000,9 +1000,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 day</string>
+			<string>Egun 1</string>
 			<key>other</key>
-			<string>%d days</string>
+			<string>%d egun</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
@@ -1016,9 +1016,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1d</string>
+			<string>e1</string>
 			<key>other</key>
-			<string>%dd</string>
+			<string>%de</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_%d</key>
@@ -1032,9 +1032,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 hour</string>
+			<string>Ordu  1</string>
 			<key>other</key>
-			<string>%d hours</string>
+			<string>%d ordu</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
@@ -1048,9 +1048,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1h</string>
+			<string>o1</string>
 			<key>other</key>
-			<string>%dh</string>
+			<string>%do</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_%d</key>
@@ -1064,9 +1064,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 minute</string>
+			<string>Minutu 1</string>
 			<key>other</key>
-			<string>%d minutes</string>
+			<string>%d minutu</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
@@ -1080,7 +1080,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1m</string>
+			<string>m1</string>
 			<key>other</key>
 			<string>%dm</string>
 		</dict>
@@ -1096,9 +1096,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 second</string>
+			<string>Segundu 1</string>
 			<key>other</key>
-			<string>%d seconds</string>
+			<string>%d segundu</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
@@ -1112,7 +1112,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1s</string>
+			<string>s1</string>
 			<key>other</key>
 			<string>%ds</string>
 		</dict>
@@ -1128,9 +1128,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 week</string>
+			<string>Aste 1</string>
 			<key>other</key>
-			<string>%d weeks</string>
+			<string>%d aste</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1w</string>
+			<string>a1</string>
 			<key>other</key>
-			<string>%dw</string>
+			<string>%da</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_YEARS_%d</key>
@@ -1160,9 +1160,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 year</string>
+			<string>Urte 1</string>
 			<key>other</key>
-			<string>%d years</string>
+			<string>%d urte</string>
 		</dict>
 	</dict>
 </dict>

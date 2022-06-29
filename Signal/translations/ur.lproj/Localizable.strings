@@ -434,10 +434,10 @@
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "ادائیگی ناکام ہو گئی";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "آپ کی ادائیگی پر عمل کاری کی گئی تھی لیکن Signal آپ کو گفٹ بیج نہیں بھیج سکا۔ براہ کرم معاونت سے رابطہ کریں۔";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "بیج گفٹ کرنا ناکام ہو گیا";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
 "BADGE_GIFTING_REDEEM" = "ریڈیم کرنا";
@@ -449,7 +449,7 @@
 "BADGE_GIFTING_VIEW" = "دیکھیں";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "آپ کا ماہانہ متواتر عطیہ خود کار طور پر منسوخ ہو گیا تھا۔ %@ آپ کا %@ آپ کی پروفائل پر مزید نظر نہیں آئے گا۔";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "آپ کا ماہانہ متواتر عطیہ خود کار طور پر منسوخ ہو گیا تھا۔ %@ آپ کا %@ آپ کی پروفائل پر مزید نظر نہیں آتا۔";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "آپ کا ماہانہ متواتر عطیہ خود کار طور پر منسوخ ہو گیا تھا کیونکہ آپ طویل عرصے سے غیر فعال تھے۔ آپ کا %@بیج آپ کی پروفائل پر مزید نظر نہیں آئے گا۔\n\nآپ Signal استعمال کرنا جاری رکھ سکتے ہیں لیکن ایپ کی معاونت اور اپنے بیج کو دوبارہ فعال کرنے کے لیے، ابھی تجدید کریں۔";

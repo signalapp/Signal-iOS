@@ -410,7 +410,7 @@
 "BADGE_GIFTING_CHAT_EXPIRED" = "已過期";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "以其之名捐款給 Signal，饋贈一枚徽章給那特別的人。對方將獲得一枚徽章，可於其個人資料中展覽。";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "以他人名義捐款給 Signal 可以向對方饋贈一枚徽章。此徽章會顯示在他們的個人資料照片上。";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "饋贈徽章";
@@ -428,16 +428,16 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "單次捐款";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "系統無法處理您的付款，付款尚未成功。請再試一次。";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "系統已經處理您的付款，但 Signal 無法傳送您的饋贈徽章。請聯絡支援團隊。";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "徽章饋贈失敗";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
 "BADGE_GIFTING_REDEEM" = "換領";
@@ -449,7 +449,7 @@
 "BADGE_GIFTING_VIEW" = "檢視";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "您的每月定期捐款已自動取消。%@ 您的「%@」徽章不再在您的個人資料中看見。";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "您的每月定期捐款已自動取消。%@ 您的個人資料不會再顯示「%@」徽章。";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "有見您已有好一段日子未曾使用，您的每月定期捐款已自動取消。您的「%@」徽章不再在您的個人資料中看見。\n\n您可如常使用 Signal，沒有關係。假如您希望支持此應用程式並延續您的徽章，請立即續期。";
@@ -1640,28 +1640,28 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "試試換另一個付款方法，又或者聯絡您的銀行取得更多資訊。";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "請到 Apple Pay 查看您的付款方法是否仍然有效。若已過時，請先更新資料，然後再試一次。若然問題持續，請聯絡您的銀行。";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "請到 Apple Pay 查看您的付款方法是否仍然有效。若已過期，請先更新資料，然後再試一次。若問題仍然持續，請聯絡您的銀行。";
 
 /* Donation payment error for decline failures where the card is not supported. */
 "DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "您的信用卡不支援此類型的購買。試試換另一個付款方法，又或者聯絡您的銀行取得更多資訊。";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "您的信用卡已過期。請到 Apple Pay 查看您的付款方法是否仍然有效。若已過時，請先更新資料，然後再試一次。";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "您的信用卡已過期。請到 Apple Pay 查看您的付款方法是否仍然有效。若已過期，請先更新資料，然後再試一次。";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "您的信用卡號碼不正確。請到 Apple Pay 查看您的付款方法是否輸入正確。若然有誤，請先更新資料，然後再試一次。";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "您的信用卡號碼不正確。請到 Apple Pay 查看您輸入的付款方法是否正確。若然有誤，請先更新資料，然後再試一次。";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
 "DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "您的信用卡驗證碼 (CVC) 不正確。請到 Apple Pay 查看您的信用卡驗證碼是否輸入正確。若然有誤，請先更新資料，然後再試一次。";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "您的信用卡款項不足以完成此次購買。試試換另一個付款方法，又或者聯絡您的銀行取得更多資訊。";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "您的信用卡資金不足以完成此次購買。請嘗試其他付款方法，或者聯絡您的銀行以了解詳情。";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "您的付款方法所述的到期月份不正確。請到 Apple Pay 更新此資訊，然後再試一次。";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "您的付款方法所述的到期月份不正確。請到 Apple Pay 更新資料，然後再試一次。";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "您的付款方法所述的到期年份不正確。請到 Apple Pay 更新此資訊，然後再試一次。";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "您的付款方法所述的到期年份不正確。請到 Apple Pay 更新資料，然後再試一次。";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "您的信用卡號碼不正確。請到 Apple Pay 更新此資訊，然後再試一次。";
@@ -3011,10 +3011,10 @@
 "IN_CALL_TERMINATED" = "通話結束";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "當收到新訊息時，已存檔的靜音聊天將會保持存檔狀態。";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "當收到新訊息時，已存檔的聊天記錄會移至收件匣。";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "未有任何對話。\n找個好友聊天，開始使用吧。";
@@ -5177,10 +5177,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "訊息提示聲";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "當收到新訊息時，已存檔的靜音聊天將會保持存檔狀態。";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "繼續存檔靜音聊天記錄";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "條款及私隱政策";

@@ -410,7 +410,7 @@
 "BADGE_GIFTING_CHAT_EXPIRED" = "หมดอายุ";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "มอบโล่เป็นของขวัญให้กับผู้อื่นด้วยการบริจาคให้กับ Signal ด้วยชื่อของคนผู้นั้น เขาจะได้มีโล่ไว้แสดงที่รูปโปรไฟล์";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "มอบโล่เป็นของขวัญให้กับผู้อื่นด้วยการบริจาคให้ Signal ในชื่อของคนคนนั้น เขาจะได้มีโล่ไว้แสดงที่รูปโปรไฟล์";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "ให้โล่เป็นของขวัญ";
@@ -428,16 +428,16 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "การบริจาคครั้งเดียว";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "การชำระเงินของคุณไม่สามารถดำเนินการได้ และคุณยังไม่ได้ถูกเรียกเก็บเงิน กรุณาลองใหม่อีกครั้ง";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "ไม่สามารถดำเนินการชำระเงินของคุณได้ และคุณยังไม่ได้ถูกเรียกเก็บเงิน กรุณาลองใหม่อีกครั้ง";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "การชำระเงินล้มเหลว";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "ดำเนินการชำระเงินแล้ว แต่ Signal ไม่สามารถส่งโล่ของขวัญของคุณได้ กรุณาติดต่อฝ่ายสนับสนุน";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "การส่งโล่ของขวัญล้มเหลว";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
 "BADGE_GIFTING_REDEEM" = "แลกเปลี่ยน";
@@ -449,7 +449,7 @@
 "BADGE_GIFTING_VIEW" = "ดู";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "การบริจาครายเดือนของคุณถูกยกเลิกโดยอัตโนมัติ  %@ โล่ %@ ของคุณจะไม่แสดงบนโปรไฟล์อีกต่อไป";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "การบริจาครายเดือนของคุณถูกยกเลิกโดยอัตโนมัติ %@ โล่ %@ ของคุณจะไม่แสดงบนโปรไฟล์อีกต่อไป";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "การบริจาครายเดือนของคุณจะถูกยกเลิกโดยอัตโนมัติ เพราะว่าคุณไม่มีการเคลื่อนไหวมาเป็นระยะเวลานาน โล่ %@ ของคุณจะไม่ปรากฎบนโปรไฟล์อีกต่อไป \n\nคุณสามารถใช้ Signal ต่อไปได้ แต่หากต้องการสนับสนุนแอปและเปิดใช้งานโล่อีกครั้ง ให้ต่ออายุตอนนี้";
@@ -1640,7 +1640,7 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "ลองวิธีการชำระอื่น หรือติดต่อธนาคารเพื่อขอข้อมูลเพิ่มเติม";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "ตรวจยืนยันวิธีการชำระเงินว่ามีการอัปเดตแล้วใน Apple Pay ถ้ายัง ให้อัปเดตแล้วลองอีกครั้ง ถ้ายังมีปัญหาอยู่ ให้ติดต่อธนาคาร";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "ตรวจยืนยันวิธีการชำระเงินว่ามีการอัปเดตแล้วใน Apple Pay หรือไม่ ถ้ายัง ให้อัปเดตแล้วลองอีกครั้ง ถ้ายังมีปัญหาอยู่ ให้ติดต่อธนาคาร";
 
 /* Donation payment error for decline failures where the card is not supported. */
 "DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "บัตรของคุณไม่รับรองการซื้อประเภทนี้ ลองวิธีชำระเงินแบบอื่น หรือติดต่อธนาคารเพื่อสอบถามข้อมูลเพิ่มเติม";
@@ -1658,7 +1658,7 @@
 "DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "บัตรของคุณมีวงเงินไม่เพียงพอที่จะทำการซื้อนี้ให้เรียบร้อย ลองวิธีการชำระเงินอื่นๆ หรือติดต่อธนาคารเพื่อขอข้อมูลเพิ่มเติม";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "เดือนหมดอายุของวิธีการชำระเงินของคุณไม่ถูกต้อง อัปเดตเดือนที่หมดอายุใน Apple Pay แล้วลองอีกครั้ง";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "เดือนหมดอายุของวิธีการชำระเงินของคุณไม่ถูกต้อง อัปเดตใน Apple Pay แล้วลองอีกครั้ง";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "ปีหมดอายุของวิธีการชำระเงินของคุณไม่ถูกต้อง อัปเดตใน Apple Pay แล้วลองอีกครั้ง";
@@ -3011,10 +3011,10 @@
 "IN_CALL_TERMINATED" = "วางสายแล้ว";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "แชตที่ปิดเสียงไว้ที่เก็บถาวรจะยังคงเก็บถาวรอยู่เมื่อมีข้อความใหม่มาถึง";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "แชตที่ปิดเสียงไว้ในที่เก็บถาวรจะยังคงเก็บถาวรอยู่เมื่อมีข้อความใหม่มาถึง";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "แชตที่เก็บถาวรไว้จะย้ายไปอยู่กล่องข้อความเมื่อข้อความใหม่มาถึง";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "แชตที่เก็บถาวรไว้จะย้ายไปอยู่กล่องข้อความขาเข้าเมื่อมีข้อความใหม่เข้ามา";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "ยังไม่มีข้อความเข้า\nเริ่มต้นด้วยการส่งข้อความหาเพื่อนสักคน";
@@ -5177,7 +5177,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "เสียงข้อความเรียกเข้า";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "แชตที่ปิดเสียงไว้ที่เก็บถาวรจะยังคงเก็บถาวรอยู่เมื่อมีข้อความใหม่มาถึง";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "แชตที่ปิดเสียงไว้ในที่เก็บถาวรจะยังคงเก็บถาวรอยู่เมื่อมีข้อความใหม่มาถึง";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "เก็บแชตที่ปิดเสียงถาวร";

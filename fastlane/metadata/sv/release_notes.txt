@@ -1,3 +1,3 @@
-• Replying to a message with just emoji? Now emoji-only responses will appear larger in the chat. We love a big response.
-• We’ve improved sharing and forwarding of audio messages and attachments. Keep sending those voice memos!
-• Other bug fixes to keep your app running smoothly.
+• Svarar du på ett meddelande med enbart emojis? Nu visas endast emoji-svar som större i chatten. Vi älskar stora svar.
+Vi har förbättrat delning och vidarebefordran av ljudmeddelanden och bilagor. Fortsätt skicka röstmeddelanden!
+Övriga buggfixar för att din app ska fungera smidigt.

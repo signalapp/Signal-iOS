@@ -80,7 +80,7 @@
 "ADD_TO_GROUP_RECENTS_TITLE" = "Nedávne čety";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ bol(a) pridaný/á do %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ bol/a pridaný/á do %@";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "Pridať do skupiny";
@@ -428,16 +428,16 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Jednorazový dar";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Vašu platbu sa nepodarilo spracovať a nebola vám naúčtovaná. Skúste to, prosím, znova.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Vašu platbu sa nepodarilo spracovať a nebola vám naúčtovaná. Skúste to znova.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Platba zlyhala";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Vaša platba bola spracovaná ale Signalu sa nepodarilo odoslať darčekový odznak. Kontaktujte náš tím podpory.";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Odosielanie odznaku nebolo úspešné";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
 "BADGE_GIFTING_REDEEM" = "Uplatniť";
@@ -1910,7 +1910,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Kľúč príjemcu je neplatný.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Prijatá správa bola mimo sinchronizáciu.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Prijatá správa bola mimo synchronizáciu.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Prijatá správa nie je kompatibilná s touto verziou.";
@@ -2573,7 +2573,7 @@
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ pridal(a) %2$@.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ bol(a) pridaný/á do skupiny.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ bol/a pridaný/á do skupiny.";
 
 /* Message indicating that a remote user has declined their invite. */
 "GROUP_REMOTE_USER_DECLINED_INVITE" = "1 osoba odmietla pozvanie do skupiny.";
@@ -2597,7 +2597,7 @@
 "GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Pozvanie do skupiny pre %@ bolo stiahnuté.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ bol(a) pozvaný/á do skupiny.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ bol/a pozvaný/á do skupiny.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Pozvali ste %@ do skupiny.";

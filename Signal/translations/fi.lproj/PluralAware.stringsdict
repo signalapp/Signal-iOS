@@ -15,7 +15,7 @@
 			<key>one</key>
 			<string>Ääniviesti 1 sekunti</string>
 			<key>other</key>
-			<string>Ääniviesti %d sekuntia</string>
+			<string>Ääniviesti, %d sekuntia</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -31,7 +31,7 @@
 			<key>one</key>
 			<string>Lisätäänkö jäsen kohteeseen “%2$@”?</string>
 			<key>other</key>
-			<string>Lisätäänkö %d jäsentä kohteeseen “%2$@”?</string>
+			<string>Lisätäänkö %d jäsentä kohteeseen %2$@?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -314,7 +314,7 @@
 			<key>one</key>
 			<string>Enimmäismäärä puhelun osanottajia (1) on saavutettu. Yritä myöhemmin uudelleen.</string>
 			<key>other</key>
-			<string>Enimmäismäärä puhelun osanottajia (%d) on saavutettu. Yritä myöhemmin uudelleen.</string>
+			<string>Puhelun osallistujien enimmäismäärä %d on täyttynyt. Yritä myöhemmin uudelleen.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>

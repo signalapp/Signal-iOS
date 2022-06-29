@@ -410,7 +410,7 @@
 "BADGE_GIFTING_CHAT_EXPIRED" = "Έληξε";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Κάνε δώρο ένα έμβλημα σε κάποιον/α, κάνοντας μια δωρεά στο Signal στο όνομά του/της. Θα λάβει το έμβλημα για να το δείξει στην εικόνα προφίλ του/της.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Κάνε δώρο ένα σήμα σε κάποιο άτομο, κάνοντας μια δωρεά στο Signal στο όνομά του. Θα λάβει το σήμα που θα εμφανίζεται στην εικόνα προφίλ του.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Κάνε δώρο ένα έμβλημα";
@@ -434,10 +434,10 @@
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Η πληρωμή απέτυχε";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Έγινε επεξεργασία της πληρωμής σου από τη Signal, αλλά δεν καταφέραμε να δωρίσουμε το σήμα. Επικοινώνησε με την υποστήριξη.";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Αποτυχία δώρου σήματος";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
 "BADGE_GIFTING_REDEEM" = "Εξαργύρωση";
@@ -449,7 +449,7 @@
 "BADGE_GIFTING_VIEW" = "Εμφάνιση";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Η επαναλαμβανόμενη μηνιαία δωρεά σου ακυρώθηκε αυτόματα. %@ Το έμβλημα %@ σου δεν είναι πλέον ορατό στο προφίλ σου.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Η επαναλαμβανόμενη μηνιαία δωρεά σου ακυρώθηκε αυτόματα. %@ Το σήμα σου %@ δεν είναι πλέον ορατό στο προφίλ σου.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Η επαναλαμβανόμενη μηνιαία δωρεά σου ακυρώθηκε αυτόματα επειδή ήσουν ανενεργός/ή για πολύ καιρό. Το έμβλημα %@ σου δεν είναι πλέον ορατό στο προφίλ σου.\n\nΜπορείς να συνεχίσεις να χρησιμοποιείς το Signal, αλλά για να υποστηρίξεις την εφαρμογή και να επανενεργοποιήσεις το έμβλημά σου, ανανέωσέ την τώρα.";
@@ -1649,7 +1649,7 @@
 "DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Η κάρτα σου έχει λήξει. Έλεγξε εάν ο τρόπος πληρωμής σου στο Apple Pay είναι ενημερωμένος. Εάν δεν είναι, ενημέρωσέ τον και δοκίμασε ξανά.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Ο αριθμός κάρτας δεν είναι σωστό. Έλεγξε εάν ο τρόπος πληρωμής σου στο Apple Pay είναι σωστός. Εάν δεν είναι, ενημέρωσέ τον και δοκίμασε ξανά.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Ο αριθμός κάρτας δεν είναι σωστός. Έλεγξε εάν ο τρόπος πληρωμής σου στο Apple Pay είναι σωστός. Εάν δεν είναι, ενημέρωσέ τον και δοκίμασε ξανά.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
 "DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Ο τριψήφιος αριθμός CVC δεν είναι σωστός. Έλεγξε εάν ο αριθμός CVC στο Apple Pay είναι σωστός. Εάν δεν είναι, ενημέρωσέ τον και δοκίμασε ξανά.";
@@ -1658,7 +1658,7 @@
 "DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Η κάρτα σου δεν έχει επαρκή χρήματα για την ολοκλήρωση αυτής της αγοράς. Δοκίμασε άλλον τρόπο πληρωμής ή επικοινώνησε με την τράπεζά σου για περισσότερες πληροφορίες.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Η ημερομηνία λήξης στον τρόπο πληρωμής σου δεν είναι σωστή. Ενημέρωσε την στο Apple Pay και δοκίμασε ξανά.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Η ημερομηνία λήξης στον τρόπο πληρωμής σου δεν είναι σωστή. Ενημέρωσε τη στο Apple Pay και δοκίμασε ξανά.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "Το έτος λήξης στον τρόπο πληρωμής σου δεν είναι σωστό. Ενημέρωσέ το στο Apple Pay και δοκίμασε ξανά.";
@@ -3011,10 +3011,10 @@
 "IN_CALL_TERMINATED" = "Η κλήση τερματίστηκε.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Οι συνομιλίες σε σίγαση που είναι αρχειοθετημένες, θα παραμείνουν σε αρχειοθέτηση όταν λάβεις νέα μηνύματα.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Οι συνομιλίες σε σίγαση που είναι αρχειοθετημένες, θα παραμείνουν σε αρχειοθέτηση εάν λάβεις νέα μηνύματα.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Οι αρχειοθετημένες συνομιλίες θα μετακινηθούν στα Εισερχόμενα όταν λάβεις νέα μηνύματα.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Οι αρχειοθετημένες συνομιλίες θα μετακινηθούν στα Εισερχόμενα εάν λάβεις νέα μηνύματα.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Δεν υπάρχουν ακόμα συνομιλίες.\nΣτείλε σε έναν φίλο σου, για να ξεκινήσεις.";

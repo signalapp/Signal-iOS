@@ -5930,7 +5930,7 @@
 "STORIES_SETTINGS_NEW_STORY" = "New Private Story";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Os Stories privados só podem ser vistos pelas pessoas que você adicionou a eles. Somente você pode ver o nome do Story.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Os Stories privados só podem ser vistos pelas pessoas que você adicionou. Somente você pode ver o nome do Story.";
 
 /* Header for the 'Private Stories' section of the stories settings */
 "STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";

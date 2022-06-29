@@ -410,7 +410,7 @@
 "BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "その人の名前でSignalに寄付をすると、バッジをプレゼントすることができます。その人のプロフィール写真にバッジが表示されます。";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
@@ -428,16 +428,16 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "1回限りの寄付";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "お支払いを処理できず、請求もされていません。 もう一度やり直してください。";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "お支払いは処理されましたが、Signalはギフトバッジをお送りすることができませんでした。 サポートにお問い合わせください。";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "バッジギフトを送れませんでした";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
 "BADGE_GIFTING_REDEEM" = "Redeem";
@@ -1640,7 +1640,7 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "別の決済方法をお試しいただくか、取引先の銀行にお問い合わせください。";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Apple Payで決済方法が最新になっているか確認します。最新の情報に更新されていない場合は、更新してからもう一度お試しください。それでも問題がある場合は、カード会社にお問い合わせください。";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Apple Payで決済方法が最新になっているか確認してください。最新の情報に更新されていない場合は、更新してからもう一度お試しください。それでも問題がある場合は、カード会社にお問い合わせください。";
 
 /* Donation payment error for decline failures where the card is not supported. */
 "DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "このカードはこの支払いに対応していません。別の決済方法を試すか、カード会社にお問い合わせください。";
@@ -1661,7 +1661,7 @@
 "DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "決済方法の有効期限の月が間違っています。Apple Payで有効期限の月を正しく入力してから、もう一度お試しください。";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "決済方法の有効期限が間違っています。Apple Payで更新してからもう一度お試しください。";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "決済方法の有効期限が間違っています。Apple Payで更新してから、もう一度お試しください。";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "カード番号が間違っています。Apple Payでカード番号を正しく入力してから、もう一度お試しください。";
@@ -4931,7 +4931,7 @@
 "SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "マルチモードをOFFにしますか？";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "安全ではないSMSで友達を招待しますか？";
@@ -5180,7 +5180,7 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "アーカイブされており、さらにミュートもしているチャットは、新しいメッセージが届いてもアーカイブされたままになります。";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "ミュートしたチャットをアーカイブしたままにします";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "利用規約とプライバシーポリシー";
