@@ -152,6 +152,13 @@ class BadgeThanksSheet: InteractiveSheetViewController {
             incomingMessage.anyUpdateIncomingMessage(transaction: transaction) {
                 $0.giftBadge?.redemptionState = state
             }
+
+            if state == .redeemed {
+                ExperienceUpgradeManager.snoozeExperienceUpgrade(
+                    .subscriptionMegaphone,
+                    transaction: transaction.unwrapGrdbWrite
+                )
+            }
         }
     }
 
