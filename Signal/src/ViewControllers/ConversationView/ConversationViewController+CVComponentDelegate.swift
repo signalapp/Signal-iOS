@@ -352,6 +352,8 @@ extension ConversationViewController: CVComponentDelegate {
     public func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge) {
         AssertIsOnMainThread()
 
+        let viewControllerToPresent: UIViewController
+
         switch itemViewModel.interaction {
         case let incomingMessage as TSIncomingMessage:
             let (shortName, fullName) = self.databaseStorage.read { transaction -> (String, String) in
@@ -361,22 +363,27 @@ extension ConversationViewController: CVComponentDelegate {
                     self.contactsManager.displayName(for: authorAddress, transaction: transaction)
                 )
             }
-            let redeemSheet = BadgeThanksSheet(badge: profileBadge, type: .gift(
+            viewControllerToPresent = BadgeThanksSheet(badge: profileBadge, type: .gift(
                 shortName: shortName,
                 fullName: fullName,
                 notNowAction: { [weak self] in self?.showRedeemBadgeLaterText() },
                 incomingMessage: incomingMessage
             ))
-            self.present(redeemSheet, animated: true)
 
-        case let outgoingMessage as TSOutgoingMessage:
-            // TODO: (GB) Show the badge that you sent.
-            _ = outgoingMessage
+        case is TSOutgoingMessage:
+            guard let thread = thread as? TSContactThread else {
+                owsFailDebug("Clicked a gift badge that wasn't in a contact thread")
+                return
+            }
+
+            viewControllerToPresent = BadgeGiftThanksSheet(thread: thread, badge: profileBadge)
 
         default:
             owsFailDebug("Tapped on gift that's not a message")
             return
         }
+
+        self.present(viewControllerToPresent, animated: true)
     }
 
     private func showRedeemBadgeLaterText() {
