@@ -29,7 +29,7 @@ public class InsetLockableTableView: UITableView {
         // Store the callback locally to prevent infinite loops
         var callback: (() -> ())?
         
-        if self.testCallbackCondition() {
+        if self.checkCallbackCondition() {
             callback = self.afterLayoutSubviewsCallback
             self.afterLayoutSubviewsCallback = nil
         }
@@ -61,7 +61,7 @@ public class InsetLockableTableView: UITableView {
         self.afterLayoutSubviewsCallback = callback
     }
     
-    private func testCallbackCondition() -> Bool {
+    private func checkCallbackCondition() -> Bool {
         guard self.callbackCondition != nil else { return false }
         
         let numSections: Int = self.numberOfSections

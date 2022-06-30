@@ -1194,14 +1194,17 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             return
         }
         
+        let targetIndexPath: IndexPath = IndexPath(
+            row: (self.viewModel.interactionData[messagesSectionIndex].elements.count - 1),
+            section: messagesSectionIndex
+        )
         self.tableView.scrollToRow(
-            at: IndexPath(
-                row: (self.viewModel.interactionData[messagesSectionIndex].elements.count - 1),
-                section: messagesSectionIndex
-            ),
+            at: targetIndexPath,
             at: .bottom,
             animated: isAnimated
         )
+        
+        self.handleInitialOffsetBounceBug(targetIndexPath: targetIndexPath, at: .bottom)
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -1398,6 +1401,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 at: position,
                 animated: (self.didFinishInitialLayout && isAnimated)
             )
+            self.handleInitialOffsetBounceBug(targetIndexPath: targetIndexPath, at: position)
             
             // If we haven't finished the initial layout then we want to delay the highlight slightly
             // so it doesn't look buggy with the push transition
@@ -1424,6 +1428,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
         
         self.tableView.scrollToRow(at: targetIndexPath, at: position, animated: true)
+        self.handleInitialOffsetBounceBug(targetIndexPath: targetIndexPath, at: position)
     }
     
     func highlightCellIfNeeded(interactionId: Int64) {
@@ -1437,6 +1442,34 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 .first(where: { ($0 as? VisibleMessageCell)?.viewModel?.id == interactionId })
                 .asType(VisibleMessageCell.self)?
                 .highlight()
+        }
+    }
+    
+    private func handleInitialOffsetBounceBug(targetIndexPath: IndexPath, at position: UITableView.ScrollPosition) {
+        /// Note: This code is a hack to prevent a weird 'bounce' behaviour that occurs when triggering the initial scroll due
+        /// to the UITableView properly calculating it's cell sizes (it seems to layout ~3 times each with slightly different sizes)
+        if !self.hasPerformedInitialScroll {
+            let initialUpdateTime: CFTimeInterval = CACurrentMediaTime()
+            var lastSize: CGSize = .zero
+            
+            self.tableView.afterNextLayoutSubviews(
+                when: { [weak self] a, b, updatedContentSize in
+                    guard (CACurrentMediaTime() - initialUpdateTime) < 2 && lastSize != updatedContentSize else {
+                        return true
+                    }
+                    
+                    lastSize = updatedContentSize
+                    
+                    self?.tableView.scrollToRow(
+                        at: targetIndexPath,
+                        at: position,
+                        animated: false
+                    )
+                        
+                    return false
+                },
+                then: {}
+            )
         }
     }
 }

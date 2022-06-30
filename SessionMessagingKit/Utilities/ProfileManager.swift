@@ -129,11 +129,12 @@ public struct ProfileManager {
             return
         }
         
+        let queue: DispatchQueue = DispatchQueue.global(qos: .default)
         let fileName: String = UUID().uuidString.appendingFileExtension("jpg")
         let filePath: String = ProfileManager.profileAvatarFilepath(filename: fileName)
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: funcName)
         
-        DispatchQueue.global(qos: .default).async {
+        queue.async {
             OWSLogger.verbose("downloading profile avatar: \(profile.id)")
             currentAvatarDownloads.mutate { $0.insert(profile.id) }
             
@@ -141,7 +142,7 @@ public struct ProfileManager {
             
             FileServerAPI
                 .download(fileId, useOldServer: useOldServer)
-                .done { data in
+                .done(on: queue) { data in
                     currentAvatarDownloads.mutate { $0.remove(profile.id) }
                     
                     GRDBStorage.shared.write { db in
@@ -184,6 +185,13 @@ public struct ProfileManager {
                             .update(db)
                         profileAvatarCache.mutate { $0[fileName] = image }
                     }
+                    
+                    // Redundant but without reading 'backgroundTask' it will warn that the variable
+                    // isn't used
+                    if backgroundTask != nil { backgroundTask = nil }
+                }
+                .catch(on: queue) { _ in
+                    currentAvatarDownloads.mutate { $0.remove(profile.id) }
                     
                     // Redundant but without reading 'backgroundTask' it will warn that the variable
                     // isn't used

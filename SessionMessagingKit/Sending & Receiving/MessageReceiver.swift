@@ -345,7 +345,7 @@ public enum MessageReceiver {
         
         // Download the profile picture if needed
         db.afterNextTransactionCommit { _ in
-            ProfileManager.downloadAvatar(for: profile)
+            ProfileManager.downloadAvatar(for: updatedProfile)
         }
     }
 }
