@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,6 +8,8 @@ import GRDB
 // A base class for SDSDatabaseStorage and SDSAnyDatabaseQueue.
 @objc
 public class SDSTransactable: NSObject {
+    fileprivate let asyncWriteQueue = DispatchQueue(label: "org.signal.asyncWrite")
+
     public func read(file: String = #file,
                      function: String = #function,
                      line: Int = #line,
@@ -84,7 +86,7 @@ public extension SDSTransactable {
                     block: @escaping (SDSAnyWriteTransaction) -> Void,
                     completionQueue: DispatchQueue,
                     completion: @escaping () -> Void) {
-        DispatchQueue.global().async {
+        self.asyncWriteQueue.async {
             self.write(file: file,
                        function: function,
                        line: line,
@@ -145,7 +147,7 @@ public extension SDSTransactable {
                   line: Int = #line,
                   _ block: @escaping (SDSAnyWriteTransaction) -> T) -> Promise<T> {
         return Promise { future in
-            DispatchQueue.global().async {
+            self.asyncWriteQueue.async {
                 future.resolve(self.write(file: file,
                                             function: function,
                                             line: line,
@@ -160,7 +162,7 @@ public extension SDSTransactable {
                   line: Int = #line,
                   _ block: @escaping (SDSAnyWriteTransaction) throws -> T) -> Promise<T> {
         return Promise { future in
-            DispatchQueue.global().async {
+            self.asyncWriteQueue.async {
                 do {
                     future.resolve(try self.write(file: file,
                                                     function: function,
