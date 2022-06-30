@@ -1030,7 +1030,8 @@ fileprivate extension CVComponentState.Builder {
                 mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                         attachmentStream: nil,
                                                         caption: caption,
-                                                        mediaSize: mediaSize))
+                                                        mediaSize: mediaSize,
+                                                        isBroken: false))
                 continue
             }
 
@@ -1039,7 +1040,8 @@ fileprivate extension CVComponentState.Builder {
                 mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                         attachmentStream: nil,
                                                         caption: caption,
-                                                        mediaSize: .zero))
+                                                        mediaSize: .zero,
+                                                        isBroken: true))
                 continue
             }
             let mediaSize = attachmentStream.imageSizePixels
@@ -1048,14 +1050,16 @@ fileprivate extension CVComponentState.Builder {
                 mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                         attachmentStream: nil,
                                                         caption: caption,
-                                                        mediaSize: .zero))
+                                                        mediaSize: .zero,
+                                                        isBroken: true))
                 continue
             }
 
             mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                     attachmentStream: attachmentStream,
                                                     caption: caption,
-                                                    mediaSize: mediaSize))
+                                                    mediaSize: mediaSize,
+                                                    isBroken: false))
         }
         return mediaAlbumItems
     }

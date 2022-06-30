@@ -318,7 +318,6 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
             return true
         }
-
         let albumView = componentView.albumView
         let location = sender.location(in: albumView)
         guard let mediaView = albumView.mediaView(forLocation: location) else {
@@ -352,6 +351,10 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
 
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+        if let item = items.first(where: { $0.attachment.uniqueId == attachment.uniqueId }), item.isBroken {
+            componentDelegate.cvc_didTapBrokenVideo()
+            return true
+        }
         componentDelegate.cvc_didTapBodyMedia(itemViewModel: itemViewModel,
                                               attachmentStream: attachmentStream,
                                               imageView: mediaView)

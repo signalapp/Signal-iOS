@@ -20,7 +20,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     private let maxMessageWidth: CGFloat
     private let isBorderless: Bool
     private let thumbnailQuality: AttachmentThumbnailQuality
-
+    private let isBroken: Bool
     private var reusableMediaView: ReusableMediaView?
 
     // MARK: - Initializers
@@ -30,6 +30,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
                          interaction: TSInteraction,
                          maxMessageWidth: CGFloat,
                          isBorderless: Bool,
+                         isBroken: Bool,
                          thumbnailQuality: AttachmentThumbnailQuality,
                          conversationStyle: ConversationStyle) {
         self.mediaCache = mediaCache
@@ -37,6 +38,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         self.interaction = interaction
         self.maxMessageWidth = maxMessageWidth
         self.isBorderless = isBorderless
+        self.isBroken = isBroken
         self.thumbnailQuality = thumbnailQuality
         self.conversationStyle = conversationStyle
 
@@ -244,8 +246,13 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         layoutSubviewToFillSuperviewEdges(playVideoCircleView)
 
         let playVideoIconView = CVImageView()
-        playVideoIconView.setTemplateImageName("play-solid-32",
-                                               tintColor: UIColor.ows_white)
+        if isBroken {
+            playVideoIconView.setTemplateImageName("video-error",
+                                                   tintColor: UIColor.ows_white)
+        } else {
+            playVideoIconView.setTemplateImageName("play-solid-32",
+                                                   tintColor: UIColor.ows_white)
+        }
         playVideoIconView.isUserInteractionEnabled = false
         addSubviewToCenterOnSuperview(playVideoIconView,
                                       size: CGSize(square: playVideoIconWidth))

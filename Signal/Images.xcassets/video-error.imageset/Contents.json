@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "video_error.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

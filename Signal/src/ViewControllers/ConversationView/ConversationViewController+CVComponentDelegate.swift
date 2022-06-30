@@ -192,6 +192,12 @@ extension ConversationViewController: CVComponentDelegate {
                                                          })
     }
 
+    public func cvc_didTapBrokenVideo() {
+        let toastText = NSLocalizedString("VIDEO_BROKEN",
+                                          comment: "Toast alert text shown when tapping on a video that cannot be played.")
+        presentToastCVC(toastText)
+    }
+
     // MARK: - Messages
 
     public func cvc_didTapBodyMedia(itemViewModel: CVItemViewModelImpl,

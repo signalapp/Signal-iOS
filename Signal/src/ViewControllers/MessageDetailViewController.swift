@@ -875,6 +875,8 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func cvc_didTapFailedOrPendingDownloads(_ message: TSMessage) {}
 
+    func cvc_didTapBrokenVideo() {}
+
     // MARK: - Messages
 
     func cvc_didTapBodyMedia(itemViewModel: CVItemViewModelImpl,

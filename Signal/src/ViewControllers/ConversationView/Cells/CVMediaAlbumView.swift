@@ -61,6 +61,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                                interaction: interaction,
                                maxMessageWidth: maxMessageWidth,
                                isBorderless: isBorderless,
+                               isBroken: item.isBroken,
                                thumbnailQuality: thumbnailQuality,
                                conversationStyle: conversationStyle)
         }
@@ -576,6 +577,7 @@ public struct CVMediaAlbumItem: Equatable {
     // TODO: Add units to name.
     public let mediaSize: CGSize
 
+    public let isBroken: Bool
     public var isFailedDownload: Bool {
         guard let attachmentPointer = attachment as? TSAttachmentPointer else {
             return false

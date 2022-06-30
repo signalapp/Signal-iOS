@@ -6394,6 +6394,9 @@
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Review Safety Numbers";
 
+/* Toast alert text shown when tapping on a video that cannot be played. */
+"VIDEO_BROKEN" = "This video can’t be played";
+
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "Video Call";
 
