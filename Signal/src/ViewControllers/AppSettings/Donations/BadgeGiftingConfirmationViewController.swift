@@ -656,7 +656,12 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
             wrappedCompletion(.init(status: .success, errors: nil))
             guard let self = self else { return }
             SignalApp.shared().presentConversation(for: self.thread, action: .none, animated: false)
-            self.dismiss(animated: true)
+            self.dismiss(animated: true) {
+                SignalApp.shared().conversationSplitViewControllerForSwift?.present(
+                    BadgeGiftThanksSheet(thread: self.thread, badge: self.badge),
+                    animated: true
+                )
+            }
         }.catch { error in
             guard let error = error as? SendGiftBadgeError else {
                 owsFail("\(error)")
