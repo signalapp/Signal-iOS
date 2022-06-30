@@ -2828,9 +2828,9 @@
 		342FFE6C271EF580000AC89F /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				342FFE70271EF580000AC89F /* CNContactViewController+OWS.h */,
 				342FFE6E271EF580000AC89F /* CNContactViewController+OWS.m */,
 				342FFE6F271EF580000AC89F /* UIApplication+OWS.swift */,
-				342FFE70271EF580000AC89F /* CNContactViewController+OWS.h */,
 				342FFE73271EF580000AC89F /* UIResponder+OWS.swift */,
 				342FFE74271EF580000AC89F /* UIStoryboard+OWS.swift */,
 			);
