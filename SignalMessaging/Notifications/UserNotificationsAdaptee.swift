@@ -142,13 +142,13 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
                 if granted {
                     Logger.debug("succeeded.")
-                } else if error != nil {
-                    Logger.error("failed with error: \(error!)")
+                } else if let error = error {
+                    Logger.error("failed with error: \(error)")
                 } else {
                     Logger.info("failed without error. User denied notification permissions.")
                 }
 
-                // Note that the promise is fulfilled regardless of if notification permssions were
+                // Note that the promise is fulfilled regardless of if notification permissions were
                 // granted. This promise only indicates that the user has responded, so we can
                 // proceed with requesting push tokens and complete registration.
                 future.resolve()
