@@ -1,3 +1,4 @@
+import UIKit
 
 final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     private var isHandlingLongPress: Bool = false
@@ -804,5 +805,21 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         let size = result.sizeThatFits(availableSpace)
         result.set(.height, to: size.height)
         return result
+    }
+}
+
+extension VisibleMessageCell {
+    public func snapshot(afterScreenUpdates afterUpdates: Bool) -> UIView? {
+        let labelForRendering = UILabel()
+        labelForRendering.numberOfLines = 0
+        labelForRendering.backgroundColor = self.bubbleView.backgroundColor
+        if let bodyTextView = self.bodyTextView {
+            labelForRendering.attributedText = bodyTextView.attributedText
+            self.snContentView.addSubview(labelForRendering)
+            labelForRendering.frame = self.snContentView.convert(bodyTextView.frame, to: self.snContentView)
+        }
+        let snapshot = self.bubbleView.snapshotView(afterScreenUpdates: true)
+        labelForRendering.removeFromSuperview()
+        return snapshot
     }
 }

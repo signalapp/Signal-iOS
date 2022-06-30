@@ -513,7 +513,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         // Show the context menu if applicable
         guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
             let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell,
-            let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false), contextMenuWindow == nil,
+              let snapshot = cell.snapshot(afterScreenUpdates: false), contextMenuWindow == nil,
             !ContextMenuVC.actions(for: viewItem, delegate: self).isEmpty else { return }
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         let frame = cell.convert(cell.bubbleView.frame, to: UIApplication.shared.keyWindow!)
