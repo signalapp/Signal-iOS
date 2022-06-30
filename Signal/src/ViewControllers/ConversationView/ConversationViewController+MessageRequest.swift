@@ -106,12 +106,11 @@ extension ConversationViewController: MessageRequestDelegate {
         syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread, responseType: .block)
         reportSpam()
 
-        presentToast(
-            text: NSLocalizedString(
+        presentToastCVC(
+            NSLocalizedString(
                 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED",
                 comment: "String indicating that spam has been reported and the chat has been blocked."
-            ),
-            extraVInset: bottomBar.height
+            )
         )
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
