@@ -24,10 +24,6 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 @property (nonatomic, nullable, readonly) DisplayableText *displayableQuotedText;
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
-@property (nonatomic, readonly) BOOL isForPreview;
-@property (nonatomic, readonly) BOOL isOutgoing;
-@property (nonatomic, readonly) OWSDirectionalRectCorner sharpCorners;
-
 @property (nonatomic, readonly) UILabel *quotedAuthorLabel;
 @property (nonatomic, readonly) UILabel *quotedTextLabel;
 @property (nonatomic, readonly) UILabel *quoteContentSourceLabel;
@@ -37,22 +33,6 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 #pragma mark -
 
 @implementation OWSQuotedMessageView
-
-+ (OWSQuotedMessageView *)quotedMessageViewForConversation:(OWSQuotedReplyModel *)quotedMessage
-                                     displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
-                                         conversationStyle:(ConversationStyle *)conversationStyle
-                                                isOutgoing:(BOOL)isOutgoing
-                                              sharpCorners:(OWSDirectionalRectCorner)sharpCorners
-{
-    OWSAssertDebug(quotedMessage);
-
-    return [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
-                                         displayableQuotedText:displayableQuotedText
-                                             conversationStyle:conversationStyle
-                                                  isForPreview:NO
-                                                    isOutgoing:isOutgoing
-                                                  sharpCorners:sharpCorners];
-}
 
 + (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage
                                     conversationStyle:(ConversationStyle *)conversationStyle
@@ -73,13 +53,9 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         displayableQuotedText = displayableText;
     }
 
-    OWSQuotedMessageView *instance = [[OWSQuotedMessageView alloc]
-        initWithQuotedMessage:quotedMessage
-        displayableQuotedText:displayableQuotedText
-            conversationStyle:conversationStyle
-                 isForPreview:YES
-                   isOutgoing:YES
-                 sharpCorners:(OWSDirectionalRectCornerBottomLeading | OWSDirectionalRectCornerBottomTrailing)];
+    OWSQuotedMessageView *instance = [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
+                                                                   displayableQuotedText:displayableQuotedText
+                                                                       conversationStyle:conversationStyle];
     [instance createContents];
     return instance;
 }
@@ -87,9 +63,6 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 - (instancetype)initWithQuotedMessage:(OWSQuotedReplyModel *)quotedMessage
                 displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
                     conversationStyle:(ConversationStyle *)conversationStyle
-                         isForPreview:(BOOL)isForPreview
-                           isOutgoing:(BOOL)isOutgoing
-                         sharpCorners:(OWSDirectionalRectCorner)sharpCorners
 {
     self = [super init];
 
@@ -101,10 +74,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
     _quotedMessage = quotedMessage;
     _displayableQuotedText = displayableQuotedText;
-    _isForPreview = isForPreview;
     _conversationStyle = conversationStyle;
-    _isOutgoing = isOutgoing;
-    _sharpCorners = sharpCorners;
 
     _quotedAuthorLabel = [UILabel new];
     _quotedTextLabel = [UILabel new];
@@ -135,7 +105,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (CGFloat)bubbleHMargin
 {
-    return (self.isForPreview ? 0.f : 6.f);
+    return 0.f;
 }
 
 - (CGFloat)hSpacing
@@ -163,7 +133,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     self.clipsToBounds = YES;
 
     CAShapeLayer *maskLayer = [CAShapeLayer new];
-    UIRectCorner sharpCorners = [UIView uiRectCornerForOWSDirectionalRectCorner:self.sharpCorners];
+    UIRectCorner sharpCorners = [UIView uiRectCornerForOWSDirectionalRectCorner:OWSDirectionalRectCornerBottomLeading |
+                                        OWSDirectionalRectCornerBottomTrailing];
 
     OWSLayerView *innerBubbleView = [[OWSLayerView alloc]
          initWithFrame:CGRectZero
@@ -203,12 +174,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     hStackView.spacing = self.hSpacing;
 
     UIView *stripeView = [UIView new];
-    if (self.isForPreview || self.isOutgoing) {
-        stripeView.backgroundColor = UIColor.ows_whiteColor;
-    } else {
-        // We render the stripe by manipulating the chat color overlay.
-        stripeView.backgroundColor = UIColor.clearColor;
-    }
+    stripeView.backgroundColor = UIColor.ows_whiteColor;
     [stripeView autoSetDimension:ALDimensionWidth toSize:self.stripeThickness];
     [stripeView setContentHuggingHigh];
     [stripeView setCompressionResistanceHigh];
@@ -312,39 +278,37 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         [contentView setCompressionResistanceHorizontalLow];
     }
 
-    if (self.isForPreview) {
-        UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [cancelButton
-            setImage:[[UIImage imageNamed:@"compose-cancel"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-            forState:UIControlStateNormal];
-        cancelButton.imageView.tintColor = Theme.secondaryTextAndIconColor;
-        [cancelButton addTarget:self action:@selector(didTapCancel) forControlEvents:UIControlEventTouchUpInside];
-        [cancelButton setContentHuggingHorizontalHigh];
-        [cancelButton setCompressionResistanceHorizontalHigh];
+    UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [cancelButton
+        setImage:[[UIImage imageNamed:@"compose-cancel"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+        forState:UIControlStateNormal];
+    cancelButton.imageView.tintColor = Theme.secondaryTextAndIconColor;
+    [cancelButton addTarget:self action:@selector(didTapCancel) forControlEvents:UIControlEventTouchUpInside];
+    [cancelButton setContentHuggingHorizontalHigh];
+    [cancelButton setCompressionResistanceHorizontalHigh];
 
-        UIStackView *cancelStack = [[UIStackView alloc] initWithArrangedSubviews:@[ cancelButton ]];
-        cancelStack.axis = UILayoutConstraintAxisHorizontal;
-        cancelStack.alignment = UIStackViewAlignmentTop;
-        cancelStack.layoutMarginsRelativeArrangement = YES;
-        CGFloat hMarginLeading = 0;
-        CGFloat hMarginTrailing = 6;
-        cancelStack.layoutMargins = UIEdgeInsetsMake(6,
-            CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
-            0,
-            CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing);
-        [cancelStack setContentHuggingHorizontalHigh];
-        [cancelStack setCompressionResistanceHorizontalHigh];
+    UIStackView *cancelStack = [[UIStackView alloc] initWithArrangedSubviews:@[ cancelButton ]];
+    cancelStack.axis = UILayoutConstraintAxisHorizontal;
+    cancelStack.alignment = UIStackViewAlignmentTop;
+    cancelStack.layoutMarginsRelativeArrangement = YES;
+    CGFloat hMarginLeading = 0;
+    CGFloat hMarginTrailing = 6;
+    cancelStack.layoutMargins = UIEdgeInsetsMake(6,
+        CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
+        0,
+        CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing);
+    [cancelStack setContentHuggingHorizontalHigh];
+    [cancelStack setCompressionResistanceHorizontalHigh];
 
-        UIStackView *cancelWrapper = [[UIStackView alloc] initWithArrangedSubviews:@[
-            contentView,
-            cancelStack,
-        ]];
-        cancelWrapper.axis = UILayoutConstraintAxisHorizontal;
+    UIStackView *cancelWrapper = [[UIStackView alloc] initWithArrangedSubviews:@[
+        contentView,
+        cancelStack,
+    ]];
+    cancelWrapper.axis = UILayoutConstraintAxisHorizontal;
 
-        contentView = cancelWrapper;
-        [contentView setContentHuggingHorizontalLow];
-        [contentView setCompressionResistanceHorizontalLow];
-    }
+    contentView = cancelWrapper;
+    [contentView setContentHuggingHorizontalLow];
+    [contentView setCompressionResistanceHorizontalLow];
 
     [innerBubbleView addSubview:contentView];
     [contentView autoPinEdgesToSuperviewEdges];
@@ -462,7 +426,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
                 }];
     }
 
-    self.quotedTextLabel.numberOfLines = self.isForPreview ? 1 : 2;
+    self.quotedTextLabel.numberOfLines = 1;
     self.quotedTextLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.quotedTextLabel.textAlignment = self.displayableQuotedText.displayTextNaturalAlignment;
     self.quotedTextLabel.attributedText = attributedText;

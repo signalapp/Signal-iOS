@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalUI/OWSBubbleView.h>
@@ -34,13 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Measurement
 - (CGSize)sizeForMaxWidth:(CGFloat)maxWidth;
-
-// Factory method for "message bubble" views.
-+ (OWSQuotedMessageView *)quotedMessageViewForConversation:(OWSQuotedReplyModel *)quotedMessage
-                                     displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
-                                         conversationStyle:(ConversationStyle *)conversationStyle
-                                                isOutgoing:(BOOL)isOutgoing
-                                              sharpCorners:(OWSDirectionalRectCorner)sharpCorners;
 
 // Factory method for "message compose" views.
 + (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage
