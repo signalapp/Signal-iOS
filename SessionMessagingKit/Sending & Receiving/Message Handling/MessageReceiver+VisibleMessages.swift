@@ -276,24 +276,34 @@ extension MessageReceiver {
     ) throws {
         guard variant == .standardOutgoing else { return }
         
-        if let syncTarget: String = syncTarget {
-            try RecipientState(
-                interactionId: interactionId,
-                recipientId: syncTarget,
-                state: .sent
-            ).save(db)
-        }
-        else if thread.variant == .closedGroup {
-            try GroupMember
-                .filter(GroupMember.Columns.groupId == thread.id)
-                .fetchAll(db)
-                .forEach { member in
+        switch thread.variant {
+            case .contact:
+                if let syncTarget: String = syncTarget {
                     try RecipientState(
                         interactionId: interactionId,
-                        recipientId: member.profileId,
+                        recipientId: syncTarget,
                         state: .sent
                     ).save(db)
                 }
+                
+            case .closedGroup:
+                try GroupMember
+                    .filter(GroupMember.Columns.groupId == thread.id)
+                    .fetchAll(db)
+                    .forEach { member in
+                        try RecipientState(
+                            interactionId: interactionId,
+                            recipientId: member.profileId,
+                            state: .sent
+                        ).save(db)
+                    }
+                
+            case .openGroup:
+                try RecipientState(
+                    interactionId: interactionId,
+                    recipientId: thread.id, // For open groups this will always be the thread id
+                    state: .sent
+                ).save(db)
         }
     
         // For outgoing messages mark all older interactions as read (the user should have seen
