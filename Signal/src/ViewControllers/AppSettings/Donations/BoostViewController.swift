@@ -622,10 +622,10 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
                     if self.parent is BoostSheetView {
                         let presentingVC = self.parent?.presentingViewController
                         self.parent?.dismiss(animated: true) {
-                            presentingVC?.present(BadgeThanksSheet(badge: boostBadge), animated: true)
+                            presentingVC?.present(BadgeThanksSheet(badge: boostBadge, type: .boost), animated: true)
                         }
                     } else {
-                        self.present(BadgeThanksSheet(badge: boostBadge), animated: true)
+                        self.present(BadgeThanksSheet(badge: boostBadge, type: .boost), animated: true)
                     }
                 }.catch { error in
                     modal.dismiss {}

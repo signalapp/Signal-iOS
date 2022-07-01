@@ -315,10 +315,42 @@ extension ConversationViewController: CVComponentDelegate {
         GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)
     }
 
-    public func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl) {
+    public func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge) {
         AssertIsOnMainThread()
 
-        Logger.debug("Tapped Gift Badge!")
+        switch itemViewModel.interaction {
+        case let incomingMessage as TSIncomingMessage:
+            let (shortName, fullName) = self.databaseStorage.read { transaction -> (String, String) in
+                let authorAddress = incomingMessage.authorAddress
+                return (
+                    self.contactsManager.shortDisplayName(for: authorAddress, transaction: transaction),
+                    self.contactsManager.displayName(for: authorAddress, transaction: transaction)
+                )
+            }
+            let redeemSheet = BadgeThanksSheet(badge: profileBadge, type: .gift(
+                shortName: shortName,
+                fullName: fullName,
+                notNowAction: { [weak self] in self?.showRedeemBadgeLaterText() },
+                incomingMessage: incomingMessage
+            ))
+            self.present(redeemSheet, animated: true)
+
+        case let outgoingMessage as TSOutgoingMessage:
+            // TODO: (GB) Show the badge that you sent.
+            _ = outgoingMessage
+
+        default:
+            owsFailDebug("Tapped on gift that's not a message")
+            return
+        }
+    }
+
+    private func showRedeemBadgeLaterText() {
+        let text = NSLocalizedString(
+            "BADGE_GIFTING_REDEEM_LATER",
+            comment: "A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift."
+        )
+        self.presentToastCVC(text)
     }
 
     public func cvc_didTapSignalMeLink(url: URL) {

@@ -937,7 +937,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
                     )
                 }
 
-                self.navigationController?.topViewController?.present(BadgeThanksSheet(badge: newSubscriptionLevel.badge), animated: true)
+                self.navigationController?.topViewController?.present(BadgeThanksSheet(badge: newSubscriptionLevel.badge, type: .subscription), animated: true)
             }
         }.catch { error in
             progressView.stopAnimating(success: false) {

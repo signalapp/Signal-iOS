@@ -948,7 +948,7 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {}
 
-    func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl) {}
+    func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge) {}
 
     func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
 

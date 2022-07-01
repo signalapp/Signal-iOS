@@ -14,7 +14,8 @@ public enum GiftBadgeError: Error {
 @objc
 public enum OWSGiftBadgeRedemptionState: Int {
     case pending = 1
-    // TODO: (GB) Add states for redeeming, redeemed, and failed.
+    case redeemed = 2
+    // TODO: (GB) Add a failure state.
 }
 
 @objc
@@ -47,7 +48,7 @@ public class OWSGiftBadge: MTLModel {
         super.init(coder: coder)
     }
 
-    private func getReceiptCredentialPresentation() throws -> ReceiptCredentialPresentation {
+    public func getReceiptCredentialPresentation() throws -> ReceiptCredentialPresentation {
         guard let rcPresentationData = self.redemptionCredential else {
             throw GiftBadgeError.malformed
         }

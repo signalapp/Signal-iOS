@@ -173,6 +173,7 @@ public class CVComponentState: Equatable, Dependencies {
     struct GiftBadge: Equatable {
         let loader: GiftBadgeView.BadgeLoader
         let expirationDate: Date
+        let redemptionState: OWSGiftBadgeRedemptionState
     }
     let giftBadge: GiftBadge?
 
@@ -1148,7 +1149,11 @@ fileprivate extension CVComponentState.Builder {
             throw OWSAssertionError("Gift message doesn't contain a gift badge")
         }
         let badgeLoader = GiftBadgeView.BadgeLoader(level: level)
-        self.giftBadge = GiftBadge(loader: badgeLoader, expirationDate: expirationDate)
+        self.giftBadge = GiftBadge(
+            loader: badgeLoader,
+            expirationDate: expirationDate,
+            redemptionState: giftBadge.redemptionState
+        )
         return build()
     }
 }

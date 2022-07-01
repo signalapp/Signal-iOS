@@ -29,6 +29,7 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
         GiftBadgeView.State(
             badgeLoader: self.giftBadge.loader,
             timeRemainingText: self.timeState.timeRemainingText,
+            redemptionState: self.giftBadge.redemptionState,
             isIncoming: self.isIncoming,
             conversationStyle: self.conversationStyle
         )
@@ -74,13 +75,22 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
             return false
         }
 
+        let profileBadge: ProfileBadge
+        switch renderItem.componentState.giftBadge?.loader.profileBadge.result {
+        case .success(.some(let value)):
+            profileBadge = value
+        default:
+            // If there's not a badge, it's still showing the loading indicator.
+            return false
+        }
+
         let buttonView = componentView.giftBadgeView.buttonStack
         guard buttonView.bounds.contains(sender.location(in: buttonView)) else {
             return false
         }
 
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        componentDelegate.cvc_didTapGiftBadge(itemViewModel)
+        componentDelegate.cvc_didTapGiftBadge(itemViewModel, profileBadge: profileBadge)
         return true
     }
 

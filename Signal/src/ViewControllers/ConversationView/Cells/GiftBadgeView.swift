@@ -10,6 +10,7 @@ class GiftBadgeView: ManualStackView {
     struct State {
         let badgeLoader: BadgeLoader
         let timeRemainingText: String
+        let redemptionState: OWSGiftBadgeRedemptionState
         let isIncoming: Bool
         let conversationStyle: ConversationStyle
     }
@@ -153,10 +154,15 @@ class GiftBadgeView: ManualStackView {
     private static func redeemButtonText(for state: State) -> String {
         if state.isIncoming {
             // TODO: (GB) Alter this value based on whether or not the badge has been redeemed.
-            return NSLocalizedString(
-                "BADGE_GIFTING_REDEEM",
-                comment: "A button shown on a gift message you receive to redeem the badge and add it to your profile."
-            )
+            switch state.redemptionState {
+            case .pending:
+                return CommonStrings.redeemGiftButton
+            case .redeemed:
+                return NSLocalizedString(
+                    "BADGE_GIFTING_REDEEMED",
+                    comment: "Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark."
+                )
+            }
         } else {
             return NSLocalizedString(
                 "BADGE_GIFTING_VIEW",

@@ -206,6 +206,13 @@ public class CommonStrings: NSObject {
         OWSLocalizedString("BUTTON_NO", comment: "Label for the 'no' button.")
     }
 
+    static public var redeemGiftButton: String {
+        return OWSLocalizedString(
+            "BADGE_GIFTING_REDEEM",
+            comment: "Label for a button used to redeem a gift and add the gift's badge to your profile."
+        )
+    }
+
     @objc
     static public var notNowButton: String {
         OWSLocalizedString("BUTTON_NOT_NOW", comment: "Label for the 'not now' button.")

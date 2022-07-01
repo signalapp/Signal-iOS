@@ -32,6 +32,14 @@ public enum BoostBadgeIds: String {
     }
 }
 
+public enum GiftBadgeIds: String {
+    case gift = "GIFT"
+
+    public static func contains(_ id: String) -> Bool {
+        return Self(rawValue: id) != nil
+    }
+}
+
 public enum SubscriptionRedemptionFailureReason: Int {
     case none = 0
     case localValidationFailed = 1

@@ -90,7 +90,7 @@ public protocol CVComponentDelegate {
 
     func cvc_didTapGroupInviteLink(url: URL)
 
-    func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl)
+    func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge)
 
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl)
 
