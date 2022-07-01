@@ -960,7 +960,7 @@ extension Attachment {
             // Save the final upload info
             let uploadedAttachment: Attachment? = {
                 guard let db: Database = db else {
-                    GRDBStorage.shared.write { db in
+                    Storage.shared.write { db in
                         try? Attachment
                             .filter(id: attachmentId)
                             .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.uploaded))
@@ -1016,7 +1016,7 @@ extension Attachment {
         // Update the attachment to the 'uploading' state
         let updatedAttachment: Attachment? = {
             guard let db: Database = db else {
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     try? Attachment
                         .filter(id: attachmentId)
                         .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.uploading))
@@ -1041,7 +1041,7 @@ extension Attachment {
         // Perform the upload
         let uploadPromise: Promise<String> = {
             guard let db: Database = db else {
-                return GRDBStorage.shared.read { db in upload(db, data) }
+                return Storage.shared.read { db in upload(db, data) }
             }
             
             return upload(db, data)
@@ -1050,7 +1050,7 @@ extension Attachment {
         uploadPromise
             .done(on: queue) { fileId in
                 // Save the final upload info
-                let uploadedAttachment: Attachment? = GRDBStorage.shared.write { db in
+                let uploadedAttachment: Attachment? = Storage.shared.write { db in
                     try updatedAttachment?
                         .with(
                             serverId: "\(fileId)",
@@ -1073,7 +1073,7 @@ extension Attachment {
                 success?()
             }
             .catch(on: queue) { error in
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     try Attachment
                         .filter(id: attachmentId)
                         .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.failedUpload))

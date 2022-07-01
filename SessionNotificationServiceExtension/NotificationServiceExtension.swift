@@ -60,7 +60,7 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
             // HACK: It is important to use write synchronously here to avoid a race condition
             // where the completeSilenty() is called before the local notification request
             // is added to notification center
-            GRDBStorage.shared.write { db in
+            Storage.shared.write { db in
                 do {
                     guard let processedMessage: ProcessedMessage = try Message.processRawReceivedMessageAsNotification(db, envelope: envelope) else {
                         self.handleFailure(for: notificationContent)
@@ -164,7 +164,7 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
         // this path should never occur. However, the service does have our push token
         // so it is possible that could change in the future. If it does, do nothing
         // and don't disturb the user. Messages will be processed when they open the app.
-        guard GRDBStorage.shared[.isReadyForAppExtensions] else { return completeSilenty() }
+        guard Storage.shared[.isReadyForAppExtensions] else { return completeSilenty() }
 
         AppSetup.setupEnvironment(
             appSpecificBlock: {
@@ -187,7 +187,7 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
         
         // If we need a config sync then trigger it now
         if needsConfigSync {
-            GRDBStorage.shared.write { db in
+            Storage.shared.write { db in
                 try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
             }
         }
@@ -203,7 +203,7 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
         guard !AppReadiness.isAppReady() else { return }
 
         // App isn't ready until storage is ready AND all version migrations are complete.
-        guard GRDBStorage.shared.isValid && areVersionMigrationsComplete else { return }
+        guard Storage.shared.isValid && areVersionMigrationsComplete else { return }
 
         SignalUtilitiesKit.Configuration.performMainSetup()
 
@@ -297,7 +297,7 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
     // MARK: - Poll for open groups
     
     private func pollForOpenGroups() -> [Promise<Void>] {
-        let promises: [Promise<Void>] = GRDBStorage.shared
+        let promises: [Promise<Void>] = Storage.shared
             .read { db in
                 // The default room promise creates an OpenGroup with an empty `roomToken` value,
                 // we don't want to start a poller for this as the user hasn't actually joined a room

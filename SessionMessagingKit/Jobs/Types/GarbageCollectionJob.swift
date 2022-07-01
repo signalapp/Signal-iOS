@@ -34,7 +34,7 @@ public enum GarbageCollectionJob: JobExecutor {
             .defaulting(to: Types.allCases)
         let timestampNow: TimeInterval = Date().timeIntervalSince1970
         
-        GRDBStorage.shared.writeAsync(
+        Storage.shared.writeAsync(
             updates: { db in
                 /// Remove any expired controlMessageProcessRecords
                 if typesToCollect.contains(.expiredControlMessageProcessRecords) {
@@ -229,7 +229,7 @@ public enum GarbageCollectionJob: JobExecutor {
                         let profileAvatarFilenames: Set<String>
                     }
                     
-                    let maybeFileInfo: FileInfo? = GRDBStorage.shared.read { db -> FileInfo in
+                    let maybeFileInfo: FileInfo? = Storage.shared.read { db -> FileInfo in
                         var attachmentLocalRelativePaths: Set<String> = []
                         var profileAvatarFilenames: Set<String> = []
                         

@@ -227,7 +227,7 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
                 in: thread
             )
             .done { [weak self] _ in
-                GRDBStorage.shared.writeAsync { db in
+                Storage.shared.writeAsync { db in
                     self?.webRTCSession.sendOffer(db, to: sessionId)
                 }
                 
@@ -258,7 +258,7 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
         
         webRTCSession.hangUp()
         
-        GRDBStorage.shared.writeAsync { [weak self] db in
+        Storage.shared.writeAsync { [weak self] db in
             try self?.webRTCSession.endCall(db, with: sessionId)
         }
         
@@ -273,7 +273,7 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
         let duration: TimeInterval = self.duration
         let hasStartedConnecting: Bool = self.hasStartedConnecting
         
-        GRDBStorage.shared.writeAsync { db in
+        Storage.shared.writeAsync { db in
             guard let interaction: Interaction = try? Interaction.fetchOne(db, id: callInteractionId) else {
                 return
             }
@@ -396,7 +396,7 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
         let sessionId: String = self.sessionId
         let webRTCSession: WebRTCSession = self.webRTCSession
         
-        GRDBStorage.shared
+        Storage.shared
             .read { db in webRTCSession.sendOffer(db, to: sessionId, isRestartingICEConnection: true) }
             .retainUntilComplete()
     }

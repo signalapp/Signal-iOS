@@ -77,7 +77,7 @@ final class LinkPreviewModal: Modal {
     // MARK: - Interaction
     
     @objc private func enable() {
-        GRDBStorage.shared.writeAsync { db in
+        Storage.shared.writeAsync { db in
             db[.areLinkPreviewsEnabled] = true
         }
         

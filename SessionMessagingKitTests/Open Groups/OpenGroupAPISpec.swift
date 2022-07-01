@@ -15,7 +15,7 @@ class OpenGroupAPISpec: QuickSpec {
     // MARK: - Spec
 
     override func spec() {
-        var mockStorage: GRDBStorage!
+        var mockStorage: Storage!
         var mockSodium: MockSodium!
         var mockAeadXChaCha20Poly1305Ietf: MockAeadXChaCha20Poly1305Ietf!
         var mockSign: MockSign!
@@ -33,7 +33,7 @@ class OpenGroupAPISpec: QuickSpec {
             // MARK: - Configuration
             
             beforeEach {
-                mockStorage = GRDBStorage(
+                mockStorage = Storage(
                     customWriter: DatabaseQueue(),
                     customMigrations: [
                         SNUtilitiesKit.migrations(),

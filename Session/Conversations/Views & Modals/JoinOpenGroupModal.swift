@@ -92,7 +92,7 @@ final class JoinOpenGroupModal: Modal {
         
         presentingViewController.dismiss(animated: true, completion: nil)
         
-        GRDBStorage.shared
+        Storage.shared
             .writeAsync { db in
                 OpenGroupManager.shared.add(
                     db,
@@ -103,7 +103,7 @@ final class JoinOpenGroupModal: Modal {
                 )
             }
             .done(on: DispatchQueue.main) { _ in
-                GRDBStorage.shared.writeAsync { db in
+                Storage.shared.writeAsync { db in
                     try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
                 }
             }

@@ -175,7 +175,7 @@ public final class JobRunner {
     public static func appDidFinishLaunching() {
         // Note: 'appDidBecomeActive' will run on first launch anyway so we can
         // leave those jobs out and can wait until then to start the JobRunner
-        let jobsToRun: (blocking: [Job], nonBlocking: [Job]) = GRDBStorage.shared
+        let jobsToRun: (blocking: [Job], nonBlocking: [Job]) = Storage.shared
             .read { db in
                 let blockingJobs: [Job] = try Job
                     .filter(
@@ -222,7 +222,7 @@ public final class JobRunner {
         // long as there are no other jobs already running
         let alreadyRunningOtherJobs: Bool = queues.wrappedValue
             .contains(where: { _, queue -> Bool in queue.isRunning.wrappedValue })
-        let jobsToRun: (blocking: [Job], nonBlocking: [Job]) = GRDBStorage.shared
+        let jobsToRun: (blocking: [Job], nonBlocking: [Job]) = Storage.shared
             .read { db in
                 guard !alreadyRunningOtherJobs else {
                     let onActiveJobs: [Job] = try Job
@@ -548,7 +548,7 @@ private final class JobQueue {
         // Get any pending jobs
         let jobIdsAlreadyRunning: Set<Int64> = jobsCurrentlyRunning.wrappedValue
         let jobsAlreadyInQueue: Set<Int64> = queue.wrappedValue.compactMap { $0.id }.asSet()
-        let jobsToRun: [Job] = GRDBStorage.shared.read { db in
+        let jobsToRun: [Job] = Storage.shared.read { db in
             try Job.filterPendingJobs(variants: jobVariants)
                 .filter(!jobIdsAlreadyRunning.contains(Job.Columns.id)) // Exclude jobs already running
                 .filter(!jobsAlreadyInQueue.contains(Job.Columns.id))   // Exclude jobs already in the queue
@@ -623,7 +623,7 @@ private final class JobQueue {
         }
         
         // Check if the next job has any dependencies
-        let dependencyInfo: (expectedCount: Int, jobs: [Job]) = GRDBStorage.shared.read { db in
+        let dependencyInfo: (expectedCount: Int, jobs: [Job]) = Storage.shared.read { db in
             let numExpectedDependencies: Int = try JobDependencies
                 .filter(JobDependencies.Columns.jobId == nextJob.id)
                 .fetchCount(db)
@@ -714,7 +714,7 @@ private final class JobQueue {
     }
     
     private func scheduleNextSoonestJob() {
-        let nextJobTimestamp: TimeInterval? = GRDBStorage.shared.read { db in
+        let nextJobTimestamp: TimeInterval? = Storage.shared.read { db in
             try Job.filterPendingJobs(variants: jobVariants, excludeFutureJobs: false)
                 .select(.nextRunTimestamp)
                 .asRequest(of: TimeInterval.self)
@@ -768,7 +768,7 @@ private final class JobQueue {
     private func handleJobSucceeded(_ job: Job, shouldStop: Bool) {
         switch job.behaviour {
             case .runOnce, .runOnceNextLaunch:
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     // First remove any JobDependencies requiring this job to be completed (if
                     // we don't then the dependant jobs will automatically be deleted)
                     _ = try JobDependencies
@@ -779,7 +779,7 @@ private final class JobQueue {
                 }
                 
             case .recurring where shouldStop == true:
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     // First remove any JobDependencies requiring this job to be completed (if
                     // we don't then the dependant jobs will automatically be deleted)
                     _ = try JobDependencies
@@ -793,7 +793,7 @@ private final class JobQueue {
             // but we want at least 1 second to pass before doing so - the job itself should
             // really update it's own 'nextRunTimestamp' (this is just a safety net)
             case .recurring where job.nextRunTimestamp <= Date().timeIntervalSince1970:
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     _ = try job
                         .with(nextRunTimestamp: (Date().timeIntervalSince1970 + 1))
                         .saved(db)
@@ -805,7 +805,7 @@ private final class JobQueue {
         // For concurrent queues retrieve any 'dependant' jobs and re-add them here (if they have other
         // dependencies they will be removed again when they try to execute)
         if executionType == .concurrent {
-            let dependantJobs: [Job] = GRDBStorage.shared
+            let dependantJobs: [Job] = Storage.shared
                 .read { db in try job.dependantJobs.fetchAll(db) }
                 .defaulting(to: [])
             let dependantJobIds: [Int64] = dependantJobs
@@ -837,7 +837,7 @@ private final class JobQueue {
     /// This function is called when a job fails, if it's wasn't a permanent failure then the 'failureCount' for the job will be incremented and it'll
     /// be re-run after a retry interval has passed
     private func handleJobFailed(_ job: Job, error: Error?, permanentFailure: Bool) {
-        guard GRDBStorage.shared.read({ db in try Job.exists(db, id: job.id ?? -1) }) == true else {
+        guard Storage.shared.read({ db in try Job.exists(db, id: job.id ?? -1) }) == true else {
             SNLog("[JobRunner] \(queueContext) \(job.variant) job canceled")
             jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
             detailsForCurrentlyRunningJobs.mutate { $0 = $0.removingValue(forKey: job.id) }
@@ -865,7 +865,7 @@ private final class JobQueue {
         let maxFailureCount: Int = (JobRunner.executorMap.wrappedValue[job.variant]?.maxFailureCount ?? 0)
         let nextRunTimestamp: TimeInterval = (Date().timeIntervalSince1970 + JobRunner.getRetryInterval(for: job))
         
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             guard
                 !permanentFailure && (
                     maxFailureCount < 0 ||

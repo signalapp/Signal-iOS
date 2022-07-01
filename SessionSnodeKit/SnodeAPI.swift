@@ -53,7 +53,7 @@ public final class SnodeAPI {
     private static func loadSnodePoolIfNeeded() {
         guard !hasLoadedSnodePool else { return }
         
-        GRDBStorage.shared.read { db in
+        Storage.shared.read { db in
             snodePool = ((try? Snode.fetchSet(db)) ?? Set())
         }
         
@@ -68,7 +68,7 @@ public final class SnodeAPI {
             newValue.forEach { try? $0.save(db) }
         }
         else {
-            GRDBStorage.shared.write { db in
+            Storage.shared.write { db in
                 _ = try? Snode.deleteAll(db)
                 newValue.forEach { try? $0.save(db) }
             }
@@ -96,7 +96,7 @@ public final class SnodeAPI {
     private static func loadSwarmIfNeeded(for publicKey: String) {
         guard !loadedSwarms.contains(publicKey) else { return }
         
-        GRDBStorage.shared.read { db in
+        Storage.shared.read { db in
             swarmCache[publicKey] = ((try? Snode.fetchSet(db, publicKey: publicKey)) ?? [])
         }
         
@@ -110,7 +110,7 @@ public final class SnodeAPI {
         swarmCache[publicKey] = newValue
         guard persist else { return }
         
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             try? newValue.save(db, key: publicKey)
         }
     }
@@ -299,7 +299,7 @@ public final class SnodeAPI {
     public static func getSnodePool() -> Promise<Set<Snode>> {
         loadSnodePoolIfNeeded()
         let now = Date()
-        let hasSnodePoolExpired = given(GRDBStorage.shared[.lastSnodePoolRefreshDate]) {
+        let hasSnodePoolExpired = given(Storage.shared[.lastSnodePoolRefreshDate]) {
             now.timeIntervalSince($0) > 2 * 60 * 60
         }.defaulting(to: true)
         let snodePool: Set<Snode> = SnodeAPI.snodePool
@@ -327,7 +327,7 @@ public final class SnodeAPI {
             promise.then2 { snodePool -> Promise<Set<Snode>> in
                 let (promise, seal) = Promise<Set<Snode>>.pending()
                 
-                GRDBStorage.shared.writeAsync(
+                Storage.shared.writeAsync(
                     updates: { db in
                         db[.lastSnodePoolRefreshDate] = now
                         setSnodePool(to: snodePool, db: db)
@@ -537,7 +537,7 @@ public final class SnodeAPI {
     private static func getMessagesWithAuthentication(from snode: Snode, associatedWith publicKey: String, namespace: Int) -> Promise<[SnodeReceivedMessage]> {
         /// **Note:** All authentication logic is only apply to 1-1 chats, the reason being that we can't currently support it yet for
         /// closed groups. The Storage Server requires an ed25519 key pair, but we don't have that for our closed groups.
-        guard let userED25519KeyPair: Box.KeyPair = GRDBStorage.shared.read({ db in Identity.fetchUserEd25519KeyPair(db) }) else {
+        guard let userED25519KeyPair: Box.KeyPair = Storage.shared.read({ db in Identity.fetchUserEd25519KeyPair(db) }) else {
             return Promise(error: SnodeAPIError.noKeyPair)
         }
         
@@ -640,7 +640,7 @@ public final class SnodeAPI {
             let messageJson: JSON = try? JSONSerialization.jsonObject(with: messageData, options: [ .fragmentsAllowed ]) as? JSON
         else { return Promise(error: HTTP.Error.invalidJSON) }
         
-        guard let userED25519KeyPair: Box.KeyPair = GRDBStorage.shared.read({ db in Identity.fetchUserEd25519KeyPair(db) }) else {
+        guard let userED25519KeyPair: Box.KeyPair = Storage.shared.read({ db in Identity.fetchUserEd25519KeyPair(db) }) else {
             return Promise(error: SnodeAPIError.noKeyPair)
         }
         

@@ -35,7 +35,7 @@ class ChatSettingsViewController: OWSTableViewController {
         messageTrimming.footerTitle = "MESSAGE_TRIMMING_OPEN_GROUP_DESCRIPTION".localized()
         messageTrimming.add(OWSTableItem.switch(
             withText: "MESSAGE_TRIMMING_OPEN_GROUP_TITLE".localized(),
-            isOn: { GRDBStorage.shared[.trimOpenGroupMessagesOlderThanSixMonths] },
+            isOn: { Storage.shared[.trimOpenGroupMessagesOlderThanSixMonths] },
             target: self,
             selector: #selector(didToggleTrimOpenGroupsSwitch(_:))
         ))
@@ -47,7 +47,7 @@ class ChatSettingsViewController: OWSTableViewController {
     // MARK: - Actions
     
     @objc private func didToggleTrimOpenGroupsSwitch(_ sender: UISwitch) {
-        GRDBStorage.shared.writeAsync(
+        Storage.shared.writeAsync(
             updates: { db in
                 db[.trimOpenGroupMessagesOlderThanSixMonths] = !sender.isOn
             },

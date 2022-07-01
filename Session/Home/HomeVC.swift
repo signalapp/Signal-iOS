@@ -20,7 +20,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     // MARK: - Intialization
     
     init() {
-        GRDBStorage.shared.addObserver(viewModel.pagedDataObserver)
+        Storage.shared.addObserver(viewModel.pagedDataObserver)
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -242,7 +242,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     
     private func startObservingChanges() {
         // Start observing for data changes
-        dataChangeObservable = GRDBStorage.shared.start(
+        dataChangeObservable = Storage.shared.start(
             viewModel.observableState,
             // If we haven't done the initial load the trigger it immediately (blocking the main
             // thread so we remain on the launch screen until it completes to be consistent with
@@ -537,7 +537,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         switch section.model {
             case .messageRequests:
                 let hide = UITableViewRowAction(style: .destructive, title: "TXT_HIDE_TITLE".localized()) { _, _ in
-                    GRDBStorage.shared.write { db in db[.hasHiddenMessageRequests] = true }
+                    Storage.shared.write { db in db[.hasHiddenMessageRequests] = true }
                 }
                 hide.backgroundColor = Colors.destructive
                 
@@ -563,7 +563,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                         title: "TXT_DELETE_TITLE".localized(),
                         style: .destructive
                     ) { _ in
-                        GRDBStorage.shared.writeAsync { db in
+                        Storage.shared.writeAsync { db in
                             switch threadViewModel.threadVariant {
                                 case .closedGroup:
                                     try MessageSender
@@ -597,7 +597,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                         "PIN_BUTTON_TEXT".localized()
                     )
                 ) { _, _ in
-                    GRDBStorage.shared.writeAsync { db in
+                    Storage.shared.writeAsync { db in
                         try SessionThread
                             .filter(id: threadViewModel.threadId)
                             .updateAll(db, SessionThread.Columns.isPinned.set(to: !threadViewModel.threadIsPinned))
@@ -615,7 +615,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                         "BLOCK_LIST_BLOCK_BUTTON".localized()
                     )
                 ) { _, _ in
-                    GRDBStorage.shared.writeAsync { db in
+                    Storage.shared.writeAsync { db in
                         try Contact
                             .filter(id: threadViewModel.threadId)
                             .updateAll(

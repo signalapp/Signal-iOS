@@ -76,7 +76,7 @@ final class CallModal: Modal {
     // MARK: - Interaction
     
     @objc private func enable() {
-        GRDBStorage.shared.writeAsync { db in db[.areCallsEnabled] = true }
+        Storage.shared.writeAsync { db in db[.areCallsEnabled] = true }
         presentingViewController?.dismiss(animated: true, completion: nil)
         onCallEnabled()
     }

@@ -214,7 +214,7 @@ public extension LinkPreview {
     private static var previewUrlCache: Atomic<NSCache<NSString, NSString>> = Atomic(NSCache())
 
     static func previewUrl(for body: String?, selectedRange: NSRange? = nil) -> String? {
-        guard GRDBStorage.shared[.areLinkPreviewsEnabled] else { return nil }
+        guard Storage.shared[.areLinkPreviewsEnabled] else { return nil }
         guard let body: String = body else { return nil }
 
         if let cachedUrl = previewUrlCache.wrappedValue.object(forKey: body as NSString) as String? {
@@ -291,7 +291,7 @@ public extension LinkPreview {
 
         // Exit early if link previews are not enabled in order to avoid
         // tainting the cache.
-        guard GRDBStorage.shared[.areLinkPreviewsEnabled] else { return }
+        guard Storage.shared[.areLinkPreviewsEnabled] else { return }
 
         serialQueue.sync {
             linkPreviewDraftCache = linkPreviewDraft
@@ -299,7 +299,7 @@ public extension LinkPreview {
     }
     
     static func tryToBuildPreviewInfo(previewUrl: String?) -> Promise<LinkPreviewDraft> {
-        guard GRDBStorage.shared[.areLinkPreviewsEnabled] else {
+        guard Storage.shared[.areLinkPreviewsEnabled] else {
             return Promise(error: LinkPreviewError.featureDisabled)
         }
         guard let previewUrl: String = previewUrl else {

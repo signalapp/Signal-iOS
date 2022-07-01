@@ -35,7 +35,7 @@ public enum SendReadReceiptsJob: JobExecutor {
             return
         }
         
-        GRDBStorage.shared
+        Storage.shared
             .writeAsync { db in
                 try MessageSender.sendImmediate(
                     db,
@@ -53,7 +53,7 @@ public enum SendReadReceiptsJob: JobExecutor {
                 var shouldFinishCurrentJob: Bool = false
                 let nextRunTimestamp: TimeInterval = (Date().timeIntervalSince1970 + minRunFrequency)
                 
-                let updatedJob: Job? = GRDBStorage.shared.write { db in
+                let updatedJob: Job? = Storage.shared.write { db in
                     // If another 'sendReadReceipts' job was scheduled then update that one
                     // to run at 'nextRunTimestamp' and make the current job stop
                     if

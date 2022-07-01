@@ -18,7 +18,7 @@ public enum FailedMessageSendsJob: JobExecutor {
         deferred: @escaping (Job) -> ()
     ) {
         // Update all 'sending' message states to 'failed'
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             let changeCount: Int = try RecipientState
                 .filter(RecipientState.Columns.state == RecipientState.State.sending)
                 .updateAll(db, RecipientState.Columns.state.set(to: RecipientState.State.failed))

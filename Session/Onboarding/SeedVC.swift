@@ -171,7 +171,7 @@ final class SeedVC: BaseVC {
         }, completion: nil)
         seedReminderView.setProgress(1, animated: true)
         
-        GRDBStorage.shared.write { db in db[.hasViewedSeed] = true }
+        Storage.shared.writeAsync { db in db[.hasViewedSeed] = true }
     }
     
     @objc private func copyMnemonic() {

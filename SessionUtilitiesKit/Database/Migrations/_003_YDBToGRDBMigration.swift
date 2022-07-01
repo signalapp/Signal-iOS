@@ -114,6 +114,6 @@ enum _003_YDBToGRDBMigration: Migration {
             ).insert(db)
         }
         
-        GRDBStorage.update(progress: 1, for: self, in: target) // In case this is the last migration
+        Storage.update(progress: 1, for: self, in: target) // In case this is the last migration
     }
 }

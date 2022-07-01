@@ -221,7 +221,7 @@ public final class MessageSender {
                         guard !isSuccess else { return } // Succeed as soon as the first promise succeeds
                         isSuccess = true
 
-                        GRDBStorage.shared.write { db in
+                        Storage.shared.write { db in
                             let responseJson: JSON? = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON
                             message.serverHash = (responseJson?["hash"] as? String)
                             
@@ -291,7 +291,7 @@ public final class MessageSender {
                         errorCount += 1
                         guard errorCount == promiseCount else { return } // Only error out if all promises failed
                         
-                        GRDBStorage.shared.write { db in
+                        Storage.shared.write { db in
                             handleFailure(db, with: .other(error))
                         }
                     }
@@ -300,7 +300,7 @@ public final class MessageSender {
             .catch(on: DispatchQueue.global(qos: .default)) { error in
                 SNLog("Couldn't send message due to error: \(error).")
                 
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     handleFailure(db, with: .other(error))
                 }
             }
@@ -682,7 +682,7 @@ public final class MessageSender {
 public class SMKMessageSender: NSObject {
     @objc(leaveClosedGroupWithPublicKey:)
     public static func objc_leave(_ groupPublicKey: String) -> AnyPromise {
-        let promise = GRDBStorage.shared.writeAsync { db in
+        let promise = Storage.shared.writeAsync { db in
             try MessageSender.leave(db, groupPublicKey: groupPublicKey)
         }
         
@@ -691,7 +691,7 @@ public class SMKMessageSender: NSObject {
     
     @objc(forceSyncConfigurationNow)
     public static func objc_forceSyncConfigurationNow() {
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
         }
     }

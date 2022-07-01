@@ -10,7 +10,7 @@ public struct SessionApp {
     // MARK: - View Convenience Methods
     
     public static func presentConversation(for threadId: String, action: ConversationViewModel.Action = .none, animated: Bool) {
-        let maybeThread: SessionThread? = GRDBStorage.shared.write { db in
+        let maybeThread: SessionThread? = Storage.shared.write { db in
             try SessionThread.fetchOrCreate(db, id: threadId, variant: .contact)
         }
         
@@ -61,7 +61,7 @@ public struct SessionApp {
         Logger.error("")
         DDLog.flushLog()
 
-        GRDBStorage.resetAllStorage()
+        Storage.resetAllStorage()
         ProfileManager.resetProfileStorage()
         Attachment.resetAttachmentStorage()
         AppEnvironment.shared.notificationPresenter.clearAllNotifications()

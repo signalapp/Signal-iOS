@@ -18,7 +18,7 @@ public enum FailedAttachmentDownloadsJob: JobExecutor {
         deferred: @escaping (Job) -> ()
     ) {
         // Update all 'sending' message states to 'failed'
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             let changeCount: Int = try Attachment
                 .filter(Attachment.Columns.state == Attachment.State.downloading)
                 .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.failedDownload))

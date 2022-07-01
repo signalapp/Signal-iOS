@@ -32,7 +32,7 @@ import SessionMessagingKit
             accessibilityIdentifier: "\(type(of: self).self).block",
             style: .destructive,
             handler: { _ in
-                GRDBStorage.shared.writeAsync(
+                Storage.shared.writeAsync(
                     updates: { db in
                         try Contact
                             .fetchOrCreate(db, id: threadId)
@@ -83,7 +83,7 @@ import SessionMessagingKit
             accessibilityIdentifier: "\(type(of: self).self).unblock",
             style: .destructive,
             handler: { _ in
-                GRDBStorage.shared.writeAsync(
+                Storage.shared.writeAsync(
                     updates: { db in
                         try Contact
                             .fetchOrCreate(db, id: threadId)

@@ -28,7 +28,7 @@ public enum MessageReceiveJob: JobExecutor {
         var updatedJob: Job = job
         var leastSevereError: Error?
         
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             var remainingMessagesToProcess: [Details.MessageInfo] = []
             
             for messageInfo in details.messages {

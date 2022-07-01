@@ -132,7 +132,7 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
             presentAlert(alert)
         }
         else {
-            let maybeThread: SessionThread? = GRDBStorage.shared.write { db in
+            let maybeThread: SessionThread? = Storage.shared.write { db in
                 try SessionThread.fetchOrCreate(db, id: hexEncodedPublicKey, variant: .contact)
             }
             

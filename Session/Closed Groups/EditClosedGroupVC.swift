@@ -92,7 +92,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         
         let threadId: String = self.threadId
         
-        GRDBStorage.shared.read { [weak self] db in
+        Storage.shared.read { [weak self] db in
             self?.userPublicKey = getUserHexEncodedPublicKey(db)
             self?.name = try ClosedGroup
                 .select(.name)
@@ -321,7 +321,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
                 .map { $0.profileId }
                 .asSet()
         ) { [weak self] selectedUserIds in
-            GRDBStorage.shared.read { [weak self] db in
+            Storage.shared.read { [weak self] db in
                 let selectedGroupMembers: [GroupMemberDisplayInfo] = try Profile
                     .filter(selectedUserIds.contains(Profile.Columns.id))
                     .fetchAll(db)
@@ -416,7 +416,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         }
         
         ModalActivityIndicatorViewController.present(fromViewController: navigationController) { _ in
-            GRDBStorage.shared
+            Storage.shared
                 .writeAsync { db in
                     if !updatedMemberIds.contains(userPublicKey) {
                         return try MessageSender.leave(db, groupPublicKey: threadId)

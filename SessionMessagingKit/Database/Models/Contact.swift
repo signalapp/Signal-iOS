@@ -117,7 +117,7 @@ public class SMKContact: NSObject {
     }
     
     @objc public static func fetchOrCreate(id: String) -> SMKContact {
-        let existingContact: Contact? = GRDBStorage.shared.read { db in
+        let existingContact: Contact? = Storage.shared.read { db in
             try Contact.fetchOne(db, id: id)
         }
         
@@ -130,7 +130,7 @@ public class SMKContact: NSObject {
     
     @objc(isBlockedFor:)
     public static func isBlocked(id: String) -> Bool {
-        return GRDBStorage.shared
+        return Storage.shared
             .read { db in
                 try Contact
                     .select(.isBlocked)

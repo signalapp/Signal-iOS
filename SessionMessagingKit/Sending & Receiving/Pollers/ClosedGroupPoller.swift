@@ -38,7 +38,7 @@ public final class ClosedGroupPoller {
     @objc public func start() {
         // Fetch all closed groups (excluding any don't contain the current user as a
         // GroupMemeber as the user is no longer a member of those)
-        GRDBStorage.shared
+        Storage.shared
             .read { db in
                 try ClosedGroup
                     .select(.threadId)
@@ -66,7 +66,7 @@ public final class ClosedGroupPoller {
     }
 
     @objc public func stop() {
-        GRDBStorage.shared
+        Storage.shared
             .read { db in
                 try ClosedGroup
                     .select(.threadId)
@@ -102,13 +102,13 @@ public final class ClosedGroupPoller {
     private func pollRecursively(_ groupPublicKey: String) {
         guard
             isPolling.wrappedValue[groupPublicKey] == true,
-            let thread: SessionThread = GRDBStorage.shared.read({ db in try SessionThread.fetchOne(db, id: groupPublicKey) })
+            let thread: SessionThread = Storage.shared.read({ db in try SessionThread.fetchOne(db, id: groupPublicKey) })
         else { return }
         
         // Get the received date of the last message in the thread. If we don't have any messages yet, pick some
         // reasonable fake time interval to use instead
         
-        let lastMessageDate: Date = GRDBStorage.shared
+        let lastMessageDate: Date = Storage.shared
             .read { db in
                 try thread
                     .interactions
@@ -200,7 +200,7 @@ public final class ClosedGroupPoller {
                                 
                                 var jobToRun: Job?
                                 
-                                GRDBStorage.shared.write { db in
+                                Storage.shared.write { db in
                                     var jobDetailMessages: [MessageReceiveJob.Details.MessageInfo] = []
                                     
                                     messages.forEach { message in

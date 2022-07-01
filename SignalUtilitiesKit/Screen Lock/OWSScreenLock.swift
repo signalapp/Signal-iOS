@@ -41,12 +41,12 @@ import SessionMessagingKit
     // MARK: - Properties
 
     @objc public func isScreenLockEnabled() -> Bool {
-        return GRDBStorage.shared[.isScreenLockEnabled]
+        return Storage.shared[.isScreenLockEnabled]
     }
 
     @objc
     public func setIsScreenLockEnabled(_ value: Bool) {
-        GRDBStorage.shared.writeAsync(
+        Storage.shared.writeAsync(
             updates: { db in db[.isScreenLockEnabled] = value },
             completion: { _, _ in
                 NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
@@ -55,12 +55,12 @@ import SessionMessagingKit
     }
 
     @objc public func screenLockTimeout() -> TimeInterval {
-        return GRDBStorage.shared[.screenLockTimeoutSeconds]
+        return Storage.shared[.screenLockTimeoutSeconds]
             .defaulting(to: screenLockTimeoutDefault)
     }
 
     @objc public func setScreenLockTimeout(_ value: TimeInterval) {
-        GRDBStorage.shared.writeAsync(
+        Storage.shared.writeAsync(
             updates: { db in db[.screenLockTimeoutSeconds] = value },
             completion: { _, _ in
                 NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)

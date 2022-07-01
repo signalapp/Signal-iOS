@@ -395,7 +395,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         AssertIsOnMainThread()
 
         guard UIApplication.shared.applicationState == .active else { return true }
-        guard GRDBStorage.shared[.playNotificationSoundInForeground] else { return false }
+        guard Storage.shared[.playNotificationSoundInForeground] else { return false }
 
         let nowMs: UInt64 = UInt64(floor(Date().timeIntervalSince1970 * 1000))
         let recentThreshold = nowMs - UInt64(kAudioNotificationsThrottleInterval * Double(kSecondInMs))
@@ -428,7 +428,7 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("threadId was unexpectedly nil")
         }
 
-        guard let thread: SessionThread = GRDBStorage.shared.read({ db in try SessionThread.fetchOne(db, id: threadId) }) else {
+        guard let thread: SessionThread = Storage.shared.read({ db in try SessionThread.fetchOne(db, id: threadId) }) else {
             throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
         }
 
@@ -440,13 +440,13 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("threadId was unexpectedly nil")
         }
 
-        guard let thread: SessionThread = GRDBStorage.shared.read({ db in try SessionThread.fetchOne(db, id: threadId) }) else {
+        guard let thread: SessionThread = Storage.shared.read({ db in try SessionThread.fetchOne(db, id: threadId) }) else {
             throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
         }
         
         let (promise, seal) = Promise<Void>.pending()
         
-        GRDBStorage.shared.writeAsync { db in
+        Storage.shared.writeAsync { db in
             let interaction: Interaction = try Interaction(
                 threadId: thread.id,
                 authorId: getUserHexEncodedPublicKey(db),
@@ -472,7 +472,7 @@ class NotificationActionHandler {
         }
         .done { seal.fulfill(()) }
         .catch { error in
-            GRDBStorage.shared.read { [weak self] db in
+            Storage.shared.read { [weak self] db in
                 self?.notificationPresenter.notifyForFailedSend(db, in: thread)
             }
             
@@ -504,7 +504,7 @@ class NotificationActionHandler {
     private func markAsRead(thread: SessionThread) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         
-        GRDBStorage.shared.writeAsync(
+        Storage.shared.writeAsync(
             updates: { db in
                 try Interaction.markAsRead(
                     db,

@@ -64,7 +64,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         let targetInteractionId: Int64? = {
             if let focusedInteractionId: Int64 = focusedInteractionId { return focusedInteractionId }
             
-            return GRDBStorage.shared.read { db in
+            return Storage.shared.read { db in
                 let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
                 
                 return try Interaction
@@ -109,7 +109,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         threadVariant: self.initialThreadVariant,
         currentUserIsClosedGroupMember: (self.initialThreadVariant != .closedGroup ?
             nil :
-            GRDBStorage.shared.read { db in
+            Storage.shared.read { db in
                 try GroupMember
                     .filter(GroupMember.Columns.groupId == self.threadId)
                     .filter(GroupMember.Columns.profileId == getUserHexEncodedPublicKey(db))
@@ -265,7 +265,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
             }
         
         if !pendingAttachmentsToDownload.isEmpty {
-            GRDBStorage.shared.writeAsync { db in
+            Storage.shared.writeAsync { db in
                 pendingAttachmentsToDownload.forEach { attachment, interactionId in
                     JobRunner.add(
                         db,
@@ -339,7 +339,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     public func mentions(for query: String = "") -> [MentionInfo] {
         let threadData: SessionThreadViewModel = self.threadData
         
-        let results: [MentionInfo] = GRDBStorage.shared
+        let results: [MentionInfo] = Storage.shared
             .read { db -> [MentionInfo] in
                 let userPublicKey: String = getUserHexEncodedPublicKey(db)
                 
@@ -447,7 +447,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     // MARK: - Functions
     
     public func updateDraft(to draft: String) {
-        GRDBStorage.shared.writeAsync { db in
+        Storage.shared.writeAsync { db in
             try SessionThread
                 .filter(id: self.threadId)
                 .updateAll(db, SessionThread.Columns.messageDraft.set(to: draft))
@@ -460,7 +460,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         let threadId: String = self.threadData.threadId
         let trySendReadReceipt: Bool = (self.threadData.threadIsMessageRequest == false)
         
-        GRDBStorage.shared.writeAsync { db in
+        Storage.shared.writeAsync { db in
             try Interaction.markAsRead(
                 db,
                 interactionId: lastInteractionId,

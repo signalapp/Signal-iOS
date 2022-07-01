@@ -275,14 +275,14 @@ public extension SessionThread {
 public class SMKThread: NSObject {
     @objc(deleteAll)
     public static func deleteAll() {
-        GRDBStorage.shared.writeAsync { db in
+        Storage.shared.writeAsync { db in
             _ = try SessionThread.deleteAll(db)
         }
     }
     
     @objc(isThreadMuted:)
     public static func isThreadMuted(_ threadId: String) -> Bool {
-        return GRDBStorage.shared.read { db in
+        return Storage.shared.read { db in
             let mutedUntilTimestamp: TimeInterval? = try SessionThread
                 .select(SessionThread.Columns.mutedUntilTimestamp)
                 .filter(id: threadId)
@@ -296,7 +296,7 @@ public class SMKThread: NSObject {
     
     @objc(isOnlyNotifyingForMentions:)
     public static func isOnlyNotifyingForMentions(_ threadId: String) -> Bool {
-        return GRDBStorage.shared.read { db in
+        return Storage.shared.read { db in
             return try SessionThread
                 .select(SessionThread.Columns.onlyNotifyForMentions == true)
                 .filter(id: threadId)
@@ -308,7 +308,7 @@ public class SMKThread: NSObject {
     
     @objc(setIsOnlyNotifyingForMentions:to:)
     public static func isOnlyNotifyingForMentions(_ threadId: String, isEnabled: Bool) {
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             try SessionThread
                 .filter(id: threadId)
                 .updateAll(db, SessionThread.Columns.onlyNotifyForMentions.set(to: isEnabled))
@@ -317,7 +317,7 @@ public class SMKThread: NSObject {
     
     @objc(mutedUntilDateFor:)
     public static func mutedUntilDateFor(_ threadId: String) -> Date? {
-        return GRDBStorage.shared.read { db in
+        return Storage.shared.read { db in
             return try SessionThread
                 .select(SessionThread.Columns.mutedUntilTimestamp)
                 .filter(id: threadId)
@@ -329,7 +329,7 @@ public class SMKThread: NSObject {
     
     @objc(updateWithMutedUntilDateTo:forThreadId:)
     public static func updateWithMutedUntilDate(to date: Date?, threadId: String) {
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             try SessionThread
                 .filter(id: threadId)
                 .updateAll(db, SessionThread.Columns.mutedUntilTimestamp.set(to: date?.timeIntervalSince1970))

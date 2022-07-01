@@ -170,7 +170,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
                 }
             }
             
-            GRDBStorage.shared
+            Storage.shared
                 .writeAsync { db in
                     try MessageSender
                         .sendNonDurably(
@@ -203,7 +203,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         let uuid: String = self.uuid
         let mediaConstraints: RTCMediaConstraints = mediaConstraints(false)
         
-        GRDBStorage.shared.writeAsync { [weak self] db in
+        Storage.shared.writeAsync { [weak self] db in
             guard let thread: SessionThread = try? SessionThread.fetchOne(db, id: sessionId) else {
                 seal.reject(Error.noThread)
                 return
@@ -268,7 +268,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         // Empty the queue
         self.queuedICECandidates.removeAll()
         
-        GRDBStorage.shared.writeAsync { db in
+        Storage.shared.writeAsync { db in
             guard let thread: SessionThread = try SessionThread.fetchOne(db, id: contactSessionId) else { return }
             
             SNLog("[Calls] Batch sending \(candidates.count) ICE candidates.")

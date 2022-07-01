@@ -14,7 +14,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
     // MARK: - Spec
 
     override func spec() {
-        var mockStorage: GRDBStorage!
+        var mockStorage: Storage!
         var mockSodium: MockSodium!
         var mockBox: MockBox!
         var mockGenericHash: MockGenericHash!
@@ -25,7 +25,7 @@ class MessageReceiverDecryptionSpec: QuickSpec {
         
         describe("a MessageReceiver") {
             beforeEach {
-                mockStorage = GRDBStorage(
+                mockStorage = Storage(
                     customWriter: DatabaseQueue(),
                     customMigrations: [
                         SNUtilitiesKit.migrations(),

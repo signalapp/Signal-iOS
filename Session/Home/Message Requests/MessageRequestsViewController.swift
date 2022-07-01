@@ -18,7 +18,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     // MARK: - Intialization
     
     init() {
-        GRDBStorage.shared.addObserver(viewModel.pagedDataObserver)
+        Storage.shared.addObserver(viewModel.pagedDataObserver)
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -355,7 +355,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             style: .destructive
         ) { _ in
             // Clear the requests
-            GRDBStorage.shared.write { db in
+            Storage.shared.write { db in
                 _ = try SessionThread
                     .filter(ids: threadIds)
                     .deleteAll(db)
@@ -388,7 +388,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             title: "TXT_DELETE_TITLE".localized(),
             style: .destructive
         ) { _ in
-            GRDBStorage.shared.write { db in
+            Storage.shared.write { db in
                 _ = try SessionThread
                     .filter(id: threadId)
                     .deleteAll(db)

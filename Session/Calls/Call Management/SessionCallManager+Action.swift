@@ -8,7 +8,7 @@ extension SessionCallManager {
     public func startCallAction() -> Bool {
         guard let call: CurrentCallProtocol = self.currentCall else { return false }
         
-        GRDBStorage.shared.writeAsync { db in
+        Storage.shared.writeAsync { db in
             call.startSessionCall(db)
         }
         

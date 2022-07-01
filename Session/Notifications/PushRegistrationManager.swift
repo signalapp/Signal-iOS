@@ -243,7 +243,7 @@ public enum PushRegistrationError: Error {
         let payload = payload.dictionaryPayload
         
         if let uuid = payload["uuid"] as? String, let caller = payload["caller"] as? String, let timestampMs = payload["timestamp"] as? Int64 {
-            let call: SessionCall? = GRDBStorage.shared.write { db in
+            let call: SessionCall? = Storage.shared.write { db in
                 let messageInfo: CallMessage.MessageInfo = CallMessage.MessageInfo(
                     state: (caller == getUserHexEncodedPublicKey(db) ?
                         .outgoing :

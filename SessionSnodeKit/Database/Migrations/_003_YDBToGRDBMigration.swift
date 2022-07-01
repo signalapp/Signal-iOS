@@ -67,7 +67,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     snodeSetResult["\(SnodeSet.onionRequestPathPrefix)1"] = [ path1Snode0, path1Snode1, path1Snode2 ]
                 }
             }
-            GRDBStorage.update(progress: 0.02, for: self, in: target)
+            Storage.update(progress: 0.02, for: self, in: target)
             
             // MARK: --SnodePool
             
@@ -100,7 +100,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 
                 collectionIndex += 1
                 
-                GRDBStorage.update(
+                Storage.update(
                     progress: min(
                         swarmCompleteProgress,
                         ((collectionIndex / roughNumCollections) * (swarmCompleteProgress - startProgress))
@@ -109,7 +109,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     in: target
                 )
             }
-            GRDBStorage.update(progress: swarmCompleteProgress, for: self, in: target)
+            Storage.update(progress: swarmCompleteProgress, for: self, in: target)
             
             for swarmCollection in swarmCollections {
                 let collection: String = "\(SSKLegacy.swarmCollectionPrefix)\(swarmCollection)"
@@ -120,7 +120,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     snodeSetResult[swarmCollection] = (snodeSetResult[swarmCollection] ?? Set()).inserting(snode)
                 }
             }
-            GRDBStorage.update(progress: 0.92, for: self, in: target)
+            Storage.update(progress: 0.92, for: self, in: target)
             
             // MARK: --Received message hashes
             
@@ -128,7 +128,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 guard let hashSet = object as? Set<String> else { return }
                 receivedMessageResults[key] = hashSet
             }
-            GRDBStorage.update(progress: 0.93, for: self, in: target)
+            Storage.update(progress: 0.93, for: self, in: target)
             
             // MARK: --Last message info
             
@@ -141,7 +141,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 lastMessageResults[key] = (lastMessageHash, lastMessageJson)
                 receivedMessageResults[key] = receivedMessageResults[key]?.removing(lastMessageHash)
             }
-            GRDBStorage.update(progress: 0.94, for: self, in: target)
+            Storage.update(progress: 0.94, for: self, in: target)
         }
         
         // MARK: - Insert into GRDB
@@ -161,7 +161,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     x25519PublicKey: legacySnode.publicKeySet.x25519Key
                 ).insert(db)
             }
-            GRDBStorage.update(progress: 0.96, for: self, in: target)
+            Storage.update(progress: 0.96, for: self, in: target)
             
             // MARK: --SnodeSets
             
@@ -176,7 +176,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     ).insert(db)
                 }
             }
-            GRDBStorage.update(progress: 0.98, for: self, in: target)
+            Storage.update(progress: 0.98, for: self, in: target)
         }
         
         try autoreleasepool {
@@ -191,7 +191,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     ).inserted(db)
                 }
             }
-            GRDBStorage.update(progress: 0.99, for: self, in: target)
+            Storage.update(progress: 0.99, for: self, in: target)
             
             // MARK: --Last Message Hash
             
@@ -209,6 +209,6 @@ enum _003_YDBToGRDBMigration: Migration {
             }
         }
         
-        GRDBStorage.update(progress: 1, for: self, in: target) // In case this is the last migration
+        Storage.update(progress: 1, for: self, in: target) // In case this is the last migration
     }
 }

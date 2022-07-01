@@ -205,7 +205,7 @@ extension OpenGroup: CustomStringConvertible, CustomDebugStringConvertible {
 public class SMKOpenGroup: NSObject {
     @objc(inviteUsers:toOpenGroupFor:)
     public static func invite(selectedUsers: Set<String>, openGroupThreadId: String) {
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: openGroupThreadId) else { return }
             
             let urlString: String = "\(openGroup.server)/\(openGroup.roomToken)?public_key=\(openGroup.publicKey)"

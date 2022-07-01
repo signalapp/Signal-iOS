@@ -602,8 +602,8 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "Re-migrate", style: .destructive) { _ in
-            GRDBStorage.deleteDatabaseFiles()
-            try? GRDBStorage.deleteDbKeys()
+            Storage.deleteDatabaseFiles()
+            try? Storage.deleteDbKeys()
             exit(1)
         })
         alert.addAction(UIAlertAction(title: "Cancel", style: .default))

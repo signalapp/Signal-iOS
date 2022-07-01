@@ -27,7 +27,7 @@ public enum RetrieveDefaultOpenGroupRoomsJob: JobExecutor {
         // in the database so we need to create a dummy one to retrieve the default room data
         let defaultGroupId: String = OpenGroup.idFor(roomToken: "", server: OpenGroupAPI.defaultServer)
         
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             guard try OpenGroup.exists(db, id: defaultGroupId) == false else { return }
             
             _ = try OpenGroup(

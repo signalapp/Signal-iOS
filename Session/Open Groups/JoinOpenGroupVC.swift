@@ -162,7 +162,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         isJoining = true
         
         ModalActivityIndicatorViewController.present(fromViewController: navigationController, canCancel: false) { [weak self] _ in
-            GRDBStorage.shared
+            Storage.shared
                 .writeAsync { db in
                     OpenGroupManager.shared.add(
                         db,
@@ -173,7 +173,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
                     )
                 }
                 .done(on: DispatchQueue.main) { [weak self] _ in
-                    GRDBStorage.shared.writeAsync { db in
+                    Storage.shared.writeAsync { db in
                         try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
                     }
 

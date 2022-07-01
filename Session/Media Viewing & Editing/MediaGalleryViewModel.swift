@@ -372,41 +372,40 @@ public class MediaGalleryViewModel {
         
         // Note: It's possible we already have cached album data for this interaction
         // but to avoid displaying stale data we re-fetch from the database anyway
-        let maybeAlbumInfo: AlbumInfo? = GRDBStorage.shared
-            .read { db -> AlbumInfo in
-                let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
-                let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
-                let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
-                
-                let newAlbumData: [Item] = try Item
-                    .baseQuery(
-                        orderSQL: SQL(interactionAttachment[.albumIndex]),
-                        customFilters: SQL("""
-                            \(attachment[.isValid]) = true AND
-                            \(interaction[.id]) = \(interactionId)
-                        """)
-                    )
-                    .fetchAll(db)
-                
-                guard let albumTimestampMs: Int64 = newAlbumData.first?.interactionTimestampMs else {
-                    return (newAlbumData, nil, nil)
-                }
-                
-                let itemBefore: Item? = try Item
-                    .baseQuery(
-                        orderSQL: Item.galleryReverseOrderSQL,
-                        customFilters: SQL("\(interaction[.timestampMs]) > \(albumTimestampMs)")
-                    )
-                    .fetchOne(db)
-                let itemAfter: Item? = try Item
-                    .baseQuery(
-                        orderSQL: Item.galleryOrderSQL,
-                        customFilters: SQL("\(interaction[.timestampMs]) < \(albumTimestampMs)")
-                    )
-                    .fetchOne(db)
-                
-                return (newAlbumData, itemBefore?.interactionId, itemAfter?.interactionId)
+        let maybeAlbumInfo: AlbumInfo? = Storage.shared.read { db -> AlbumInfo in
+            let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
+            let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+            let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
+            
+            let newAlbumData: [Item] = try Item
+                .baseQuery(
+                    orderSQL: SQL(interactionAttachment[.albumIndex]),
+                    customFilters: SQL("""
+                        \(attachment[.isValid]) = true AND
+                        \(interaction[.id]) = \(interactionId)
+                    """)
+                )
+                .fetchAll(db)
+            
+            guard let albumTimestampMs: Int64 = newAlbumData.first?.interactionTimestampMs else {
+                return (newAlbumData, nil, nil)
             }
+            
+            let itemBefore: Item? = try Item
+                .baseQuery(
+                    orderSQL: Item.galleryReverseOrderSQL,
+                    customFilters: SQL("\(interaction[.timestampMs]) > \(albumTimestampMs)")
+                )
+                .fetchOne(db)
+            let itemAfter: Item? = try Item
+                .baseQuery(
+                    orderSQL: Item.galleryOrderSQL,
+                    customFilters: SQL("\(interaction[.timestampMs]) < \(albumTimestampMs)")
+                )
+                .fetchOne(db)
+            
+            return (newAlbumData, itemBefore?.interactionId, itemAfter?.interactionId)
+        }
         
         guard let newAlbumInfo: AlbumInfo = maybeAlbumInfo else { return [] }
         

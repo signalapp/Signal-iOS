@@ -78,7 +78,7 @@ final class BlockedModal: Modal {
     @objc private func unblock() {
         let publicKey: String = self.publicKey
         
-        GRDBStorage.shared.writeAsync { db in
+        Storage.shared.writeAsync { db in
             try Contact
                 .filter(id: publicKey)
                 .updateAll(db, Contact.Columns.isBlocked.set(to: true))

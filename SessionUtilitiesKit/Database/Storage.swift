@@ -5,16 +5,16 @@ import GRDB
 import PromiseKit
 import SignalCoreKit
 
-public final class GRDBStorage {
+public final class Storage {
     private static let dbFileName: String = "Session.sqlite"
     private static let keychainService: String = "TSKeyChainService"
     private static let dbCipherKeySpecKey: String = "GRDBDatabaseCipherKeySpec"
     private static let kSQLCipherKeySpecLength: Int32 = 48
     
     private static var sharedDatabaseDirectoryPath: String { "\(OWSFileSystem.appSharedDataDirectoryPath())/database" }
-    private static var databasePath: String { "\(GRDBStorage.sharedDatabaseDirectoryPath)/\(GRDBStorage.dbFileName)" }
-    private static var databasePathShm: String { "\(GRDBStorage.sharedDatabaseDirectoryPath)/\(GRDBStorage.dbFileName)-shm" }
-    private static var databasePathWal: String { "\(GRDBStorage.sharedDatabaseDirectoryPath)/\(GRDBStorage.dbFileName)-wal" }
+    private static var databasePath: String { "\(Storage.sharedDatabaseDirectoryPath)/\(Storage.dbFileName)" }
+    private static var databasePathShm: String { "\(Storage.sharedDatabaseDirectoryPath)/\(Storage.dbFileName)-shm" }
+    private static var databasePathWal: String { "\(Storage.sharedDatabaseDirectoryPath)/\(Storage.dbFileName)-wal" }
     
     public static var isDatabasePasswordAccessible: Bool {
         guard (try? getDatabaseCipherKeySpec()) != nil else { return false }
@@ -22,7 +22,7 @@ public final class GRDBStorage {
         return true
     }
     
-    public static let shared: GRDBStorage = GRDBStorage()
+    public static let shared: Storage = Storage()
     public private(set) var isValid: Bool = false
     public private(set) var hasCompletedMigrations: Bool = false
     
@@ -36,11 +36,10 @@ public final class GRDBStorage {
         customWriter: DatabaseWriter? = nil,
         customMigrations: [TargetMigrations]? = nil
     ) {
-        
         // Create the database directory if needed and ensure it's protection level is set before attempting to
         // create the database KeySpec or the database itself
-        OWSFileSystem.ensureDirectoryExists(GRDBStorage.sharedDatabaseDirectoryPath)
-        OWSFileSystem.protectFileOrFolder(atPath: GRDBStorage.sharedDatabaseDirectoryPath)
+        OWSFileSystem.ensureDirectoryExists(Storage.sharedDatabaseDirectoryPath)
+        OWSFileSystem.protectFileOrFolder(atPath: Storage.sharedDatabaseDirectoryPath)
         
         // If a custom writer was provided then use that (for unit testing)
         guard customWriter == nil else {
@@ -55,15 +54,16 @@ public final class GRDBStorage {
         //
         // Note: We reset the bytes immediately after generation to ensure the database key doesn't hang
         // around in memory unintentionally
-        var tmpKeySpec: Data = GRDBStorage.getOrGenerateDatabaseKeySpec()
+        var tmpKeySpec: Data = Storage.getOrGenerateDatabaseKeySpec()
         tmpKeySpec.resetBytes(in: 0..<tmpKeySpec.count)
         
         // Configure the database and create the DatabasePool for interacting with the database
         var config = Configuration()
         config.maximumReaderCount = 10  // Increase the max read connection limit - Default is 5
         config.prepareDatabase { db in
-            var keySpec: Data = GRDBStorage.getOrGenerateDatabaseKeySpec()
+            var keySpec: Data = Storage.getOrGenerateDatabaseKeySpec()
             defer { keySpec.resetBytes(in: 0..<keySpec.count) } // Reset content immediately after use
+            
             // Use a raw key spec, where the 96 hexadecimal digits are provided
             // (i.e. 64 hex for the 256 bit key, followed by 32 hex for the 128 bit salt)
             // using explicit BLOB syntax, e.g.:
@@ -86,7 +86,7 @@ public final class GRDBStorage {
         // Create the DatabasePool to allow us to connect to the database and mark the storage as valid
         do {
             dbWriter = try DatabasePool(
-                path: "\(GRDBStorage.sharedDatabaseDirectoryPath)/\(GRDBStorage.dbFileName)",
+                path: "\(Storage.sharedDatabaseDirectoryPath)/\(Storage.dbFileName)",
                 configuration: config
             )
             isValid = true
@@ -180,7 +180,7 @@ public final class GRDBStorage {
             self?.hasCompletedMigrations = true
             self?.migrationProgressUpdater = nil
             SUKLegacy.clearLegacyDatabaseInstance()
-//            SUKLegacy.deleteLegacyDatabaseFilesAndKey() // TODO: Delete legacy database after the migration is done
+//            SUKLegacy.deleteLegacyDatabaseFilesAndKey() // TODO: Add a "Delete legacy database" migration to run after the '003' migrations
             
             if let error = error {
                 SNLog("[Migration Error] Migration failed with error: \(error)")
@@ -212,7 +212,7 @@ public final class GRDBStorage {
         // would crash as it gets force-unwrapped - better to just do the check explicitly instead
         guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
         
-        GRDBStorage.shared.migrationProgressUpdater?.wrappedValue(target.key(with: migration), progress)
+        Storage.shared.migrationProgressUpdater?.wrappedValue(target.key(with: migration), progress)
     }
     
     // MARK: - Security
@@ -284,14 +284,15 @@ public final class GRDBStorage {
         SUKLegacy.clearLegacyDatabaseInstance()
         try? SUKLegacy.deleteLegacyDatabaseFilesAndKey()
         
-        GRDBStorage.shared.isValid = false
-        GRDBStorage.shared.hasCompletedMigrations = false
-        GRDBStorage.shared.dbWriter = nil
+        Storage.shared.isValid = false
+        Storage.shared.hasCompletedMigrations = false
+        Storage.shared.dbWriter = nil
         
         self.deleteDatabaseFiles()
         try? self.deleteDbKeys()
     }
     
+    // TODO: Change these back to private
     public/*private*/ static func deleteDatabaseFiles() {
         OWSFileSystem.deleteFile(databasePath)
         OWSFileSystem.deleteFile(databasePathShm)
@@ -373,7 +374,7 @@ public final class GRDBStorage {
 
 // MARK: - Promise Extensions
 
-public extension GRDBStorage {
+public extension Storage {
     // FIXME: Would be good to replace these with Swift Combine
     @discardableResult func read<T>(_ value: (Database) throws -> Promise<T>) -> Promise<T> {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else {

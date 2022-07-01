@@ -250,7 +250,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         // Suggest that the user enable link previews if they haven't already and we haven't
         // told them about link previews yet
         let text = inputTextView.text!
-        let areLinkPreviewsEnabled: Bool = GRDBStorage.shared[.areLinkPreviewsEnabled]
+        let areLinkPreviewsEnabled: Bool = Storage.shared[.areLinkPreviewsEnabled]
         
         if
             !LinkPreview.allPreviewUrls(forMessageBodyText: text).isEmpty &&

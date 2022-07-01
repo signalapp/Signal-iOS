@@ -41,7 +41,7 @@ public enum MessageSendJob: JobExecutor {
             //
             // Note: Normal attachments should be sent in a non-durable way but any
             // attachments for LinkPreviews and Quotes will be processed through this mechanism
-            let attachmentState: (shouldFail: Bool, shouldDefer: Bool)? = GRDBStorage.shared.write { db in
+            let attachmentState: (shouldFail: Bool, shouldDefer: Bool)? = Storage.shared.write { db in
                 let allAttachmentStateInfo: [Attachment.StateInfo] = try Attachment
                     .stateInfo(interactionId: interactionId)
                     .fetchAll(db)
@@ -131,7 +131,7 @@ public enum MessageSendJob: JobExecutor {
         details.message.threadId = (details.message.threadId ?? job.threadId)
         
         // Perform the actual message sending
-        GRDBStorage.shared.writeAsync { db -> Promise<Void> in
+        Storage.shared.writeAsync { db -> Promise<Void> in
             try MessageSender.sendImmediate(
                 db,
                 message: details.message,
@@ -160,7 +160,7 @@ public enum MessageSendJob: JobExecutor {
                     if details.message is VisibleMessage {
                         guard
                             let interactionId: Int64 = job.interactionId,
-                            GRDBStorage.shared.read({ db in try Interaction.exists(db, id: interactionId) }) == true
+                            Storage.shared.read({ db in try Interaction.exists(db, id: interactionId) }) == true
                         else {
                             // The message has been deleted so permanently fail the job
                             failure(job, error, true)

@@ -22,7 +22,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
     // MARK: - Variables
     
     private lazy var defaultSearchResults: [SectionModel] = {
-        let result: SessionThreadViewModel? = GRDBStorage.shared.read { db -> SessionThreadViewModel? in
+        let result: SessionThreadViewModel? = Storage.shared.read { db -> SessionThreadViewModel? in
             try SessionThreadViewModel
                 .noteToSelfOnlyQuery(userPublicKey: getUserHexEncodedPublicKey(db))
                 .fetchOne(db)
@@ -155,7 +155,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
 
         lastSearchText = searchText
 
-        let result: Result<[SectionModel], Error>? = GRDBStorage.shared.read { db -> Result<[SectionModel], Error> in
+        let result: Result<[SectionModel], Error>? = Storage.shared.read { db -> Result<[SectionModel], Error> in
             do {
                 let userPublicKey: String = getUserHexEncodedPublicKey(db)
                 let contactsAndGroupsResults: [SessionThreadViewModel] = try SessionThreadViewModel

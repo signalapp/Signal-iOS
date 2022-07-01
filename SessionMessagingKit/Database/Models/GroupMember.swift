@@ -65,7 +65,7 @@ public struct GroupMember: Codable, Equatable, FetchableRecord, PersistableRecor
 public class SMKGroupMember: NSObject {
     @objc(isCurrentUserMemberOf:)
     public static func isCurrentUserMember(of groupId: String) -> Bool {
-        return GRDBStorage.shared.read { db in
+        return Storage.shared.read { db in
             let userPublicKey: String = getUserHexEncodedPublicKey(db)
             let numEntries: Int = try GroupMember
                 .filter(GroupMember.Columns.groupId == groupId)
@@ -79,7 +79,7 @@ public class SMKGroupMember: NSObject {
     
     @objc(isCurrentUserAdminOf:)
     public static func isCurrentUserAdmin(of groupId: String) -> Bool {
-        return GRDBStorage.shared.read { db in
+        return Storage.shared.read { db in
             let userPublicKey: String = getUserHexEncodedPublicKey(db)
             let numEntries: Int = try GroupMember
                 .filter(GroupMember.Columns.groupId == groupId)

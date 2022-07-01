@@ -74,7 +74,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         
         // If we need a config sync then trigger it now
         if needsConfigSync {
-            GRDBStorage.shared.write { db in
+            Storage.shared.write { db in
                 try? MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
             }
         }
@@ -88,7 +88,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
         // App isn't ready until storage is ready AND all version migrations are complete.
         guard areVersionMigrationsComplete else { return }
-        guard GRDBStorage.shared.isValid else { return }
+        guard Storage.shared.isValid else { return }
         guard !AppReadiness.isAppReady() else {
             // Only mark the app as ready once.
             return

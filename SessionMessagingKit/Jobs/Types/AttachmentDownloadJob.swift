@@ -22,7 +22,7 @@ public enum AttachmentDownloadJob: JobExecutor {
             let threadId: String = job.threadId,
             let detailsData: Data = job.details,
             let details: Details = try? JSONDecoder().decode(Details.self, from: detailsData),
-            let attachment: Attachment = GRDBStorage.shared
+            let attachment: Attachment = Storage.shared
                 .read({ db in try Attachment.fetchOne(db, id: details.attachmentId) })
         else {
             failure(job, JobRunnerError.missingRequiredDetails, false)
@@ -57,7 +57,7 @@ public enum AttachmentDownloadJob: JobExecutor {
             // then we should update the state of the attachment to be failed to avoid having attachments
             // appear in an endlessly downloading state
             if !otherCurrentJobAttachmentIds.contains(attachment.id) {
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     _ = try Attachment
                         .filter(id: attachment.id)
                         .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.failedDownload))
@@ -75,7 +75,7 @@ public enum AttachmentDownloadJob: JobExecutor {
         }
         
         // Update to the 'downloading' state (no need to update the 'attachment' instance)
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             try Attachment
                 .filter(id: attachment.id)
                 .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.downloading))
@@ -93,7 +93,7 @@ public enum AttachmentDownloadJob: JobExecutor {
                 return Promise(error: AttachmentDownloadError.invalidUrl)
             }
             
-            let maybeOpenGroupDownloadPromise: Promise<Data>? = GRDBStorage.shared.read({ db in
+            let maybeOpenGroupDownloadPromise: Promise<Data>? = Storage.shared.read({ db in
                 guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else {
                     return nil  // Not an open group so just use standard FileServer upload
                 }
@@ -142,7 +142,7 @@ public enum AttachmentDownloadJob: JobExecutor {
                 ///
                 /// **Note:** We **MUST** use the `'with()` function here as it will update the
                 /// `isValid` and `duration` values based on the downloaded data and the state
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     _ = try attachment
                         .with(
                             state: .downloaded,
@@ -189,7 +189,7 @@ public enum AttachmentDownloadJob: JobExecutor {
                 ///
                 /// **Note:** We **MUST** use the `'with()` function here as it will update the
                 /// `isValid` and `duration` values based on the downloaded data and the state
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     _ = try Attachment
                         .filter(id: attachment.id)
                         .updateAll(db, Attachment.Columns.state.set(to: targetState))

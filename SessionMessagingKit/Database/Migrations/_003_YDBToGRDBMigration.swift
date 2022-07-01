@@ -80,7 +80,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 
                 legacyMigrations.insert(legacyMigration)
             }
-            GRDBStorage.update(progress: 0.01, for: self, in: target)
+            Storage.update(progress: 0.01, for: self, in: target)
             
             // MARK: --Contacts
             
@@ -96,7 +96,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 forKey: SMKLegacy.blockedPhoneNumbersKey,
                 inCollection: SMKLegacy.blockListCollection
             ) as? [String] ?? [])
-            GRDBStorage.update(progress: 0.02, for: self, in: target)
+            Storage.update(progress: 0.02, for: self, in: target)
             
             // MARK: --Threads
             
@@ -196,7 +196,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     openGroupImage[thread.uniqueId] = transaction.object(forKey: openGroup.id, inCollection: SMKLegacy.openGroupImageCollection) as? Data
                 }
             }
-            GRDBStorage.update(progress: 0.04, for: self, in: target)
+            Storage.update(progress: 0.04, for: self, in: target)
             
             // MARK: --Interactions
             
@@ -245,7 +245,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 
                 rowIndex += 1
                 
-                GRDBStorage.update(
+                Storage.update(
                     progress: min(
                         interactionsCompleteProgress,
                         ((rowIndex / roughNumRows) * (interactionsCompleteProgress - startProgress))
@@ -254,7 +254,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     in: target
                 )
             }
-            GRDBStorage.update(progress: interactionsCompleteProgress, for: self, in: target)
+            Storage.update(progress: interactionsCompleteProgress, for: self, in: target)
             
             // MARK: --Attachments
             
@@ -269,7 +269,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 
                 attachments[key] = attachment
             }
-            GRDBStorage.update(progress: 0.21, for: self, in: target)
+            Storage.update(progress: 0.21, for: self, in: target)
             
             // MARK: --Read Receipts
             
@@ -328,7 +328,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 guard let job = object as? SMKLegacy._AttachmentDownloadJob else { return }
                 attachmentDownloadJobs.insert(job)
             }
-            GRDBStorage.update(progress: 0.22, for: self, in: target)
+            Storage.update(progress: 0.22, for: self, in: target)
             
             // MARK: --Preferences
             
@@ -387,7 +387,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 .asType(NSNumber.self)?
                 .doubleValue)
                 .defaulting(to: (15 * 60))
-            GRDBStorage.update(progress: 0.23, for: self, in: target)
+            Storage.update(progress: 0.23, for: self, in: target)
         }
         
         // We can't properly throw within the 'enumerateKeysAndObjects' block so have to throw here
@@ -490,7 +490,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 }
                 
                 // Increment the progress for each contact
-                GRDBStorage.update(
+                Storage.update(
                     progress: contactStartProgress + (progressPerContact * CGFloat(index + 1)),
                     for: self,
                     in: target
@@ -1128,7 +1128,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         }
                         
                         // Increment the progress for each contact
-                        GRDBStorage.update(
+                        Storage.update(
                             progress: (
                                 threadInteractionsStartProgress +
                                 (progressPerInteraction * (interactionCounter + 1))
@@ -1400,7 +1400,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 )?.inserted(db)
             }
         }
-        GRDBStorage.update(progress: 0.99, for: self, in: target)
+        Storage.update(progress: 0.99, for: self, in: target)
         
         // MARK: - Preferences
         
@@ -1440,7 +1440,7 @@ enum _003_YDBToGRDBMigration: Migration {
         db[.hasSentAMessage] = (legacyPreferences[SMKLegacy.preferencesKeyHasSentAMessageKey] as? Bool == true)
         db[.isReadyForAppExtensions] = CurrentAppContext().appUserDefaults().bool(forKey: SMKLegacy.preferencesKeyIsReadyForAppExtensions)
         
-        GRDBStorage.update(progress: 1, for: self, in: target) // In case this is the last migration
+        Storage.update(progress: 1, for: self, in: target) // In case this is the last migration
     }
     
     // MARK: - Convenience

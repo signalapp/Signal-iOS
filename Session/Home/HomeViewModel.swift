@@ -28,8 +28,8 @@ public class HomeViewModel {
         let userProfile: Profile?
         
         init(
-            showViewedSeedBanner: Bool = !GRDBStorage.shared[.hasViewedSeed],
-            hasHiddenMessageRequests: Bool = GRDBStorage.shared[.hasHiddenMessageRequests],
+            showViewedSeedBanner: Bool = !Storage.shared[.hasViewedSeed],
+            hasHiddenMessageRequests: Bool = Storage.shared[.hasHiddenMessageRequests],
             unreadMessageRequestThreadCount: Int = 0,
             userProfile: Profile? = nil
         ) {
@@ -43,7 +43,7 @@ public class HomeViewModel {
     // MARK: - Initialization
     
     init() {
-        self.state = GRDBStorage.shared.read { db in try HomeViewModel.retrieveState(db) }
+        self.state = Storage.shared.read { db in try HomeViewModel.retrieveState(db) }
             .defaulting(to: State())
         self.pagedDataObserver = nil
         

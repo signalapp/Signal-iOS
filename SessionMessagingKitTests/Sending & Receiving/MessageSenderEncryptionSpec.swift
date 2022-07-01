@@ -14,7 +14,7 @@ class MessageSenderEncryptionSpec: QuickSpec {
     // MARK: - Spec
 
     override func spec() {
-        var mockStorage: GRDBStorage!
+        var mockStorage: Storage!
         var mockBox: MockBox!
         var mockSign: MockSign!
         var mockNonce24Generator: MockNonce24Generator!
@@ -22,7 +22,7 @@ class MessageSenderEncryptionSpec: QuickSpec {
         
         describe("a MessageSender") {
             beforeEach {
-                mockStorage = GRDBStorage(
+                mockStorage = Storage(
                     customWriter: DatabaseQueue(),
                     customMigrations: [
                         SNUtilitiesKit.migrations(),

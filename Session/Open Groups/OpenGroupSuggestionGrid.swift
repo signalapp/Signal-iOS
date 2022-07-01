@@ -250,7 +250,7 @@ extension OpenGroupSuggestionGrid {
                 return
             }
             
-            let promise = GRDBStorage.shared.read { db in
+            let promise = Storage.shared.read { db in
                 OpenGroupManager.roomImage(db, fileId: imageId, for: room.token, on: OpenGroupAPI.defaultServer)
             }
             

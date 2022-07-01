@@ -308,7 +308,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     init(threadId: String, threadVariant: SessionThread.Variant, focusedInteractionId: Int64? = nil) {
         self.viewModel = ConversationViewModel(threadId: threadId, threadVariant: threadVariant, focusedInteractionId: focusedInteractionId)
         
-        GRDBStorage.shared.addObserver(viewModel.pagedDataObserver)
+        Storage.shared.addObserver(viewModel.pagedDataObserver)
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -472,7 +472,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     
     private func startObservingChanges() {
         // Start observing for data changes
-        dataChangeObservable = GRDBStorage.shared.start(
+        dataChangeObservable = Storage.shared.start(
             viewModel.observableThreadData,
             onError:  { _ in },
             onChange: { [weak self] maybeThreadData in
@@ -482,7 +482,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                     guard
                         let sessionId: String = self?.viewModel.threadData.threadId,
                         SessionId.Prefix(from: sessionId) == .blinded,
-                        let blindedLookup: BlindedIdLookup = GRDBStorage.shared.read({ db in
+                        let blindedLookup: BlindedIdLookup = Storage.shared.read({ db in
                             try BlindedIdLookup
                                 .filter(id: sessionId)
                                 .fetchOne(db)
@@ -496,13 +496,13 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                     
                     // Stop observing changes
                     self?.stopObservingChanges()
-                    GRDBStorage.shared.removeObserver(self?.viewModel.pagedDataObserver)
+                    Storage.shared.removeObserver(self?.viewModel.pagedDataObserver)
                     
                     // Swap the observing to the updated thread
                     self?.viewModel.swapToThread(updatedThreadId: unblindedId)
                     
                     // Start observing changes again
-                    GRDBStorage.shared.addObserver(self?.viewModel.pagedDataObserver)
+                    Storage.shared.addObserver(self?.viewModel.pagedDataObserver)
                     self?.startObservingChanges()
                     return
                 }

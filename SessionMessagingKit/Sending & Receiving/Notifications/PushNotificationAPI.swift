@@ -70,7 +70,7 @@ public final class PushNotificationAPI : NSObject {
         }
         
         // Unsubscribe from all closed groups (including ones the user is no longer a member of, just in case)
-        GRDBStorage.shared.read { db in
+        Storage.shared.read { db in
             let userPublicKey: String = getUserHexEncodedPublicKey(db)
             
             try ClosedGroup
@@ -133,7 +133,7 @@ public final class PushNotificationAPI : NSObject {
         }
         
         // Subscribe to all closed groups
-        GRDBStorage.shared.read { db in
+        Storage.shared.read { db in
             try ClosedGroup
                 .select(.threadId)
                 .joining(

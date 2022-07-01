@@ -70,7 +70,7 @@ public extension Identity {
     }
 
     static func store(seed: Data, ed25519KeyPair: Sign.KeyPair, x25519KeyPair: ECKeyPair) {
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             try Identity(variant: .seed, data: seed).save(db)
             try Identity(variant: .ed25519SecretKey, data: Data(ed25519KeyPair.secretKey)).save(db)
             try Identity(variant: .ed25519PublicKey, data: Data(ed25519KeyPair.publicKey)).save(db)
@@ -85,7 +85,7 @@ public extension Identity {
     
     static func fetchUserPublicKey(_ db: Database? = nil) -> Data? {
         guard let db: Database = db else {
-            return GRDBStorage.shared.read { db in fetchUserPublicKey(db) }
+            return Storage.shared.read { db in fetchUserPublicKey(db) }
         }
         
         return try? Identity.fetchOne(db, id: .x25519PublicKey)?.data
@@ -93,7 +93,7 @@ public extension Identity {
     
     static func fetchUserPrivateKey(_ db: Database? = nil) -> Data? {
         guard let db: Database = db else {
-            return GRDBStorage.shared.read { db in fetchUserPrivateKey(db) }
+            return Storage.shared.read { db in fetchUserPrivateKey(db) }
         }
         
         return try? Identity.fetchOne(db, id: .x25519PrivateKey)?.data
@@ -101,7 +101,7 @@ public extension Identity {
     
     static func fetchUserKeyPair(_ db: Database? = nil) -> Box.KeyPair? {
         guard let db: Database = db else {
-            return GRDBStorage.shared.read { db in fetchUserKeyPair(db) }
+            return Storage.shared.read { db in fetchUserKeyPair(db) }
         }
         guard
             let publicKey: Data = fetchUserPublicKey(db),
@@ -116,7 +116,7 @@ public extension Identity {
     
     static func fetchUserEd25519KeyPair(_ db: Database? = nil) -> Box.KeyPair? {
         guard let db: Database = db else {
-            return GRDBStorage.shared.read { db in fetchUserEd25519KeyPair(db) }
+            return Storage.shared.read { db in fetchUserEd25519KeyPair(db) }
         }
         guard
             let publicKey: Data = try? Identity.fetchOne(db, id: .ed25519PublicKey)?.data,
@@ -130,7 +130,7 @@ public extension Identity {
     }
     
     static func fetchHexEncodedSeed() -> String? {
-        return GRDBStorage.shared.read { db in
+        return Storage.shared.read { db in
             guard let data: Data = try? Identity.fetchOne(db, id: .seed)?.data else {
                 return nil
             }
@@ -159,7 +159,7 @@ public extension Identity {
 public class SUKIdentity: NSObject {
     @objc(userExists)
     public static func userExists() -> Bool {
-        return GRDBStorage.shared
+        return Storage.shared
             .read { db in Identity.userExists(db) }
             .defaulting(to: false)
     }

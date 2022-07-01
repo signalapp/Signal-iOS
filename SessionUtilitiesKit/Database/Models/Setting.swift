@@ -148,7 +148,7 @@ public protocol EnumSetting: RawRepresentable where RawValue == Int {}
 
 // MARK: - GRDB Interactions
 
-public extension GRDBStorage {
+public extension Storage {
     subscript(key: Setting.BoolKey) -> Bool {
         // Default to false if it doesn't exist
         return (read { db in db[key] } ?? false)

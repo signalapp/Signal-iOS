@@ -202,7 +202,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Environment.shared?.audioSession.setup()
         Environment.shared?.reachabilityManager.setup()
         
-        GRDBStorage.shared.writeAsync { db in
+        Storage.shared.writeAsync { db in
             // Disable the SAE until the main app has successfully completed launch process
             // at least once in the post-SAE world.
             db[.isReadyForAppExtensions] = true
@@ -238,7 +238,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // Remove the legacy database and any message hashes that have been migrated to the new DB
             try? SUKLegacy.deleteLegacyDatabaseFilesAndKey()
             
-            GRDBStorage.shared.write { db in
+            Storage.shared.write { db in
                 try SnodeReceivedMessageInfo.deleteAll(db)
             }
             
@@ -272,7 +272,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     private func verifyDBKeysAvailableBeforeBackgroundLaunch() {
         guard UIApplication.shared.applicationState == .background else { return }
         
-        guard !GRDBStorage.isDatabasePasswordAccessible else { return }    // All good
+        guard !Storage.isDatabasePasswordAccessible else { return }    // All good
         
         Logger.info("Exiting because we are in the background and the database password is not accessible.")
         
@@ -320,7 +320,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     private func ensureRootViewController(isPreAppReadyCall: Bool = false) {
-        guard (AppReadiness.isAppReady() || isPreAppReadyCall) && GRDBStorage.shared.isValid && !hasInitialRootViewController else {
+        guard (AppReadiness.isAppReady() || isPreAppReadyCall) && Storage.shared.isValid && !hasInitialRootViewController else {
             return
         }
         
@@ -366,7 +366,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             guard CurrentAppContext().isMainApp else { return }
             
             CurrentAppContext().setMainAppBadgeNumber(
-                GRDBStorage.shared
+                Storage.shared
                     .read { db in
                         let userPublicKey: String = getUserHexEncodedPublicKey(db)
                         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
@@ -596,7 +596,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         guard Date().timeIntervalSince(lastSync) > (7 * 24 * 60 * 60) else { return } // Sync every 2 days
         
-        GRDBStorage.shared
+        Storage.shared
             .writeAsync { db in try MessageSender.syncConfiguration(db, forceSyncNow: false) }
             .done {
                 // Only update the 'lastConfigurationSync' timestamp if we have done the

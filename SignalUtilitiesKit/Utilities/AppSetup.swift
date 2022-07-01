@@ -64,7 +64,7 @@ public enum AppSetup {
     ) {
         var backgroundTask: OWSBackgroundTask? = (backgroundTask ?? OWSBackgroundTask(labelStr: #function))
         
-        GRDBStorage.shared.perform(
+        Storage.shared.perform(
             migrations: [
                 SNUtilitiesKit.migrations(),
                 SNSnodeKit.migrations(),

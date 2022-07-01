@@ -59,7 +59,7 @@ public final class ProfilePictureView: UIView {
     public func update(forThreadId threadId: String?) {
         guard
             let threadId: String = threadId,
-            let viewModel: SessionThreadViewModel = GRDBStorage.shared.read({ db -> SessionThreadViewModel? in
+            let viewModel: SessionThreadViewModel = Storage.shared.read({ db -> SessionThreadViewModel? in
                 let userPublicKey: String = getUserHexEncodedPublicKey(db)
                 
                 return try SessionThreadViewModel

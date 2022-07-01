@@ -135,7 +135,7 @@ public final class Poller {
                 if !messages.isEmpty {
                     var messageCount: Int = 0
                     
-                    GRDBStorage.shared.write { db in
+                    Storage.shared.write { db in
                         var threadMessages: [String: [MessageReceiveJob.Details.MessageInfo]] = [:]
                         
                         messages.forEach { message in

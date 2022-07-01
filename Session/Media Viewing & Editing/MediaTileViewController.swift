@@ -35,7 +35,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
 
     init(viewModel: MediaGalleryViewModel) {
         self.viewModel = viewModel
-        GRDBStorage.shared.addObserver(viewModel.pagedDataObserver)
+        Storage.shared.addObserver(viewModel.pagedDataObserver)
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -670,7 +670,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
         }()
 
         let deleteAction = UIAlertAction(title: confirmationTitle, style: .destructive) { [weak self] _ in
-            GRDBStorage.shared.writeAsync { db in
+            Storage.shared.writeAsync { db in
                 let interactionIds: Set<Int64> = items
                     .map { $0.interactionId }
                     .asSet()

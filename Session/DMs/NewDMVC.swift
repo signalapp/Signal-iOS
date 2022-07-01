@@ -175,7 +175,7 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
     }
 
     private func startNewDM(with sessionId: String) {
-        let maybeThread: SessionThread? = GRDBStorage.shared.write { db in
+        let maybeThread: SessionThread? = Storage.shared.write { db in
             try SessionThread.fetchOrCreate(db, id: sessionId, variant: .contact)
         }
         

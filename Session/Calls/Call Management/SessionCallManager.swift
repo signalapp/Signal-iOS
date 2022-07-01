@@ -170,7 +170,7 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
             }
             return
         }
-        guard let call: SessionCall = GRDBStorage.shared.read({ db in SessionCall(db, for: caller, uuid: uuid, mode: mode) }) else {
+        guard let call: SessionCall = Storage.shared.read({ db in SessionCall(db, for: caller, uuid: uuid, mode: mode) }) else {
             return
         }
         

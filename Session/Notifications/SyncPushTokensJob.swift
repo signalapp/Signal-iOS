@@ -51,8 +51,8 @@ public enum SyncPushTokensJob: JobExecutor {
         
         PushRegistrationManager.shared.requestPushTokens()
             .then(on: queue) { (pushToken: String, voipToken: String) -> Promise<Void> in
-                let lastPushToken: String? = GRDBStorage.shared[.lastRecordedPushToken]
-                let lastVoipToken: String? = GRDBStorage.shared[.lastRecordedVoipToken]
+                let lastPushToken: String? = Storage.shared[.lastRecordedPushToken]
+                let lastVoipToken: String? = Storage.shared[.lastRecordedVoipToken]
                 let shouldUploadTokens: Bool = (
                     !uploadOnlyIfStale || (
                         lastPushToken != pushToken ||
@@ -77,7 +77,7 @@ public enum SyncPushTokensJob: JobExecutor {
                     .done(on: queue) { _ in
                         Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
 
-                        GRDBStorage.shared.write { db in
+                        Storage.shared.write { db in
                             db[.lastRecordedPushToken] = pushToken
                             db[.lastRecordedVoipToken] = voipToken
                         }

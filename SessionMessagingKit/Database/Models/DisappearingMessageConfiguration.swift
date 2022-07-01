@@ -140,7 +140,7 @@ public class SMKDisappearingMessagesConfiguration: NSObject {
     
     @objc(isEnabledFor:)
     public static func isEnabled(for threadId: String) -> Bool {
-        return GRDBStorage.shared
+        return Storage.shared
             .read { db in
                 try DisappearingMessagesConfiguration
                     .select(.isEnabled)
@@ -153,7 +153,7 @@ public class SMKDisappearingMessagesConfiguration: NSObject {
     
     @objc(durationIndexFor:)
     public static func durationIndex(for threadId: String) -> Int {
-        let durationSeconds: TimeInterval = GRDBStorage.shared
+        let durationSeconds: TimeInterval = Storage.shared
             .read { db in
                 try DisappearingMessagesConfiguration
                     .select(.durationSeconds)
@@ -187,7 +187,7 @@ public class SMKDisappearingMessagesConfiguration: NSObject {
                 DisappearingMessagesConfiguration.validDurationsSeconds[0]
         )
         
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
                 return
             }

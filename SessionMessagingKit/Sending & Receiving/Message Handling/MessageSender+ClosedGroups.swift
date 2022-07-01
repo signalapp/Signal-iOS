@@ -178,7 +178,7 @@ extension MessageSender {
                 )
                 .done {
                     /// Store it **after** having sent out the message to the group
-                    GRDBStorage.shared.write { db in
+                    Storage.shared.write { db in
                         try newKeyPair.insert(db)
                         
                         distributingKeyPairs.mutate {
@@ -514,7 +514,7 @@ extension MessageSender {
                 // Remove the group from the database and unsubscribe from PNs
                 ClosedGroupPoller.shared.stopPolling(for: groupPublicKey)
                 
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     try closedGroup
                         .keyPairs
                         .deleteAll(db)

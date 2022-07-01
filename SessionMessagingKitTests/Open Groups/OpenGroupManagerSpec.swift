@@ -73,7 +73,7 @@ class OpenGroupManagerSpec: QuickSpec {
     override func spec() {
         var mockOGMCache: MockOGMCache!
         var mockGeneralCache: MockGeneralCache!
-        var mockStorage: GRDBStorage!
+        var mockStorage: Storage!
         var mockSodium: MockSodium!
         var mockAeadXChaCha20Poly1305Ietf: MockAeadXChaCha20Poly1305Ietf!
         var mockGenericHash: MockGenericHash!
@@ -99,7 +99,7 @@ class OpenGroupManagerSpec: QuickSpec {
             beforeEach {
                 mockOGMCache = MockOGMCache()
                 mockGeneralCache = MockGeneralCache()
-                mockStorage = GRDBStorage(
+                mockStorage = Storage(
                     customWriter: DatabaseQueue(),
                     customMigrations: [
                         SNUtilitiesKit.migrations(),

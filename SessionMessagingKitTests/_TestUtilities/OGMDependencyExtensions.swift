@@ -11,7 +11,7 @@ extension OpenGroupManager.OGMDependencies {
         cache: Atomic<OGMCacheType>? = nil,
         onionApi: OnionRequestAPIType.Type? = nil,
         generalCache: Atomic<GeneralCacheType>? = nil,
-        storage: GRDBStorage? = nil,
+        storage: Storage? = nil,
         sodium: SodiumType? = nil,
         box: BoxType? = nil,
         genericHash: GenericHashType? = nil,

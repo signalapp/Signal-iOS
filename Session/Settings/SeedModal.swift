@@ -86,7 +86,7 @@ final class SeedModal: Modal {
         contentView.pin(.bottom, to: .bottom, of: stackView, withInset: spacing)
         
         // Mark seed as viewed
-        GRDBStorage.shared.write { db in db[.hasViewedSeed] = true }
+        Storage.shared.writeAsync { db in db[.hasViewedSeed] = true }
     }
     
     // MARK: - Interaction

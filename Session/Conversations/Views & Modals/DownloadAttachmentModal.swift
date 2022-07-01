@@ -90,7 +90,7 @@ final class DownloadAttachmentModal: Modal {
     @objc private func trust() {
         guard let profileId: String = profile?.id else { return }
 
-        GRDBStorage.shared.writeAsync { db in
+        Storage.shared.writeAsync { db in
             try Contact
                 .filter(id: profileId)
                 .updateAll(db, Contact.Columns.isTrusted.set(to: true))

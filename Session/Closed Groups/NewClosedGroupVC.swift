@@ -196,12 +196,12 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         let selectedContacts = self.selectedContacts
         let message: String? = (selectedContacts.count > 20) ? "Please wait while the group is created..." : nil
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, message: message) { [weak self] _ in
-            GRDBStorage.shared
+            Storage.shared
                 .writeAsync { db in
                     try MessageSender.createClosedGroup(db, name: name, members: selectedContacts)
                 }
                 .done(on: DispatchQueue.main) { thread in
-                    GRDBStorage.shared.writeAsync { db in
+                    Storage.shared.writeAsync { db in
                         try? MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
                     }
                     

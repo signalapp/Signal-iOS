@@ -384,7 +384,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     
     private func startObservingChanges() {
         // Start observing for data changes
-        dataChangeObservable = GRDBStorage.shared.start(
+        dataChangeObservable = Storage.shared.start(
             viewModel.observableAlbumData,
             onError: { _ in },
             onChange: { [weak self] albumData in
@@ -528,7 +528,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
                 self.viewModel.threadVariant == .contact
             else { return }
             
-            GRDBStorage.shared.write { db in
+            Storage.shared.write { db in
                 guard let thread: SessionThread = try SessionThread.fetchOne(db, id: self.viewModel.threadId) else {
                     return
                 }
@@ -555,7 +555,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             title: "delete_message_for_me".localized(),
             style: .destructive
         ) { _ in
-            GRDBStorage.shared.writeAsync { db in
+            Storage.shared.writeAsync { db in
                 _ = try Attachment
                     .filter(id: itemToDelete.attachment.id)
                     .deleteAll(db)
@@ -864,7 +864,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let name: String = {
             switch targetItem.interactionVariant {
                 case .standardIncoming:
-                    return GRDBStorage.shared
+                    return Storage.shared
                         .read { db in
                             Profile.displayName(
                                 db,

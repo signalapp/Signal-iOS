@@ -317,13 +317,13 @@ public class SMKPreferences: NSObject {
     }
     
     @objc public static func notificationPreviewType() -> Int {
-        return GRDBStorage.shared[.preferencesNotificationPreviewType]
+        return Storage.shared[.preferencesNotificationPreviewType]
             .defaulting(to: Preferences.NotificationPreviewType.nameAndPreview)
             .rawValue
     }
     
     @objc public static func setNotificationPreviewType(_ previewType: Int) {
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             db[.preferencesNotificationPreviewType] = Preferences.NotificationPreviewType(rawValue: previewType)
                 .defaulting(to: .nameAndPreview)
         }
@@ -342,62 +342,62 @@ public class SMKPreferences: NSObject {
     
     @objc(setPlayNotificationSoundInForeground:)
     static func objc_setPlayNotificationSoundInForeground(_ enabled: Bool) {
-        GRDBStorage.shared.write { db in db[.playNotificationSoundInForeground] = enabled }
+        Storage.shared.write { db in db[.playNotificationSoundInForeground] = enabled }
     }
     
     @objc(playNotificationSoundInForeground)
     static func objc_playNotificationSoundInForeground() -> Bool {
-        return GRDBStorage.shared[.playNotificationSoundInForeground]
+        return Storage.shared[.playNotificationSoundInForeground]
     }
     
     @objc(setScreenSecurity:)
     static func objc_setScreenSecurity(_ enabled: Bool) {
-        GRDBStorage.shared.write { db in db[.appSwitcherPreviewEnabled] = enabled }
+        Storage.shared.write { db in db[.appSwitcherPreviewEnabled] = enabled }
     }
     
     @objc(isScreenSecurityEnabled)
     static func objc_isScreenSecurityEnabled() -> Bool {
-        return GRDBStorage.shared[.appSwitcherPreviewEnabled]
+        return Storage.shared[.appSwitcherPreviewEnabled]
     }
     
     @objc(setAreReadReceiptsEnabled:)
     static func objc_setAreReadReceiptsEnabled(_ enabled: Bool) {
-        GRDBStorage.shared.write { db in db[.areReadReceiptsEnabled] = enabled }
+        Storage.shared.write { db in db[.areReadReceiptsEnabled] = enabled }
     }
     
     @objc(areReadReceiptsEnabled)
     static func objc_areReadReceiptsEnabled() -> Bool {
-        return GRDBStorage.shared[.areReadReceiptsEnabled]
+        return Storage.shared[.areReadReceiptsEnabled]
     }
     
     @objc(setTypingIndicatorsEnabled:)
     static func objc_setTypingIndicatorsEnabled(_ enabled: Bool) {
-        GRDBStorage.shared.write { db in db[.typingIndicatorsEnabled] = enabled }
+        Storage.shared.write { db in db[.typingIndicatorsEnabled] = enabled }
     }
     
     @objc(areTypingIndicatorsEnabled)
     static func objc_areTypingIndicatorsEnabled() -> Bool {
-        return GRDBStorage.shared[.typingIndicatorsEnabled]
+        return Storage.shared[.typingIndicatorsEnabled]
     }
     
     @objc(setLinkPreviewsEnabled:)
     static func objc_setLinkPreviewsEnabled(_ enabled: Bool) {
-        GRDBStorage.shared.write { db in db[.areLinkPreviewsEnabled] = enabled }
+        Storage.shared.write { db in db[.areLinkPreviewsEnabled] = enabled }
     }
     
     @objc(areLinkPreviewsEnabled)
     static func objc_areLinkPreviewsEnabled() -> Bool {
-        return GRDBStorage.shared[.areLinkPreviewsEnabled]
+        return Storage.shared[.areLinkPreviewsEnabled]
     }
     
     @objc(setCallsEnabled:)
     static func objc_setCallsEnabled(_ enabled: Bool) {
-        GRDBStorage.shared.write { db in db[.areCallsEnabled] = enabled }
+        Storage.shared.write { db in db[.areCallsEnabled] = enabled }
     }
     
     @objc(areCallsEnabled)
     static func objc_areCallsEnabled() -> Bool {
-        return GRDBStorage.shared[.areCallsEnabled]
+        return Storage.shared[.areCallsEnabled]
     }
 }
 
@@ -420,7 +420,7 @@ public class SMKSound: NSObject {
     }
     
     @objc public static var defaultNotificationSound: Int {
-        return GRDBStorage.shared[.defaultNotificationSound]
+        return Storage.shared[.defaultNotificationSound]
             .defaulting(to: Preferences.Sound.defaultNotificationSound)
             .rawValue
     }
@@ -428,7 +428,7 @@ public class SMKSound: NSObject {
     @objc public static func setGlobalNotificationSound(_ sound: Int) {
         guard let sound: Preferences.Sound = Preferences.Sound(rawValue: sound) else { return }
         
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             db[.defaultNotificationSound] = sound
         }
     }
@@ -436,7 +436,7 @@ public class SMKSound: NSObject {
     @objc public static func notificationSound(for threadId: String?) -> Int {
         guard let threadId: String = threadId else { return defaultNotificationSound }
 
-        return (GRDBStorage.shared
+        return (Storage.shared
             .read { db in
                 try Preferences.Sound
                     .fetchOne(
@@ -453,7 +453,7 @@ public class SMKSound: NSObject {
     @objc public static func setNotificationSound(_ sound: Int, forThreadId threadId: String) {
         guard let sound: Preferences.Sound = Preferences.Sound(rawValue: sound) else { return }
         
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             try SessionThread
                 .filter(id: threadId)
                 .updateAll(db, SessionThread.Columns.notificationSound.set(to: sound))

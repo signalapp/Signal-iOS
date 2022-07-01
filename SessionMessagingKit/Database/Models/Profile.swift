@@ -219,7 +219,7 @@ public extension Profile {
 
 public extension Profile {
     static func fetchAllContactProfiles(excluding: Set<String> = [], excludeCurrentUser: Bool = true) -> [Profile] {
-        return GRDBStorage.shared
+        return Storage.shared
             .read { db in
                 let idsToExclude: Set<String> = excluding
                     .inserting(excludeCurrentUser ? getUserHexEncodedPublicKey(db) : nil)
@@ -240,7 +240,7 @@ public extension Profile {
     
     static func displayName(_ db: Database? = nil, id: ID, threadVariant: SessionThread.Variant = .contact, customFallback: String? = nil) -> String {
         guard let db: Database = db else {
-            return GRDBStorage.shared
+            return Storage.shared
                 .read { db in displayName(db, id: id, threadVariant: threadVariant, customFallback: customFallback) }
                 .defaulting(to: (customFallback ?? id))
         }
@@ -253,7 +253,7 @@ public extension Profile {
     
     static func displayNameNoFallback(_ db: Database? = nil, id: ID, threadVariant: SessionThread.Variant = .contact) -> String? {
         guard let db: Database = db else {
-            return GRDBStorage.shared.read { db in displayNameNoFallback(db, id: id, threadVariant: threadVariant) }
+            return Storage.shared.read { db in displayNameNoFallback(db, id: id, threadVariant: threadVariant) }
         }
         
         return (try? Profile.fetchOne(db, id: id))?
@@ -280,7 +280,7 @@ public extension Profile {
     static func fetchOrCreateCurrentUser() -> Profile {
         var userPublicKey: String = ""
         
-        let exisingProfile: Profile? = GRDBStorage.shared.read { db in
+        let exisingProfile: Profile? = Storage.shared.read { db in
             userPublicKey = getUserHexEncodedPublicKey(db)
             
             return try Profile.fetchOne(db, id: userPublicKey)
@@ -307,7 +307,7 @@ public extension Profile {
     /// **Note:** This method intentionally does **not** save the newly created Profile,
     /// it will need to be explicitly saved after calling
     static func fetchOrCreate(id: String) -> Profile {
-        let exisingProfile: Profile? = GRDBStorage.shared.read { db in
+        let exisingProfile: Profile? = Storage.shared.read { db in
             try Profile.fetchOne(db, id: id)
         }
         
@@ -401,7 +401,7 @@ public class SMKProfile: NSObject {
     
     @objc(displayNameAfterSavingNickname:forProfileId:)
     public static func displayNameAfterSaving(nickname: String?, for profileId: String) -> String {
-        return GRDBStorage.shared.write { db in
+        return Storage.shared.write { db in
             let profile: Profile = Profile.fetchOrCreate(id: profileId)
             let targetNickname: String? = ((nickname ?? "").count > 0 ? nickname : nil)
             

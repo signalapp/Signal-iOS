@@ -54,7 +54,7 @@ extension ConversationVC:
     
     @objc func startCall(_ sender: Any?) {
         guard SessionCall.isEnabled else { return }
-        guard GRDBStorage.shared[.areCallsEnabled] else {
+        guard Storage.shared[.areCallsEnabled] else {
             let callPermissionRequestModal = CallPermissionRequestModal()
             self.navigationController?.present(callPermissionRequestModal, animated: true, completion: nil)
             return
@@ -67,7 +67,7 @@ extension ConversationVC:
         guard AVAudioSession.sharedInstance().recordPermission == .granted else { return }
         guard self.viewModel.threadData.threadVariant == .contact else { return }
         guard AppEnvironment.shared.callManager.currentCall == nil else { return }
-        guard let call: SessionCall = GRDBStorage.shared.read({ db in SessionCall(db, for: threadId, uuid: UUID().uuidString.lowercased(), mode: .offer, outgoing: true) }) else {
+        guard let call: SessionCall = Storage.shared.read({ db in SessionCall(db, for: threadId, uuid: UUID().uuidString.lowercased(), mode: .offer, outgoing: true) }) else {
             return
         }
         
@@ -92,7 +92,7 @@ extension ConversationVC:
                 self.blockedBanner.alpha = 0
             },
             completion: { _ in
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     try Contact
                         .filter(id: publicKey)
                         .updateAll(db, Contact.Columns.isBlocked.set(to: true))
@@ -354,7 +354,7 @@ extension ConversationVC:
             timestampMs: (sentTimestampMs - 1)  // Set 1ms earlier as this is used for sorting
         )
         .done { [weak self] _ in
-            GRDBStorage.shared.writeAsync(
+            Storage.shared.writeAsync(
                 updates: { db in
                     guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
                         return
@@ -451,7 +451,7 @@ extension ConversationVC:
             timestampMs: (sentTimestampMs - 1)  // Set 1ms earlier as this is used for sorting
         )
         .done { [weak self] _ in
-            GRDBStorage.shared.writeAsync(
+            Storage.shared.writeAsync(
                 updates: { db in
                     guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
                         return
@@ -509,14 +509,14 @@ extension ConversationVC:
             self?.resetMentions()
         }
 
-        if GRDBStorage.shared[.playNotificationSoundInForeground] {
+        if Storage.shared[.playNotificationSoundInForeground] {
             let soundID = Preferences.Sound.systemSoundId(for: .messageSent, quiet: true)
             AudioServicesPlaySystemSound(soundID)
         }
         
         let threadId: String = self.viewModel.threadData.threadId
         
-        GRDBStorage.shared.writeAsync { db in
+        Storage.shared.writeAsync { db in
             TypingIndicators.didStopTyping(db, threadId: threadId, direction: .outgoing)
             
             _ = try SessionThread
@@ -542,7 +542,7 @@ extension ConversationVC:
             let threadVariant: SessionThread.Variant = self.viewModel.threadData.threadVariant
             let threadIsMessageRequest: Bool = (self.viewModel.threadData.threadIsMessageRequest == true)
             
-            GRDBStorage.shared.writeAsync { db in
+            Storage.shared.writeAsync { db in
                 TypingIndicators.didStartTyping(
                     db,
                     threadId: threadId,
@@ -760,7 +760,7 @@ extension ConversationVC:
                         let threadId: String = self.viewModel.threadData.threadId
                         
                         // Retry downloading the failed attachment
-                        GRDBStorage.shared.writeAsync { db in
+                        Storage.shared.writeAsync { db in
                             JobRunner.add(
                                 db,
                                 job: Job(
@@ -845,7 +845,7 @@ extension ConversationVC:
             case .textOnlyMessage:
                 if let quote: Quote = cellViewModel.quote {
                     // Scroll to the original quoted message
-                    let maybeOriginalInteractionId: Int64? = GRDBStorage.shared.read { db in
+                    let maybeOriginalInteractionId: Int64? = Storage.shared.read { db in
                         try quote.originalInteraction
                             .select(.id)
                             .asRequest(of: Int64.self)
@@ -920,7 +920,7 @@ extension ConversationVC:
     
     func startThread(with sessionId: String, openGroupServer: String?, openGroupPublicKey: String?) {
         guard SessionId.Prefix(from: sessionId) == .blinded else {
-            GRDBStorage.shared.write { db in
+            Storage.shared.write { db in
                 try SessionThread.fetchOrCreate(db, id: sessionId, variant: .contact)
             }
             
@@ -936,7 +936,7 @@ extension ConversationVC:
             return
         }
         
-        let targetThreadId: String? = GRDBStorage.shared.write { db in
+        let targetThreadId: String? = Storage.shared.write { db in
             let lookup: BlindedIdLookup = try BlindedIdLookup
                 .fetchOrCreate(
                     db,
@@ -968,14 +968,14 @@ extension ConversationVC:
         let sheet = UIAlertController(title: cellViewModel.mostRecentFailureText, message: nil, preferredStyle: .actionSheet)
         sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         sheet.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in
-            GRDBStorage.shared.writeAsync { db in
+            Storage.shared.writeAsync { db in
                 try Interaction
                     .filter(id: cellViewModel.id)
                     .deleteAll(db)
             }
         }))
         sheet.addAction(UIAlertAction(title: "Resend", style: .default, handler: { _ in
-            GRDBStorage.shared.writeAsync { [weak self] db in
+            Storage.shared.writeAsync { [weak self] db in
                 guard
                     let threadId: String = self?.viewModel.threadData.threadId,
                     let interaction: Interaction = try? Interaction.fetchOne(db, id: cellViewModel.id),
@@ -1094,7 +1094,7 @@ extension ConversationVC:
                 .then { _ -> Promise<Void> in request }
                 .done { _ in
                     // Delete the interaction (and associated data) from the database
-                    GRDBStorage.shared.writeAsync { db in
+                    Storage.shared.writeAsync { db in
                         _ = try Interaction
                             .filter(id: cellViewModel.id)
                             .deleteAll(db)
@@ -1117,7 +1117,7 @@ extension ConversationVC:
             // Handle open group messages the old way
             case .openGroup:
                 // If it's an incoming message the user must have moderator status
-                let result: (openGroupServerMessageId: Int64?, openGroup: OpenGroup?)? = GRDBStorage.shared.read { db -> (Int64?, OpenGroup?) in
+                let result: (openGroupServerMessageId: Int64?, openGroup: OpenGroup?)? = Storage.shared.read { db -> (Int64?, OpenGroup?) in
                     (
                         try Interaction
                             .select(.openGroupServerMessageId)
@@ -1143,7 +1143,7 @@ extension ConversationVC:
                 // Delete the message from the open group
                 deleteRemotely(
                     from: self,
-                    request: GRDBStorage.shared.read { db in
+                    request: Storage.shared.read { db in
                         OpenGroupAPI.messageDelete(
                             db,
                             id: openGroupServerMessageId,
@@ -1157,7 +1157,7 @@ extension ConversationVC:
                 }
                 
             case .contact, .closedGroup:
-                let serverHash: String? = GRDBStorage.shared.read { db -> String? in
+                let serverHash: String? = Storage.shared.read { db -> String? in
                     try Interaction
                         .select(.serverHash)
                         .filter(id: cellViewModel.id)
@@ -1174,7 +1174,7 @@ extension ConversationVC:
                 
                 // For incoming interactions or interactions with no serverHash just delete them locally
                 guard cellViewModel.variant == .standardOutgoing, let serverHash: String = serverHash else {
-                    GRDBStorage.shared.writeAsync { db in
+                    Storage.shared.writeAsync { db in
                         _ = try Interaction
                             .filter(id: cellViewModel.id)
                             .deleteAll(db)
@@ -1197,7 +1197,7 @@ extension ConversationVC:
                 
                 let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
                 alertVC.addAction(UIAlertAction(title: "delete_message_for_me".localized(), style: .destructive) { [weak self] _ in
-                    GRDBStorage.shared.writeAsync { db in
+                    Storage.shared.writeAsync { db in
                         _ = try Interaction
                             .filter(id: cellViewModel.id)
                             .deleteAll(db)
@@ -1230,7 +1230,7 @@ extension ConversationVC:
                             )
                             .map { _ in () }
                     ) { [weak self] in
-                        GRDBStorage.shared.writeAsync { db in
+                        Storage.shared.writeAsync { db in
                             guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
                                 return
                             }
@@ -1302,7 +1302,7 @@ extension ConversationVC:
         
         let threadId: String = self.viewModel.threadData.threadId
         
-        GRDBStorage.shared.writeAsync { db in
+        Storage.shared.writeAsync { db in
             guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else { return }
             
             try MessageSender.send(
@@ -1326,7 +1326,7 @@ extension ConversationVC:
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-            GRDBStorage.shared
+            Storage.shared
                 .read { db -> Promise<Void> in
                     guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else {
                         return Promise(error: StorageError.objectNotFound)
@@ -1365,7 +1365,7 @@ extension ConversationVC:
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-            GRDBStorage.shared
+            Storage.shared
                 .read { db -> Promise<Void> in
                     guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else {
                         return Promise(error: StorageError.objectNotFound)
@@ -1650,7 +1650,7 @@ extension ConversationVC {
         // (it'll be updated with correct profile info if they accept the message request so this
         // shouldn't cause weird behaviours)
         guard
-            let approvalData: (contact: Contact, thread: SessionThread?) = GRDBStorage.shared.read({ db in
+            let approvalData: (contact: Contact, thread: SessionThread?) = Storage.shared.read({ db in
                 return (
                     Contact.fetchOrCreate(db, id: threadId),
                     try SessionThread.fetchOne(db, id: threadId)
@@ -1683,7 +1683,7 @@ extension ConversationVC {
 
                 return promise
                     .then { _ -> Promise<Void> in
-                        GRDBStorage.shared.writeAsync { db in
+                        Storage.shared.writeAsync { db in
                             try MessageSender.sendNonDurably(
                                 db,
                                 message: messageRequestResponse,
@@ -1700,7 +1700,7 @@ extension ConversationVC {
             }
             .map { _ in
                 // Default 'didApproveMe' to true for the person approving the message request
-                GRDBStorage.shared.writeAsync(
+                Storage.shared.writeAsync(
                     updates: { db in
                         try approvalData.contact
                             .with(
@@ -1783,7 +1783,7 @@ extension ConversationVC {
         )
         alertVC.addAction(UIAlertAction(title: "TXT_DELETE_TITLE".localized(), style: .destructive) { _ in
             // Delete the request
-            GRDBStorage.shared.writeAsync(
+            Storage.shared.writeAsync(
                 updates: { db in
                     // Update the contact
                     _ = try Contact

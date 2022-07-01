@@ -22,7 +22,7 @@ public enum AttachmentUploadJob: JobExecutor {
             let threadId: String = job.threadId,
             let detailsData: Data = job.details,
             let details: Details = try? JSONDecoder().decode(Details.self, from: detailsData),
-            let (attachment, openGroup): (Attachment, OpenGroup?) = GRDBStorage.shared.read({ db in
+            let (attachment, openGroup): (Attachment, OpenGroup?) = Storage.shared.read({ db in
                 guard let attachment: Attachment = try Attachment.fetchOne(db, id: details.attachmentId) else {
                     return nil
                 }

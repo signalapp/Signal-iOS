@@ -20,7 +20,7 @@ public enum DisappearingMessagesJob: JobExecutor {
         let timestampNowMs: TimeInterval = (Date().timeIntervalSince1970 * 1000)
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: #function)
         
-        let updatedJob: Job? = GRDBStorage.shared.write { db in
+        let updatedJob: Job? = Storage.shared.write { db in
             _ = try Interaction
                 .filter(Interaction.Columns.expiresStartedAtMs != nil)
                 .filter((Interaction.Columns.expiresStartedAtMs + (Interaction.Columns.expiresInSeconds * 1000)) <= timestampNowMs)

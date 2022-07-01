@@ -154,7 +154,7 @@ final class NukeDataModal: Modal {
     
     @objc private func clearDeviceOnly() {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] _ in
-            GRDBStorage.shared
+            Storage.shared
                 .writeAsync { db in try MessageSender.syncConfiguration(db, forceSyncNow: true) }
                 .ensure(on: DispatchQueue.main) {
                     self?.deleteAllLocalData()

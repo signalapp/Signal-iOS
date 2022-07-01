@@ -17,7 +17,7 @@ enum Onboarding {
             Identity.store(seed: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
             let x25519PublicKey = x25519KeyPair.hexEncodedPublicKey
             
-            GRDBStorage.shared.write { db in
+            Storage.shared.write { db in
                 try Contact(id: x25519PublicKey)
                     .with(
                         isApproved: true,
@@ -28,7 +28,7 @@ enum Onboarding {
             
             switch self {
                 case .register:
-                    GRDBStorage.shared.write { db in db[.hasViewedSeed] = false }
+                    Storage.shared.write { db in db[.hasViewedSeed] = false }
                     // Set hasSyncedInitialConfiguration to true so that when we hit the
                     // home screen a configuration sync is triggered (yes, the logic is a
                     // bit weird). This is needed so that if the user registers and
@@ -37,7 +37,7 @@ enum Onboarding {
                         
                 case .recover, .link:
                     // No need to show it again if the user is restoring or linking
-                    GRDBStorage.shared.write { db in db[.hasViewedSeed] = true }
+                    Storage.shared.write { db in db[.hasViewedSeed] = true }
                     userDefaults[.hasSyncedInitialConfiguration] = false
             }
             

@@ -36,7 +36,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         get {
             if let paths: [[Snode]] = _paths { return paths }
             
-            let results: [[Snode]]? = GRDBStorage.shared.read { db in
+            let results: [[Snode]]? = Storage.shared.read { db in
                 try? Snode.fetchAllOnionRequestPaths(db)
             }
             
@@ -180,7 +180,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
             .map2 { paths in
                 OnionRequestAPI.paths = paths + reusablePaths
                 
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     SNLog("Persisting onion request paths to database.")
                     try? paths.save(db)
                 }
@@ -281,7 +281,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         let newPaths = oldPaths + [ path ]
         paths = newPaths
         
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             SNLog("Persisting onion request paths to database.")
             try? newPaths.save(db)
         }
@@ -297,7 +297,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         paths.remove(at: pathIndex)
         OnionRequestAPI.paths = paths
         
-        GRDBStorage.shared.write { db in
+        Storage.shared.write { db in
             guard !paths.isEmpty else {
                 SNLog("Clearing onion request paths.")
                 try? Snode.clearOnionRequestPaths(db)

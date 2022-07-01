@@ -19,7 +19,7 @@ public final class BackgroundPoller: NSObject {
             .appending(pollForMessages())
             .appending(contentsOf: pollForClosedGroupMessages())
             .appending(
-                contentsOf: GRDBStorage.shared
+                contentsOf: Storage.shared
                     .read { db in
                         // The default room promise creates an OpenGroup with an empty `roomToken` value,
                         // we don't want to start a poller for this as the user hasn't actually joined a room
@@ -58,7 +58,7 @@ public final class BackgroundPoller: NSObject {
     private static func pollForClosedGroupMessages() -> [Promise<Void>] {
         // Fetch all closed groups (excluding any don't contain the current user as a
         // GroupMemeber as the user is no longer a member of those)
-        return GRDBStorage.shared
+        return Storage.shared
             .read { db in
                 try ClosedGroup
                     .select(.threadId)
@@ -92,7 +92,7 @@ public final class BackgroundPoller: NSObject {
                             
                             var jobsToRun: [Job] = []
                             
-                            GRDBStorage.shared.write { db in
+                            Storage.shared.write { db in
                                 var threadMessages: [String: [MessageReceiveJob.Details.MessageInfo]] = [:]
                                 
                                 messages.forEach { message in

@@ -23,7 +23,7 @@ public struct ProfileManager {
     
     public static func profileAvatar(_ db: Database? = nil, id: String) -> UIImage? {
         guard let db: Database = db else {
-            return GRDBStorage.shared.read { db in profileAvatar(db, id: id) }
+            return Storage.shared.read { db in profileAvatar(db, id: id) }
         }
         guard let profile: Profile = try? Profile.fetchOne(db, id: id) else { return nil }
         
@@ -145,7 +145,7 @@ public struct ProfileManager {
                 .done(on: queue) { data in
                     currentAvatarDownloads.mutate { $0.remove(profile.id) }
                     
-                    GRDBStorage.shared.write { db in
+                    Storage.shared.write { db in
                         guard let latestProfile: Profile = try Profile.fetchOne(db, id: profile.id) else {
                             return
                         }
@@ -218,7 +218,7 @@ public struct ProfileManager {
             
             guard let avatarImage: UIImage = avatarImage else {
                 // If we have no image then we need to make sure to remove it from the profile
-                GRDBStorage.shared.writeAsync { db in
+                Storage.shared.writeAsync { db in
                     let existingProfile: Profile = Profile.fetchOrCreateCurrentUser(db)
                     
                     OWSLogger.verbose(existingProfile.profilePictureUrl != nil ?
@@ -309,7 +309,7 @@ public struct ProfileManager {
                     let downloadUrl: String = "\(FileServerAPI.server)/files/\(fileId)"
                     UserDefaults.standard[.lastProfilePictureUpload] = Date()
                     
-                    GRDBStorage.shared.writeAsync { db in
+                    Storage.shared.writeAsync { db in
                         let profile: Profile = try Profile
                             .fetchOrCreateCurrentUser(db)
                             .with(

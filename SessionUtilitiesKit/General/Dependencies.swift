@@ -9,9 +9,9 @@ open class Dependencies {
         set { _generalCache = newValue }
     }
     
-    public var _storage: GRDBStorage?
-    public var storage: GRDBStorage {
-        get { Dependencies.getValueSettingIfNull(&_storage) { GRDBStorage.shared } }
+    public var _storage: Storage?
+    public var storage: Storage {
+        get { Dependencies.getValueSettingIfNull(&_storage) { Storage.shared } }
         set { _storage = newValue }
     }
     
@@ -31,7 +31,7 @@ open class Dependencies {
     
     public init(
         generalCache: Atomic<GeneralCacheType>? = nil,
-        storage: GRDBStorage? = nil,
+        storage: Storage? = nil,
         standardUserDefaults: UserDefaultsType? = nil,
         date: Date? = nil
     ) {

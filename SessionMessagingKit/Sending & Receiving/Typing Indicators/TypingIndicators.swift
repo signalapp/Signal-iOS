@@ -32,7 +32,7 @@ public class TypingIndicators {
             // or show typing indicators for other users
             //
             // We also don't want to show/send typing indicators for message requests
-            guard GRDBStorage.shared[.typingIndicatorsEnabled] && !threadIsMessageRequest else {
+            guard Storage.shared[.typingIndicatorsEnabled] && !threadIsMessageRequest else {
                 return nil
             }
             
@@ -67,7 +67,7 @@ public class TypingIndicators {
                 withTimeInterval: (direction == .outgoing ? 3 : 5),
                 repeats: false
             ) { [weak self] _ in
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     self?.stoping(db)
                 }
             }
@@ -122,7 +122,7 @@ public class TypingIndicators {
                 withTimeInterval: 10,
                 repeats: false
             ) { [weak self] _ in
-                GRDBStorage.shared.write { db in
+                Storage.shared.write { db in
                     self?.scheduleRefreshCallback(db)
                 }
             }
