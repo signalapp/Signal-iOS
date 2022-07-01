@@ -754,11 +754,7 @@ private class MediaGallerySectionHeader: UICollectionReusableView {
         get {
             // HACK: scrollbar incorrectly appears *behind* section headers
             // in collection view on iOS11 =(
-            if #available(iOS 11, *) {
-                return AlwaysOnTopLayer.self
-            } else {
-                return super.layerClass
-            }
+            return AlwaysOnTopLayer.self
         }
     }
 

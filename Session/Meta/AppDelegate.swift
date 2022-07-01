@@ -498,6 +498,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - App Mode
 
     private func adapt(appMode: AppMode) {
+        // FIXME: Need to update this when an appropriate replacement is added (see https://teng.pub/technical/2021/11/9/uiapplication-key-window-replacement)
         guard let window: UIWindow = UIApplication.shared.keyWindow else { return }
         
         switch (appMode) {

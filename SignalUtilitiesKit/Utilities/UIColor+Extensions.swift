@@ -29,19 +29,13 @@ public extension UIColor {
         let renderer: UIGraphicsImageRenderer = UIGraphicsImageRenderer(bounds: bounds)
 
         return renderer.image { rendererContext in
-            if #available(iOS 13.0, *) {
-                rendererContext.cgContext
-                    .setFillColor(
-                        self.resolvedColor(
-                            // Note: This is needed for '.cgColor' to support dark mode
-                            with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
-                        ).cgColor
-                    )
-            }
-            else {
-                rendererContext.cgContext.setFillColor(self.cgColor)
-            }
-            
+            rendererContext.cgContext
+                .setFillColor(
+                    self.resolvedColor(
+                        // Note: This is needed for '.cgColor' to support dark mode
+                        with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
+                    ).cgColor
+                )
             rendererContext.cgContext.fill(bounds)
         }
     }

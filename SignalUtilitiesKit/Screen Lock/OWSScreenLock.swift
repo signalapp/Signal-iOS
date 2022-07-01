@@ -174,8 +174,7 @@ import SessionMessagingKit
                 return .failure(error:defaultErrorDescription)
             }
 
-            if #available(iOS 11.0, *) {
-                switch laError.code {
+            switch laError.code {
                 case .biometryNotAvailable:
                     Logger.error("local authentication error: biometryNotAvailable.")
                     return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE",
@@ -191,41 +190,41 @@ import SessionMessagingKit
                 default:
                     // Fall through to second switch
                     break
-                }
             }
 
             switch laError.code {
-            case .authenticationFailed:
-                Logger.error("local authentication error: authenticationFailed.")
-                return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode authentication failed."))
-            case .userCancel, .userFallback, .systemCancel, .appCancel:
-                Logger.info("local authentication cancelled.")
-                return .cancel
-            case .passcodeNotSet:
-                Logger.error("local authentication error: passcodeNotSet.")
-                return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode passcode is not set."))
-            case .touchIDNotAvailable:
-                Logger.error("local authentication error: touchIDNotAvailable.")
-                return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode are not available on this device."))
-            case .touchIDNotEnrolled:
-                Logger.error("local authentication error: touchIDNotEnrolled.")
-                return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device."))
-            case .touchIDLockout:
-                Logger.error("local authentication error: touchIDLockout.")
-                return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures."))
-            case .invalidContext:
-                owsFailDebug("context not valid.")
-                return .unexpectedFailure(error:defaultErrorDescription)
-            case .notInteractive:
-                owsFailDebug("context not interactive.")
-                return .unexpectedFailure(error:defaultErrorDescription)
+                case .authenticationFailed:
+                    Logger.error("local authentication error: authenticationFailed.")
+                    return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED",
+                                                             comment: "Indicates that Touch ID/Face ID/Phone Passcode authentication failed."))
+                case .userCancel, .userFallback, .systemCancel, .appCancel:
+                    Logger.info("local authentication cancelled.")
+                    return .cancel
+                case .passcodeNotSet:
+                    Logger.error("local authentication error: passcodeNotSet.")
+                    return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET",
+                                                             comment: "Indicates that Touch ID/Face ID/Phone Passcode passcode is not set."))
+                case .touchIDNotAvailable:
+                    Logger.error("local authentication error: touchIDNotAvailable.")
+                    return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE",
+                                                             comment: "Indicates that Touch ID/Face ID/Phone Passcode are not available on this device."))
+                case .touchIDNotEnrolled:
+                    Logger.error("local authentication error: touchIDNotEnrolled.")
+                    return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED",
+                                                             comment: "Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device."))
+                case .touchIDLockout:
+                    Logger.error("local authentication error: touchIDLockout.")
+                    return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT",
+                                                             comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures."))
+                case .invalidContext:
+                    owsFailDebug("context not valid.")
+                    return .unexpectedFailure(error:defaultErrorDescription)
+                case .notInteractive:
+                    owsFailDebug("context not interactive.")
+                    return .unexpectedFailure(error:defaultErrorDescription)
             }
         }
+        
         return .failure(error:defaultErrorDescription)
     }
 
@@ -241,10 +240,7 @@ import SessionMessagingKit
 
         // Never recycle biometric auth.
         context.touchIDAuthenticationAllowableReuseDuration = TimeInterval(0)
-
-        if #available(iOS 11.0, *) {
-            assert(!context.interactionNotAllowed)
-        }
+        assert(!context.interactionNotAllowed)
 
         return context
     }

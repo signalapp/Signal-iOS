@@ -121,6 +121,7 @@ final class ContextMenuVC: UIViewController {
         
         let menuHeight = (CGFloat(actions.count) * ContextMenuVC.actionViewHeight)
         let spacing = Values.smallSpacing
+        // FIXME: Need to update this when an appropriate replacement is added (see https://teng.pub/technical/2021/11/9/uiapplication-key-window-replacement)
         let margin = max(UIApplication.shared.keyWindow!.safeAreaInsets.bottom, Values.mediumSpacing)
         
         if frame.maxY + spacing + menuHeight > UIScreen.main.bounds.height - margin {

@@ -894,20 +894,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let landscapeHeaderText = String(format: landscapeHeaderFormat, name, formattedDate)
         self.title = landscapeHeaderText
         self.navigationItem.title = landscapeHeaderText
-
-        if #available(iOS 11, *) {
-            // Do nothing, on iOS11+, autolayout grows the stack view as necessary.
-        } else {
-            // Size the titleView to be large enough to fit the widest label,
-            // but no larger. If we go for a "full width" label, our title view
-            // will not be centered (since the left and right bar buttons have different widths)
-            portraitHeaderNameLabel.sizeToFit()
-            portraitHeaderDateLabel.sizeToFit()
-            let width = max(portraitHeaderNameLabel.frame.width, portraitHeaderDateLabel.frame.width)
-
-            let headerFrame: CGRect = CGRect(x: 0, y: 0, width: width, height: 44)
-            portraitHeaderView.frame = headerFrame
-        }
     }
     
     // MARK: - InteractivelyDismissableViewController

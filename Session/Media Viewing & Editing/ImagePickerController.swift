@@ -77,14 +77,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let titleView = TitleView()
         titleView.delegate = self
         titleView.text = photoCollection.localizedTitle()
-        
-        if #available(iOS 11, *) {
-            // do nothing
-        } else {
-            // must assign titleView frame manually on older iOS
-            titleView.frame = CGRect(origin: .zero, size: titleView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize))
-        }
-
         navigationItem.titleView = titleView
         self.titleView = titleView
 
@@ -269,11 +261,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: 
     
     var lastPageYOffset: CGFloat {
-        var yOffset = collectionView.contentSize.height - collectionView.bounds.height + collectionView.adjustedContentInset.bottom
-        if #available(iOS 11.0, *) {
-            yOffset += view.safeAreaInsets.bottom
-        }
-        return yOffset
+        return (collectionView.contentSize.height - collectionView.bounds.height + collectionView.adjustedContentInset.bottom + view.safeAreaInsets.bottom)
     }
 
     func scrollToBottom(animated: Bool) {
@@ -344,10 +332,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     static let kInterItemSpacing: CGFloat = 2
     private class func buildLayout() -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
-
-        if #available(iOS 11, *) {
-            layout.sectionInsetReference = .fromSafeArea
-        }
+        layout.sectionInsetReference = .fromSafeArea
         layout.minimumInteritemSpacing = kInterItemSpacing
         layout.minimumLineSpacing = kInterItemSpacing
         layout.sectionHeadersPinToVisibleBounds = true
@@ -356,13 +341,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     func updateLayout() {
-        let containerWidth: CGFloat
-        if #available(iOS 11.0, *) {
-            containerWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width
-        } else {
-            containerWidth = self.view.frame.size.width
-        }
-
+        let containerWidth: CGFloat = self.view.safeAreaLayoutGuide.layoutFrame.size.width
         let kItemsPerPortraitRow = 4
         let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
         let approxItemWidth = screenWidth / CGFloat(kItemsPerPortraitRow)
@@ -586,7 +565,7 @@ extension ImagePickerGridController: UIGestureRecognizerDelegate {
     }
 }
 
-protocol TitleViewDelegate: class {
+protocol TitleViewDelegate: AnyObject {
     func titleViewWasTapped(_ titleView: TitleView)
 }
 

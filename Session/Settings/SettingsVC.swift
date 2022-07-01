@@ -391,39 +391,31 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
             closeButton.isAccessibilityElement = true
             navigationItem.leftBarButtonItem = closeButton
             
-            if #available(iOS 13, *) { // Pre iOS 13 the user can't switch actively but the app still responds to system changes
-                let appModeIcon: UIImage
-                if isSystemDefault {
-                    appModeIcon = isDarkMode ? #imageLiteral(resourceName: "ic_theme_auto").withTintColor(.white) : #imageLiteral(resourceName: "ic_theme_auto").withTintColor(.black)
-                }
-                else {
-                    appModeIcon = isDarkMode ? #imageLiteral(resourceName: "ic_dark_theme_on").withTintColor(.white) : #imageLiteral(resourceName: "ic_dark_theme_off").withTintColor(.black)
-                }
-                
-                let appModeButton = UIButton()
-                appModeButton.setImage(appModeIcon, for: UIControl.State.normal)
-                appModeButton.tintColor = Colors.text
-                appModeButton.addTarget(self, action: #selector(switchAppMode), for: UIControl.Event.touchUpInside)
-                appModeButton.accessibilityLabel = "Switch app mode button"
-                
-                let qrCodeIcon = isDarkMode ? #imageLiteral(resourceName: "QRCode").withTintColor(.white) : #imageLiteral(resourceName: "QRCode").withTintColor(.black)
-                let qrCodeButton = UIButton()
-                qrCodeButton.setImage(qrCodeIcon, for: UIControl.State.normal)
-                qrCodeButton.tintColor = Colors.text
-                qrCodeButton.addTarget(self, action: #selector(showQRCode), for: UIControl.Event.touchUpInside)
-                qrCodeButton.accessibilityLabel = "Show QR code button"
-                
-                let stackView = UIStackView(arrangedSubviews: [ appModeButton, qrCodeButton ])
-                stackView.axis = .horizontal
-                stackView.spacing = Values.mediumSpacing
-                navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
+            let appModeIcon: UIImage
+            if isSystemDefault {
+                appModeIcon = isDarkMode ? #imageLiteral(resourceName: "ic_theme_auto").withTintColor(.white) : #imageLiteral(resourceName: "ic_theme_auto").withTintColor(.black)
             }
             else {
-                let qrCodeIcon = isDarkMode ? #imageLiteral(resourceName: "QRCode").asTintedImage(color: .white) : #imageLiteral(resourceName: "QRCode").asTintedImage(color: .black)
-                let qrCodeButton = UIBarButtonItem(image: qrCodeIcon, style: .plain, target: self, action: #selector(showQRCode))
-                qrCodeButton.tintColor = Colors.text
-                navigationItem.rightBarButtonItem = qrCodeButton
+                appModeIcon = isDarkMode ? #imageLiteral(resourceName: "ic_dark_theme_on").withTintColor(.white) : #imageLiteral(resourceName: "ic_dark_theme_off").withTintColor(.black)
             }
+            
+            let appModeButton = UIButton()
+            appModeButton.setImage(appModeIcon, for: UIControl.State.normal)
+            appModeButton.tintColor = Colors.text
+            appModeButton.addTarget(self, action: #selector(switchAppMode), for: UIControl.Event.touchUpInside)
+            appModeButton.accessibilityLabel = "Switch app mode button"
+            
+            let qrCodeIcon = isDarkMode ? #imageLiteral(resourceName: "QRCode").withTintColor(.white) : #imageLiteral(resourceName: "QRCode").withTintColor(.black)
+            let qrCodeButton = UIButton()
+            qrCodeButton.setImage(qrCodeIcon, for: UIControl.State.normal)
+            qrCodeButton.tintColor = Colors.text
+            qrCodeButton.addTarget(self, action: #selector(showQRCode), for: UIControl.Event.touchUpInside)
+            qrCodeButton.accessibilityLabel = "Show QR code button"
+            
+            let stackView = UIStackView(arrangedSubviews: [ appModeButton, qrCodeButton ])
+            stackView.axis = .horizontal
+            stackView.spacing = Values.mediumSpacing
+            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
         }
     }
     

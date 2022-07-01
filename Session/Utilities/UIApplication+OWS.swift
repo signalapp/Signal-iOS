@@ -27,6 +27,6 @@ import UIKit
     }
 
     func openSystemSettings() {
-        openURL(URL(string: UIApplication.openSettingsURLString)!)
+        open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
     }
 }

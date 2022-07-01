@@ -241,17 +241,11 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             for: .highlighted
         )
         result.layer.cornerRadius = (ConversationVC.messageRequestButtonHeight / 2)
-        result.layer.borderColor = {
-            if #available(iOS 13.0, *) {
-                return Colors.sessionHeading
-                    .resolvedColor(
-                        // Note: This is needed for '.cgColor' to support dark mode
-                        with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
-                    ).cgColor
-            }
-
-            return Colors.sessionHeading.cgColor
-        }()
+        result.layer.borderColor = Colors.sessionHeading
+            .resolvedColor(
+                // Note: This is needed for '.cgColor' to support dark mode
+                with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
+            ).cgColor
         result.layer.borderWidth = 1
         result.addTarget(self, action: #selector(acceptMessageRequest), for: .touchUpInside)
 
@@ -272,17 +266,11 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             for: .highlighted
         )
         result.layer.cornerRadius = (ConversationVC.messageRequestButtonHeight / 2)
-        result.layer.borderColor = {
-            if #available(iOS 13.0, *) {
-                return Colors.destructive
-                    .resolvedColor(
-                        // Note: This is needed for '.cgColor' to support dark mode
-                        with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
-                    ).cgColor
-            }
-
-            return Colors.destructive.cgColor
-        }()
+        result.layer.borderColor = Colors.destructive
+            .resolvedColor(
+                // Note: This is needed for '.cgColor' to support dark mode
+                with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
+            ).cgColor
         result.layer.borderWidth = 1
         result.addTarget(self, action: #selector(deleteMessageRequest), for: .touchUpInside)
 

@@ -453,16 +453,10 @@ protocol ImageCaptureOutput: AnyObject {
 
 class CaptureOutput {
 
-    let imageOutput: ImageCaptureOutput
+    let imageOutput: ImageCaptureOutput = PhotoCaptureOutputAdaptee()
     let movieOutput: AVCaptureMovieFileOutput
 
     init() {
-        if #available(iOS 10.0, *) {
-            imageOutput = PhotoCaptureOutputAdaptee()
-        } else {
-            imageOutput = StillImageCaptureOutput()
-        }
-
         movieOutput = AVCaptureMovieFileOutput()
         // disable movie fragment writing since it's not supported on mp4
         // leaving it enabled causes all audio to be lost on videos longer
@@ -531,7 +525,6 @@ class CaptureOutput {
     }
 }
 
-@available(iOS 10.0, *)
 class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
 
     let photoOutput = AVCapturePhotoOutput()
@@ -586,7 +579,6 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
             self.completion = completion
         }
 
-        @available(iOS 11.0, *)
         func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
             var data = photo.fileDataRepresentation()!
             // Call normalized here to fix the orientation
