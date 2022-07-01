@@ -35,6 +35,7 @@
     "OWSRecipientIdentity": 38,
     "OWSRecoverableDecryptionPlaceholder": 70,
     "OWSResaveCollectionDBMigration": 49,
+    "OWSSendGiftBadgeJobRecord": 73,
     "OWSSessionResetJobRecord": 52,
     "OWSUnknownContactBlockOfferMessage": 5,
     "OWSUnknownDBObject": 37,

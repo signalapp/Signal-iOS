@@ -7,6 +7,8 @@ import PassKit
 import SignalCoreKit
 
 public class DonationUtilities: NSObject {
+    public static let sendGiftBadgeJobQueue = SendGiftBadgeJobQueue()
+
     public static var isApplePayAvailable: Bool {
         PKPaymentAuthorizationController.canMakePayments()
     }

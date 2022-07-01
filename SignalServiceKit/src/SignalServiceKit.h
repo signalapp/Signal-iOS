@@ -47,6 +47,7 @@
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSRecoverableDecryptionPlaceholder.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
+#import <SignalServiceKit/OWSSendGiftBadgeJobRecord.h>
 #import <SignalServiceKit/OWSSessionResetJobRecord.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSStaticOutgoingMessage.h>

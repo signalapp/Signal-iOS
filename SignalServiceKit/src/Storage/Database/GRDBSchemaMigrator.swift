@@ -164,6 +164,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addCanReceiveGiftBadgesToUserProfiles
         case addStoryThreadColumns
         case addUnsavedMessagesToSendToJobRecord
+        case addColumnsForSendGiftBadgeDurableJob
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1805,6 +1806,18 @@ public class GRDBSchemaMigrator: NSObject {
             do {
                 try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
                     table.add(column: "unsavedMessagesToSend", .blob)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addColumnsForSendGiftBadgeDurableJob) { db in
+            do {
+                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                    table.add(column: "messageText", .text)
+                    table.add(column: "paymentIntentClientSecret", .text)
+                    table.add(column: "paymentMethodId", .text)
                 }
             } catch {
                 owsFail("Error: \(error)")

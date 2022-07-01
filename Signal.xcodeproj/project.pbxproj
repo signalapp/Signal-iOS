@@ -1047,6 +1047,7 @@
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
 		F97A2EEA282578C000610669 /* BadgeExpirationSheetStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */; };
 		F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9844C482867936400B16DD4 /* SignalMeTest.swift */; };
+		F98EA265286A469100791EB4 /* SendGiftBadgeJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */; };
 		F9A335CA282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A335C9282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift */; };
 		F9A335CC282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */; };
 		F9A8ACC7280A175E00AFC6A7 /* DonationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A8ACC6280A175E00AFC6A7 /* DonationViewController.swift */; };
@@ -2498,6 +2499,7 @@
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
+		F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendGiftBadgeJobQueue.swift; sourceTree = "<group>"; };
 		F9A335C9282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseBadgeViewControllerStateTest.swift; sourceTree = "<group>"; };
 		F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseRecipientViewController.swift; sourceTree = "<group>"; };
 		F9A8ACC6280A175E00AFC6A7 /* DonationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationViewController.swift; sourceTree = "<group>"; };
@@ -3860,6 +3862,7 @@
 				3461293F1FD1D74B00532771 /* environment */,
 				34BB3C5723C6644B001651FC /* groups */,
 				453518951FC63DBF00210559 /* Info.plist */,
+				F98EA263286A464500791EB4 /* Donations */,
 				88D23D0823CEBF4400B0E74B /* Notifications */,
 				3474C56526111605006723D2 /* Payments */,
 				346129B01FD1F7E800532771 /* profiles */,
@@ -4856,6 +4859,14 @@
 				F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */,
 			);
 			path = "Context Menus";
+			sourceTree = "<group>";
+		};
+		F98EA263286A464500791EB4 /* Donations */ = {
+			isa = PBXGroup;
+			children = (
+				F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */,
+			);
+			path = Donations;
 			sourceTree = "<group>";
 		};
 		F9C5BC5F282E98D4001EB3BF /* Donations */ = {
@@ -6173,6 +6184,7 @@
 				454A965A1FD6017E008D2A0E /* SignalAttachment.swift in Sources */,
 				3461295B1FD1D74C00532771 /* Environment.m in Sources */,
 				883A7FD2269F642F00841DF9 /* AvatarModel.swift in Sources */,
+				F98EA265286A469100791EB4 /* SendGiftBadgeJobQueue.swift in Sources */,
 				34BB3C5D23C6644B001651FC /* GroupsV2Utils.swift in Sources */,
 				34BB3C6023C6644B001651FC /* GroupV2Params.swift in Sources */,
 				3474C57526111605006723D2 /* PaymentsCurrenciesImpl.swift in Sources */,

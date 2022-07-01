@@ -264,6 +264,9 @@ CREATE
             ,"amount" NUMERIC
             ,"currencyCode" TEXT
             ,"unsavedMessagesToSend" BLOB
+            ,"messageText" TEXT
+            ,"paymentIntentClientSecret" TEXT
+            ,"paymentMethodId" TEXT
         )
 ;
 

@@ -7,11 +7,21 @@ import PassKit
 import SignalServiceKit
 
 public struct Stripe: Dependencies {
+    public struct PaymentIntent {
+        let id: String
+        let clientSecret: String
+
+        fileprivate init(clientSecret: String) throws {
+            self.id = try API.id(for: clientSecret)
+            self.clientSecret = clientSecret
+        }
+    }
+
     public static func donate(amount: NSDecimalNumber, in currencyCode: Currency.Code, for payment: PKPayment) -> Promise<Void> {
-        firstly { () -> Promise<API.PaymentIntent> in
+        firstly { () -> Promise<PaymentIntent> in
             API.createPaymentIntent(for: amount, in: currencyCode)
         }.then { intent in
-            API.confirmPaymentIntent(for: payment, clientSecret: intent.clientSecret, paymentIntentId: intent.id)
+            confirmPaymentIntent(for: payment, clientSecret: intent.clientSecret, paymentIntentId: intent.id)
         }
     }
 
@@ -19,10 +29,50 @@ public struct Stripe: Dependencies {
                              in currencyCode: Currency.Code,
                              level: OneTimeBadgeLevel,
                              for payment: PKPayment) -> Promise<String> {
-        firstly { () -> Promise<API.PaymentIntent> in
-            API.createBoostPaymentIntent(for: amount, in: currencyCode, level: level)
+        firstly { () -> Promise<PaymentIntent> in
+            createBoostPaymentIntent(for: amount, in: currencyCode, level: level)
         }.then { intent in
-            API.confirmPaymentIntent(for: payment, clientSecret: intent.clientSecret, paymentIntentId: intent.id).map { intent.id }
+            confirmPaymentIntent(for: payment, clientSecret: intent.clientSecret, paymentIntentId: intent.id).map { intent.id }
+        }
+    }
+
+    public static func createBoostPaymentIntent(
+        for amount: NSDecimalNumber,
+        in currencyCode: Currency.Code,
+        level: OneTimeBadgeLevel
+    ) -> Promise<PaymentIntent> {
+        firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
+            guard !isAmountTooSmall(amount, in: currencyCode) else {
+                throw OWSAssertionError("Amount too small")
+            }
+
+            guard !isAmountTooLarge(amount, in: currencyCode) else {
+                throw OWSAssertionError("Amount too large")
+            }
+
+            guard supportedCurrencyCodes.contains(currencyCode.uppercased()) else {
+                throw OWSAssertionError("Unexpected currency code")
+            }
+
+            // The description is never translated as it's populated into an
+            // english only receipt by Stripe.
+            let request = OWSRequestFactory.boostCreatePaymentIntent(
+                withAmount: integralAmount(amount, in: currencyCode),
+                inCurrencyCode: currencyCode,
+                level: level.rawValue
+            )
+
+            return networkManager.makePromise(request: request)
+        }.map(on: .sharedUserInitiated) { response in
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Missing or invalid JSON")
+            }
+            guard let parser = ParamParser(responseObject: json) else {
+                throw OWSAssertionError("Failed to decode JSON response")
+            }
+            return try PaymentIntent(
+                clientSecret: try parser.required(key: "clientSecret")
+            )
         }
     }
 
@@ -42,6 +92,32 @@ public struct Stripe: Dependencies {
             }
             return try parser.required(key: "id")
         }
+    }
+
+    static func confirmPaymentIntent(for payment: PKPayment, clientSecret: String, paymentIntentId: String) -> Promise<Void> {
+        firstly(on: .sharedUserInitiated) { () -> Promise<String> in
+            createPaymentMethod(with: payment)
+        }.then(on: .sharedUserInitiated) { paymentMethodId -> Promise<HTTPResponse> in
+            guard !SubscriptionManager.terminateTransactionIfPossible else {
+                throw OWSGenericError("Boost transaction chain cancelled")
+            }
+
+            return try confirmPaymentIntent(paymentIntentClientSecret: clientSecret,
+                                            paymentIntentId: paymentIntentId,
+                                            paymentMethodId: paymentMethodId)
+        }.asVoid()
+    }
+
+    public static func confirmPaymentIntent(paymentIntentClientSecret: String,
+                                            paymentIntentId: String,
+                                            paymentMethodId: String,
+                                            idempotencyKey: String? = nil) throws -> Promise<HTTPResponse> {
+        try API.postForm(endpoint: "payment_intents/\(paymentIntentId)/confirm",
+                         parameters: [
+                            "payment_method": paymentMethodId,
+                            "client_secret": paymentIntentClientSecret
+                         ],
+                         idempotencyKey: idempotencyKey)
     }
 
     public static func confirmSetupIntent(for paymentIntentID: String, clientSecret: String, payment: PKPayment) throws -> Promise<HTTPResponse> {
@@ -98,16 +174,6 @@ fileprivate extension Stripe {
     )
 
     struct API {
-        struct PaymentIntent {
-            let id: String
-            let clientSecret: String
-
-            init(clientSecret: String) throws {
-                self.id = try API.id(for: clientSecret)
-                self.clientSecret = clientSecret
-            }
-        }
-
         static func id(for clientSecret: String) throws -> String {
             let components = clientSecret.components(separatedBy: "_secret_")
             if components.count >= 2, !components[0].isEmpty {
@@ -154,63 +220,6 @@ fileprivate extension Stripe {
                     clientSecret: try parser.required(key: "client_secret")
                 )
             }
-        }
-
-        static func createBoostPaymentIntent(
-            for amount: NSDecimalNumber,
-            in currencyCode: Currency.Code,
-            level: OneTimeBadgeLevel
-        ) -> Promise<(PaymentIntent)> {
-            firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
-                guard !isAmountTooSmall(amount, in: currencyCode) else {
-                    throw OWSAssertionError("Amount too small")
-                }
-
-                guard !isAmountTooLarge(amount, in: currencyCode) else {
-                    throw OWSAssertionError("Amount too large")
-                }
-
-                guard supportedCurrencyCodes.contains(currencyCode.uppercased()) else {
-                    throw OWSAssertionError("Unexpected currency code")
-                }
-
-                // The description is never translated as it's populated into an
-                // english only receipt by Stripe.
-                let request = OWSRequestFactory.boostCreatePaymentIntent(
-                    withAmount: integralAmount(amount, in: currencyCode),
-                    inCurrencyCode: currencyCode,
-                    level: level.rawValue
-                )
-
-                return networkManager.makePromise(request: request)
-            }.map(on: .sharedUserInitiated) { response in
-                guard let json = response.responseBodyJson else {
-                    throw OWSAssertionError("Missing or invalid JSON")
-                }
-                guard let parser = ParamParser(responseObject: json) else {
-                    throw OWSAssertionError("Failed to decode JSON response")
-                }
-                return try PaymentIntent(
-                    clientSecret: try parser.required(key: "clientSecret")
-                )
-            }
-        }
-
-        static func confirmPaymentIntent(for payment: PKPayment, clientSecret: String, paymentIntentId: String) -> Promise<Void> {
-            firstly(on: .sharedUserInitiated) { () -> Promise<String> in
-                createPaymentMethod(with: payment)
-            }.then(on: .sharedUserInitiated) { paymentMethodId -> Promise<HTTPResponse> in
-
-                guard !SubscriptionManager.terminateTransactionIfPossible else {
-                    throw OWSGenericError("Boost transaction chain cancelled")
-                }
-
-                let parameters = [
-                    "payment_method": paymentMethodId,
-                    "client_secret": clientSecret
-                ]
-                return try postForm(endpoint: "payment_intents/\(paymentIntentId)/confirm", parameters: parameters)
-            }.asVoid()
         }
 
         // MARK: Common Stripe integrations
@@ -277,15 +286,25 @@ fileprivate extension Stripe {
             }
         }
 
-        static func postForm(endpoint: String, parameters: [String: Any]) throws -> Promise<HTTPResponse> {
+        static func postForm(endpoint: String,
+                             parameters: [String: Any],
+                             idempotencyKey: String? = nil) throws -> Promise<HTTPResponse> {
             guard let formData = AFQueryStringFromParameters(parameters).data(using: .utf8) else {
                 throw OWSAssertionError("Failed to generate post body data")
+            }
+
+            var headers: [String: String] = [
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": authorizationHeader
+            ]
+            if let idempotencyKey = idempotencyKey {
+                headers["Idempotency-Key"] = idempotencyKey
             }
 
             return urlSession.dataTaskPromise(
                 endpoint,
                 method: .post,
-                headers: ["Content-Type": "application/x-www-form-urlencoded", "Authorization": authorizationHeader],
+                headers: headers,
                 body: formData
             )
         }

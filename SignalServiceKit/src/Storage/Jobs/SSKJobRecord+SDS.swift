@@ -56,6 +56,9 @@ public struct JobRecordRecord: SDSRecord {
     public let amount: Data?
     public let currencyCode: String?
     public let unsavedMessagesToSend: Data?
+    public let messageText: String?
+    public let paymentIntentClientSecret: String?
+    public let paymentMethodId: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -87,6 +90,9 @@ public struct JobRecordRecord: SDSRecord {
         case amount
         case currencyCode
         case unsavedMessagesToSend
+        case messageText
+        case paymentIntentClientSecret
+        case paymentMethodId
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -139,6 +145,9 @@ public extension JobRecordRecord {
         amount = row[26]
         currencyCode = row[27]
         unsavedMessagesToSend = row[28]
+        messageText = row[29]
+        paymentIntentClientSecret = row[30]
+        paymentMethodId = row[31]
     }
 }
 
@@ -266,6 +275,42 @@ extension SSKJobRecord {
                                                            subscriberID: subscriberID,
                                                            targetSubscriptionLevel: targetSubscriptionLevel)
 
+        case .sendGiftBadgeJobRecord:
+
+            let uniqueId: String = record.uniqueId
+            let exclusiveProcessIdentifier: String? = record.exclusiveProcessIdentifier
+            let failureCount: UInt = record.failureCount
+            let label: String = record.label
+            let sortId: UInt64 = UInt64(recordId)
+            let status: SSKJobRecordStatus = record.status
+            let amountSerialized: Data? = record.amount
+            let amount: NSDecimalNumber = try SDSDeserialization.unarchive(amountSerialized, name: "amount")
+            let boostPaymentIntentID: String = try SDSDeserialization.required(record.boostPaymentIntentID, name: "boostPaymentIntentID")
+            let currencyCode: String = try SDSDeserialization.required(record.currencyCode, name: "currencyCode")
+            let messageText: String = try SDSDeserialization.required(record.messageText, name: "messageText")
+            let paymentIntentClientSecret: String = try SDSDeserialization.required(record.paymentIntentClientSecret, name: "paymentIntentClientSecret")
+            let paymentMethodId: String = try SDSDeserialization.required(record.paymentMethodId, name: "paymentMethodId")
+            let receiptCredentailRequest: Data = try SDSDeserialization.required(record.receiptCredentailRequest, name: "receiptCredentailRequest")
+            let receiptCredentailRequestContext: Data = try SDSDeserialization.required(record.receiptCredentailRequestContext, name: "receiptCredentailRequestContext")
+            let threadId: String = try SDSDeserialization.required(record.threadId, name: "threadId")
+
+            return OWSSendGiftBadgeJobRecord(grdbId: recordId,
+                                             uniqueId: uniqueId,
+                                             exclusiveProcessIdentifier: exclusiveProcessIdentifier,
+                                             failureCount: failureCount,
+                                             label: label,
+                                             sortId: sortId,
+                                             status: status,
+                                             amount: amount,
+                                             boostPaymentIntentID: boostPaymentIntentID,
+                                             currencyCode: currencyCode,
+                                             messageText: messageText,
+                                             paymentIntentClientSecret: paymentIntentClientSecret,
+                                             paymentMethodId: paymentMethodId,
+                                             receiptCredentailRequest: receiptCredentailRequest,
+                                             receiptCredentailRequestContext: receiptCredentailRequestContext,
+                                             threadId: threadId)
+
         case .sessionResetJobRecord:
 
             let uniqueId: String = record.uniqueId
@@ -377,6 +422,9 @@ extension SSKJobRecord: SDSModel {
         case let model as OWSSessionResetJobRecord:
             assert(type(of: model) == OWSSessionResetJobRecord.self)
             return OWSSessionResetJobRecordSerializer(model: model)
+        case let model as OWSSendGiftBadgeJobRecord:
+            assert(type(of: model) == OWSSendGiftBadgeJobRecord.self)
+            return OWSSendGiftBadgeJobRecordSerializer(model: model)
         case let model as OWSReceiptCredentialRedemptionJobRecord:
             assert(type(of: model) == OWSReceiptCredentialRedemptionJobRecord.self)
             return OWSReceiptCredentialRedemptionJobRecordSerializer(model: model)
@@ -501,6 +549,44 @@ extension SSKJobRecord: DeepCopyable {
                                             sortId: sortId,
                                             status: status,
                                             contactThreadId: contactThreadId)
+        }
+
+        if let modelToCopy = self as? OWSSendGiftBadgeJobRecord {
+            assert(type(of: modelToCopy) == OWSSendGiftBadgeJobRecord.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let exclusiveProcessIdentifier: String? = modelToCopy.exclusiveProcessIdentifier
+            let failureCount: UInt = modelToCopy.failureCount
+            let label: String = modelToCopy.label
+            let sortId: UInt64 = modelToCopy.sortId
+            let status: SSKJobRecordStatus = modelToCopy.status
+            // NOTE: If this generates build errors, you made need to
+            // implement DeepCopyable for this type in DeepCopy.swift.
+            let amount: NSDecimalNumber = try DeepCopies.deepCopy(modelToCopy.amount)
+            let boostPaymentIntentID: String = modelToCopy.boostPaymentIntentID
+            let currencyCode: String = modelToCopy.currencyCode
+            let messageText: String = modelToCopy.messageText
+            let paymentIntentClientSecret: String = modelToCopy.paymentIntentClientSecret
+            let paymentMethodId: String = modelToCopy.paymentMethodId
+            let receiptCredentailRequest: Data = modelToCopy.receiptCredentailRequest
+            let receiptCredentailRequestContext: Data = modelToCopy.receiptCredentailRequestContext
+            let threadId: String = modelToCopy.threadId
+
+            return OWSSendGiftBadgeJobRecord(grdbId: id,
+                                             uniqueId: uniqueId,
+                                             exclusiveProcessIdentifier: exclusiveProcessIdentifier,
+                                             failureCount: failureCount,
+                                             label: label,
+                                             sortId: sortId,
+                                             status: status,
+                                             amount: amount,
+                                             boostPaymentIntentID: boostPaymentIntentID,
+                                             currencyCode: currencyCode,
+                                             messageText: messageText,
+                                             paymentIntentClientSecret: paymentIntentClientSecret,
+                                             paymentMethodId: paymentMethodId,
+                                             receiptCredentailRequest: receiptCredentailRequest,
+                                             receiptCredentailRequestContext: receiptCredentailRequestContext,
+                                             threadId: threadId)
         }
 
         if let modelToCopy = self as? OWSReceiptCredentialRedemptionJobRecord {
@@ -687,6 +773,9 @@ extension SSKJobRecordSerializer {
     static var amountColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "amount", columnType: .blob, isOptional: true) }
     static var currencyCodeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "currencyCode", columnType: .unicodeString, isOptional: true) }
     static var unsavedMessagesToSendColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "unsavedMessagesToSend", columnType: .blob, isOptional: true) }
+    static var messageTextColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "messageText", columnType: .unicodeString, isOptional: true) }
+    static var paymentIntentClientSecretColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paymentIntentClientSecret", columnType: .unicodeString, isOptional: true) }
+    static var paymentMethodIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paymentMethodId", columnType: .unicodeString, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -722,7 +811,10 @@ extension SSKJobRecordSerializer {
         receiptCredentialPresentationColumn,
         amountColumn,
         currencyCodeColumn,
-        unsavedMessagesToSendColumn
+        unsavedMessagesToSendColumn,
+        messageTextColumn,
+        paymentIntentClientSecretColumn,
+        paymentMethodIdColumn
         ])
     }
 }
@@ -1137,8 +1229,11 @@ class SSKJobRecordSerializer: SDSSerializer {
         let amount: Data? = nil
         let currencyCode: String? = nil
         let unsavedMessagesToSend: Data? = nil
+        let messageText: String? = nil
+        let paymentIntentClientSecret: String? = nil
+        let paymentMethodId: String? = nil
 
-        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost, receiptCredentialPresentation: receiptCredentialPresentation, amount: amount, currencyCode: currencyCode, unsavedMessagesToSend: unsavedMessagesToSend)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost, receiptCredentialPresentation: receiptCredentialPresentation, amount: amount, currencyCode: currencyCode, unsavedMessagesToSend: unsavedMessagesToSend, messageText: messageText, paymentIntentClientSecret: paymentIntentClientSecret, paymentMethodId: paymentMethodId)
     }
 }
 
