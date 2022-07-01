@@ -1,4 +1,5 @@
 import NVActivityIndicatorView
+import SessionUIKit
 
 final class LinkPreviewView : UIView {
     private let viewItem: ConversationViewItem?
@@ -59,7 +60,7 @@ final class LinkPreviewView : UIView {
         return result
     }()
     
-    var bodyTextView: UITextView?
+    var bodyTextView: TappableLabel?
 
     // MARK: Settings
     private static let loaderSize: CGFloat = 24
@@ -163,7 +164,7 @@ final class LinkPreviewView : UIView {
 }
 
 // MARK: Delegate
-protocol LinkPreviewViewDelegate : UITextViewDelegate & BodyTextViewDelegate {
+protocol LinkPreviewViewDelegate : TappableLabelDelegate {
     var lastSearchedText: String? { get }
 
     func handleLinkPreviewCanceled()

@@ -1,11 +1,12 @@
 import UIKit
+import SessionUIKit
 
 final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     private var isHandlingLongPress: Bool = false
     private var unloadContent: (() -> Void)?
     private var previousX: CGFloat = 0
     var albumView: MediaAlbumView?
-    var bodyTextView: UITextView?
+    var bodyTextView: TappableLabel?
     // Constraints
     private lazy var headerViewTopConstraint = headerView.pin(.top, to: .top, of: self, withInset: 1)
     private lazy var authorLabelHeightConstraint = authorLabel.set(.height, to: 0)
@@ -631,9 +632,10 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         }
     }
     
-    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        delegate?.openURL(URL)
-        return false
+    func tapableLabel(_ label: TappableLabel, didTapUrl url: String, atRange range: NSRange) {
+        if let URL = URL(string: url) {
+            delegate?.openURL(URL)
+        }
     }
     
     private func resetReply() {
@@ -776,50 +778,67 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         return isGroupThread && viewItem.shouldShowSenderProfilePicture && senderSessionID != nil
     }
     
-    static func getBodyTextView(for viewItem: ConversationViewItem, with availableWidth: CGFloat, textColor: UIColor, delegate: UITextViewDelegate & BodyTextViewDelegate) -> UITextView {
+    static func getBodyTextView(for viewItem: ConversationViewItem, with availableWidth: CGFloat, textColor: UIColor, delegate: TappableLabelDelegate) -> TappableLabel {
         // Take care of:
         // • Highlighting mentions
         // • Linkification
         // • Highlighting search results
+        
+        func detectLinks(body: String?) -> [String: NSRange] {
+            var links: [String: NSRange] = [:]
+            guard let body = body else { return links }
+            let detector: NSDataDetector
+            do {
+                detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+            } catch {
+                return [:]
+            }
+            let matches = detector.matches(in: body, options: [], range: NSRange(location: 0, length: body.count))
+            for match in matches {
+                guard let matchURL = match.url else { continue }
+                
+                // If the URL entered didn't have a scheme it will default to 'http', we want to catch this and
+                // set the scheme to 'https' instead as we don't load previews for 'http' so this will result
+                // in more previews actually getting loaded without forcing the user to enter 'https://' before
+                // every URL they enter
+                let urlString: String = (matchURL.absoluteString == "http://\(body)" ?
+                    "https://\(body)" :
+                    matchURL.absoluteString
+                )
+                if URL(string: urlString) != nil {
+                    links[urlString] = (body as NSString).range(of: urlString)
+                }
+            }
+            return links
+        }
+        
         guard let message = viewItem.interaction as? TSMessage else { preconditionFailure() }
         let isOutgoing = (message.interactionType() == .outgoingMessage)
-        let result = BodyTextView(snDelegate: delegate)
-        result.isEditable = false
         let attributes: [NSAttributedString.Key:Any] = [
             .foregroundColor : textColor,
             .font : UIFont.systemFont(ofSize: getFontSize(for: viewItem))
         ]
         let attributedText = NSMutableAttributedString(attributedString: MentionUtilities.highlightMentions(in: message.body ?? "", isOutgoingMessage: isOutgoing, threadID: viewItem.interaction.uniqueThreadId, attributes: attributes))
+        let links = detectLinks(body: message.body)
+        for (urlString, range) in links {
+            let linkCustomAttributes: [NSAttributedString.Key : Any] = [
+               .font: UIFont.systemFont(ofSize: getFontSize(for: viewItem)),
+               .foregroundColor: textColor,
+               .underlineColor: textColor,
+               .underlineStyle: NSUnderlineStyle.single.rawValue,
+               .attachment: URL(string: urlString)!]
+            attributedText.addAttributes(linkCustomAttributes, range: range)
+        }
+        
+        let result = TappableLabel()
         result.attributedText = attributedText
-        result.dataDetectorTypes = .link
         result.backgroundColor = .clear
         result.isOpaque = false
-        result.textContainerInset = UIEdgeInsets.zero
-        result.contentInset = UIEdgeInsets.zero
-        result.textContainer.lineFragmentPadding = 0
-        result.isScrollEnabled = false
         result.isUserInteractionEnabled = true
         result.delegate = delegate
-        result.linkTextAttributes = [ .foregroundColor : textColor, .underlineStyle : NSUnderlineStyle.single.rawValue ]
         let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
         let size = result.sizeThatFits(availableSpace)
         result.set(.height, to: size.height)
         return result
-    }
-}
-
-extension VisibleMessageCell {
-    public func snapshot(afterScreenUpdates afterUpdates: Bool) -> UIView? {
-        let labelForRendering = UILabel()
-        labelForRendering.numberOfLines = 0
-        labelForRendering.backgroundColor = self.bubbleView.backgroundColor
-        if let bodyTextView = self.bodyTextView {
-            labelForRendering.attributedText = bodyTextView.attributedText
-            self.snContentView.addSubview(labelForRendering)
-            labelForRendering.frame = self.snContentView.convert(bodyTextView.frame, to: self.snContentView)
-        }
-        let snapshot = self.bubbleView.snapshotView(afterScreenUpdates: true)
-        labelForRendering.removeFromSuperview()
-        return snapshot
     }
 }

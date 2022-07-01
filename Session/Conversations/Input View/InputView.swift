@@ -398,6 +398,10 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     func handleMentionSelected(_ mention: Mention, from view: MentionSelectionView) {
         delegate?.handleMentionSelected(mention, from: view)
     }
+    
+    func tapableLabel(_ label: TappableLabel, didTapUrl url: String, atRange range: NSRange) {
+        // Do nothing
+    }
 
     // MARK: Convenience
     private func container(for button: InputViewButton) -> UIView {
