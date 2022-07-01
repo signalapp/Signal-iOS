@@ -424,7 +424,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             }
         }
         
-        viewModel.markAllAsRead()
         recoverInputView()
     }
 
@@ -580,8 +579,11 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             snInputView.text = draft
         }
         
-        // Now we have done all the needed diffs, update the viewModel with the latest data
+        // Now we have done all the needed diffs, update the viewModel with the latest data and mark
+        // all messages as read (we do it in here as the 'threadData' actually contains the last
+        // 'interactionId' for the thread)
         self.viewModel.updateThreadData(updatedThreadData)
+        self.viewModel.markAllAsRead()
         
         /// **Note:** This needs to happen **after** we have update the viewModel's thread data
         if initialLoad || viewModel.threadData.currentUserIsClosedGroupMember != updatedThreadData.currentUserIsClosedGroupMember {
@@ -608,9 +610,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             return
         }
         
-        // Mark received messages as read
+        // Store the 'sentMessageBeforeUpdate' state locally
         let didSendMessageBeforeUpdate: Bool = self.viewModel.sentMessageBeforeUpdate
-        self.viewModel.markAllAsRead()
         self.viewModel.sentMessageBeforeUpdate = false
         
         // When sending a message we want to reload the UI instantly (with any form of animation the message
