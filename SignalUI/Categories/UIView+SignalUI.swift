@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 @objc
 public extension UINavigationController {
@@ -805,14 +806,62 @@ public extension UIView {
 
 @objc
 public extension UIBezierPath {
-    static func roundedRect(_ rect: CGRect,
-                            sharpCorners: UIRectCorner,
-                            sharpCornerRadius: CGFloat,
-                            wideCornerRadius: CGFloat) -> UIBezierPath {
+    /// Create a roundedRect path with two different corner radii.
+    ///
+    /// - Parameters:
+    ///   - rect: The outer bounds of the roundedRect.
+    ///   - sharpCorners: The corners that should use `sharpCornerRadius`. The
+    ///     other corners will use `wideCornerRadius`.
+    ///   - sharpCornerRadius: The corner radius of `sharpCorners`.
+    ///   - wideCornerRadius: The corner radius of non-`sharpCorners`.
+    ///
+    static func roundedRect(
+        _ rect: CGRect,
+        sharpCorners: UIRectCorner,
+        sharpCornerRadius: CGFloat,
+        wideCornerRadius: CGFloat
+    ) -> UIBezierPath {
+
+        return roundedRect(
+            rect,
+            sharpCorners: sharpCorners,
+            sharpCornerRadius: sharpCornerRadius,
+            wideCorners: .allCorners.subtracting(sharpCorners),
+            wideCornerRadius: wideCornerRadius
+        )
+    }
+
+    /// Create a roundedRect path with two different corner radii.
+    ///
+    /// The behavior is undefined if `sharpCorners` and `wideCorners` overlap.
+    ///
+    /// - Parameters:
+    ///   - rect: The outer bounds of the roundedRect.
+    ///   - sharpCorners: The corners that should use `sharpCornerRadius`.
+    ///   - sharpCornerRadius: The corner radius of `sharpCorners`.
+    ///   - wideCorners: The corners that should use `wideCornerRadius`.
+    ///   - wideCornerRadius: The corner radius of `wideCorners`.
+    ///
+    static func roundedRect(
+        _ rect: CGRect,
+        sharpCorners: UIRectCorner,
+        sharpCornerRadius: CGFloat,
+        wideCorners: UIRectCorner,
+        wideCornerRadius: CGFloat
+    ) -> UIBezierPath {
+
+        assert(sharpCorners.isDisjoint(with: wideCorners))
+
         let bezierPath = UIBezierPath()
 
         func cornerRounding(forCorner corner: UIRectCorner) -> CGFloat {
-            sharpCorners.contains(corner) ? sharpCornerRadius : wideCornerRadius
+            if sharpCorners.contains(corner) {
+                return sharpCornerRadius
+            }
+            if wideCorners.contains(corner) {
+                return wideCornerRadius
+            }
+            return 0
         }
         let topLeftRounding = cornerRounding(forCorner: .topLeft)
         let topRightRounding = cornerRounding(forCorner: .topRight)

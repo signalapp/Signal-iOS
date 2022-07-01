@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, readonly) NSString *reactionEmoji;
 @property (nonatomic, readonly) BOOL isRemotelySourced;
 @property (nonatomic, readonly) BOOL isStory;
+@property (nonatomic, readonly) BOOL isGiftBadge;
 
 #pragma mark - Attachments
 

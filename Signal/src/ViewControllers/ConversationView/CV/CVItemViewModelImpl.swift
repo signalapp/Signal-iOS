@@ -137,6 +137,12 @@ public class CVItemViewModelImpl: NSObject, CVItemViewModel {
         }
         return !bodyMedia.items.compactMap { $0.attachment as? TSAttachmentPointer }.isEmpty
     }
+
+    public var isGiftBadge: Bool {
+        AssertIsOnMainThread()
+
+        return componentState.giftBadge != nil
+    }
 }
 
 // MARK: - Actions

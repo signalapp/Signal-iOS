@@ -1453,7 +1453,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     BOOL hasQuotedText = NO;
     BOOL hasQuotedAttachment = NO;
-    if (self.quotedMessage.body.length > 0) {
+    BOOL hasQuotedGiftBadge = NO;
+
+    if (quotedMessage.body.length > 0) {
         hasQuotedText = YES;
         [quoteBuilder setText:quotedMessage.body];
 
@@ -1489,7 +1491,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         hasQuotedAttachment = YES;
     }
 
-    if (hasQuotedText || hasQuotedAttachment) {
+    if (quotedMessage.isGiftBadge) {
+        [quoteBuilder setType:SSKProtoDataMessageQuoteTypeGiftBadge];
+        hasQuotedGiftBadge = YES;
+    }
+
+    if (hasQuotedText || hasQuotedAttachment || hasQuotedGiftBadge) {
         return quoteBuilder;
     } else {
         OWSFailDebug(@"Invalid quoted message data.");

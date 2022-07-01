@@ -33,7 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
                       sourceFilename:(nullable NSString *)sourceFilename
                     attachmentStream:(nullable TSAttachmentStream *)attachmentStream
     failedThumbnailAttachmentPointer:(nullable TSAttachmentPointer *)failedThumbnailAttachmentPointer
-                       reactionEmoji:(nullable NSString *)reactionEmoji NS_DESIGNATED_INITIALIZER;
+                       reactionEmoji:(nullable NSString *)reactionEmoji
+                         isGiftBadge:(BOOL)isGiftBadge NS_DESIGNATED_INITIALIZER;
+
 
 @end
 
@@ -54,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
                     attachmentStream:(nullable TSAttachmentStream *)attachmentStream
     failedThumbnailAttachmentPointer:(nullable TSAttachmentPointer *)failedThumbnailAttachmentPointer
                        reactionEmoji:(nullable NSString *)reactionEmoji
+                         isGiftBadge:(BOOL)isGiftBadge
 {
     self = [super init];
     if (!self) {
@@ -72,6 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
     _attachmentStream = attachmentStream;
     _failedThumbnailAttachmentPointer = failedThumbnailAttachmentPointer;
     _reactionEmoji = reactionEmoji;
+    _isGiftBadge = isGiftBadge;
 
     return self;
 }
@@ -118,7 +122,8 @@ NS_ASSUME_NONNULL_BEGIN
                             sourceFilename:quotedMessage.sourceFilename
                           attachmentStream:nil
           failedThumbnailAttachmentPointer:failedAttachmentPointer
-                             reactionEmoji:nil];
+                             reactionEmoji:nil
+                               isGiftBadge:quotedMessage.isGiftBadge];
 }
 
 + (nullable instancetype)quotedStoryReplyFromMessage:(TSMessage *)message
@@ -146,7 +151,8 @@ NS_ASSUME_NONNULL_BEGIN
                               sourceFilename:nil
                             attachmentStream:nil
             failedThumbnailAttachmentPointer:nil
-                               reactionEmoji:message.storyReactionEmoji];
+                               reactionEmoji:message.storyReactionEmoji
+                                 isGiftBadge:NO];
     }
 
     return [self quotedReplyFromStoryMessage:storyMessage
@@ -185,7 +191,8 @@ NS_ASSUME_NONNULL_BEGIN
                             sourceFilename:nil
                           attachmentStream:attachmentStream
           failedThumbnailAttachmentPointer:failedAttachmentPointer
-                             reactionEmoji:reactionEmoji];
+                             reactionEmoji:reactionEmoji
+                               isGiftBadge:NO];
 }
 
 + (nullable instancetype)quotedReplyForSendingWithItem:(id<CVItemViewModel>)item
@@ -233,7 +240,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 sourceFilename:nil
                               attachmentStream:nil
               failedThumbnailAttachmentPointer:nil
-                                 reactionEmoji:nil];
+                                 reactionEmoji:nil
+                                   isGiftBadge:NO];
     }
 
     if (item.contactShare) {
@@ -254,7 +262,24 @@ NS_ASSUME_NONNULL_BEGIN
                                 sourceFilename:nil
                               attachmentStream:nil
               failedThumbnailAttachmentPointer:nil
-                                 reactionEmoji:nil];
+                                 reactionEmoji:nil
+                                   isGiftBadge:NO];
+    }
+
+    if (item.isGiftBadge) {
+        return [[self alloc] initWithTimestamp:timestamp
+                                 authorAddress:authorAddress
+                                          body:nil
+                                    bodyRanges:nil
+                                    bodySource:TSQuotedMessageContentSourceLocal
+                                thumbnailImage:nil
+                          thumbnailViewFactory:nil
+                                   contentType:nil
+                                sourceFilename:nil
+                              attachmentStream:nil
+              failedThumbnailAttachmentPointer:nil
+                                 reactionEmoji:nil
+                                   isGiftBadge:YES];
     }
 
     if (item.stickerInfo || item.stickerAttachment || item.stickerMetadata) {
@@ -344,7 +369,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 sourceFilename:quotedAttachment.sourceFilename
                               attachmentStream:quotedAttachment
               failedThumbnailAttachmentPointer:nil
-                                 reactionEmoji:nil];
+                                 reactionEmoji:nil
+                                   isGiftBadge:NO];
     }
 
     NSString *_Nullable quotedText;
@@ -435,7 +461,8 @@ NS_ASSUME_NONNULL_BEGIN
                             sourceFilename:quotedAttachment.sourceFilename
                           attachmentStream:quotedAttachment
           failedThumbnailAttachmentPointer:nil
-                             reactionEmoji:nil];
+                             reactionEmoji:nil
+                               isGiftBadge:NO];
 }
 
 #pragma mark - Instance Methods
@@ -447,7 +474,8 @@ NS_ASSUME_NONNULL_BEGIN
                                         authorAddress:self.authorAddress
                                                  body:self.body
                                            bodyRanges:self.bodyRanges
-                           quotedAttachmentForSending:self.attachmentStream];
+                           quotedAttachmentForSending:self.attachmentStream
+                                          isGiftBadge:self.isGiftBadge];
 }
 
 - (BOOL)isRemotelySourced

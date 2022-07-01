@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 @objc
 public protocol QuotedMessageViewDelegate {
@@ -169,7 +170,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
 
         var hasQuotedThumbnail: Bool {
-            contentTypeWithThumbnail != nil || quotedReplyModel.thumbnailViewFactory != nil
+            contentTypeWithThumbnail != nil || quotedReplyModel.thumbnailViewFactory != nil || quotedReplyModel.isGiftBadge
         }
 
         var hasReaction: Bool {
@@ -273,6 +274,15 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                                         .font: filenameFont,
                                                         .foregroundColor: filenameTextColor
                                                     ])
+            } else if self.quotedReplyModel.isGiftBadge {
+                attributedText = NSAttributedString(
+                    string: NSLocalizedString(
+                        "BADGE_GIFTING_REPLY",
+                        comment: "Shown when you're replying to a gift message to indicate that it contains a gift."
+                    ),
+                    // This appears in the same context as fileType, so use the same font/color.
+                    attributes: [.font: self.fileTypeFont, .foregroundColor: self.fileTypeTextColor]
+                )
             } else {
                 let string = NSLocalizedString("QUOTED_REPLY_TYPE_ATTACHMENT",
                                                comment: "Indicates this message is a quoted reply to an attachment of unknown type.")
@@ -349,12 +359,13 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
     }
 
+    private static let sharpCornerRadius: CGFloat = 4
+    private static let wideCornerRadius: CGFloat = 10
+
     private func createBubbleView(sharpCorners: OWSDirectionalRectCorner,
                                   conversationStyle: ConversationStyle,
                                   configurator: Configurator,
                                   componentDelegate: CVComponentDelegate) -> ManualLayoutView {
-        let sharpCornerRadius: CGFloat = 4
-        let wideCornerRadius: CGFloat = 10
 
         // Background
         chatColorView.configure(value: conversationStyle.bubbleChatColorOutgoing,
@@ -376,7 +387,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         // Mask & Rounding
         if sharpCorners.isEmpty || sharpCorners.contains(.allCorners) {
             bubbleView.layer.maskedCorners = .all
-            bubbleView.layer.cornerRadius = sharpCorners.isEmpty ? wideCornerRadius : sharpCornerRadius
+            bubbleView.layer.cornerRadius = sharpCorners.isEmpty ? Self.wideCornerRadius : Self.sharpCornerRadius
         } else {
             // Slow path. CA isn't optimized to handle corners of multiple radii
             // Let's do it by hand with a CAShapeLayer
@@ -385,8 +396,8 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 let sharpCorners = UIView.uiRectCorner(forOWSDirectionalRectCorner: sharpCorners)
                 let bezierPath = UIBezierPath.roundedRect(view.bounds,
                                                           sharpCorners: sharpCorners,
-                                                          sharpCornerRadius: sharpCornerRadius,
-                                                          wideCornerRadius: wideCornerRadius)
+                                                          sharpCornerRadius: Self.sharpCornerRadius,
+                                                          wideCornerRadius: Self.wideCornerRadius)
                 maskLayer.path = bezierPath.cgPath
             }
             bubbleView.layer.mask = maskLayer
@@ -443,6 +454,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             // some performance cost.
             quotedImageView.layer.minificationFilter = .trilinear
             quotedImageView.layer.magnificationFilter = .trilinear
+            quotedImageView.layer.mask = nil
 
             func tryToLoadThumbnailImage() -> UIImage? {
                 guard let contentType = configurator.contentTypeWithThumbnail,
@@ -490,6 +502,47 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                                                     action: #selector(didTapFailedThumbnailDownload)))
                 wrapper.isUserInteractionEnabled = true
 
+                return wrapper
+            } else if quotedReplyModel.isGiftBadge {
+                quotedImageView.image = UIImage(named: "gift-thumbnail")
+                quotedImageView.contentMode = .scaleAspectFit
+                quotedImageView.clipsToBounds = false
+
+                let wrapper = ManualLayoutViewWithLayer(name: "giftBadgeWrapper")
+                wrapper.addSubviewToFillSuperviewEdges(quotedImageView)
+
+                // For outgoing replies to gift messages, the wrapping image is blue, and
+                // the bubble can be the same shade of blue. This looks odd, so add a 1pt
+                // white border in that case.
+                if configurator.isOutgoing && !configurator.isForPreview {
+                    // The gift badge needs to know which corners to round, which depends on
+                    // whether or not there's adjacent content in the parent container. We care
+                    // about "edges that are against the rounded parent edges", and then we
+                    // round the corners at the intersection of those edges. For example, in
+                    // the common case, we'll be pressing against the top, trailing, and bottom
+                    // edges, so we round the .topTrailing and .bottomTrailing corners.
+                    var eligibleCorners: OWSDirectionalRectCorner = [.topTrailing, .bottomTrailing]
+                    if quotedReplyModel.isRemotelySourced {
+                        eligibleCorners.remove(.bottomTrailing)
+                    }
+                    let maskLayer = CAShapeLayer()
+                    quotedImageView.addLayoutBlock { view in
+                        let maskRect = view.bounds.insetBy(dx: 1, dy: 1)
+                        maskLayer.path = UIBezierPath.roundedRect(
+                            maskRect,
+                            sharpCorners: UIView.uiRectCorner(
+                                forOWSDirectionalRectCorner: sharpCorners.intersection(eligibleCorners)
+                            ),
+                            sharpCornerRadius: Self.sharpCornerRadius,
+                            wideCorners: UIView.uiRectCorner(
+                                forOWSDirectionalRectCorner: eligibleCorners.subtracting(sharpCorners)
+                            ),
+                            wideCornerRadius: Self.wideCornerRadius
+                        ).cgPath
+                    }
+                    quotedImageView.layer.mask = maskLayer
+                    wrapper.backgroundColor = .ows_white
+                }
                 return wrapper
             } else {
                 // TODO: Should we overlay the file extension like we do with CVComponentGenericAttachment

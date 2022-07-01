@@ -85,8 +85,14 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (BOOL)hasQuotedAttachment
 {
-    return (self.quotedMessage.contentType.length > 0
-        && ![OWSMimeTypeOversizeTextMessage isEqualToString:self.quotedMessage.contentType]);
+    if (self.quotedMessage.contentType.length > 0
+        && ![OWSMimeTypeOversizeTextMessage isEqualToString:self.quotedMessage.contentType]) {
+        return YES;
+    }
+    if (self.quotedMessage.isGiftBadge) {
+        return YES;
+    }
+    return NO;
 }
 
 - (BOOL)hasQuotedAttachmentThumbnailImage
@@ -236,6 +242,16 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
                 [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapFailedThumbnailDownload:)];
             [quotedAttachmentView addGestureRecognizer:tapGesture];
             quotedAttachmentView.userInteractionEnabled = YES;
+        } else if (self.quotedMessage.isGiftBadge) {
+            UIImage *giftIcon = [UIImage imageNamed:@"gift-thumbnail"];
+            UIImageView *contentImageView = [self imageViewForImage:giftIcon];
+            contentImageView.contentMode = UIViewContentModeScaleAspectFit;
+
+            UIView *wrapper = [UIView transparentContainer];
+            [wrapper addSubview:contentImageView];
+            [contentImageView autoCenterInSuperview];
+            [contentImageView autoSetDimension:ALDimensionWidth toSize:self.quotedAttachmentSize];
+            quotedAttachmentView = wrapper;
         } else {
             // TODO: Should we overlay the file extension like we do with CVComponentGenericAttachment
             UIImage *contentIcon = [UIImage imageNamed:@"generic-attachment"];
@@ -416,6 +432,12 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
                                                              NSFontAttributeName : self.filenameFont,
                                                              NSForegroundColorAttributeName : self.filenameTextColor,
                                                          }];
+    } else if (self.quotedMessage.isGiftBadge) {
+        attributedText = [[NSAttributedString alloc] initWithString:[self giftTypeForSnippet]
+                                                         attributes:@{
+                                                             NSFontAttributeName : self.fileTypeFont,
+                                                             NSForegroundColorAttributeName : self.fileTypeTextColor,
+                                                         }];
     } else {
         attributedText = [[NSAttributedString alloc]
             initWithString:NSLocalizedString(@"QUOTED_REPLY_TYPE_ATTACHMENT",
@@ -478,6 +500,12 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
             @"QUOTED_REPLY_TYPE_PHOTO", @"Indicates this message is a quoted reply to a photo file.");
     }
     return nil;
+}
+
+- (nullable NSString *)giftTypeForSnippet
+{
+    return NSLocalizedString(
+        @"BADGE_GIFTING_REPLY", @"Shown when you're replying to a gift message to indicate that it contains a gift.");
 }
 
 - (BOOL)isAudioAttachment

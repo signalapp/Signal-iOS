@@ -1441,7 +1441,42 @@ struct SignalServiceProtos_DataMessage {
 
     var bodyRanges: [SignalServiceProtos_DataMessage.BodyRange] = []
 
+    var type: SignalServiceProtos_DataMessage.Quote.TypeEnum {
+      get {return _type ?? .normal}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case normal // = 0
+      case giftBadge // = 1
+
+      init() {
+        self = .normal
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .normal
+        case 1: self = .giftBadge
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .normal: return 0
+        case .giftBadge: return 1
+        }
+      }
+
+    }
 
     struct QuotedAttachment {
       // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -1488,6 +1523,7 @@ struct SignalServiceProtos_DataMessage {
     fileprivate var _authorE164: String? = nil
     fileprivate var _authorUuid: String? = nil
     fileprivate var _text: String? = nil
+    fileprivate var _type: SignalServiceProtos_DataMessage.Quote.TypeEnum? = nil
   }
 
   struct Contact {
@@ -2441,6 +2477,10 @@ extension SignalServiceProtos_DataMessage.Flags: CaseIterable {
 }
 
 extension SignalServiceProtos_DataMessage.ProtocolVersion: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SignalServiceProtos_DataMessage.Quote.TypeEnum: CaseIterable {
   // Support synthesized by the compiler.
 }
 
@@ -4592,6 +4632,7 @@ extension SignalServiceProtos_DataMessage: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Flags: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.ProtocolVersion: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Quote: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Quote.TypeEnum: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Contact: @unchecked Sendable {}
 extension SignalServiceProtos_DataMessage.Contact.Name: @unchecked Sendable {}
@@ -5963,6 +6004,7 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
     3: .same(proto: "text"),
     4: .same(proto: "attachments"),
     6: .same(proto: "bodyRanges"),
+    7: .same(proto: "type"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5977,6 +6019,7 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
       case 4: try { try decoder.decodeRepeatedMessageField(value: &self.attachments) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self._authorUuid) }()
       case 6: try { try decoder.decodeRepeatedMessageField(value: &self.bodyRanges) }()
+      case 7: try { try decoder.decodeSingularEnumField(value: &self._type) }()
       default: break
       }
     }
@@ -6005,6 +6048,9 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
     if !self.bodyRanges.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.bodyRanges, fieldNumber: 6)
     }
+    try { if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 7)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -6015,9 +6061,17 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
     if lhs._text != rhs._text {return false}
     if lhs.attachments != rhs.attachments {return false}
     if lhs.bodyRanges != rhs.bodyRanges {return false}
+    if lhs._type != rhs._type {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SignalServiceProtos_DataMessage.Quote.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "NORMAL"),
+    1: .same(proto: "GIFT_BADGE"),
+  ]
 }
 
 extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

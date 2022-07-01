@@ -34,6 +34,8 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 @property (nullable, nonatomic, readonly) NSString *body;
 @property (nonatomic, readonly, nullable) MessageBodyRanges *bodyRanges;
 
+@property (nonatomic, readonly) BOOL isGiftBadge;
+
 #pragma mark - Attachments
 
 @property (nonatomic, readonly) BOOL hasAttachment;
@@ -62,7 +64,8 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
                     authorAddress:(SignalServiceAddress *)authorAddress
                              body:(nullable NSString *)body
                        bodyRanges:(nullable MessageBodyRanges *)bodyRanges
-       quotedAttachmentForSending:(nullable TSAttachment *)attachment;
+       quotedAttachmentForSending:(nullable TSAttachment *)attachment
+                      isGiftBadge:(BOOL)isGiftBadge;
 
 // used when receiving quoted messages
 + (nullable instancetype)quotedMessageForDataMessage:(SSKProtoDataMessage *)dataMessage

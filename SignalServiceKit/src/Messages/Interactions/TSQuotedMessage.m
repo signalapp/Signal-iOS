@@ -146,6 +146,7 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                        bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                        bodySource:(TSQuotedMessageContentSource)bodySource
      receivedQuotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
+                      isGiftBadge:(BOOL)isGiftBadge
 {
     OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(authorAddress.isValid);
@@ -161,6 +162,7 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     _bodyRanges = bodyRanges;
     _bodySource = bodySource;
     _quotedAttachment = attachmentInfo;
+    _isGiftBadge = isGiftBadge;
 
     return self;
 }
@@ -170,6 +172,7 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                              body:(nullable NSString *)body
                        bodyRanges:(nullable MessageBodyRanges *)bodyRanges
        quotedAttachmentForSending:(nullable TSAttachmentStream *)attachment
+                      isGiftBadge:(BOOL)isGiftBadge
 {
     OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(authorAddress.isValid);
@@ -185,6 +188,7 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     _bodyRanges = bodyRanges;
     _bodySource = TSQuotedMessageContentSourceLocal;
     _quotedAttachment = attachment ? [[OWSAttachmentInfo alloc] initWithOriginalAttachmentStream:attachment] : nil;
+    _isGiftBadge = isGiftBadge;
 
     return self;
 }
@@ -292,12 +296,14 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                                                      body:body
                                                bodyRanges:nil
                                                bodySource:TSQuotedMessageContentSourceLocal
-                             receivedQuotedAttachmentInfo:nil];
+                             receivedQuotedAttachmentInfo:nil
+                                              isGiftBadge:NO];
     }
 
     NSString *_Nullable body = nil;
     MessageBodyRanges *_Nullable bodyRanges = nil;
     OWSAttachmentInfo *attachmentInfo = nil;
+    BOOL isGiftBadge = NO;
 
     if (quotedMessage.body.length > 0) {
         body = quotedMessage.body;
@@ -309,6 +315,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
         body = [@"👤 " stringByAppendingString:quotedMessage.contactShare.name.displayName];
     } else if (quotedMessage.storyReactionEmoji.length > 0) {
         body = quotedMessage.storyReactionEmoji;
+    } else if (quotedMessage.giftBadge != nil) {
+        isGiftBadge = YES;
     }
 
     SSKProtoDataMessageQuoteQuotedAttachment *_Nullable firstAttachmentProto = proto.attachments.firstObject;
@@ -344,8 +352,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
         }
     }
 
-    if (body.length == 0 && !attachmentInfo) {
-        OWSFailDebug(@"quoted message has neither text nor attachment");
+    if (body.length == 0 && !attachmentInfo && !isGiftBadge) {
+        OWSFailDebug(@"quoted message has no content");
         return nil;
     }
 
@@ -364,7 +372,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                                                  body:body
                                            bodyRanges:bodyRanges
                                            bodySource:TSQuotedMessageContentSourceLocal
-                         receivedQuotedAttachmentInfo:attachmentInfo];
+                         receivedQuotedAttachmentInfo:attachmentInfo
+                                          isGiftBadge:isGiftBadge];
 }
 
 /// Builds a remote message from the proto payload
@@ -373,6 +382,19 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 + (nullable TSQuotedMessage *)remoteQuotedMessageFromQuoteProto:(SSKProtoDataMessageQuote *)proto
                                                     transaction:(SDSAnyWriteTransaction *)transaction
 {
+    // This is untrusted content from other users that may not be well-formed.
+    // The GiftBadge type has no content/attachments, so don't read those
+    // fields if the type is GiftBadge.
+    if (proto.hasType && (proto.unwrappedType == SSKProtoDataMessageQuoteTypeGiftBadge)) {
+        return [[TSQuotedMessage alloc] initWithTimestamp:proto.id
+                                            authorAddress:proto.authorAddress
+                                                     body:nil
+                                               bodyRanges:nil
+                                               bodySource:TSQuotedMessageContentSourceRemote
+                             receivedQuotedAttachmentInfo:nil
+                                              isGiftBadge:YES];
+    }
+
     NSString *_Nullable body = nil;
     MessageBodyRanges *_Nullable bodyRanges = nil;
     OWSAttachmentInfo *attachmentInfo = nil;
@@ -409,7 +431,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                                                      body:body
                                                bodyRanges:bodyRanges
                                                bodySource:TSQuotedMessageContentSourceRemote
-                             receivedQuotedAttachmentInfo:attachmentInfo];
+                             receivedQuotedAttachmentInfo:attachmentInfo
+                                              isGiftBadge:NO];
     } else {
         OWSFailDebug(@"Failed to construct a valid quoted message from remote proto content");
         return nil;

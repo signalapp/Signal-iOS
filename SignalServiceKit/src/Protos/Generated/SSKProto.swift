@@ -4004,6 +4004,28 @@ extension SSKProtoDataMessageQuoteQuotedAttachmentBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessageQuoteType
+
+@objc
+public enum SSKProtoDataMessageQuoteType: Int32 {
+    case normal = 0
+    case giftBadge = 1
+}
+
+private func SSKProtoDataMessageQuoteTypeWrap(_ value: SignalServiceProtos_DataMessage.Quote.TypeEnum) -> SSKProtoDataMessageQuoteType {
+    switch value {
+    case .normal: return .normal
+    case .giftBadge: return .giftBadge
+    }
+}
+
+private func SSKProtoDataMessageQuoteTypeUnwrap(_ value: SSKProtoDataMessageQuoteType) -> SignalServiceProtos_DataMessage.Quote.TypeEnum {
+    switch value {
+    case .normal: return .normal
+    case .giftBadge: return .giftBadge
+    }
+}
+
 // MARK: - SSKProtoDataMessageQuote
 
 @objc
@@ -4054,6 +4076,26 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
     @objc
     public var hasText: Bool {
         return proto.hasText
+    }
+
+    public var type: SSKProtoDataMessageQuoteType? {
+        guard hasType else {
+            return nil
+        }
+        return SSKProtoDataMessageQuoteTypeWrap(proto.type)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedType: SSKProtoDataMessageQuoteType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: Quote.type.")
+        }
+        return SSKProtoDataMessageQuoteTypeWrap(proto.type)
+    }
+    @objc
+    public var hasType: Bool {
+        return proto.hasType
     }
 
     @objc
@@ -4206,6 +4248,9 @@ extension SSKProtoDataMessageQuote {
         }
         builder.setAttachments(attachments)
         builder.setBodyRanges(bodyRanges)
+        if let _value = type {
+            builder.setType(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -4292,6 +4337,11 @@ public class SSKProtoDataMessageQuoteBuilder: NSObject {
     @objc
     public func setBodyRanges(_ wrappedItems: [SSKProtoDataMessageBodyRange]) {
         proto.bodyRanges = wrappedItems.map { $0.proto }
+    }
+
+    @objc
+    public func setType(_ valueParam: SSKProtoDataMessageQuoteType) {
+        proto.type = SSKProtoDataMessageQuoteTypeUnwrap(valueParam)
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
