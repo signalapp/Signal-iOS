@@ -627,7 +627,7 @@
 "UNPIN_BUTTON_TEXT" = "Losmaken";
 "modal_call_missed_tips_title" = "Oproep gemist";
 "modal_call_missed_tips_explanation" = "Oproep gemist van '%@' omdat je de 'Spraak- en video-oproep' permissie nodig hebt in de privacy-instellingen.";
-"meida_saved" = "Media opgeslagen door %@.";
+"media_saved" = "Media opgeslagen door %@.";
 "screenshot_taken" = "%@ heeft een schermafbeelding genomen.";
 "SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
 "SEARCH_SECTION_MESSAGES" = "Messages";

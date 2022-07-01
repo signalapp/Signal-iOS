@@ -28,7 +28,9 @@ public extension Dictionary.Values {
 // MARK: - Functional Convenience
 
 public extension Dictionary {
-    func setting(_ key: Key, _ value: Value?) -> [Key: Value] {
+    func setting(_ key: Key?, _ value: Value?) -> [Key: Value] {
+        guard let key: Key = key else { return self }
+        
         var updatedDictionary: [Key: Value] = self
         updatedDictionary[key] = value
 
@@ -45,7 +47,9 @@ public extension Dictionary {
         return updatedDictionary
     }
     
-    func removingValue(forKey key: Key) -> [Key: Value] {
+    func removingValue(forKey key: Key?) -> [Key: Value] {
+        guard let key: Key = key else { return self }
+        
         var updatedDictionary: [Key: Value] = self
         updatedDictionary.removeValue(forKey: key)
 

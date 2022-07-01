@@ -646,21 +646,15 @@ public final class MessageSender {
         with error: MessageSenderError,
         interactionId: Int64?
     ) {
-        guard let interaction: Interaction = try? interaction(db, for: message, interactionId: interactionId) else {
-            return
-        }
-        
         // Mark any "sending" recipients as "failed"
-        try? interaction.recipientStates
-            .fetchAll(db)
-            .forEach { oldState in
-                guard oldState.state == .sending else { return }
-                
-                try? oldState.with(
-                    state: .failed,
-                    mostRecentFailureText: error.localizedDescription
-                ).save(db)
-            }
+        _ = try? RecipientState
+            .filter(RecipientState.Columns.interactionId == interactionId)
+            .filter(RecipientState.Columns.state == RecipientState.State.sending)
+            .updateAll(
+                db,
+                RecipientState.Columns.state.set(to: RecipientState.State.failed),
+                RecipientState.Columns.mostRecentFailureText.set(to: error.localizedDescription)
+            )
     }
     
     // MARK: - Convenience

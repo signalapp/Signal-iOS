@@ -627,7 +627,7 @@
 "UNPIN_BUTTON_TEXT" = "Открепить";
 "modal_call_missed_tips_title" = "Пропущен вызов";
 "modal_call_missed_tips_explanation" = "Вызов от '%@' пропущен, вам необходимо включить разрешение 'Голосовые и видео вызовы' в настройках Конфиденциальности.";
-"meida_saved" = "%@ сохранил(а) медиафайл.";
+"media_saved" = "%@ сохранил(а) медиафайл.";
 "screenshot_taken" = "%@ сделал(а) снимок экрана.";
 "SEARCH_SECTION_CONTACTS" = "Контакты и группы";
 "SEARCH_SECTION_MESSAGES" = "Сообщения";

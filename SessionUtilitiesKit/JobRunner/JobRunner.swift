@@ -285,6 +285,11 @@ public final class JobRunner {
         return (queues.wrappedValue[job.variant]?.isCurrentlyRunning(jobId) == true)
     }
     
+    public static func defailsForCurrentlyRunningJobs(of variant: Job.Variant) -> [Int64: Data?] {
+        return (queues.wrappedValue[variant]?.detailsForAllCurrentlyRunningJobs())
+            .defaulting(to: [:])
+    }
+    
     public static func hasPendingOrRunningJob<T: Encodable>(with variant: Job.Variant, details: T) -> Bool {
         guard let targetQueue: JobQueue = queues.wrappedValue[variant] else { return false }
         guard let detailsData: Data = try? JSONEncoder().encode(details) else { return false }
@@ -396,6 +401,7 @@ private final class JobQueue {
     fileprivate var isRunning: Atomic<Bool> = Atomic(false)
     private var queue: Atomic<[Job]> = Atomic([])
     private var jobsCurrentlyRunning: Atomic<Set<Int64>> = Atomic([])
+    private var detailsForCurrentlyRunningJobs: Atomic<[Int64: Data?]> = Atomic([:])
     
     fileprivate var hasPendingJobs: Bool { !queue.wrappedValue.isEmpty }
     
@@ -503,6 +509,10 @@ private final class JobQueue {
     
     fileprivate func isCurrentlyRunning(_ jobId: Int64) -> Bool {
         return jobsCurrentlyRunning.wrappedValue.contains(jobId)
+    }
+    
+    fileprivate func detailsForAllCurrentlyRunningJobs() -> [Int64: Data?] {
+        return detailsForCurrentlyRunningJobs.wrappedValue
     }
     
     fileprivate func hasPendingOrRunningJob(with detailsData: Data?) -> Bool {
@@ -683,6 +693,7 @@ private final class JobQueue {
             jobsCurrentlyRunning = jobsCurrentlyRunning.inserting(nextJob.id)
             numJobsRunning = jobsCurrentlyRunning.count
         }
+        detailsForCurrentlyRunningJobs.mutate { $0 = $0.setting(nextJob.id, nextJob.details) }
         SNLog("[JobRunner] \(queueContext) started job (\(executionType == .concurrent ? "\(numJobsRunning) currently running, " : "")\(numJobsRemaining) remaining)")
         
         jobExecutor.run(
@@ -817,6 +828,7 @@ private final class JobQueue {
         // The job is removed from the queue before it runs so all we need to to is remove it
         // from the 'currentlyRunning' set and start the next one
         jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
+        detailsForCurrentlyRunningJobs.mutate { $0 = $0.removingValue(forKey: job.id) }
         internalQueue.async { [weak self] in
             self?.runNextJob()
         }
@@ -828,6 +840,7 @@ private final class JobQueue {
         guard GRDBStorage.shared.read({ db in try Job.exists(db, id: job.id ?? -1) }) == true else {
             SNLog("[JobRunner] \(queueContext) \(job.variant) job canceled")
             jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
+            detailsForCurrentlyRunningJobs.mutate { $0 = $0.removingValue(forKey: job.id) }
             
             internalQueue.async { [weak self] in
                 self?.runNextJob()
@@ -839,6 +852,7 @@ private final class JobQueue {
         if self.type == .blocking && job.shouldBlockFirstRunEachSession {
             SNLog("[JobRunner] \(queueContext) \(job.variant) job failed; retrying immediately")
             jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
+            detailsForCurrentlyRunningJobs.mutate { $0 = $0.removingValue(forKey: job.id) }
             queue.mutate { $0.insert(job, at: 0) }
             
             internalQueue.async { [weak self] in
@@ -915,6 +929,7 @@ private final class JobQueue {
         }
         
         jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
+        detailsForCurrentlyRunningJobs.mutate { $0 = $0.removingValue(forKey: job.id) }
         internalQueue.async { [weak self] in
             self?.runNextJob()
         }
@@ -924,6 +939,7 @@ private final class JobQueue {
     /// on other jobs, and it should automatically manage those dependencies)
     private func handleJobDeferred(_ job: Job) {
         jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
+        detailsForCurrentlyRunningJobs.mutate { $0 = $0.removingValue(forKey: job.id) }
         internalQueue.async { [weak self] in
             self?.runNextJob()
         }

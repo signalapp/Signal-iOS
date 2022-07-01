@@ -200,7 +200,6 @@ public extension Profile {
 public extension Profile {
     func with(
         name: String? = nil,
-        nickname: Updatable<String?> = .existing,
         profilePictureUrl: Updatable<String?> = .existing,
         profilePictureFileName: Updatable<String?> = .existing,
         profileEncryptionKey: Updatable<OWSAES256Key> = .existing
@@ -208,7 +207,7 @@ public extension Profile {
         return Profile(
             id: id,
             name: (name ?? self.name),
-            nickname: (nickname ?? self.nickname),
+            nickname: self.nickname,
             profilePictureUrl: (profilePictureUrl ?? self.profilePictureUrl),
             profilePictureFileName: (profilePictureFileName ?? self.profilePictureFileName),
             profileEncryptionKey: (profileEncryptionKey ?? self.profileEncryptionKey)
@@ -406,9 +405,9 @@ public class SMKProfile: NSObject {
             let profile: Profile = Profile.fetchOrCreate(id: profileId)
             let targetNickname: String? = ((nickname ?? "").count > 0 ? nickname : nil)
             
-            _ = try profile
-                .with(nickname: .update(targetNickname))
-                .saved(db)
+            try Profile
+                .filter(id: profile.id)
+                .updateAll(db, Profile.Columns.nickname.set(to: targetNickname))
             
             return (targetNickname ?? profile.name)
         }

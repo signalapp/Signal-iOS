@@ -56,6 +56,8 @@ public struct Attachment: Codable, Identifiable, Equatable, Hashable, FetchableR
         case failedUpload
         case uploading
         case uploaded
+        
+        case invalid = 100
     }
     
     /// A unique identifier for the attachment
@@ -939,6 +941,8 @@ extension Attachment {
             return
         }
         
+        let attachmentId: String = self.id
+        
         // If the attachment is a downloaded attachment, check if it came from the server
         // and if so just succeed immediately (no use re-uploading an attachment that is
         // already present on the server) - or if we want it to be encrypted and it's not
@@ -956,16 +960,20 @@ extension Attachment {
             // Save the final upload info
             let uploadedAttachment: Attachment? = {
                 guard let db: Database = db else {
-                    return GRDBStorage.shared.write { db in
-                        try? self
-                            .with(state: .uploaded)
-                            .saved(db)
+                    GRDBStorage.shared.write { db in
+                        try? Attachment
+                            .filter(id: attachmentId)
+                            .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.uploaded))
                     }
+                    
+                    return self.with(state: .uploaded)
                 }
                 
-                return try? self
-                    .with(state: .uploaded)
-                    .saved(db)
+                _ = try? Attachment
+                    .filter(id: attachmentId)
+                    .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.uploaded))
+                
+                return self.with(state: .uploaded)
             }()
             
             guard uploadedAttachment != nil else {
@@ -1008,16 +1016,20 @@ extension Attachment {
         // Update the attachment to the 'uploading' state
         let updatedAttachment: Attachment? = {
             guard let db: Database = db else {
-                return GRDBStorage.shared.write { db in
-                    try? processedAttachment
-                        .with(state: .uploading)
-                        .saved(db)
+                GRDBStorage.shared.write { db in
+                    try? Attachment
+                        .filter(id: attachmentId)
+                        .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.uploading))
                 }
+                
+                return processedAttachment.with(state: .uploading)
             }
             
-            return try? processedAttachment
-                .with(state: .uploading)
-                .saved(db)
+            _ = try? Attachment
+                .filter(id: attachmentId)
+                .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.uploading))
+            
+            return processedAttachment.with(state: .uploading)
         }()
         
         guard updatedAttachment != nil else {
@@ -1062,9 +1074,9 @@ extension Attachment {
             }
             .catch(on: queue) { error in
                 GRDBStorage.shared.write { db in
-                    try updatedAttachment?
-                        .with(state: .failedUpload)
-                        .saved(db)
+                    try Attachment
+                        .filter(id: attachmentId)
+                        .updateAll(db, Attachment.Columns.state.set(to: Attachment.State.failedUpload))
                 }
                 
                 failure?(error)

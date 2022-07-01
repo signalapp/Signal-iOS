@@ -180,9 +180,9 @@ public struct ProfileManager {
                             return
                         }
                         
-                        try? latestProfile
-                            .with(profilePictureFileName: .update(fileName))
-                            .update(db)
+                        _ = try? Profile
+                            .filter(id: profile.id)
+                            .updateAll(db, Profile.Columns.profilePictureFileName.set(to: fileName))
                         profileAvatarCache.mutate { $0[fileName] = image }
                     }
                     

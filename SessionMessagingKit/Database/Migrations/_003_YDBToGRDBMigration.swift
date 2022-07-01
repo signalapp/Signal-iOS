@@ -841,7 +841,6 @@ enum _003_YDBToGRDBMigration: Migration {
                                 }
                                 
                             default:
-                                // TODO: What message types have no body?
                                 SNLog("[Migration Error] Unsupported interaction type")
                                 throw StorageError.migrationFailed
                         }
@@ -926,7 +925,6 @@ enum _003_YDBToGRDBMigration: Migration {
                         receivedMessageTimestamps.remove(legacyInteraction.timestamp)
                         
                         guard let interactionId: Int64 = interaction.id else {
-                            // TODO: Is it possible the old database has duplicates which could hit this case?
                             SNLog("[Migration Error] Failed to insert interaction")
                             throw StorageError.migrationFailed
                         }
@@ -1072,13 +1070,9 @@ enum _003_YDBToGRDBMigration: Migration {
                             // Note: The `legacyInteraction.timestamp` value is in milliseconds
                             let timestamp: TimeInterval = LinkPreview.timestampFor(sentTimestampMs: Double(legacyInteraction.timestamp))
                             
-                            guard linkPreview.imageAttachmentId == nil || attachments[linkPreview.imageAttachmentId ?? ""] != nil else {
-                                // TODO: Is it possible to hit this case if a quoted attachment hasn't been downloaded?
-                                SNLog("[Migration Error] Missing link preview attachment")
-                                throw StorageError.migrationFailed
-                            }
-                            
-                            // Setup the attachment and add it to the lookup (if it exists)
+                            // Setup the attachment and add it to the lookup (if it exists - we do actually
+                            // support link previews with no image attachments so no need to throw migration
+                            // errors in those cases)
                             let attachmentId: String? = try attachmentId(
                                 db,
                                 for: linkPreview.imageAttachmentId,
@@ -1100,15 +1094,28 @@ enum _003_YDBToGRDBMigration: Migration {
                         // Handle any attachments
                         
                         try attachmentIds.enumerated().forEach { index, legacyAttachmentId in
-                            guard let attachmentId: String = try attachmentId(
+                            let maybeAttachmentId: String? = (try attachmentId(
                                 db,
                                 for: legacyAttachmentId,
                                 interactionVariant: variant,
                                 attachments: attachments,
                                 processedAttachmentIds: &processedAttachmentIds
-                            ) else {
-                                SNLog("[Migration Error] Missing interaction attachment")
-//                                throw StorageError.migrationFailed
+                            ))
+                            .defaulting(
+                                // It looks like somehow messages could exist in the old database which
+                                // referenced attachments but had no attachments in the database; doing
+                                // nothing here results in these messages appearing as empty message
+                                // bubbles so instead we want to insert invalid attachments instead
+                                to: try invalidAttachmentId(
+                                    db,
+                                    for: legacyAttachmentId,
+                                    attachments: attachments,
+                                    processedAttachmentIds: &processedAttachmentIds
+                                )
+                            )
+                            
+                            guard let attachmentId: String = maybeAttachmentId else {
+                                SNLog("[Migration Warning] Failed to create invalid attachment for missing attachment")
                                 return
                             }
                             
@@ -1457,7 +1464,7 @@ enum _003_YDBToGRDBMigration: Migration {
         }
         
         guard let legacyAttachment: SMKLegacy._Attachment = attachments[legacyAttachmentId] else {
-            SNLog("[Migration Warning] Missing attachment - interaction will appear as blank")
+            SNLog("[Migration Warning] Missing attachment - interaction will show a \"failed\" attachment")
             return nil
         }
 
@@ -1582,6 +1589,45 @@ enum _003_YDBToGRDBMigration: Migration {
                 }
             }(),
             caption: legacyAttachment.caption
+        ).inserted(db)
+        
+        processedAttachmentIds.insert(legacyAttachmentId)
+        
+        return legacyAttachmentId
+    }
+    
+    private static func invalidAttachmentId(
+        _ db: Database,
+        for legacyAttachmentId: String,
+        interactionVariant: Interaction.Variant? = nil,
+        attachments: [String: SMKLegacy._Attachment],
+        processedAttachmentIds: inout Set<String>
+    ) throws -> String {
+        guard !processedAttachmentIds.contains(legacyAttachmentId) else {
+            return legacyAttachmentId
+        }
+        
+        _ = try Attachment(
+            // Note: The legacy attachment object used a UUID string for it's id as well
+            // and saved files using these id's so just used the existing id so we don't
+            // need to bother renaming files as part of the migration
+            id: legacyAttachmentId,
+            serverId: nil,
+            variant: .standard,
+            state: .invalid,
+            contentType: "",
+            byteCount: 0,
+            creationTimestamp: Date().timeIntervalSince1970,
+            sourceFilename: nil,
+            downloadUrl: nil,
+            localRelativeFilePath: nil,
+            width: nil,
+            height: nil,
+            duration: nil,
+            isValid: false,
+            encryptionKey: nil,
+            digest: nil,
+            caption: nil
         ).inserted(db)
         
         processedAttachmentIds.insert(legacyAttachmentId)

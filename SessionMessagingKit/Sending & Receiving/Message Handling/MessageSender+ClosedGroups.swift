@@ -216,8 +216,9 @@ extension MessageSender {
         // Update name if needed
         if name != closedGroup.name {
             // Update the group
-            let updatedClosedGroup: ClosedGroup = closedGroup.with(name: name)
-            try updatedClosedGroup.save(db)
+            _ = try ClosedGroup
+                .filter(id: closedGroup.id)
+                .updateAll(db, ClosedGroup.Columns.name.set(to: name))
             
             // Notify the user
             let interaction: Interaction = try Interaction(

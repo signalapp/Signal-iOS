@@ -155,9 +155,7 @@ class MediaDetailViewController: OWSViewController, UIScrollViewDelegate, OWSVid
         self.mediaView.removeFromSuperview()
         self.playVideoButton.removeFromSuperview()
         self.videoProgressBar.removeFromSuperview()
-
-        // TODO: COnfirm this
-        scrollView.zoomScale = 1
+        self.scrollView.zoomScale = 1
         
         if self.galleryItem.attachment.isAnimated {
             if self.galleryItem.attachment.isValid, let originalFilePath: String = self.galleryItem.attachment.originalFilePath {

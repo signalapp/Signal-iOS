@@ -627,7 +627,7 @@
 "UNPIN_BUTTON_TEXT" = "Irrota";
 "modal_call_missed_tips_title" = "Vastaamaton puhelu";
 "modal_call_missed_tips_explanation" = "Vastaamaton puhelu käyttäjältä '%@', koska pahelut edellyttävät 'Ääni- ja videopuhelut' -käyttöoikeuden yksityisyysasetuksista.";
-"meida_saved" = "%@ tallensi median.";
+"media_saved" = "%@ tallensi median.";
 "screenshot_taken" = "%@ otti kuvankaappauksen.";
 "SEARCH_SECTION_CONTACTS" = "Henkilöt ja ryhmät";
 "SEARCH_SECTION_MESSAGES" = "Viestit";

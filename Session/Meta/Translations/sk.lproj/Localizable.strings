@@ -627,7 +627,7 @@
 "UNPIN_BUTTON_TEXT" = "Zrušiť pripnutie";
 "modal_call_missed_tips_title" = "Zmeškaný hovor";
 "modal_call_missed_tips_explanation" = "Zmeškaný hovor od %@ pretože ste potrebovali zapnúť povolenie pre 'Hlasové a video hovory' v Nastaveniach Súkromia.";
-"meida_saved" = "Médiá uložené používateľom %@.";
+"media_saved" = "Médiá uložené používateľom %@.";
 "screenshot_taken" = "%@ urobili snímku obrazovky.";
 "SEARCH_SECTION_CONTACTS" = "Kontakty a Skupiny";
 "SEARCH_SECTION_MESSAGES" = "Správy";

@@ -627,7 +627,7 @@
 "UNPIN_BUTTON_TEXT" = "Loslösen";
 "modal_call_missed_tips_title" = "Verpasster Anruf";
 "modal_call_missed_tips_explanation" = "Verpasster Anruf von '%@', da du die Berechtigung 'Anrufe und Videoanrufe' in den Datenschutzeinstellungen aktivieren musst.";
-"meida_saved" = "Medien gespeichert von %@.";
+"media_saved" = "Medien gespeichert von %@.";
 "screenshot_taken" = "%@ hat ein Screenshot gemacht.";
 "SEARCH_SECTION_CONTACTS" = "Kontakte und Gruppen";
 "SEARCH_SECTION_MESSAGES" = "Nachrichten";

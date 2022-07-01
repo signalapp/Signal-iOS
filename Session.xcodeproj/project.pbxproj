@@ -593,7 +593,6 @@
 		FD09C5E828264937000CE219 /* MediaDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09C5E728264937000CE219 /* MediaDetailViewController.swift */; };
 		FD09C5EA282A1BB2000CE219 /* ThreadTypingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09C5E9282A1BB2000CE219 /* ThreadTypingIndicator.swift */; };
 		FD09C5EC282B8F18000CE219 /* AttachmentError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09C5EB282B8F17000CE219 /* AttachmentError.swift */; };
-		FD0BA51B27CD88EC00CC6805 /* BlindedIdMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD0BA51A27CD88EC00CC6805 /* BlindedIdMapping.swift */; };
 		FD17D79927F40AB800122BE0 /* _003_YDBToGRDBMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79827F40AB800122BE0 /* _003_YDBToGRDBMigration.swift */; };
 		FD17D79C27F40B2E00122BE0 /* SMKLegacy.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79B27F40B2E00122BE0 /* SMKLegacy.swift */; };
 		FD17D7A027F40CC800122BE0 /* _001_InitialSetupMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79F27F40CC800122BE0 /* _001_InitialSetupMigration.swift */; };
@@ -653,7 +652,7 @@
 		FD3C906027E410F700CD579F /* FileUploadResponseSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C905F27E410F700CD579F /* FileUploadResponseSpec.swift */; };
 		FD3C906227E411AF00CD579F /* HeaderSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C906127E411AF00CD579F /* HeaderSpec.swift */; };
 		FD3C906427E4122F00CD579F /* RequestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C906327E4122F00CD579F /* RequestSpec.swift */; };
-		FD3C906727E416AF00CD579F /* BlindedIdMappingSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C906627E416AF00CD579F /* BlindedIdMappingSpec.swift */; };
+		FD3C906727E416AF00CD579F /* BlindedIdLookupSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C906627E416AF00CD579F /* BlindedIdLookupSpec.swift */; };
 		FD3C906A27E417CE00CD579F /* SodiumUtilitiesSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C906927E417CE00CD579F /* SodiumUtilitiesSpec.swift */; };
 		FD3C906D27E43C4B00CD579F /* MessageSenderEncryptionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C906C27E43C4B00CD579F /* MessageSenderEncryptionSpec.swift */; };
 		FD3C906F27E43E8700CD579F /* MockBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C906E27E43E8700CD579F /* MockBox.swift */; };
@@ -1658,7 +1657,6 @@
 		FD09C5E728264937000CE219 /* MediaDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetailViewController.swift; sourceTree = "<group>"; };
 		FD09C5E9282A1BB2000CE219 /* ThreadTypingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadTypingIndicator.swift; sourceTree = "<group>"; };
 		FD09C5EB282B8F17000CE219 /* AttachmentError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentError.swift; sourceTree = "<group>"; };
-		FD0BA51A27CD88EC00CC6805 /* BlindedIdMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlindedIdMapping.swift; sourceTree = "<group>"; };
 		FD17D79527F3E04600122BE0 /* _001_InitialSetupMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _001_InitialSetupMigration.swift; sourceTree = "<group>"; };
 		FD17D79827F40AB800122BE0 /* _003_YDBToGRDBMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _003_YDBToGRDBMigration.swift; sourceTree = "<group>"; };
 		FD17D79B27F40B2E00122BE0 /* SMKLegacy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMKLegacy.swift; sourceTree = "<group>"; };
@@ -1694,7 +1692,7 @@
 		FD3C905F27E410F700CD579F /* FileUploadResponseSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUploadResponseSpec.swift; sourceTree = "<group>"; };
 		FD3C906127E411AF00CD579F /* HeaderSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderSpec.swift; sourceTree = "<group>"; };
 		FD3C906327E4122F00CD579F /* RequestSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestSpec.swift; sourceTree = "<group>"; };
-		FD3C906627E416AF00CD579F /* BlindedIdMappingSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlindedIdMappingSpec.swift; sourceTree = "<group>"; };
+		FD3C906627E416AF00CD579F /* BlindedIdLookupSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlindedIdLookupSpec.swift; sourceTree = "<group>"; };
 		FD3C906927E417CE00CD579F /* SodiumUtilitiesSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SodiumUtilitiesSpec.swift; sourceTree = "<group>"; };
 		FD3C906C27E43C4B00CD579F /* MessageSenderEncryptionSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSenderEncryptionSpec.swift; sourceTree = "<group>"; };
 		FD3C906E27E43E8700CD579F /* MockBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBox.swift; sourceTree = "<group>"; };
@@ -2424,14 +2422,6 @@
 			path = General;
 			sourceTree = "<group>";
 		};
-		B8B3201F258B1A540020074B /* Contacts */ = {
-			isa = PBXGroup;
-			children = (
-				FD0BA51A27CD88EC00CC6805 /* BlindedIdMapping.swift */,
-			);
-			path = Contacts;
-			sourceTree = "<group>";
-		};
 		B8B558ED26C4B55F00693325 /* Calls */ = {
 			isa = PBXGroup;
 			children = (
@@ -3153,7 +3143,6 @@
 				C3C2A70A25539DF900C340D1 /* Meta */,
 				FDC4384D27B47FD600C60D73 /* Common Networking */,
 				B8DE1FB226C22F1F0079C9CE /* Calls */,
-				B8B3201F258B1A540020074B /* Contacts */,
 				C32C5BCB256DC818003C73A2 /* Database */,
 				C300A5BB2554AFFB00555489 /* Messages */,
 				C300A5F02554B08500555489 /* Sending & Receiving */,
@@ -3615,7 +3604,7 @@
 		FD3C906527E416A200CD579F /* Contacts */ = {
 			isa = PBXGroup;
 			children = (
-				FD3C906627E416AF00CD579F /* BlindedIdMappingSpec.swift */,
+				FD3C906627E416AF00CD579F /* BlindedIdLookupSpec.swift */,
 			);
 			path = Contacts;
 			sourceTree = "<group>";
@@ -5113,7 +5102,6 @@
 				FD09797527FAB64300936362 /* ProfileManager.swift in Sources */,
 				FD245C57285065F100B966DD /* Poller.swift in Sources */,
 				FDA8EAFE280E8B78002B68E5 /* FailedMessageSendsJob.swift in Sources */,
-				FD0BA51B27CD88EC00CC6805 /* BlindedIdMapping.swift in Sources */,
 				FD245C6A2850666F00B966DD /* FileServerAPI.swift in Sources */,
 				FDC4386927B4E6B800C60D73 /* String+Utlities.swift in Sources */,
 				FD716E6628502EE200C96BF4 /* CurrentCallProtocol.swift in Sources */,
@@ -5487,7 +5475,7 @@
 				FD3C906D27E43C4B00CD579F /* MessageSenderEncryptionSpec.swift in Sources */,
 				FDC2908D27D70905005DAE71 /* UpdateMessageRequestSpec.swift in Sources */,
 				FD078E5427E197CA000769AF /* OpenGroupManagerSpec.swift in Sources */,
-				FD3C906727E416AF00CD579F /* BlindedIdMappingSpec.swift in Sources */,
+				FD3C906727E416AF00CD579F /* BlindedIdLookupSpec.swift in Sources */,
 				FD83B9D227D59495005E1583 /* MockUserDefaults.swift in Sources */,
 				FD078E5C27E29F78000769AF /* MockNonce24Generator.swift in Sources */,
 			);
@@ -6818,7 +6806,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 350;
+				CURRENT_PROJECT_VERSION = 354;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6890,7 +6878,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 350;
+				CURRENT_PROJECT_VERSION = 354;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

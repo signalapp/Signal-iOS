@@ -7,8 +7,6 @@ enum Header: String {
     case contentType = "Content-Type"
     case contentDisposition = "Content-Disposition"
     
-    case room = "Room"  // TODO: Confirm this is needed
-    
     case sogsPubKey = "X-SOGS-Pubkey"
     case sogsNonce = "X-SOGS-Nonce"
     case sogsTimestamp = "X-SOGS-Timestamp"

@@ -627,7 +627,7 @@
 "UNPIN_BUTTON_TEXT" = "取消置顶";
 "modal_call_missed_tips_title" = "未接来电";
 "modal_call_missed_tips_explanation" = "未接听 '%@'，因为您需要在隐私设置中启用“语音和视频通话”权限。";
-"meida_saved" = "%@ 保存了媒体内容。";
+"media_saved" = "%@ 保存了媒体内容。";
 "screenshot_taken" = "%@ 进行了截图。";
 "SEARCH_SECTION_CONTACTS" = "联系人和群组";
 "SEARCH_SECTION_MESSAGES" = "消息";

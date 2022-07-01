@@ -151,7 +151,7 @@ public extension OpenGroup {
                 roomToken: roomToken,
                 publicKey: publicKey,
                 isActive: false,
-                name: "",
+                name: roomToken,    // Default the name to the `roomToken` until we get retrieve the actual name
                 roomDescription: nil,
                 imageId: nil,
                 imageData: nil,

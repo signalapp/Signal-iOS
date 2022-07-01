@@ -627,7 +627,7 @@
 "UNPIN_BUTTON_TEXT" = "Dejar de fijar";
 "modal_call_missed_tips_title" = "Llamada perdida";
 "modal_call_missed_tips_explanation" = "Llamada perdida de '%@' porque necesitas habilitar el permiso de 'Llamadas de voz y video' en la configuración de privacidad.";
-"meida_saved" = "Media saved by %@.";
+"media_saved" = "Media saved by %@.";
 "screenshot_taken" = "%@ tomó una captura de pantalla.";
 "SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
 "SEARCH_SECTION_MESSAGES" = "Messages";

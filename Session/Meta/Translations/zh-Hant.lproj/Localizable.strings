@@ -627,7 +627,7 @@
 "UNPIN_BUTTON_TEXT" = "取消置頂";
 "modal_call_missed_tips_title" = "未接來電";
 "modal_call_missed_tips_explanation" = "Call missed from '%@' because you needed to enable the 'Voice and video calls' permission in the Privacy Settings.";
-"meida_saved" = "%@ 儲存了媒體";
+"media_saved" = "%@ 儲存了媒體";
 "screenshot_taken" = "%@ 擷取了螢幕畫面";
 "SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
 "SEARCH_SECTION_MESSAGES" = "Messages";

@@ -78,18 +78,6 @@ public struct ClosedGroup: Codable, Identifiable, FetchableRecord, PersistableRe
     }
 }
 
-// MARK: - Mutation
-
-public extension ClosedGroup {
-    func with(name: String) -> ClosedGroup {
-        return ClosedGroup(
-            threadId: threadId,
-            name: name,
-            formationTimestamp: formationTimestamp
-        )
-    }
-}
-
 // MARK: - GRDB Interactions
 
 public extension ClosedGroup {

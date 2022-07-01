@@ -627,7 +627,7 @@
 "UNPIN_BUTTON_TEXT" = "ピン留めを外す";
 "modal_call_missed_tips_title" = "通話できません";
 "modal_call_missed_tips_explanation" = "プライバシー設定で「音声通話とビデオ通話」を許可していないため、%@から着信できませんでした。";
-"meida_saved" = "%@ によって保存されたメディア";
+"media_saved" = "%@ によって保存されたメディア";
 "screenshot_taken" = "%@はスクリーンショットを撮りました。";
 "SEARCH_SECTION_CONTACTS" = "連絡先とグループ";
 "SEARCH_SECTION_MESSAGES" = "メッセージ";

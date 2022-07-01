@@ -627,7 +627,7 @@
 "UNPIN_BUTTON_TEXT" = "Odepnij";
 "modal_call_missed_tips_title" = "Połączenie nieodebrane";
 "modal_call_missed_tips_explanation" = "Połączenie nieodebrane od '%@' ponieważ musisz włączyć uprawnienie 'Połączenia głosowe i wideo' w Ustawieniach Prywatności.";
-"meida_saved" = "Media zapisane przez %@.";
+"media_saved" = "Media zapisane przez %@.";
 "screenshot_taken" = "%@ wykonał zrzut ekranu.";
 "SEARCH_SECTION_CONTACTS" = "Kontakty i grupy";
 "SEARCH_SECTION_MESSAGES" = "Wiadomości";

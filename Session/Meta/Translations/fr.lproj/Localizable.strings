@@ -627,7 +627,7 @@
 "UNPIN_BUTTON_TEXT" = "Désépingler";
 "modal_call_missed_tips_title" = "Appel manqué";
 "modal_call_missed_tips_explanation" = "Appel manqué de '%@' car vous devez activer la permission 'Appels vocaux et vidéo' dans les paramètres de confidentialité.";
-"meida_saved" = "%@ a enregistré le média.";
+"media_saved" = "%@ a enregistré le média.";
 "screenshot_taken" = "%@ a pris une capture d'écran.";
 "SEARCH_SECTION_CONTACTS" = "Contacts et Groupes";
 "SEARCH_SECTION_MESSAGES" = "Messages";

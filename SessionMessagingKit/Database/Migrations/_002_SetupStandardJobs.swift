@@ -48,11 +48,8 @@ enum _002_SetupStandardJobs: Migration {
             
             _ = try Job(
                 variant: .garbageCollection,
-                behaviour: .recurringOnActive,
-                details: GarbageCollectionJob.Details(
-                    typesToCollect: GarbageCollectionJob.Types.allCases
-                )
-            )?.inserted(db)
+                behaviour: .recurringOnActive
+            ).inserted(db)
         }
         
         GRDBStorage.update(progress: 1, for: self, in: target) // In case this is the last migration

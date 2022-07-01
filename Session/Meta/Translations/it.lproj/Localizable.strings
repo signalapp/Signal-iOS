@@ -627,7 +627,7 @@
 "UNPIN_BUTTON_TEXT" = "Non fissare in alto";
 "modal_call_missed_tips_title" = "Chiamata persa";
 "modal_call_missed_tips_explanation" = "Chiamata persa da '%@' perché era necessario abilitare l'autorizzazione 'Voce e video chiamate' nelle Impostazioni Privacy.";
-"meida_saved" = "Media salvato da %@.";
+"media_saved" = "Media salvato da %@.";
 "screenshot_taken" = "%@ ha acquisito uno screenshot.";
 "SEARCH_SECTION_CONTACTS" = "Contatti e Gruppi";
 "SEARCH_SECTION_MESSAGES" = "Messaggi";

@@ -73,21 +73,20 @@ final class BlockedModal: Modal {
         contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: spacing)
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func unblock() {
         let publicKey: String = self.publicKey
         
-        GRDBStorage.shared.writeAsync(
-            updates: { db in
-                try? Contact
-                    .fetchOne(db, id: publicKey)?
-                    .with(isBlocked: true)
-                    .update(db)
-            },
-            completion: { db, _ in
-                try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
-            }
-        )
+        GRDBStorage.shared.writeAsync { db in
+            try Contact
+                .filter(id: publicKey)
+                .updateAll(db, Contact.Columns.isBlocked.set(to: true))
+        
+            try MessageSender
+                .syncConfiguration(db, forceSyncNow: true)
+                .retainUntilComplete()
+        }
         
         presentingViewController?.dismiss(animated: true, completion: nil)
     }

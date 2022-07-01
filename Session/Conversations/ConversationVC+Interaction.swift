@@ -751,7 +751,7 @@ extension ConversationVC:
                 guard let mediaView = albumView.mediaView(forLocation: locationInAlbumView) else { return }
                 
                 switch mediaView.attachment.state {
-                    case .pendingDownload, .downloading, .uploading: break
+                    case .pendingDownload, .downloading, .uploading, .invalid: break
                     
                     // Failed uploads should be handled via the "resend" process instead
                     case .failedUpload: break

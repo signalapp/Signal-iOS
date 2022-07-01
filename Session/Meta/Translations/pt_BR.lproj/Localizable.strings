@@ -627,7 +627,7 @@
 "UNPIN_BUTTON_TEXT" = "Desfixar";
 "modal_call_missed_tips_title" = "Chamada perdida";
 "modal_call_missed_tips_explanation" = "Chamada perdida de '%@', você precisa habilitar a permissão de 'Voz e Video' nas configurações de Privacidade.";
-"meida_saved" = "Mídia salva por %@.";
+"media_saved" = "Mídia salva por %@.";
 "screenshot_taken" = "%@ fez uma captura de tela.";
 "SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
 "SEARCH_SECTION_MESSAGES" = "Messages";

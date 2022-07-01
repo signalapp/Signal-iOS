@@ -79,13 +79,8 @@ public struct LinkPreview: Codable, Equatable, Hashable, FetchableRecord, Persis
 public extension LinkPreview {
     init?(_ db: Database, proto: SNProtoDataMessage, body: String?, sentTimestampMs: TimeInterval) throws {
         guard let previewProto = proto.preview.first else { throw LinkPreviewError.noPreview }
-        guard proto.attachments.count < 1 else { throw LinkPreviewError.invalidInput }
         guard URL(string: previewProto.url) != nil else { throw LinkPreviewError.invalidInput }
         guard LinkPreview.isValidLinkUrl(previewProto.url) else { throw LinkPreviewError.invalidInput }
-        guard let body: String = body else { throw LinkPreviewError.invalidInput }
-        guard LinkPreview.allPreviewUrls(forMessageBodyText: body).contains(previewProto.url) else {
-            throw LinkPreviewError.invalidInput
-        }
         
         // Try to get an existing link preview first
         let timestamp: TimeInterval = LinkPreview.timestampFor(sentTimestampMs: sentTimestampMs)

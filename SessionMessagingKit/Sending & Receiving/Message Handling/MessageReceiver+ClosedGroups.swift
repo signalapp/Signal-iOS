@@ -212,9 +212,9 @@ extension MessageReceiver {
         guard case let .nameChange(name) = message.kind else { return }
         
         try performIfValid(db, message: message) { id, sender, thread, closedGroup in
-            try closedGroup
-                .with(name: name)
-                .save(db)
+            _ = try ClosedGroup
+                .filter(id: id)
+                .updateAll(db, ClosedGroup.Columns.name.set(to: name))
             
             // Notify the user if needed
             guard name != closedGroup.name else { return }
