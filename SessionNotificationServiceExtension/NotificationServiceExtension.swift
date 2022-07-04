@@ -82,16 +82,16 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
                                 let interaction: Interaction = try? Interaction.fetchOne(db, id: interactionId),
                                 interaction.variant == .standardOutgoing
                             {
-                            let semaphore = DispatchSemaphore(value: 0)
-                            let center = UNUserNotificationCenter.current()
-                            center.getDeliveredNotifications { notifications in
-                                let matchingNotifications = notifications.filter({ $0.request.content.userInfo[NotificationServiceExtension.threadIdKey] as? String == interaction.threadId })
-                                center.removeDeliveredNotifications(withIdentifiers: matchingNotifications.map({ $0.request.identifier }))
-                                // Hack: removeDeliveredNotifications seems to be async,need to wait for some time before the delivered notifications can be removed.
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { semaphore.signal() }
+                                let semaphore = DispatchSemaphore(value: 0)
+                                let center = UNUserNotificationCenter.current()
+                                center.getDeliveredNotifications { notifications in
+                                    let matchingNotifications = notifications.filter({ $0.request.content.userInfo[NotificationServiceExtension.threadIdKey] as? String == interaction.threadId })
+                                    center.removeDeliveredNotifications(withIdentifiers: matchingNotifications.map({ $0.request.identifier }))
+                                    // Hack: removeDeliveredNotifications seems to be async,need to wait for some time before the delivered notifications can be removed.
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { semaphore.signal() }
+                                }
+                                semaphore.wait()
                             }
-                            semaphore.wait()
-                        }
                         
                         case let unsendRequest as UnsendRequest:
                             try MessageReceiver.handleUnsendRequest(db, message: unsendRequest)

@@ -304,52 +304,52 @@ public final class SnodeAPI {
         }.defaulting(to: true)
         let snodePool: Set<Snode> = SnodeAPI.snodePool
         
-        if hasInsufficientSnodes || hasSnodePoolExpired {
-            if let getSnodePoolPromise = getSnodePoolPromise { return getSnodePoolPromise }
-            
-            let promise: Promise<Set<Snode>>
-            if snodePool.count < minSnodePoolCount {
-                promise = getSnodePoolFromSeedNode()
+        guard hasInsufficientSnodes || hasSnodePoolExpired else {
+            return Promise.value(snodePool)
+        }
+        
+        if let getSnodePoolPromise = getSnodePoolPromise { return getSnodePoolPromise }
+        
+        let promise: Promise<Set<Snode>>
+        if snodePool.count < minSnodePoolCount {
+            promise = getSnodePoolFromSeedNode()
+        }
+        else {
+            promise = getSnodePoolFromSnode().recover2 { _ in
+                getSnodePoolFromSeedNode()
             }
-            else {
-                promise = getSnodePoolFromSnode().recover2 { _ in
-                    getSnodePoolFromSeedNode()
+        }
+        
+        getSnodePoolPromise = promise
+        promise.map2 { snodePool -> Set<Snode> in
+            guard !snodePool.isEmpty else { throw SnodeAPIError.snodePoolUpdatingFailed }
+            
+            return snodePool
+        }
+        
+        promise.then2 { snodePool -> Promise<Set<Snode>> in
+            let (promise, seal) = Promise<Set<Snode>>.pending()
+            
+            Storage.shared.writeAsync(
+                updates: { db in
+                    db[.lastSnodePoolRefreshDate] = now
+                    setSnodePool(to: snodePool, db: db)
+                },
+                completion: { _, _ in
+                    seal.fulfill(snodePool)
                 }
-            }
-            
-            getSnodePoolPromise = promise
-            promise.map2 { snodePool -> Set<Snode> in
-                guard !snodePool.isEmpty else { throw SnodeAPIError.snodePoolUpdatingFailed }
-                
-                return snodePool
-            }
-            
-            promise.then2 { snodePool -> Promise<Set<Snode>> in
-                let (promise, seal) = Promise<Set<Snode>>.pending()
-                
-                Storage.shared.writeAsync(
-                    updates: { db in
-                        db[.lastSnodePoolRefreshDate] = now
-                        setSnodePool(to: snodePool, db: db)
-                    },
-                    completion: { _, _ in
-                        seal.fulfill(snodePool)
-                    }
-                )
-                
-                return promise
-            }
-            promise.done2 { _ in
-                getSnodePoolPromise = nil
-            }
-            promise.catch2 { _ in
-                getSnodePoolPromise = nil
-            }
+            )
             
             return promise
         }
+        promise.done2 { _ in
+            getSnodePoolPromise = nil
+        }
+        promise.catch2 { _ in
+            getSnodePoolPromise = nil
+        }
         
-        return Promise.value(snodePool)
+        return promise
     }
     
     public static func getSessionID(for onsName: String) -> Promise<String> {

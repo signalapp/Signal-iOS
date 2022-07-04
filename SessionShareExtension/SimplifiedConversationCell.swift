@@ -95,7 +95,8 @@ final class SimplifiedConversationCell: UITableViewCell {
             additionalProfile: cellViewModel.additionalProfile,
             threadVariant: cellViewModel.threadVariant,
             openGroupProfilePicture: cellViewModel.openGroupProfilePictureData.map { UIImage(data: $0) },
-            useFallbackPicture: (cellViewModel.threadVariant == .openGroup && cellViewModel.openGroupProfilePictureData == nil)
+            useFallbackPicture: (cellViewModel.threadVariant == .openGroup && cellViewModel.openGroupProfilePictureData == nil),
+            showMultiAvatarForClosedGroup: true
         )
         displayNameLabel.text = cellViewModel.displayName
     }

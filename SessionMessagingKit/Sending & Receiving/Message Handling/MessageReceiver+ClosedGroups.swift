@@ -433,8 +433,10 @@ extension MessageReceiver {
                     publicKey: userPublicKey
                 )
             }
-            else {
-                // Re-add the removed member as a zombie
+            
+            // Re-add the removed member as a zombie (unless the admin left which disbands the
+            // group)
+            if !didAdminLeave {
                 try GroupMember(
                     groupId: id,
                     profileId: sender,

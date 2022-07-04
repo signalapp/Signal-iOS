@@ -108,12 +108,57 @@ public final class OpenGroupManager: NSObject {
 
     // MARK: - Adding & Removing
     
+    private static func port(for server: String, serverUrl: URL) -> String {
+        if let port: Int = serverUrl.port {
+            return ":\(port)"
+        }
+        
+        let components: [String] = server.components(separatedBy: ":")
+        
+        guard
+            let port: String = components.last,
+            (
+                port != components.first &&
+                !port.starts(with: "//")
+            )
+        else { return "" }
+        
+        return ":\(port)"
+    }
+    
+    public static func isSessionRunOpenGroup(server: String) -> Bool {
+        guard let serverUrl: URL = URL(string: server.lowercased()) else { return false }
+        
+        let serverPort: String = OpenGroupManager.port(for: server, serverUrl: serverUrl)
+        let serverHost: String = serverUrl.host
+            .defaulting(
+                to: server
+                    .lowercased()
+                    .replacingOccurrences(of: serverPort, with: "")
+            )
+        let options: Set<String> = Set([
+            OpenGroupAPI.legacyDefaultServerIP,
+            OpenGroupAPI.defaultServer
+                .replacingOccurrences(of: "http://", with: "")
+                .replacingOccurrences(of: "https://", with: "")
+        ])
+        
+        return options.contains(serverHost)
+    }
+    
     public func hasExistingOpenGroup(_ db: Database, roomToken: String, server: String, publicKey: String, dependencies: OGMDependencies = OGMDependencies()) -> Bool {
         guard let serverUrl: URL = URL(string: server.lowercased()) else { return false }
         
-        let serverHost: String = (serverUrl.host ?? server.lowercased())
-        let serverPort: String = (serverUrl.port.map { ":\($0)" } ?? "")
-        let defaultServerHost: String = OpenGroupAPI.defaultServer.substring(from: "https://".count)
+        let serverPort: String = OpenGroupManager.port(for: server, serverUrl: serverUrl)
+        let serverHost: String = serverUrl.host
+            .defaulting(
+                to: server
+                    .lowercased()
+                    .replacingOccurrences(of: serverPort, with: "")
+            )
+        let defaultServerHost: String = OpenGroupAPI.defaultServer
+            .replacingOccurrences(of: "http://", with: "")
+            .replacingOccurrences(of: "https://", with: "")
         var serverOptions: Set<String> = Set([
             server.lowercased(),
             "\(serverHost)\(serverPort)",
@@ -121,12 +166,12 @@ public final class OpenGroupManager: NSObject {
             "https://\(serverHost)\(serverPort)"
         ])
         
-        if serverHost == OpenGroupAPI.legacyDefaultServerIP {
+        // If the server is run by Session then include all configurations in case one of the alternate configurations
+        // was used
+        if OpenGroupManager.isSessionRunOpenGroup(server: server) {
             serverOptions.insert(defaultServerHost)
             serverOptions.insert("http://\(defaultServerHost)")
-            serverOptions.insert(OpenGroupAPI.defaultServer)
-        }
-        else if serverHost == defaultServerHost {
+            serverOptions.insert("https://\(defaultServerHost)")
             serverOptions.insert(OpenGroupAPI.legacyDefaultServerIP)
             serverOptions.insert("http://\(OpenGroupAPI.legacyDefaultServerIP)")
             serverOptions.insert("https://\(OpenGroupAPI.legacyDefaultServerIP)")
@@ -158,7 +203,14 @@ public final class OpenGroupManager: NSObject {
         }
         
         // Store the open group information
-        let threadId: String = OpenGroup.idFor(roomToken: roomToken, server: server)
+        let targetServer: String = {
+            guard OpenGroupManager.isSessionRunOpenGroup(server: server) else {
+                return server.lowercased()
+            }
+            
+            return OpenGroupAPI.defaultServer
+        }()
+        let threadId: String = OpenGroup.idFor(roomToken: roomToken, server: targetServer)
         
         // Optionally try to insert a new version of the OpenGroup (it will fail if there is already an
         // inactive one but that won't matter as we then activate it
@@ -167,14 +219,14 @@ public final class OpenGroupManager: NSObject {
         
         if (try? OpenGroup.exists(db, id: threadId)) == false {
             try? OpenGroup
-                .fetchOrCreate(db, server: server, roomToken: roomToken, publicKey: publicKey)
+                .fetchOrCreate(db, server: targetServer, roomToken: roomToken, publicKey: publicKey)
                 .save(db)
         }
         
         // Set the group to active and reset the sequenceNumber (handle groups which have
         // been deactivated)
         _ = try? OpenGroup
-            .filter(id: OpenGroup.idFor(roomToken: roomToken, server: server))
+            .filter(id: OpenGroup.idFor(roomToken: roomToken, server: targetServer))
             .updateAll(
                 db,
                 OpenGroup.Columns.isActive.set(to: true),
@@ -195,7 +247,7 @@ public final class OpenGroupManager: NSObject {
                         .capabilitiesAndRoom(
                             db,
                             for: roomToken,
-                            on: server,
+                            on: targetServer,
                             authenticated: false,
                             using: dependencies
                         )
@@ -206,7 +258,7 @@ public final class OpenGroupManager: NSObject {
                         OpenGroupManager.handleCapabilities(
                             db,
                             capabilities: response.capabilities.data,
-                            on: server
+                            on: targetServer
                         )
                         
                         // Then the room
@@ -215,7 +267,7 @@ public final class OpenGroupManager: NSObject {
                             pollInfo: OpenGroupAPI.RoomPollInfo(room: response.room.data),
                             publicKey: publicKey,
                             for: roomToken,
-                            on: server,
+                            on: targetServer,
                             dependencies: dependencies
                         ) {
                             seal.fulfill(())

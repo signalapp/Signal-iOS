@@ -34,7 +34,11 @@ public enum SyncPushTokensJob: JobExecutor {
             return
         }
         
-        guard !UIApplication.shared.isRegisteredForRemoteNotifications else {
+        // Push tokens don't normally change while the app is launched, so checking once during launch is
+        // usually sufficient, but e.g. on iOS11, users who have disabled "Allow Notifications" and disabled
+        // "Background App Refresh" will not be able to obtain an APN token. Enabling those settings does not
+        // restart the app, so we check every activation for users who haven't yet registered.
+        guard job.behaviour != .recurringOnActive || !UIApplication.shared.isRegisteredForRemoteNotifications else {
             deferred(job) // Don't need to do anything if push notifications are already registered
             return
         }
@@ -157,6 +161,7 @@ extension SyncPushTokensJob {
                 
                 failure(error)
             }
+            .retainUntilComplete()
     }
 }
 

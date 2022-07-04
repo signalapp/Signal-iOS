@@ -421,6 +421,7 @@ public extension SessionThreadViewModel {
                     \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
                         SELECT MIN(\(groupMember[.profileId]))
                         FROM \(GroupMember.self)
+                        JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
                         WHERE (
                             \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
                             \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
@@ -433,6 +434,7 @@ public extension SessionThreadViewModel {
                     \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) = (
                         SELECT MAX(\(groupMember[.profileId]))
                         FROM \(GroupMember.self)
+                        JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
                         WHERE (
                             \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
                             \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
@@ -662,6 +664,7 @@ public extension SessionThreadViewModel {
         let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
         let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
         let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
+        let profile: TypedTableAlias<Profile> = TypedTableAlias()
         
         let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
         
@@ -698,6 +701,7 @@ public extension SessionThreadViewModel {
                 \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
                     SELECT MIN(\(groupMember[.profileId]))
                     FROM \(GroupMember.self)
+                    JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
                     WHERE (
                         \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
                         \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
@@ -710,6 +714,7 @@ public extension SessionThreadViewModel {
                 \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) = (
                     SELECT MAX(\(groupMember[.profileId]))
                     FROM \(GroupMember.self)
+                    JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
                     WHERE (
                         \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
                         \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
@@ -851,6 +856,7 @@ public extension SessionThreadViewModel {
                 \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
                     SELECT MIN(\(groupMember[.profileId]))
                     FROM \(GroupMember.self)
+                    JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
                     WHERE (
                         \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
                         \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
@@ -863,6 +869,7 @@ public extension SessionThreadViewModel {
                 \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) = (
                     SELECT MAX(\(groupMember[.profileId]))
                     FROM \(GroupMember.self)
+                    JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
                     WHERE (
                         \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
                         \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
@@ -1034,6 +1041,7 @@ public extension SessionThreadViewModel {
                 \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
                     SELECT MIN(\(groupMember[.profileId]))
                     FROM \(GroupMember.self)
+                    JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
                     WHERE (
                         \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
                         \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
@@ -1046,6 +1054,7 @@ public extension SessionThreadViewModel {
                 \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) = (
                     SELECT MAX(\(groupMember[.profileId]))
                     FROM \(GroupMember.self)
+                    JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
                     WHERE (
                         \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
                         \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
@@ -1330,6 +1339,7 @@ public extension SessionThreadViewModel {
         let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
         let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
         let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
+        let profile: TypedTableAlias<Profile> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
         let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
@@ -1378,6 +1388,7 @@ public extension SessionThreadViewModel {
                 \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
                     SELECT MIN(\(groupMember[.profileId]))
                     FROM \(GroupMember.self)
+                    JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
                     WHERE (
                         \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
                         \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
@@ -1390,6 +1401,7 @@ public extension SessionThreadViewModel {
                 \(ViewModel.closedGroupProfileBackKey).\(profileIdColumnLiteral) = (
                     SELECT MAX(\(groupMember[.profileId]))
                     FROM \(GroupMember.self)
+                    JOIN \(Profile.self) ON \(profile[.id]) = \(groupMember[.profileId])
                     WHERE (
                         \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
                         \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND

@@ -113,41 +113,49 @@ public final class PushNotificationAPI : NSObject {
         request.allHTTPHeaderFields = [ Header.contentType.rawValue: "application/json" ]
         request.httpBody = body
         
-        let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
-                .map2 { _, response in
-                    guard let response: UpdateRegistrationResponse = try? response?.decoded(as: UpdateRegistrationResponse.self) else {
-                        return SNLog("Couldn't register device token.")
+        var promises: [Promise<Void>] = []
+        
+        promises.append(
+            attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
+                OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
+                    .map2 { _, response -> Void in
+                        guard let response: UpdateRegistrationResponse = try? response?.decoded(as: UpdateRegistrationResponse.self) else {
+                            return SNLog("Couldn't register device token.")
+                        }
+                        guard response.body.code != 0 else {
+                            return SNLog("Couldn't register device token due to error: \(response.body.message ?? "nil").")
+                        }
+                        
+                        userDefaults[.deviceToken] = hexEncodedToken
+                        userDefaults[.lastDeviceTokenUpload] = now
+                        userDefaults[.isUsingFullAPNs] = true
                     }
-                    guard response.body.code != 0 else {
-                        return SNLog("Couldn't register device token due to error: \(response.body.message ?? "nil").")
-                    }
-                    
-                    userDefaults[.deviceToken] = hexEncodedToken
-                    userDefaults[.lastDeviceTokenUpload] = now
-                    userDefaults[.isUsingFullAPNs] = true
-                }
-        }
-        promise.catch2 { error in
+            }
+        )
+        promises.first?.catch2 { error in
             SNLog("Couldn't register device token.")
         }
         
         // Subscribe to all closed groups
-        Storage.shared.read { db in
-            try ClosedGroup
-                .select(.threadId)
-                .joining(
-                    required: ClosedGroup.members
-                        .filter(GroupMember.Columns.profileId == getUserHexEncodedPublicKey(db))
-                )
-                .asRequest(of: String.self)
-                .fetchAll(db)
-                .forEach { closedGroupPublicKey in
+        promises.append(
+            contentsOf: Storage.shared
+                .read { db -> [String] in
+                    try ClosedGroup
+                        .select(.threadId)
+                        .joining(
+                            required: ClosedGroup.members
+                                .filter(GroupMember.Columns.profileId == getUserHexEncodedPublicKey(db))
+                        )
+                        .asRequest(of: String.self)
+                        .fetchAll(db)
+                }
+                .defaulting(to: [])
+                .map { closedGroupPublicKey -> Promise<Void> in
                     performOperation(.subscribe, for: closedGroupPublicKey, publicKey: publicKey)
                 }
-        }
+        )
         
-        return promise
+        return when(fulfilled: promises)
     }
 
     @objc(registerWithToken:hexEncodedPublicKey:isForcedUpdate:)

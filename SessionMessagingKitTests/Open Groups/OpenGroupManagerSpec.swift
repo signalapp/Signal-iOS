@@ -421,6 +421,65 @@ class OpenGroupManagerSpec: QuickSpec {
             
             // MARK: - Adding & Removing
             
+            // MARK: - --isSessionRunOpenGroup
+            
+            context("when checking if an open group is run by session") {
+                it("returns false when it does not match one of Sessions servers with no scheme") {
+                    expect(OpenGroupManager.isSessionRunOpenGroup(server: "test.test"))
+                        .to(beFalse())
+                }
+                
+                it("returns false when it does not match one of Sessions servers in http") {
+                    expect(OpenGroupManager.isSessionRunOpenGroup(server: "http://test.test"))
+                        .to(beFalse())
+                }
+                
+                it("returns false when it does not match one of Sessions servers in https") {
+                    expect(OpenGroupManager.isSessionRunOpenGroup(server: "https://test.test"))
+                        .to(beFalse())
+                }
+                
+                it("returns true when it matches Sessions SOGS IP") {
+                    expect(OpenGroupManager.isSessionRunOpenGroup(server: "116.203.70.33"))
+                        .to(beTrue())
+                }
+                
+                it("returns true when it matches Sessions SOGS IP with http") {
+                    expect(OpenGroupManager.isSessionRunOpenGroup(server: "http://116.203.70.33"))
+                        .to(beTrue())
+                }
+                
+                it("returns true when it matches Sessions SOGS IP with https") {
+                    expect(OpenGroupManager.isSessionRunOpenGroup(server: "https://116.203.70.33"))
+                        .to(beTrue())
+                }
+                
+                it("returns true when it matches Sessions SOGS IP with a port") {
+                    expect(OpenGroupManager.isSessionRunOpenGroup(server: "116.203.70.33:80"))
+                        .to(beTrue())
+                }
+                
+                it("returns true when it matches Sessions SOGS domain") {
+                    expect(OpenGroupManager.isSessionRunOpenGroup(server: "open.getsession.org"))
+                        .to(beTrue())
+                }
+                
+                it("returns true when it matches Sessions SOGS domain with http") {
+                    expect(OpenGroupManager.isSessionRunOpenGroup(server: "http://open.getsession.org"))
+                        .to(beTrue())
+                }
+                
+                it("returns true when it matches Sessions SOGS domain with https") {
+                    expect(OpenGroupManager.isSessionRunOpenGroup(server: "https://open.getsession.org"))
+                        .to(beTrue())
+                }
+                
+                it("returns true when it matches Sessions SOGS domain with a port") {
+                    expect(OpenGroupManager.isSessionRunOpenGroup(server: "open.getsession.org:80"))
+                        .to(beTrue())
+                }
+            }
+            
             // MARK: - --hasExistingOpenGroup
             
             context("when checking it has an existing open group") {

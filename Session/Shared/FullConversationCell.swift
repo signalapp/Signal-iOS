@@ -339,7 +339,8 @@ public final class FullConversationCell: UITableViewCell {
             useFallbackPicture: (
                 cellViewModel.threadVariant == .openGroup &&
                 cellViewModel.openGroupProfilePictureData == nil
-            )
+            ),
+            showMultiAvatarForClosedGroup: true
         )
         displayNameLabel.text = cellViewModel.displayName
         timestampLabel.text = cellViewModel.lastInteractionDate.formattedForDisplay

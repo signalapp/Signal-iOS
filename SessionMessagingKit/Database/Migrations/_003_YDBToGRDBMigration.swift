@@ -178,11 +178,9 @@ enum _003_YDBToGRDBMigration: Migration {
                     // value contains a HTTPS scheme so we get IP HTTP -> HTTPS for free as well)
                     let processedOpenGroupServer: String = {
                         // Check if the server is a Session-run one based on it's
-                        guard
-                            openGroup.server.contains(OpenGroupAPI.legacyDefaultServerIP) ||
-                            openGroup.server == OpenGroupAPI.defaultServer
-                                .replacingOccurrences(of: "https://", with: "http://")
-                        else { return openGroup.server }
+                        guard OpenGroupManager.isSessionRunOpenGroup(server: openGroup.server) else {
+                            return openGroup.server
+                        }
                         
                         return OpenGroupAPI.defaultServer
                     }()

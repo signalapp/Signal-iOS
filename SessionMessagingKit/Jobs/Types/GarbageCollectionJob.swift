@@ -34,6 +34,21 @@ public enum GarbageCollectionJob: JobExecutor {
             .defaulting(to: Types.allCases)
         let timestampNow: TimeInterval = Date().timeIntervalSince1970
         
+        /// Only do something if the job isn't the recurring one or it's been 23 hours since it last ran (23 hours so a user who opens the
+        /// app at about the same time every day will trigger the garbage collection) - since this runs when the app becomes active we
+        /// want to prevent it running to frequently (the app becomes active if a system alert, the notification center or the control panel
+        /// are shown)
+        let lastGarbageCollection: Date = UserDefaults.standard[.lastGarbageCollection]
+            .defaulting(to: Date.distantPast)
+        
+        guard
+            job.behaviour != .recurringOnActive ||
+            Date().timeIntervalSince(lastGarbageCollection) > (23 * 60 * 60)
+        else {
+            deferred(job)
+            return
+        }
+        
         Storage.shared.writeAsync(
             updates: { db in
                 /// Remove any expired controlMessageProcessRecords

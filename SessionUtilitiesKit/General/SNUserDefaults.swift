@@ -43,6 +43,7 @@ public enum SNUserDefaults {
         case lastProfilePictureUpload
         case lastOpenGroupImageUpdate
         case lastOpen
+        case lastGarbageCollection
     }
 
     public enum Double: Swift.String {

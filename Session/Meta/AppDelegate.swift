@@ -144,11 +144,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self?.handleActivation()
         }
 
-        // Clear all notifications whenever we become active.
-        // When opening the app from a notification,
-        // AppDelegate.didReceiveLocalNotification will always
-        // be called _before_ we become active.
-        clearAllNotificationsAndRestoreBadgeCount()
+        /// Clear all notifications whenever we become active
+        ///
+        /// **Note:** It looks like when opening the app from a notification, `userNotificationCenter(didReceive)` is
+        /// no longer always called before we become active so we need to dispatch this to run on the next run loop
+        DispatchQueue.main.async { [weak self] in
+            self?.clearAllNotificationsAndRestoreBadgeCount()
+        }
 
         // On every activation, clear old temp directories.
         ClearOldTemporaryDirectories();

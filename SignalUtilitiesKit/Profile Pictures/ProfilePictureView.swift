@@ -77,7 +77,8 @@ public final class ProfilePictureView: UIView {
             useFallbackPicture: (
                 viewModel.threadVariant == .openGroup &&
                 viewModel.openGroupProfilePictureData == nil
-            )
+            ),
+            showMultiAvatarForClosedGroup: true
         )
     }
 
@@ -87,7 +88,8 @@ public final class ProfilePictureView: UIView {
         additionalProfile: Profile? = nil,
         threadVariant: SessionThread.Variant,
         openGroupProfilePicture: UIImage? = nil,
-        useFallbackPicture: Bool = false
+        useFallbackPicture: Bool = false,
+        showMultiAvatarForClosedGroup: Bool = false
     ) {
         AssertIsOnMainThread()
         guard !useFallbackPicture else {
@@ -125,36 +127,41 @@ public final class ProfilePictureView: UIView {
             )
         }
         
-        // Calulate the sizes (and set the additional image content
+        // Calulate the sizes (and set the additional image content)
         let targetSize: CGFloat
-        if let additionalProfile: Profile = additionalProfile, openGroupProfilePicture == nil {
-            if self.size == 40 {
-                targetSize = 32
-            }
-            else if self.size == Values.largeProfilePictureSize {
-                targetSize = 56
-            }
-            else {
-                targetSize = Values.smallProfilePictureSize
-            }
-            
-            imageViewWidthConstraint.constant = targetSize
-            imageViewHeightConstraint.constant = targetSize
-            additionalImageViewWidthConstraint.constant = targetSize
-            additionalImageViewHeightConstraint.constant = targetSize
-            additionalImageView.isHidden = false
-            additionalImageView.image = getProfilePicture(
-                of: targetSize,
-                for: additionalProfile.id,
-                profile: additionalProfile
-            ).image
-        }
-        else {
-            targetSize = self.size
-            imageViewWidthConstraint.constant = targetSize
-            imageViewHeightConstraint.constant = targetSize
-            additionalImageView.isHidden = true
-            additionalImageView.image = nil
+        
+        switch (threadVariant, showMultiAvatarForClosedGroup) {
+            case (.closedGroup, true):
+                if self.size == 40 {
+                    targetSize = 32
+                }
+                else if self.size == Values.largeProfilePictureSize {
+                    targetSize = 56
+                }
+                else {
+                    targetSize = Values.smallProfilePictureSize
+                }
+                
+                imageViewWidthConstraint.constant = targetSize
+                imageViewHeightConstraint.constant = targetSize
+                additionalImageViewWidthConstraint.constant = targetSize
+                additionalImageViewHeightConstraint.constant = targetSize
+                additionalImageView.isHidden = false
+                
+                if let additionalProfile: Profile = additionalProfile {
+                    additionalImageView.image = getProfilePicture(
+                        of: targetSize,
+                        for: additionalProfile.id,
+                        profile: additionalProfile
+                    ).image
+                }
+                
+            default:
+                targetSize = self.size
+                imageViewWidthConstraint.constant = targetSize
+                imageViewHeightConstraint.constant = targetSize
+                additionalImageView.isHidden = true
+                additionalImageView.image = nil
         }
         
         // Set the image

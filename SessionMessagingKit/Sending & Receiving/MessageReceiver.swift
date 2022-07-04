@@ -344,8 +344,10 @@ public enum MessageReceiver {
         }
         
         // Download the profile picture if needed
-        db.afterNextTransactionCommit { _ in
-            ProfileManager.downloadAvatar(for: updatedProfile)
+        if updatedProfile.profilePictureUrl != profile.profilePictureUrl || updatedProfile.profileEncryptionKey != profile.profileEncryptionKey {
+            db.afterNextTransactionCommit { _ in
+                ProfileManager.downloadAvatar(for: updatedProfile)
+            }
         }
     }
 }

@@ -83,9 +83,12 @@ public struct ProfileManager {
     // MARK: - File Paths
     
     public static let sharedDataProfileAvatarsDirPath: String = {
-        URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
+        let path: String = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
             .appendingPathComponent("ProfileAvatars")
             .path
+        OWSFileSystem.ensureDirectoryExists(path)
+        
+        return path
     }()
     
     private static let profileAvatarsDirPath: String = {
@@ -305,8 +308,8 @@ public struct ProfileManager {
             // Upload the avatar to the FileServer
             FileServerAPI
                 .upload(encryptedAvatarData)
-                .done(on: queue) { fileId in
-                    let downloadUrl: String = "\(FileServerAPI.server)/files/\(fileId)"
+                .done(on: queue) { fileUploadResponse in
+                    let downloadUrl: String = "\(FileServerAPI.server)/files/\(fileUploadResponse.id)"
                     UserDefaults.standard[.lastProfilePictureUpload] = Date()
                     
                     Storage.shared.writeAsync { db in
