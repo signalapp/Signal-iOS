@@ -107,6 +107,17 @@ public class SignalCall: NSObject, CallManagerCallReference {
         case externalError(underlyingError: Error)
         case timeout(description: String)
         case signaling
+        case doNotDisturbEnabled
+        case contactIsBlocked
+
+        func shouldSilentlyDropCall() -> Bool {
+            switch self {
+            case .providerReset, .disconnected, .externalError, .timeout, .signaling:
+                return false
+            case .doNotDisturbEnabled, .contactIsBlocked:
+                return true
+            }
+        }
     }
 
     var participantAddresses: [SignalServiceAddress] {

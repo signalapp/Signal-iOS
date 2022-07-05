@@ -154,7 +154,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
         adaptee(for: call).reportIncomingCall(call, callerName: callerName) { error in
             AssertIsOnMainThread()
 
-            guard let error = error else { return }
+            guard var error = error else { return }
 
             let nsError: NSError = error as NSError
             Logger.warn("Error: \(nsError.domain), \(nsError.code), error: \(error)")
@@ -168,8 +168,10 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
                     Logger.warn("callUUIDAlreadyExists")
                 case CXErrorCodeIncomingCallError.filteredByDoNotDisturb.rawValue:
                     Logger.warn("filteredByDoNotDisturb")
+                    error = SignalCall.CallError.doNotDisturbEnabled
                 case CXErrorCodeIncomingCallError.filteredByBlockList.rawValue:
                     Logger.warn("filteredByBlockList")
+                    error = SignalCall.CallError.contactIsBlocked
                 default:
                     Logger.warn("Unknown CXErrorCodeIncomingCallError")
                 }

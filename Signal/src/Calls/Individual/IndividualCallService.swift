@@ -1394,8 +1394,7 @@ final public class IndividualCallService: NSObject {
             self.callUIAdapter.failCall(failedCall, error: callError)
         }
 
-        // Note that we check against 'callError' here in case 'error' was already wrapped by the caller.
-        if case .externalError(underlyingError: CXErrorCodeIncomingCallError.filteredByDoNotDisturb) = callError,
+        if callError.shouldSilentlyDropCall(),
            let callId = failedCall.individualCall.callId {
             // Drop the call explicitly to avoid sending a hangup.
             callManager.drop(callId: callId)
