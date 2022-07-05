@@ -80,7 +80,7 @@ def parse_swift_ast(file_path, namespace, ast):
           namespace.swift_class_names.append(name)
 
 
-def process_file(file_path, namespace, intermediates):
+def process_file(file_path, namespace):
     filename = os.path.basename(file_path)
     if not filename.endswith('.swift'):
         return
@@ -121,14 +121,6 @@ def process_file(file_path, namespace, intermediates):
 
     output = output.strip()
     # print 'output', output
-
-
-    if intermediates:
-        intermediate_file_path = file_path + '.ast'
-        print('Writing intermediate:', intermediate_file_path)
-        with open(intermediate_file_path, 'wt') as f:
-            f.write(output)
-
 
     parse_swift_ast(file_path, namespace, output)
 
@@ -196,7 +188,7 @@ def process_dir(src_dir_path, dir_name, dst_dir_path):
     for rootdir, dirnames, filenames in os.walk(dir_path):
         for filename in filenames:
             file_path = os.path.abspath(os.path.join(rootdir, filename))
-            process_file(file_path, namespace, args.intermediates)
+            process_file(file_path, namespace)
 
     bridging_header_path = os.path.abspath(os.path.join(dst_dir_path, dir_name, dir_name + '-Swift.h'))
     generate_swift_bridging_header(namespace, bridging_header_path)
@@ -209,7 +201,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Parse Objective-C AST.')
     parser.add_argument('--src-path', required=True, help='used to specify a path to process.')
     parser.add_argument('--swift-bridging-path', required=True, help='used to specify a path to process.')
-    parser.add_argument('--intermediates', action='store_true', help='if set, will write intermediate files')
     args = parser.parse_args()
 
     src_dir_path = os.path.abspath(args.src_path)

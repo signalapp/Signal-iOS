@@ -731,7 +731,7 @@ def get_pch_include(file_path):
 # --- Processing
 
 
-def process_objc(file_path: str, swift_bridging_path: str, intermediates: bool) -> None:
+def process_objc(file_path: str, swift_bridging_path: str) -> None:
     module_header_dir_path = gather_module_headers('Pods')
     pch_include = get_pch_include(file_path)
 
@@ -794,11 +794,6 @@ def process_objc(file_path: str, swift_bridging_path: str, intermediates: bool) 
     output = output.strip()
     raw_ast = output
 
-    if intermediates:
-        intermediate_file_path = file_path + '.ast'
-        print('Writing intermediate:', intermediate_file_path)
-        with open(intermediate_file_path, 'wt') as f:
-            f.write(raw_ast)
     print('raw_ast:', len(raw_ast))
 
     namespace = Namespace()
@@ -815,7 +810,7 @@ def process_objc(file_path: str, swift_bridging_path: str, intermediates: bool) 
         f.write(output)
 
 
-def process_file(file_path, swift_bridging_path, intermediates):
+def process_file(file_path, swift_bridging_path):
     filename = os.path.basename(file_path)
 
     # TODO: Fix this file
@@ -826,7 +821,7 @@ def process_file(file_path, swift_bridging_path, intermediates):
     _, file_extension = os.path.splitext(filename)
     if file_extension == '.m':
         # print 'filename:', filename
-        process_objc(file_path, swift_bridging_path, intermediates)
+        process_objc(file_path, swift_bridging_path)
 
 
 # ---
@@ -836,7 +831,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Parse Objective-C AST.')
     parser.add_argument('--src-path', required=True, help='used to specify a path to process.')
     parser.add_argument('--swift-bridging-path', required=True, help='used to specify a path to process.')
-    parser.add_argument('--intermediates', action='store_true', help='if set, will write intermediate files')
     args = parser.parse_args()
 
     src_path = os.path.abspath(args.src_path)
@@ -853,7 +847,7 @@ if __name__ == "__main__":
     # * .pch files.
 
     if os.path.isfile(src_path):
-        process_file(src_path, swift_bridging_path, args.intermediates)
+        process_file(src_path, swift_bridging_path)
     else:
         # First clear out existing .sdsjson files.
         for rootdir, dirnames, filenames in os.walk(src_path):
@@ -865,7 +859,7 @@ if __name__ == "__main__":
         for rootdir, dirnames, filenames in os.walk(src_path):
             for filename in filenames:
                 file_path = os.path.abspath(os.path.join(rootdir, filename))
-                process_file(file_path, swift_bridging_path, args.intermediates)
+                process_file(file_path, swift_bridging_path)
 
 
 # TODO: We can't access ivars from Swift without public property accessors.
