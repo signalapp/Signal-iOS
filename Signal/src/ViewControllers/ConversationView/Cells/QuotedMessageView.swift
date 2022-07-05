@@ -169,7 +169,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
 
         var hasQuotedThumbnail: Bool {
-            (contentType != nil && OWSMimeTypeOversizeTextMessage != contentType) || quotedReplyModel.thumbnailViewFactory != nil
+            contentTypeWithThumbnail != nil || quotedReplyModel.thumbnailViewFactory != nil
         }
 
         var hasReaction: Bool {
@@ -179,6 +179,16 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var contentType: String? {
             guard let contentType = quotedReplyModel.contentType,
                   !contentType.isEmpty else {
+                return nil
+            }
+            return contentType
+        }
+
+        var contentTypeWithThumbnail: String? {
+            guard let contentType = self.contentType else {
+                return nil
+            }
+            guard contentType != OWSMimeTypeOversizeTextMessage else {
                 return nil
             }
             return contentType
@@ -435,8 +445,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             quotedImageView.layer.magnificationFilter = .trilinear
 
             func tryToLoadThumbnailImage() -> UIImage? {
-                guard let contentType = configurator.contentType,
-                        OWSMimeTypeOversizeTextMessage != contentType,
+                guard let contentType = configurator.contentTypeWithThumbnail,
                         TSAttachmentStream.hasThumbnail(forMimeType: contentType) else { return nil }
 
                 // TODO: Possibly ignore data that is too large.
