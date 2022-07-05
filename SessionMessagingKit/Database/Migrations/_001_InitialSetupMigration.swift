@@ -123,7 +123,9 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.threadId, .text)
                 .notNull()
                 .primaryKey()
-            t.column(.server, .text).notNull()
+            t.column(.server, .text)
+                .indexed()                                            // Quicker querying
+                .notNull()
             t.column(.roomToken, .text).notNull()
             t.column(.publicKey, .text).notNull()
             t.column(.isActive, .boolean)
@@ -328,10 +330,12 @@ enum _001_InitialSetupMigration: Migration {
                 .references(Interaction.self, onDelete: .cascade)     // Delete if interaction deleted
             t.column(.authorId, .text)
                 .notNull()
+                .indexed()                                            // Quicker querying
                 .references(Profile.self)
             t.column(.timestampMs, .double).notNull()
             t.column(.body, .text)
             t.column(.attachmentId, .text)
+                .indexed()                                            // Quicker querying
                 .references(Attachment.self, onDelete: .setNull)      // Clear if attachment deleted
         }
         
@@ -345,6 +349,7 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.variant, .integer).notNull()
             t.column(.title, .text)
             t.column(.attachmentId, .text)
+                .indexed()                                            // Quicker querying
                 .references(Attachment.self)                          // Managed via garbage collection
             
             t.primaryKey([.url, .timestamp])

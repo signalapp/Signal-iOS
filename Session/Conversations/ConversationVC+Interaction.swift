@@ -337,6 +337,15 @@ extension ConversationVC:
             modal.proceed = { self.sendMessage(hasPermissionToSendSeed: true) }
             return present(modal, animated: true, completion: nil)
         }
+        
+        // Clearing this out immediately (even though it already happens in 'messageSent') to prevent
+        // "double sending" if the user rapidly taps the send button
+        DispatchQueue.main.async { [weak self] in
+            self?.snInputView.text = ""
+            self?.snInputView.quoteDraftInfo = nil
+
+            self?.resetMentions()
+        }
 
         // Note: 'shouldBeVisible' is set to true the first time a thread is saved so we can
         // use it to determine if the user is creating a new thread and update the 'isApproved'

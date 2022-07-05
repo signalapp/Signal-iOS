@@ -25,7 +25,8 @@ enum _002_SetupStandardJobs: Migration {
             // in 'onActive' (see the `SyncPushTokensJob` for more info)
             _ = try Job(
                 variant: .syncPushTokens,
-                behaviour: .recurringOnActive
+                behaviour: .recurringOnActive,
+                shouldSkipLaunchBecomeActive: true
             ).inserted(db)
         }
         

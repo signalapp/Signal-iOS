@@ -102,6 +102,7 @@ public final class JobRunner {
     
     internal static var executorMap: Atomic<[Job.Variant: JobExecutor.Type]> = Atomic([:])
     fileprivate static var perSessionJobsCompleted: Atomic<Set<Int64>> = Atomic([])
+    private static var hasCompletedInitialBecomeActive: Atomic<Bool> = Atomic(false)
     
     // MARK: - Configuration
     
@@ -184,7 +185,7 @@ public final class JobRunner {
                             Job.Behaviour.runOnceNextLaunch
                         ].contains(Job.Columns.behaviour)
                     )
-                    .filter(Job.Columns.shouldBlockFirstRunEachSession == true)
+                    .filter(Job.Columns.shouldBlock == true)
                     .order(Job.Columns.id)
                     .fetchAll(db)
                 let nonblockingJobs: [Job] = try Job
@@ -194,7 +195,7 @@ public final class JobRunner {
                             Job.Behaviour.runOnceNextLaunch
                         ].contains(Job.Columns.behaviour)
                     )
-                    .filter(Job.Columns.shouldBlockFirstRunEachSession == false)
+                    .filter(Job.Columns.shouldBlock == false)
                     .order(Job.Columns.id)
                     .fetchAll(db)
                 
@@ -218,65 +219,38 @@ public final class JobRunner {
     }
     
     public static func appDidBecomeActive() {
-        // Note: When becoming active we want to start all non-on-launch blocking jobs as
-        // long as there are no other jobs already running
-        let alreadyRunningOtherJobs: Bool = queues.wrappedValue
-            .contains(where: { _, queue -> Bool in queue.isRunning.wrappedValue })
-        let jobsToRun: (blocking: [Job], nonBlocking: [Job]) = Storage.shared
+        let hasCompletedInitialBecomeActive: Bool = JobRunner.hasCompletedInitialBecomeActive.wrappedValue
+        let jobsToRun: [Job] = Storage.shared
             .read { db in
-                guard !alreadyRunningOtherJobs else {
-                    let onActiveJobs: [Job] = try Job
-                        .filter(Job.Columns.behaviour == Job.Behaviour.recurringOnActive)
-                        .order(Job.Columns.id)
-                        .fetchAll(db)
-                    
-                    return ([], onActiveJobs)
-                }
-                
-                let blockingJobs: [Job] = try Job
-                    .filter(
-                        Job.Behaviour.allCases
-                            .filter {
-                                $0 != .recurringOnLaunch &&
-                                $0 != .runOnceNextLaunch
-                            }
-                            .contains(Job.Columns.behaviour)
-                    )
-                    .filter(Job.Columns.shouldBlockFirstRunEachSession == true)
-                    .order(Job.Columns.id)
-                    .fetchAll(db)
-                let nonBlockingJobs: [Job] = try Job
+                return try Job
                     .filter(Job.Columns.behaviour == Job.Behaviour.recurringOnActive)
-                    .filter(Job.Columns.shouldBlockFirstRunEachSession == false)
                     .order(Job.Columns.id)
                     .fetchAll(db)
-                
-                return (blockingJobs, nonBlockingJobs)
             }
-            .defaulting(to: ([], []))
+            .defaulting(to: [])
+            .filter { hasCompletedInitialBecomeActive || !$0.shouldSkipLaunchBecomeActive }
         
         // Store the current queue state locally to avoid multiple atomic retrievals
         let jobQueues: [Job.Variant: JobQueue] = queues.wrappedValue
         let blockingQueueIsRunning: Bool = (blockingQueue.wrappedValue?.isRunning.wrappedValue == true)
         
-        guard !jobsToRun.blocking.isEmpty || !jobsToRun.nonBlocking.isEmpty else {
+        guard !jobsToRun.isEmpty else {
             if !blockingQueueIsRunning {
                 jobQueues.forEach { _, queue in queue.start() }
             }
             return
         }
         
-        // Add and start any blocking jobs
-        blockingQueue.wrappedValue?.appDidFinishLaunching(with: jobsToRun.blocking, canStart: true)
         // Add and start any non-blocking jobs (if there are no blocking jobs)
-        let jobsByVariant: [Job.Variant: [Job]] = jobsToRun.nonBlocking.grouped(by: \.variant)
+        let jobsByVariant: [Job.Variant: [Job]] = jobsToRun.grouped(by: \.variant)
         
         jobQueues.forEach { variant, queue in
             queue.appDidBecomeActive(
                 with: (jobsByVariant[variant] ?? []),
-                canStart: (!blockingQueueIsRunning && jobsToRun.blocking.isEmpty)
+                canStart: !blockingQueueIsRunning
             )
         }
+        JobRunner.hasCompletedInitialBecomeActive.mutate { $0 = true }
     }
     
     public static func isCurrentlyRunning(_ job: Job?) -> Bool {
@@ -849,7 +823,7 @@ private final class JobQueue {
         }
         
         // If this is the blocking queue and a "blocking" job failed then rerun it immediately
-        if self.type == .blocking && job.shouldBlockFirstRunEachSession {
+        if self.type == .blocking && job.shouldBlock {
             SNLog("[JobRunner] \(queueContext) \(job.variant) job failed; retrying immediately")
             jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
             detailsForCurrentlyRunningJobs.mutate { $0 = $0.removingValue(forKey: job.id) }

@@ -88,7 +88,10 @@ enum _003_YDBToGRDBMigration: Migration {
             
             transaction.enumerateRows(inCollection: SMKLegacy.contactCollection) { _, object, _, _ in
                 guard let contact = object as? SMKLegacy._Contact else { return }
+                
                 contacts.insert(contact)
+                
+                /// Store a record of the all valid profiles (so we can create dummy entries if we need to for closed group members)
                 validProfileIds.insert(contact.sessionID)
             }
             
@@ -628,12 +631,28 @@ enum _003_YDBToGRDBMigration: Migration {
                     
                     // Create the 'GroupMember' models for the group (even if the current user is no longer
                     // a member as these objects are used to generate the group avatar icon)
+                    func createDummyProfile(profileId: String) {
+                        SNLog("[Migration Warning] Closed group member with unknown user found - Creating empty profile")
+                        
+                        // Note: Need to upsert here because it's possible multiple quotes
+                        // will use the same invalid 'authorId' value resulting in a unique
+                        // constraint violation
+                        try? Profile(
+                            id: profileId,
+                            name: profileId
+                        ).save(db)
+                    }
+                    
                     try groupModel.groupMemberIds.forEach { memberId in
                         try GroupMember(
                             groupId: threadId,
                             profileId: memberId,
                             role: .standard
                         ).insert(db)
+                        
+                        if !validProfileIds.contains(memberId) {
+                            createDummyProfile(profileId: memberId)
+                        }
                     }
                     
                     try groupModel.groupAdminIds.forEach { adminId in
@@ -642,6 +661,10 @@ enum _003_YDBToGRDBMigration: Migration {
                             profileId: adminId,
                             role: .admin
                         ).insert(db)
+                        
+                        if !validProfileIds.contains(adminId) {
+                            createDummyProfile(profileId: adminId)
+                        }
                     }
                     
                     try (closedGroupZombieMemberIds[legacyThread.uniqueId] ?? []).forEach { zombieId in
@@ -650,6 +673,10 @@ enum _003_YDBToGRDBMigration: Migration {
                             profileId: zombieId,
                             role: .zombie
                         ).insert(db)
+                        
+                        if !validProfileIds.contains(zombieId) {
+                            createDummyProfile(profileId: zombieId)
+                        }
                     }
                 }
                 

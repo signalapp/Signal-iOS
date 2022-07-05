@@ -31,9 +31,12 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.behaviour, .integer)
                 .notNull()
                 .indexed()                                            // Quicker querying
-            t.column(.shouldBlockFirstRunEachSession, .boolean)
+            t.column(.shouldBlock, .boolean)
                 .notNull()
                 .indexed()                                            // Quicker querying
+                .defaults(to: false)
+            t.column(.shouldSkipLaunchBecomeActive, .boolean)
+                .notNull()
                 .defaults(to: false)
             t.column(.nextRunTimestamp, .double)
                 .notNull()
