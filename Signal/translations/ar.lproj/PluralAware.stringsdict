@@ -28,10 +28,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>إضافة أعضاء جُدد</string>
+			<key>many</key>
+			<string>إضافة أعضاء جُدد</string>
 			<key>one</key>
-			<string>Add Member</string>
+			<string>إضافة 1 عضو جديد</string>
 			<key>other</key>
-			<string>Add Members</string>
+			<string>إضافة أعضاء جُدد</string>
+			<key>two</key>
+			<string>إضافة أعضاء جُدد</string>
+			<key>zero</key>
+			<string>إضافة أعضاء جُدد</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -60,10 +68,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>إضافة أعضاء جُدد</string>
+			<key>many</key>
+			<string>إضافة أعضاء جُدد</string>
 			<key>one</key>
-			<string>Add New Member</string>
+			<string>إضافة 1 عضو جديد</string>
 			<key>other</key>
-			<string>Add New Members</string>
+			<string>إضافة أعضاء جُدد</string>
+			<key>two</key>
+			<string>إضافة أعضاء جُدد</string>
+			<key>zero</key>
+			<string>إضافة أعضاء جُدد</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -76,10 +92,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>يُستخدم هذا اللون المخصص في %d دردشات. هل تريد حذفه لجميع الدردشات؟</string>
+			<key>many</key>
+			<string>يُستخدم هذا اللون المخصص في %d دردشات. هل تريد حذفه لجميع الدردشات؟</string>
 			<key>one</key>
-			<string>This custom color is used in 1 chat. Do you want to delete it?</string>
+			<string>يُستخدم هذا اللون المخصص في 1 دردشة. هل تريد حذفه لجميع الدردشات؟</string>
 			<key>other</key>
-			<string>This custom color is used in %d chats. Do you want to delete it for all chats?</string>
+			<string>يُستخدم هذا اللون المخصص في %d دردشات. هل تريد حذفه لجميع الدردشات؟</string>
+			<key>two</key>
+			<string>يُستخدم هذا اللون المخصص في %d دردشات. هل تريد حذفه لجميع الدردشات؟</string>
+			<key>zero</key>
+			<string>يُستخدم هذا اللون المخصص في %d دردشات. هل تريد حذفه لجميع الدردشات؟</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -92,10 +116,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>يُستخدم هذا اللون في %d دردشات. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
+			<key>many</key>
+			<string>يُستخدم هذا اللون في %d دردشات. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
 			<key>one</key>
-			<string>This color is used in 1 chat. Do you want to save changes for all chats?</string>
+			<string>يُستخدم هذا اللون في 1 دردشة. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
 			<key>other</key>
-			<string>This color is used in %d chats. Do you want to save changes for all chats?</string>
+			<string>يُستخدم هذا اللون في %d دردشات. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
+			<key>two</key>
+			<string>يُستخدم هذا اللون في %d دردشات. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
+			<key>zero</key>
+			<string>يُستخدم هذا اللون في %d دردشات. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -108,10 +140,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>حذف %d محادثات؟</string>
+			<key>many</key>
+			<string>حذف %d محادثات؟</string>
 			<key>one</key>
-			<string>Delete Chat?</string>
+			<string>حذف 1 محادثة؟</string>
 			<key>other</key>
-			<string>Delete %d Chats?</string>
+			<string>حذف %d محادثات؟</string>
+			<key>two</key>
+			<string>حذف %d محادثات؟</string>
+			<key>zero</key>
+			<string>حذف %d محادثات؟</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -148,10 +188,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>لا يُمكنك تحديد أكثر من %d محادثات.</string>
+			<key>many</key>
+			<string>لا يُمكنك تحديد أكثر من %d محادثات.</string>
 			<key>one</key>
-			<string>You can’t select more than 1 chat.</string>
+			<string>لا يُمكنك تحديد أكثر من 1 محادثة.</string>
 			<key>other</key>
-			<string>You can’t select more than %d chats.</string>
+			<string>لا يُمكنك تحديد أكثر من %d محادثات.</string>
+			<key>two</key>
+			<string>لا يُمكنك تحديد أكثر من %d محادثات.</string>
+			<key>zero</key>
+			<string>لا يُمكنك تحديد أكثر من %d محادثات.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -164,9 +212,17 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d %2$#@total@</string>
+			<key>many</key>
+			<string>%d %2$#@total@</string>
 			<key>one</key>
 			<string>1 %2$#@total@</string>
 			<key>other</key>
+			<string>%d %2$#@total@</string>
+			<key>two</key>
+			<string>%d %2$#@total@</string>
+			<key>zero</key>
 			<string>%d %2$#@total@</string>
 		</dict>
 		<key>total</key>
@@ -175,10 +231,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>من %d معحبين</string>
+			<key>many</key>
+			<string>من %d معحبين</string>
 			<key>one</key>
-			<string>match</string>
+			<string>من 1 معجب</string>
 			<key>other</key>
-			<string>of %d matches</string>
+			<string>من %d معجيبن</string>
+			<key>two</key>
+			<string>من %d معحبين</string>
+			<key>zero</key>
+			<string>من %d معجبين</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -191,10 +255,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d أعضاء</string>
+			<key>many</key>
+			<string>%d أعضاء</string>
 			<key>one</key>
-			<string>1 Member</string>
+			<string>1 عضو</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>%d أعضاء</string>
+			<key>two</key>
+			<string>%d أعضاء</string>
+			<key>zero</key>
+			<string>%d أعضاء</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -207,10 +279,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d مجموعات مشتركة</string>
+			<key>many</key>
+			<string>%d مجموعات مشتركة</string>
 			<key>one</key>
-			<string>1 Group in Common</string>
+			<string>1 مجموعة مشتركة</string>
 			<key>other</key>
-			<string>%d Groups in Common</string>
+			<string>%d مجموعات مشتركة</string>
+			<key>two</key>
+			<string>%d مجموعات مشتركة</string>
+			<key>zero</key>
+			<string>%d مجموعات مشتركة</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -239,10 +319,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>مُنذ %d دقائق</string>
+			<key>many</key>
+			<string>مُنذ %d دقائق</string>
 			<key>one</key>
-			<string>1 minute ago</string>
+			<string>مُنذ 1 دقيقة</string>
 			<key>other</key>
-			<string>%d minutes ago</string>
+			<string>مُنذ %d دقائق</string>
+			<key>two</key>
+			<string>مُنذ %d دقائق</string>
+			<key>zero</key>
+			<string>مُنذ %d دقائق</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -255,10 +343,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>حذف %d رسائل؟ </string>
+			<key>many</key>
+			<string>حذف %d رسائل؟ </string>
 			<key>one</key>
-			<string>Delete Message?</string>
+			<string>حذف 1 رسالة؟ </string>
 			<key>other</key>
-			<string>Delete %d Messages?</string>
+			<string>حذف %d رسائل؟ </string>
+			<key>two</key>
+			<string>حذف %d رسائل؟ </string>
+			<key>zero</key>
+			<string>حذف %d رسائل؟ </string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -287,10 +383,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>إصدار Signal الخاص بك سينتهي في %d أيام. انقر لتحديثه إلى الإصدار الأحدث.</string>
+			<key>many</key>
+			<string>إصدار Signal الخاص بك سينتهي في %d أيام. انقر لتحديثه إلى الإصدار الأحدث.</string>
 			<key>one</key>
-			<string>Your version of Signal will expire in 1 day. Tap to update to the most recent version.</string>
+			<string>إصدار Signal الخاص بك سينتهي في 1 يوم. انقر لتحديثه إلى الإصدار الأحدث.</string>
 			<key>other</key>
-			<string>Your version of Signal will expire in %d days. Tap to update to the most recent version.</string>
+			<string>إصدار Signal الخاص بك سينتهي في %d أيام. انقر لتحديثه إلى الإصدار الأحدث.</string>
+			<key>two</key>
+			<string>إصدار Signal الخاص بك سينتهي في %d أيام. انقر لتحديثه إلى الإصدار الأحدث.</string>
+			<key>zero</key>
+			<string>إصدار Signal الخاص بك سينتهي في %d أيام. انقر لتحديثه إلى الإصدار الأحدث.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -303,10 +407,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>أرسل %d رسائل</string>
+			<key>many</key>
+			<string>أرسل %d رسائل</string>
 			<key>one</key>
-			<string>Send message</string>
+			<string>أرسل 1 رسالة</string>
 			<key>other</key>
-			<string>Send %d messages</string>
+			<string>أرسل %d رسائل</string>
+			<key>two</key>
+			<string>أرسل %d رسائل</string>
+			<key>zero</key>
+			<string>أرسل %d رسائل</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
@@ -319,10 +431,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة. %2$@</string>
+			<key>many</key>
+			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة. %2$@</string>
 			<key>one</key>
-			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
+			<string>ﻻ يمكن إنشاء هذه المجموعة ﻷن 1 عضو يستخدم إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالته قبل إنشاء المجموعة. %2$@</string>
 			<key>other</key>
-			<string>This group cannot be created because %d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
+			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة. %2$@</string>
+			<key>two</key>
+			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة. %2$@</string>
+			<key>zero</key>
+			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -335,10 +455,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة.</string>
+			<key>many</key>
+			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة.</string>
 			<key>one</key>
-			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
+			<string>ﻻ يمكن إنشاء المجموعة ﻷن 1 عضو يستخدم إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوم بتحديث Signal، أو عليك إزالته قبل إنشاء المجموعة.</string>
 			<key>other</key>
-			<string>This group cannot be created because %d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
+			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة.</string>
+			<key>two</key>
+			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة.</string>
+			<key>zero</key>
+			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -351,10 +479,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>تعذّر إعادة إضافة %d أعضاء إلى المجموعة الجديدة. هل تريد إضافتهم الآن؟</string>
+			<key>many</key>
+			<string>تعذّر إعادة إضافة %d أعضاء إلى المجموعة الجديدة. هل تريد إضافتهم الآن؟</string>
 			<key>one</key>
-			<string>1 member couldn’t be re-added to the New Group. Do you want to add them now?</string>
+			<string>تعذّر إعادة إضافة 1 عضو إلى المجموعة الجديدة. هل تريد إضافته الآن؟</string>
 			<key>other</key>
-			<string>%d members couldn’t be re-added to the New Group. Do you want to add them now?</string>
+			<string>تعذّر إعادة إضافة %d أعضاء إلى المجموعة الجديدة. هل تريد إضافتهم الآن؟</string>
+			<key>two</key>
+			<string>تعذّر إعادة إضافة %d أعضاء إلى المجموعة الجديدة. هل تريد إضافتهم الآن؟</string>
+			<key>zero</key>
+			<string>تعذّر إعادة إضافة %d أعضاء إلى المجموعة الجديدة. هل تريد إضافتهم الآن؟</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -367,10 +503,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>تعمل مجموعات Signal بشكل أفضل مع %d أعضاء أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
+			<key>many</key>
+			<string>تعمل مجموعات Signal بشكل أفضل مع %d أعضاء أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
 			<key>one</key>
-			<string>Signal groups perform best with 1 member or less. Adding more members will cause delays sending and receiving messages.</string>
+			<string>تعمل مجموعات Signal بشكل أفضل مع 1 عضو. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
 			<key>other</key>
-			<string>Signal groups perform best with %d members or less. Adding more members will cause delays sending and receiving messages.</string>
+			<string>تعمل مجموعات Signal بشكل أفضل مع %d أعضاء أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
+			<key>two</key>
+			<string>تعمل مجموعات Signal بشكل أفضل مع %d أعضاء أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
+			<key>zero</key>
+			<string>تعمل مجموعات Signal بشكل أفضل مع %d أعضاء أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -383,10 +527,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>وصل عدد المُشاركين إلى الحد الأقصى لـ %d مشارك. يُرجى المُحاولة مرة أُخرى لاحقاً.</string>
+			<key>many</key>
+			<string>وصل عدد المُشاركين إلى الحد الأقصى لـ %d مشارك. يُرجى المُحاولة مرة أُخرى لاحقاً.</string>
 			<key>one</key>
-			<string>The maximum number of 1 participant has been reached for this call. Try again later.</string>
+			<string>وصل عدد المُشاركين إلى الحد الأقصى لـ 1 مشارك. يُرجى المُحاولة مرة أُخرى لاحقاً.</string>
 			<key>other</key>
-			<string>The maximum number of %d participants has been reached for this call. Try again later.</string>
+			<string>وصل عدد المُشاركين إلى الحد الأقصى لـ %d مشارك. يُرجى المُحاولة مرة أُخرى لاحقاً.</string>
+			<key>two</key>
+			<string>وصل عدد المُشاركين إلى الحد الأقصى لـ %d مشاركين. يُرجى المُحاولة مرة أُخرى لاحقاً.</string>
+			<key>zero</key>
+			<string>وصل عدد المُشاركين إلى الحد الأقصى لـ %d مشارك. يُرجى المُحاولة مرة أُخرى لاحقاً.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -399,10 +551,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>في هذه المُكالمة. %d شخص</string>
+			<key>many</key>
+			<string>في هذه المُكالمة. %d شخص</string>
 			<key>one</key>
-			<string>In this call · 1 person</string>
+			<string>في هذه المُكالمة. 1 شخص</string>
 			<key>other</key>
-			<string>In this call · %d people</string>
+			<string>في هذه المُكالمة. %d شخص</string>
+			<key>two</key>
+			<string>في هذه المُكالمة. %d أشخاص</string>
+			<key>zero</key>
+			<string>في هذه المُكالمة. %d شخص</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -415,10 +575,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%2$@ و %3$@ و %d آخرون في هذه المُكالمة</string>
+			<key>many</key>
+			<string>%2$@ و %3$@ و %d آخرون في هذه المُكالمة</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other are in this call</string>
+			<string>%2$@ و %3$@ و 1 آخر في هذه المُكالمة</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %d others are in this call</string>
+			<string>%2$@ و %3$@ و %d آخرون في هذه المُكالمة</string>
+			<key>two</key>
+			<string>%2$@ و %3$@ و %d آخرين في هذه المُكالمة</string>
+			<key>zero</key>
+			<string>%2$@ و %3$@ و %d آخرون في هذه المُكالمة</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -431,10 +599,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>انضمّ %2$@ و %3$@ و %d آخرون إلى هذه المكالمة</string>
+			<key>many</key>
+			<string>انضمّ %2$@ و %3$@ و %d آخرون إلى هذه المكالمة</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other joined the call</string>
+			<string>انضمّ %2$@ و %3$@ و 1 آخر إلى هذه المكالمة</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %d others joined the call</string>
+			<string>انضمّ %2$@ و %3$@ و %d آخرون إلى هذه المكالمة</string>
+			<key>two</key>
+			<string>انضمّ %2$@ و %3$@ و %d آخرين إلى هذه المكالمة</string>
+			<key>zero</key>
+			<string>انضمّ %2$@ و %3$@ و %d آخرون إلى هذه المكالمة </string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -447,10 +623,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>غادر %2$@ و %3$@ و %d  آخرون هذه المُكالمة</string>
+			<key>many</key>
+			<string>غادر %2$@ و %3$@ و %d آخرون هذه المُكالمة</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other left the call</string>
+			<string>غادر %2$@ و %3$@ و 1 آخر هذه المُكالمة</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %d others left the call</string>
+			<string>غادر %2$@ و %3$@ و %d آخرون هذه المُكالمة</string>
+			<key>two</key>
+			<string>غادر %2$@ و %3$@ و %d آخرين هذه المُكالمة</string>
+			<key>zero</key>
+			<string>غادر %2$@ و %3$@ و %d آخرون هذه المُكالمة</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -463,10 +647,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>تم إرسال %d دعوات</string>
+			<key>many</key>
+			<string>تم إرسال %d دعوات</string>
 			<key>one</key>
-			<string>Invitation Sent</string>
+			<string>تم إرسال 1 دعوة</string>
 			<key>other</key>
-			<string>%d Invitations Sent</string>
+			<string>تم إرسال %d دعوات</string>
+			<key>two</key>
+			<string>تم إرسال %d دعوات</string>
+			<key>zero</key>
+			<string>تم إرسال %d دعوات</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -479,10 +671,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d أعضاء بالمجموعة لهم نفس اﻻسم.</string>
+			<key>many</key>
+			<string>%d أعضاء بالمجموعة لهم نفس اﻻسم.</string>
 			<key>one</key>
-			<string>1 group member has similar name.</string>
+			<string>1 عضو بالمجموعة له نفس اﻻسم.</string>
 			<key>other</key>
-			<string>%d group members have similar names.</string>
+			<string>%d أعضاء بالمجموعة لهم نفس اﻻسم.</string>
+			<key>two</key>
+			<string>%d أعضاء بالمجموعة لهم نفس اﻻسم.</string>
+			<key>zero</key>
+			<string>%d أعضاء بالمجموعة لهم نفس اﻻسم.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -495,10 +695,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d أعضاء بالمجموعة لهم أسماء متشابهة، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء آخر.</string>
+			<key>many</key>
+			<string>%d أعضاء بالمجموعة لهم أسماء متشابهة، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء آخر.</string>
 			<key>one</key>
-			<string>1 group member has similar name, review the member below or choose to take action.</string>
+			<string>1 عضو بالمجموعة له أسماء متشابهة، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء آخر.</string>
 			<key>other</key>
-			<string>%d group members have similar names, review the members below or choose to take action.</string>
+			<string>%d أعضاء بالمجموعة لهم أسماء متشابهة، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء آخر.</string>
+			<key>two</key>
+			<string>%d أعضاء بالمجموعة لهم أسماء متشابهة، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء آخر.</string>
+			<key>zero</key>
+			<string>%d أعضاء بالمجموعة لهم أسماء متشابهة، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء آخر.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -511,10 +719,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d أعضاء بالمجموعة لهم نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء آخر.</string>
+			<key>many</key>
+			<string>%d أعضاء بالمجموعة لهم نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء آخر.</string>
 			<key>one</key>
-			<string>1 group member has the same name, review the member below or choose to take action.</string>
+			<string>1 عضو بالمجموعة له نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء آخر.</string>
 			<key>other</key>
-			<string>%d group members have the same name, review the members below or choose to take action.</string>
+			<string>%d أعضاء بالمجموعة لهم نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء آخر.</string>
+			<key>two</key>
+			<string>%d أعضاء بالمجموعة لهم نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء آخر.</string>
+			<key>zero</key>
+			<string>%d أعضاء بالمجموعة لهم نفس الاسم، يُرجى مراجعة الأعضاء أسفله أو اتخاذ إجراء آخر.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -527,10 +743,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d أعضاء</string>
+			<key>many</key>
+			<string>%d أعضاء</string>
 			<key>one</key>
-			<string>1 member</string>
+			<string>1 عضو</string>
 			<key>other</key>
-			<string>%d members</string>
+			<string>%d أعضاء</string>
+			<key>two</key>
+			<string>%d أعضاء</string>
+			<key>zero</key>
+			<string>%d أعضاء</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -543,10 +767,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d أعضاء</string>
+			<key>many</key>
+			<string>%d أعضاء</string>
 			<key>one</key>
-			<string>1 Member</string>
+			<string>1 عضو</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>%d أعضاء</string>
+			<key>two</key>
+			<string>%d أعضاء</string>
+			<key>zero</key>
+			<string>%d أعضاء</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -559,10 +791,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>تمت دعوة %d أشخاص إلى المجموعة.</string>
+			<key>many</key>
+			<string>تمت دعوة %d أشخاص إلى المجموعة.</string>
 			<key>one</key>
-			<string>1 person was invited to the group.</string>
+			<string>تمت دعوة 1 شخص إلى المجموعة.</string>
 			<key>other</key>
-			<string>%d people were invited to the group.</string>
+			<string>تمت دعوة %d أشخاص إلى المجموعة.</string>
+			<key>two</key>
+			<string>تمت دعوة %d أشخاص إلى المجموعة.</string>
+			<key>zero</key>
+			<string>تمت دعوة %d أشخاص إلى المجموعة.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -575,10 +815,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>دعا %2$@ %d أشخاص إلى المجموعة.</string>
+			<key>many</key>
+			<string>دعا %2$@ %d أشخاص إلى المجموعة.</string>
 			<key>one</key>
-			<string>%2$@ invited 1 person to the group.</string>
+			<string>دعا %2$@ 1 شخص إلى المجموعة.</string>
 			<key>other</key>
-			<string>%2$@ invited %d people to the group.</string>
+			<string>دعا %2$@ %d أشخاص إلى المجموعة.</string>
+			<key>two</key>
+			<string>دعا %2$@ %d أشخاص إلى المجموعة.</string>
+			<key>zero</key>
+			<string>دعا %2$@ %d أشخاص إلى المجموعة.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -591,10 +839,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>تم إلغاء دعوات إلى المجموعة لـ %d أشخاص.</string>
+			<key>many</key>
+			<string>تم إلغاء دعوات إلى المجموعة لـ %d أشخاص.</string>
 			<key>one</key>
-			<string>Invitation to the group were revoked for 1 person.</string>
+			<string>تم إلغاء الدعوة إلى المجموعة لـ 1 شخص.</string>
 			<key>other</key>
-			<string>Invitations to the group were revoked for %d people.</string>
+			<string>تم إلغاء دعوات إلى المجموعة لـ %d  أشخاص</string>
+			<key>two</key>
+			<string>تم إلغاء دعوات إلى المجموعة لـ %d أشخاص.</string>
+			<key>zero</key>
+			<string>تم إلغاء دعوات إلى المجموعة لـ %d أشخاص.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -607,10 +863,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>ألغى %2$@ دعوة إلى المجموعة لـ %d أشخاص.</string>
+			<key>many</key>
+			<string>ألغى %2$@ دعوة إلى المجموعة لـ %d أشخاص.</string>
 			<key>one</key>
-			<string>%2$@ revoked an invitation to the group for 1 person.</string>
+			<string>ألغى %2$@ دعوة إلى المجموعة لـ 1 شخص.</string>
 			<key>other</key>
-			<string>%2$@ revoked an invitation to the group for %d people.</string>
+			<string>ألغى %2$@ دعوة إلى المجموعة لـ %d  أشخاص.</string>
+			<key>two</key>
+			<string>ألغى %2$@ دعوة إلى المجموعة لـ %d أشخاص.</string>
+			<key>zero</key>
+			<string>ألغى %2$@ دعوة إلى المجموعة لـ %d أشخاص.</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -647,10 +911,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>تعذّر إضافة %d أعضاء إلى المجموعة الجديدة وقد تمت إزِالتهم منها.</string>
+			<key>many</key>
+			<string>تعذّر إضافة %d أعضاء إلى المجموعة الجديدة وقد تمت إزِالتهم منها.</string>
 			<key>one</key>
-			<string>A member couldn’t be added to the New Group and has been removed from the group.</string>
+			<string>تعذّر إضافة 1 عضو إلى المجموعة الجديدة وقد تمت إزِالته منها.</string>
 			<key>other</key>
-			<string>%d members couldn’t be added to the New Group and have been removed from the group.</string>
+			<string>تعذّر إضافة %d أعضاء إلى المجموعة الجديدة وقد تمت إزِالتهم منها.</string>
+			<key>two</key>
+			<string>تعذّر إضافة %d أعضاء إلى المجموعة الجديدة وقد تمت إزِالتهم منها.</string>
+			<key>zero</key>
+			<string>تعذّر إضافة %d أعضاء إلى المجموعة الجديدة وقد تمت إزِالتهم منها.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -663,10 +935,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>تعذّر إضافة %d أعضاء إلى المجموعة الجديدة وقد تمت دعوتهم للانضمام إليها.</string>
+			<key>many</key>
+			<string>تعذّر إضافة %d أعضاء إلى المجموعة الجديدة وقد تمت دعوتهم للانضمام إليها.</string>
 			<key>one</key>
-			<string>A member couldn’t be added to the New Group and has been invited to join.</string>
+			<string>تعذّر إضافة 1 عضو إلى المجموعة الجديدة وقد تمت دعوته للانضمام إليها.</string>
 			<key>other</key>
-			<string>%d members couldn’t be added to the New Group and have been invited to join.</string>
+			<string>تعذّر إضافة %d أعضاء إلى المجموعة الجديدة وقد  تمت دعوتهم للانضمام إليها.</string>
+			<key>two</key>
+			<string>تعذّر إضافة %d أعضاء إلى المجموعة الجديدة وقد تمت دعوتهم للانضمام إليها.</string>
+			<key>zero</key>
+			<string>تعذّر إضافة %d أعضاء إلى المجموعة الجديدة وقد تمت دعوتهم للانضمام إليها.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -679,10 +959,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>لا يمكنك مشاركة أكثر من %d عناصر.</string>
+			<key>many</key>
+			<string>لا يمكنك مشاركة أكثر من %d عناصر.</string>
 			<key>one</key>
-			<string>You can’t share more than 1 item.</string>
+			<string>لا يمكنك مشاركة أكثر 1 عنصر.</string>
 			<key>other</key>
-			<string>You can’t share more than %d items.</string>
+			<string>لا يمكنك مشاركة أكثر من %d عناصر.</string>
+			<key>two</key>
+			<string>لا يمكنك مشاركة أكثر من %d عناصر.</string>
+			<key>zero</key>
+			<string>لا يمكنك مشاركة أكثر من %d عناصر.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -695,10 +983,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d مجموعات مشتركة</string>
+			<key>many</key>
+			<string>%d مجموعات مشتركة</string>
 			<key>one</key>
-			<string>1 group in common</string>
+			<string>1 مجموعة مشتركة</string>
 			<key>other</key>
-			<string>%d groups in common</string>
+			<string>%d مجموعات مشتركة</string>
+			<key>two</key>
+			<string>%d مجموعات مشتركة</string>
+			<key>zero</key>
+			<string>%d مجموعات مشتركة</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -711,10 +1007,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>حذف %d رسائل</string>
+			<key>many</key>
+			<string>حذف %d رسائل</string>
 			<key>one</key>
-			<string>Delete 1 Message</string>
+			<string>حذف 1 رسالة</string>
 			<key>other</key>
-			<string>Delete %d Messages</string>
+			<string>حذف %d رسائل</string>
+			<key>two</key>
+			<string>حذف %d رسائل</string>
+			<key>zero</key>
+			<string>حذف %d رسائل</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -727,10 +1031,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d صور</string>
+			<key>many</key>
+			<string>%d صور</string>
 			<key>one</key>
-			<string>1 Photo</string>
+			<string>1 صورة</string>
 			<key>other</key>
-			<string>%d Photos</string>
+			<string>%d صور</string>
+			<key>two</key>
+			<string>%d صور</string>
+			<key>zero</key>
+			<string>%d صور</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -743,10 +1055,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d عناصر</string>
+			<key>many</key>
+			<string>%d عناصر</string>
 			<key>one</key>
-			<string>1 Item</string>
+			<string>1 عنصر</string>
 			<key>other</key>
-			<string>%d Items</string>
+			<string>%d عناصر</string>
+			<key>two</key>
+			<string>%d عناصر</string>
+			<key>zero</key>
+			<string>%d عناصر</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -759,10 +1079,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>قمت بحظر %d أعضاء من هذه المجموعة</string>
+			<key>many</key>
+			<string>قمت بحظر %d أعضاء من هذه المجموعة</string>
 			<key>one</key>
-			<string>You Blocked 1 Member of This Group</string>
+			<string>قمت بحظر 1 عضو من هذه المجموعة</string>
 			<key>other</key>
-			<string>You Blocked %d Members of This Group</string>
+			<string>قمت بحظر %d أعضاء من هذه المجموعة</string>
+			<key>two</key>
+			<string>قمت بحظر %d أعضاء من هذه المجموعة</string>
+			<key>zero</key>
+			<string>قمت بحظر %d أعضاء من هذه المجموعة</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -775,10 +1103,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>تم تحديد %d</string>
+			<key>many</key>
+			<string>تم تحديد %d</string>
 			<key>one</key>
-			<string>1 Selected</string>
+			<string>تم تحديد 1</string>
 			<key>other</key>
-			<string>%d Selected</string>
+			<string>تم تحديد %d</string>
+			<key>two</key>
+			<string>تم تحديد %d</string>
+			<key>zero</key>
+			<string>تم تحديد %d</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_%d</key>
@@ -815,10 +1151,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d أعضاء</string>
+			<key>many</key>
+			<string>%d أعضاء</string>
 			<key>one</key>
-			<string>1 Member</string>
+			<string>1 عضو</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>%d أعضاء</string>
+			<key>two</key>
+			<string>%d أعضاء</string>
+			<key>zero</key>
+			<string>%d أعضاء</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -831,10 +1175,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>رمز PIN غير صحيح. %d محاولات متبقية.</string>
+			<key>many</key>
+			<string>رمز PIN غير صحيح. %d محاولات متبقية.</string>
 			<key>one</key>
-			<string>Incorrect PIN. 1 attempt remaining.</string>
+			<string>رمز PIN غير صحيح. 1 محاولة متبقية.</string>
 			<key>other</key>
-			<string>Incorrect PIN. %d attempts remaining.</string>
+			<string>رمز PIN غير صحيح. %d محاولات متبقية.</string>
+			<key>two</key>
+			<string>رمز PIN غير صحيح. %d محاولات متبقية.</string>
+			<key>zero</key>
+			<string>رمز PIN غير صحيح. %d محاولات متبقية.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -847,10 +1199,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>دعا %2$@ %d أشخاص</string>
+			<key>many</key>
+			<string>دعا %2$@ %d أشخاص</string>
 			<key>one</key>
-			<string>%2$@ invited 1 person</string>
+			<string>دعا %2$@ 1 شخص</string>
 			<key>other</key>
-			<string>%2$@ invited %d people</string>
+			<string>دعا %2$@ %d أشخاص</string>
+			<key>two</key>
+			<string>دعا %2$@ %d أشخاص</string>
+			<key>zero</key>
+			<string>دعا %2$@ %d أشخاص</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -863,10 +1223,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d طلبات أعضاء مُعلّقة.</string>
+			<key>many</key>
+			<string>%d طلبات أعضاء مُعلّقة.</string>
 			<key>one</key>
-			<string>1 pending member request.</string>
+			<string>1 طلب عضو مُعلّق.</string>
 			<key>other</key>
-			<string>%d pending member requests.</string>
+			<string>%d طلبات أعضاء مُعلّقة.</string>
+			<key>two</key>
+			<string>%d طلبات أعضاء مُعلّقة.</string>
+			<key>zero</key>
+			<string>%d طلبات أعضاء مُعلّقة.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -879,10 +1247,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>إلغاء %d دعوات غير صالحة</string>
+			<key>many</key>
+			<string>إلغاء %d دعوات غير صالحة</string>
 			<key>one</key>
-			<string>Revoke invalid invite</string>
+			<string>إلغاء 1 دعوة غير صالحة</string>
 			<key>other</key>
-			<string>Revoke %d invalid invites</string>
+			<string>إلغاء %d دعوات غير صالحة</string>
+			<key>two</key>
+			<string>إلغاء %d دعوات غير صالحة</string>
+			<key>zero</key>
+			<string>إلغاء %d دعوات غير صالحة</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -895,10 +1271,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>إلغاء الدعوات</string>
+			<key>many</key>
+			<string>إلغاء الدعوات</string>
 			<key>one</key>
-			<string>Revoke Invite</string>
+			<string>إلغاء دعوة</string>
 			<key>other</key>
-			<string>Revoke Invites</string>
+			<string>إلغاء الدعوات</string>
+			<key>two</key>
+			<string>إلغاء الدعوات</string>
+			<key>zero</key>
+			<string>إلغاء الدعوات</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -911,10 +1295,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>إلغاء %d دعوات أَرسلها "%2$@"؟</string>
+			<key>many</key>
+			<string>إلغاء %d دعوات أَرسلها "%2$@"؟</string>
 			<key>one</key>
-			<string>Revoke group invite sent by “%2$@”?</string>
+			<string>إلغاء 1 دعوة أَرسلها "%2$@"؟</string>
 			<key>other</key>
-			<string>Revoke %d invites sent by “%2$@”?</string>
+			<string>إلغاء %d دعوات أَرسلها "%2$@"؟</string>
+			<key>two</key>
+			<string>إلغاء %d دعوات أَرسلها "%2$@"؟</string>
+			<key>zero</key>
+			<string>إلغاء %d دعوات أَرسلها "%2$@"؟</string>
 		</dict>
 	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
@@ -927,10 +1319,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>سنُذكرك لاحقًا. سيُصبح إنشاء رمز PIN إلزاميًا بعد %d أيام.</string>
+			<key>many</key>
+			<string>سنُذكرك لاحقًا. سيُصبح إنشاء رمز PIN إلزاميًا بعد %d أيام.</string>
 			<key>one</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in 1 day.</string>
+			<string>سنُذكرك لاحقًا. سيُصبح إنشاء رمز PIN إلزاميًا بعد 1 يوم.</string>
 			<key>other</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in %d days.</string>
+			<string>سنُذكرك لاحقًا. سيُصبح إنشاء رمز PIN إلزاميًا بعد %d أيام.</string>
+			<key>two</key>
+			<string>سنُذكرك لاحقًا. سيُصبح إنشاء رمز PIN إلزاميًا بعد %d أيام.</string>
+			<key>zero</key>
+			<string>سنُذكرك لاحقًا. سيُصبح إنشاء رمز PIN إلزاميًا بعد %d أيام.</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -967,10 +1367,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، يُمكنك إنشاء رمز PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة مِثل معلومات حسابك الشخصي.</string>
+			<key>many</key>
+			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، يُمكنك إنشاء رمز PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة مِثل معلومات حسابك الشخصي.</string>
 			<key>one</key>
-			<string>You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
+			<string>تبقت لديك 1 محاولة. إذا استنفذتَ جميع المُحاولات، يُمكنك إنشاء رمز PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة مِثل معلومات حسابك الشخصي.</string>
 			<key>other</key>
-			<string>You have %d attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
+			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، يُمكنك إنشاء رمز PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة مِثل معلومات حسابك الشخصي.</string>
+			<key>two</key>
+			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، يُمكنك إنشاء رمز PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة مِثل معلومات حسابك الشخصي.</string>
+			<key>zero</key>
+			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، يُمكنك إنشاء رمز PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة مِثل معلومات حسابك الشخصي.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -983,10 +1391,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، سوف يُقفل حسابك. بعد سبعة أيام من الخمول، ستتمكن من إعادة التسجيل دون إدخال رمز ـPIN الخاص بك. سيتم مسح حسابك وحذف جميع المُحتويات نهائياً.</string>
+			<key>many</key>
+			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، سوف يُقفل حسابك. بعد سبعة أيام من الخمول، ستتمكن من إعادة التسجيل دون إدخال رمز ـPIN الخاص بك. سيتم مسح حسابك وحذف جميع المُحتويات نهائياً.</string>
 			<key>one</key>
-			<string>You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
+			<string>تبقت لديك 1 محاولة. إذا استنفذتَ جميع المُحاولات، سوف يُقفل حسابك. بعد سبعة أيام من الخمول، ستتمكن من إعادة التسجيل دون إدخال رمز ـPIN الخاص بك. سيتم مسح حسابك وحذف جميع المُحتويات نهائياً.</string>
 			<key>other</key>
-			<string>You have %d attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
+			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، سوف يُقفل حسابك. بعد سبعة أيام من الخمول، ستتمكن من إعادة التسجيل دون إدخال رمز ـPIN الخاص بك. سيتم مسح حسابك وحذف جميع المُحتويات نهائياً.</string>
+			<key>two</key>
+			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، سوف يُقفل حسابك. بعد سبعة أيام من الخمول، ستتمكن من إعادة التسجيل دون إدخال رمز ـPIN الخاص بك. سيتم مسح حسابك وحذف جميع المُحتويات نهائياً.</string>
+			<key>zero</key>
+			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، سوف يُقفل حسابك. بعد سبعة أيام من الخمول، ستتمكن من إعادة التسجيل دون إدخال رمز ـPIN الخاص بك. سيتم مسح حسابك وحذف جميع المُحتويات نهائياً.</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

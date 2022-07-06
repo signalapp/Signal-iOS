@@ -403,14 +403,17 @@
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "ഒരു സന്ദേശം ചേര്‍ക്കുക";
 
-/* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "ഗിഫ്റ്റുകൾ ലഭിക്കാൻ Signal അപ്ഡേറ്റ് ചെയ്യണം";
+/* Error message indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+
+/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "കാലഹരണപ്പെട്ടു";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "മറ്റൊരാളുടെ പേരിൽ Signal-ന് ഒരു സംഭാവന നൽകി അവർക്കൊരു ബാഡ്‍ജ് ഗിഫ്റ്റ് ചെയ്യുക. അവരുടെ പ്രൊഫൈൽ ഫോട്ടോയിൽ പ്രദർശിപ്പിക്കാൻ അവർക്കൊരു ബാഡ്‍ജ് ലഭിക്കും.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "ഒരു ബാഡ്‍ജ് ഗിഫ്റ്റ് ചെയ്യുക";
@@ -420,6 +423,12 @@
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
 "BADGE_GIFTING_CONFIRMATION_TITLE" = "ഗിഫ്റ്റ് സ്ഥിരീകരിക്കുക";
+
+/* Error message indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "ഈ ഉപയോക്താവിന് അവര്‍ Signal അപ്ഗ്രേഡ് ചെയ്യുന്നത് വരെ ഗിഫ്റ്റുകൾ സ്വീകരിക്കാനാകില്ല.";
+
+/* Title for error message dialog indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "ഒരു ഗിഫ്റ്റ് ബാഡ്‍ജ് അയയ്ക്കുക";
@@ -439,14 +448,32 @@
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
 
-/* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
+/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+
+/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
+
+/* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "റിഡീം ചെയ്യുക";
+
+/* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
+"BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
+
+/* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
+
+/* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
+"BADGE_GIFTING_REDEEMED" = "റിഡീം ചെയ്‌തു";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "%@ നീണ്ടുനിൽക്കുന്നു";
 
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "കാണുക";
+
+/* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "You’ve received a gift badge from %@. Display this badge on your profile to build awareness for donating to Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "എല്ലാ മാസവുമുള്ള നിങ്ങളുടെ സംഭാവന സ്വയമേവ റദ്ദായി. %@ നിങ്ങളുടെ %@ ഇനി നിങ്ങളുടെ പ്രൊഫൈലിൽ ദൃശ്യമാകില്ല.";
@@ -4624,9 +4651,6 @@
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "ഉപയോക്താവിനെ തിരഞ്ഞെടുക്കാനാവില്ല.";
 
-/* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "ഈ ഉപയോക്താവിന് അവര്‍ Signal അപ്ഗ്രേഡ് ചെയ്യുന്നത് വരെ ഗിഫ്റ്റുകൾ സ്വീകരിക്കാനാകില്ല.";
-
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "ഞാൻ എന്റെ പിൻ മറന്നു.";
 
@@ -6381,6 +6405,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "സുരക്ഷാ നമ്പർ പുനപരിശോധിക്കുക";
+
+/* Toast alert text shown when tapping on a video that cannot be played. */
+"VIDEO_BROKEN" = "This video can’t be played";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "വീഡിയോ കോൾ";

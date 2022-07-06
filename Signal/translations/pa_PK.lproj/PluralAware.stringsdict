@@ -922,7 +922,7 @@
 			<key>one</key>
 			<string>ਪ੍ਰਾਈਵੇਟ ਕਹਾਣੀ · 1 ਦਰਸ਼ਕ</string>
 			<key>other</key>
-			<string>ਪ੍ਰਾਈਵੇਟ ਕਹਾਣੀ · %d ਦਰਸ਼ਕ</string>
+			<string>ਨਿੱਜੀ ਕਹਾਣੀ · %d ਦਰਸ਼ਕ</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

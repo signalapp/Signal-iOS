@@ -12,10 +12,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Message vocal de %d secondes</string>
 			<key>one</key>
-			<string>Voice message 1 second</string>
+			<string>Message vocal d'1 seconde</string>
 			<key>other</key>
-			<string>Voice message %d seconds</string>
+			<string>Message vocal de %d secondes</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>

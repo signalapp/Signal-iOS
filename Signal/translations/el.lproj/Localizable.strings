@@ -403,14 +403,17 @@
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Προσθήκη μηνύματος";
 
-/* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Πρέπει να αναβαθμίσεις το Signal για να λάβεις δώρα";
+/* Error message indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+
+/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Έληξε";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Κάνε δώρο ένα έμβλημα σε κάποιον/α, κάνοντας μια δωρεά στο Signal στο όνομά του/της. Θα λάβει το έμβλημα για να το δείξει στην εικόνα προφίλ του/της.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Κάνε δώρο ένα έμβλημα";
@@ -420,6 +423,12 @@
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
 "BADGE_GIFTING_CONFIRMATION_TITLE" = "Επιβεβαίωση δώρου";
+
+/* Error message indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "Ο χρήστης δεν μπορεί να λάβει δώρα μέχρι να αναβαθμίσει το Signal.";
+
+/* Title for error message dialog indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Αποστολή εμβλήματος δώρου";
@@ -434,13 +443,28 @@
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Η πληρωμή απέτυχε";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Έγινε επεξεργασία της πληρωμής σου από τη Signal, αλλά δεν καταφέραμε να δωρίσουμε το σήμα. Επικοινώνησε με την υποστήριξη.";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Αποτυχία δώρου σήματος";
 
-/* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
+/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+
+/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
+
+/* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "Εξαργύρωση";
+
+/* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
+"BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
+
+/* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
+
+/* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
+"BADGE_GIFTING_REDEEMED" = "Εξαργυρώθηκε";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Διαρκεί %@";
@@ -448,8 +472,11 @@
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "Εμφάνιση";
 
+/* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "You’ve received a gift badge from %@. Display this badge on your profile to build awareness for donating to Signal.";
+
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Η επαναλαμβανόμενη μηνιαία δωρεά σου ακυρώθηκε αυτόματα. %@ Το έμβλημα %@ σου δεν είναι πλέον ορατό στο προφίλ σου.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Η επαναλαμβανόμενη μηνιαία δωρεά σου ακυρώθηκε αυτόματα. %@ Το σήμα σου %@ δεν είναι πλέον ορατό στο προφίλ σου.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Η επαναλαμβανόμενη μηνιαία δωρεά σου ακυρώθηκε αυτόματα επειδή ήσουν ανενεργός/ή για πολύ καιρό. Το έμβλημα %@ σου δεν είναι πλέον ορατό στο προφίλ σου.\n\nΜπορείς να συνεχίσεις να χρησιμοποιείς το Signal, αλλά για να υποστηρίξεις την εφαρμογή και να επανενεργοποιήσεις το έμβλημά σου, ανανέωσέ την τώρα.";
@@ -1649,7 +1676,7 @@
 "DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Η κάρτα σου έχει λήξει. Έλεγξε εάν ο τρόπος πληρωμής σου στο Apple Pay είναι ενημερωμένος. Εάν δεν είναι, ενημέρωσέ τον και δοκίμασε ξανά.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Ο αριθμός κάρτας δεν είναι σωστό. Έλεγξε εάν ο τρόπος πληρωμής σου στο Apple Pay είναι σωστός. Εάν δεν είναι, ενημέρωσέ τον και δοκίμασε ξανά.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Ο αριθμός κάρτας δεν είναι σωστός. Έλεγξε εάν ο τρόπος πληρωμής σου στο Apple Pay είναι σωστός. Εάν δεν είναι, ενημέρωσέ τον και δοκίμασε ξανά.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
 "DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Ο τριψήφιος αριθμός CVC δεν είναι σωστός. Έλεγξε εάν ο αριθμός CVC στο Apple Pay είναι σωστός. Εάν δεν είναι, ενημέρωσέ τον και δοκίμασε ξανά.";
@@ -1658,7 +1685,7 @@
 "DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Η κάρτα σου δεν έχει επαρκή χρήματα για την ολοκλήρωση αυτής της αγοράς. Δοκίμασε άλλον τρόπο πληρωμής ή επικοινώνησε με την τράπεζά σου για περισσότερες πληροφορίες.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Η ημερομηνία λήξης στον τρόπο πληρωμής σου δεν είναι σωστή. Ενημέρωσε την στο Apple Pay και δοκίμασε ξανά.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Η ημερομηνία λήξης στον τρόπο πληρωμής σου δεν είναι σωστή. Ενημέρωσε τη στο Apple Pay και δοκίμασε ξανά.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "Το έτος λήξης στον τρόπο πληρωμής σου δεν είναι σωστό. Ενημέρωσέ το στο Apple Pay και δοκίμασε ξανά.";
@@ -3011,10 +3038,10 @@
 "IN_CALL_TERMINATED" = "Η κλήση τερματίστηκε.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Οι συνομιλίες σε σίγαση που είναι αρχειοθετημένες, θα παραμείνουν σε αρχειοθέτηση όταν λάβεις νέα μηνύματα.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Οι συνομιλίες σε σίγαση που είναι αρχειοθετημένες, θα παραμείνουν σε αρχειοθέτηση εάν λάβεις νέα μηνύματα.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Οι αρχειοθετημένες συνομιλίες θα μετακινηθούν στα Εισερχόμενα όταν λάβεις νέα μηνύματα.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Οι αρχειοθετημένες συνομιλίες θα μετακινηθούν στα Εισερχόμενα εάν λάβεις νέα μηνύματα.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Δεν υπάρχουν ακόμα συνομιλίες.\nΣτείλε σε έναν φίλο σου, για να ξεκινήσεις.";
@@ -4623,9 +4650,6 @@
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Ο/Η χρήστης δεν μπορεί να επιλεχθεί.";
-
-/* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "Ο χρήστης δεν μπορεί να λάβει δώρα μέχρι να αναβαθμίσει το Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Ξέχασα το ΡΙΝ μου.";
@@ -6381,6 +6405,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Έλεγχος αριθμών ασφαλείας";
+
+/* Toast alert text shown when tapping on a video that cannot be played. */
+"VIDEO_BROKEN" = "This video can’t be played";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "Βιντεοκλήση";

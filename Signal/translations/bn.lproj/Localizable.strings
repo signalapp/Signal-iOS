@@ -377,7 +377,7 @@
 "BADGE_EXIPRED_BOOST_BODY_FORMAT" = "আপনার বুস্ট ব্যাজের মেয়াদ শেষ হয়ে গেছে এবং এটি আপনার প্রোফাইলে আর দেখা যাবে না।\n\nআপনি Signal ব্যবহার করা চালিয়ে যেতে পারেন কিন্তু আপনার জন্য তৈরি এই প্রযুক্তিকে সমর্থন করার জন্য, মাসিক ডোনেশন দিয়ে একজন সাসটেইনার হওয়ার কথা বিবেচনা করুন।";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "আপনার বুস্ট ব্যাজের মেয়াদ শেষ হয়ে গেছে এবং এটি আপনার প্রোফাইলে আর দেখা যাবে না।\n\n আপনি আপনার বুস্ট ব্যাজ আরও 30 দিনের জন্য এককালীন আর্থিক অবদান প্রদান করার মাধ্যমে পুনরায় সক্রিয় করতে পারেন।";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "একজন সাসটেইনার হয়ে উঠুন";
@@ -403,14 +403,17 @@
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "বার্তা যোগ করুন";
 
-/* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "উপহার পেতে অবশ্যই Signal আপডেট করতে হবে";
+/* Error message indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+
+/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "বাতিল";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "একটি ব্যাজ উপহার দিন";
@@ -420,6 +423,12 @@
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
 "BADGE_GIFTING_CONFIRMATION_TITLE" = "উপহার নিশ্চিত করুন";
+
+/* Error message indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "এই ব্যবহারকারী Signal আপগ্রেড না করা পর্যন্ত উপহার গ্রহণ করতে পারবেন না।";
+
+/* Title for error message dialog indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "একটি গিফট ব্যাজ পাঠান";
@@ -434,19 +443,37 @@
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "পেমেন্ট সফল হয়নি";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "আপনার পেমেন্ট প্রক্রিয়া সম্পন্ন হয়েছে কিন্তু Signal আপনার গিফট ব্যাজ পাঠাতে পারেনি। অনুগ্রহপূর্বক সাপোর্ট-এ যোগাযোগ করুন।";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "ব্যাজ উপহার সফল হয়নি";
 
-/* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
+/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+
+/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
+
+/* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "ফিরে পান";
+
+/* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
+"BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
+
+/* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
+
+/* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
+"BADGE_GIFTING_REDEEMED" = "ফিরে পাওয়া গেছে";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "স্থায়িত্ব %@";
 
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "দেখুন";
+
+/* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "You’ve received a gift badge from %@. Display this badge on your profile to build awareness for donating to Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "আপনার পুনরাবৃত্ত মাসিক ডোনেশন স্বয়ংক্রিয়ভাবে বাতিল হয়ে গেছে। %@ আপনার %@ ব্যাজ আপনার প্রোফাইলে আর দৃশ্যমান নয়৷";
@@ -749,19 +776,19 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "ছবি সম্পাদনা করুন";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "আপনার নতুন নাম্বারটি আপনার পুরানো নাম্বারের মতো হওয়া উচিত নয়। আপনার নাম্বার পরিবর্তন করতে একটি নতুন ফোন নাম্বার লিখুন।";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "আপনার লেখা ফোন নম্বরটি আপনার অ্যাকাউন্টের সাথে মিলছে না।";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Invalid new phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "নতুন ফোন নাম্বারটি বৈধ নয়। আপনার নাম্বার পরিবর্তন করতে একটি বৈধ ফোন নাম্বার লিখুন।";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Invalid old phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "পুরোনো ফোন নাম্বারটি বৈধ নয়। আপনার নাম্বার পরিবর্তন করতে একটি বৈধ ফোন নাম্বার লিখুন।";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "নতুন ফোন নাম্বারের জন্য পিন লিখুন। এটি আপনার এসএমএস যাচাইকরণ কোড থেকে ভিন্ন৷";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "এখানে চ্যাটের রংয়ের প্রিভিউ রয়েছে।";
@@ -827,7 +854,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "আপনার পরিচিতি গুলির মধ্যে কোনটি Signal ব্যবহারকারী তা দেখতে আপনি iOS সেটিংস অ্যাপ থেকে পরিচিতি অ্যাক্সেস সক্ষম করতে পারেন।";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "Configure Reactions";
+"CONFIGURE_REACTIONS" = "রিঅ্যাকশন কনফিগার করুন";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "এটি আপনার মেসেজগুলি মুছে দিয়ে অ্যাপ্লিকেশনটি রিসেট করবে। এই প্রক্রিয়াটি সম্পন্ন হওয়ার পর অ্যাপটি বন্ধ হবে।";
@@ -1064,7 +1091,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "চ্যাট মুছবেন?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "এই চ্যাটটি মিউট করুন...";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 দিন";
@@ -1346,19 +1373,19 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "গ্রেডিয়েন্টের দিক পরিবর্তন করতে টেনে আনুন";
 
 /* Button to run the database integrity check */
-"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Run";
+"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "চালান";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "আপনি Signal কতটা ব্যবহার করেছেন তার উপর নির্ভর করে এটি কিছুটা সময় নিতে পারে (কয়েক মিনিট বা তার বেশি)। খুব বেশি সময় নিলে Signal বন্ধ করাটাই নিরাপদ।";
 
 /* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
+"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "ডিবাগ লগ-এ যোগ করুন";
 
 /* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Integrity check results";
+"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "ইন্টেগ্রিটি চেক-এর ফলাফল";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database integrity check?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "ডেটাবেজ ইন্টেগ্রিটি চেক পরিচালনা করবেন ?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "এই কয়েক মিনিট সময় নিতে পারে.";
@@ -1397,7 +1424,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "সাপোর্ট সেন্টারে ইমেইল করুন";
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
-"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "লগ এক্সপোর্ট করুন";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "নিজেকে পাঠান";
@@ -1640,31 +1667,31 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "অন্য পেমেন্ট পদ্ধতি ব্যবহার করে দেখুন বা আরো তথ্যের জন্য আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Apple Pay-তে আপনার পেমেন্ট পদ্ধতি আপ টু ডেট আছে কিনা তা পরীক্ষা করে দেখুন। যদি না থাকে, এটি আপডেট করুন এবং আবার চেষ্টা করুন। আপনার যদি এখনো সমস্যা হয় তবে আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "আপনার কার্ড এই ধরণের ক্রয় সমর্থন করে না। অন্য পেমেন্ট পদ্ধতি ব্যবহার করে দেখুন বা আরো তথ্যের জন্য আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "আপনার কার্ডের মেয়াদ শেষ হয়ে গেছে। Apple Pay-তে আপনার পেমেন্ট পদ্ধতি আপ টু ডেট আছে কিনা তা পরীক্ষা করে দেখুন। যদি না থাকে, এটি আপডেট করুন এবং আবার চেষ্টা করুন।";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "আপনার কার্ড নাম্বার ভুল। আপনার পেমেন্ট পদ্ধতি Apple Pay-তে সঠিকভাবে প্রবেশ করানো হয়েছে কিনা তা পরীক্ষা করে দেখুন। যদি না হয়ে থাকে, এটি আপডেট করুন এবং আবার চেষ্টা করুন।";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "আপনার সিভিসি নাম্বারটি সঠিক নয়। Apple Pay-তে আপনার সিভিসি নাম্বার সঠিকভাবে লেখা আছে কিনা তা দেখুন। যদি না থেকে থাকে, তবে এটি আপডেট করুন এবং আবার চেষ্টা করুন।";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "এই ক্রয়টি সম্পন্ন করার জন্য আপনার কার্ডে পর্যাপ্ত ব্যালেন্স নেই। অন্য পেমেন্ট পদ্ধতি ব্যবহার করে দেখুন বা আরো তথ্যের জন্য আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "আপনার পেমেন্ট পদ্ধতিতে মেয়াদ শেষ হওয়ার মাসটি ভুল। Apple Pay-তে এটি আপডেট করুন এবং আবার চেষ্টা করুন।";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "আপনার পেমেন্ট পদ্ধতিতে মেয়াদ শেষ হওয়ার বছরটি ভুল। Apple Pay-তে এটি আপডেট করুন এবং আবার চেষ্টা করুন।";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "আপনার কার্ড নাম্বারটি সঠিক নয়। Apple Pay-তে আপডেট করে আবার চেষ্টা করুন।";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
 "DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "পেমেন্ট সম্পন্ন করার জন্য আবার চেষ্টা করুন বা আরো তথ্যের জন্য আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।";
@@ -1673,7 +1700,7 @@
 "DONATION_PAYMENT_ERROR_OTHER" = "অন্য পেমেন্ট পদ্ধতি ব্যবহার করে দেখুন বা আরো তথ্যের জন্য আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Apple Pay-তে আপনার পেমেন্ট পদ্ধতি আপ টু ডেট আছে কিনা দেখুন। যদি না থাকে তবে আপডেট করে আবার চেষ্টা করুন।";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "পরিমাণ";
@@ -1685,10 +1712,10 @@
 "DONATION_RECEIPT_DETAILS" = "বিস্তারিত";
 
 /* Text on the button that exports the receipt */
-"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Share Receipt";
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "রিসিপ্ট শেয়ার করুন";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Signal-এর পাশে থাকার জন্য আপনাকে ধন্যবাদ। আপনার অবদান এমন একটি ওপেন সোর্স প্রাইভেসি টেকনোলজির ক্রমবিকাশের মিশনে ইন্ধন জোগাতে সাহায্য করে যা স্বাধীন মতপ্রকাশকে রক্ষা করে এবং সারা বিশ্বের লক্ষ লক্ষ মানুষের জন্য নিরাপদ বৈশ্বিক যোগাযোগ সক্ষম করে। আপনি যদি মার্কিন যুক্তরাষ্ট্রের বাসিন্দা হন, তাহলে আপনার ট্যাক্স রেকর্ডের জন্য এই রিসিপ্টটি রাখুন। Signal Technology Foundation অভ্যন্তরীণ রাজস্ব কোডের ধারা 501c3-এর অধীনে মার্কিন যুক্তরাষ্ট্রে অবস্থিত একটি কর-মুক্ত অলাভজনক সংস্থা। আমাদের Federal Tax ID হলো 82-4506840।";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "এক-কালীন";
@@ -1700,7 +1727,7 @@
 "DONATION_RECEIPT_TITLE" = "ডোনেশন রিসিপ্ট";
 
 /* Section title for donation type on receipts */
-"DONATION_RECEIPT_TYPE" = "Type";
+"DONATION_RECEIPT_TYPE" = "টাইপ করুন";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
 "DONATION_RECEIPTS" = "ডোনেশন রিসিপ্ট";
@@ -1721,7 +1748,7 @@
 "DONATION_VIEW_LOAD_FAILED" = "নেটওয়ার্ক ত্রুটি। আপনার সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন।";
 
 /* Text of the 'make a monthly donation' button on the donation screen */
-"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "মাসিক ডোনেশন দিন";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "ব্যাজগুলি";
@@ -1739,7 +1766,7 @@
 "DONATION_VIEW_ONE_TIME_DONATION" = "এক-কালীন ডোনেশন";
 
 /* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "ডোনেশন দেয়ার অন্যান্য উপায়";
 
 /* Title for the 'receipts' section on the donation screen */
 "DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "রিসিপ্ট";
@@ -2657,7 +2684,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "অনুরোধ ও আমন্ত্রণ";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
-"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
+"GROUP_STORY_NAME_FORMAT" = "%1$@ থেকে %2$@";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "গ্রুপ আপডেট হয়েছে।";
@@ -2951,10 +2978,10 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "সংরক্ষাণাগার";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "চ্যাট নির্বাচন করুন";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
-"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+"HOME_VIEW_TOOLBAR_READ_ALL" = "সব পড়ুন";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "যেকোনো জায়গা অস্পষ্ট করতে আলতো চেপে টানুন";
@@ -3011,10 +3038,10 @@
 "IN_CALL_TERMINATED" = "কল শেষ হয়েছে।";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "যখন নতুন ম্যাসেজ আসবে তখন আর্কাইভ করা মিউটেড চ্যাট আর্কাইভ অবস্থায়ই থাকবে।";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "নতুন ম্যাসেজ আসলে আর্কাইভকৃত চ্যাট ইনবক্সে চলে যাবে৷";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "এখনো কোন চ্যাট নেই।\nএকজন বন্ধুকে মেসেজ পাঠানোর মাধ্যমে শুরু করুন।";
@@ -3026,7 +3053,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "আপনি আপনার ফোন বা iPad থেকে সমলয়কৃত মেসেজগুলি পাঠাতে বা গ্রহণ করতে পারবেন।  আপনার সুরক্ষার প্রয়োজনে, চ্যাটের ইতিহাস নতুন সংযুক্ত ডিভাইসগুলিতে স্থানান্তর করা হয় না।";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ তার ফোন নাম্বার পরিবর্তন করেছেন।";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal এ যোগ দিয়েছে!";
@@ -3254,10 +3281,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "কল করুন";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "ফেসটাইম অডিও";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "ফেসটাইম ভিডিও";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "টেক্সট মেসেজ পাঠান";
@@ -4235,10 +4262,10 @@
 "PIN_ACTION" = "পিন";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "আপনার নতুন পিন তৈরি করা যায়নি। আপনার বিদ্যমান পিন নিষ্ক্রিয় করা হয়েছে। আপনার নেটওয়ার্ক সংযোগ ঠিক আছে কিনা দেখুন এবং আবার চেষ্টা করুন।";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "পিন পরিবর্তন সফল হয়নি";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "পিন অবশ্যই কমপক্ষে 4টি অক্ষরের হতে হবে";
@@ -4283,10 +4310,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "পিনগুলি মেলে না। আবার চেষ্টা করুন।";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "আপনার নেটওয়ার্ক সংযোগ ঠিক আছে কিনা দেখুন এবং আবার চেষ্টা করুন।";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "কোন নেটওয়ার্ক সংযোগ নেই";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "পিনটি কমপক্ষে 4টি সংখ্যার হতে হবে";
@@ -4310,10 +4337,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "রেজিস্ট্রেশন লক বন্ধ করবেন?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "পিন তৈরি সফল হয়েছে, কিন্তু রেজিস্ট্রেশন লক চালু করা যায়নি৷ আপনার নেটওয়ার্ক সংযোগ ঠিক আছে কিনা দেখুন এবং আবার চেষ্টা করুন।";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "রেজিস্ট্রেশন লক চালু করা সফল হয়নি";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "পিন নিষ্ক্রিয় করুন";
@@ -4334,7 +4361,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "পিন তৈরি করতে ব্যর্থ হয়েছে";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "আপনার পিন তৈরি করা যায়নি। আপনার নেটওয়ার্ক সংযোগ ঠিক আছে কিনা দেখুন এবং আবার চেষ্টা করুন।";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "আপনাকে আপনার পিন মুখস্ত করতে সহায়তা করতে আমরা আপনাকে মাঝে মাঝে এটি প্রবেশ করাতে বলব। আমরা সময়ের সাথে সাথে  জিজ্ঞাসা করা কমিয়ে দেব।";
@@ -4382,7 +4409,7 @@
 "PINS_MEGAPHONE_ACTION" = "পিন তৈরি করুন";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "আপনার Signal পিন তৈরি করা শেষ করুন।";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "একটি পিন তৈরি করুন";
@@ -4550,10 +4577,10 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "আপনার স্টোরি-তে রিঅ্যাক্ট করা হয়েছে";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%@-এর স্টোরি-তে রিঅ্যাক্ট করা হয়েছে";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Story";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · স্টোরি";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "সংযুক্তি";
@@ -4623,9 +4650,6 @@
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "ইউজারকে বেছে নেওয়া যাবে না।";
-
-/* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "আমি আমার পিন ভুলে গেছি";
@@ -4928,10 +4952,10 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "বন্ধ করুন";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "আপনার ধারণকৃত যেকোন ছবি কিংবা ভিডিও হারাবেন";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "মাল্টি-মোড বন্ধ করবেন?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "অনিরাপদ এসএমএসের মাধ্যমে বন্ধুকে আমন্ত্রণ জানাবেন?";
@@ -5042,19 +5066,19 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "আপনার পরিচিতি থেকে আইপি ঠিকানাটি লুকাতে Signal সার্ভারের মাধ্যমে কল সমূহ রিলে করুন। সক্ষম করা কল এর মান হ্রাস পাবে।";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "নাম্বার এডিট করুন";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "ফোন নাম্বার পরিবর্তন করুন";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "আপনার ফোন নাম্বার পরিবর্তন করে %@ করা হয়েছে";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "নাম্বার পরিবর্তন করুন";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "আপনি আপনার ফোন নাম্বার %1$@ থেকে %2$@-তে পরিবর্তন করতে যাচ্ছেন।\n\nএগিয়ে যাওয়ার আগে, দয়া করে নীচের নাম্বারটি সঠিক কিনা যাচাই করুন।";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "দেশ কোড";
@@ -5066,22 +5090,22 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "উদাহরণ: %@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "আপনার নতুন নাম্বার";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "আপনার পুরোনো নাম্বার";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "ফোন নম্বর";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "%@ যাচাই করা হচ্ছে";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "আপনার বর্তমান ফোন নাম্বারটি একটি নতুন ফোন নাম্বারে পরিবর্তন করতে এটি ব্যবহার করুন। আপনি এই পরিবর্তনটি পূর্বাবস্থায় ফিরিয়ে নিতে পারবেন না।\n\nএগিয়ে যাওয়ার আগে, নিশ্চিত করুন যে আপনার নতুন নাম্বারটি এসএমএস বা কল পেতে পারে।";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "ফোন নাম্বার পরিবর্তন করুন";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "নাম্বার পরিবর্তন করুন";
@@ -5177,10 +5201,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "বার্তার শব্দ";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "যখন নতুন ম্যাসেজ আসবে তখন আর্কাইভ করা মিউটেড চ্যাট আর্কাইভ অবস্থায়ই থাকবে।";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "মিউটেড চ্যাট আর্কাইভকৃত অবস্থায় রাখুন";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "শর্তাদি এবং গোপনীয়তা নীতি";
@@ -5516,7 +5540,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "রিকভারি ফ্রেজ পেস্ট করুন";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "আপনার পুনরুদ্ধার করার বাক্যাংশটি একটি 24-শব্দ বিশিষ্ট বাক্যাংশ যা শুধু আপনিই জানবেন। আপনার পেমেন্ট অ্যাকাউন্ট পুনরুদ্ধার করতে এটি ব্যবহার করুন।";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "রিকভারি ফ্রেজ লিখুন";
@@ -5915,28 +5939,28 @@
 "STORIES_FORWARD_STORY_ACTION" = "ফরওয়ার্ড";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
+"STORIES_GO_TO_CHAT_ACTION" = "চ্যাট-এ যান";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Hide Story";
+"STORIES_HIDE_STORY_ACTION" = "স্টোরি লুকান";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "এই মুহূর্তে দেখানোর মতো কোন আপডেট নেই।\nআপনার স্টোরি যোগ করতে + ট্যাপ করুন।";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "এখন পর্যন্ত কোন রিপ্লাই নেই";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "নতুন ব্যক্তিগত স্টোরি";
 
 /* Footer for the 'Private Stories' section of the stories settings */
 "STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "ব্যক্তিগত স্টোরি শুধু আপনি যাদের যোগ করেছেন তারা দেখতে পাবে। স্টোরি'র নাম শুধু আপনি দেখতে পাবেন। ";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "ব্যক্তিগত স্টোরি";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "স্টোরি প্রাইভেসি";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "শেয়ার করুন";
@@ -5954,10 +5978,10 @@
 "STORY_PRIVACY_SETTINGS" = "গোপনীয়তা";
 
 /* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";
+"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> উত্তর";
 
 /* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> replies";
+"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> গুলো উত্তর";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "প্রত্যুত্তর";
@@ -6047,10 +6071,10 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal একটি অলাভজনক সংস্থা যার কোন বিজ্ঞাপনদাতা বা বিনিয়োগকারী নেই, যারা এটি ব্যবহার করেন এবং মূল্যায়ন করেন শুধু তাদের মাধ্যমেই এটি পরিচালিত হয় ৷ মাসিক ডোনেশন দিন এবং আপনার সমর্থন শেয়ার করার জন্য একটি প্রোফাইল ব্যাজ নিন৷";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal ওপেন সোর্স গোপনীয়তা প্রযুক্তির বিকাশের জন্য প্রতিজ্ঞাবদ্ধ যা মনের ভাব প্রকাশ করার স্বাধীনতাকে রক্ষা করে এবং বিশ্বব্যাপী নিরাপদ যোগাযোগ সক্ষম করে।\n\nআপনার ডোনেশন এই উদ্যোগের চালিকাশক্তি এবং ব্যক্তিগত যোগাযোগের জন্য লক্ষ লক্ষ মানুষের দ্বারা ব্যবহৃত একটি অ্যাপের ক্রমবিকাশ এবং কার্যক্রমের জন্য অর্থের যোগান৷ এতে নেই কোন বিজ্ঞাপন। নেই কোন ট্র্যাকার। নেই কোন তামাশা।";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "সমর্থন প্রযুক্তিটিকে টিকিয়ে রাখে এমন কমিউনিটির সাথে যোগ দিয়ে এটি তৈরি করা হয়েছে আপনার জন্য - আপনার ডেটার জন্য নয়।";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "কেন দান করবেন?";
@@ -6381,6 +6405,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "সুরক্ষা নাম্বার পর্যালোচনা করুন";
+
+/* Toast alert text shown when tapping on a video that cannot be played. */
+"VIDEO_BROKEN" = "This video can’t be played";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "ভিডিও কল";

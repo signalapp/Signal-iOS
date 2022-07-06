@@ -403,14 +403,17 @@
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Añadir mensaje";
 
-/* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Debes actualizar Signal para recibir regalos";
+/* Error message indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+
+/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Caducado";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Regala un distintivo a alguien haciendo una donación a Signal en su nombre. Obtendrá un distintivo para mostrar en su foto de perfil.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Regala un distintivo";
@@ -421,6 +424,12 @@
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
 "BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirmar regalo";
 
+/* Error message indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "This user can't receive gifts until they upgrade Signal.";
+
+/* Title for error message dialog indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Enviar un distintivo de regalo";
 
@@ -428,7 +437,7 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Donación puntual";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "No se ha podido procesar tu pago y no hemos hecho el cargo. Inténtalo de nuevo.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "No se ha podido procesar el pago y no hemos efectuado el cargo. Inténtalo de nuevo.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Fallo en el pago";
@@ -439,14 +448,32 @@
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
 
-/* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
+/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+
+/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
+
+/* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "Canjear";
+
+/* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
+"BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
+
+/* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
+
+/* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
+"BADGE_GIFTING_REDEEMED" = "Canjeado";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Dura %@";
 
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "Ver";
+
+/* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "You’ve received a gift badge from %@. Display this badge on your profile to build awareness for donating to Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Tu suscripción mensual se ha cancelado automáticamente. %@ Tu distintivo «%@» ya no es visible en tu perfil.";
@@ -1640,7 +1667,7 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Selecciona otro método de pago o contacta con tu banco para más información.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Verifica que tu método de pago está al día en Apple Pay e inténtalo de nuevo. Si el problema persiste, contacta con tu banco.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Verifica que tu método de pago está al día en Apple Pay e inténtalo de nuevo. Si el problema persiste, ponte en contacto con tu banco.";
 
 /* Donation payment error for decline failures where the card is not supported. */
 "DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Tu tarjeta no permite este tipo de gasto. Inténtalo con otro método de pago.";
@@ -1649,13 +1676,13 @@
 "DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Tu tarjeta ha caducado. Comprueba que tu método de pago está actualizado en Apple Pay. Si no es el caso, actualízalo e inténtalo de nuevo.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Tu número de tarjeta es inválido. Comprueba que tu método de pago  está correctamente configurado en Apple Pay. Si no es el caso, actualízalo e inténtalo de nuevo.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Tu número de tarjeta no es válido. Comprueba que tu método de pago está correctamente configurado en Apple Pay. Si no es el caso, actualízalo e inténtalo de nuevo.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
 "DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Tu número CVC es inválido. Comprueba que tu número CVC es el correcto en Apple Pay. Si no es así, actualízalo e inténtalo de nuevo.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Tu tarjeta no dispone de suficientes fondos para completar el pago. Selecciona otro método de pago o contacta con tu banco para más información.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Tu tarjeta no dispone de suficientes fondos para completar el pago. Selecciona otro método de pago o ponte en contacto con tu banco para más información.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "El mes de vencimiento en tu método de pago no es correcto. Actualízalo en Apple Pay e inténtalo de nuevo.";
@@ -3011,7 +3038,7 @@
 "IN_CALL_TERMINATED" = "Llamada finalizada.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Chats silenciados en el archivo permanecen en el archivo aunque reciban un mensaje.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Los chats silenciados archivados permanecerán archivados aunque recibas un nuevo mensaje.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Los chats archivados regresan a la lista principal al recibir mensajes.";
@@ -4624,9 +4651,6 @@
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Imposible seleccionar esta persona.";
 
-/* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
-
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "He olvidado mi PIN.";
 
@@ -5177,10 +5201,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Notificaciones sonoras";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Chats silenciados en el archivo permanecen en el archivo aunque reciban un mensaje.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Los chats silenciados archivados permanecerán archivados aunque recibas un nuevo mensaje.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Dejar archivados chats silenciados";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Dejar archivados los chats silenciados";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Aviso legal y privacidad";
@@ -6381,6 +6405,9 @@
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Verificar cifras de seguridad";
+
+/* Toast alert text shown when tapping on a video that cannot be played. */
+"VIDEO_BROKEN" = "This video can’t be played";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "Hacer videollamada";

@@ -15,7 +15,7 @@
 			<key>one</key>
 			<string>Ääniviesti 1 sekunti</string>
 			<key>other</key>
-			<string>Ääniviesti %d sekuntia</string>
+			<string>Ääniviesti, %d sekuntia</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -29,9 +29,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Lisätäänkö jäsen kohteeseen “%2$@”?</string>
+			<string>Lisätäänkö jäsen kohteeseen %2$@?</string>
 			<key>other</key>
-			<string>Lisätäänkö %d jäsentä kohteeseen “%2$@”?</string>
+			<string>Lisätäänkö %d jäsentä kohteeseen %2$@?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -79,7 +79,7 @@
 			<key>one</key>
 			<string>Tätä mukautettua väriä käytetään yhdessä keskustelussa. Haluatko poistaa sen?</string>
 			<key>other</key>
-			<string>Tätä mukautettua väriä käytetään %d keskustelussa. Haluatko poistaa sen kaikista keskusteluista?</string>
+			<string>Mukautettu väri on käytössä %d keskustelussa. Poistetaanko se kaikista?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -95,7 +95,7 @@
 			<key>one</key>
 			<string>Tätä väriä käytetään 1 keskustelussa. Haluatko tallentaa muutokset?</string>
 			<key>other</key>
-			<string>Tätä väriä käytetään %d keskustelussa. Haluatko tallentaa muutokset kaikkiin näihin keskusteluihin?</string>
+			<string>Tämä väri on käytössä %d keskustelussa. Tallennetaanko muutos kaikkiin keskusteluihin?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -143,7 +143,7 @@
 			<key>one</key>
 			<string>Et voi valita enempää kuin 1 keskustelun.</string>
 			<key>other</key>
-			<string>Et voi valita enempää kuin %d keskustelua.</string>
+			<string>Voit valita enintään %d keskustelua.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -314,7 +314,7 @@
 			<key>one</key>
 			<string>Enimmäismäärä puhelun osanottajia (1) on saavutettu. Yritä myöhemmin uudelleen.</string>
 			<key>other</key>
-			<string>Enimmäismäärä puhelun osanottajia (%d) on saavutettu. Yritä myöhemmin uudelleen.</string>
+			<string>Puhelun osallistujien enimmäismäärä %d on täyttynyt. Yritä myöhemmin uudelleen.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -504,7 +504,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1:llä ryhmän jäsenellä on samankaltainen nimi.</string>
+			<string>Yhdellä ryhmän jäsenellä on samankaltainen nimi.</string>
 			<key>other</key>
 			<string>%d ryhmän jäsenellä on samankaltaiset nimet.</string>
 		</dict>
@@ -522,7 +522,7 @@
 			<key>one</key>
 			<string>1 ryhmän jäsenellä on samankaltainen nimi, tarkista nimi ja tarvittavat toimet alla.</string>
 			<key>other</key>
-			<string>%d ryhmän jäsenellä on samankaltaiset nimet, tarkista nimet ja tarvittavat toimet alla.</string>
+			<string>%d ryhmän jäsenellä on samankaltaiset nimet. Tarkista jäsenet alapuolelta ja korjaa ongelma.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -538,7 +538,7 @@
 			<key>one</key>
 			<string>1 ryhmän jäsenellä on sama nimi, tarkista nimi ja tarvittavat toimet alla.</string>
 			<key>other</key>
-			<string>%d ryhmän jäsenellä on sama nimi, tarkista nimet ja tarvittavat toimet alla.</string>
+			<string>%d ryhmän jäsenellä on sama nimi. Tarkista jäsenet alapuolelta ja korjaa ongelma.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -906,7 +906,7 @@
 			<key>one</key>
 			<string>Peruuta käyttäjän “%2$@” lähettämä ryhmäkutsu?</string>
 			<key>other</key>
-			<string>Peruuta %d kutsua, jotka lähetti käyttäjä “%2$@”?</string>
+			<string>Peruuta %d kutsua, jotka lähetti käyttäjä %2$@?</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -970,7 +970,7 @@
 			<key>one</key>
 			<string>Sinulla on 1 yritys jäljellä. Jos yritykset käytetään loppuun, tilisi lukitaan. 7 epäaktiivisen päivän jälkeen voit uudelleenrekisteröidä numerosi ilman PIN-koodia. Vanhan tilisi sisältö pyyhitään tyhjäkksi ja kaikki sisältö poistetaan.</string>
 			<key>other</key>
-			<string>Sinulla on %d yritystä jäljellä. Jos yritykset käytetään loppuun, tilisi lukitaan. 7 epäaktiivisen päivän jälkeen voit uudelleenrekisteröidä numerosi ilman PIN-koodia. Vanhan tilisi sisältö pyyhitään tyhjäkksi ja kaikki sisältö poistetaan.</string>
+			<string>Sinulla on %d yritystä jäljellä. Jos yrityksesi loppuvat, tilisi lukitaan. 7 päivän toimettomuuden jälkeen voit rekisteröityä uudelleen ilman tunnuslukua. Tilin kaikki sisältö poistetaan.</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -986,7 +986,7 @@
 			<key>one</key>
 			<string>Jäsen ryhmissä %2$@, %3$@, ja 1:ssä muussa ryhmässä</string>
 			<key>other</key>
-			<string>Jäsen ryhmissä %2$@, %3$@, ja %d muussa ryhmässä</string>
+			<string>Jäsen ryhmissä %2$@, %3$@ ja %d muussa ryhmässä</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -1018,7 +1018,7 @@
 			<key>one</key>
 			<string>1 vrk</string>
 			<key>other</key>
-			<string>%d vrk</string>
+			<string>%d pv</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_%d</key>
@@ -1048,9 +1048,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 h</string>
+			<string>1 t</string>
 			<key>other</key>
-			<string>%d h</string>
+			<string>%d t</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_%d</key>

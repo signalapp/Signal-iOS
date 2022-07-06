@@ -1,7 +1,7 @@
-NSAppleMusicUsageDescription = "Signalin on käytettävä Apple Musicia medialiitteiden toistamiseen.";
+NSAppleMusicUsageDescription = "Signal tarvitsee Apple Music -käyttöoikeuden medialiitteiden toistamiseen.";
 NSCameraUsageDescription = "Signal käyttää kameraa kuvaamiseen ja videopuheluihin.";
 NSContactsUsageDescription = "Signal käyttää yhteystietoja tuntemiesi ihmisten löytämiseen. Yhteystietoja ei tallenneta Signalin palvelimelle.";
-NSFaceIDUsageDescription = "Signalin ruudun lukitus käyttää Face ID:tä.";
+NSFaceIDUsageDescription = "Signalin näytön lukitus käyttää Face ID:tä.";
 NSLocationWhenInUseUsageDescription = "Signal tarvitsee sijaintitietojen käyttöoikeuden sijaintisi jakamiseksi.";
 NSMicrophoneUsageDescription = "Signal tarvitsee mikrofonin käyttöoikeuden puheluihin ja ääniviesteihin.";
 NSPhotoLibraryAddUsageDescription = "Signal tallentaa kuvat kirjastoon.";
