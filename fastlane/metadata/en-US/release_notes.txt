@@ -1,1 +1,2 @@
-Handful of bug fixes to keep your app running smoothly. More exciting changes on the horizon!
+- Updates to the media editor, to make it easier than ever to send photos and videos with your own personal touch.
+- Handful of bug fixes to keep your app running smoothly. More exciting changes on the horizon!
