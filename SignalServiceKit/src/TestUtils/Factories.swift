@@ -142,7 +142,8 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                                 additionalRecipients: additionalRecipientsBuilder(),
                                                 storyAuthorAddress: storyAuthorAddressBuilder(),
                                                 storyTimestamp: storyTimestampBuilder(),
-                                                storyReactionEmoji: storyReactionEmojiBuilder()).build(transaction: transaction)
+                                                storyReactionEmoji: storyReactionEmojiBuilder(),
+                                                giftBadge: giftBadgeBuilder()).build(transaction: transaction)
     }
 
     @objc
@@ -249,6 +250,11 @@ public class OutgoingMessageFactory: NSObject, Factory {
 
     @objc
     public var storyReactionEmojiBuilder: () -> String? = {
+        return nil
+    }
+
+    @objc
+    public var giftBadgeBuilder: () -> OWSGiftBadge? = {
         return nil
     }
 

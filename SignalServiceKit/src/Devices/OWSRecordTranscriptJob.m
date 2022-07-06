@@ -120,7 +120,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 additionalRecipients:nil
                                   storyAuthorAddress:transcript.storyAuthorAddress
                                       storyTimestamp:transcript.storyTimestamp
-                                  storyReactionEmoji:nil] buildWithTransaction:transaction];
+                                  storyReactionEmoji:nil
+                                           giftBadge:transcript.giftBadge] buildWithTransaction:transaction];
 
     SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
     if (localAddress == nil) {

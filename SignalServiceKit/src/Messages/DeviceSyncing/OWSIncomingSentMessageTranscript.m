@@ -209,6 +209,8 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogError(@"linkPreviewError: %@", linkPreviewError);
         }
 
+        _giftBadge = [OWSGiftBadge maybeBuildFromDataMessage:_dataMessage];
+
         NSError *stickerError;
         _messageSticker = [MessageSticker buildValidatedMessageStickerWithDataMessage:_dataMessage
                                                                           transaction:transaction

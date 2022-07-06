@@ -100,7 +100,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                               additionalRecipients: [SignalServiceAddress]?,
                               storyAuthorAddress: SignalServiceAddress?,
                               storyTimestamp: NSNumber?,
-                              storyReactionEmoji: String?) -> TSOutgoingMessageBuilder {
+                              storyReactionEmoji: String?,
+                              giftBadge: OWSGiftBadge?) -> TSOutgoingMessageBuilder {
         return TSOutgoingMessageBuilder(thread: thread,
                                         timestamp: timestamp,
                                         messageBody: messageBody,
@@ -119,7 +120,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                                         additionalRecipients: additionalRecipients,
                                         storyAuthorAddress: storyAuthorAddress,
                                         storyTimestamp: storyTimestamp?.uint64Value,
-                                        storyReactionEmoji: storyReactionEmoji)
+                                        storyReactionEmoji: storyReactionEmoji,
+                                        giftBadge: giftBadge)
     }
 
     private var hasBuilt = false

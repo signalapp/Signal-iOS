@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class MessageBodyRanges;
 @class MessageSticker;
 @class OWSContact;
+@class OWSGiftBadge;
 @class OWSLinkPreview;
 @class SDSAnyWriteTransaction;
 @class SSKProtoAttachmentPointer;
@@ -47,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, readonly, nullable) OWSContact *contact;
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
+@property (nonatomic, readonly, nullable) OWSGiftBadge *giftBadge;
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
 @property (nonatomic, readonly) BOOL isRecipientUpdate;
 @property (nonatomic, readonly) BOOL isViewOnceMessage;
