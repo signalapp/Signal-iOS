@@ -113,6 +113,8 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
           circumstance:(OWSReceiptCircumstance)circumstance
            transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)giftWasRedeemed:(TSIncomingMessage *)incomingMessage transaction:(SDSAnyWriteTransaction *)transaction;
+
 #pragma mark - Settings
 
 - (void)prepareCachedValues;

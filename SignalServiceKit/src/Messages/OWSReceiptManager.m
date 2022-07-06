@@ -216,6 +216,12 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     }
 }
 
+- (void)giftWasRedeemed:(TSIncomingMessage *)incomingMessage transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self enqueueLinkedDeviceViewedReceiptForMessage:incomingMessage transaction:transaction];
+    [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
+}
+
 #pragma mark - Read Receipts From Recipient
 
 - (NSArray<NSNumber *> *)processReadReceiptsFromRecipient:(SignalServiceAddress *)address
@@ -502,6 +508,18 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     OWSAssertDebug(message);
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
+
+    if (message.giftBadge != nil) {
+        [message anyUpdateMessageWithTransaction:transaction
+                                           block:^(TSMessage *_Nonnull obj) {
+                                               if ([obj isKindOfClass:[TSIncomingMessage class]]) {
+                                                   obj.giftBadge.redemptionState = OWSGiftBadgeRedemptionStateRedeemed;
+                                               } else {
+                                                   // TODO: (GB) Sync opened state for outgoing gift messages.
+                                               }
+                                           }];
+        return;
+    }
 
     if ([message isKindOfClass:[TSIncomingMessage class]]) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;

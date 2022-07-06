@@ -154,6 +154,8 @@ class BadgeThanksSheet: InteractiveSheetViewController {
             }
 
             if state == .redeemed {
+                self.receiptManager.giftWasRedeemed(incomingMessage, transaction: transaction)
+
                 ExperienceUpgradeManager.snoozeExperienceUpgrade(
                     .subscriptionMegaphone,
                     transaction: transaction.unwrapGrdbWrite
