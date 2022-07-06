@@ -88,6 +88,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         let shareViewNavigationController = OWSNavigationController()
         shareViewNavigationController.presentationController?.delegate = self
+        shareViewNavigationController.delegate = self
         self.shareViewNavigationController = shareViewNavigationController
 
         // Don't display load screen immediately, in hopes that we can avoid it altogether.
@@ -997,6 +998,30 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 extension ShareViewController: UIAdaptivePresentationControllerDelegate {
     public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         shareViewWasCancelled()
+    }
+}
+
+// MARK: -
+
+extension ShareViewController: UINavigationControllerDelegate {
+
+    public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        updateNavigationBarVisibility(for: viewController, in: navigationController, animated: animated)
+    }
+
+    public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        updateNavigationBarVisibility(for: viewController, in: navigationController, animated: animated)
+    }
+
+    private func updateNavigationBarVisibility(for viewController: UIViewController,
+                                               in navigationController: UINavigationController,
+                                               animated: Bool) {
+        switch viewController {
+        case is AttachmentApprovalViewController:
+            navigationController.setNavigationBarHidden(true, animated: animated)
+        default:
+            navigationController.setNavigationBarHidden(false, animated: animated)
+        }
     }
 }
 

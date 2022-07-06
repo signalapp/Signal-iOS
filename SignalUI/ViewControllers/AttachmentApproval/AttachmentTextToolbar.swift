@@ -4,40 +4,35 @@
 
 import Foundation
 import UIKit
+import SignalMessaging
 
 // Coincides with Android's max text message length
 let kMaxMessageBodyCharacterCount = 2000
 
-protocol AttachmentTextToolbarDelegate: MentionTextViewDelegate {
-    func attachmentTextToolbarDidTapSend(_ attachmentTextToolbar: AttachmentTextToolbar)
+protocol AttachmentTextToolbarDelegate: AnyObject {
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar)
-    func attachmentTextToolbarDidViewOnce(_ attachmentTextToolbar: AttachmentTextToolbar)
-    func attachmentTextToolbarDidTapQualityButton(_ attachmentTextToolbar: AttachmentTextToolbar)
-
-    var isViewOnceEnabled: Bool { get set }
-    var outputQualityLevel: ImageQualityLevel { get }
 }
 
 // MARK: -
 
-class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
+class AttachmentTextToolbar: UIView {
 
-    var options: AttachmentApprovalViewControllerOptions {
+    // Forward text editing-related events to AttachmentApprovalToolbar.
+    weak var delegate: AttachmentTextToolbarDelegate?
+
+    // Forward mention-related calls directly to the view controller.
+    weak var mentionTextViewDelegate: MentionTextViewDelegate?
+
+    var isViewOnceEnabled: Bool = false {
         didSet {
             updateContent()
         }
     }
 
-    weak var attachmentTextToolbarDelegate: AttachmentTextToolbarDelegate?
-
-    var isViewOnceEnabled: Bool {
-        return options.contains(.canToggleViewOnce) && attachmentTextToolbarDelegate?.isViewOnceEnabled ?? false
-    }
-
-    var outputQualityLevel: ImageQualityLevel {
-        attachmentTextToolbarDelegate?.outputQualityLevel ?? .standard
+    var isEditingText: Bool {
+        textView.isFirstResponder
     }
 
     var messageBody: MessageBody? {
@@ -51,104 +46,30 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
 
         set {
             textView.messageBody = newValue
-            updatePlaceholderTextViewVisibility()
+            updateAppearance()
         }
     }
-
-    var recipientNames = [String]() {
-        didSet { updateRecipientNames() }
-    }
-
-    private let viewOnceWrapper = UIView()
-
-    private let qualityLevelWrapper = UIView()
-    private let qualityLevelButton = OWSButton()
-
-    // Layout Constants
-
-    let kMinToolbarItemHeight: CGFloat = 40
-    let kMinTextViewHeight: CGFloat = 36
-    var maxTextViewHeight: CGFloat {
-        // About ~4 lines in portrait and ~3 lines in landscape.
-        // Otherwise we risk obscuring too much of the content.
-        return UIDevice.current.orientation.isPortrait ? 160 : 100
-    }
-    var textViewHeightConstraint: NSLayoutConstraint?
-    let kToolbarMargin: CGFloat = 12
 
     // MARK: - Initializers
 
-    init(options: AttachmentApprovalViewControllerOptions, sendButtonImageName: String) {
-        self.options = options
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
-        super.init(frame: CGRect.zero)
-
-        // Specifying autorsizing mask and an intrinsic content size allows proper
+        // Specifying autoresizing mask and an intrinsic content size allows proper
         // sizing when used as an input accessory view.
-        self.autoresizingMask = .flexibleHeight
-        self.translatesAutoresizingMaskIntoConstraints = false
-        self.backgroundColor = UIColor.clear
+        autoresizingMask = .flexibleHeight
+        preservesSuperviewLayoutMargins = true
+        translatesAutoresizingMaskIntoConstraints = false
+        layoutMargins.top = 10
 
         textView.mentionDelegate = self
 
-        let sendButton = OWSButton.sendButton(imageName: sendButtonImageName) { [weak self] in
-            guard let self = self else { return }
-            self.didTapSend()
-        }
-        sendButton.accessibilityLabel = OWSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
-
-        viewOnceButton.block = { [weak self] in
-            self?.didTapViewOnceMessagesButton()
-        }
-        qualityLevelButton.block = { [weak self] in
-            guard let self = self else { return }
-            self.attachmentTextToolbarDelegate?.attachmentTextToolbarDidTapQualityButton(self)
-        }
-
-        // Vertically center
-        for button in [qualityLevelButton, viewOnceButton] {
-            button.contentEdgeInsets =
-                UIEdgeInsets(
-                    top: 6,
-                    left: 0,
-                    bottom: (kMinToolbarItemHeight - timerHeight) / 2,
-                    right: 0
-                )
-        }
-
         // Layout
 
-        let sendWrapper = UIView()
-        sendWrapper.addSubview(sendButton)
-        viewOnceWrapper.addSubview(viewOnceButton)
-        qualityLevelWrapper.addSubview(qualityLevelButton)
-
-        let hStackView = UIStackView()
-        hStackView.isLayoutMarginsRelativeArrangement = true
-        hStackView.layoutMargins = UIEdgeInsets(top: kToolbarMargin, left: kToolbarMargin, bottom: kToolbarMargin, right: kToolbarMargin)
-        hStackView.axis = .horizontal
-        hStackView.alignment = .bottom
-        hStackView.spacing = kToolbarMargin
-
-        var views = [ viewOnceWrapper, qualityLevelWrapper, viewOnceSpacer, viewOnceRecipientNamesLabelScrollView, textContainer, sendWrapper ]
-        // UIStackView's horizontal layout is leading-to-trailing.
-        // We want left-to-right ordering, so reverse if RTL.
-        if CurrentAppContext().isRTL {
-            views.reverse()
-        }
-        for view in views {
-            hStackView.addArrangedSubview(view)
-        }
-
-        let vStackView = UIStackView(arrangedSubviews: [recipientNamesLabelScrollView, hStackView])
-        vStackView.axis = .vertical
-        vStackView.spacing = 12
-        self.addSubview(vStackView)
-        vStackView.autoPinEdgesToSuperviewEdges()
+        addSubview(textViewContainer)
+        textViewContainer.autoPinEdgesToSuperviewMargins()
 
         textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
-        viewOnceRecipientNamesLabelScrollView.autoSetDimension(.height, toSize: kMinTextViewHeight, relation: .greaterThanOrEqual)
-        viewOnceSpacer.autoSetDimension(.height, toSize: kMinTextViewHeight, relation: .greaterThanOrEqual)
 
         // We pin edges explicitly rather than doing something like:
         //  textView.autoPinEdges(toSuperviewMarginsExcludingEdge: .right)
@@ -156,27 +77,30 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
         // So it doesn't work as expected with RTL layouts when we explicitly want something
         // to be on the right side for both RTL and LTR layouts, like with the send button.
         // I believe this is a bug in PureLayout. Filed here: https://github.com/PureLayout/PureLayout/issues/209
-        textContainer.autoPinEdge(toSuperviewMargin: .top)
-        textContainer.autoPinEdge(toSuperviewMargin: .bottom)
+        textViewWrapperView.autoPinEdge(toSuperviewMargin: .top)
+        textViewWrapperView.autoPinEdge(toSuperviewMargin: .bottom)
 
-        let layoutButtonWithinWrapper = { (button: UIView) in
-            button.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-            button.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-            NSLayoutConstraint.autoSetPriority(.defaultLow) {
-                button.autoPinEdge(toSuperviewEdge: .top)
-            }
+        addSubview(addMessageButton)
+        addMessageButton.autoPinEdgesToSuperviewMargins()
+        addConstraint({
+            let constraint = addMessageButton.heightAnchor.constraint(equalToConstant: kMinTextViewHeight)
+            constraint.priority = UILayoutPriority.defaultLow
+            return constraint
+        }())
 
-            button.setContentHuggingHigh()
-            button.setCompressionResistanceHigh()
-        }
-        layoutButtonWithinWrapper(sendButton)
-        layoutButtonWithinWrapper(viewOnceButton)
-        layoutButtonWithinWrapper(qualityLevelButton)
+        addSubview(viewOnceMediaLabel)
+        viewOnceMediaLabel.autoPinEdgesToSuperviewMargins()
+        addConstraint({
+            let constraint = viewOnceMediaLabel.heightAnchor.constraint(equalToConstant: kMinTextViewHeight)
+            constraint.priority = UILayoutPriority.defaultLow
+            return constraint
+        }())
 
         updateContent()
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    @available(*, unavailable, message: "Use init(frame:) instead")
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -188,128 +112,133 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
 
     // MARK: - Subviews
 
-    let timerHeight: CGFloat = 24
+    private let kMinTextViewHeight: CGFloat = 36
+    private var maxTextViewHeight: CGFloat {
+        // About ~4 lines in portrait and ~3 lines in landscape.
+        // Otherwise we risk obscuring too much of the content.
+        return UIDevice.current.orientation.isPortrait ? 160 : 100
+    }
+    private var textViewHeightConstraint: NSLayoutConstraint?
+
     private func updateContent() {
         AssertIsOnMainThread()
-
-        let viewOnceImageName = isViewOnceEnabled ? "view-once-24" : "view-infinite-24"
-        viewOnceButton.setTemplateImageName(viewOnceImageName, tintColor: Theme.darkThemePrimaryColor)
-
-        textContainer.isHidden = isViewOnceEnabled
-        viewOnceWrapper.isHidden = !options.contains(.canToggleViewOnce)
-
-        showViewOnceTooltipIfNecessary()
-
-        let qualityLevelImageName = outputQualityLevel == .high ? "hq-24" : "sq-24"
-        qualityLevelButton.setTemplateImageName(qualityLevelImageName, tintColor: Theme.darkThemePrimaryColor)
-        qualityLevelWrapper.isHidden = !options.contains(.canChangeQualityLevel)
-
+        updateAppearance()
         updateHeight(textView: textView)
-
-        updateRecipientNames()
     }
 
-    lazy var textView: MentionTextView = {
-        let textView = buildTextView()
+    private func updateAppearance() {
+        let hasText: Bool = {
+            guard let text = self.textView.text else {
+                return false
+            }
+            return !text.isEmpty
+        }()
 
+        addMessageButton.isHidden = hasText || isEditingText || isViewOnceEnabled
+        viewOnceMediaLabel.isHidden = !isViewOnceEnabled
+        textViewContainer.isHidden = (!hasText && !isEditingText) || isViewOnceEnabled
+        placeholderTextView.isHidden = hasText
+        doneButton.isHiddenInStackView = !isEditingText
+
+        if let blueCircleView = doneButton.subviews.first(where: { $0 is CircleView }) {
+            doneButton.sendSubviewToBack(blueCircleView)
+        }
+    }
+
+    lazy private(set) var textView: MentionTextView = {
+        let textView = buildTextView()
         textView.returnKeyType = .done
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
         textView.mentionDelegate = self
-
         return textView
     }()
 
-    private let placeholderText = OWSLocalizedString("MESSAGE_TEXT_FIELD_PLACEHOLDER", comment: "placeholder text for the editable message field")
+    private let placeholderText = OWSLocalizedString("MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE", comment: "Placeholder for message text input field in media editor.")
 
     private lazy var placeholderTextView: UITextView = {
         let placeholderTextView = buildTextView()
-
         placeholderTextView.text = placeholderText
         placeholderTextView.isEditable = false
         placeholderTextView.textContainer.maximumNumberOfLines = 1
         placeholderTextView.textContainer.lineBreakMode = .byTruncatingTail
-        placeholderTextView.textColor = .ows_whiteAlpha60
-
+        placeholderTextView.textColor = .ows_gray45
         return placeholderTextView
     }()
 
-    private lazy var recipientNamesLabelScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.isHidden = true
-        scrollView.showsHorizontalScrollIndicator = false
-        scrollView.contentInset = UIEdgeInsets(top: kToolbarMargin, leading: 16, bottom: 0, trailing: 16)
-
-        scrollView.addSubview(recipientNamesLabel)
-        recipientNamesLabel.autoPinEdgesToSuperviewEdges()
-        recipientNamesLabel.autoMatch(.height, to: .height, of: scrollView, withOffset: -kToolbarMargin)
-
-        return scrollView
+    private lazy var addMessageButton: UIButton = {
+        let button = OWSButton(title: placeholderText) { [weak self] in
+            guard let self = self else { return }
+            self.didTapAddMessage()
+        }
+        button.setTitleColor(.ows_white, for: .normal)
+        button.titleLabel?.lineBreakMode = .byTruncatingTail
+        button.titleLabel?.textAlignment = .center
+        button.titleLabel?.font = .ows_dynamicTypeBodyClamped
+        return button
     }()
 
-    private lazy var recipientNamesLabel: UILabel = {
+    private lazy var viewOnceMediaLabel: UILabel = {
         let label = UILabel()
-        label.font = .ows_dynamicTypeBody2
-        label.textColor = Theme.darkThemePrimaryColor
-
-        label.setContentHuggingLow()
-
-        return label
-    }()
-
-    private lazy var viewOnceRecipientNamesLabelScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.isHidden = true
-        scrollView.showsHorizontalScrollIndicator = false
-
-        scrollView.addSubview(viewOnceRecipientNamesLabel)
-        viewOnceRecipientNamesLabel.autoPinEdgesToSuperviewEdges()
-        viewOnceRecipientNamesLabel.autoMatch(.width, to: .width, of: scrollView, withOffset: 0, relation: .greaterThanOrEqual)
-        viewOnceRecipientNamesLabel.autoMatch(.height, to: .height, of: scrollView)
-
-        return scrollView
-    }()
-
-    private lazy var viewOnceRecipientNamesLabel: UILabel = {
-        let label = UILabel()
-        label.font = .ows_dynamicTypeBody2
-        label.textColor = Theme.darkThemePrimaryColor
+        label.text = OWSLocalizedString("MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA", comment: "Shown in place of message input text in media editor when 'View Once' is on.")
+        label.numberOfLines = 1
+        label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
-
-        label.setContentHuggingLow()
-
+        label.textColor = .ows_whiteAlpha50
+        label.font = .ows_dynamicTypeBodyClamped
         return label
     }()
 
-    private lazy var textContainer: UIView = {
-        let textContainer = UIView()
-        let textBorder = UIView()
-        textContainer.addSubview(textBorder)
-        let inset = (kMinToolbarItemHeight - kMinTextViewHeight) / 2
-        textBorder.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: inset, trailing: 0))
+    private lazy var textViewContainer: UIView = {
+        let hStackView = UIStackView(arrangedSubviews: [ textViewWrapperView, doneButton ])
+        hStackView.axis = .horizontal
+        hStackView.alignment = .bottom
+        hStackView.spacing = 4
+        return hStackView
+    }()
 
-        textBorder.layer.borderColor = Theme.darkThemePrimaryColor.cgColor
-        textBorder.layer.borderWidth = CGHairlineWidthFraction(1.4)
-        textBorder.layer.cornerRadius = kMinTextViewHeight / 2
-        textBorder.clipsToBounds = true
+    private lazy var doneButton: UIButton = {
+        let doneButton = OWSButton(imageName: "check-24", tintColor: .white) { [weak self] in
+            guard let self = self else { return }
+            self.didTapFinishEditing()
+        }
+        let visibleButtonSize = kMinTextViewHeight
+        doneButton.layoutMargins = UIEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 0)
+        doneButton.contentEdgeInsets = doneButton.layoutMargins
+        doneButton.accessibilityLabel = CommonStrings.doneButton
+        let blueCircle = CircleView(diameter: visibleButtonSize)
+        blueCircle.backgroundColor = .ows_accentBlue
+        blueCircle.isUserInteractionEnabled = false
+        doneButton.addSubview(blueCircle)
+        doneButton.sendSubviewToBack(blueCircle)
+        blueCircle.autoPinEdgesToSuperviewMargins()
+        return doneButton
+    }()
 
-        textBorder.addSubview(placeholderTextView)
-        placeholderTextView.autoPinEdgesToSuperviewEdges()
+    private lazy var textViewWrapperView: UIView = {
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = .ows_gray80
+        backgroundView.layer.cornerRadius = kMinTextViewHeight / 2
+        backgroundView.clipsToBounds = true
 
-        textBorder.addSubview(textView)
+        let wrapperView = UIView()
+        wrapperView.addSubview(backgroundView)
+        backgroundView.autoPinEdgesToSuperviewEdges()
+
+        wrapperView.addSubview(textView)
         textView.autoPinEdgesToSuperviewEdges()
 
-        return textContainer
+        wrapperView.addSubview(placeholderTextView)
+        placeholderTextView.autoPinEdges(toEdgesOf: textView)
+
+        return wrapperView
     }()
 
     private func buildTextView() -> MentionTextView {
         let textView = AttachmentTextView()
-
         textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
         textView.backgroundColor = .clear
         textView.tintColor = Theme.darkThemePrimaryColor
-
-        let textViewFont = UIFont.ows_dynamicTypeBody
-        textView.font = textViewFont
+        textView.font = .ows_dynamicTypeBody
         textView.textColor = Theme.darkThemePrimaryColor
 
         // Check the system font size and increase text inset accordingly
@@ -317,59 +246,47 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
         textView.updateVerticalInsetsForDynamicBodyType(defaultInsets: 7)
         textView.textContainerInset.left = 7
         textView.textContainerInset.right = 7
-
         return textView
     }
+}
 
-    private let viewOnceButton = OWSButton()
+// MARK: - Actions
 
-    private let viewOnceSpacer = UIView.hStretchingSpacer()
-
-    // MARK: - Actions
+extension AttachmentTextToolbar {
 
     @objc
-    func didTapSend() {
-        assert(attachmentTextToolbarDelegate != nil)
-
+    private func didTapFinishEditing() {
         textView.acceptAutocorrectSuggestion()
-        attachmentTextToolbarDelegate?.attachmentTextToolbarDidTapSend(self)
+        textView.resignFirstResponder()
     }
 
     @objc
-    func didTapViewOnceMessagesButton() {
-        AssertIsOnMainThread()
-
-        // Toggle value.
-        attachmentTextToolbarDelegate?.isViewOnceEnabled = !isViewOnceEnabled
-        preferences.setWasViewOnceTooltipShown()
-
-        attachmentTextToolbarDelegate?.attachmentTextToolbarDidViewOnce(self)
-
-        if isViewOnceEnabled { textView.resignFirstResponder() }
-
-        updateContent()
+    private func didTapAddMessage() {
+        guard !isViewOnceEnabled else { return }
+        textView.becomeFirstResponder()
     }
+}
 
-    // MARK: - MentionTextViewDelegate
+extension AttachmentTextToolbar: MentionTextViewDelegate {
 
     func textViewDidBeginTypingMention(_ textView: MentionTextView) {
-        attachmentTextToolbarDelegate?.textViewDidBeginTypingMention(textView)
+        mentionTextViewDelegate?.textViewDidBeginTypingMention(textView)
     }
 
     func textViewDidEndTypingMention(_ textView: MentionTextView) {
-        attachmentTextToolbarDelegate?.textViewDidEndTypingMention(textView)
+        mentionTextViewDelegate?.textViewDidEndTypingMention(textView)
     }
 
     func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
-        return attachmentTextToolbarDelegate?.textViewMentionPickerParentView(textView)
+        return mentionTextViewDelegate?.textViewMentionPickerParentView(textView)
     }
 
     func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
-        return attachmentTextToolbarDelegate?.textViewMentionPickerReferenceView(textView)
+        return mentionTextViewDelegate?.textViewMentionPickerReferenceView(textView)
     }
 
     func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
-        return attachmentTextToolbarDelegate?.textViewMentionPickerPossibleAddresses(textView) ?? []
+        return mentionTextViewDelegate?.textViewMentionPickerPossibleAddresses(textView) ?? []
     }
 
     func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
@@ -377,13 +294,13 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
     func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
         return .composingAttachment
     }
+}
 
-    // MARK: - UITextViewDelegate
+extension AttachmentTextToolbar: UITextViewDelegate {
 
     public func textViewDidChange(_ textView: UITextView) {
-        updateHeight(textView: textView)
-        attachmentTextToolbarDelegate?.attachmentTextToolbarDidChange(self)
-        updatePlaceholderTextViewVisibility()
+        updateContent()
+        delegate?.attachmentTextToolbarDidChange(self)
     }
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -397,58 +314,34 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
         }
     }
 
+    public func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        // Putting these lines in `textViewDidBeginEditing` doesn't work.
+        textView.textContainer.lineBreakMode = .byWordWrapping
+        textView.textContainer.maximumNumberOfLines = 0
+        return true
+    }
+
     public func textViewDidBeginEditing(_ textView: UITextView) {
-        attachmentTextToolbarDelegate?.attachmentTextToolbarDidBeginEditing(self)
-        updatePlaceholderTextViewVisibility()
+        // Making textView think its content has changed is necessary
+        // in order to get correct textView size and expand it to multiple lines if necessary.
+        textView.layoutManager.processEditing(for: textView.textStorage,
+                                              edited: .editedCharacters,
+                                              range: NSRange(location: 0, length: 0),
+                                              changeInLength: 0,
+                                              invalidatedRange: NSRange(location: 0, length: 0))
+        delegate?.attachmentTextToolbarDidBeginEditing(self)
+        updateContent()
     }
 
     public func textViewDidEndEditing(_ textView: UITextView) {
-        attachmentTextToolbarDelegate?.attachmentTextToolbarDidEndEditing(self)
-        updatePlaceholderTextViewVisibility()
+        textView.textContainer.lineBreakMode = .byTruncatingTail
+        textView.textContainer.maximumNumberOfLines = 1
+        delegate?.attachmentTextToolbarDidEndEditing(self)
+        updateContent()
     }
+}
 
-    // MARK: - Helpers
-
-    func updatePlaceholderTextViewVisibility() {
-        let isHidden: Bool = {
-            guard let text = self.textView.text else {
-                return false
-            }
-
-            guard text.count > 0 else {
-                return false
-            }
-
-            return true
-        }()
-
-        placeholderTextView.isHidden = isHidden
-    }
-
-    func updateRecipientNames() {
-        viewOnceSpacer.isHidden = !isViewOnceEnabled || recipientNames.count > 0
-        viewOnceRecipientNamesLabelScrollView.isHidden = !isViewOnceEnabled || recipientNames.isEmpty
-        recipientNamesLabelScrollView.isHidden = isViewOnceEnabled || recipientNames.count < 2
-
-        switch recipientNames.count {
-        case 0:
-            placeholderTextView.text = placeholderText
-        case 1:
-            let messageToText = String(
-                format: OWSLocalizedString(
-                    "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT",
-                    comment: "Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}}"
-                ), recipientNames[0]
-            )
-            placeholderTextView.text = messageToText
-            viewOnceRecipientNamesLabel.text = messageToText
-        default:
-            let namesList = recipientNames.joined(separator: ", ")
-            placeholderTextView.text = placeholderText
-            recipientNamesLabel.text = namesList
-            viewOnceRecipientNamesLabel.text = namesList
-        }
-    }
+extension AttachmentTextToolbar {
 
     private func updateHeight(textView: UITextView) {
         guard let textViewHeightConstraint = textViewHeightConstraint else {
@@ -465,70 +358,11 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
             textViewHeightConstraint.constant = textViewHeight
             invalidateIntrinsicContentSize()
         }
-        textViewHeightConstraint.isActive = !isViewOnceEnabled
+        textViewHeightConstraint.isActive = isEditingText
     }
 
     private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {
         let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
         return CGFloatClamp(contentSize.height, kMinTextViewHeight, maxTextViewHeight)
-    }
-
-    // MARK: - Helpers
-
-    // The tooltip lies outside this view's bounds, so we
-    // need to special-case the hit testing so that it can
-    // intercept touches within its bounds.
-    @objc
-    public override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        if let viewOnceTooltip = self.viewOnceTooltip {
-            let tooltipFrame = convert(viewOnceTooltip.bounds, from: viewOnceTooltip)
-            if tooltipFrame.contains(point) {
-                return true
-            }
-        }
-        return super.point(inside: point, with: event)
-    }
-
-    private var shouldShowViewOnceTooltip: Bool {
-        guard !isViewOnceEnabled else {
-            return false
-        }
-        guard !preferences.wasViewOnceTooltipShown() else {
-            return false
-        }
-        return true
-    }
-
-    private var viewOnceTooltip: UIView?
-
-    // Show the tooltip if a) it should be shown b) isn't already showing.
-    private func showViewOnceTooltipIfNecessary() {
-        guard shouldShowViewOnceTooltip else {
-            return
-        }
-        guard nil == viewOnceTooltip else {
-            // Already showing the tooltip.
-            return
-        }
-        guard !viewOnceButton.isHidden && !viewOnceWrapper.isHidden else {
-            return
-        }
-        let tooltip = ViewOnceTooltip.present(fromView: self, widthReferenceView: self, tailReferenceView: viewOnceButton) { [weak self] in
-            self?.removeViewOnceTooltip()
-        }
-        viewOnceTooltip = tooltip
-
-        DispatchQueue.global().async {
-            self.preferences.setWasViewOnceTooltipShown()
-
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) { [weak self] in
-                self?.removeViewOnceTooltip()
-            }
-        }
-    }
-
-    private func removeViewOnceTooltip() {
-        viewOnceTooltip?.removeFromSuperview()
-        viewOnceTooltip = nil
     }
 }

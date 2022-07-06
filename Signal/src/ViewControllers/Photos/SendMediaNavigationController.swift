@@ -13,8 +13,6 @@ protocol SendMediaNavDelegate: AnyObject {
 
     func sendMediaNavInitialMessageBody(_ sendMediaNavigationController: SendMediaNavigationController) -> MessageBody?
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageBody newMessageBody: MessageBody?)
-    var sendMediaNavApprovalButtonImageName: String { get }
-    var sendMediaNavCanSaveAttachments: Bool { get }
     var sendMediaNavTextInputContextIdentifier: String? { get }
     var sendMediaNavRecipientNames: [String] { get }
     var sendMediaNavMentionableAddresses: [SignalServiceAddress] { get }
@@ -22,6 +20,10 @@ protocol SendMediaNavDelegate: AnyObject {
 
 @objc
 class CameraFirstCaptureNavigationController: SendMediaNavigationController {
+
+    override var requiresContactPickerToProceed: Bool {
+        true
+    }
 
     @objc
     private(set) var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
@@ -46,20 +48,14 @@ class SendMediaNavigationController: OWSNavigationController {
         return attachmentDraftCollection.count
     }
 
-    // MARK: - Overrides
-
-    override var prefersStatusBarHidden: Bool {
-        guard !CurrentAppContext().hasActiveCall else {
-            return false
-        }
-        return true
+    var requiresContactPickerToProceed: Bool {
+        false
     }
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        if topViewController is ConversationPickerViewController {
-            return .default
-        }
-        return  .lightContent
+    // MARK: - Overrides
+
+    override var childForStatusBarStyle: UIViewController? {
+        topViewController
     }
 
     override func viewDidLoad() {
@@ -169,10 +165,13 @@ class SendMediaNavigationController: OWSNavigationController {
             return
         }
 
-        let approvalViewController = AttachmentApprovalViewController(options: options,
-                                                                      sendButtonImageName: sendMediaNavDelegate.sendMediaNavApprovalButtonImageName,
-                                                                      attachmentApprovalItems: attachmentApprovalItems)
+        var options = options
+        if requiresContactPickerToProceed {
+            options.insert(.isNotFinalScreen)
+        }
+        let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
+        approvalViewController.approvalDataSource = self
         approvalViewController.messageBody = sendMediaNavDelegate.sendMediaNavInitialMessageBody(self)
 
         if animated {
@@ -243,7 +242,9 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
                 setNavigationBarHidden(true, animated: animated)
             }
         case is AttachmentApprovalViewController:
-            showNavbar(.alwaysDarkAndClear)
+            if !isNavigationBarHidden {
+                setNavigationBarHidden(true, animated: animated)
+            }
         case is ImagePickerGridController:
             showNavbar(.alwaysDark)
         case is ConversationPickerViewController:
@@ -313,7 +314,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
             if let owsNavBar = presentedViewController.navigationBar as? OWSNavigationBar {
                 owsNavBar.switchToStyle(.alwaysDark)
             }
-            presentedViewController.ows_prefersStatusBarHidden = true
+            presentedViewController.ows_preferredStatusBarStyle = .lightContent
             self.presentFullScreen(presentedViewController, animated: true)
         }
     }
@@ -357,8 +358,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDataSource {
     }
 
     func addMedia(attachment: SignalAttachment) {
-        guard let sendMediaNavDelegate = self.sendMediaNavDelegate else { return }
-        let cameraCaptureAttachment = CameraCaptureAttachment(signalAttachment: attachment, canSave: sendMediaNavDelegate.sendMediaNavCanSaveAttachments)
+        let cameraCaptureAttachment = CameraCaptureAttachment(signalAttachment: attachment)
         attachmentDraftCollection.append(.camera(attachment: cameraCaptureAttachment))
     }
 }
@@ -424,12 +424,10 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>) {
-        guard let sendMediaNavDelegate = sendMediaNavDelegate else { return }
         guard !attachmentDraftCollection.hasPickerAttachment(forAsset: asset) else { return }
 
         let attachmentApprovalItemPromise = attachmentPromise.map { attachment in
-            AttachmentApprovalItem(attachment: attachment,
-                                   canSave: sendMediaNavDelegate.sendMediaNavCanSaveAttachments)
+            AttachmentApprovalItem(attachment: attachment, canSave: false)
         }
 
         let libraryMedia = MediaLibraryAttachment(asset: asset, attachmentApprovalItemPromise: attachmentApprovalItemPromise)
@@ -462,9 +460,6 @@ extension SendMediaNavigationController: ImagePickerGridControllerDataSource {
 
 extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegate {
 
-    func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
-    }
-
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
         sendMediaNavDelegate?.sendMediaNav(self, didChangeMessageBody: newMessageBody)
     }
@@ -496,13 +491,16 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
 
         popViewController(animated: true)
     }
+}
+
+extension SendMediaNavigationController: AttachmentApprovalViewControllerDataSource {
 
     var attachmentApprovalTextInputContextIdentifier: String? {
         return sendMediaNavDelegate?.sendMediaNavTextInputContextIdentifier
     }
 
     var attachmentApprovalRecipientNames: [String] {
-        return sendMediaNavDelegate?.sendMediaNavRecipientNames ?? []
+        sendMediaNavDelegate?.sendMediaNavRecipientNames ?? []
     }
 
     var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
@@ -611,9 +609,9 @@ private struct CameraCaptureAttachment: Hashable, Equatable {
     let attachmentApprovalItem: AttachmentApprovalItem
     let attachmentApprovalItemPromise: Promise<AttachmentApprovalItem>
 
-    init(signalAttachment: SignalAttachment, canSave: Bool) {
+    init(signalAttachment: SignalAttachment) {
         self.signalAttachment = signalAttachment
-        self.attachmentApprovalItem = AttachmentApprovalItem(attachment: signalAttachment, canSave: canSave)
+        self.attachmentApprovalItem = AttachmentApprovalItem(attachment: signalAttachment, canSave: true)
         self.attachmentApprovalItemPromise = Promise.value(attachmentApprovalItem)
     }
 

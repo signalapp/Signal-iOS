@@ -4,8 +4,8 @@
 
 import UIKit
 
-public protocol ImageEditorPaletteViewDelegate: AnyObject {
-    func selectedColorDidChange()
+protocol ImageEditorPaletteViewDelegate: AnyObject {
+    func imageEditorPaletteView(_ paletteView: ImageEditorPaletteView, didSelectColor color: ImageEditorColor)
 }
 
 // MARK: -
@@ -13,49 +13,46 @@ public protocol ImageEditorPaletteViewDelegate: AnyObject {
 // We represent image editor colors using this (color, phase)
 // tuple so that we can consistently restore palette view
 // state.
-@objc
-public class ImageEditorColor: NSObject {
-    public let color: UIColor
+class ImageEditorColor {
+    let color: UIColor
 
     // Colors are chosen from a spectrum of colors.
     // This unit value represents the location of the
     // color within that spectrum.
-    public let palettePhase: CGFloat
+    let palettePhase: CGFloat
 
-    public var cgColor: CGColor {
+    var cgColor: CGColor {
         return color.cgColor
     }
 
-    public required init(color: UIColor, palettePhase: CGFloat) {
+    required init(color: UIColor, palettePhase: CGFloat) {
         self.color = color
         self.palettePhase = palettePhase
     }
 
-    public class func defaultColor() -> ImageEditorColor {
-        return ImageEditorColor(color: UIColor(rgbHex: 0xff0000), palettePhase: 0)
+    class func defaultColor() -> ImageEditorColor {
+        return ImageEditorColor(color: UIColor(rgbHex: 0xff0000), palettePhase: 1/9)
     }
 
-    public static var gradientUIColors: [UIColor] {
+    static var gradientUIColors: [UIColor] {
         return [
-            UIColor(rgbHex: 0xffffff),
-            UIColor(rgbHex: 0xff0000),
-            UIColor(rgbHex: 0xff00ff),
-            UIColor(rgbHex: 0x0000ff),
-            UIColor(rgbHex: 0x00ffff),
-            UIColor(rgbHex: 0x00ff00),
-            UIColor(rgbHex: 0xffff00),
+            UIColor(rgbHex: 0x000000),
             UIColor(rgbHex: 0xff5500),
-            UIColor(rgbHex: 0x000000)
+            UIColor(rgbHex: 0xffff00),
+            UIColor(rgbHex: 0x00ff00),
+            UIColor(rgbHex: 0x00ffff),
+            UIColor(rgbHex: 0x0000ff),
+            UIColor(rgbHex: 0xff00ff),
+            UIColor(rgbHex: 0xff0000),
+            UIColor(rgbHex: 0xffffff)
         ]
     }
 
-    public static var gradientCGColors: [CGColor] {
-        return gradientUIColors.map({ (color) in
-            return color.cgColor
-        })
+    static var gradientCGColors: [CGColor] {
+        return gradientUIColors.map { $0.cgColor }
     }
 
-    static func ==(left: ImageEditorColor, right: ImageEditorColor) -> Bool {
+    static func == (left: ImageEditorColor, right: ImageEditorColor) -> Bool {
         return left.palettePhase.fuzzyEquals(right.palettePhase)
     }
 }
@@ -65,14 +62,13 @@ public class ImageEditorColor: NSObject {
 private class PalettePreviewView: OWSLayerView {
 
     private static let innerRadius: CGFloat = 32
-    private static let shadowMargin: CGFloat = 0
     // The distance from the "inner circle" to the "teardrop".
     private static let circleMargin: CGFloat = 3
     private static let teardropTipRadius: CGFloat = 4
     private static let teardropPointiness: CGFloat = 12
 
     private let teardropColor = UIColor.white
-    public var selectedColor = UIColor.white {
+    var selectedColor = UIColor.white {
         didSet {
             circleLayer.fillColor = selectedColor.cgColor
         }
@@ -96,10 +92,6 @@ private class PalettePreviewView: OWSLayerView {
         layer.addSublayer(circleLayer)
 
         teardropLayer.fillColor = teardropColor.cgColor
-        teardropLayer.shadowColor = UIColor.black.cgColor
-        teardropLayer.shadowRadius = 2.0
-        teardropLayer.shadowOpacity = 0.33
-        teardropLayer.shadowOffset = .zero
 
         layoutCallback = { (view) in
             PalettePreviewView.updateLayers(view: view,
@@ -116,7 +108,7 @@ private class PalettePreviewView: OWSLayerView {
     }
 
     @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -125,10 +117,9 @@ private class PalettePreviewView: OWSLayerView {
                              teardropLayer: CAShapeLayer) {
         let bounds = view.bounds
         let outerRadius = innerRadius + circleMargin
-        let rightEdge = CGPoint(x: bounds.width,
-                                y: bounds.height * 0.5)
-        let teardropTipCenter = rightEdge.minus(CGPoint(x: teardropTipRadius + shadowMargin, y: 0))
-        let circleCenter = teardropTipCenter.minus(CGPoint(x: teardropPointiness + innerRadius, y: 0))
+        let bottomEdge = CGPoint(x: bounds.center.x, y: bounds.maxY)
+        let teardropTipCenter = bottomEdge.minus(CGPoint(x: 0, y: teardropTipRadius))
+        let circleCenter = teardropTipCenter.minus(CGPoint(x: 0, y: teardropPointiness + innerRadius))
 
         // The "teardrop" shape is bounded by 2 circles, joined by their tangents.
         //
@@ -141,22 +132,24 @@ private class PalettePreviewView: OWSLayerView {
         //
         // 1. Find the length of the hypotenuse.
         let circleCenterDistance = teardropTipCenter.minus(circleCenter).length
-        // 2. Fine the length of the first side.
+        // 2. Find the length of the first side.
         let radiusDiff = outerRadius - teardropTipRadius
-        // 2. Fine the length of the second side.
+        // 3. Find the length of the second side.
         let tangentLength = (circleCenterDistance.square - radiusDiff.square).squareRoot()
         let angle = atan2(tangentLength, radiusDiff)
+        let startAngle = angle + .halfPi
+        let endAngle = -angle + .halfPi
 
         let teardropPath = UIBezierPath()
         teardropPath.addArc(withCenter: circleCenter,
                             radius: outerRadius,
-                            startAngle: +angle,
-                            endAngle: -angle,
+                            startAngle: startAngle,
+                            endAngle: endAngle,
                             clockwise: true)
         teardropPath.addArc(withCenter: teardropTipCenter,
                             radius: teardropTipRadius,
-                            startAngle: -angle,
-                            endAngle: +angle,
+                            startAngle: endAngle,
+                            endAngle: startAngle,
                             clockwise: true)
 
         teardropLayer.path = teardropPath.cgPath
@@ -172,13 +165,17 @@ private class PalettePreviewView: OWSLayerView {
 
 // MARK: -
 
-public class ImageEditorPaletteView: UIView {
+class ImageEditorPaletteView: UIView {
 
-    public weak var delegate: ImageEditorPaletteViewDelegate?
+    weak var delegate: ImageEditorPaletteViewDelegate?
 
-    public var selectedValue: ImageEditorColor
+    var selectedValue: ImageEditorColor {
+        didSet {
+            updateState()
+        }
+    }
 
-    public required init(currentColor: ImageEditorColor) {
+    required init(currentColor: ImageEditorColor) {
         self.selectedValue = currentColor
 
         super.init(frame: .zero)
@@ -187,44 +184,53 @@ public class ImageEditorPaletteView: UIView {
     }
 
     @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Views
 
     private let imageView = UIImageView()
-    private let selectionView = UIView()
+    private static let selectionSize: CGFloat = 22
+    private static let colorBarWidth: CGFloat = 12
+    private var selectionView: UIView = {
+        let selectionView = CircleView(diameter: selectionSize)
+        // Use separate view to create border effect because
+        // setting up border on the same view creates a weird glow around the border.
+        let borderView = CircleView(diameter: selectionSize + 1)
+        borderView.layer.borderColor = UIColor.white.cgColor
+        borderView.layer.borderWidth = 2
+        selectionView.addSubview(borderView)
+        borderView.autoHCenterInSuperview()
+        borderView.autoVCenterInSuperview()
+        return selectionView
+    }()
     // imageWrapper is used to host the "selection view".
     private let imageWrapper = OWSLayerView()
-    private let shadowView = UIView()
     private var selectionConstraint: NSLayoutConstraint?
     private let previewView = PalettePreviewView()
-    private var previewConstraint: NSLayoutConstraint?
 
     private func createContents() {
-        self.backgroundColor = .clear
-        self.isOpaque = false
-        self.layoutMargins = .zero
+        isOpaque = false
+        layoutMargins.leading = 0
+        layoutMargins.trailing = 0
 
-        shadowView.backgroundColor = .black
-        shadowView.layer.shadowColor = UIColor.black.cgColor
-        shadowView.layer.shadowRadius = 2.0
-        shadowView.layer.shadowOpacity = 0.33
-        shadowView.layer.shadowOffset = .zero
-        addSubview(shadowView)
-
+        let borderWidth: CGFloat = 2
         let image = ImageEditorPaletteView.buildPaletteGradientImage()
         imageView.image = image
-        let imageRadius = image.size.width * 0.5
+        let imageRadius = image.size.height * 0.5
         imageView.layer.cornerRadius = imageRadius
-        shadowView.layer.cornerRadius = imageRadius
         imageView.clipsToBounds = true
         addSubview(imageView)
-        // We use an invisible margin to expand the hot area of this control.
-        let margin: CGFloat = 20
-        imageView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: margin, left: margin, bottom: margin, right: margin))
-        imageView.addBorder(with: .white)
+        imageView.autoSetDimension(.height, toSize: ImageEditorPaletteView.colorBarWidth)
+        imageView.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(margin: borderWidth))
+
+        // Create "outer border" that doesn't obscure any colors in the strip.
+        let imageViewBorder = PillView()
+        imageViewBorder.layer.borderWidth = borderWidth
+        imageViewBorder.layer.borderColor = UIColor.white.cgColor
+        addSubview(imageViewBorder)
+        imageViewBorder.autoPin(toEdgesOf: imageView, with: UIEdgeInsets(margin: -borderWidth))
 
         imageWrapper.layoutCallback = { [weak self] (_) in
             guard let strongSelf = self else {
@@ -234,46 +240,32 @@ public class ImageEditorPaletteView: UIView {
         }
         addSubview(imageWrapper)
         imageWrapper.autoPin(toEdgesOf: imageView)
-        shadowView.autoPin(toEdgesOf: imageView)
 
-        selectionView.addBorder(with: .white)
-        selectionView.layer.cornerRadius = selectionSize / 2
-        selectionView.autoSetDimensions(to: CGSize(square: selectionSize))
         imageWrapper.addSubview(selectionView)
-        selectionView.autoHCenterInSuperview()
+        selectionView.autoVCenterInSuperview()
 
         // There must be a better way to pin the selection view's location,
         // but I can't find it.
-        let selectionConstraint = NSLayoutConstraint(item: selectionView,
-                                                     attribute: .centerY, relatedBy: .equal, toItem: imageWrapper, attribute: .top, multiplier: 1, constant: 0)
+        let selectionConstraint = NSLayoutConstraint(item: selectionView, attribute: .centerX, relatedBy: .equal,
+                                                     toItem: imageWrapper, attribute: .leading, multiplier: 1, constant: 0)
         selectionConstraint.autoInstall()
         self.selectionConstraint = selectionConstraint
 
         previewView.isHidden = true
         addSubview(previewView)
-        previewView.autoPinEdge(.trailing, to: .leading, of: imageView, withOffset: -24)
-        let previewConstraint = NSLayoutConstraint(item: previewView,
-                                                     attribute: .centerY, relatedBy: .equal, toItem: imageWrapper, attribute: .top, multiplier: 1, constant: 0)
-        previewConstraint.autoInstall()
-        self.previewConstraint = previewConstraint
+        previewView.autoPinEdge(.bottom, to: .top, of: imageView, withOffset: -24)
+        previewView.centerXAnchor.constraint(equalTo: selectionView.centerXAnchor).isActive = true
 
-        isUserInteractionEnabled = true
         addGestureRecognizer(PermissiveGestureRecognizer(target: self, action: #selector(didTouch)))
 
         updateState()
     }
 
-    // 0 = the color at the top of the image is selected.
-    // 1 = the color at the bottom of the image is selected.
-    private let selectionSize: CGFloat = 20
+    private func selectColor(atLocationX locationX: CGFloat) {
+        let palettePhase = locationX.inverseLerp(0, imageView.width, shouldClamp: true)
+        selectedValue = value(for: palettePhase)
 
-    private func selectColor(atLocationY y: CGFloat) {
-        let palettePhase = y.inverseLerp(0, imageView.height, shouldClamp: true)
-        self.selectedValue = value(for: palettePhase)
-
-        updateState()
-
-        delegate?.selectedColorDidChange()
+        delegate?.imageEditorPaletteView(self, didSelectColor: selectedValue)
     }
 
     private func value(for palettePhase: CGFloat) -> ImageEditorColor {
@@ -312,7 +304,7 @@ public class ImageEditorPaletteView: UIView {
             return ImageEditorColor.defaultColor()
         }
         guard palettePhase >= segment.palettePhase0,
-            palettePhase <= segment.palettePhase1 else {
+              palettePhase <= segment.palettePhase1 else {
             owsFailDebug("Invalid segment.")
             return ImageEditorColor.defaultColor()
         }
@@ -331,20 +323,14 @@ public class ImageEditorPaletteView: UIView {
             owsFailDebug("Missing selectionConstraint.")
             return
         }
-        let selectionY = imageWrapper.height * selectedValue.palettePhase
-        selectionConstraint.constant = selectionY
-
-        guard let previewConstraint = previewConstraint else {
-            owsFailDebug("Missing previewConstraint.")
-            return
-        }
-        previewConstraint.constant = selectionY
+        let selectionX = imageWrapper.width * selectedValue.palettePhase
+        selectionConstraint.constant = selectionX
     }
 
     // MARK: Events
 
     @objc
-    func didTouch(gesture: UIGestureRecognizer) {
+    private func didTouch(gesture: UIGestureRecognizer) {
         switch gesture.state {
         case .began, .changed:
             previewView.isHidden = false
@@ -356,11 +342,11 @@ public class ImageEditorPaletteView: UIView {
         }
 
         let location = gesture.location(in: imageView)
-        selectColor(atLocationY: location.y)
+        selectColor(atLocationX: location.x)
     }
 
     private static func buildPaletteGradientImage() -> UIImage {
-        let gradientSize = CGSize(width: 8, height: 200)
+        let gradientSize = CGSize(width: UIScreen.main.bounds.width, height: colorBarWidth)
         let gradientBounds = CGRect(origin: .zero, size: gradientSize)
         let gradientView = UIView()
         gradientView.frame = gradientBounds
@@ -370,8 +356,7 @@ public class ImageEditorPaletteView: UIView {
         // See: https://github.com/signalapp/Signal-Android/blob/42e94d8f921aba212b1ffebfae4f2590a6f3385a/res/values/arrays.xml#L267-L277
         gradientLayer.colors = ImageEditorColor.gradientCGColors
         gradientLayer.startPoint = CGPoint.zero
-        gradientLayer.endPoint = CGPoint(x: 0, y: gradientSize.height)
-        gradientLayer.endPoint = CGPoint(x: 0, y: 1.0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 0)
         return gradientView.renderAsImage(opaque: true, scale: UIScreen.main.scale)
     }
 }

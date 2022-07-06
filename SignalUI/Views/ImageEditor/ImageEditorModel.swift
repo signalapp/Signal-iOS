@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -24,8 +24,7 @@ private class ImageEditorOperation: NSObject {
 
 // MARK: -
 
-@objc
-public protocol ImageEditorModelObserver: AnyObject {
+protocol ImageEditorModelObserver: AnyObject {
     // Used for large changes to the model, when the entire
     // model should be reloaded.
     func imageEditorModelDidChange(before: ImageEditorContents,
@@ -38,14 +37,11 @@ public protocol ImageEditorModelObserver: AnyObject {
 
 // MARK: -
 
-@objc
-public class ImageEditorModel: NSObject {
+class ImageEditorModel: NSObject {
 
-    @objc
-    public let srcImagePath: String
+    let srcImagePath: String
 
-    @objc
-    public let srcImageSizePixels: CGSize
+    let srcImageSizePixels: CGSize
 
     private var contents: ImageEditorContents
 
@@ -56,12 +52,13 @@ public class ImageEditorModel: NSObject {
 
     var blurredSourceImage: CGImage?
 
+    var color = ImageEditorColor.defaultColor()
+
     // We don't want to allow editing of images if:
     //
     // * They are invalid.
     // * We can't determine their size / aspect-ratio.
-    @objc
-    public required init(srcImagePath: String) throws {
+    required init(srcImagePath: String) throws {
         self.srcImagePath = srcImagePath
 
         let srcFileName = (srcImagePath as NSString).lastPathComponent
@@ -71,9 +68,9 @@ public class ImageEditorModel: NSObject {
             throw ImageEditorError.invalidInput
         }
         guard MIMETypeUtil.isImage(mimeType),
-            !MIMETypeUtil.isAnimated(mimeType) else {
-                Logger.error("Invalid MIME type: \(mimeType).")
-                throw ImageEditorError.invalidInput
+              !MIMETypeUtil.isAnimated(mimeType) else {
+            Logger.error("Invalid MIME type: \(mimeType).")
+            throw ImageEditorError.invalidInput
         }
 
         let srcImageSizePixels = NSData.imageSize(forFilePath: srcImagePath, mimeType: mimeType)
@@ -89,59 +86,50 @@ public class ImageEditorModel: NSObject {
         super.init()
     }
 
-    public func renderOutput() -> UIImage? {
+    func renderOutput() -> UIImage? {
         return ImageEditorCanvasView.renderForOutput(model: self, transform: currentTransform())
     }
 
-    public func currentTransform() -> ImageEditorTransform {
+    func currentTransform() -> ImageEditorTransform {
         return transform
     }
 
-    @objc
-    public func isDirty() -> Bool {
+    func isDirty() -> Bool {
         if itemCount() > 0 {
             return true
         }
         return transform != ImageEditorTransform.defaultTransform(srcImageSizePixels: srcImageSizePixels)
     }
 
-    @objc
-    public func itemCount() -> Int {
+    func itemCount() -> Int {
         return contents.itemCount()
     }
 
-    @objc
-    public func items() -> [ImageEditorItem] {
+    func items() -> [ImageEditorItem] {
         return contents.items()
     }
 
-    @objc
-    public func itemIds() -> [String] {
+    func itemIds() -> [String] {
         return contents.itemIds()
     }
 
-    @objc
-    public func has(itemForId itemId: String) -> Bool {
+    func has(itemForId itemId: String) -> Bool {
         return item(forId: itemId) != nil
     }
 
-    @objc
-    public func item(forId itemId: String) -> ImageEditorItem? {
+    func item(forId itemId: String) -> ImageEditorItem? {
         return contents.item(forId: itemId)
     }
 
-    @objc
-    public func canUndo() -> Bool {
+    func canUndo() -> Bool {
         return !undoStack.isEmpty
     }
 
-    @objc
-    public func canRedo() -> Bool {
+    func canRedo() -> Bool {
         return !redoStack.isEmpty
     }
 
-    @objc
-    public func currentUndoOperationId() -> String? {
+    func currentUndoOperationId() -> String? {
         guard let operation = undoStack.last else {
             return nil
         }
@@ -152,8 +140,7 @@ public class ImageEditorModel: NSObject {
 
     private var observers = [Weak<ImageEditorModelObserver>]()
 
-    @objc
-    public func add(observer: ImageEditorModelObserver) {
+    func add(observer: ImageEditorModelObserver) {
         observers.append(Weak(value: observer))
     }
 
@@ -181,8 +168,7 @@ public class ImageEditorModel: NSObject {
 
     // MARK: -
 
-    @objc
-    public func undo() {
+    func undo() {
         guard let undoOperation = undoStack.popLast() else {
             owsFailDebug("Cannot undo.")
             return
@@ -198,8 +184,7 @@ public class ImageEditorModel: NSObject {
         fireModelDidChange(before: oldContents, after: self.contents)
     }
 
-    @objc
-    public func redo() {
+    func redo() {
         guard let redoOperation = redoStack.popLast() else {
             owsFailDebug("Cannot redo.")
             return
@@ -215,8 +200,7 @@ public class ImageEditorModel: NSObject {
         fireModelDidChange(before: oldContents, after: self.contents)
     }
 
-    @objc
-    public func append(item: ImageEditorItem) {
+    func append(item: ImageEditorItem) {
         performAction({ (oldContents) in
             let newContents = oldContents.clone()
             newContents.append(item: item)
@@ -224,19 +208,17 @@ public class ImageEditorModel: NSObject {
         }, changedItemIds: [item.itemId])
     }
 
-    @objc
-    public func replace(item: ImageEditorItem,
-                        suppressUndo: Bool = false) {
+    func replace(item: ImageEditorItem,
+                 suppressUndo: Bool = false) {
         performAction({ (oldContents) in
             let newContents = oldContents.clone()
             newContents.replace(item: item)
             return newContents
         }, changedItemIds: [item.itemId],
-           suppressUndo: suppressUndo)
+                      suppressUndo: suppressUndo)
     }
 
-    @objc
-    public func remove(item: ImageEditorItem) {
+    func remove(item: ImageEditorItem) {
         performAction({ (oldContents) in
             let newContents = oldContents.clone()
             newContents.remove(item: item)
@@ -244,8 +226,7 @@ public class ImageEditorModel: NSObject {
         }, changedItemIds: [item.itemId])
     }
 
-    @objc
-    public func replace(transform: ImageEditorTransform) {
+    func replace(transform: ImageEditorTransform) {
         self.transform = transform
 
         // The contents haven't changed, but this event prods the
@@ -258,8 +239,7 @@ public class ImageEditorModel: NSObject {
 
     private var temporaryFilePaths = [String]()
 
-    @objc
-    public func temporaryFilePath(fileExtension: String) -> String {
+    func temporaryFilePath(fileExtension: String) -> String {
         AssertIsOnMainThread()
 
         let filePath = OWSFileSystem.temporaryFilePath(fileExtension: fileExtension)
@@ -323,18 +303,18 @@ public class ImageEditorModel: NSObject {
                               height: round(unitCropRect.size.height * srcImageSize.height))
 
         guard cropRect.origin.x >= 0,
-            cropRect.origin.y >= 0,
-            cropRect.origin.x + cropRect.size.width <= srcImageSize.width,
-            cropRect.origin.y + cropRect.size.height <= srcImageSize.height else {
-                owsFailDebug("Invalid crop rectangle.")
-                return nil
+              cropRect.origin.y >= 0,
+              cropRect.origin.x + cropRect.size.width <= srcImageSize.width,
+              cropRect.origin.y + cropRect.size.height <= srcImageSize.height else {
+            owsFailDebug("Invalid crop rectangle.")
+            return nil
         }
         guard cropRect.size.width > 0,
-            cropRect.size.height > 0 else {
-                // Not an error; indicates that the user tapped rather
-                // than dragged.
-                Logger.warn("Empty crop rectangle.")
-                return nil
+              cropRect.size.height > 0 else {
+            // Not an error; indicates that the user tapped rather
+            // than dragged.
+            Logger.warn("Empty crop rectangle.")
+            return nil
         }
 
         let hasAlpha = NSData.hasAlpha(forValidImageFilePath: imagePath)

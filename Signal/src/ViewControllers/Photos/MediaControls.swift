@@ -36,7 +36,7 @@ class CameraCaptureControl: UIView {
     private let shutterButtonOuterCircle = CircleBlurView(effect: UIBlurEffect(style: .light))
     private let shutterButtonInnerCircle = CircleView()
 
-    fileprivate static let recordingLockControlSize: CGFloat = 36   // Stop button, swipe tracking circle, lock icon
+    fileprivate static let recordingLockControlSize: CGFloat = 42   // Stop button, swipe tracking circle, lock icon
     private static let shutterButtonDefaultSize: CGFloat = 72
     private static let shutterButtonRecordingSize: CGFloat = 122
 
@@ -523,7 +523,7 @@ class CameraCaptureControl: UIView {
 
 private class LockView: UIView {
 
-    private let imageViewLock = UIImageView(image: UIImage(named: "media-composer-lock-outline-24"))
+    private let imageViewLock = UIImageView(image: UIImage(named: "media-composer-lock-outline"))
     private let blurBackgroundView = CircleBlurView(effect: UIBlurEffect(style: .dark))
     private let whiteBackgroundView = CircleView()
     private let whiteCircleView = CircleView()
@@ -662,110 +662,6 @@ private extension UserInterfaceStyleOverride {
     }
 }
 
-class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
-
-    fileprivate var userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified {
-        didSet {
-            if oldValue != userInterfaceStyleOverride {
-                updateStyle()
-            }
-        }
-    }
-
-    enum BackgroundStyle {
-        case solid
-        case blur
-    }
-
-    let backgroundStyle: BackgroundStyle
-    let backgroundView: UIView
-    private static let visibleButtonSize: CGFloat = 36  // both height and width
-    private static let defaultInset: CGFloat = 8
-
-    var contentInsets: UIEdgeInsets = UIEdgeInsets(margin: CameraOverlayButton.defaultInset) {
-        didSet {
-            layoutMargins = contentInsets
-        }
-    }
-
-    required init(image: UIImage?, backgroundStyle: BackgroundStyle = .blur, userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified) {
-        self.backgroundStyle = backgroundStyle
-        self.backgroundView = {
-            switch backgroundStyle {
-            case .solid:
-                return CircleView()
-
-            case .blur:
-                return CircleBlurView(effect: UIBlurEffect(style: .regular))
-            }
-        }()
-
-        super.init(frame: CGRect(origin: .zero, size: .square(Self.visibleButtonSize + 2*Self.defaultInset)))
-
-        self.userInterfaceStyleOverride = userInterfaceStyleOverride
-
-        layoutMargins = contentInsets
-
-        addSubview(backgroundView)
-        backgroundView.isUserInteractionEnabled = false
-        backgroundView.autoPinEdgesToSuperviewMargins()
-
-        setImage(image, for: .normal)
-        updateStyle()
-    }
-
-    @available(*, unavailable, message: "Use init(image:userInterfaceStyleOverride:) instead")
-    override init(frame: CGRect) {
-        fatalError("init(frame:) has not been implemented")
-    }
-
-    @available(*, unavailable, message: "Use init(image:userInterfaceStyleOverride:) instead")
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        sendSubviewToBack(backgroundView)
-    }
-
-    override var intrinsicContentSize: CGSize {
-        return CGSize(width: Self.visibleButtonSize + layoutMargins.leading + layoutMargins.trailing,
-                      height: Self.visibleButtonSize + layoutMargins.top + layoutMargins.bottom)
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle, userInterfaceStyleOverride == .unspecified {
-            updateStyle()
-        }
-    }
-
-    private static func backgroundColor(for userInterfaceStyle: UIUserInterfaceStyle) -> UIColor {
-        switch userInterfaceStyle {
-        case .dark:
-            return .ows_gray80
-        case .light:
-            return .ows_gray20
-        default:
-            owsFailDebug("It is an error to pass UIUserInterfaceStyleUnspecified.")
-            return .ows_gray80
-        }
-    }
-
-    private func updateStyle() {
-        switch backgroundStyle {
-        case .solid:
-            backgroundView.backgroundColor = CameraOverlayButton.backgroundColor(for: effectiveUserInterfaceStyle)
-        case .blur:
-            if let circleBlurView = backgroundView as? CircleBlurView {
-                circleBlurView.effect = UIBlurEffect(style: CameraOverlayButton.blurEffectStyle(for: effectiveUserInterfaceStyle))
-            }
-        }
-        tintColor = CameraOverlayButton.tintColor(for: effectiveUserInterfaceStyle)
-    }
-}
-
 class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
 
     var badgeNumber: Int = 0 {
@@ -803,18 +699,18 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
     private let pillView: PillView = {
         let pillView = PillView(frame: .zero)
         pillView.isUserInteractionEnabled = false
-        pillView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 7)
+        pillView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 8)
         return pillView
     }()
     private let blurBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
     private let chevronImageView: UIImageView = {
         let image: UIImage?
         if #available(iOS 13, *) {
-            image = CurrentAppContext().isRTL ? UIImage(systemName: "chevron.backward") : UIImage(systemName: "chevron.right")
+            image = UIImage(systemName: "chevron.right")
         } else {
-            image = CurrentAppContext().isRTL ? UIImage(named: "chevron-left-20") : UIImage(named: "chevron-right-20")
+            image = UIImage(named: "chevron-right-20")
         }
-        let chevronImageView = UIImageView(image: image!.withRenderingMode(.alwaysTemplate))
+        let chevronImageView = UIImageView(image: image!.withRenderingMode(.alwaysTemplate).imageFlippedForRightToLeftLayoutDirection())
         chevronImageView.contentMode = .center
         if #available(iOS 13, *) {
             chevronImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: MediaDoneButton.font.pointSize)

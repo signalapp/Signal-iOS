@@ -4,14 +4,12 @@
 
 import UIKit
 
-@objc
-public enum ImageEditorError: Int, Error {
+enum ImageEditorError: Int, Error {
     case assertionError
     case invalidInput
 }
 
-@objc
-public enum ImageEditorItemType: Int {
+enum ImageEditorItemType: Int {
     case test
     case stroke
     case text
@@ -33,31 +31,27 @@ public enum ImageEditorItemType: Int {
 // * 1.0 = right edge
 // * 0.0 = top edge
 // * 1.0 = bottom edge
-public typealias ImageEditorSample = CGPoint
+typealias ImageEditorSample = CGPoint
 
 // MARK: -
 
 // Instances of ImageEditorItem should be treated
 // as immutable, once configured.
-@objc
-public class ImageEditorItem: NSObject {
-    @objc
-    public let itemId: String
 
-    @objc
-    public let itemType: ImageEditorItemType
+class ImageEditorItem: NSObject {
 
-    @objc
-    public init(itemType: ImageEditorItemType) {
+    let itemId: String
+
+    let itemType: ImageEditorItemType
+
+    init(itemType: ImageEditorItemType) {
         self.itemId = UUID().uuidString
         self.itemType = itemType
 
         super.init()
     }
 
-    @objc
-    public init(itemId: String,
-                itemType: ImageEditorItemType) {
+    init(itemId: String, itemType: ImageEditorItemType) {
         self.itemId = itemId
         self.itemType = itemType
 
@@ -66,7 +60,7 @@ public class ImageEditorItem: NSObject {
 
     // The scale with which to render this item's content
     // when rendering the "output" image for sending.
-    public func outputScale() -> CGFloat {
+    func outputScale() -> CGFloat {
         return 1.0
     }
 }

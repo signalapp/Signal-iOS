@@ -152,30 +152,6 @@ public extension UIView {
         #endif
     }
 
-    func applyScaleAspectFitLayout(subview: UIView, aspectRatio: CGFloat) -> [NSLayoutConstraint] {
-        guard subviews.contains(subview) else {
-            owsFailDebug("Not a subview.")
-            return []
-        }
-
-        // This emulates the behavior of contentMode = .scaleAspectFit using
-        // iOS auto layout constraints.
-        //
-        // This allows ConversationInputToolbar to place the "cancel" button
-        // in the upper-right hand corner of the preview content.
-        var constraints = [NSLayoutConstraint]()
-        constraints.append(contentsOf: subview.autoCenterInSuperview())
-        constraints.append(subview.autoPin(toAspectRatio: aspectRatio))
-        constraints.append(subview.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
-        constraints.append(subview.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
-        NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultHigh) {
-            constraints.append(subview.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .equal))
-            constraints.append(subview.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .equal))
-        }
-
-        return constraints
-    }
-
     func setShadow(radius: CGFloat = 2.0, opacity: Float = 0.66, offset: CGSize = .zero, color: UIColor = UIColor.black) {
         layer.shadowRadius = radius
         layer.shadowOpacity = opacity

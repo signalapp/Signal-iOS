@@ -458,7 +458,8 @@ public extension ConversationViewController {
 
         let modal = AttachmentApprovalViewController.wrappedInNavController(attachments: attachments,
                                                                             initialMessageBody: inputToolbar.messageBody(),
-                                                                            approvalDelegate: self)
+                                                                            approvalDelegate: self,
+                                                                            approvalDataSource: self)
         presentFullScreen(modal, animated: true)
     }
 }
@@ -525,8 +526,19 @@ fileprivate extension ConversationViewController {
                 let pickerModal = SendMediaNavigationController.showingCameraFirst()
                 pickerModal.sendMediaNavDelegate = self
                 pickerModal.modalPresentationStyle = .overFullScreen
+                // Defer hiding status bar until modal is fully onscreen
+                // to prevent unwanted shifting upwards of the entire presenter VC's view.
+                let pickerHidesStatusBar = (pickerModal.topViewController?.prefersStatusBarHidden ?? false)
+                if !pickerHidesStatusBar {
+                    pickerModal.modalPresentationCapturesStatusBarAppearance = true
+                }
                 self.dismissKeyBoard()
-                self.present(pickerModal, animated: true)
+                self.present(pickerModal, animated: true) {
+                    if pickerHidesStatusBar {
+                        pickerModal.modalPresentationCapturesStatusBarAppearance = true
+                        pickerModal.setNeedsStatusBarAppearanceUpdate()
+                    }
+                }
             }
         }
     }
@@ -556,8 +568,9 @@ fileprivate extension ConversationViewController {
 
 public extension ConversationViewController {
     func showGifPicker() {
-        let gifModal = GifPickerNavigationViewController()
+        let gifModal = GifPickerNavigationViewController(initialMessageBody: inputToolbar?.messageBody())
         gifModal.approvalDelegate = self
+        gifModal.approvalDataSource = self
         dismissKeyBoard()
         present(gifModal, animated: true)
     }
@@ -748,6 +761,12 @@ extension ConversationViewController: UIDocumentPickerDelegate {
 extension ConversationViewController: SendMediaNavDelegate {
 
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController) {
+        // Restore status bar visibility (if current VC hides it) so that
+        // there's no visible UI updates in the presenter.
+        if sendMediaNavigationController.topViewController?.prefersStatusBarHidden ?? false {
+            sendMediaNavigationController.modalPresentationCapturesStatusBarAppearance = false
+            sendMediaNavigationController.setNeedsStatusBarAppearanceUpdate()
+        }
         self.dismiss(animated: true, completion: nil)
     }
 
@@ -779,10 +798,6 @@ extension ConversationViewController: SendMediaNavDelegate {
 
         inputToolbar.setMessageBody(newMessageBody, animated: false)
     }
-
-    var sendMediaNavApprovalButtonImageName: String { "send-solid-24" }
-
-    var sendMediaNavCanSaveAttachments: Bool { true }
 
     var sendMediaNavTextInputContextIdentifier: String? { textInputContextIdentifier }
 

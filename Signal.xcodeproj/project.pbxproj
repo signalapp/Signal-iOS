@@ -63,7 +63,6 @@
 		3402AA33271D9DCD0084CBAE /* ConversationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557B271B510500B05242 /* ConversationPicker.swift */; };
 		3402AA34271D9DCD0084CBAE /* AttachmentItemCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95598271B510500B05242 /* AttachmentItemCollection.swift */; };
 		3402AA35271D9DCD0084CBAE /* ActionSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95569271B510500B05242 /* ActionSheetController.swift */; };
-		3402AA36271D9DCD0084CBAE /* AttachmentCaptionToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9559A271B510500B05242 /* AttachmentCaptionToolbar.swift */; };
 		3402AA37271D9DCD0084CBAE /* ConversationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557C271B510500B05242 /* ConversationItem.swift */; };
 		3402AA39271D9DCD0084CBAE /* OWSTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95594271B510500B05242 /* OWSTableViewController.swift */; };
 		3402AA3A271D9DCD0084CBAE /* ScreenLockViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95580271B510500B05242 /* ScreenLockViewController.m */; };
@@ -75,7 +74,6 @@
 		3402AA42271D9DCD0084CBAE /* AttachmentTextToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9559E271B510500B05242 /* AttachmentTextToolbar.swift */; };
 		3402AA43271D9DCD0084CBAE /* ContactShareApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95592271B510500B05242 /* ContactShareApprovalViewController.swift */; };
 		3402AA44271D9DCD0084CBAE /* ModalActivityIndicatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */; };
-		3402AA45271D9DCD0084CBAE /* AttachmentCaptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9559F271B510500B05242 /* AttachmentCaptionViewController.swift */; };
 		3402AA46271D9DCD0084CBAE /* OWSTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95590271B510500B05242 /* OWSTableViewController.m */; };
 		3402AA47271D9DCD0084CBAE /* StickerHorizontalListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95572271B510500B05242 /* StickerHorizontalListView.swift */; };
 		3402AA48271D9DCD0084CBAE /* StickerKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95573271B510500B05242 /* StickerKeyboard.swift */; };
@@ -133,7 +131,6 @@
 		3402AA81271D9E180084CBAE /* OWSTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95550271B510400B05242 /* OWSTextField.m */; };
 		3402AA82271D9E180084CBAE /* DisappearingTimerConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9551F271B510400B05242 /* DisappearingTimerConfigurationView.swift */; };
 		3402AA83271D9E180084CBAE /* OWSFlatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95511271B510400B05242 /* OWSFlatButton.swift */; };
-		3402AA84271D9E180084CBAE /* BlurTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9554B271B510400B05242 /* BlurTooltip.swift */; };
 		3402AA85271D9E180084CBAE /* OWSSearchBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95520271B510400B05242 /* OWSSearchBar.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AA86271D9E180084CBAE /* ResizingScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95531271B510400B05242 /* ResizingScrollView.swift */; };
 		3402AA87271D9E180084CBAE /* CVCellMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95523271B510400B05242 /* CVCellMeasurement.swift */; };
@@ -155,7 +152,6 @@
 		3402AA97271D9E180084CBAE /* VideoEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9551B271B510400B05242 /* VideoEditorModel.swift */; };
 		3402AA98271D9E180084CBAE /* ImageEditorPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95552271B510400B05242 /* ImageEditorPanGestureRecognizer.swift */; };
 		3402AA99271D9E180084CBAE /* OWSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95530271B510400B05242 /* OWSButton.swift */; };
-		3402AA9A271D9E180084CBAE /* ImageEditorBrushViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95554271B510400B05242 /* ImageEditorBrushViewController.swift */; };
 		3402AA9B271D9E180084CBAE /* TooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9554D271B510400B05242 /* TooltipView.swift */; };
 		3402AA9C271D9E180084CBAE /* ManualLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9551D271B510400B05242 /* ManualLayoutView.swift */; };
 		3402AA9D271D9E180084CBAE /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9553F271B510400B05242 /* CircleView.swift */; };
@@ -165,7 +161,6 @@
 		3402AAA1271D9E180084CBAE /* OWSBubbleView.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95534271B510400B05242 /* OWSBubbleView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AAA2271D9E180084CBAE /* OWSTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A9550D271B510400B05242 /* OWSTextView.m */; };
 		3402AAA3271D9E180084CBAE /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95526271B510400B05242 /* DirectionalPanGestureRecognizer.swift */; };
-		3402AAA4271D9E180084CBAE /* OWSViewController+ImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9555C271B510400B05242 /* OWSViewController+ImageEditor.swift */; };
 		3402AAA5271D9E180084CBAE /* ThreadViewHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95547271B510400B05242 /* ThreadViewHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AAA6271D9E180084CBAE /* MentionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9552C271B510400B05242 /* MentionPicker.swift */; };
 		3402AAA7271D9E180084CBAE /* AvatarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95545271B510400B05242 /* AvatarImageView.swift */; };
@@ -174,7 +169,6 @@
 		3402AAAA271D9E180084CBAE /* InputAccessoryViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9554F271B510400B05242 /* InputAccessoryViewPlaceholder.swift */; };
 		3402AAAB271D9E180084CBAE /* OWSActionSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9553D271B510400B05242 /* OWSActionSheets.swift */; };
 		3402AAAC271D9E180084CBAE /* NonContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9550A271B510400B05242 /* NonContactTableViewCell.swift */; };
-		3402AAAD271D9E180084CBAE /* ImageEditorBlurViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95560271B510400B05242 /* ImageEditorBlurViewController.swift */; };
 		3402AAAE271D9E180084CBAE /* ImageEditorTextItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95553271B510400B05242 /* ImageEditorTextItem.swift */; };
 		3402AAAF271D9E180084CBAE /* Mention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9552B271B510400B05242 /* Mention.swift */; };
 		3402AAB0271D9E180084CBAE /* TextFieldWithPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95528271B510400B05242 /* TextFieldWithPlaceholder.swift */; };
@@ -182,7 +176,6 @@
 		3402AAB2271D9E180084CBAE /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95536271B510400B05242 /* ContactTableViewCell.swift */; };
 		3402AAB3271D9E180084CBAE /* CVBodyTextLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95522271B510400B05242 /* CVBodyTextLabel.swift */; };
 		3402AAB4271D9E180084CBAE /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95519271B510400B05242 /* VideoPlayerView.swift */; };
-		3402AAB5271D9E180084CBAE /* ImageEditorTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95555271B510400B05242 /* ImageEditorTextViewController.swift */; };
 		3402AAB6271D9E180084CBAE /* ImageEditorCropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95556271B510400B05242 /* ImageEditorCropViewController.swift */; };
 		3402AAB7271D9E180084CBAE /* OWSTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A9552E271B510400B05242 /* OWSTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AABF271DA2720084CBAE /* VoiceMessageModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402AABE271DA2720084CBAE /* VoiceMessageModels.swift */; };
@@ -787,7 +780,24 @@
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
 		641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */; };
 		760D93AB27A0E28600F351AC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 760D93AA27A0E28600F351AC /* CoreServices.framework */; };
+		7628DDBE2807505D009AA53D /* ImageEditorCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBC28075056009AA53D /* ImageEditorCropView.swift */; };
+		7628DDBF2807505D009AA53D /* RotationControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBD2807505D009AA53D /* RotationControl.swift */; };
+		7628DDC1280750BC009AA53D /* ExpandableContactListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDC0280750BC009AA53D /* ExpandableContactListView.swift */; };
+		7628DDC32807609F009AA53D /* ImageEditorToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDC22807609F009AA53D /* ImageEditorToolbar.swift */; };
+		7628DDC5280A01B8009AA53D /* ImageEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDC4280A01B8009AA53D /* ImageEditorViewController.swift */; };
+		763D7DDB27E155ED002EA7E6 /* RoundMediaButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */; };
+		763D7DDD27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */; };
+		766035A9286CE4CB00F6B71C /* MediaTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766035A8286CE4CB00F6B71C /* MediaTopBar.swift */; };
+		766035AB286FEC2F00F6B71C /* AttachmentPrepContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766035AA286FEC2F00F6B71C /* AttachmentPrepContentView.swift */; };
+		7666D54428331E1100A3BDB9 /* ImageEditorViewController+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */; };
+		7666D54628331E4800A3BDB9 /* ImageEditorViewController+Blur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */; };
+		7666D54828331E6900A3BDB9 /* ImageEditorViewController+Text.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */; };
+		76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */; };
+		76896BFA28415B6B00F6C8D2 /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */; };
+		76896BFC2841A84D00F6C8D2 /* ImageAttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BFB2841A84D00F6C8D2 /* ImageAttachmentPrepViewController.swift */; };
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
+		768AE8BA280F713C00998C2D /* ImageEditorSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768AE8B9280F713C00998C2D /* ImageEditorSliderView.swift */; };
+		76995F15283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76995F14283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		76FCCDBC27AB8FBE00BAA7F0 /* MediaControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */; };
@@ -1656,7 +1666,6 @@
 		34A95546271B510400B05242 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		34A95547271B510400B05242 /* ThreadViewHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThreadViewHelper.h; sourceTree = "<group>"; };
 		34A95548271B510400B05242 /* GalleryRailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryRailView.swift; sourceTree = "<group>"; };
-		34A9554B271B510400B05242 /* BlurTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurTooltip.swift; sourceTree = "<group>"; };
 		34A9554C271B510400B05242 /* ViewOnceTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewOnceTooltip.swift; sourceTree = "<group>"; };
 		34A9554D271B510400B05242 /* TooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TooltipView.swift; sourceTree = "<group>"; };
 		34A9554E271B510400B05242 /* OWSStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSStackView.swift; sourceTree = "<group>"; };
@@ -1664,19 +1673,15 @@
 		34A95550271B510400B05242 /* OWSTextField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSTextField.m; sourceTree = "<group>"; };
 		34A95552271B510400B05242 /* ImageEditorPanGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorPanGestureRecognizer.swift; sourceTree = "<group>"; };
 		34A95553271B510400B05242 /* ImageEditorTextItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorTextItem.swift; sourceTree = "<group>"; };
-		34A95554271B510400B05242 /* ImageEditorBrushViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorBrushViewController.swift; sourceTree = "<group>"; };
-		34A95555271B510400B05242 /* ImageEditorTextViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorTextViewController.swift; sourceTree = "<group>"; };
 		34A95556271B510400B05242 /* ImageEditorCropViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorCropViewController.swift; sourceTree = "<group>"; };
 		34A95557271B510400B05242 /* PermissiveGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissiveGestureRecognizer.swift; sourceTree = "<group>"; };
 		34A95558271B510400B05242 /* ImageEditorPinchGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorPinchGestureRecognizer.swift; sourceTree = "<group>"; };
 		34A95559271B510400B05242 /* ImageEditorStrokeItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorStrokeItem.swift; sourceTree = "<group>"; };
 		34A9555A271B510400B05242 /* ImageEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorModel.swift; sourceTree = "<group>"; };
 		34A9555B271B510400B05242 /* ImageEditorBlurRegionsItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorBlurRegionsItem.swift; sourceTree = "<group>"; };
-		34A9555C271B510400B05242 /* OWSViewController+ImageEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSViewController+ImageEditor.swift"; sourceTree = "<group>"; };
 		34A9555D271B510400B05242 /* ImageEditorCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorCanvasView.swift; sourceTree = "<group>"; };
 		34A9555E271B510400B05242 /* ImageEditorItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorItem.swift; sourceTree = "<group>"; };
 		34A9555F271B510400B05242 /* ImageEditorContents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorContents.swift; sourceTree = "<group>"; };
-		34A95560271B510400B05242 /* ImageEditorBlurViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorBlurViewController.swift; sourceTree = "<group>"; };
 		34A95561271B510400B05242 /* ImageEditorPaletteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorPaletteView.swift; sourceTree = "<group>"; };
 		34A95562271B510400B05242 /* ImageEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorView.swift; sourceTree = "<group>"; };
 		34A95563271B510400B05242 /* ImageEditorTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorTransform.swift; sourceTree = "<group>"; };
@@ -1719,12 +1724,10 @@
 		34A95597271B510500B05242 /* AttachmentTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentTextView.swift; sourceTree = "<group>"; };
 		34A95598271B510500B05242 /* AttachmentItemCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentItemCollection.swift; sourceTree = "<group>"; };
 		34A95599271B510500B05242 /* AttachmentPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentPrepViewController.swift; sourceTree = "<group>"; };
-		34A9559A271B510500B05242 /* AttachmentCaptionToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentCaptionToolbar.swift; sourceTree = "<group>"; };
 		34A9559B271B510500B05242 /* ApprovalRailCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApprovalRailCellView.swift; sourceTree = "<group>"; };
 		34A9559C271B510500B05242 /* AttachmentApprovalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalViewController.swift; sourceTree = "<group>"; };
 		34A9559D271B510500B05242 /* AttachmentApprovalToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalToolbar.swift; sourceTree = "<group>"; };
 		34A9559E271B510500B05242 /* AttachmentTextToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentTextToolbar.swift; sourceTree = "<group>"; };
-		34A9559F271B510500B05242 /* AttachmentCaptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentCaptionViewController.swift; sourceTree = "<group>"; };
 		34A955A1271B510500B05242 /* VoiceMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageModel.swift; sourceTree = "<group>"; };
 		34A955A4271B510500B05242 /* CVItemViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CVItemViewModel.h; sourceTree = "<group>"; };
 		34A955A5271B510500B05242 /* ContactShareViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareViewModel.swift; sourceTree = "<group>"; };
@@ -2105,7 +2108,24 @@
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		760D93AA27A0E28600F351AC /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		7628DDBC28075056009AA53D /* ImageEditorCropView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorCropView.swift; sourceTree = "<group>"; };
+		7628DDBD2807505D009AA53D /* RotationControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotationControl.swift; sourceTree = "<group>"; };
+		7628DDC0280750BC009AA53D /* ExpandableContactListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpandableContactListView.swift; sourceTree = "<group>"; };
+		7628DDC22807609F009AA53D /* ImageEditorToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorToolbar.swift; sourceTree = "<group>"; };
+		7628DDC4280A01B8009AA53D /* ImageEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorViewController.swift; sourceTree = "<group>"; };
+		763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundMediaButton.swift; sourceTree = "<group>"; };
+		763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalTopBar.swift; sourceTree = "<group>"; };
+		766035A8286CE4CB00F6B71C /* MediaTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTopBar.swift; sourceTree = "<group>"; };
+		766035AA286FEC2F00F6B71C /* AttachmentPrepContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentPrepContentView.swift; sourceTree = "<group>"; };
+		7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Draw.swift"; sourceTree = "<group>"; };
+		7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Blur.swift"; sourceTree = "<group>"; };
+		7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Text.swift"; sourceTree = "<group>"; };
+		76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAttachmentPrepViewController.swift; sourceTree = "<group>"; };
+		76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
+		76896BFB2841A84D00F6C8D2 /* ImageAttachmentPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAttachmentPrepViewController.swift; sourceTree = "<group>"; };
 		768A1A2A17FC9CD300E00ED8 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		768AE8B9280F713C00998C2D /* ImageEditorSliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorSliderView.swift; sourceTree = "<group>"; };
+		76995F14283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+StrokeWidthSlider.swift"; sourceTree = "<group>"; };
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -3357,6 +3377,7 @@
 				34A95533271B510400B05242 /* OWSTextView.h */,
 				34A9550D271B510400B05242 /* OWSTextView.m */,
 				34A95531271B510400B05242 /* ResizingScrollView.swift */,
+				763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */,
 				34A95509271B510400B05242 /* TappableStackView.swift */,
 				34A95532271B510400B05242 /* TappableView.swift */,
 				885275BF27E26775003F2F9B /* TextAttachmentView.swift */,
@@ -3387,8 +3408,10 @@
 		34A9551A271B510400B05242 /* VideoEditor */ = {
 			isa = PBXGroup;
 			children = (
+				76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */,
 				34A9551B271B510400B05242 /* VideoEditorModel.swift */,
 				34A9551C271B510400B05242 /* VideoEditorView.swift */,
+				76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */,
 			);
 			path = VideoEditor;
 			sourceTree = "<group>";
@@ -3417,7 +3440,6 @@
 		34A9554A271B510400B05242 /* Tooltips */ = {
 			isa = PBXGroup;
 			children = (
-				34A9554B271B510400B05242 /* BlurTooltip.swift */,
 				34A9554D271B510400B05242 /* TooltipView.swift */,
 				34A9554C271B510400B05242 /* ViewOnceTooltip.swift */,
 			);
@@ -3427,24 +3449,30 @@
 		34A95551271B510400B05242 /* ImageEditor */ = {
 			isa = PBXGroup;
 			children = (
+				76896BFB2841A84D00F6C8D2 /* ImageAttachmentPrepViewController.swift */,
 				34A9555B271B510400B05242 /* ImageEditorBlurRegionsItem.swift */,
-				34A95560271B510400B05242 /* ImageEditorBlurViewController.swift */,
-				34A95554271B510400B05242 /* ImageEditorBrushViewController.swift */,
 				34A9555D271B510400B05242 /* ImageEditorCanvasView.swift */,
 				34A9555F271B510400B05242 /* ImageEditorContents.swift */,
+				7628DDBC28075056009AA53D /* ImageEditorCropView.swift */,
 				34A95556271B510400B05242 /* ImageEditorCropViewController.swift */,
 				34A9555E271B510400B05242 /* ImageEditorItem.swift */,
 				34A9555A271B510400B05242 /* ImageEditorModel.swift */,
 				34A95561271B510400B05242 /* ImageEditorPaletteView.swift */,
 				34A95552271B510400B05242 /* ImageEditorPanGestureRecognizer.swift */,
 				34A95558271B510400B05242 /* ImageEditorPinchGestureRecognizer.swift */,
+				768AE8B9280F713C00998C2D /* ImageEditorSliderView.swift */,
 				34A95559271B510400B05242 /* ImageEditorStrokeItem.swift */,
 				34A95553271B510400B05242 /* ImageEditorTextItem.swift */,
-				34A95555271B510400B05242 /* ImageEditorTextViewController.swift */,
+				7628DDC22807609F009AA53D /* ImageEditorToolbar.swift */,
 				34A95563271B510400B05242 /* ImageEditorTransform.swift */,
 				34A95562271B510400B05242 /* ImageEditorView.swift */,
-				34A9555C271B510400B05242 /* OWSViewController+ImageEditor.swift */,
+				7628DDC4280A01B8009AA53D /* ImageEditorViewController.swift */,
+				7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */,
+				7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */,
+				76995F14283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift */,
+				7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */,
 				34A95557271B510400B05242 /* PermissiveGestureRecognizer.swift */,
+				7628DDBD2807505D009AA53D /* RotationControl.swift */,
 			);
 			path = ImageEditor;
 			sourceTree = "<group>";
@@ -3514,13 +3542,15 @@
 			children = (
 				34A9559B271B510500B05242 /* ApprovalRailCellView.swift */,
 				34A9559D271B510500B05242 /* AttachmentApprovalToolbar.swift */,
+				763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */,
 				34A9559C271B510500B05242 /* AttachmentApprovalViewController.swift */,
-				34A9559A271B510500B05242 /* AttachmentCaptionToolbar.swift */,
-				34A9559F271B510500B05242 /* AttachmentCaptionViewController.swift */,
 				34A95598271B510500B05242 /* AttachmentItemCollection.swift */,
 				34A95599271B510500B05242 /* AttachmentPrepViewController.swift */,
 				34A9559E271B510500B05242 /* AttachmentTextToolbar.swift */,
 				34A95597271B510500B05242 /* AttachmentTextView.swift */,
+				7628DDC0280750BC009AA53D /* ExpandableContactListView.swift */,
+				766035A8286CE4CB00F6B71C /* MediaTopBar.swift */,
+				766035AA286FEC2F00F6B71C /* AttachmentPrepContentView.swift */,
 			);
 			path = AttachmentApproval;
 			sourceTree = "<group>";
@@ -5967,8 +5997,10 @@
 				3402AA65271D9DEC0084CBAE /* ThreadViewModel.swift in Sources */,
 				3402AA57271D9DCD0084CBAE /* MediaMessageView.swift in Sources */,
 				3402AA95271D9E180084CBAE /* ContactsViewHelper.m in Sources */,
+				7666D54428331E1100A3BDB9 /* ImageEditorViewController+Draw.swift in Sources */,
 				3402AA8F271D9E180084CBAE /* ThemeHeaderView.swift in Sources */,
 				3402AA7C271D9E180084CBAE /* ContactsViewHelper.swift in Sources */,
+				763D7DDD27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift in Sources */,
 				34A954AC271A471300B05242 /* SignalUI.docc in Sources */,
 				3402AA5A271D9DCD0084CBAE /* OWSTableViewController2.swift in Sources */,
 				3402AA6E271D9E180084CBAE /* OWSSearchBar.m in Sources */,
@@ -5978,11 +6010,13 @@
 				3402AA91271D9E180084CBAE /* GalleryRailView.swift in Sources */,
 				3402AA81271D9E180084CBAE /* OWSTextField.m in Sources */,
 				3402AA3B271D9DCD0084CBAE /* OWSWindow.swift in Sources */,
+				763D7DDB27E155ED002EA7E6 /* RoundMediaButton.swift in Sources */,
 				3402AA54271D9DCD0084CBAE /* LinearHorizontalLayout.swift in Sources */,
 				34A954DE271B4F3E00B05242 /* ChatColors.swift in Sources */,
 				34A954E7271B4F6A00B05242 /* AttachmentSharing.m in Sources */,
 				34A955BB271B55BA00B05242 /* PaymentsUI.swift in Sources */,
 				3402AA4A271D9DCD0084CBAE /* AttachmentApprovalViewController.swift in Sources */,
+				7666D54628331E4800A3BDB9 /* ImageEditorViewController+Blur.swift in Sources */,
 				3402AA63271D9DEC0084CBAE /* ContactShareViewModel.swift in Sources */,
 				34A954E2271B4F3E00B05242 /* ColorOrGradientSwatchView.swift in Sources */,
 				3402AA79271D9E180084CBAE /* PermissiveGestureRecognizer.swift in Sources */,
@@ -5990,18 +6024,20 @@
 				83B9573927C9A1FA00A678FD /* CaptchaView.swift in Sources */,
 				3402AAB4271D9E180084CBAE /* VideoPlayerView.swift in Sources */,
 				34A955B9271B553D00B05242 /* PaymentsFormat.swift in Sources */,
-				3402AA36271D9DCD0084CBAE /* AttachmentCaptionToolbar.swift in Sources */,
 				34ACA7F72733183000E47AD4 /* CountryCodeViewController.swift in Sources */,
 				342FFE62271DB2E7000AC89F /* AppContext+SignalUI.swift in Sources */,
 				3402AA31271D9DCD0084CBAE /* TextApprovalViewController.swift in Sources */,
+				766035AB286FEC2F00F6B71C /* AttachmentPrepContentView.swift in Sources */,
 				3402AA87271D9E180084CBAE /* CVCellMeasurement.swift in Sources */,
 				3402AAC3271DA6100084CBAE /* OWSAudioPlayer.m in Sources */,
+				7628DDC32807609F009AA53D /* ImageEditorToolbar.swift in Sources */,
 				3402AAA3271D9E180084CBAE /* DirectionalPanGestureRecognizer.swift in Sources */,
 				34BB78B7272C51B600DA0D04 /* MobileCoinHelperSDK.swift in Sources */,
 				3402AA72271D9E180084CBAE /* ImageEditorItem.swift in Sources */,
 				3402AA52271D9DCD0084CBAE /* ViewControllerUtils.m in Sources */,
 				3402AA6C271D9E180084CBAE /* ImageEditorView.swift in Sources */,
 				3402AA59271D9DCD0084CBAE /* OWSViewController.m in Sources */,
+				7628DDBE2807505D009AA53D /* ImageEditorCropView.swift in Sources */,
 				3402AA03271D9DB50084CBAE /* ConversationStyle.swift in Sources */,
 				3402AA62271D9DEC0084CBAE /* ThreadUtil+SignalUI.swift in Sources */,
 				3465F4D627287677001663AF /* PaymentsProcessor.swift in Sources */,
@@ -6012,29 +6048,30 @@
 				3402AA33271D9DCD0084CBAE /* ConversationPicker.swift in Sources */,
 				3465F4D727287677001663AF /* MobileCoinAPI+Configuration.swift in Sources */,
 				3402A9E8271D97090084CBAE /* UIView+SignalUI.swift in Sources */,
+				768AE8BA280F713C00998C2D /* ImageEditorSliderView.swift in Sources */,
 				3402AA8A271D9E180084CBAE /* ImageEditorCanvasView.swift in Sources */,
 				3402AA83271D9E180084CBAE /* OWSFlatButton.swift in Sources */,
-				3402AA45271D9DCD0084CBAE /* AttachmentCaptionViewController.swift in Sources */,
 				3402A9DA271D953B0084CBAE /* SUIEnvironment.swift in Sources */,
+				76995F15283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift in Sources */,
 				3402AAAE271D9E180084CBAE /* ImageEditorTextItem.swift in Sources */,
 				3402AA30271D9DCD0084CBAE /* ContactFieldView.swift in Sources */,
-				3402AA84271D9E180084CBAE /* BlurTooltip.swift in Sources */,
 				34A955B3271B53F600B05242 /* BlockListUIUtils.m in Sources */,
 				3402AA8D271D9E180084CBAE /* ManualStackView.swift in Sources */,
 				34A954E1271B4F3E00B05242 /* Theme.m in Sources */,
+				76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */,
+				76896BFA28415B6B00F6C8D2 /* VideoTimelineView.swift in Sources */,
 				32FAB92A2727A57100FB76A6 /* PrimaryImageView.swift in Sources */,
 				3402AAAC271D9E180084CBAE /* NonContactTableViewCell.swift in Sources */,
 				3402AAB1271D9E180084CBAE /* OWSNavigationBar.swift in Sources */,
 				3402AA46271D9DCD0084CBAE /* OWSTableViewController.m in Sources */,
-				3402AAB5271D9E180084CBAE /* ImageEditorTextViewController.swift in Sources */,
 				34A955AE271B533000B05242 /* FullTextSearcher.swift in Sources */,
 				3402AA58271D9DCD0084CBAE /* OWSNavigationController.m in Sources */,
+				76896BFC2841A84D00F6C8D2 /* ImageAttachmentPrepViewController.swift in Sources */,
 				3402A9FF271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.m in Sources */,
 				88C980D427F3AD2C009750C0 /* TSMessage+SignalUI.swift in Sources */,
 				342FFE66271DB66E000AC89F /* OWSProfileManager+SignalUI.m in Sources */,
 				3402AAB2271D9E180084CBAE /* ContactTableViewCell.swift in Sources */,
 				3402AA74271D9E180084CBAE /* OWSBubbleShapeView.swift in Sources */,
-				3402AAAD271D9E180084CBAE /* ImageEditorBlurViewController.swift in Sources */,
 				3402AA99271D9E180084CBAE /* OWSButton.swift in Sources */,
 				3402AAA9271D9E180084CBAE /* GradientView.swift in Sources */,
 				3402AA69271D9DEC0084CBAE /* OWSQuotedReplyModel.m in Sources */,
@@ -6077,18 +6114,20 @@
 				3402AA43271D9DCD0084CBAE /* ContactShareApprovalViewController.swift in Sources */,
 				3402AA5B271D9DCD0084CBAE /* StickerPackCollectionView.swift in Sources */,
 				3402AA4B271D9DCD0084CBAE /* AttachmentApprovalToolbar.swift in Sources */,
-				3402AA9A271D9E180084CBAE /* ImageEditorBrushViewController.swift in Sources */,
 				34A954CB271B4BE600B05242 /* ShareViewDelegate.swift in Sources */,
 				3465F4DD2728812B001663AF /* Payments.swift in Sources */,
 				3402AA7A271D9E180084CBAE /* CVUtils.swift in Sources */,
 				3465F4D527287677001663AF /* PaymentsReconciliation.swift in Sources */,
+				7666D54828331E6900A3BDB9 /* ImageEditorViewController+Text.swift in Sources */,
 				3402AAAB271D9E180084CBAE /* OWSActionSheets.swift in Sources */,
+				766035A9286CE4CB00F6B71C /* MediaTopBar.swift in Sources */,
 				3402AAA8271D9E180084CBAE /* MentionTextView.swift in Sources */,
 				34D21DA227297FBF00D891F4 /* DebugLogger+Payments.swift in Sources */,
 				34A954FC271B4FB000B05242 /* UIFont+OWS.m in Sources */,
 				3402AA75271D9E180084CBAE /* ConversationAvatarView.swift in Sources */,
 				3402AA70271D9E180084CBAE /* OWSStackView.swift in Sources */,
 				34A955BD271B560000B05242 /* NameCollisionFinder.swift in Sources */,
+				7628DDBF2807505D009AA53D /* RotationControl.swift in Sources */,
 				3402AA3F271D9DCD0084CBAE /* ApprovalRailCellView.swift in Sources */,
 				3465F4D827287677001663AF /* PaymentsImpl.swift in Sources */,
 				3402AA4E271D9DCD0084CBAE /* ApprovalFooterView.swift in Sources */,
@@ -6102,8 +6141,8 @@
 				3402AA35271D9DCD0084CBAE /* ActionSheetController.swift in Sources */,
 				3402AA93271D9E180084CBAE /* GroupLinkPreview.swift in Sources */,
 				3402AA73271D9E180084CBAE /* ImageEditorTransform.swift in Sources */,
-				3402AAA4271D9E180084CBAE /* OWSViewController+ImageEditor.swift in Sources */,
 				3402AA7F271D9E180084CBAE /* LinkingTextView.swift in Sources */,
+				7628DDC5280A01B8009AA53D /* ImageEditorViewController.swift in Sources */,
 				3402AA98271D9E180084CBAE /* ImageEditorPanGestureRecognizer.swift in Sources */,
 				342FFE59271DAA25000AC89F /* OWSAudioSession.swift in Sources */,
 				3402A9F5271D9A060084CBAE /* UIUtil.m in Sources */,
@@ -6112,6 +6151,7 @@
 				3402AA8E271D9E180084CBAE /* TextViewWithPlaceholder.swift in Sources */,
 				34A954F7271B4FB000B05242 /* UIViewController+OWS.m in Sources */,
 				3402AAA2271D9E180084CBAE /* OWSTextView.m in Sources */,
+				7628DDC1280750BC009AA53D /* ExpandableContactListView.swift in Sources */,
 				3402AA77271D9E180084CBAE /* LinkPreviewState.swift in Sources */,
 				3402AA42271D9DCD0084CBAE /* AttachmentTextToolbar.swift in Sources */,
 				3402AA90271D9E180084CBAE /* ImageEditorModel.swift in Sources */,

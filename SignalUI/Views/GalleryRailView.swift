@@ -2,6 +2,8 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
+import UIKit
+
 public protocol GalleryRailItemProvider: AnyObject {
     var railItems: [GalleryRailItem] { get }
 }
@@ -35,7 +37,11 @@ public class GalleryRailCellView: UIView {
         clipsToBounds = false
         addSubview(contentContainer)
         contentContainer.autoPinEdgesToSuperviewMargins()
-        contentContainer.layer.cornerRadius = 4.8
+        contentContainer.layer.cornerRadius = 10
+
+        dimmerView.layer.cornerRadius = 10
+        addSubview(dimmerView)
+        dimmerView.autoPinEdges(toEdgesOf: contentContainer)
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(sender:)))
         addGestureRecognizer(tapGesture)
@@ -73,20 +79,10 @@ public class GalleryRailCellView: UIView {
 
     private(set) var isSelected: Bool = false
 
-    public let cellBorderWidth: CGFloat = 3
-
     func setIsSelected(_ isSelected: Bool) {
         self.isSelected = isSelected
-
-        // Reserve space for the selection border whether or not the cell is selected.
-        layoutMargins = UIEdgeInsets(top: 0, left: cellBorderWidth, bottom: 0, right: cellBorderWidth)
-
-        if isSelected {
-            contentContainer.layer.borderColor = Theme.galleryHighlightColor.cgColor
-            contentContainer.layer.borderWidth = cellBorderWidth
-        } else {
-            contentContainer.layer.borderWidth = 0
-        }
+        dimmerView.layer.borderWidth = isSelected ? 2 : 1.5
+        dimmerView.layer.borderColor = isSelected ? tintColor.cgColor : UIColor.ows_white.cgColor
     }
 
     // MARK: Subview Helpers
@@ -95,7 +91,12 @@ public class GalleryRailCellView: UIView {
         let view = UIView()
         view.autoPinToSquareAspectRatio()
         view.clipsToBounds = true
+        return view
+    }()
 
+    let dimmerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 }
@@ -119,6 +120,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
     override init(frame: CGRect) {
         super.init(frame: frame)
         clipsToBounds = false
+        preservesSuperviewLayoutMargins = true
         addSubview(scrollView)
         scrollView.clipsToBounds = false
         scrollView.layoutMargins = .zero
@@ -147,7 +149,10 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         UIView.animate(withDuration: animationDuration, animations: animations, completion: completion)
     }
 
-    public func configureCellViews(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?, cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView, animated: Bool = true) {
+    public func configureCellViews(itemProvider: GalleryRailItemProvider?,
+                                   focusedItem: GalleryRailItem?,
+                                   cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView,
+                                   animated: Bool = true) {
         let animationDuration: TimeInterval = 0.2
 
         guard let itemProvider = itemProvider else {
@@ -211,7 +216,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         self.cellViews = cellViews
         let stackView = UIStackView(arrangedSubviews: cellViews)
         stackView.axis = .horizontal
-        stackView.spacing = 0
+        stackView.spacing = 4
         stackView.clipsToBounds = false
 
         scrollView.addSubview(stackView)
@@ -242,7 +247,8 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         return scrollView
     }()
 
-    private func buildCellViews(items: [GalleryRailItem], cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView) -> [GalleryRailCellView] {
+    private func buildCellViews(items: [GalleryRailItem],
+                                cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView) -> [GalleryRailCellView] {
         return items.map { item in
             let cellView = cellViewBuilder(item)
             cellView.configure(item: item, delegate: self)

@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
 @testable import Signal
 @testable import SignalMessaging
+@testable import SignalUI
 
 class ImageEditorModelTest: SignalBaseTest {
 

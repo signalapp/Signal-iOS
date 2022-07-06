@@ -2,17 +2,15 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import Foundation
-import UIKit
 import AVFoundation
+import Foundation
 import SignalMessaging
+import UIKit
 
 protocol AttachmentPrepViewControllerDelegate: AnyObject {
-    func prepViewControllerUpdateNavigationBar()
 
-    func prepViewControllerUpdateControls()
-
-    var prepViewControllerShouldIgnoreTapGesture: Bool { get }
+    func attachmentPrepViewControllerDidRequestUpdateControlsVisibility(_ viewController: AttachmentPrepViewController,
+                                                                        completion: ((Bool) -> Void)?)
 }
 
 // MARK: -
@@ -33,35 +31,58 @@ public class AttachmentPrepViewController: OWSViewController {
         return attachmentApprovalItem.attachment
     }
 
+    var toolbarSupplementaryView: UIView? { nil }
+
     private(set) var scrollView: UIScrollView!
     private(set) var contentContainer: UIView!
 
-    private var imageEditorView: ImageEditorView?
-    private var videoEditorView: VideoEditorView?
-
-    private var isUsingPortraitConstraints: Bool?
-    private var viewConstraintsPortrait: [NSLayoutConstraint]?
-    private var viewConstraintsLandscape: [NSLayoutConstraint]?
-
-    private var mediaMessageView: MediaMessageView?
-
-    public var shouldHideControls: Bool {
-        if let imageEditorView = imageEditorView {
-            return imageEditorView.shouldHideControls
-        }
-        if let videoEditorView = videoEditorView {
-            return videoEditorView.shouldHideControls
-        }
-        return false
-    }
-
     // MARK: - Initializers
 
-    init(attachmentApprovalItem: AttachmentApprovalItem) {
+    class func viewController(for attachmentApprovalItem: AttachmentApprovalItem) -> AttachmentPrepViewController? {
+        switch attachmentApprovalItem.type {
+        case .image: return ImageAttachmentPrepViewController(attachmentApprovalItem: attachmentApprovalItem)
+        case .video: return VideoAttachmentPrepViewController(attachmentApprovalItem: attachmentApprovalItem)
+        case .generic: return AttachmentPrepViewController(attachmentApprovalItem: attachmentApprovalItem)
+        }
+    }
+
+    required init?(attachmentApprovalItem: AttachmentApprovalItem) {
+        guard !attachmentApprovalItem.attachment.hasError else {
+            return nil
+        }
         self.attachmentApprovalItem = attachmentApprovalItem
         super.init()
-        assert(!attachment.hasError)
     }
+
+    // MARK: - Customization Points for Subclasses
+
+    private lazy var genericContentView = MediaMessageView(attachment: attachment)
+
+    var contentView: AttachmentPrepContentView {
+        return genericContentView
+    }
+
+    func prepareContentView() { }
+
+    func prepareToMoveOffscreen() { }
+
+    private var isMediaToolViewControllerPresented = false
+
+    public var shouldHideControls: Bool {
+        return isMediaToolViewControllerPresented
+    }
+
+    public var canSaveMedia: Bool {
+        return attachmentApprovalItem.canSave
+    }
+
+    /**
+     * Subclasses can override this property if they want some other metric to be used when calculating
+     * bottom inset for `contentView.contentLayoutGuide`.
+     * Currently this is only used by `ImageAttachmentPrepViewController` to ensure
+     * that image doesn't move when switching to / from edit mode.
+     */
+    var mediaEditingToolbarHeight: CGFloat? { nil }
 
     // MARK: - View Lifecycle
 
@@ -79,15 +100,12 @@ public class AttachmentPrepViewController: OWSViewController {
         scrollView.delegate = self
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
-        contentContainer.addSubview(scrollView)
-
         // Panning should stop pretty soon after the user stops scrolling
-        scrollView.decelerationRate = UIScrollView.DecelerationRate.fast
-
+        scrollView.decelerationRate = .fast
         // We want scroll view content up and behind the system status bar content
         // but we want other content (e.g. bar buttons) to respect the top layout guide.
         scrollView.contentInsetAdjustmentBehavior = .never
-
+        contentContainer.addSubview(scrollView)
         scrollView.autoPinEdgesToSuperviewEdges()
 
         // Create full screen container view so the scrollView
@@ -100,134 +118,41 @@ public class AttachmentPrepViewController: OWSViewController {
         containerView.autoMatch(.height, to: .height, of: view)
         containerView.autoMatch(.width, to: .width, of: view)
 
-        let contentMarginTop = UIDevice.current.hasIPhoneXNotch ? CurrentAppContext().statusBarHeight : 0
-
-        if let imageEditorModel = attachmentApprovalItem.imageEditorModel {
-
-            let imageEditorView = ImageEditorView(model: imageEditorModel, delegate: self)
-            imageEditorView.frame = view.bounds
-            imageEditorView.configureSubviews()
-            view.addSubview(imageEditorView)
-            imageEditorView.autoPinWidthToSuperview()
-
-            viewConstraintsPortrait = [
-                imageEditorView.heightAnchor.constraint(equalTo: imageEditorView.widthAnchor, multiplier: 16/9),
-                imageEditorView.topAnchor.constraint(equalTo: view.topAnchor, constant: contentMarginTop) ]
-            viewConstraintsLandscape = [
-                imageEditorView.topAnchor.constraint(equalTo: view.topAnchor),
-                imageEditorView.bottomAnchor.constraint(equalTo: view.bottomAnchor) ]
-
-            self.imageEditorView = imageEditorView
-
-            imageEditorUpdateNavigationBar()
-        } else if let videoEditorModel = attachmentApprovalItem.videoEditorModel {
-
-            let videoEditorView = VideoEditorView(model: videoEditorModel,
-                                                  attachmentApprovalItem: attachmentApprovalItem,
-                                                  delegate: self)
-            videoEditorView.frame = view.bounds
-            videoEditorView.configureSubviews()
-            view.addSubview(videoEditorView)
-            videoEditorView.autoPinWidthToSuperview()
-
-            viewConstraintsPortrait = [
-                videoEditorView.heightAnchor.constraint(equalTo: videoEditorView.widthAnchor, multiplier: 16/9),
-                videoEditorView.topAnchor.constraint(equalTo: view.topAnchor, constant: contentMarginTop) ]
-            viewConstraintsLandscape = [
-                videoEditorView.topAnchor.constraint(equalTo: view.topAnchor),
-                videoEditorView.bottomAnchor.constraint(equalTo: view.bottomAnchor) ]
-
-            self.videoEditorView = videoEditorView
-
-            videoEditorUpdateNavigationBar()
-        } else {
-            let mediaMessageView = MediaMessageView(attachment: attachment, mode: .attachmentApproval)
-            containerView.addSubview(mediaMessageView)
-            mediaMessageView.autoPinEdgesToSuperviewEdges()
-            self.mediaMessageView = mediaMessageView
-        }
-    }
-
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-
-        updateViewConstraintsForCurrentInterfaceOrientation()
+        let contentView = contentView
+        contentView.frame = containerView.bounds
+        prepareContentView()
+        containerView.addSubview(contentView)
+        contentView.autoPinEdgesToSuperviewEdges()
     }
 
     override public func viewWillAppear(_ animated: Bool) {
-        Logger.debug("")
-
         super.viewWillAppear(animated)
 
-        prepDelegate?.prepViewControllerUpdateNavigationBar()
-        prepDelegate?.prepViewControllerUpdateControls()
-
-        showBlurTooltipIfNecessary()
+        // Avoid unwanted animations when review screen appears.
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
-        Logger.debug("")
-
         super.viewDidAppear(animated)
 
-        prepDelegate?.prepViewControllerUpdateNavigationBar()
-        prepDelegate?.prepViewControllerUpdateControls()
+        isMediaToolViewControllerPresented = false
+        prepDelegate?.attachmentPrepViewControllerDidRequestUpdateControlsVisibility(self, completion: nil)
     }
 
-    override public func viewWillLayoutSubviews() {
-        Logger.debug("")
-        super.viewWillLayoutSubviews()
-
-        // e.g. if flipping to/from landscape
-        updateMinZoomScaleForSize(view.bounds.size)
-
-        ensureAttachmentViewScale(animated: false)
-
-        positionBlurTooltip()
-    }
-
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
-        // Handle:
-        // • iPhone rotation to/from landscape: `verticalSizeClass` changes.
-        // • Resizing of app window on iPad: `horizontalSizeClass` might change.
-        if traitCollection.verticalSizeClass != previousTraitCollection?.verticalSizeClass ||
-            traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass {
-            view.setNeedsUpdateConstraints()
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate { _ in
+            self.updateMinZoomScaleForSize(size)
+            self.ensureAttachmentViewScale(animated: false)
         }
-    }
-
-    public override func updateViewConstraints() {
-        updateViewConstraintsForCurrentInterfaceOrientation()
-        super.updateViewConstraints()
-    }
-
-    // MARK: - Navigation Bar
-
-    public func navigationBarItems() -> [UIView] {
-        if let imageEditorView = imageEditorView {
-            return imageEditorView.navigationBarItems()
-        }
-        if let videoEditorView = videoEditorView {
-            return videoEditorView.navigationBarItems()
-        }
-        return []
-    }
-
-    public var hasCustomSaveButton: Bool {
-        return videoEditorView != nil
     }
 
     // MARK: - Helpers
 
-    var isZoomable: Bool {
-        return attachment.isImage || attachment.isVideo
-    }
-
     func zoomOut(animated: Bool) {
-        if self.scrollView.zoomScale != self.scrollView.minimumZoomScale {
-            self.scrollView.setZoomScale(self.scrollView.minimumZoomScale, animated: animated)
+        if scrollView.zoomScale != scrollView.minimumZoomScale {
+            scrollView.setZoomScale(scrollView.minimumZoomScale, animated: animated)
         }
     }
 
@@ -244,7 +169,7 @@ public class AttachmentPrepViewController: OWSViewController {
     func ensureAttachmentViewScale(animated: Bool) {
         let animationDuration = animated ? 0.2 : 0
         guard shouldAllowAttachmentViewResizing else {
-            if self.contentContainer.transform != CGAffineTransform.identity {
+            if contentContainer.transform != CGAffineTransform.identity {
                 UIView.animate(withDuration: animationDuration) {
                     self.contentContainer.transform = CGAffineTransform.identity
                 }
@@ -254,14 +179,14 @@ public class AttachmentPrepViewController: OWSViewController {
 
         switch attachmentViewScale {
         case .fullsize:
-            guard self.contentContainer.transform != .identity else {
+            guard contentContainer.transform != .identity else {
                 return
             }
             UIView.animate(withDuration: animationDuration) {
                 self.contentContainer.transform = CGAffineTransform.identity
             }
         case .compact:
-            guard self.contentContainer.transform == .identity else {
+            guard contentContainer.transform == .identity else {
                 return
             }
             UIView.animate(withDuration: animationDuration) {
@@ -280,114 +205,53 @@ public class AttachmentPrepViewController: OWSViewController {
         }
     }
 
-    private func updateViewConstraintsForCurrentInterfaceOrientation() {
-        let isPortraitLayout = traitCollection.verticalSizeClass == .regular && traitCollection.horizontalSizeClass == .compact
-
-        guard isPortraitLayout != isUsingPortraitConstraints else { return }
-
-        guard let viewConstraintsPortrait = viewConstraintsPortrait,
-              let viewConstraintsLandscape = viewConstraintsLandscape else {
-            return
+    private func presentFullScreen(viewController: UIViewController, completion: (() -> Void)? = nil) {
+        if let presentedViewController = presentedViewController {
+            owsAssertDebug(false, "Already has presented view controller. [\(presentedViewController)]")
+            presentedViewController.dismiss(animated: false)
         }
 
-        isUsingPortraitConstraints = isPortraitLayout
-
-        if isPortraitLayout {
-            view.removeConstraints(viewConstraintsLandscape)
-            view.addConstraints(viewConstraintsPortrait)
-        } else {
-            view.removeConstraints(viewConstraintsPortrait)
-            view.addConstraints(viewConstraintsLandscape)
-        }
+        let navigationController = OWSNavigationController(rootViewController: viewController)
+        navigationController.modalPresentationStyle = .fullScreen
+        navigationController.setNavigationBarHidden(true, animated: false)
+        presentFullScreen(navigationController, animated: false, completion: completion)
     }
 
-    // MARK: - Tooltip
-
-    private var shouldShowBlurTooltip: Bool {
-        guard imageEditorView != nil else { return false }
-
-        guard !preferences.wasBlurTooltipShown() else {
-            return false
-        }
-        return true
-    }
-
-    private var blurTooltip: UIView?
-    private var blurTooltipTailReferenceView: UIView?
-
-    // Show the tooltip if a) it should be shown b) isn't already showing.
-    private func showBlurTooltipIfNecessary() {
-        guard shouldShowBlurTooltip else { return }
-        guard blurTooltip == nil else { return }
-
-        let tailReferenceView = UIView()
-        tailReferenceView.isUserInteractionEnabled = false
-        view.addSubview(tailReferenceView)
-        blurTooltipTailReferenceView = tailReferenceView
-
-        let tooltip = BlurTooltip.present(
-            fromView: view,
-            widthReferenceView: view,
-            tailReferenceView: tailReferenceView
-        ) { [weak self] in
-            self?.removeBlurTooltip()
-            self?.imageEditorView?.didTapBlur()
-        }
-        blurTooltip = tooltip
-
-        DispatchQueue.global().async {
-            self.preferences.setWasBlurTooltipShown()
-
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) { [weak self] in
-                self?.removeBlurTooltip()
+    final func presentMediaTool(viewController: UIViewController) {
+        if let prepDelegate = prepDelegate {
+            isMediaToolViewControllerPresented = true
+            prepDelegate.attachmentPrepViewControllerDidRequestUpdateControlsVisibility(self) { _ in
+                self.presentFullScreen(viewController: viewController)
             }
+        } else {
+            self.presentFullScreen(viewController: viewController)
         }
     }
 
-    private func positionBlurTooltip() {
-        guard let blurTooltipTailReferenceView = blurTooltipTailReferenceView else { return }
-        guard let imageEditorView = imageEditorView else { return }
+    func activatePenTool() { }
 
-        blurTooltipTailReferenceView.frame = view.convert(imageEditorView.blurButton.frame, from: imageEditorView.blurButton.superview)
-    }
-
-    private func removeBlurTooltip() {
-        blurTooltip?.removeFromSuperview()
-        blurTooltip = nil
-        blurTooltipTailReferenceView?.removeFromSuperview()
-        blurTooltipTailReferenceView = nil
-    }
+    func activateCropTool() { }
 }
-
-// MARK: -
 
 extension AttachmentPrepViewController: UIScrollViewDelegate {
 
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        if isZoomable {
-            return mediaMessageView
-        } else {
-            // don't zoom for audio or generic attachments.
+        guard isZoomable else {
             return nil
         }
+        return contentView
     }
 
-    fileprivate func updateMinZoomScaleForSize(_ size: CGSize) {
-        Logger.debug("")
-
-        guard let mediaMessageView = mediaMessageView else {
-            return
-        }
-
+    private func updateMinZoomScaleForSize(_ size: CGSize) {
         // Ensure bounds have been computed
-        mediaMessageView.layoutIfNeeded()
-        guard mediaMessageView.bounds.width > 0, mediaMessageView.bounds.height > 0 else {
+        contentView.layoutIfNeeded()
+        guard contentView.bounds.width > 0, contentView.bounds.height > 0 else {
             Logger.warn("bad bounds")
             return
         }
 
-        let widthScale = size.width / mediaMessageView.bounds.width
-        let heightScale = size.height / mediaMessageView.bounds.height
+        let widthScale = size.width / contentView.bounds.width
+        let heightScale = size.height / contentView.bounds.height
         let minScale = min(widthScale, heightScale)
         scrollView.maximumZoomScale = minScale * 5.0
         scrollView.minimumZoomScale = minScale
@@ -396,90 +260,43 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
 
     // Keep the media view centered within the scroll view as you zoom
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        guard let mediaMessageView = mediaMessageView else {
-            owsFailDebug("No media message view.")
-            return
-        }
-
         // The scroll view has zoomed, so you need to re-center the contents
-        let scrollViewSize = self.scrollViewVisibleSize
+        let scrollViewSize = visibleSize(ofScrollView: scrollView)
+        let scrollViewCenter = center(ofScrollView: scrollView)
 
         // First assume that mediaMessageView center coincides with the contents center
         // This is correct when the mediaMessageView is bigger than scrollView due to zoom
         var contentCenter = CGPoint(x: (scrollView.contentSize.width / 2), y: (scrollView.contentSize.height / 2))
 
-        let scrollViewCenter = self.scrollViewCenter
-
         // if mediaMessageView is smaller than the scrollView visible size - fix the content center accordingly
-        if self.scrollView.contentSize.width < scrollViewSize.width {
+        if scrollView.contentSize.width < scrollViewSize.width {
             contentCenter.x = scrollViewCenter.x
         }
 
-        if self.scrollView.contentSize.height < scrollViewSize.height {
+        if scrollView.contentSize.height < scrollViewSize.height {
             contentCenter.y = scrollViewCenter.y
         }
 
-        mediaMessageView.center = contentCenter
+        contentView.center = contentCenter
+    }
+
+    private var isZoomable: Bool {
+        // No zoom for audio or generic attachments.
+        return attachment.isImage || attachment.isVideo
     }
 
     // return the scroll view center
-    private var scrollViewCenter: CGPoint {
-        let size = scrollViewVisibleSize
+    private func center(ofScrollView scrollView: UIScrollView) -> CGPoint {
+        let size = visibleSize(ofScrollView: scrollView)
         return CGPoint(x: (size.width / 2), y: (size.height / 2))
     }
 
     // Return scrollview size without the area overlapping with tab and nav bar.
-    private var scrollViewVisibleSize: CGSize {
+    private func visibleSize(ofScrollView scrollView: UIScrollView) -> CGSize {
         let contentInset = scrollView.contentInset
         let scrollViewSize = scrollView.bounds.standardized.size
         let width = scrollViewSize.width - (contentInset.left + contentInset.right)
         let height = scrollViewSize.height - (contentInset.top + contentInset.bottom)
         return CGSize(width: width, height: height)
-    }
-}
-
-// MARK: -
-
-extension AttachmentPrepViewController: ImageEditorViewDelegate {
-    public func imageEditor(presentFullScreenView viewController: UIViewController,
-                            isTransparent: Bool) {
-
-        let navigationController = OWSNavigationController(rootViewController: viewController)
-        navigationController.modalPresentationStyle = (isTransparent
-            ? .overFullScreen
-            : .fullScreen)
-        navigationController.ows_prefersStatusBarHidden = true
-
-        if let navigationBar = navigationController.navigationBar as? OWSNavigationBar {
-            navigationBar.switchToStyle(.alwaysDarkAndClear)
-        } else {
-            owsFailDebug("navigationBar was nil or unexpected class")
-        }
-
-        self.presentFullScreen(navigationController, animated: false)
-    }
-
-    public func imageEditorUpdateNavigationBar() {
-        prepDelegate?.prepViewControllerUpdateNavigationBar()
-    }
-
-    public func imageEditorUpdateControls() {
-        prepDelegate?.prepViewControllerUpdateControls()
-    }
-
-    public var imageEditorShouldIgnoreTapGesture: Bool {
-        return prepDelegate?.prepViewControllerShouldIgnoreTapGesture ?? false
-    }
-}
-
-// MARK: -
-
-extension AttachmentPrepViewController: VideoEditorViewDelegate {
-    public var videoEditorViewController: UIViewController {
-        return self
-    }
-
-    public func videoEditorUpdateNavigationBar() {
-        prepDelegate?.prepViewControllerUpdateNavigationBar()
     }
 }

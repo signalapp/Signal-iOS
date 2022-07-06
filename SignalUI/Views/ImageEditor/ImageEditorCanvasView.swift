@@ -4,30 +4,127 @@
 
 import UIKit
 
-public class EditorTextLayer: CATextLayer {
+class EditorTextLayer: CATextLayer {
+
     let itemId: String
 
-    public init(itemId: String) {
+    init(itemId: String) {
         self.itemId = itemId
-
         super.init()
     }
 
     @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+private class TextFrameLayer: CAShapeLayer {
+
+    override init() {
+        super.init()
+        commonInit()
+    }
+
+    override init(layer: Any) {
+        super.init(layer: layer)
+        commonInit()
+    }
+
+    @available(*, unavailable, message: "use other init() instead.")
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override var bounds: CGRect {
+        didSet {
+            updatePath()
+        }
+    }
+
+    override var frame: CGRect {
+        didSet {
+            updatePath()
+        }
+    }
+
+    private static let circleRadius: CGFloat = 5
+
+    // Visible frame is a little smaller than layer's bounds in order
+    // to make room for little circles in the middle of left and right frame sides.
+    private var frameRect: CGRect {
+        bounds.insetBy(dx: TextFrameLayer.circleRadius, dy: 0)
+    }
+    private lazy var leftCircleLayer = TextFrameLayer.createCircleLayer()
+    private lazy var rightCircleLayer = TextFrameLayer.createCircleLayer()
+    private static func createCircleLayer() -> CAShapeLayer {
+        let layer = CAShapeLayer()
+        layer.bounds = CGRect(origin: .zero, size: CGSize(square: circleRadius * 2))
+        layer.fillColor = UIColor.white.cgColor
+        layer.path = UIBezierPath(ovalIn: layer.bounds).cgPath
+        return layer
+    }
+
+    private func commonInit() {
+        fillColor = UIColor.clear.cgColor
+        lineWidth = 3 * CGHairlineWidth()
+        strokeColor = UIColor.white.cgColor
+
+        addSublayer(leftCircleLayer)
+        addSublayer(rightCircleLayer)
+    }
+
+    private func updatePath() {
+        path = UIBezierPath(rect: frameRect).cgPath
+    }
+
+    override func layoutSublayers() {
+        super.layoutSublayers()
+        let frameRect = frameRect
+        leftCircleLayer.position = CGPoint(x: frameRect.minX, y: frameRect.midY)
+        rightCircleLayer.position = CGPoint(x: frameRect.maxX, y: frameRect.midY)
     }
 }
 
 // MARK: -
 
 // A view for previewing an image editor model.
-@objc
-public class ImageEditorCanvasView: UIView {
+class ImageEditorCanvasView: AttachmentPrepContentView {
 
     private let model: ImageEditorModel
 
-    private let itemIdsToIgnore: [String]
+    var hiddenItemId: String? {
+        didSet {
+            if let itemId = oldValue, let layer = contentLayerMap[itemId] {
+                layer.isHidden = false
+                // Show text object's frame if current text object is selected.
+                if itemId == selectedTextItemId {
+                    selectedTextFrameLayer?.isHidden = false
+                }
+            }
+            if let hiddenItemId = hiddenItemId, let layer = contentLayerMap[hiddenItemId] {
+                layer.isHidden = true
+                // Hide text object's frame when hiding selected text object.
+                if hiddenItemId == selectedTextItemId {
+                    selectedTextFrameLayer?.isHidden = true
+                }
+            }
+        }
+    }
+
+    var selectedTextItemId: String? {
+        didSet {
+            updateSelectedTextFrame()
+        }
+    }
+
+    override var contentLayoutMargins: UIEdgeInsets {
+        didSet {
+            if oldValue != contentLayoutMargins {
+                updateLayout()
+            }
+        }
+    }
 
     // We want blurs to be rendered above the image and behind strokes and text.
     private static let blurLayerZ: CGFloat = +1
@@ -35,14 +132,14 @@ public class ImageEditorCanvasView: UIView {
     private static let brushLayerZ: CGFloat = +2
     // We want text to be rendered above the image, blurs, and strokes.
     private static let textLayerZ: CGFloat = +3
+    // Selection frame is rendered above all content.
+    private static let selectionFrameLayerZ: CGFloat = +4
     // We leave space for 10k items/layers of each type.
     private static let zPositionSpacing: CGFloat = 0.0001
 
-    @objc
-    public required init(model: ImageEditorModel,
-                         itemIdsToIgnore: [String] = []) {
+    required init(model: ImageEditorModel, hiddenItemId: String? = nil) {
         self.model = model
-        self.itemIdsToIgnore = itemIdsToIgnore
+        self.hiddenItemId = hiddenItemId
 
         super.init(frame: .zero)
 
@@ -61,7 +158,7 @@ public class ImageEditorCanvasView: UIView {
     // contentView is used to host the layers used to render the content.
     //
     // The transform for the content is applied to it.
-    public let contentView = OWSLayerView()
+    let contentView = OWSLayerView()
 
     // clipView is used to clip the content.  It reflects the actual
     // visible bounds of the "canvas" content.
@@ -69,19 +166,19 @@ public class ImageEditorCanvasView: UIView {
 
     private var contentViewConstraints = [NSLayoutConstraint]()
 
-    private var srcImage: UIImage?
-
     private var imageLayer = CALayer()
 
-    @objc
-    public func configureSubviews() {
+    var roundCorners: Bool = false {
+        didSet {
+            contentView.layer.cornerRadius = roundCorners ? 18 : 0
+        }
+    }
+
+    func configureSubviews() {
         self.backgroundColor = .clear
         self.isOpaque = false
 
-        self.srcImage = loadSrcImage()
-
         clipView.clipsToBounds = true
-        clipView.backgroundColor = .clear
         clipView.isOpaque = false
         clipView.layoutCallback = { [weak self] (_) in
             guard let strongSelf = self else {
@@ -91,13 +188,13 @@ public class ImageEditorCanvasView: UIView {
         }
         addSubview(clipView)
 
-        if let srcImage = srcImage {
+        if let srcImage = loadSrcImage() {
             imageLayer.contents = srcImage.cgImage
             imageLayer.contentsScale = srcImage.scale
         }
 
-        contentView.backgroundColor = .clear
         contentView.isOpaque = false
+        contentView.layer.masksToBounds = true
         contentView.layer.addSublayer(imageLayer)
         contentView.layoutCallback = { [weak self] (_) in
             guard let strongSelf = self else {
@@ -111,45 +208,58 @@ public class ImageEditorCanvasView: UIView {
         updateLayout()
     }
 
-    public var gestureReferenceView: UIView {
+    var gestureReferenceView: UIView {
         return clipView
     }
 
     private func updateLayout() {
         NSLayoutConstraint.deactivate(contentViewConstraints)
         contentViewConstraints = ImageEditorCanvasView.updateContentLayout(transform: model.currentTransform(),
-                                                                           contentView: clipView)
+                                                                           contentView: clipView,
+                                                                           layoutMargins: contentLayoutMargins)
     }
 
-    public class func updateContentLayout(transform: ImageEditorTransform,
-                                          contentView: UIView) -> [NSLayoutConstraint] {
+    class func updateContentLayout(transform: ImageEditorTransform,
+                                   contentView: UIView,
+                                   layoutMargins: UIEdgeInsets = .zero) -> [NSLayoutConstraint] {
         guard let superview = contentView.superview else {
             owsFailDebug("Content view has no superview.")
             return []
         }
-        let outputSizePixels = transform.outputSizePixels
 
-        let aspectRatio = outputSizePixels
-        var constraints = superview.applyScaleAspectFitLayout(subview: contentView, aspectRatio: aspectRatio.width / aspectRatio.height)
+        let aspectRatio = transform.outputSizePixels
+        let centerOffset = CGPoint(x: 0.5 * (layoutMargins.leading - layoutMargins.trailing),
+                                   y: 0.5 * (layoutMargins.top - layoutMargins.bottom))
+
+        // This emulates the behavior of contentMode = .scaleAspectFit using iOS auto layout constraints.
+        var constraints = [NSLayoutConstraint]()
+        NSLayoutConstraint.autoSetPriority(.defaultHigh - 100) {
+            constraints.append(contentView.autoAlignAxis(.vertical, toSameAxisOf: superview, withOffset: centerOffset.x))
+            constraints.append(contentView.autoAlignAxis(.horizontal, toSameAxisOf: superview, withOffset: centerOffset.y))
+        }
+        constraints.append(contentView.autoPinEdge(.top, to: .top, of: superview, withOffset: layoutMargins.top, relation: .greaterThanOrEqual))
+        constraints.append(contentView.autoPin(toAspectRatio: aspectRatio.width / aspectRatio.height))
+        constraints.append(contentView.autoMatch(.width, to: .width, of: superview, withMultiplier: 1.0, relation: .lessThanOrEqual))
+        constraints.append(contentView.autoMatch(.height, to: .height, of: superview, withMultiplier: 1.0, relation: .lessThanOrEqual))
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            constraints.append(contentView.autoMatch(.width, to: .width, of: superview, withMultiplier: 1.0, relation: .equal))
+            constraints.append(contentView.autoMatch(.height, to: .height, of: superview, withMultiplier: 1.0, relation: .equal))
+        }
 
         let superviewSize = superview.frame.size
         let maxSuperviewDimension = max(superviewSize.width, superviewSize.height)
         let outputSizePoints = CGSize(square: maxSuperviewDimension)
-        // TODO: Add a "shouldFill" parameter.
-        //        let outputSizePoints = CGSizeScale(outputSizePixels, 1.0 / UIScreen.main.scale)
-        NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {
+        NSLayoutConstraint.autoSetPriority(.defaultLow) {
             constraints.append(contentsOf: contentView.autoSetDimensions(to: outputSizePoints))
         }
         return constraints
     }
 
-    @objc
-    public func loadSrcImage() -> UIImage? {
+    private func loadSrcImage() -> UIImage? {
         return ImageEditorCanvasView.loadSrcImage(model: model)
     }
 
-    @objc
-    public class func loadSrcImage(model: ImageEditorModel) -> UIImage? {
+    class func loadSrcImage(model: ImageEditorModel) -> UIImage? {
         let srcImageData: Data
         do {
             let srcImagePath = model.srcImagePath
@@ -173,11 +283,52 @@ public class ImageEditorCanvasView: UIView {
         return srcImage.normalized()
     }
 
+    // MARK: - Text Selection Frame
+
+    private var selectedTextFrameLayer: TextFrameLayer?
+
+    // Negative insets because text object frame is larger than object itself.
+    private static let textFrameInsets = UIEdgeInsets(hMargin: -16, vMargin: -4)
+
+    private func updateSelectedTextFrame() {
+        guard let selectedTextItemId = selectedTextItemId,
+              let textLayer = contentLayerMap[selectedTextItemId] as? EditorTextLayer else {
+            selectedTextFrameLayer?.removeFromSuperlayer()
+            selectedTextFrameLayer = nil
+            return
+        }
+
+        let selectedTextFrameLayer = selectedTextFrameLayer ?? TextFrameLayer()
+        if selectedTextFrameLayer.superlayer == nil {
+            contentView.layer.addSublayer(selectedTextFrameLayer)
+            selectedTextFrameLayer.zPosition = ImageEditorCanvasView.selectionFrameLayerZ
+            self.selectedTextFrameLayer = selectedTextFrameLayer
+        }
+
+        // Disable implicit animations that make little circles not move smoothly with the frame.
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        let transform = textLayer.affineTransform()
+        let rotationAngle = atan2(transform.b, transform.a)
+        let scaleX = sqrt(pow(transform.a, 2) + pow(transform.c, 2))
+        let scaleY = sqrt(pow(transform.b, 2) + pow(transform.d, 2))
+
+        selectedTextFrameLayer.bounds = textLayer.bounds
+            .inset(by: ImageEditorCanvasView.textFrameInsets)
+            .applying(CGAffineTransform(scaleX: scaleX, y: scaleY))
+        selectedTextFrameLayer.position = textLayer.position
+        selectedTextFrameLayer.setAffineTransform(CGAffineTransform(rotationAngle: rotationAngle))
+        selectedTextFrameLayer.layoutSublayers()
+
+        CATransaction.commit()
+    }
+
     // MARK: - Content
 
-    var contentLayerMap = [String: CALayer]()
+    private var contentLayerMap = [String: CALayer]()
 
-    internal func updateAllContent() {
+    private func updateAllContent() {
         AssertIsOnMainThread()
 
         // Don't animate changes.
@@ -199,11 +350,6 @@ public class ImageEditorCanvasView: UIView {
             updateImageLayer()
 
             for item in model.items() {
-                guard !itemIdsToIgnore.contains(item.itemId) else {
-                    // Ignore this item.
-                    continue
-                }
-
                 guard let layer = ImageEditorCanvasView.layerForItem(item: item,
                                                                      model: model,
                                                                      transform: transform,
@@ -211,12 +357,16 @@ public class ImageEditorCanvasView: UIView {
                                                                         continue
                 }
 
+                if item.itemId == hiddenItemId {
+                    layer.isHidden = true
+                }
                 contentView.layer.addSublayer(layer)
                 contentLayerMap[item.itemId] = layer
             }
         }
 
         updateLayout()
+        updateSelectedTextFrame()
 
         // Force layout now.
         setNeedsLayout()
@@ -225,7 +375,7 @@ public class ImageEditorCanvasView: UIView {
         CATransaction.commit()
     }
 
-    internal func updateContent(changedItemIds: [String]) {
+    private func updateContent(changedItemIds: [String]) {
         AssertIsOnMainThread()
 
         // Don't animate changes.
@@ -264,10 +414,15 @@ public class ImageEditorCanvasView: UIView {
                                                                         continue
                 }
 
+                if item.itemId == hiddenItemId {
+                    layer.isHidden = true
+                }
                 contentView.layer.addSublayer(layer)
                 contentLayerMap[item.itemId] = layer
             }
         }
+
+        updateSelectedTextFrame()
 
         CATransaction.commit()
     }
@@ -285,7 +440,7 @@ public class ImageEditorCanvasView: UIView {
                                                transform: model.currentTransform())
     }
 
-    public class func updateImageLayer(imageLayer: CALayer, viewSize: CGSize, imageSize: CGSize, transform: ImageEditorTransform) {
+    class func updateImageLayer(imageLayer: CALayer, viewSize: CGSize, imageSize: CGSize, transform: ImageEditorTransform) {
         imageLayer.frame = imageFrame(forViewSize: viewSize, imageSize: imageSize, transform: transform)
 
         // This is the only place the isFlipped flag is consulted.
@@ -298,7 +453,7 @@ public class ImageEditorCanvasView: UIView {
         imageLayer.setAffineTransform(transform)
     }
 
-    public class func imageFrame(forViewSize viewSize: CGSize, imageSize: CGSize, transform: ImageEditorTransform) -> CGRect {
+    class func imageFrame(forViewSize viewSize: CGSize, imageSize: CGSize, transform: ImageEditorTransform) -> CGRect {
         guard viewSize.width > 0, viewSize.height > 0 else {
             owsFailDebug("Invalid viewSize")
             return .zero
@@ -400,7 +555,7 @@ public class ImageEditorCanvasView: UIView {
         AssertIsOnMainThread()
 
         let optionalBlurredImageLayer: CALayer?
-        if item.isBlur {
+        if item.strokeType == .blur {
             guard let blurredImageLayer = blurredImageLayerForItem(model: model, transform: transform, viewSize: viewSize) else {
                 owsFailDebug("Failed to retrieve blurredImageLayer")
                 return nil
@@ -496,10 +651,16 @@ public class ImageEditorCanvasView: UIView {
 
         shapeLayer.path = bezierPath.cgPath
         shapeLayer.fillColor = nil
-        shapeLayer.lineCap = CAShapeLayerLineCap.round
-        shapeLayer.lineJoin = CAShapeLayerLineJoin.round
 
-        if item.isBlur {
+        if item.strokeType == .highlighter {
+            shapeLayer.lineCap = CAShapeLayerLineCap.square
+            shapeLayer.lineJoin = CAShapeLayerLineJoin.bevel
+        } else {
+            shapeLayer.lineCap = CAShapeLayerLineCap.round
+            shapeLayer.lineJoin = CAShapeLayerLineJoin.round
+        }
+
+        if item.strokeType == .blur {
             guard let blurredImageLayer = optionalBlurredImageLayer else {
                 owsFailDebug("Unexpectedly missing blurredImageLayer")
                 return nil
@@ -587,19 +748,40 @@ public class ImageEditorCanvasView: UIView {
         // using the image width as reference.
         let fontSize = item.font.pointSize * imageFrame.size.width / item.fontReferenceImageWidth
 
+        let textColor: UIColor = {
+            switch item.style {
+            case .regular: return item.color.color
+            default: return UIColor.white
+            }
+        }()
+
         let text = item.text.filterForDisplay ?? ""
-        let attributedString = NSAttributedString(string: text,
-                                                  attributes: [
-                                                    NSAttributedString.Key.font: item.font.withSize(fontSize),
-                                                    NSAttributedString.Key.foregroundColor: item.color.color
-            ])
+        let attributedString = NSMutableAttributedString(string: text,
+                                                         attributes: [ .font: item.font.withSize(fontSize),
+                                                                       .foregroundColor: textColor ])
+        switch item.style {
+        case .underline:
+            attributedString.addAttributes([ .underlineStyle: NSUnderlineStyle.single.rawValue,
+                                             .underlineColor: item.color.color ],
+                                           range: attributedString.entireRange)
+        case .outline:
+            attributedString.addAttributes([ .strokeWidth: -3,
+                                             .strokeColor: item.color.color ],
+                                           range: attributedString.entireRange)
+
+        case .inverted:
+            attributedString.addAttribute(.backgroundColor,
+                                          value: item.color.color,
+                                          range: attributedString.entireRange)
+
+        default:
+            break
+        }
+
         let layer = EditorTextLayer(itemId: item.itemId)
         layer.string = attributedString
-        layer.foregroundColor = item.color.cgColor
-        layer.font = CGFont(item.font.fontName as CFString)
-        layer.fontSize = fontSize
         layer.isWrapped = true
-        layer.alignmentMode = CATextLayerAlignmentMode.center
+        layer.alignmentMode = .center
         // I don't think we need to enable allowsFontSubpixelQuantization
         // or set truncationMode.
 
@@ -617,10 +799,7 @@ public class ImageEditorCanvasView: UIView {
         // TODO: Is there a more accurate way to measure text in a CATextLayer?
         //       CoreText?
         let textBounds = attributedString.boundingRect(with: maxSize,
-                                                       options: [
-                                                        .usesLineFragmentOrigin,
-                                                        .usesFontLeading
-            ],
+                                                       options: [ .usesLineFragmentOrigin, .usesFontLeading ],
                                                        context: nil)
         // The text item's center is specified in "image unit" coordinates, but
         // needs to be rendered in "canvas" coordinates.  The imageFrame
@@ -675,7 +854,7 @@ public class ImageEditorCanvasView: UIView {
     // MARK: - Blur
 
     private func prepareBlurredImage() {
-        guard let srcImage = ImageEditorCanvasView.loadSrcImage(model: self.model) else {
+        guard let srcImage = loadSrcImage() else {
             return owsFailDebug("Could not load src image.")
         }
 
@@ -688,7 +867,9 @@ public class ImageEditorCanvasView: UIView {
             self.model.blurredSourceImage = blurredImage
 
             // Once the blur is ready, update any content in case the user already blurred
-            self.updateAllContent()
+            if self.window != nil {
+                self.updateAllContent()
+            }
         }.catch { _ in
             owsFailDebug("Failed to blur src image")
         }
@@ -729,8 +910,7 @@ public class ImageEditorCanvasView: UIView {
     // We render using the transform parameter, not the transform from the model.
     // This allows this same method to be used for rendering "previews" for the
     // crop tool and the final output.
-    @objc
-    public class func renderForOutput(model: ImageEditorModel, transform: ImageEditorTransform) -> UIImage? {
+    class func renderForOutput(model: ImageEditorModel, transform: ImageEditorTransform) -> UIImage? {
         // TODO: Do we want to render off the main thread?
         AssertIsOnMainThread()
 
@@ -801,9 +981,18 @@ public class ImageEditorCanvasView: UIView {
 
     // MARK: -
 
-    public func textLayer(forLocation point: CGPoint) -> EditorTextLayer? {
+    func textLayer(forLocation point: CGPoint) -> EditorTextLayer? {
         guard let sublayers = contentView.layer.sublayers else {
             return nil
+        }
+
+        // Allow to interact with selected text layer when user taps within
+        // selection frame (which is larger than text itself).
+        if let selectedTextFrameLayer = selectedTextFrameLayer,
+           let selectedTextItemId = selectedTextItemId,
+           let selectedTextLayer = contentLayerMap[selectedTextItemId] as? EditorTextLayer,
+           selectedTextFrameLayer.hitTest(point) != nil {
+            return selectedTextLayer
         }
 
         // First we build a map of all text layers.
@@ -832,10 +1021,10 @@ public class ImageEditorCanvasView: UIView {
 
     // MARK: - Coordinates
 
-    public class func locationImageUnit(forLocationInView locationInView: CGPoint,
-                                        viewBounds: CGRect,
-                                        model: ImageEditorModel,
-                                        transform: ImageEditorTransform) -> CGPoint {
+    class func locationImageUnit(forLocationInView locationInView: CGPoint,
+                                 viewBounds: CGRect,
+                                 model: ImageEditorModel,
+                                 transform: ImageEditorTransform) -> CGPoint {
         let imageFrame = self.imageFrame(forViewSize: viewBounds.size, imageSize: model.srcImageSizePixels, transform: transform)
         let affineTransformStart = transform.affineTransform(viewSize: viewBounds.size)
         let locationInContent = locationInView.minus(viewBounds.center).applyingInverse(affineTransformStart).plus(viewBounds.center)
@@ -848,12 +1037,11 @@ public class ImageEditorCanvasView: UIView {
 
 extension ImageEditorCanvasView: ImageEditorModelObserver {
 
-    public func imageEditorModelDidChange(before: ImageEditorContents,
-                                          after: ImageEditorContents) {
+    func imageEditorModelDidChange(before: ImageEditorContents, after: ImageEditorContents) {
         updateAllContent()
     }
 
-    public func imageEditorModelDidChange(changedItemIds: [String]) {
+    func imageEditorModelDidChange(changedItemIds: [String]) {
         updateContent(changedItemIds: changedItemIds)
     }
 }

@@ -53,11 +53,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - View Lifecycle
 
     override var prefersStatusBarHidden: Bool {
-        guard !CurrentAppContext().hasActiveCall else {
-            return false
-        }
-
-        return true
+        !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !CurrentAppContext().hasActiveCall
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

@@ -4,10 +4,10 @@
 
 import UIKit
 
-public struct ImageEditorPinchState {
-    public let centroid: CGPoint
-    public let distance: CGFloat
-    public let angleRadians: CGFloat
+struct ImageEditorPinchState {
+    let centroid: CGPoint
+    let distance: CGFloat
+    let angleRadians: CGFloat
 
     init(centroid: CGPoint,
          distance: CGFloat,
@@ -27,13 +27,13 @@ public struct ImageEditorPinchState {
 // * Tries to fail quickly to avoid conflicts with other GRs, especially pans/swipes.
 // * Captures a bunch of useful "pinch state" that makes using this GR much easier
 //   than UIPinchGestureRecognizer.
-public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
+class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
 
-    public weak var referenceView: UIView?
+    weak var referenceView: UIView?
 
-    public var pinchStateStart = ImageEditorPinchState.empty
+    var pinchStateStart = ImageEditorPinchState.empty
 
-    public var pinchStateLast = ImageEditorPinchState.empty
+    var pinchStateLast = ImageEditorPinchState.empty
 
     // MARK: - Touch Handling
 
@@ -45,7 +45,7 @@ public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
     }
 
     @objc
-    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesBegan(touches, with: event)
 
         if state == .possible {
@@ -70,7 +70,7 @@ public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
     }
 
     @objc
-    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesMoved(touches, with: event)
 
         switch state {
@@ -90,8 +90,10 @@ public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
                         return
                     }
                 }
+
             case .invalid:
                 failAndReset()
+
             case .valid(let pinchState):
                 state = .changed
                 pinchStateLast = pinchState
@@ -102,7 +104,7 @@ public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
     }
 
     @objc
-    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesEnded(touches, with: event)
 
         switch state {
@@ -122,13 +124,13 @@ public class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
     }
 
     @objc
-    public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesCancelled(touches, with: event)
 
         state = .cancelled
     }
 
-    public enum TouchState {
+    enum TouchState {
         case possible
         case valid(pinchState: ImageEditorPinchState)
         case invalid
