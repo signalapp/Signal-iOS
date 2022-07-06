@@ -12,10 +12,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Glasovna poruka u trajanju od %d sekunde</string>
 			<key>one</key>
-			<string>Voice message 1 second</string>
+			<string>Glasovna poruka u trajanju od 1 sekunde</string>
 			<key>other</key>
-			<string>Voice message %d seconds</string>
+			<string>Glasovna poruka u trajanju od %d sekundi</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -28,10 +30,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Dodaj članove</string>
 			<key>one</key>
-			<string>Add Member</string>
+			<string>Dodaj člana</string>
 			<key>other</key>
-			<string>Add Members</string>
+			<string>Dodaj članove</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -44,10 +48,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Dodati %d člana u “%2$@”?</string>
 			<key>one</key>
-			<string>Add member to “%2$@”?</string>
+			<string>Dodati člana u “%2$@”?</string>
 			<key>other</key>
-			<string>Add %d members to “%2$@”?</string>
+			<string>Dodati %d članova u “%2$@”?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -60,10 +66,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Dodaj nove članove</string>
 			<key>one</key>
-			<string>Add New Member</string>
+			<string>Dodaj novog člana</string>
 			<key>other</key>
-			<string>Add New Members</string>
+			<string>Dodaj nove članove</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -76,10 +84,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Ova prilagođena boja koristi se u %d razgovora. Želite li je izbrisati za sve razgovore?</string>
 			<key>one</key>
-			<string>This custom color is used in 1 chat. Do you want to delete it?</string>
+			<string>Ova prilagođena boja se koristi u 1 razgovoru. Želite li je izbrisati?</string>
 			<key>other</key>
-			<string>This custom color is used in %d chats. Do you want to delete it for all chats?</string>
+			<string>Ova prilagođena boja koristi se u %d razgovora. Želite li je izbrisati za sve razgovore?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -92,10 +102,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Ova boja se koristi u %d razgovora. Želite li spremiti promjene za sve razgovore?</string>
 			<key>one</key>
-			<string>This color is used in 1 chat. Do you want to save changes for all chats?</string>
+			<string>Ova boja se koristi u 1 razgovoru. Želite li spremiti promjene za sve razgovore?</string>
 			<key>other</key>
-			<string>This color is used in %d chats. Do you want to save changes for all chats?</string>
+			<string>Ova boja se koristi u %d razgovora. Želite li spremiti promjene za sve razgovore?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -108,10 +120,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Izbrisati %d razgovora?</string>
 			<key>one</key>
-			<string>Delete Chat?</string>
+			<string>Izbrisati razgovor?</string>
 			<key>other</key>
-			<string>Delete %d Chats?</string>
+			<string>Izbrisati %d razgovora?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -124,10 +138,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Razgovori će biti izbrisani s ovoga uređaja.</string>
 			<key>one</key>
-			<string>This chat will be deleted from this device.</string>
+			<string>Razgovor će biti izbrisan s ovog uređaja.</string>
 			<key>other</key>
-			<string>These chats will be deleted from this device.</string>
+			<string>Razgovori će biti izbrisani s ovoga uređaja.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -140,10 +156,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Ne možete odabrati više od %d razgovora.</string>
 			<key>one</key>
-			<string>You can’t select more than 1 chat.</string>
+			<string>Ne možete odabrati više od 1 razgovora.</string>
 			<key>other</key>
-			<string>You can’t select more than %d chats.</string>
+			<string>Ne možete odabrati više od %d razgovora.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -156,6 +174,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d %2$#@total@</string>
 			<key>one</key>
 			<string>1 %2$#@total@</string>
 			<key>other</key>
@@ -167,10 +187,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>od %d podudaranja</string>
 			<key>one</key>
-			<string>match</string>
+			<string>podudaranje</string>
 			<key>other</key>
-			<string>of %d matches</string>
+			<string>od %d podudaranja</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -183,10 +205,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d člana</string>
 			<key>one</key>
-			<string>1 Member</string>
+			<string>1 član</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>%d članova</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -199,10 +223,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d zajedničke grupe</string>
 			<key>one</key>
-			<string>1 Group in Common</string>
+			<string>1 zajednička grupa</string>
 			<key>other</key>
-			<string>%d Groups in Common</string>
+			<string>%d zajedničkih grupa</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -215,10 +241,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d m</string>
 			<key>one</key>
-			<string>%dm</string>
+			<string>%d m</string>
 			<key>other</key>
-			<string>%dm</string>
+			<string>%d m</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -231,10 +259,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Prije %d minute</string>
 			<key>one</key>
-			<string>1 minute ago</string>
+			<string>Prije 1 minute</string>
 			<key>other</key>
-			<string>%d minutes ago</string>
+			<string>Prije %d minuta</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -247,10 +277,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Izbrisati %d poruke?</string>
 			<key>one</key>
-			<string>Delete Message?</string>
+			<string>Izbrisati poruku?</string>
 			<key>other</key>
-			<string>Delete %d Messages?</string>
+			<string>Izbrisati %d poruke?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>

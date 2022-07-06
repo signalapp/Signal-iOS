@@ -403,8 +403,11 @@
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "新增訊息";
 
-/* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "必須更新 Signal 才能收到禮物";
+/* Error message indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+
+/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "已過期";
@@ -421,6 +424,12 @@
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
 "BADGE_GIFTING_CONFIRMATION_TITLE" = "確認禮物";
 
+/* Error message indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "這位使用者必須先升級 Signal 版本才能收取禮物。";
+
+/* Title for error message dialog indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "發送禮品徽章";
 
@@ -434,10 +443,16 @@
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "付款失敗";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "系統已完成處理你的付款程序，但 Signal 無法傳送禮品徽章給你。請聯絡支援團隊。";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "無法送出徽章禮品";
+
+/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+
+/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
 "BADGE_GIFTING_REDEEM" = "加值";
@@ -4623,9 +4638,6 @@
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "使用者無法被選擇。";
-
-/* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "這位使用者必須先升級 Signal 版本才能收取禮物。";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "我忘了 PIN 碼。";

@@ -403,14 +403,17 @@
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Aggiungi un messaggio";
 
-/* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Deve aggiornare Signal per ricevere i regali";
+/* Error message indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+
+/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Scaduto";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Regala a qualcuno un badge facendo una donazione a Signal a suo nome. Riceverà un badge da mostrare sulla sua foto del profilo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Regala un badge a qualcuno facendo una donazione a Signal a suo nome. Riceverà un badge da mostrare sulla sua foto del profilo.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Regala un badge";
@@ -421,6 +424,12 @@
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
 "BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
 
+/* Error message indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "Per poter ricevere dei regali, questa persona deve prima aggiornare Signal.";
+
+/* Title for error message dialog indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Invia un badge regalo";
 
@@ -428,16 +437,22 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Donazione unica";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Non siamo riusciti a elaborare il tuo pagamento, perciò non ti è stata addebitata nessuna somma. Prova di nuovo.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Il tuo pagamento è stato elaborato correttamente, ma Signal non è riuscito a inviarti il tuo badge. Ti consigliamo di contattare l'assistenza.";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Invio badge non riuscito";
+
+/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+
+/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
 "BADGE_GIFTING_REDEEM" = "Riscatta";
@@ -449,7 +464,7 @@
 "BADGE_GIFTING_VIEW" = "Mostra";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "La tua donazione mensile ricorrente è stata automaticamente cancellata. %@ Il tuo %@ badge non è più visibile sul tuo profilo.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "La tua donazione mensile è stata cancellata automaticamente. %@ Il tuo %@ badge non è più visibile sul tuo profilo.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "La tua donazione mensile ricorrente è stata automaticamente cancellata perché sei stato inattivo per troppo tempo. Il tuo badge %@ non è più visibile sul tuo profilo.\n\nPuoi continuare a usare Signal, ma per sostenere l'app e riattivare il tuo badge, rinnova ora.";
@@ -1640,13 +1655,13 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Prova un altro metodo di pagamento o contatta la tua banca per maggiori informazioni.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Controlla che il tuo metodo di pagamento sia aggiornato in Apple Pay. Se non lo è, aggiornalo e riprova. Se il problema persiste, contatta la tua banca.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Assicurati che il tuo metodo di pagamento sia aggiornato su Apple Pay. Se non lo è, aggiornalo e riprova. Se il problema persiste, contatta la tua banca.";
 
 /* Donation payment error for decline failures where the card is not supported. */
 "DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "La tua carta non supporta questo tipo di acquisto. Prova un altro metodo di pagamento o contatta la tua banca per maggiori informazioni.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "La carta è scaduta. Verifica se il tuo metodo di pagamento è stato inserito correttamente in Apple Pay. Se non lo è, aggiornalo e riprova.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "La carta è scaduta. Verifica che il tuo metodo di pagamento sia stato inserito correttamente su Apple Pay. In caso contrario, aggiornalo e riprova.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
 "DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Il numero della tua carta non è corretto. Verifica se il tuo metodo di pagamento è stato inserito correttamente in Apple Pay. Se non lo è, aggiornalo e riprova.";
@@ -3011,10 +3026,10 @@
 "IN_CALL_TERMINATED" = "Chiamata terminata.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Le chat silenziate che archivi rimangono archiviate anche quando arriva un nuovo messaggio.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Le chat archiviate compariranno nella lista delle chat attive se arriva un nuovo messaggio.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Ancora nessuna chat.\nInizia inviando un messaggio a un amico.";
@@ -4624,9 +4639,6 @@
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "L'utente non può essere selezionato.";
 
-/* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "Per poter ricevere dei regali, questa persona deve prima aggiornare Signal.";
-
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Ho dimenticato il mio PIN.";
 
@@ -5177,10 +5189,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Suono messaggio";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Le chat silenziate che archivi rimangono archiviate anche quando arriva un nuovo messaggio al loro interno.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Mantieni le chat silenziate nell'archivio";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Politica e termini sulla privacy";

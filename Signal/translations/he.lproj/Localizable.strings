@@ -403,14 +403,17 @@
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "הוסף הודעה";
 
-/* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "חייב/ת לעדכן את Signal כדי לקבל שיים";
+/* Error message indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+
+/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "פג";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "תן תג כשי למישהו ע״י ביצוע תרומה אל Signal בשמו. הוא יקבל תג להציג אותו בתמונת הפרופיל שלו.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "אפשר לתת למישהו או מישהי תג מתנה על ידי ביצוע תרומה ל-Signal בשמם. הם יקבלו תג שיוכלו להציג בתמונת הפרופיל שלהם.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "תן תג כשי";
@@ -421,6 +424,12 @@
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
 "BADGE_GIFTING_CONFIRMATION_TITLE" = "אשר שי";
 
+/* Error message indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "אי אפשר לתת מתנות למשתמש או המשתמשת עד שהם ישדרגו את Signal.";
+
+/* Title for error message dialog indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "שלח תג שי";
 
@@ -428,16 +437,22 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "תרומה חד־פעמית";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "התשלום שלך לא היה יכול להיות מעובד ולא חויבת. אנא נסה שוב.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "לא יכולנו לעבד את התשלום שלך ולכן לא חויבת. יש לנסות שוב.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "תשלום נכשל";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "התשלום שלך עבד אבל Signal לא הצליחה לשלוח לך את תג המתנה שלך. יש ליצור קשר עם התמיכה שלנו.";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "תג מתנה נכשל";
+
+/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+
+/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
 "BADGE_GIFTING_REDEEM" = "ממש";
@@ -449,7 +464,7 @@
 "BADGE_GIFTING_VIEW" = "הצג";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "התרומה החודשית המחזורית שלך בוטלה באופן אוטומטי. %@ תג ה%@ שלך אינו גלוי יותר בפרופיל שלך.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "התרומה החודשית החוזרת שלך בוטלה באופן אוטומטי. %@ תג ה%@ שלך לא גלוי יותר בפרופיל שלך.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "התרומה החודשית המחזורית שלך בוטלה באופן אוטומטי מאחר שהיית בלתי פעיל למשך זמן רב. תג ה%@ שלך אינו גלוי יותר בפרופיל שלך.\n\nאתה יכול להמשיך להשתמש ב־Signal אבל כדי לתמוך ביישום ולהפעיל מחדש את התג שלך, חַדֵשׁ עכשיו.";
@@ -1640,28 +1655,28 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "נסה שיטת תשלום אחרת או צור קשר עם הבנק שלך בשביל עוד מידע.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "בדוק ששיטת התשלום שלך מעודכנת ב־Apple Pay. אם היא לא, עדכן אותה ונסה שוב. אם אתה עדין חווה סוגיות, צור קשר עם הבנק שלך.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "יש לבדוק ששיטת התשלום שלך מעודכנת ב־Apple Pay. אם היא לא, צריך לעדכן אותה ולנסות שוב. אם הבעיה נמשכת, יש ליצור קשר עם הבנק שלך.";
 
 /* Donation payment error for decline failures where the card is not supported. */
 "DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "הכרטיס שלך לא תומך בסוג זה של רכישה. נסה שיטת תשלום אחרת או צור קשר עם הבנק שלך לעוד מידע.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "הכרטיס שלך פג. בדוק ששיטת התשלום שלך מעודכנת ב־Apple Pay. אם היא לא, עדכן אותה ונסה שוב.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "הכרטיס שלך פג תוקף. צריך לבדוק אם שיטת התשלום שלך מעודכנת ב־Apple Pay. אם היא לא, יש לעדכן אותה ולנסות שוב.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "מספר הכרטיס שלך שגוי. בדוק ששיטת התשלום שלך מוקלדת כראוי ב־Apple Pay. אם היא לא, עדכן אותה ונסה שוב.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "מספר הכרטיס שלך שגוי. צריך לבדוק ששיטת התשלום שלך מוקלדת כראוי ב־Apple Pay. אם היא לא, יש לעדכן אותה ולנסות שוב.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
 "DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "מספר CVC של הכרטיס שלך שגוי. בדוק שמספר CVC של הכרטיס שלך מוקלד כראוי ב־Apple Pay. אם הוא לא, עדכן אותו ונסה שוב.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "לכרטיס שלך אין מספיק כספים כדי להשלים רכישה זו. נסה שיטת תשלום אחרת או צור קשר עם הבנק שלך לעוד מידע.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "אין מספיק כסף בכרטיס שלך כדי להשלים רכישה זו. יש לנסות שיטת תשלום אחרת או ליצור קשר עם הבנק שלך למידע נוסף.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "חודש התפוגה בשיטת התשלום שלך שגוי. עדכן אותו ב־Apple Pay ונסה שוב.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "חודש התפוגה בשיטת התשלום שלך שגוי. יש לעדכן אותו ב־Apple Pay ולנסות שוב.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "שנת התפוגה בשיטת התשלום שלך שגויה. עדכן אותה ב־Apple Pay ונסה שוב.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "שנת התפוגה בשיטת התשלום שלך שגויה. יש לעדכן אותה ב־Apple Pay ולנסות שוב.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "מספר הכרטיס שלך שגוי. עדכן אותו ב־Apple Pay ונסה שוב.";
@@ -3011,10 +3026,10 @@
 "IN_CALL_TERMINATED" = "השיחה הסתיימה.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "התכתבויות מושתקות שהן מאורכבות יישארו מאורכבות כאשר הודעה חדשה מגיעה.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "התכתבויות מושתקות שמאוחסנות בארכיון ישארו בארכיון כשהודעה חדשה מגיעה.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "התכתבויות מאורכבות יועברו אל התיבה הנכנסת כאשר הודעה חדשה מגיעה.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "התכתבויות שמאוחסנות בארכיון יועברו אל תיבת הדואר הנכנס כשהודעה חדשה מגיעה.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "אין עדיין התכתבויות.\nהתחל ע״י שליחת הודעה לחבר.";
@@ -4624,9 +4639,6 @@
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "המשתמש אינו יכול להיבחר.";
 
-/* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "אי אפשר לתת מתנות למשתמש או המשתמשת עד שהם ישדרגו את Signal.";
-
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "שכחתי את ה־PIN שלי.";
 
@@ -4931,7 +4943,7 @@
 "SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "תאבד תמונות כלשהן או סרטונים כלשהם שצילמת.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "לבטל רב־מצב?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "לבטל מצב צילום רצף?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "להזמין חבר דרך מסרון בלתי־מאובטח?";
@@ -5177,10 +5189,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "צליל הודעה";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "התכתבויות מושתקות שהן מאורכבות יישארו מאורכבות כאשר הודעה חדשה מגיעה.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "התכתבויות מושתקות שמאוחסנות בארכיון ישארו בארכיון כשהודעה חדשה מגיעה.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "השאר התכתבויות מושתקות מאורכבות";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "השארת התכתבויות מושתקות בארכיון";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "תנאים ומדיניות פרטיות";

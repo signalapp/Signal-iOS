@@ -134,10 +134,10 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "錯誤";
 
 /* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
+"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "執行資料庫完整性檢查";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "Open Signal Instead";
+"APP_LAUNCH_FAILURE_CONTINUE" = "改用開啟 Signal";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "載入唔到資料庫";
@@ -149,16 +149,16 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "未知嘅資料庫版本。";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal had a problem while trying to open. Please send a debug log to support@signal.org to help troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal 在嘗試開啟嗰陣出現問題。請傳送偵錯記錄到 support@signal.org，等我哋可以睇睇呢個問題。";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "開啟唔到 Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "您嘅裝置唔夠儲存空間，所以打開唔到 Signal。如果要用 Signal 嘅話，請您喺「設定」管理儲存空間，騰出更多容量。";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "儲存空間唔夠";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "未能還原由您部舊機轉移過嚟嘅資料。請將除錯記錄檔發送至 support@signal.org，等我哋可以睇睇呢個問題。若然您重新安裝 Signal，可能會遺失您嘅訊息紀錄。";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signal 賣旗籌款";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "您嘅贊助徽章已經過期，而且唔會再喺您嘅個人資料到顯示出嚟。\n\n您可以繼續用 Signal，但係都不妨考慮透過每月捐款支持我哋為您開發技術。";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "您嘅贊助徽章已經過期，而且唔會再喺您嘅個人資料到顯示出嚟。\n\n您可以透過一次性捐款重啟您嘅贊助徽章 30 日。";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "擔當後援";
@@ -398,61 +398,76 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "每月捐款已經取消";
 
 /* Text telling the user that they can add a message along with their gift badge */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "您嘅禮物會以一對一訊息傳送俾接收人。您可以喺下面加入自己嘅訊息。";
 
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "寫返句訊息";
 
-/* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+/* Error message indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+
+/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
-"BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
+"BADGE_GIFTING_CHAT_EXPIRED" = "已過期";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "用其他人嘅名義捐款俾 Signal 可以向對方送上一個徽章。呢個徽章會顯示喺佢嘅個人資料照片到。";
 
 /* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "贈送徽章";
 
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "揀選收款人";
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "確認禮品";
+
+/* Error message indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "呢位使用者要更新 Signal 先可以接收禮品。";
+
+/* Title for error message dialog indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "送出一個禮品徽章";
 
 /* Text telling the user that their gift is a one-time donation */
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "單次捐款";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "系統處理唔到您嘅付款，付款仲未成功。請您再試一次。";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "付款失敗";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "系統已經處理您嘅付款，但係 Signal 傳送唔到您嘅饋贈徽章。請聯絡支援團隊。";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "徽章饋贈失敗";
+
+/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+
+/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
-"BADGE_GIFTING_REDEEM" = "Redeem";
+"BADGE_GIFTING_REDEEM" = "換領";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "為期 %@";
 
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "睇下";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "您嘅每月定期捐款已經自動取消。%@ 您嘅個人資料唔會再顯示「%@」徽章。";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "因為您冇用 Signal 一段時間，所以您嘅每月定期捐款已經自動取消。您嘅個人資料唔會再顯示「%@」徽章。\n\n您可以繼續用 Signal，但係都不妨考慮即時續期贊助嚟支持我哋，重啟您嘅徽章。";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "多謝您為我哋集氣！";
@@ -470,7 +485,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "若您有唔止一枚襟章，您可揀一枚做賣飛佛襟章，掛上去個人資料度畀其他人睇到。";
 
 /* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "您得到一個「%@」徽章。不妨喺您嘅個人資料顯示徽章，等大家一呼百應，一齊捐款撐起 Signal。";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "閂咗個橫幅";
@@ -530,7 +545,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "封鎖咗個谷";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "You can't block yourself.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "您係唔可以封鎖自己架。";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "錯誤";
@@ -548,7 +563,7 @@
 "BLUR_TOOLTIP" = "新嘢：朦朧人臉又或隨意造化朦朧之美。";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "進行一次性捐款就可以得到為期 30 日嘅贊助徽章。";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "您嘅「集氣」襟章，有效期至 %@。";
@@ -1346,19 +1361,19 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "拖拉去改變漸層嘅方向";
 
 /* Button to run the database integrity check */
-"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Run";
+"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "執行";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "執行時間視乎您用 Signal 嘅程度，可能要幾分鐘或以上嘅時間。如果等得太耐，您可以關閉 Signal。";
 
 /* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
+"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "加入到偵錯記錄";
 
 /* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Integrity check results";
+"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "完整性檢查結果";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database integrity check?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "係咪要執行資料庫完整性檢查？";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "可能要幾分鐘時間。";
@@ -1640,31 +1655,31 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "試下轉另一個付款方法，又或者聯絡返您間銀行問清楚。";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "請到 Apple Pay 檢查吓您嘅付款方法係咪仍然有效。如果已經過期，請先更新資料，然後再試一次。如果仲有問題，請聯絡您嘅銀行。";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "您嘅付款卡唔支援呢類購買。請您嘗試其他付款方法，或者聯絡您嘅銀行了解詳情。";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "您嘅信用卡已經過期。請到 Apple Pay 檢查吓您嘅付款方法係咪仍然有效。如果已經過期，請先更新資料，然後再試一次。";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "您嘅信用卡號碼有錯。請到 Apple Pay 檢查吓您輸入嘅付款方法係咪正確。如果有錯，請更新資料，然後再試一次。";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "您嘅 CVC 號碼有錯。請檢查您喺 Apple Pay 輸入嘅 CVC 號碼係咪正確。如果唔啱嘅話就請您更新資料，然後再試一次。";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "您無足夠嘅信用卡資金去完成呢次購買。請您試吓其他付款方法，或者聯絡您嘅銀行了解詳情。";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "您付款方法嘅到期月份有錯。請到 Apple Pay 更新資料，然後再試一次。";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "您付款方法嘅到期年份有錯。請到 Apple Pay 更新資料，然後再試一次。";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "您嘅付款卡號碼有錯。請您喺 Apple Pay 更新資料，然後再試一次。";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
 "DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "請再試下完成呢次付款，又或者聯絡返您間銀行問清楚。";
@@ -1673,7 +1688,7 @@
 "DONATION_PAYMENT_ERROR_OTHER" = "試下轉另一個付款方法，又或者聯絡返您間銀行問清楚。";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "請您喺 Apple Pay 檢查付款方法係咪仍然有效。如果已經過期，請先更新資料，然後再試一次。";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "金額";
@@ -1685,10 +1700,10 @@
 "DONATION_RECEIPT_DETAILS" = "詳情";
 
 /* Text on the button that exports the receipt */
-"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Share Receipt";
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "分享收據";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "多謝您支持 Signal。您嘅捐款驅動我哋嘅使命，致力開發開放原始碼嘅私隱技術嚟保護自由表達，令全球通訊變得安全，等世界各地數以百萬計嘅 Signal 使用者可以私密通訊。如果您係美國居民，請保留呢張收據作為您嘅稅務紀錄。Signal Technology Foundation 係美國依據《國稅法規》(IRC) 第 501c3 條嘅免稅非牟利機構。我哋嘅聯邦稅識別號碼係 82-4506840。";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "單次";
@@ -1700,7 +1715,7 @@
 "DONATION_RECEIPT_TITLE" = "捐款收據";
 
 /* Section title for donation type on receipts */
-"DONATION_RECEIPT_TYPE" = "Type";
+"DONATION_RECEIPT_TYPE" = "類型";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
 "DONATION_RECEIPTS" = "捐款收據";
@@ -1715,13 +1730,13 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "課金 Signal";
 
 /* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "Gift a Badge";
+"DONATION_VIEW_GIFT" = "贈送徽章";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "網絡有問題。請檢查您嘅連線，然後再試下啦。";
 
 /* Text of the 'make a monthly donation' button on the donation screen */
-"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "每月捐款";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "襟章";
@@ -1736,10 +1751,10 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "我擔當後援";
 
 /* Title for the 'one-time donation' link in the donation view */
-"DONATION_VIEW_ONE_TIME_DONATION" = "One-time donation";
+"DONATION_VIEW_ONE_TIME_DONATION" = "一次性捐款";
 
 /* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "其他捐款方法";
 
 /* Title for the 'receipts' section on the donation screen */
 "DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "收據";
@@ -1823,7 +1838,7 @@
 "EMPTY_CONTACTS_LABEL_LINE1" = "您嘅聯絡人都未有用 Signal。";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "不如邀請其他人？";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "佔線";
@@ -1964,7 +1979,7 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "就呢位聯絡人嘅失敗次數太多。請遲啲再試下啦。";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Your safety number with %@ has recently changed. You may wish to verify before sending this message again.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "您同 %@ 嘅安全碼最近有變。您可以重新驗證咗安全碼先再傳送訊息。";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "驗證安全碼失敗！";
@@ -2153,7 +2168,7 @@
 "GROUP_CALL_NO_ONE_HERE" = "仲未有人喺度";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "仲未有人加入呢個通話。";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ 已加入通話";
@@ -2390,13 +2405,13 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "請再試一次。";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "呢條群組連結無效。請檢查連結係咪完整同正確，然後再嘗試加入。";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "條拎無效";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "喺呢部裝置到更新 Signal 嚟加入呢個群組。";
 
 /* Explanation of the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "以谷拎加入嘅新成員送交話事人審批。";
@@ -2744,7 +2759,7 @@
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "講低句畀話事人聽";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "離開之前，先為呢個群組揀選一位新嘅管理員。";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "個使用者已經入咗谷。";
@@ -2777,7 +2792,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "我可唔可以將舊版谷升級？";
 
 /* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "To create a New Group, all members should update to the latest version of Signal.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "如果要建立新嘅群組，所有成員都要更新到最新版本嘅 Signal。";
 
 /* Title for the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "舊版同新版谷之別";
@@ -2792,7 +2807,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "呢個谷冇得升級做新版谷，因為人數太多。可以升級嘅谷人數上限係 %@ 人。";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "當全部現有群組成員都用緊支援新版群組嘅 Signal 之後，群組就會升級。 ";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "升級之前嘅所有訊息紀錄同媒體仍然會維持原狀。";
@@ -2876,7 +2891,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "呢個谷喺呢一刻未升級得做新版谷住。";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "This group couldn’t be upgraded to a New Group because you’re not connected to the Internet. Try again later.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "您未連接互聯絡，所以冇辦法將呢個群組升級到新版群組。請您等一陣再試。";
 
 /* Title for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "未能完成升級";
@@ -3011,10 +3026,10 @@
 "IN_CALL_TERMINATED" = "通話結束。";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "收到新訊息嘅時候，已經存檔嘅靜音聊天會保持喺存檔狀態。";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "收到新訊息嘅時候，已經存檔嘅聊天記錄會移到收件匣。";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "身在獨家村。\n發個訊息畀好友撩下佢傾偈啦。";
@@ -3377,7 +3392,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "係咪要刪除同退出呢個谷？";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Review requests carefully. Signal found another contact with the same name.";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "請您小心審核請求。Signal 搵到有另一個同名嘅聯絡人。";
 
 /* A header string above a known contact's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "您嘅聯絡人";
@@ -3533,7 +3548,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "您冇得再連結多啲機。";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device and try again.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "您目前可以連結帳號嘅裝置數量已經到咗上限。請您移除裝置，然後再試一次。";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "已避靜";
@@ -3635,7 +3650,7 @@
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "寫個新訊息畀：";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "No user found. Invite via SMS?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "搵唔到使用者。不如用短訊邀請？";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "樹窿";
@@ -3722,7 +3737,7 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "係咪要飛過唔打 PIN 碼？";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
+"ONBOARDING_CAPTCHA_TITLE" = "喺您嘅訊息加入個人化嘅心思";
 
 /* Explanation on the 'onboarding after dropped YDB' view. */
 "ONBOARDING_DROPPED_YDB_EXPLANATION" = "由於您有好一排冇用過，需要重新註冊先可以再次使用 Signal。";
@@ -3737,10 +3752,10 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "連結 iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "㩒一下「登記 iPad」就可以建立新嘅 Signal 帳號，或者將現有帳號轉移到呢個 iPad 到。而咁樣做會將用緊同一電話號碼登記嘅其他裝置停用 Signal。";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "㩒一下「連結 iPhone」嚟將手機連結到現有帳號。我哋通常都唔建議您連結手機，因為咁樣會限制通話等某啲功能。";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "註冊呢部 iPad";
@@ -3791,7 +3806,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "PIN 碼知多啲";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "為咗保障您嘅私隱同帳號安全，我哋會將佢鎖定 7 日。\n\n閒置 7 日之後，您就可以唔需要用 PIN 碼嚟重新登記呢個手機號碼，而所有資料都會被刪除。";
 
 /* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "暫時凍結帳戶知多啲";
@@ -4091,10 +4106,10 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "係咪要拒絕「%@」嘅請求？";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "There are no pending member requests.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "您暫時冇尚未處理嘅成員請求。";
 
 /* Label indicating that a group has no pending members. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "No invites to show.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "暫時冇邀請要處理。";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "已加咗「%@」入谷。";
@@ -4160,7 +4175,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "邊個都唔得";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "冇人可以喺 Signal 透過電話號碼搵到您。任何喺手機通訊錄入面有您電話號碼嘅人都唔會喺 Signal 聯絡人到睇到您，而其他人都唔可以搜尋您嘅電話號碼嚟搵您。";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "範例：%@";
@@ -4175,7 +4190,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "全世界";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "同您通訊嘅人同埋群組可以睇到您嘅電話號碼。而手機通訊錄入面有您電話號碼嘅人都可以喺 Signal 上面睇到您嘅電話號碼。";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "邊個都唔得";
@@ -4418,16 +4433,16 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal 摷勻您嘅剪貼簿都搵唔到安全碼。您係咪真係有複製到？";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "每一對 Signal 使用者會共享一個專屬嘅安全碼。請您再檢查一下 %@ 係顯示緊您專屬嘅安全碼。";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "You're running an old version of Signal. You need to update before you can verify.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "您用緊嘅 Signal 版本太舊。您要更新咗先可以再驗證。";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Your partner is running an old version of Signal. They need to update before you can verify.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "您朋友用緊嘅 Signal 版本太舊。佢哋要更新咗先可以再驗證。";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number. Are you both on an up-to-date version of Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "您掃瞄嘅代碼似乎唔係一個安全碼。請您確定雙方都係用緊最新版本嘅 Signal。";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "若然您想驗證下您同 %@ 之間嘅端對端加密係咪安全，請將上面嘅數字同佢部機上面嘅數字做比較。\n\n又或者，您可以掃一掃佢部機上面嘅二維碼，或者叫佢掃一掃您個碼都得。";
@@ -4550,10 +4565,10 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "對您嘅是日花生畀咗心情";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "回應咗 %@ 個嘅限時動態";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Story";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · 限時動態";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "附件";
@@ -4624,9 +4639,6 @@
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "個使用者揀選唔到。";
 
-/* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
-
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "我唔記得我個 PIN 碼。";
 
@@ -4634,13 +4646,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "有冇啲咩幫到您？";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "PIN 碼係由您用數字或者字母建立 4 個位以上嘅密碼。如果您唔記得咗 PIN 碼就要等 7 日先可以重新登記帳號。";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "您個 PIN 碼係一個 4+ 位數嘅代碼，佢喺建立嘅時候係由您一手決定嘅，可以係純數目字，又或者係數目字加英文字母混合。若然您唔記得咗自己個 PIN 碼，您整過個新嘅都得。咁您就可以註冊同使用您嘅帳戶，但係您就會冇咗先前儲存落嘅一啲設定，例如話您嘅個人資料資訊。";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "PIN 碼係由您建立嘅一個 4 位數字以上嘅密碼。如果您唔記得咗 PIN 碼就要等 7 日先可以重新登記帳號。";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN 碼唔啱";
@@ -4673,7 +4685,7 @@
 "REGISTRATION_ERROR" = "註冊錯誤";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "We can't activate your account until you verify the code we sent you.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "您要驗證我哋俾您嘅代碼，我哋先可以啟用您嘅帳號。";
 
 /* Alert body for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "要繼續嘅話，請檢查您部電話嘅連線，然後再試下啦。";
@@ -4775,7 +4787,7 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "我哋嘅 Signal 安全碼：\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "您同 %@ 嘅安全碼已經變咗。您可能要重新驗證。";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "請掃一掃您嘅聯絡人部機上面個二維碼。";
@@ -4838,7 +4850,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "攞唔到連結碼";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "To link this device to a different account, you must first reset this device. Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "您一定要重設裝置先可以將佢連結到其他帳號。您係咪肯定要刪除訊息、附件同通話等所有記錄？刪除咗就冇得復原架啦。";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "統統刪除得一乾二淨";
@@ -4847,13 +4859,13 @@
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "帳戶唔夾";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Update Signal on this device to link it with your phone.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "喺呢部裝置上面更新 Signal 嚟連結您嘅手機。";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "唔支援呢個版本";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "您另一部裝置用緊嘅舊版本 Signal 唔支援掃瞄 iPad 二維碼。請您安裝最新版本嘅 Signal 然後重試。";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "更新掃緊嗰部機";
@@ -4874,7 +4886,7 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "完成連結";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "在手機打開 Signal 嚟將呢部 iPad 連接到您嘅帳號 ";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "我部電話冇 Signal 喎…";
@@ -4886,16 +4898,16 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "喺您部電話度安裝 Signal";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "喺手機㩒一下您嘅個人資料照片嚟打開 Signal 設定。然後㩒「已連結裝置」同「連結新裝置」，再用手機掃瞄呢個二維碼：";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help linking your iPad here";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "喺呢到尋求有關連結 iPad 嘅幫助";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "請用您部電話掃描呢個二維碼";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Launch Signal on your old iPad to transfer your account";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "喺舊嘅 iPad 到打開 Signal 嚟轉移您嘅帳號";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "保密階段已重設。";
@@ -4913,10 +4925,10 @@
 "SEND_FAILED_NOTIFICATION_BODY" = "您個訊息傳送唔到。";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Sending invite failed, please try again later.";
+"SEND_INVITE_FAILURE" = "傳送唔到邀請，請您等一陣再重試。";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "您邀請咗朋友用 Signal！";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "啲相都係擗咗佢";
@@ -4928,13 +4940,13 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "關閉";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "您將會冇晒所有拍過嘅相片同影片。";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "要關閉連拍模式？";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "Invite a friend via insecure SMS?";
+"SEND_SMS_CONFIRM_TITLE" = "用唔安全嘅短訊去邀請人？";
 
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "您係咪想邀請下列冧把嚟 Signal：";
@@ -5150,7 +5162,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "刪除晒所有資料";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "您係咪肯定要刪除訊息、附件同通話等所有記錄？刪除咗就冇得復原架啦。";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "統統刪除得一乾二淨";
@@ -5177,10 +5189,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "訊息音效";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "收到新訊息嘅時候，已經存檔嘅靜音聊天會保持喺存檔狀態。";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "繼續存檔靜音聊天記錄";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "使用條款同私隱政策";
@@ -5789,7 +5801,7 @@
 "SHARE_ACTION_MESSAGE" = "訊息";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "您同 %@ 嘅安全碼最近有變。 您可以喺主應用程式驗證咗安全碼先再傳送訊息。";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "載入緊…";
@@ -5843,13 +5855,13 @@
 "SPAM_CAPTCHA_COMPLETED_TOAST" = "驗證完成。";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "如果您揀跳過驗證，您可能會錯過咗其他人嘅訊息，而您嘅訊息都有可能會傳送唔到。";
 
 /* Title for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "係咪要唔驗證就繼續？";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
+"SPAM_CAPTCHA_SHEET_BODY" = "為咗喺 Signal 防止垃圾訊息，請您完成驗證。\n\n驗證完之後，您可以繼續收發訊息。任何之前暫停咗嘅訊息都會自動傳送。";
 
 /* Title for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_TITLE" = "驗證完先再繼續發訊息";
@@ -5921,22 +5933,22 @@
 "STORIES_HIDE_STORY_ACTION" = "隱藏是日花生";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "暫時冇更新內容。\n點按 + 號新增您嘅限時動態。";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "未有人回覆";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "新嘅私人限時動態";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "只有您加入嘅成員先可以睇到私人限時動態。只有您先可以睇到限時動態嘅名。";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "私人限時動態";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "限時動態私隱設定";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "分享";
@@ -6047,10 +6059,10 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal 係非牟利組織，背後冇廣告商或投資者大條水喉硬碰加軟撼，全靠位位用呢個爐、錫呢個爐嘅「惜爐」團伙，燃亮最光的星斗，至能夠廢鉄到足金。希望您做我哋每月捐款計劃嘅善長，同時可換取一枚襟章掛喺個人資料度，同好友分享您做力撐派嘅喜悅。";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal 致力開發開放原始碼嘅私隱技術，保護自由表達，同埋令全球通訊變得安全。\n\n您嘅捐款驅動呢個因由，而且幫助補貼程式開發同運作，令世界各地數以百萬計嘅 Signal 使用者私密通訊。我哋無廣告、無追蹤，並且絕無戲言。";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "加入成為贊助人，支持我哋為您開發技術同保障您嘅資料私隱。";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "何解要課金？";
@@ -6107,7 +6119,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "處理緊交易...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read more.";
+"SUSTAINER_VIEW_READ_MORE" = "睇晒全文。";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "到 %@ 續期";
@@ -6239,13 +6251,13 @@
 "UNKNOWN_COUNTRY_NAME" = "未知嘅國家";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "One of your devices sent a message that can't be processed or displayed here because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "您有一部裝置用咗 Signal 嘅全新功能傳送訊息，我哋冇辦法處理或者顯示出嚟。";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ sent you a message that can't be processed or displayed because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ 傳送一個用咗 Signal 全新功能嘅訊息俾您，我哋冇辦法處理或者顯示出嚟。";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "You received a message that can't be processed or displayed because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "您收到一個用咗 Signal 全新功能嘅訊息，我哋冇辦法處理或者顯示出嚟。";
 
 /* Label for button that lets users upgrade the app. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "立即更新 Signal";
@@ -6254,10 +6266,10 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "已更新到最新版本嘅 Signal。您而家可以喺您部機度接收呢類型嘅訊息。";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "You can ask %@ to re-send this message now that you are using an up-to-date version of Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "您而家用緊最新版本嘅 Signal 啦，您可以叫 %@ 再傳送呢個訊息俾您。";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "You can ask the sender to re-send this message now that you are using an up-to-date version of Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "您而家用緊最新版本嘅 Signal 啦，您可以叫傳送人再傳送呢個訊息俾您。";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "未知";
@@ -6281,7 +6293,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "係咪要解除連結「%@」？";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Device no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "裝置已經解除連結。請將 Signal 同您嘅手機重新連結嚟繼續收發訊息。";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal 解除唔到您部機嘅連結。";
@@ -6329,7 +6341,7 @@
 "USERNAME_LOOKUP_ERROR" = "查閱使用者名稱嘅時候發生錯誤。請陣間再試下啦。";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ is not a Signal user. Make sure you’ve entered the complete username.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ 唔係 Signal 嘅使用者。請檢查您有冇輸入完整嘅使用者名稱。";
 
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "搵唔到使用者";

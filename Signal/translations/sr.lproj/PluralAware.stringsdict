@@ -12,30 +12,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>Видео порука %d секунди/а</string>
 			<key>one</key>
 			<string>Видео порука 1 секунда</string>
+			<key>few</key>
+			<string>Видео порука %d секунди/а</string>
 			<key>other</key>
 			<string>Видео порука %d секунди/а</string>
-		</dict>
-	</dict>
-	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>Додати чланове</string>
-			<key>one</key>
-			<string>Додати члан</string>
-			<key>other</key>
-			<string>Додати чланове</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -48,10 +30,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>Додати %d члана у “%2$@”?</string>
 			<key>one</key>
 			<string>Додати члан у “%2$@”?</string>
+			<key>few</key>
+			<string>Додати %d члана у “%2$@”?</string>
 			<key>other</key>
 			<string>Додати %d члана у “%2$@”?</string>
 		</dict>
@@ -66,12 +48,30 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>Додај нове чланове</string>
 			<key>one</key>
 			<string>Додај новог члана</string>
+			<key>few</key>
+			<string>Додај нове чланове</string>
 			<key>other</key>
 			<string>Додај нове чланове</string>
+		</dict>
+	</dict>
+	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Додати члан</string>
+			<key>few</key>
+			<string>Додати чланове</string>
+			<key>other</key>
+			<string>Додати чланове</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -85,9 +85,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This custom color is used in 1 chat. Do you want to delete it?</string>
+			<string>Ova prilagođena boja se koristi u 1 ćaskanju. Želite li da je izbrišete kod svih ćaskanja?</string>
+			<key>few</key>
+			<string>Ova prilagođena boja se koristi u ćaskanjima (ukupno %d). Želite li da je izbrišete kod svih ćaskanja?</string>
 			<key>other</key>
-			<string>This custom color is used in %d chats. Do you want to delete it for all chats?</string>
+			<string>Ova prilagođena boja se koristi u ćaskanjima (ukupno %d). Želite li da je izbrišete kod svih ćaskanja?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -101,9 +103,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This color is used in 1 chat. Do you want to save changes for all chats?</string>
+			<string>Ova boja se koristi u 1 ćaskanju. Želite li da sačuvate promene kod svih ćaskanja?</string>
+			<key>few</key>
+			<string>Ova boja se koristi u ćaskanjima (ukupno %d). Želite li da sačuvate promene kod svih ćaskanja?</string>
 			<key>other</key>
-			<string>This color is used in %d chats. Do you want to save changes for all chats?</string>
+			<string>Ova boja se koristi u ćaskanjima (ukupno %d). Želite li da sačuvate promene kod svih ćaskanja?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -116,10 +120,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>Брисати %d ћаскања?</string>
 			<key>one</key>
 			<string>Брисати ћаскање?</string>
+			<key>few</key>
+			<string>Брисати %d ћаскања?</string>
 			<key>other</key>
 			<string>Брисати %d ћаскања?</string>
 		</dict>
@@ -134,10 +138,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>Ћаскања ће бити избрисана са овог уређаја.</string>
 			<key>one</key>
 			<string>Ћаскање ће бити избрисан са овог уређаја.</string>
+			<key>few</key>
+			<string>Ћаскања ће бити избрисана са овог уређаја.</string>
 			<key>other</key>
 			<string>Ћаскања ће бити избрисана са овог уређаја.</string>
 		</dict>
@@ -153,9 +157,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can’t select more than 1 chat.</string>
+			<string>Maksimalni broj ćaskanja koji možete da izaberete je 1</string>
+			<key>few</key>
+			<string>Maksimalni broj ćaskanja koji možete da izaberete je %d</string>
 			<key>other</key>
-			<string>You can’t select more than %d chats.</string>
+			<string>Maksimalni broj ćaskanja koji možete da izaberete je %d</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -168,10 +174,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d %2$#@total@</string>
 			<key>one</key>
 			<string>1 %2$#@total@</string>
+			<key>few</key>
+			<string>%d %2$#@total@</string>
 			<key>other</key>
 			<string>%d %2$#@total@</string>
 		</dict>
@@ -181,10 +187,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>од %d резултата</string>
 			<key>one</key>
 			<string>од резултата</string>
+			<key>few</key>
+			<string>од %d резултата</string>
 			<key>other</key>
 			<string>од %d резултата</string>
 		</dict>
@@ -199,10 +205,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d чланова</string>
 			<key>one</key>
 			<string>1 члан</string>
+			<key>few</key>
+			<string>%d чланова</string>
 			<key>other</key>
 			<string>%d чланова</string>
 		</dict>
@@ -217,10 +223,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d заједничке групе</string>
 			<key>one</key>
 			<string>1 заједничка група</string>
+			<key>few</key>
+			<string>%d заједничке групе</string>
 			<key>other</key>
 			<string>%d заједничке групе</string>
 		</dict>
@@ -236,9 +242,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%dm</string>
+			<string>%d min</string>
+			<key>few</key>
+			<string>%d min</string>
 			<key>other</key>
-			<string>%dm</string>
+			<string>%d min</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -251,10 +259,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>Пре %d минута</string>
 			<key>one</key>
 			<string>Пре 1 минут</string>
+			<key>few</key>
+			<string>Пре %d минута</string>
 			<key>other</key>
 			<string>Пре %d минута</string>
 		</dict>
@@ -269,10 +277,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>Обрисати %d поруке?</string>
 			<key>one</key>
 			<string>Обрисати поруку?</string>
+			<key>few</key>
+			<string>Обрисати %d поруке?</string>
 			<key>other</key>
 			<string>Обрисати %d поруке?</string>
 		</dict>
@@ -288,9 +296,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Maximum group size of %d member reached.</string>
+			<string>Dostignut je maksimalni broj članova u gurpi (%d)</string>
+			<key>few</key>
+			<string>Dostignut je maksimalni broj članova u gurpi (%d)</string>
 			<key>other</key>
-			<string>Maximum group size of %d members reached.</string>
+			<string>Dostignut je maksimalni broj članova u gurpi (%d)</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -304,9 +314,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Your version of Signal will expire in 1 day. Tap to update to the most recent version.</string>
+			<string>Verzija Signala koju koristite ističe za 1 dan. Dodirnite da ažurirate aplikaciju na najnoviju verziju.</string>
+			<key>few</key>
+			<string>Verzija Signala koju koristite ističe za %d dan(a). Dodirnite da ažurirate aplikaciju na najnoviju verziju.</string>
 			<key>other</key>
-			<string>Your version of Signal will expire in %d days. Tap to update to the most recent version.</string>
+			<string>Verzija Signala koju koristite ističe za %d dan(a). Dodirnite da ažurirate aplikaciju na najnoviju verziju.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -319,76 +331,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>Послати %d поруке</string>
 			<key>one</key>
 			<string>Послати поруку</string>
+			<key>few</key>
+			<string>Послати %d поруке</string>
 			<key>other</key>
 			<string>Послати %d поруке</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
-			<key>other</key>
-			<string>This group cannot be created because %d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
-			<key>other</key>
-			<string>This group cannot be created because %d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 member couldn’t be re-added to the New Group. Do you want to add them now?</string>
-			<key>other</key>
-			<string>%d members couldn’t be re-added to the New Group. Do you want to add them now?</string>
-		</dict>
-	</dict>
-	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Signal groups perform best with 1 member or less. Adding more members will cause delays sending and receiving messages.</string>
-			<key>other</key>
-			<string>Signal groups perform best with %d members or less. Adding more members will cause delays sending and receiving messages.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -402,9 +350,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>The maximum number of 1 participant has been reached for this call. Try again later.</string>
+			<string>Dostignut je maksimalni broj članova za ovaj poziv (1). Probajte ponovo kasnije.</string>
+			<key>few</key>
+			<string>Dostignut je maksimalni broj članova za ovaj poziv (%d). Probajte ponovo kasnije.</string>
 			<key>other</key>
-			<string>The maximum number of %d participants has been reached for this call. Try again later.</string>
+			<string>Dostignut je maksimalni broj članova za ovaj poziv (%d). Probajte ponovo kasnije.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -418,9 +368,83 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>In this call · 1 person</string>
+			<string>U ovom pozivu · Br. osoba: 1</string>
+			<key>few</key>
+			<string>U ovom pozivu · Br. osoba: %d</string>
 			<key>other</key>
-			<string>In this call · %d people</string>
+			<string>U ovom pozivu · Br. osoba: %d</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Pregleda: 1</string>
+			<key>few</key>
+			<string>Pregleda: %d</string>
+			<key>other</key>
+			<string>Pregleda: %d</string>
+		</dict>
+	</dict>
+	<key>PRIVATE_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Privatna priča · Gledalaca: 1</string>
+			<key>few</key>
+			<string>Privatna priča · Gledalaca: %d</string>
+			<key>other</key>
+			<string>Privatna priča · Gledalaca: %d </string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Gledalaca: 1</string>
+			<key>few</key>
+			<string>Gledalaca: %d</string>
+			<key>other</key>
+			<string>Gledalaca: %d</string>
+		</dict>
+	</dict>
+	<key>GROUP_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Grupna priča · Gledalaca: 1</string>
+			<key>few</key>
+			<string>Grupna priča · Gledalaca: %d</string>
+			<key>other</key>
+			<string>Grupna priča · Gledalaca: %d </string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -434,9 +458,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other are in this call</string>
+			<string>U pozivu su %2$@, %3$@ i još 1 osoba</string>
+			<key>few</key>
+			<string>U pozivu su %2$@, %3$@ i još njih %d</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %d others are in this call</string>
+			<string>U pozivu su %2$@, %3$@ i još njih %d </string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -450,9 +476,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other joined the call</string>
+			<string>Pozivu su se pridružili %2$@, %3$@ i još 1 osoba</string>
+			<key>few</key>
+			<string>Pozivu su se pridružili %2$@, %3$@ i još njih %d</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %d others joined the call</string>
+			<string>Pozivu su se pridružili %2$@, %3$@ i još njih %d</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -466,9 +494,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other left the call</string>
+			<string>Poziv su napustili %2$@, %3$@ i još 1 osoba</string>
+			<key>few</key>
+			<string>Poziv su napustili %2$@, %3$@ i još njih %d </string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %d others left the call</string>
+			<string>Poziv su napustili %2$@, %3$@ i još njih %d</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -482,57 +512,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invitation Sent</string>
+			<string>Pozivnica je poslata</string>
+			<key>few</key>
+			<string>Pozivnice su poslate (%d)</string>
 			<key>other</key>
-			<string>%d Invitations Sent</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 group member has similar name.</string>
-			<key>other</key>
-			<string>%d group members have similar names.</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 group member has similar name, review the member below or choose to take action.</string>
-			<key>other</key>
-			<string>%d group members have similar names, review the members below or choose to take action.</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 group member has the same name, review the member below or choose to take action.</string>
-			<key>other</key>
-			<string>%d group members have the same name, review the members below or choose to take action.</string>
+			<string>Pozivnice su poslate (%d)</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -545,10 +529,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d члана</string>
 			<key>one</key>
 			<string>1 члан</string>
+			<key>few</key>
+			<string>%d члана</string>
 			<key>other</key>
 			<string>%d члана</string>
 		</dict>
@@ -564,12 +548,14 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Member</string>
+			<string>Broj članova: 1</string>
+			<key>few</key>
+			<string>Broj članova: %d</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>Broj članova: %d</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
+	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -580,15 +566,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 person was invited to the group.</string>
+			<string>Jedan član grupe ima slično ime.</string>
+			<key>few</key>
+			<string>Njih %d u grupi imaju slična imena.</string>
 			<key>other</key>
-			<string>%d people were invited to the group.</string>
+			<string>Njih %d u grupi imaju slična imena.</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
+	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
+		<string>%#@text@</string>
 		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -596,9 +584,29 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ invited 1 person to the group.</string>
+			<string>Jedan član grupe ima slično ime. Pregledajte tog člana u nastavku ili preduzmite nešto po tom pitanju.</string>
+			<key>few</key>
+			<string>Njih %d u grupi imaju slična imena. Pregledajte te članove u nastavku ili preduzmite nešto po tom pitanju.</string>
 			<key>other</key>
-			<string>%2$@ invited %d people to the group.</string>
+			<string>Njih %d u grupi imaju slična imena. Pregledajte te članove u nastavku ili preduzmite nešto po tom pitanju.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Jedan član grupe ima isto ime. Pregledajte tog člana u nastavku ili preduzmite nešto po tom pitanju.</string>
+			<key>few</key>
+			<string>Njih %d u grupi imaju ista imena. Pregledajte te članove u nastavku ili preduzmite nešto po tom pitanju.</string>
+			<key>other</key>
+			<string>Njih %d u grupi imaju ista imena. Pregledajte te članove u nastavku ili preduzmite nešto po tom pitanju.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -612,9 +620,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invitation to the group were revoked for 1 person.</string>
+			<string>Pozivnice za grupu su opozvane za 1 osobu. </string>
+			<key>few</key>
+			<string>Pozivnice za grupu su opozvane za njih %d. </string>
 			<key>other</key>
-			<string>Invitations to the group were revoked for %d people.</string>
+			<string>Pozivnice za grupu su opozvane za njih %d. </string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -628,12 +638,14 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ revoked an invitation to the group for 1 person.</string>
+			<string>%2$@ je opozvao/la pozivnicu za grupu za 1 osobu.</string>
+			<key>few</key>
+			<string>%2$@ je opozvao/la pozivnicu za grupu za njih %d.</string>
 			<key>other</key>
-			<string>%2$@ revoked an invitation to the group for %d people.</string>
+			<string>%2$@ je opozvao/la pozivnicu za grupu za njih %d.</string>
 		</dict>
 	</dict>
-	<key>GROUP_STORY_VIEWERS_%d</key>
+	<key>GROUP_REMOTE_USER_INVITED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -643,12 +655,30 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>Grupna priča · Gledalaca: %d</string>
 			<key>one</key>
-			<string>Grupna priča · Gledalaca: 1</string>
+			<string>Jedna osoba je pozvana u grupu.</string>
+			<key>few</key>
+			<string>Njih %d je pozvano u grupu.</string>
 			<key>other</key>
-			<string>Grupna priča · Gledalaca: %d </string>
+			<string>Njih %d je pozvano u grupu.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@ je pozvao/la 1 osobu u grupu.</string>
+			<key>few</key>
+			<string>%2$@ je pozvao/la njih %d u grupu.</string>
+			<key>other</key>
+			<string>%2$@ je pozvao/la njih %d u grupu.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -662,9 +692,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A member couldn’t be added to the New Group and has been removed from the group.</string>
+			<string>Nije bilo moguće dodati jednog člana u novu grupu i taj član je uklonjen iz grupe.</string>
+			<key>few</key>
+			<string>Njih %d nije bilo moguće dodati i ti članovi su uklonjeni iz grupe.</string>
 			<key>other</key>
-			<string>%d members couldn’t be added to the New Group and have been removed from the group.</string>
+			<string>Njih %d nije bilo moguće dodati i ti članovi su uklonjeni iz grupe.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -678,9 +710,83 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A member couldn’t be added to the New Group and has been invited to join.</string>
+			<string>Nije bilo moguće dodati jednog člana u novu grupu i taj član je pozvan da se pridruži.</string>
+			<key>few</key>
+			<string>Njih %d nije bilo moguće dodati u novu grupu i ti članovi su pozvani da se pridruže.</string>
 			<key>other</key>
-			<string>%d members couldn’t be added to the New Group and have been invited to join.</string>
+			<string>Njih %d nije bilo moguće dodati u novu grupu i ti članovi su pozvani da se pridruže.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ova grupa se ne može kreirati jer 1 član koristi staru verziju Signala. Možete da kreirate grupu u novom stilu sa tim članom kada ažurira Signal ili ga možete ukloniti pre kreiranja grupe. %2$@</string>
+			<key>few</key>
+			<string>Ova grupa se ne može kreirati jer njih %d koristi staru verziju Signala. Možete da kreirate grupu u novom stilu sa tim članovima kada ažuriraju Signal ili ih možete ukloniti pre kreiranja grupe. %2$@</string>
+			<key>other</key>
+			<string>Ova grupa se ne može kreirati jer njih %d koristi staru verziju Signala. Možete da kreirate grupu u novom stilu sa tim članovima kada ažuriraju Signal ili ih možete ukloniti pre kreiranja grupe. %2$@</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ova grupa se ne može kreirati jer 1 član koristi staru verziju Signala. Možete da kreirate grupu u novom stilu sa tim članom kada ažurira Signal ili ga možete ukloniti pre kreiranja grupe.</string>
+			<key>few</key>
+			<string>Ova grupa se ne može kreirati jer njih %d koristi staru verziju Signala. Možete da kreirate grupu u novom stilu sa tim članovima kada ažuriraju Signal ili ih možete ukloniti pre kreiranja grupe.</string>
+			<key>other</key>
+			<string>Ova grupa se ne može kreirati jer njih %d koristi staru verziju Signala. Možete da kreirate grupu u novom stilu sa tim članovima kada ažuriraju Signal ili ih možete ukloniti pre kreiranja grupe.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Nije bilo moguće dodati 1 člana u novu grupu. Želite li da ga dodate sada?</string>
+			<key>few</key>
+			<string>Njih %d nije bilo moguće dodati u novu grupu. Želite li da ih dodate sada?</string>
+			<key>other</key>
+			<string>Njih %d nije bilo moguće dodati u novu grupu. Želite li da ih dodate sada?</string>
+		</dict>
+	</dict>
+	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Signal grupe najbolje funkcionišu kada je broj članova grupe 1 ili manje. Ako dodate više članova, to će uzrokovati kašnjenje u slanju i primanju poruka.</string>
+			<key>few</key>
+			<string>Signal grupe najbolje funkcionišu kada je broj članova grupe %d ili manje. Ako dodate više članova, to će uzrokovati kašnjenje u slanju i primanju poruka.</string>
+			<key>other</key>
+			<string>Signal grupe najbolje funkcionišu kada je broj članova grupe %d ili manje. Ako dodate više članova, to će uzrokovati kašnjenje u slanju i primanju poruka.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -694,9 +800,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can’t share more than 1 item.</string>
+			<string>Ne možete da podelite stavke ako ih ima više od 1.</string>
+			<key>few</key>
+			<string>Ne možete da podelite stavke ako ih ima više od %d.</string>
 			<key>other</key>
-			<string>You can’t share more than %d items.</string>
+			<string>Ne možete da podelite stavke ako ih ima više od %d.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -710,9 +818,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 group in common</string>
+			<string>Zajedničkih grupa: 1</string>
+			<key>few</key>
+			<string>Zajedničkih grupa: %d</string>
 			<key>other</key>
-			<string>%d groups in common</string>
+			<string>Zajedničkih grupa: %d</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -726,9 +836,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete 1 Message</string>
+			<string>Izbriši 1 poruku</string>
+			<key>few</key>
+			<string>Izbriši poruke (%d)</string>
 			<key>other</key>
-			<string>Delete %d Messages</string>
+			<string>Izbriši poruke (%d)</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -742,9 +854,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Photo</string>
+			<string>Fotografija: 1</string>
+			<key>few</key>
+			<string>Fotografija: %d</string>
 			<key>other</key>
-			<string>%d Photos</string>
+			<string>Fotografija: %d</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -758,25 +872,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Item</string>
+			<string>Stavki: 1</string>
+			<key>few</key>
+			<string>Stavki: %d</string>
 			<key>other</key>
-			<string>%d Items</string>
-		</dict>
-	</dict>
-	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>You Blocked 1 Member of This Group</string>
-			<key>other</key>
-			<string>You Blocked %d Members of This Group</string>
+			<string>Stavki: %d</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -790,27 +890,29 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Selected</string>
+			<string>Izabrano: 1</string>
+			<key>few</key>
+			<string>Izabrano: %d</string>
 			<key>other</key>
-			<string>%d Selected</string>
+			<string>Izabrano: %d</string>
 		</dict>
 	</dict>
-	<key>MY_STORY_VIEWERS_%d</key>
+	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>Gledalaca: %d</string>
 			<key>one</key>
-			<string>Gledalaca: 1</string>
+			<string>Blokirali ste 1 člana u grupi</string>
+			<key>few</key>
+			<string>Blokirali ste njih %d u grupi</string>
 			<key>other</key>
-			<string>Gledalaca: %d</string>
+			<string>Blokirali ste njih %d u grupi</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -824,9 +926,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Member</string>
+			<string>Članova: 1</string>
+			<key>few</key>
+			<string>Članova: %d</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>Članova: %d</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -840,9 +944,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Incorrect PIN. 1 attempt remaining.</string>
+			<string>Neispravan PIN. Imate još 1 pokušaj.</string>
+			<key>few</key>
+			<string>Neispravan PIN. Imate još %d pokušaja.</string>
 			<key>other</key>
-			<string>Incorrect PIN. %d attempts remaining.</string>
+			<string>Neispravan PIN. Imate još %d pokušaja.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -856,9 +962,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ invited 1 person</string>
+			<string>%2$@ je pozvao/la 1 osobu</string>
+			<key>few</key>
+			<string>%2$@ je pozvao/la njih %d</string>
 			<key>other</key>
-			<string>%2$@ invited %d people</string>
+			<string>%2$@ je pozvao/la njih %d</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -872,9 +980,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 pending member request.</string>
+			<string>Na čekanju je 1 zahtev za članstvo.</string>
+			<key>few</key>
+			<string>Na čekanju je %d zahtev(a) za članstvo.</string>
 			<key>other</key>
-			<string>%d pending member requests.</string>
+			<string>Na čekanju je %d zahtev(a) za članstvo.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -888,25 +998,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoke invalid invite</string>
+			<string>Opozovite nevažeću pozivnicu</string>
+			<key>few</key>
+			<string>Opozovite nevažeće pozivnice (%d)</string>
 			<key>other</key>
-			<string>Revoke %d invalid invites</string>
-		</dict>
-	</dict>
-	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Revoke Invite</string>
-			<key>other</key>
-			<string>Revoke Invites</string>
+			<string>Opozovite nevažeće pozivnice (%d)</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -920,9 +1016,29 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoke group invite sent by “%2$@”?</string>
+			<string>Opozovite pozivnicu za grupu koju je poslao/la „%2$@“?</string>
+			<key>few</key>
+			<string>Opozovite pozivnice (%d) koje je poslao/la „%2$@“?</string>
 			<key>other</key>
-			<string>Revoke %d invites sent by “%2$@”?</string>
+			<string>Opozovite pozivnice (%d) koje je poslao/la „%2$@“?</string>
+		</dict>
+	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Opozovite pozivnicu</string>
+			<key>few</key>
+			<string>Opozovite pozivnice</string>
+			<key>other</key>
+			<string>Opozovite pozivnice</string>
 		</dict>
 	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
@@ -936,27 +1052,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in 1 day.</string>
-			<key>other</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in %d days.</string>
-		</dict>
-	</dict>
-	<key>PRIVATE_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
+			<string>Podsetićemo vas kasnije. Kreiranje PIN-a će biti obavezno nakon 1 dana.</string>
 			<key>few</key>
-			<string>Privatna priča · Gledalaca: %d</string>
-			<key>one</key>
-			<string>Privatna priča · Gledalaca: 1</string>
+			<string>Podsetićemo vas kasnije. Kreiranje PIN-a će biti obavezno nakon %d dana.</string>
 			<key>other</key>
-			<string>Privatna priča · Gledalaca: %d </string>
+			<string>Podsetićemo vas kasnije. Kreiranje PIN-a će biti obavezno nakon %d dana.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -970,9 +1070,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
+			<string>Imate još 1 pokušaj. Ako ostanete bez pokušaja, možete da kreirate novi PIN. Možete da registrujete i koristite svoj nalog, ali ćete izgubiti neka sačuvana podešavanja kao što su informacije na profilu.</string>
+			<key>few</key>
+			<string>Imate još %d pokušaja. Ako ostanete bez pokušaja, možete da kreirate novi PIN. Možete da registrujete i koristite svoj nalog, ali ćete izgubiti neka sačuvana podešavanja kao što su informacije na profilu.</string>
 			<key>other</key>
-			<string>You have %d attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
+			<string>Imate još %d pokušaja. Ako ostanete bez pokušaja, možete da kreirate novi PIN. Možete da registrujete i koristite svoj nalog, ali ćete izgubiti neka sačuvana podešavanja kao što su informacije na profilu.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -986,27 +1088,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
-			<key>other</key>
-			<string>You have %d attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
+			<string>Imate još 1 pokušaj. Ako ostanete bez pokušaja, vaš nalog će biti zaključan. Nakon 7 dana neaktivnosti moći ćete ponovo da se registrujete bez PIN-a. Vaš nalog će biti izbrisan, kao i sav sadržaj na njemu.</string>
 			<key>few</key>
-			<string>Pregleda: %d</string>
-			<key>one</key>
-			<string>Pregleda: 1</string>
+			<string>Imate još %d pokušaja. Ako ostanete bez pokušaja, vaš nalog će biti zaključan. Nakon 7 dana neaktivnosti moći ćete ponovo da se registrujete bez PIN-a. Vaš nalog će biti izbrisan, kao i sav sadržaj na njemu.</string>
 			<key>other</key>
-			<string>Pregleda: %d</string>
+			<string>Imate još %d pokušaja. Ako ostanete bez pokušaja, vaš nalog će biti zaključan. Nakon 7 dana neaktivnosti moći ćete ponovo da se registrujete bez PIN-a. Vaš nalog će biti izbrisan, kao i sav sadržaj na njemu.</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -1020,9 +1106,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Member of %2$@, %3$@, and 1 additional group</string>
+			<string>Član grupa %2$@, %3$@ i još 1 grupe</string>
+			<key>few</key>
+			<string>Član grupa %2$@, %3$@ i još %d</string>
 			<key>other</key>
-			<string>Member of %2$@, %3$@, and %d additional groups</string>
+			<string>Član grupa %2$@, %3$@ i još %d</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -1036,9 +1124,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 day</string>
+			<string>1 d.</string>
+			<key>few</key>
+			<string>%d d.</string>
 			<key>other</key>
-			<string>%d days</string>
+			<string>%d d.</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
@@ -1052,9 +1142,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1d</string>
+			<string>1 d.</string>
+			<key>few</key>
+			<string>%d d.</string>
 			<key>other</key>
-			<string>%dd</string>
+			<string>%d d.</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_%d</key>
@@ -1068,9 +1160,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 hour</string>
+			<string>1 h</string>
+			<key>few</key>
+			<string>%d h</string>
 			<key>other</key>
-			<string>%d hours</string>
+			<string>%d h</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
@@ -1084,9 +1178,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1h</string>
+			<string>1 h</string>
+			<key>few</key>
+			<string>%d h</string>
 			<key>other</key>
-			<string>%dh</string>
+			<string>%d h</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_%d</key>
@@ -1100,9 +1196,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 minute</string>
+			<string>1 min</string>
+			<key>few</key>
+			<string>%d min</string>
 			<key>other</key>
-			<string>%d minutes</string>
+			<string>%d min</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
@@ -1116,9 +1214,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1m</string>
+			<string>1 min</string>
+			<key>few</key>
+			<string>%d min</string>
 			<key>other</key>
-			<string>%dm</string>
+			<string>%d min</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_%d</key>
@@ -1132,9 +1232,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 second</string>
+			<string>1 s</string>
+			<key>few</key>
+			<string>%d s</string>
 			<key>other</key>
-			<string>%d seconds</string>
+			<string>%d s</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
@@ -1148,9 +1250,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1s</string>
+			<string>1 s</string>
+			<key>few</key>
+			<string>%d s</string>
 			<key>other</key>
-			<string>%ds</string>
+			<string>%d s</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_%d</key>
@@ -1164,9 +1268,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 week</string>
+			<string>1 ned.</string>
+			<key>few</key>
+			<string>%d ned.</string>
 			<key>other</key>
-			<string>%d weeks</string>
+			<string>%d ned.</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
@@ -1180,9 +1286,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1w</string>
+			<string>1 ned.</string>
+			<key>few</key>
+			<string>%d ned.</string>
 			<key>other</key>
-			<string>%dw</string>
+			<string>%d ned.</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_YEARS_%d</key>
@@ -1196,9 +1304,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 year</string>
+			<string>1 god.</string>
+			<key>few</key>
+			<string>%d god.</string>
 			<key>other</key>
-			<string>%d years</string>
+			<string>%d god.</string>
 		</dict>
 	</dict>
 </dict>

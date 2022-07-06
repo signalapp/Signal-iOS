@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signal ਨੂੰ ਸਹਿਯੋਗ ਦਿਓ";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "ਤੁਹਾਡੇ ਬੂਸਟ ਬੈਜ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ ਅਤੇ ਹੁਣ ਉਹ ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ ਉੱਤੇ ਪ੍ਰਦਰਸ਼ਿਤ ਕਰਨ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।\n\nਤੁਸੀਂ Signal ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਜਾਰੀ ਰੱਖ ਸਕਦੇ ਹੋ, ਪਰ ਖਾਸ ਤੁਹਾਡੇ ਲਈ ਬਣਾਈ ਗਈ ਤਕਨਾਲੋਜੀ ਦਾ ਸਮਰਥਨ ਕਰਨ ਲਈ, ਹਰ ਮਹੀਨੇ ਦਾਨ ਦੇ ਕੇ ਸਾਡਾ ਸਸਟੇਨਰ ਬਣਨ ਬਾਰੇ ਵਿਚਾਰ ਜ਼ਰੂਰ ਕਰੋ।";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "ਤੁਹਾਡੇ ਬੂਸਟ ਬੈਜ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ ਅਤੇ ਹੁਣ ਉਹ ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ ਉੱਤੇ ਪ੍ਰਦਰਸ਼ਿਤ ਕਰਨ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।\n\nਤੁਸੀਂ Signal ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਜਾਰੀ ਰੱਖ ਸਕਦੇ ਹੋ, ਪਰ ਖਾਸ ਤੁਹਾਡੇ ਲਈ ਬਣਾਈ ਗਈ ਤਕਨਾਲੋਜੀ ਦਾ ਸਮਰਥਨ ਕਰਨ ਲਈ, ਹਰ ਮਹੀਨੇ ਦਾਨ ਦੇ ਕੇ ਸਾਡਾ ਸਮਰਥਕ ਬਣਨ ਬਾਰੇ ਵਿਚਾਰ ਜ਼ਰੂਰ ਕਰੋ।";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "ਤੁਹਾਡੇ ਬੂਸਟ ਬੈਜ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ ਅਤੇ ਹੁਣ ਉਹ ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ ਉੱਤੇ ਪ੍ਰਦਰਸ਼ਿਤ ਕਰਨ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।\n\nਤੁਸੀਂ ਇੱਕ-ਵਾਰ ਦਾਨ ਦੇ ਕੇ ਆਪਣੇ ਬੂਸਟ ਬੈਜ ਨੂੰ ਹੋਰ 30 ਦਿਨਾਂ ਲਈ ਮੁੜ ਸਰਗਰਮ ਕਰ ਸਕਦੇ ਹੋ।";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "ਤੁਹਾਡੇ ਬੂਸਟ ਬੈਜ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ ਅਤੇ ਹੁਣ ਇਹ ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ ਉੱਤੇ ਦਿਖਾਉਣ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।\n\nਤੁਸੀਂ ਇੱਕ-ਵਾਰ ਦਾਨ ਦੇ ਕੇ ਆਪਣੇ ਬੂਸਟ ਬੈਜ ਨੂੰ ਹੋਰ 30 ਦਿਨਾਂ ਲਈ ਮੁੜ ਸਰਗਰਮ ਕਰ ਸਕਦੇ ਹੋ।";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "ਸਹਾਇਕ ਬਣੋ";
@@ -395,25 +395,28 @@
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "ਮਹੀਨੇਵਾਰ ਦਾਨ ਰੱਦ ਕੀਤਾ ਗਿਆ";
 
 /* Text telling the user that they can add a message along with their gift badge */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "ਤੁਹਾਡਾ ਤੋਹਫ਼ਾ ਪ੍ਰਾਪਤਕਰਤਾ ਨੂੰ ਸਿੱਧਾ ਚੈਟ ਸੁਨੇਹੇ ਵਿੱਚ ਭੇਜਿਆ ਜਾਵੇਗਾ। ਹੇਠਾਂ ਆਪਣਾ ਖੁਦ ਦਾ ਸੁਨੇਹਾ ਸ਼ਾਮਲ ਕਰੋ।";
 
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "ਸੁਨੇਹਾ ਜੋੜੋ";
 
-/* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+/* Error message indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+
+/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
-"BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
+"BADGE_GIFTING_CHAT_EXPIRED" = "ਮਿਆਦ ਪੁੱਗੀ";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "ਕਿਸੇ ਦੇ ਨਾਮ ਉੱਤੇ Signal ਨੂੰ ਦਾਨ ਦੇ ਕੇ ਉਹਨਾਂ ਨੂੰ ਤੋਹਫ਼ੇ ਵਿੱਚ ਬੈਜ ਦਿਓ। ਉਹਨਾਂ ਨੂੰ ਆਪਣੀ ਪ੍ਰੋਫਾਈਲ ਫ਼ੋਟੋ ਉੱਤੇ ਦਿਖਾਉਣ ਲਈ ਬੈਜ ਮਿਲੇਗਾ।";
 
 /* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "ਬੈਜ ਦਾ ਤੋਹਫ਼ੇ ਦਿਓ";
 
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "ਪ੍ਰਾਪਤਕਰਤਾ ਦੀ ਚੋਣ ਕਰੋ";
@@ -421,26 +424,38 @@
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
 "BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
 
+/* Error message indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "ਇਹ ਵਰਤੋਂਕਾਰ ਉਦੋਂ ਤੱਕ ਤੋਹਫ਼ੇ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦਾ ਜਦੋਂ ਤੱਕ ਉਹ Signal ਨੂੰ ਅੱਪਗਰੇਡ ਨਹੀਂ ਕਰਦਾ।";
+
+/* Title for error message dialog indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
 
 /* Text telling the user that their gift is a one-time donation */
-"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "One-time Donation";
+"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "ਇੱਕ ਵਾਰ ਦਾਨ";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "ਤੁਹਾਡੇ ਭੁਗਤਾਨ ਉੱਤੇ ਕਾਰਵਾਈ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ ਅਤੇ ਤੁਹਾਡੇ ਤੋਂ ਕੋਈ ਖਰਚਾ ਨਹੀਂ ਲਿਆ ਗਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ ਕਰੋ।";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "ਤੁਹਾਡੇ ਭੁਗਤਾਨ ਉੱਤੇ ਕਾਰਵਾਈ ਕਰ ਲਈ ਗਈ ਸੀ ਪਰ Signal ਤੁਹਾਡਾ ਤੋਹਫ਼ਾ ਬੈਜ ਭੇਜ ਨਹੀਂ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਸਹਾਇਤਾ ਟੀਮ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "ਬੈਜ ਦਾ ਤੋਹਫ਼ਾ ਭੇਜਣਾ ਅਸਫਲ ਰਿਹਾ";
+
+/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+
+/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
-"BADGE_GIFTING_REDEEM" = "Redeem";
+"BADGE_GIFTING_REDEEM" = "ਰੀਡੀਮ ਕਰੋ";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
@@ -449,7 +464,7 @@
 "BADGE_GIFTING_VIEW" = "ਵੇਖੋ";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "ਤੁਹਾਡੇ ਵੱਲੋਂ ਹਰ ਮਹੀਨੇ ਦਿੱਤਾ ਜਾਣ ਵਾਲਾ ਦਾਨ ਆਪਣੇ-ਆਪ ਰੱਦ ਹੋ ਗਿਆ ਸੀ। %@ ਤੁਹਾਡਾ %@ ਬੈਜ ਹੁਣ ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਦਿਖਾਈ ਨਹੀਂ ਦੇ ਰਿਹਾ ਹੈ।";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
@@ -464,7 +479,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "ਸਹਿਯੋਗ ਦੇਣ ਲਈ ਤੁਹਾਡਾ ਧੰਨਵਾਦ!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "ਜਦੋਂ ਤੁਹਾਡੇ ਕੋਲ ਇੱਕ ਤੋਂ ਵੱਧ ਬਿੱਲੇ ਹੋਣ ਤਾਂ ਤੁਸੀਂ ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਉੱਤੇ ਹੋਰਾਂ ਨੂੰ ਦਿਖਾਉਣ ਲਈ ਇੱਕ ਬਿੱਲਾ ਚੁਣ ਸਕਦੇ ਹੋ।";
@@ -1637,49 +1652,49 @@
 "DONATE_MEGAPHONE_TITLE" = "Signal ਨੂੰ ਦਾਨ ਕਰੋ";
 
 /* Donation payment error for decline failures where authentication is required. */
-"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "ਕਿਸੇ ਹੋਰ ਭੁਗਤਾਨ ਵਿਧੀ ਦੀ ਵਰਤੋਂ ਕਰੋ ਜਾਂ ਹੋਰ ਜਾਣਕਾਰੀ ਲੈਣ ਲਈ ਆਪਣੇ ਬੈਂਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Apple Pay ਵਿੱਚ ਜਾਂਚ ਕਰੋ ਕਿ ਤੁਹਾਡੀ ਭੁਗਤਾਨ ਵਿਧੀ ਦੀ ਜਾਣਕਾਰੀ ਬਿਲਕੁਲ ਨਵੀਂ ਹੈ। ਜੇਕਰ ਨਹੀਂ ਹੈ ਤਾਂ ਉਸ ਜਾਣਕਾਰੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ ਅਤੇ ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰੋ। ਜੇਕਰ ਤੁਹਾਨੂੰ ਅਜੇ ਵੀ ਸਮੱਸਿਆਵਾਂ ਪੇਸ਼ ਆ ਰਹੀਆਂ ਹਨ, ਤਾਂ ਆਪਣੇ ਬੈਂਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।";
 
 /* Donation payment error for decline failures where the card is not supported. */
 "DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "ਤੁਹਾਡੇ ਕਾਰਡ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਗਈ ਹੈ। Apple Pay ਵਿੱਚ ਜਾਂਚ ਕਰੋ ਕਿ ਤੁਹਾਡੀ ਭੁਗਤਾਨ ਵਿਧੀ ਦੀ ਜਾਣਕਾਰੀ ਬਿਲਕੁਲ ਨਵੀਂ ਹੈ। ਜੇਕਰ ਨਹੀਂ ਹੈ ਤਾਂ ਉਸ ਜਾਣਕਾਰੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ ਅਤੇ ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "ਤੁਹਾਡਾ ਕਾਰਡ ਨੰਬਰ ਗਲਤ ਹੈ। ਜਾਂਚ ਕਰੋ ਕਿ Apple Pay ਵਿੱਚ ਤੁਹਾਡੀ ਭੁਗਤਾਨ ਵਿਧੀ ਦੀ ਜਾਣਕਾਰੀ ਬਿਲਕੁਲ ਸਹੀ ਦਰਜ ਕੀਤੀ ਗਈ ਹੈ। ਜੇਕਰ ਜਾਣਕਾਰੀ ਸਹੀ ਨਹੀਂ ਹੈ ਤਾਂ ਉਸ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ ਅਤੇ ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
 "DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "ਇਸ ਖਰੀਦ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਕਾਰਡ ਵਿੱਚ ਲੋੜੀਂਦੀ ਰਕਮ ਨਹੀਂ ਹੈ। ਕਿਸੇ ਹੋਰ ਭੁਗਤਾਨ ਵਿਧੀ ਦੀ ਵਰਤੋਂ ਕਰੋ ਜਾਂ ਹੋਰ ਜਾਣਕਾਰੀ ਲੈਣ ਲਈ ਆਪਣੇ ਬੈਂਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "ਤੁਹਾਡੀ ਭੁਗਤਾਨ ਵਿਧੀ ਦੀ ਜਾਣਕਾਰੀ ਵਿੱਚ ਦੱਸਿਆ ਗਿਆ ਮਿਆਦ ਸਮਾਪਤੀ ਦਾ ਮਹੀਨਾ ਗਲਤ ਹੈ। ਇਸਨੂੰ Apple Pay ਵਿੱਚ ਅੱਪਡੇਟ ਕਰੋ ਅਤੇ ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "ਤੁਹਾਡੀ ਭੁਗਤਾਨ ਵਿਧੀ ਦੀ ਜਾਣਕਾਰੀ ਵਿੱਚ ਦੱਸਿਆ ਗਿਆ ਮਿਆਦ ਸਮਾਪਤੀ ਦਾ ਸਾਲ ਗਲਤ ਹੈ। ਇਸਨੂੰ Apple Pay ਵਿੱਚ ਅੱਪਡੇਟ ਕਰੋ ਅਤੇ ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Try completing the payment again or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "ਭੁਗਤਾਨ ਨੂੰ ਦੁਬਾਰਾ ਪੂਰਾ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਆਪਣੇ ਬੈਂਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।";
 
 /* Donation payment error for unspecified decline failures. */
-"DONATION_PAYMENT_ERROR_OTHER" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_OTHER" = "ਕਿਸੇ ਹੋਰ ਭੁਗਤਾਨ ਵਿਧੀ ਦੀ ਵਰਤੋਂ ਕਰੋ ਜਾਂ ਹੋਰ ਜਾਣਕਾਰੀ ਲੈਣ ਲਈ ਆਪਣੇ ਬੈਂਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
 
 /* Section title for donation amount on receipts */
-"DONATION_RECEIPT_AMOUNT" = "Amount";
+"DONATION_RECEIPT_AMOUNT" = "ਰਕਮ";
 
 /* Section title for donation date on receipts */
-"DONATION_RECEIPT_DATE_PAID" = "Date paid";
+"DONATION_RECEIPT_DATE_PAID" = "ਭੁਗਤਾਨ ਕਰਨ ਦੀ ਮਿਤੀ";
 
 /* Title on the view where you can see a single receipt */
 "DONATION_RECEIPT_DETAILS" = "ਵੇਰਵਾ";
@@ -1691,22 +1706,22 @@
 "DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
 
 /* Title for one-time donation receipts */
-"DONATION_RECEIPT_ONE_TIME" = "One-time";
+"DONATION_RECEIPT_ONE_TIME" = "ਇੱਕ-ਵਾਰ";
 
 /* Title for recurring donation receipts */
-"DONATION_RECEIPT_RECURRING" = "Recurring";
+"DONATION_RECEIPT_RECURRING" = "ਵਾਰ-ਵਾਰ";
 
 /* Title on donation receipts */
-"DONATION_RECEIPT_TITLE" = "Donation receipt";
+"DONATION_RECEIPT_TITLE" = "ਦਾਨ ਦੀ ਰਸੀਦ";
 
 /* Section title for donation type on receipts */
 "DONATION_RECEIPT_TYPE" = "Type";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
-"DONATION_RECEIPTS" = "Donation Receipts";
+"DONATION_RECEIPTS" = "ਦਾਨ ਦੀਆਂ ਰਸੀਦਾਂ";
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
-"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
+"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "ਜੇਕਰ ਤੁਸੀਂ Signal ਨੂੰ ਦੁਬਾਰਾ ਇੰਸਟਾਲ ਕੀਤਾ ਹੈ, ਤਾਂ ਪਿਛਲੇ ਦਾਨ ਦੀਆਂ ਰਸੀਦਾਂ ਉਪਲਬਧ ਨਹੀਂ ਹੋਣਗੀਆਂ।";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Signal ਨੂੰ ਦਾਨ ਕਰੋ";
@@ -1715,7 +1730,7 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Signal ਨੂੰ ਦਾਨ ਦਿਓ";
 
 /* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "Gift a Badge";
+"DONATION_VIEW_GIFT" = "ਬੈਜ ਦਾ ਤੋਹਫ਼ੇ ਦਿਓ";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "ਨੈੱਟਵਰਕ ਗਲਤੀ। ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰਕੇ ਫੇਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
@@ -1736,13 +1751,13 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "My Support";
 
 /* Title for the 'one-time donation' link in the donation view */
-"DONATION_VIEW_ONE_TIME_DONATION" = "One-time donation";
+"DONATION_VIEW_ONE_TIME_DONATION" = "ਇੱਕ ਵਾਰ ਦਾਨ";
 
 /* Title for the 'other ways to give' section on the donation view */
 "DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
 
 /* Title for the 'receipts' section on the donation screen */
-"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Receipts";
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "ਰਸੀਦਾਂ";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "ਮੈਂਬਰੀ ਲਈ ਸਵਾਲ-ਜਵਾਬ";
@@ -2363,7 +2378,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਗਰੁੱਪ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਤਾਂ ਜੋ ਸਿਰਫ਼ ਐਡਮਿਨ ਹੀ ਸੁਨੇਹੇ ਭੇਜ ਸਕਣ।";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "ਤੁਸੀਂ ਗਰੁੱਪ ਲਿੰਕ ਰਾਹੀਂ ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਸਕਦੇ ਕਿਉਂਕਿ ਐਡਮਿਨ ਨੇ ਤੁਹਾਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ।";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ਇਹ ਗਰੁੱਪ ਲਿੰਕ ਹੁਣ ਸਰਗਰਮ ਨਹੀਂ ਹੈ।";
@@ -3011,10 +3026,10 @@
 "IN_CALL_TERMINATED" = "ਕਾਲ ਸਮਾਪਤ ਹੋਈ।";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "ਨਵਾਂ ਸੁਨੇਹਾ ਆਉਣ 'ਤੇ ਆਰਕਾਈਵ ਵਿੱਚ ਮੌਜੂਦ ਮੌਨ ਕੀਤੀਆਂ ਗਈਆਂ ਚੈਟਾਂ ਆਰਕਾਈਵ ਵਿੱਚ ਹੀ ਰਹਿਣਗੀਆਂ।";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "ਨਵਾਂ ਸੁਨੇਹਾ ਆਉਣ 'ਤੇ ਆਰਕਾਈਵ ਵਿੱਚ ਮੌਜੂਦ ਚੈਟਾਂ ਇਨਬਾਕਸ ਵਿੱਚ ਚਲੀਆਂ ਜਾਣਗੀਆਂ।";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "ਹਾਲੇ ਕੋਈ ਚੈਟ ਨਹੀਂ ਹੈ।\nਦੋਸਤ ਨੂੰ ਸੁਨੇਹਾ ਕਰਕੇ ਸ਼ੁਰੂਆਤ ਕਰੋ।";
@@ -4547,7 +4562,7 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "ਮੂਲ ਸੁਨੇਹਾ ਨਹੀਂ ਲੱਭਿਆ.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "ਤੁਹਾਡੀ ਕਹਾਣੀਂ ਉੱਤੇ ਰਿਐਕਸ਼ਨ ਦਿੱਤਾ";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
@@ -4623,9 +4638,6 @@
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "ਉਪਭੋਗਤਾ ਨੂੰ ਚੁਣਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ.";
-
-/* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "ਇਹ ਵਰਤੋਂਕਾਰ ਉਦੋਂ ਤੱਕ ਤੋਹਫ਼ੇ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦਾ ਜਦੋਂ ਤੱਕ ਉਹ Signal ਨੂੰ ਅੱਪਗਰੇਡ ਨਹੀਂ ਕਰਦਾ।";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "ਮੈਂ ਆਪਣਾ ਪਿਨ ਭੁੱਲ ਗਿਆ/ਗਈ।";
@@ -4931,7 +4943,7 @@
 "SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "ਕੀ ਮਲਟੀ-ਮੋਡ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "ਅਸੁਰੱਖਿਅਤ SMS ਦੇ ਰਾਹੀਂ ਦੋਸਤ ਨੂੰ ਸੱਦਾ ਭੇਜਣਾ ਹੈ?";
@@ -5177,10 +5189,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "ਸੁਨੇਹੇ ਦੀ ਆਵਾਜ਼";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "ਨਵਾਂ ਸੁਨੇਹਾ ਆਉਣ 'ਤੇ ਆਰਕਾਈਵ ਵਿੱਚ ਮੌਜੂਦ ਮੌਨ ਕੀਤੀਆਂ ਗਈਆਂ ਚੈਟਾਂ ਆਰਕਾਈਵ ਵਿੱਚ ਹੀ ਰਹਿਣਗੀਆਂ।";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "ਮੌਨ ਕੀਤੀਆਂ ਗਈਆਂ ਚੈਟਾਂ ਨੂੰ ਆਰਕਾਈਵ ਵਿੱਚ ਹੀ ਰੱਖੋ";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "ਸ਼ਰਤਾਂ ਅਤੇ ਪਰਦੇਦਾਰੀ ਨੀਤੀ";
@@ -5924,7 +5936,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "ਇਸ ਸਮੇਂ ਦਿਖਾਉਣ ਲਈ ਕੋਈ ਵੀ ਅੱਪਡੇਟ ਮੌਜੂਦ ਨਹੀਂ ਹੈ।\nਆਪਣੀ ਕਹਾਣੀ ਜੋੜਨ ਲਈ + 'ਤੇ ਟੈਪ ਕਰੋ।";
 
 /* Indicates that this story has no replies yet */
-"STORIES_NO_REPLIES_YET" = "No replies yet";
+"STORIES_NO_REPLIES_YET" = "ਅਜੇ ਤੱਕ ਕਿਸੇ ਨੇ ਜਵਾਬ ਨਹੀਂ ਦਿੱਤਾ";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "ਨਵੀਂ ਪ੍ਰਾਈਵੇਟ ਕਹਾਣੀ";
@@ -5945,7 +5957,7 @@
 "STORIES_TITLE" = "ਕਹਾਣੀਆਂ";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "ਲਿੰਕ 'ਤੇ ਜਾਓ";
 
 /* Text indicating a story that was replied to is no longer available. */
 "STORY_NO_LONGER_AVAILABLE" = "ਹੁਣ ਮੌਜੂਦ ਨਹੀਂ ਹੈ";
@@ -5963,7 +5975,7 @@
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "ਜਵਾਬ ਦਿਓ";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reacted to the story";
+"STORY_REPLY_REACTION" = "ਕਹਾਣੀ ਉੱਤੇ ਰਿਐਕਸ਼ਨ ਦਿੱਤਾ";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "ਜਵਾਬ ਦਿਓ";
@@ -5975,7 +5987,7 @@
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "خیرات کرو";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal ਨੂੰ ਤੁਹਾਡੇ ਵਰਗੇ ਲੋਕਾਂ ਦੇ ਸਹਿਯੋਗ ਨਾਲ ਚਲਾਇਆ ਜਾਂਦਾ ਹੈ। ਦਾਨ ਦਿਓ ਅਤੇ ਬੈਜ ਪ੍ਰਾਪਤ ਕਰੋ। ";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "ਹਾਲੇ ਨਹੀਂ";
@@ -5984,7 +5996,7 @@
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "ਸਹਾਇਕ ਬਣੋ";
 
 /* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ਸਬਸਕ੍ਰਾਈਬਰ ID ਨੂੰ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ ਦੇ ਨਾਲ ਤੁਹਾਡਾ ਸੁਰੱਖਿਆ ਨੰਬਰ ਮੇਲ ਖਾਂਦਾ ਹੈ। ਤੁਸੀਂ ਇਸ ਸੰਪਰਕ 'ਤੇ ਤਸਦੀਕਸ਼ੁਦਾ ਵਜੋਂ ਚਿੰਨ੍ਹ ਲਗਾ ਸਕਦੇ ਹੋ।";
@@ -6044,7 +6056,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ ...";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal ਇੱਕ ਗੈਰ-ਲਾਭਕਾਰੀ ਸੰਗਠਨ ਹੈ, ਇਸ ਦਾ ਨਾ ਕੋਈ ਨਿਵੇਸ਼ਕ ਹੈ ਅਤੇ ਨਾ ਹੀ ਇਸ ਵਿੱਚ ਇਸ਼ਤਿਹਾਰ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ। ਇਸ ਨੂੰ ਸਿਰਫ਼ ਉਹਨਾਂ ਲੋਕਾਂ ਦੇ ਸਹਿਯੋਗ ਨਾਲ ਚਲਾਇਆ ਜਾਂਦਾ ਹੈ ਜੋ ਇਸ ਨੂੰ ਵਰਤਦੇ ਹਨ ਅਤੇ ਇਸ ਦੀ ਕਦਰ ਕਰਦੇ ਹਨ। ਆਪਣਾ ਸਹਿਯੋਗ ਦੇਣ ਲਈ, ਹਰ ਮਹੀਨੇ ਦਾਨ ਦਿਓ ਅਤੇ ਪ੍ਰੋਫਾਈਲ ਬੈਜ ਪ੍ਰਾਪਤ ਕਰੋ।";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
@@ -6068,7 +6080,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "ਤਸਦੀਕ";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You won't be charged again. Your badge will be removed from your profile at the end of your billing period.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "ਤੁਹਾਡੇ ਤੋਂ ਦੁਬਾਰਾ ਕੋਈ ਖਰਚਾ ਨਹੀਂ ਲਿਆ ਜਾਵੇਗਾ। ਤੁਹਾਡੀ ਬਿਲਿੰਗ ਮਿਆਦ ਦੇ ਅੰਤ 'ਤੇ ਤੁਹਾਡਾ ਬੈਜ ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "ਤਸਦੀਕ ਰੱਦ ਕਰਨਾ ਹੈ?";
@@ -6134,7 +6146,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "ਅੱਪਡੇਟ ਕਰੋ";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "ਖਾਸ ਤੁਹਾਡੇ ਲਈ ਬਣਾਈ ਗਈ ਤਕਨਾਲੋਜੀ ਦਾ ਸਮਰਥਨ ਕਰਨ ਲਈ, Signal ਨੂੰ ਹਰ ਮਹੀਨੇ ਦਾਨ ਦਿਓ।";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "ਬੰਦ ";

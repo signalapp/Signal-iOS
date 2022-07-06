@@ -134,7 +134,7 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "त्रुटी";
 
 /* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
+"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "डेटाबेस इंटिग्रिटी तपासणी रन करा";
 
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "त्याऐवजी Signal उघडा";
@@ -149,16 +149,16 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "अज्ञात डेटाबेस आवृत्ती.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal had a problem while trying to open. Please send a debug log to support@signal.org to help troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal ला ओपन करताना एक समस्या आली.  या दोषाचे समस्यानिवारण करण्यास मदत करण्यास कृपया डीबग लॉग support@signal.org ला पाठवा.";
 
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Signal उघडता आले नाही";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "आपल्या उपकरणामध्ये कमी संग्रहण Signal उघडू शकत नाही. Signal ला वापरण्यास,  आपले संग्रहण व्यवस्थापित करून काही जागा मोकळी करा.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "संग्रहण जागा कमी";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "आपल्या जुन्या डिव्हाईस वरून स्थानांतरित केलेला डेटा पुनर्स्थित केला जाऊ शकला नाही. कृपया support@signal.org वर डीबग लॉग पाठवा जेणेकरून आम्ही समस्येचे निराकरण करू शकू. जर आपण Signal पुनः-स्थापना केली तर आपला संदेश इतिहास गहाळ होऊ शकतो.";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signal ला बूस्ट करा";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "आपला बूस्टर बॅज कालबाह्य झाला आहे आणि आपल्या प्रोफाईलवर या पुढे प्रदर्शित करण्यास उपलब्ध असणार नाही. \n\nआपण Signal ला वापरणे पुढे सुरू ठेवू शकता मात्र मासिक दान करून एक सस्टेनर बनण्याचा विचार करा.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "आपला बूस्टर बॅज कालबाह्य झालेला आहे आणि आपल्या प्रोफाईलवर प्रदर्शित करण्यास या पुढे उपलब्ध असणार नाही.\n\nआपण एका वेळेसाठी योगदान देऊन आणखी 30 दिवसांसाठी  आपला बूस्ट बॅज पुन्हा   अॅक्टिव्हेट करू शकता .";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "सस्टेनर बना";
@@ -403,14 +403,17 @@
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "संदेश जोडा";
 
-/* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Must update Signal to receive gifts";
+/* Error message indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+
+/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
-"BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
+"BADGE_GIFTING_CHAT_EXPIRED" = "कालबाह्य झालेे";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "कोणाच्या तरी नावाने Signal ला देणगी देऊन एक बॅज त्यांना भेट द्या.  त्यांना त्यांच्या प्रोफाईल फोटोवर प्रदर्शित करण्यासाठी बॅज मिळेल.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "एक बॅज भेट करा ";
@@ -419,37 +422,49 @@
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "प्राप्तकर्ता निवडा";
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "भेटीची पुष्टी करा";
+
+/* Error message indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "हा वापरकर्ता जोपर्यंत तो Signal अद्यतनित करत नाहीत तो पर्यंत भेट प्राप्त करू शकणार नाही.  ";
+
+/* Title for error message dialog indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "एक भेट बॅज पाठवा";
 
 /* Text telling the user that their gift is a one-time donation */
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = " एक-वेळ देणगी";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "आपल्या पेमेंटवर प्रक्रिया केली जाऊ शकत नाही आणि आपणाला शुल्क आकारलेले नाही. कृपया पुन्हा प्रयत्न करा.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "पेमेंट अयशस्वी झाले.";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "आपल्या पेमेंटवर प्रक्रिया करण्यात आली होती मात्र Signal आपल्याला भेट बॅज पाठवू शकत नाही. कृपया सपोर्टशी संपर्क साधा.";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "बॅज भेट अयशस्वी झाली";
+
+/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+
+/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
 "BADGE_GIFTING_REDEEM" = "रिडीम करा";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "शेवटचे %@";
 
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "बघा";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "आपली आवर्ती मासिक देणगी स्वयंचलितपणे रद्द झाली आहे. %@ आपला %@ बॅज यापुढे आपल्या प्रोफाईलवर दिसणार नाही.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "आपले आवर्ती मासिक देणगी आपोआप रद्द झाले कारण आपण खूप काळ निष्क्रिय होता. आपला %@ बॅज यापुढे आपल्या प्रोफाईलवर दिसणार नाही.\n\nआपण Signal वापरणे सुरू ठेवू शकता परंतु अॅपला सपोर्ट करण्यासाठी आणि आपला बॅज पुन्हा सक्रिय करण्यासाठी, आता नूतनीकरण करा.";
@@ -638,16 +653,16 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 येणारा ऑडिओ कॉल…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call at %@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞  %@ वाजता एक ऑडिओ मिस्ड कॉल ";
 
 /* notification body for a call that was just missed */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 सुटलेला ऑडिओ कॉल";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞  %@रोजी एक मिस्ड ऑडिओ कॉल";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞  %@रोजी एक मिस्ड ऑडिओ कॉल";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal मध्ये कॉल करण्यासाठी आणि व्हॉईस रेकॉर्ड करण्यासाठी आपण iOS सेटिंग अॅप मध्ये मायक्रोफोन अॅक्सेस सक्षम करू शकता.";
@@ -680,16 +695,16 @@
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 येणारा व्हिडिओ कॉल…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call at %@";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹  %@वाजता एक मिस्ड व्हिडीओ कॉल";
 
 /* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 सुटलेला व्हिडिओ कॉल";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹  %@रोजी एक मिस्ड व्हिडिओ कॉल";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹  %@ एक मिस्ड व्हिडिओ कॉल";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "विना व्हिडिओ उत्तर द्या";
@@ -1346,19 +1361,19 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "ग्रेडिएंटची दिशा बदलण्यासाठी ओढा";
 
 /* Button to run the database integrity check */
-"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Run";
+"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "रन करा";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "आपण किती Signal वापरले आहे यावर अवलंबून याला काही वेळ (अनेक मिनिटे किंवा अधिक) लागू शकतो. Signal अधिक वेळ घेत असल्यास आपण ते बंद करावे हे सुरक्षित आहे.";
 
 /* Button to save database integrity check results to the debug log */
 "DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "डीबग लॉगमध्ये जोडा";
 
 /* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Integrity check results";
+"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "एकात्मिकता तपासणी परिणाम";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database integrity check?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "डेटाबेस एकात्मिकता तपासणी रन करायची?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "ह्याला काही मिनिटे लागू शकतात.";
@@ -1640,31 +1655,31 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "दुसरी पेमेंट पद्धत वापरून पहा किंवा अधिक माहितीसाठी आपल्या बँकेशी संपर्क साधा.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "आपली पेमेंट पद्धत Apple Pay वर अद्यतनित आहे का ते तपासून पहा.  अद्ययावत नसल्यास, ती अद्यतनित करा आणि पुन्हा प्रयत्न करा. आपल्याला अद्याप समस्या असल्यास, आपल्या बँकेशी संपर्क साधा.";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "आपले कार्ड अशा प्रकारच्या खरेदीला समर्थन देत नाही. दुसरी पेमेंट पद्धत वापरून पहा किंवा अधिक माहिती साठी आपल्या बँकेशी संपर्क साधा.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "आपले कार्ड कालबाह्य झाले आहे. आपली पेमेंट पद्धत Apple Pay अद्यतनित आहे का ते तपासून पहा. अद्ययावत नसल्यास, ती अद्यतनित करा आणि पुन्हा प्रयत्न करा.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "आपला कार्ड नंबर चुकीचा आहे. आपली पेमेंट पद्धत  Apple Pay मध्ये योग्यप्रकारे प्रविष्ट केली असल्याचे तपासा. अद्ययावत नसल्यास, ती अद्यतनित करा आणि पुन्हा प्रयत्न करा.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "आपला CVC नंबर चुकीचा आहे. आपला CVC नंबर हा Apple Pay मध्ये योग्य प्रकारे प्रविष्ट केला आहे का ते तपासा. तो अद्यतनित नसल्याल, तो अद्यतनित करा आणि पुन्हा प्रयत्न करा. ";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "ही खरेदी पूर्ण करण्यास आपल्या कार्डवर पुरेसा निधी नाही. दुसऱ्या पेमेंट पद्धतीचा वापर करून पहा किंवा अधिक माहितीसाठी आपल्या बँकेशी संपर्क साधा.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "आपल्या पेमेंट पद्धतीवरील कालबाह्यता महिना चुकीचा आहे. तो Apple Pay वर अद्यतनित करा आणि पुन्हा प्रयत्न करा.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "आपल्या पेमेंट पध्दतीवरील कालबाह्यता वर्ष चुकीचे आहे. ते Apple Pay वर अद्यतनित करा आणि पुन्हा प्रयत्न करा.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "आपला पेमेंट पद्धत वरील कार्ड नंबर चुकीचा आहे. ते Apple Pay वर अद्यतनित करा आणि पुन्हा प्रयत्न करा.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
 "DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "पुन्हा पेमेंट पूर्ण करण्याचा प्रयत्न करा किंवा अधिक माहितीसाठी आपल्या बँकेशी संपर्क साधा.";
@@ -1673,7 +1688,7 @@
 "DONATION_PAYMENT_ERROR_OTHER" = "दुसरी पेमेंट पद्धत वापरून पहा किंवा अधिक माहितीसाठी आपल्या बँकेशी संपर्क साधा.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Apple Pay वर आपली पेमेंट पद्धत अद्ययावत आहे का पाहण्यासाठी तपासा. ते नसल्यास, ते अद्यतनित करा आणि पुन्हा प्रयत्न करा.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "रक्कम";
@@ -2657,7 +2672,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "विनंत्या आणि आमंत्रणे";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
-"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
+"GROUP_STORY_NAME_FORMAT" = "%1$@ पासून %2$@पर्यंत";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "गट अद्यतनित.";
@@ -3011,10 +3026,10 @@
 "IN_CALL_TERMINATED" = "कॉल संपला.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "नवीन संदेश येईल तेव्हा आर्काईव्ह केलेले म्यूट केलेले चॅट्स हे आर्काईव्ह केलेलेच राहतील.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "नवीन संदेश येईल तेव्हा आर्काईव्ह केलेले चॅट्स इनबॉक्समध्ये हलवले जातील.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "आतापर्यंत कुठेलही चॅट नाही.\nमित्राला संदेश पाठवून सुरू करा.";
@@ -3254,10 +3269,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "कॉल करा";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime ऑडिओ";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime व्हिडिओ";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "मजकूर संदेश पाठवा";
@@ -4547,10 +4562,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "मूळ संदेश सापडला नाही.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "आपल्या स्टोरीवर प्रतिक्रिया दिली ";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = " %@ च्या स्टोरी ला प्रतिक्रिया दिली";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ . स्टोरी";
@@ -4623,9 +4638,6 @@
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "वापरकर्ता निवडला जाऊ शकत नाही.";
-
-/* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "This user can't receive gifts until they upgrade Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "मी माझा PIN विसरलो.";
@@ -4928,10 +4940,10 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "बंद करा";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "आपण घेतलेले कोणतेही फोटो किंवा व्हिडिओ गमवाल.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "मल्टी-मोड बंद करायचा?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "असुरक्षित SMS द्वारा एका मित्राला आमंत्रित करायचे?";
@@ -5177,10 +5189,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "संदेश ध्वनी";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "नवीन संदेश येईल तेव्हा आर्काईव्ह केलेले म्यूट केलेले चॅट्स हे आर्काईव्ह केलेलेच राहतील.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "म्यूट केलेले आर्काईव्ह केलेले चॅटस् ठेवा";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "अटी आणि गोपनीयता धोरण";
@@ -5918,25 +5930,25 @@
 "STORIES_GO_TO_CHAT_ACTION" = "चॅटवर जा";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Hide Story";
+"STORIES_HIDE_STORY_ACTION" = "स्टोरी लपवा";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "आत्ता लगेचच दाखवण्यास कोणतेही अद्यतने नाहीत.\nआपली स्टोरी जोडण्यास + टॅप करा.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "अद्याप कोणतीही प्रत्युत्तरे नाहीत";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "नवीन खाजगी स्टोरी";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "खाजगी स्टोरीज या आपण ज्यांना जोडलेले आहे त्या लोकांना पाहता येतील. फक्त आपणाला स्टोरी नाव पाहता येऊ शकेल.";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "खाजगी स्टोरी";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "स्टोरीची गोपनीयता";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "सामायिक करा";

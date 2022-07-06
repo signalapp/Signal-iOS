@@ -403,14 +403,17 @@
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Додати повідомлення";
 
-/* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Має оновити Signal для отримання подарунків";
+/* Error message indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+
+/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Строк дії закінчився";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Подаруйте комусь емблему, зробивши внесок у Signal. Ця особа отримає емблему, яку зможе показувати на своєму фото профілю.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Подаруйте комусь значок, зробивши Signal пожертву. Ця людина отримає значок для фото свого профілю.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Подарувати емблему";
@@ -421,6 +424,12 @@
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
 "BADGE_GIFTING_CONFIRMATION_TITLE" = "Підтвердження надіслання подарунка";
 
+/* Error message indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "Користувач не може отримувати подарунки, доки не оновить Signal.";
+
+/* Title for error message dialog indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Відправити емблему у подарунок";
 
@@ -428,19 +437,25 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Разовий внесок";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Не вдалося обробити ваш платіж, і з вас не стягнуто кошти. Будь ласка, спробуйте ще раз.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Не вдалося обробити ваш платіж. Кошти не було стягнуто. Будь ласка, спробуйте ще раз.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Помилка платежу";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Ваш платіж було оброблено, але Signal не вдалося надіслати подарунковий значок. Будь ласка, зв'яжіться зі службою підтримки.";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Збій із подарунковим значком";
+
+/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+
+/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
-"BADGE_GIFTING_REDEEM" = "Redeem";
+"BADGE_GIFTING_REDEEM" = "Активувати";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Діє %@";
@@ -449,7 +464,7 @@
 "BADGE_GIFTING_VIEW" = "Переглянути";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Ваш регулярний щомісячний платіж було автоматично скасовано. %@ Ваша %@ емблема більше не показуватиметься у профілі.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Регулярний щомісячний платіж було автоматично скасовано. %@ Ваш %@ значок більше не відображатиметься у профілі.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Ваш регулярний щомісячний платіж було автоматично скасовано, оскільки ви занадто довго були неактивні. Відзнака %@ більше не показуватиметься у вашому профілі.\n\nВи можете й надалі користуватися Signal, але для підтримки програми та відновлення вашої відзнаки, необхідно поновити внесок.";
@@ -1640,28 +1655,28 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Спробуйте інший спосіб платежу, або зв'яжіться зі своїм банком для додаткової інформації.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Упевніться, що дані вашого способу платежу оновлено в Apple Pay. Якщо ні, оновіть їх та спробуйте знов. Якщо проблема не зникає, зв'яжіться зі своїм банком.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Упевніться, що дані вашого способу оплати в Apple Pay є актуальними. Якщо це не так, оновіть їх і спробуйте знову. Якщо проблема не зникне, зв'яжіться зі своїм банком.";
 
 /* Donation payment error for decline failures where the card is not supported. */
 "DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Ваша картка не підтримує цей тип покупки. Спробуйте інший спосіб платежу або зв'яжіться зі своїм банком для додаткової інформації.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Строк дії картки завершився. Упевніться, що дані вашого способу платежу оновлено в Apple Pay. Якщо ні, оновіть його та спробуйте знов.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Строк дії картки завершився. Упевніться, що дані вашого способу оплати в Apple Pay є актуальними. Якщо це не так, оновіть їх і спробуйте знову.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Номер картки невірний. Упевніться, що дані вашого способу платежу оновлено в Apple Pay. Якщо ні, оновіть його та спробуйте знов.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Номер картки невірний. Упевніться, що дані вашого способу оплати в Apple Pay введені правильно. Якщо це не так, оновіть їх і спробуйте знову.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
 "DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "CVC-код картки невірний. Упевніться, що CVC-код коректно введено в Apple Pay. Якщо ні, оновіть його та спробуйте знов.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "На вашій картці недостатньо коштів для здійснення цієї покупки. Спробуйте інший платіжний засіб або зв'яжіться з банком для додаткової інформації.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "На картці недостатньо коштів для здійснення цієї покупки. Спробуйте інший спосіб оплати або зв'яжіться зі своїм банком для додаткової інформації.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Місяць закінчення строку дії картки невірний. Оновіть його в Apple Pay та спробуйте знов.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Місяць закінчення дії картки невірний. Оновіть його в Apple Pay і спробуйте знову.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "Рік закінчення строку дії картки невірний. Оновіть його в Apple Pay та спробуйте знов.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "Рік закінчення дії картки невірний. Оновіть його в Apple Pay і спробуйте знову.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Номер картки невірний. Оновіть його в Apple Pay та спробуйте знов.";
@@ -3014,7 +3029,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Стишені та заархівовані чати залишатимуться заархівованими після отримання нового повідомлення.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Заархівовані чати переміщатимуться до Вхідних після отримання нового повідомлення.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Заархівовані чати переміщатимуться до вхідних після отримання нового повідомлення.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Ще немає чатів.\nРозпочніть, написавши повідомлення друзям.";
@@ -4623,9 +4638,6 @@
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Користувач не може бути обраний.";
-
-/* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "Користувач не може отримувати подарунки, доки не оновить Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Я забув свій PIN-код.";

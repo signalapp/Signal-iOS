@@ -11,7 +11,7 @@
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Liitetiedosto";
 
 /* Accessibility label for audio. */
-"ACCESSIBILITY_LABEL_AUDIO" = "Äänitiedosto";
+"ACCESSIBILITY_LABEL_AUDIO" = "Ääni";
 
 /* Accessibility label for contact. */
 "ACCESSIBILITY_LABEL_CONTACT" = "Yhteystieto";
@@ -32,7 +32,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Ääniviesti";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Signal -puhelu";
+"ACTION_AUDIO_CALL" = "Signal-puhelu";
 
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Kutsu Signaliin";
@@ -95,10 +95,10 @@
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Lähettäjän %@ viestiä, tarraa, reaktiota, lukukuittausta tai mediaa ei voitu toimittaa sinulle tässä keskustelussa.";
 
 /* Title for delivery issue sheet */
-"ALERT_DELIVERY_ISSUE_TITLE" = "Toimitusongelma";
+"ALERT_DELIVERY_ISSUE_TITLE" = "Ongelma viestin toimituksessa";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = " Kohteen %@viestiä, tarraa, reaktiota, lukukuittausta tai mediaa ei voitu toimittaa sinulle. Se on ehkä yritetty lähettää sinulle suoraan tai ryhmässä.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Lähettäjän %@ viestiä, tarraa, reaktiota, lukukuittausta tai mediaa ei voitu toimittaa sinulle. Se on ehkä yritetty lähettää sinulle suoraan tai ryhmässä.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Hylkää";
@@ -113,10 +113,10 @@
 "ALERT_SAVE" = "Tallenna";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Et kuulu samoihin ryhmiin tämän henkilön kanssa. Käy pyynnöt tarkasti läpi ennen hyväksymistä vältääksesi epätoivotut viestit.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Et kuulu samoihin ryhmiin tämän henkilön kanssa. Käy pyynnöt huolellisesti läpi ennen hyväksymistä välttääksesi ei-toivotut viestit.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Ryhmän kanssa ei ole yhteisiä jäseniä. Käy pyynnöt tarkasti läpi ennen hyväksymistä epätoivottujen viestien välttämiseksi.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Tämän ryhmän kanssa ei ole yhteisiä jäseniä. Käy pyynnöt huolellisesti läpi ennen hyväksymistä välttääksesi ei-toivotut viestit.";
 
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Tietoa viestipyynnöistä";
@@ -128,7 +128,7 @@
 "APN_Message" = "Olet saattanut saada uusia viestejä";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ei avaudu. Lähetä virheenkorjausloki osoitteeseen support@signal.org, jotta voimme selvittää ratkaista ongelman.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ei avaudu. Lähetä virheenkorjausloki osoitteeseen support@signal.org, jotta voimme selvittää ongelman.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Virhe";
@@ -149,10 +149,10 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Tuntematon tietokantaversio.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal havaitsi ongelman käynnistyessään. Lähetä virheenkorjausloki osoitteeseen support@signal.org – tämä auttaa meitä virheen selvittämisessä ja korjaamisessa.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal havaitsi ongelman käynnistyessään. Lähetä virheenkorjausloki osoitteeseen support@signal.org – tämä auttaa meitä virheen selvittämisessä.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Signalia ei saatu avattua";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Signal ei avaudu";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signalia ei voitu avata, koska laitteen tallennustila on vähissä. Jos haluat käyttää Signalia, vapauta tallennustilaa laitteen asetuksissa.";
@@ -161,7 +161,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Tallennustila vähissä";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Aiemmasta laitteesta siirrettyjä tietoja ei voitu palauttaa. Lähetä virheloki osoitteeseen support@signal.org, jotta voimme selvittää ongelman. Jos asennat Signalin uudelleen, viestihistoriasi saattaa pyyhkiytyä.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Aiemmasta laitteesta siirrettyjä tietoja ei voitu palauttaa. Lähetä virheenkorjausloki osoitteeseen support@signal.org, jotta voimme selvittää ongelman. Jos asennat Signalin uudelleen, viestihistoriasi saattaa pyyhkiytyä.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Siirtoa ei voitu suorittaa loppuun";
@@ -203,7 +203,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Lisää kuvateksti...";
 
 /* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Kuvaus";
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Kuvateksti";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Liitteen vieminen epäonnistui.";
@@ -287,10 +287,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Sijainti";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Voit lähettää kuvia tästä myöntämällä kuvakirjaston käyttöoikeudet asetuksissa.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Voit lähettää kuvia tästä näkymästä myöntämällä kuvakirjaston käyttöoikeudet asetuksissa.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Voit lähettää äskettäisiä kuvia tästä, kun olet ensin ottanut kuvia.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Voit lähettää äskettäisiä kuvia tästä näkymästä, kun olet ensin ottanut kuvia.";
 
 /* A button to select a payment from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PAYMENT" = "Maksu";
@@ -302,7 +302,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Tiedoston valinta epäonnistui.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Pakkaa tämä tiedosto tai hakemisto ja yritä lähettää se tämän sijasta.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Pakkaa tämä tiedosto tai hakemisto ja yritä lähettää se pakattuna.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Tiedostotyyppiä ei tueta";
@@ -362,10 +362,10 @@
 "BACK_BUTTON" = "Takaisin";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Omat kunniamerkkini";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Omat merkkini";
 
 /* The title for the badge configuration page */
-"BADGE_CONFIGURATION_TITLE" = "Kunniamerkit";
+"BADGE_CONFIGURATION_TITLE" = "Merkit";
 
 /* Text prompting the user to become a signal sustainer */
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Ryhdy tukijaksi";
@@ -380,13 +380,13 @@
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Boost-merkkisi on vanhentunut, eikä sitä voi enää näyttää profiilissasi.\n\nVoit aktivoida Boost-merkkisi uudelleen 30 päiväksi tekemällä kertalahjoituksen.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Ryhdy Tukijaksi";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Ryhdy tukijaksi";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Lisää Boostaus";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Lisää Boost";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Kunniamerkki on erääntynyt";
+"BADGE_EXPIRED_BOOST_TITLE" = "Merkki on vanhentunut";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Lue lisää";
@@ -403,14 +403,17 @@
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Lisää viesti";
 
-/* Indicates that a contact cannot receive badges because they need to update Signal */
-"BADGE_GIFTING_CANNOT_SEND_BADGE_SUBTITLE" = "Päivitä Signal, jotta voit ottaa lahjoja vastaan";
+/* Error message indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+
+/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Vanhentunut";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal in their name. They’ll get a badge to display on their profile photo.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Lahjoita toiselle henkilölle merkki tekemällä lahjoitus Signalille hänen nimissään. Lahjan saaja saa merkin, jonka hän voi näyttää profiilikuvassaan.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Lahjoita merkki";
@@ -421,38 +424,50 @@
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
 "BADGE_GIFTING_CONFIRMATION_TITLE" = "Vahvista lahja";
 
+/* Error message indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "Tämä käyttäjä ei voi saada lahjoja, ennen kuin hän on päivittänyt Signalin.";
+
+/* Title for error message dialog indicating that a user can't receive gifts. */
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Lähetä kunniamerkki lahjaksi";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Lähetä merkki lahjaksi";
 
 /* Text telling the user that their gift is a one-time donation */
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Kertalahjoitus";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Maksuasi ei pystytty käsittelemään, eikä sinua ei ole veloitettu. Ole hyvä ja yritä uudelleen.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Maksu epäonnistui";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Maksusi käsiteltiin, mutta Signal ei pystynyt lähettämään merkkiä lahjaksi. Ota yhteyttä tukeen.";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Merkin lähetys lahjaksi epäonnistui";
+
+/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+
+/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
 
 /* A button shown on a gift message you receive to redeem the badge and add it to your profile. */
-"BADGE_GIFTING_REDEEM" = "Lunastus";
+"BADGE_GIFTING_REDEEM" = "Lunasta";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Voimassa %@";
+"BADGE_GIFTING_ROW_DURATION" = "Voimassa: %@";
 
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "Näytä";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Toistuva kuukausittainen lahjoituksesi peruutettiin automaattisesti.  %@ Merkki %@ ei näy enää profiilissasi.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Toistuva kuukausilahjoituksesi on keskeytetty, koska et ole ollut aktiivinen pitkään aikaan. Sinun %@ -kunniamerkkisi ei näy enää profiilissasi.\n\nVoit jatkaa Signalin käyttöä mutta tukeaksesi ohjelmaa ja saadaksesi kunniamerkin taas aktiiviseksi, uudista lahjoituksesi nyt. ";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Toistuva kuukausilahjoituksesi on keskeytetty, koska et ole ollut aktiivinen pitkään aikaan. Merkki %@ ei näy enää profiilissasi.\n\nVoit jatkaa Signalin käyttöä, mutta jos haluat tukea sovellusta ja aktivoida merkin, tee uusi lahjoitus.";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Kiitos Boostista!";
@@ -461,28 +476,28 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Näytä profiilissa";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Aseta kunniamerkkisi esiteltäväksi";
+"BADGE_THANKS_MAKE_FEATURED" = "Aseta esiteltäväksi merkiksi";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "Kiitämme tuestasi!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "Kun sinulla on useampi kuin yksi kunniamerkki, voit valita vain yhden esille muiden nähtäväksi profiilissasi.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "Jos sinulla on enemmän kuin yksi merkki, voit valita yhden niistä esiteltäväksi profiilissasi.";
 
 /* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "Olet ansainnut %@ -kunniamerkin. Liitä kunniamerkki profiiliisi lisätäksesi tietoisuutta Signalille lahjoittamisen tärkeydestä.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Olet ansainnut %@ -merkin! Näytä tämä merkki profiilissasi lisätäksesi tietoisuutta Signalille lahjoituksista.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Sulje banneri";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Estettyyn ryhmään lähetettyjä viestejä ei näytetä.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Et enää saa viestejä tai päivityksiä tältä ryhmältä.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Estä";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Estetäänkö ja poistutaanko ryhmästä \"%@\"?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Estetäänkö ja poistutaanko ryhmästä %@?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Estetäänkö %@?";
@@ -506,7 +521,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Voitte jatkossa lähettää viestejä ja soittaa toisillenne.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Ryhmän jäsenet voivat tämän jälkeen lisätä sinut takaisin ryhmään.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Ryhmän nykyiset jäsenet voivat lisätä sinut takaisin ryhmään.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Ryhmän jäsenet voivat lisätä sinut takaisin tähän ryhmään.";
@@ -536,22 +551,22 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Virhe";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ esto on poistettu.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Kohteen %@ esto on poistettu.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Ryhmän jäsenet voivat nyt lisätä sinut takaisin ryhmään.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Ryhmän nykyiset jäsenet voivat lisätä sinut takaisin ryhmään.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Estetyt käyttäjät eivät pysty soittamaan tai lähettämään sinulle viestejä.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Estetyt käyttäjät eivät voi soittaa sinulle tai lähettää sinulle viestejä.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Uutta: sumenna kasvot tai sumenna mitä vain piirtämällä.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Tee kertalahjoitus ja ansaitse Boost-kunniamerkki 30 päiväksi.";
+"BOOST_VIEW_BODY" = "Tee kertalahjoitus ja ansaitse Boost-merkki 30 päiväksi.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Kunniamerkkisi Boostaus erääntyy %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Boost-merkki vanhenee %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Syötä uusi summa";
@@ -584,7 +599,7 @@
 "BUTTON_DONE" = "Valmis";
 
 /* Label for the 'duplicate' button. */
-"BUTTON_DUPLICATE" = "Duplikoi";
+"BUTTON_DUPLICATE" = "Monista";
 
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "Muokkaa";
@@ -710,7 +725,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Mykistä";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ saa sinulta viestipynnön. Voit soittaa, kun viestipyyntösi on hyväksytty.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ saa sinulta viestipyynnön. Voit soittaa, kun viestipyyntösi on hyväksytty.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Vaihda kameraa";
@@ -737,7 +752,7 @@
 "CAMERA_BUTTON_LABEL" = "Kamera";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Tätä käyttäjää ei voida varmentaa ennen kuin olet lähettänyt tai vastaanottanut viestejä hänen kanssaan.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Tätä käyttäjää ei voida varmentaa, ennen kuin olet lähettänyt tai vastaanottanut viestejä hänen kanssaan.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Virhe";
@@ -749,19 +764,19 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "Muokkaa kuvaa";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Uusi numero ei saa olla sama kuin vanha. Vaihtaaksesi puhelinnumeroa, anna uusi puhelinnumero.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Uusi numero ei voi olla sama kuin vanha. Syötä uusi numero vaihtaaksesi puhelinnumeroa.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Puhelinnumero ei vastaa tiliin rekisteröityä puhelinnumeroa.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Virheellinen uusi puhelinnumero. Syötä voimassa oleva puhelinnumero vaihtaaksesi numeroa.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Virheellinen uusi puhelinnumero. Syötä kelvollinen puhelinnumero vaihtaaksesi numeroa.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Tarkista vanha puhelinnumero.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Tarkista vanha puhelinnumero. Syötä kelvollinen puhelinnumero vaihtaaksesi numeroa.";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Syötä tunnusluku uudelle puhelinnumerollesi. Se ei ole sama kuin tekstiviestivahvistuskoodisi.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Syötä tunnusluku uudelle puhelinnumerollesi. Se ei ole sama kuin saamasi tekstiviestivahvistuskoodi.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Keskustelun värien esikatselunäkymä.";
@@ -782,7 +797,7 @@
 "CHAT_COLOR_OUTGOING_MESSAGE_2" = "Väri näkyy vain sinulle.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_AUTO" = "auto";
+"CHAT_COLOR_SETTINGS_AUTO" = "Automaattinen";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Poista väri";
@@ -794,7 +809,7 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Muokkaa väriä";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Auto hakee värit taustakuvasta";
+"CHAT_COLORS_AUTO_TOOLTIP" = "Automaattinen asetus sovittaa värin taustakuvan kanssa";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Keskustelut";
@@ -824,7 +839,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Käyttäjätunnushaku";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Hae yhteystiedoistasi Signalin käyttäjiä sallimalla yhteystietojen käyttö iOS:n asetuksissa.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Voit hakea yhteystiedoistasi Signalin käyttäjiä sallimalla yhteystietojen käyttö iOS:n asetuksissa.";
 
 /* Configure reactions title text */
 "CONFIGURE_REACTIONS" = "Reaktioiden asetukset";
@@ -836,7 +851,7 @@
 "CONFIRM_DELETE_DATA_TITLE" = "Oletko varma, että haluat poistaa kaikki tiedot?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Tämä palauttaa sovelluksen poistamalla kaikki viestisi tältä laitteelta. Voit aina yhdistää puhelimeesi uudelleen, mutta se ei palauta poistettuja viestejä. Sovellus sulkeutuu, kun tämä prosessi on valmis.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Tämä palauttaa sovelluksen alkuasetuksiin poistamalla kaikki viestisi tältä laitteelta. Voit aina yhdistää puhelimeesi uudelleen, mutta poistetut viestit eivät palaudu. Sovellus sulkeutuu, kun prosessi on valmis.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Oletko varma, että haluat poistaa kaikki tiedot?";
@@ -872,7 +887,7 @@
 "CONTACT_EMAIL" = "Sähköposti";
 
 /* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "Kaupunki";
+"CONTACT_FIELD_ADDRESS_CITY" = "Paikkakunta";
 
 /* Label for the 'country' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_COUNTRY" = "Maa";
@@ -890,7 +905,7 @@
 "CONTACT_FIELD_ADDRESS_REGION" = "Maakunta";
 
 /* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "Katu";
+"CONTACT_FIELD_ADDRESS_STREET" = "Katuosoite";
 
 /* Label for the 'family name' field of a contact. */
 "CONTACT_FIELD_FAMILY_NAME" = "Sukunimi";
@@ -911,13 +926,13 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organisaatio";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Nähdäksesi yhteystietojen nimet ja kuvat keskusteluissa:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Näin näet yhteystietojen nimet ja kuvat keskusteluissa:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Napauta \"Mene asetuksiin\" alla";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Napauta Mene asetuksiin alta";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Ota käyttöön \"Yhteystiedot\"";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Ota käyttöön Yhteystiedot";
 
 /* Title for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Ota käyttöön Yhteystiedot";
@@ -938,7 +953,7 @@
 "CONTACT_PHONE" = "Puhelin";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Ei sähköpostia";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Ei sähköpostiosoitetta";
 
 /* table cell subtitle when contact card has no known phone number */
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Ei puhelinnumeroa";
@@ -962,22 +977,22 @@
 "CONTACT_SUPPORT" = "Ota yhteyttä tukeen";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Lahjoitukset ja kunniamerkit";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Lahjoitukset ja merkit";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Lahjoitukset ja kunniamerkit";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Lahjoitukset ja merkit";
 
 /* The localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Kehitysidea";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Haluan esittää toiveen ominaisuudesta";
 
 /* A brief localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Toimintopyyntö";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Toive ominaisuudesta";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Palaute sovelluksesta";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Haluan antaa palautetta sovelluksesta";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Sovelluspalaute";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Palaute sovelluksesta";
 
 /* The localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER" = "Jokin muu";
@@ -995,19 +1010,19 @@
 "CONTACT_SUPPORT_FILTER_PROMPT" = "Miten voimme auttaa?";
 
 /* The localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION" = "Kysymys";
+"CONTACT_SUPPORT_FILTER_QUESTION" = "Minulla on kysyttävää";
 
 /* A brief localized representation of the 'question' support filter. */
 "CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Kysymys";
 
 /* The localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Tekninen ongelma";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Jokin ei toimi";
 
 /* A brief localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Tekninen ongelma";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Jokin ei toimi";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal ei kyennyt täyttämään tukipyyntöäsi.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal ei voinut ratkaista tukipyyntöäsi.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Yritä uudelleen";
@@ -1019,7 +1034,7 @@
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Lähetetäänkö virheenkorjausloki?";
 
 /* Placeholder telling user they must select a filter. */
-"CONTACT_SUPPORT_SELECT_A_FILTER" = "Valitse sy";
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "Valitse syy";
 
 /* Button text */
 "CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Lähetä virheenkorjauslokilla";
@@ -1064,7 +1079,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Poistetaanko keskustelu?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mykistä keskustelu ajaksi...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mykistä tämä keskustelu";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 päiväksi";
@@ -1124,16 +1139,16 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Pois päältä";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Valitse ketkä voivat muokata ryhmän nimeä, kuvausta, kuvaa ja katoavien viestien ajastinta.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Valitse, kuka voi muokata ryhmän nimeä, valokuvaa, kuvausta ja katoavien viestien ajastusta.";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ääni";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Ansaiset profiiliisi kunniamerkkejä tukemalla Signalia. Napauta kunniamerkkiä lukeaksesi lisää.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Hanki profiiliisi merkkejä tukemalla Signalia. Lue lisää napauttamalla merkkiä.";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "Kunniamerkit";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "Merkit";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Estetyn käyttäjän lähettämiä viestejä ei näytetä.";
@@ -1163,7 +1178,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Jäsenten lisääminen";
 
 /* Description for the 'edit membership access'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Valitse ketkä voivat muokata ryhmän jäsenyyttä.";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Valitse, kuka voi muokata ryhmän jäsenyyttä.";
 
 /* Label for 'group link' action in conversation settings view. */
 "CONVERSATION_SETTINGS_GROUP_LINK" = "Ryhmälinkki";
@@ -1172,13 +1187,13 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Nimitä ylläpitäjäksi";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ voi tulevaisuudessa muokata ryhmää ja sen jäseniä.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ voi muokata ryhmää ja sen jäseniä.";
 
 /* Label for 'member invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_INVITES" = "Kutsut";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Liittymispyynnöt & kutsut";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Liittymispyynnöt ja kutsut";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Ilmoita aina";
@@ -1406,7 +1421,7 @@
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Jaa";
 
 /* Title of the debug log alert. */
-"DEBUG_LOG_ALERT_TITLE" = "Vielä yksi kysymys";
+"DEBUG_LOG_ALERT_TITLE" = "Vielä yksi vaihe";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist-linkki on nyt kopioitu leikepöydällesi. Sinut ohjataan nyt virheluetteloon GitHubissa.";
@@ -1421,7 +1436,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Poista tili";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Signal-tili poistetaan ja sovellusasetukset nollataan. Sovellus sulkeutuu prosessin päätteeksi.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Signal-tili poistetaan ja sovellus palautetaan alkuasetuksiin. Sovellus sulkeutuu prosessin päätteeksi.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Haluatko varmasti poistaa tilisi?";
@@ -1430,22 +1445,22 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Maatunnus";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Tilin poisto epäonnistui. Tarkista WiFi- ja verkkoyhteys ja yritä sitten uudelleen.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Tilin poisto epäonnistui. Tarkista WiFi- tai mobiilidatayhteys, ja yritä uudelleen.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Tili ja kaikki viestit poistetaan.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Tilin tiedot, profiili ja kaikki viestit poistetaan.";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Poistetaan tiliä...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Ei Internet-yhteyttä. Tarkista WiFi- ja verkkoyhteys ja yritä sitten uudelleen.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Ei Internet-yhteyttä. Tarkista WiFi- tai mobiilidatayhteys, ja yritä uudelleen.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Puhelinnumero";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Varmenna tilin puhelinnumero";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Varmenna Signal-tilin puhelinnumero";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Poista tili";
@@ -1466,13 +1481,13 @@
 "DEREGISTRATION_WARNING" = "Tämä laite ei ole enää rekisteröity. Puhelinnumerosi saataa olla rekisteröity Signaliin jollain toisella laitteella. Napauta rekisteröityäksesi uudelleen.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Viimeksi yhdistettynä %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Viimeksi aktiivisena %@";
 
 /* {{Short Date}} when device was linked. */
 "DEVICE_LINKED_AT_LABEL" = "Yhdistetty %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Yhdistettyjen laitteiden listaa ei saatu päivitettyä";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Yhdistettyjen laitteiden listaa voida päivittää.";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Pysäytä siirto";
@@ -1505,10 +1520,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Siirrä tili ja viestit";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Siirrä tili- ja viestihistoriasi vanhasta iOS-laitteesta";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Siirrä tilisi ja viestihistoriasi vanhasta iOS-laitteesta";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Siirrä tili- ja viestihistoriasi vanhasta iPadista";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Siirrä tilisi ja viestihistoriasi vanhasta iPadista";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Siirto toisesta iPadista";
@@ -1517,7 +1532,7 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Siirto toisesta iOS-laitteesta";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Jatkaminen poistaa Signalin käytöstä muissa laitteissa, jotka ovat tällä hetkellä rekisteröity samalla puhelinnumerolla.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "Jatkaminen poistaa Signalin käytöstä muissa samalla puhelinnumerolla rekisteröidyissä laitteissa.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Uutta laitetta ei voitu varmentaa. Yritä uudelleen";
@@ -1526,7 +1541,7 @@
 "DEVICE_TRANSFER_ERROR_GENERIC" = "Siirto ei onnistunut. Varmista, että laitteesi ovat lähellä toisiaan ja yritä uudelleen";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Jotta voit määrittää tämän iPadin liitetyksi laitteeksi, sinun täytyy lukea koodi aiemmin käytetyllä iPadilla";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Jotta voit määrittää tämän iPadin yhdistetyksi laitteeksi, sinun täytyy lukea koodi aiemmin käytetyllä iPadilla";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Sinun täytyy lukea koodi iPhonella, jotta voit siirtää tilin";
@@ -1616,10 +1631,10 @@
 "DISMISS_BUTTON_TEXT" = "Peruuta";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Ohita alavalikko";
+"DISMISS_CONTEXT_MENU" = "Ohita pikavalikko";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Näytä kunniamerkit profiilissa";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Näytä merkit profiilissa";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Sensuurin kiertämisen sijainti";
@@ -1628,7 +1643,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Lahjoita";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal pysyy käynnissä kaltaistesi ihmisten ansiosta. Ryhdy kuukausilahjoittajaksi ja saa kunniamerkki profiiliisi.";
+"DONATE_MEGAPHONE_BODY" = "Signal toimii kaltaistesi ihmisten tuella. Tee kuukausilahjoitus ja ansaitse merkki.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Ei nyt";
@@ -1640,28 +1655,28 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Kokeile toista maksutapaa tai ole yhteydessä pankkiisi saadaksesi lisätietoja.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Tarkista, onko Apple Pay -palveluun määrittelemäsi maksutapa ajan tasalla. Jos näin ei ole, päivitä sen tiedot ja yritä uudelleen. Jos ongelmat jatkuvat, ota yhteyttä pankkiisi.";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Maksukorttisi ei tue tämän tyyppistä ostosta. Yritä toista maksutapaa tai ole yhteydessä kortin myöntäjään.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Maksukorttisi ei tue tämän tyyppistä ostosta. Yritä toista maksutapaa tai ole yhteydessä pankkiisi.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Maksukorttisi on vanhentunut. Tarkista, onko Apple Pay -palveluun määrittelemäsi maksutapa ajan tasalla. Jos näin ei ole, päivitä sen tiedot ja yritä uudelleen.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Maksukorttisi numero on virheellinen. Tarkista, onko Apple Pay -palveluun määrittelemäsi maksutapa ajan tasalla. Jos näin ei ole, päivitä sen tiedot ja yritä uudelleen.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Syöttämäsi CVC-numero on väärä. Tarkista että CVC on syötetty oikein Apple Payssa.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Syöttämäsi CVC-numero on väärä. Tarkista että CVC on syötetty oikein Apple Payssa. Jos näin ei ole, päivitä sen tiedot ja yritä uudelleen.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Maksukortillasi ei ole riittävästi katetta tämän ostoksen tekemiseen. Yritä toista maksutapaa tai ole yhteydessä pankkiisi.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Maksutavan erääntymiskuukausi on virheellinen. Päivitä se Apple Payssä ja yritä uudelleen.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "Maksutavan erääntymisvuosi on virheellinen. Päivitä se Apple Payssä ja yritä uudelleen.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Maksukortin numero on väärä. Päivitä se Apple Payssa ja yritä uudelleen.";
@@ -1688,7 +1703,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Jaa kuitti";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Kiitos kun tuet Signalia. Lahjoituksesi auttaa ylläpitämään ja kehittämään Signalia eteenpäin ja mahdollistaa turvallisen viestinnän miljoonille ihmisille ympäri maailman. Jos olet Yhdysvaltojen asukas, säästä tämä kuitti veroilmoitusta varten. Signal Technology Foundation on Yhdysvalloissa verovähennyskelpoinen taho (verolaki 501c3). Liittovaltion verotunnuksemme on 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Kiitos Signalin tukemisesta. Lahjoituksesi auttaa edistämään avoimen lähdekoodin tietosuojateknologian kehittämistä, joka suojaa sananvapautta ja mahdollistaa turvallisen maailmanlaajuisen viestinnän miljoonille käyttäjille ympäri maailmaa. Jos asut Yhdysvalloissa, säilytä tämä kuitti verotusta varten. Signal Technology Foundation on verovapaa voittoa tavoittelematon organisaatio Yhdysvaltojen Internal Revenue Code -pykälän 501c3 mukaisesti. Liittovaltion verotunnuksemme on 82-4506840.";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "Kertalahjoitus";
@@ -1712,7 +1727,7 @@
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Lahjoita Signalille";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
-"DONATION_VIEW_DONATION_TO_SIGNAL" = "Lahjoita Signalille";
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "Lahjoitus Signalille";
 
 /* Title for the 'Gift a Badge' link in the donation view */
 "DONATION_VIEW_GIFT" = "Lahjoita merkki";
@@ -1724,7 +1739,7 @@
 "DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Ryhdy kuukausilahjoittajaksi";
 
 /* Title for the 'Badges' button on the donation screen */
-"DONATION_VIEW_MANAGE_BADGES" = "Kunniamerkit";
+"DONATION_VIEW_MANAGE_BADGES" = "Merkit";
 
 /* Title for the 'Manage Subscription' button on the donation screen */
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Muokkaa tilausta";
@@ -1745,7 +1760,7 @@
 "DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Kuitit";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
-"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Tilausten UKK";
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Tilausten yleiset kysymykset";
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "Lahjoita Signalille";
@@ -1754,16 +1769,16 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Aseta valuutta";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Voit sallia yhteystietojen käytön Asetukset-ohjelmasta.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Voit antaa käyttöoikeuden iOS-asetuksissa.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal tarvitsee oikeutta käyttää yhteystietojasi niiden muokkaamiseen";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal tarvitsee oikeuden käyttää yhteystietojasi, jotta se voi muokata niitä";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Muokkaa ryhmää";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Tätä käyttäjää ei voida lisätä ryhmään ennen kuin hän on päivittänyt Signalin.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Tätä käyttäjää ei voida lisätä ryhmään, ennen kuin hän on päivittänyt Signalin.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Virheellinen kuva.";
@@ -1781,7 +1796,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopioi";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hei!\n\nOlen alkanut käyttämään Signalia iPhonella tietosuojattuun viestintään. Haluaisin myös sinun asentavan sen, jotta voimme olla varmoja, ettei kukaan muu lue viestejämme tai kuuntele puheluitamme.\n\nSignal on saatavilla sekä iPhonelle että Androidille. Lataa se täältä: %@\n\nSignal toimii kuten muutkin viestintäapit. Sillä voi lähettää kuvia ja videoita, soittaa puheluita ja käydä ryhmäkeskusteluja. Ja mikä parasta, kukaan ulkopuolinen ei pääse käsiksi viesteihin, eivät edes Signalin kehittäjät!\n\nVoit lukea lisää Open Whisper Systemsistä, eli Signalin kehittäjistä, täältä: %@";
+"EMAIL_INVITE_BODY" = "Hei!\n\nOlen siirtynyt käyttämään Signalia iPhonella tietosuojattuun viestintään. Toivoisin myös sinun asentavan sen, jotta voimme olla varmoja, ettei kukaan muu lue viestejämme tai kuuntele puheluitamme.\n\nSignal on saatavilla sekä iPhonelle että Androidille. Lataa se täältä: %@\n\nSignal toimii kuten muutkin viestintäsovellukset. Sillä voi lähettää kuvia ja videoita, soittaa puheluita ja käydä ryhmäkeskusteluja. Ja mikä parasta, kukaan ulkopuolinen ei pääse käsiksi viesteihin, eivät edes Signalin kehittäjät!\n\nVoit lukea lisää Open Whisper Systemsistä, eli Signalin kehittäjistä, täältä: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Vaihdetaan Signaliin";
@@ -1820,7 +1835,7 @@
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Matkailu ja paikat";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Kellään yhteystiedollasi ei ole Signalia.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Kukaan yhteystiedoistasi ei käytä Signalia.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Haluaisitko kutsua jonkun?";
@@ -1835,16 +1850,16 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Yhteystietojen lukeminen ei onnistunut.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Ei voitu lähettää viestiä eteenpäin.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Viestin edelleen lähettäminen epäonnistui.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Ei voitu lähettää viestiä eteenpäin, koska se ei ole enää saatavilla.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Viestin edelleen lähettäminen epäonnistui, koska se ei ole enää saatavilla.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Ei voitu lähettää viestejä edelleen, koska ne eivät ole enää saatavilla.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Viestien edelleen lähettäminen epäonnistui, koska ne eivät ole enää saatavilla.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Ei voitu lähettää viestejä eteenpäin";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Viestin edelleen lähettäminen epäonnistui.";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Videon tallennus ei onnistunut.";
@@ -1853,7 +1868,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Viestin lähetys epäonnistui.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Sähköpostiapin avaaminen epäonnistui";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Sähköpostisovelluksen avaaminen epäonnistui";
 
 /* Error indicating that a support mailto link could not be created. */
 "ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Tukipyyntöä ei voitu luoda";
@@ -1883,7 +1898,7 @@
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Tämä laite ei ole enää rekisteröity puhelinnumerollesi. Asenna Signal uudelleen.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Palvelinvirhe. Ytitä myöhemmin uudelleen.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Palvelinvirhe. Yritä myöhemmin uudelleen.";
 
 /* Description for errors returned from the server due to suspected spam. */
 "ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Palvelin vaatii käyttäjän tunnistautumisen ennen viestin lähetystä.";
@@ -1892,7 +1907,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Tuntematon virhe.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Yhteystieto ei käytä Signalia.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Tämä yhteystieto ei käytä Signalia.";
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Liitteen lataaminen epäonnistui.";
@@ -1910,13 +1925,13 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Vastaanottajan avain ei ole kelvollinen.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Vastaanotettu viesti ei ollut synkronissa.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Vastaanotetun viestin synkronointivirhe.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Vastanotettiin viesti, joka ei ole yhteensopiva tämän ohjelmistoversion kanssa.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "Tälle yhteystiedolle ei ole istuntoa.";
+"ERROR_MESSAGE_NO_SESSION" = "Istunnon määrittäminen yhteyttä varten epäonnistui.";
 
 /* Shown when signal users safety numbers changed */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Turvanumero on vaihtunut.";
@@ -1925,7 +1940,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Turvanumerosi yhteystiedon %@ kanssa on vaihtunut.";
 
 /* Text notifying the user that their secure session has been reset */
-"ERROR_MESSAGE_SESSION_REFRESH" = "Keskustelutuokio on päivitetty";
+"ERROR_MESSAGE_SESSION_REFRESH" = "Keskustelu on päivitetty";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Tuntematon virhe.";
@@ -1937,7 +1952,7 @@
 "ERROR_NETWORK_FAILURE" = "Verkkovirhe";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Ole hyvä ja auta meitä parantamaan Signalia raportoimalla tämä virheilmoitus debug-lokien kanssa laitteeltasi osoitteeseen support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Ole hyvä ja auta meitä parantamaan Signalia lähettämällä tämä virheilmoitus laitteesi virheenkorjauslokien kanssa osoitteeseen support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
 "ERROR_NOTIFICATION_TITLE" = "Signal Beta: Tapahtui virhe";
@@ -1949,7 +1964,7 @@
 "ERROR_SENDING_DEREGISTERED" = "Laitteesi ei ole enää rekisteröity. Rekisteröidy uudelleen jatkaaksesi viestintää.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Käyttämäsi Signalin versio on vahentunut. Napsauta päivittääksesi uudempaan versioon, jotta voit jatkaa viestien lähettelyä.";
+"ERROR_SENDING_EXPIRED" = "Käyttämäsi Signalin versio on vanhentunut. Napsauta päivittääksesi uudempaan versioon, jotta voit jatkaa viestintää.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Rekisteröimätön käyttäjä: %@";
@@ -1964,16 +1979,16 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Lähetys tälle yhteystiedolle on epäonnistunut liian monta kertaa. Yritä myöhemmin uudelleen.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Sinun ja yhteystiedon %@ turvanumero on vaihtunut hiljattain. Saatat halua varmentaa sen ennen uudelleenlähettämistä.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Turvanumerosi yhteystiedon %@ kanssa on vaihtunut hiljattain. Saatat halua varmentaa sen ennen viestin uudelleen lähettämistä.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Turvanumeron varmennus epäonnistui!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Valitse kunniamerkki";
+"FEATURED_BADGE_SECTION_HEADER" = "Valitse merkki";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Esitelty kunniamerkki";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Esitelty merkki";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Merkitse varmennetuksi";
@@ -1982,7 +1997,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Alusta istunto";
 
 /* Accessibility label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Päätä ryhmän luonti";
+"FINISH_GROUP_CREATION_LABEL" = "Viimeistele ryhmän luonti";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Välitä yhteystieto";
@@ -2039,7 +2054,7 @@
 "GET_STARTED_CARD_NEW_GROUP" = "Uusi ryhmä";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "GIF:n lataaminen epäonnistui, tarkista verkkoyhteys.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "GIF:n lataaminen epäonnistui. Tarkista verkkoyhteys.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Tuntematon virhe.";
@@ -2066,19 +2081,19 @@
 "GO_TO_SETTINGS_BUTTON" = "Siirry asetuksiin";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Muutit kuka voi muokata ryhmän tietoja käyttäjiin \"%@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Muutit ryhmän tietojen muokkaajaksi käyttäjän %@.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ muutti kuka voi muokata ryhmän tietoja käyttäjiin \"%2$@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ muutti ryhmän tietojen muokkaajaksi käyttäjän %2$@-";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Ryhmän tietoja voi muokata \"%@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Ryhmän tietojen muokkaajiksi on määritelty %@.";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Vain ylläpitäjät";
 
 /* Description of the 'all users' access level. */
-"GROUP_ACCESS_LEVEL_ANY" = "Jokainen käyttäjä";
+"GROUP_ACCESS_LEVEL_ANY" = "Kaikki käyttäjät";
 
 /* Description of the 'all members' access level. */
 "GROUP_ACCESS_LEVEL_MEMBER" = "Kaikki jäsenet";
@@ -2090,25 +2105,25 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Pois päältä";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Muutit kuka voi muokata ryhmän jäsenyyttä käyttäjiin \"%@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Muutit ryhmän jäsenyyden muokkaajaksi käyttäjän %@.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ muutti kuka voi muokata ryhmän jäsenyyttä käyttäjiin \"%2$@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ muutti ryhmän jäsenyyden muokkaajaksi käyttäjän %2$@.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Ryhmän jäsenyyttä voi muokata \"%@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Ryhmän tietojen muokkaajiksi on määritelty %@.";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "Vain ylläpitäjät voivat muuttaa tätä vaihtoehtoa.";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Et voi enää käydä ääni- tai videoviestinvaihtoa henkilön kanssa.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Et voi enää käydä ääni- tai videoviestinvaihtoa tämän käyttäjän kanssa.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ on estetty";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Vain ryhmän ylläpitäjä voi aloittaa kutsun.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Vain ryhmän ylläpitäjä voi aloittaa puhelun.";
 
 /* Title for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Ryhmäpuhelua ei voi aloittaa";
@@ -2126,7 +2141,7 @@
 "GROUP_CALL_ERROR_DETAILS" = "Lisätietoja";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Puheluun ei mahdu enempää osallistujia, yritä myöhemmin uudelleen.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Puhelun osallistujien enimmäismäärä on täyttynyt. Yritä myöhemmin uudelleen.";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "Puhelu on täynnä";
@@ -2144,10 +2159,10 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Ääni- ja videoviestin vastaanottaminen käyttäjältä %@ epäonnistui ";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Tämä saattaa johtua siitä että he eivät ole verifioineet turvanumerosi muutosta, heidän laitteessaan olevasta ongelmasta, tai siitä että he ovat blokanneet sinut.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Tämä saattaa johtua siitä että he eivät ole vahvistaneet uutta turvanumeroasi, laitteiden teknisistä ongelmista, tai siitä, että sinut on estetty.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Ääni- ja videoviestin vastaanottaminen käyttäjältä %@ epäonnistui ";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Ääni- ja videoviestin vastaanottaminen käyttäjältä %@ epäonnistui";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Kukaan muu ei ole täällä";
@@ -2177,10 +2192,10 @@
 "GROUP_CALL_RECONNECTING" = "Yhdistetään";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Joku on liittynyt tähän puheluun vaihtuneen turvanumeron kanssa.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Joku on liittynyt tähän puheluun vaihtuneella turvanumerolla.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Katso ruudunjakoa pyyhkäisemällä ylös";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "Pyyhkäise nähdäksesi näytönjaon";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Joku aloitti ryhmäpuhelun";
@@ -2219,7 +2234,7 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Sinä (toisella laitteella)";
 
 /* Message indicating that group was created by the local user. */
-"GROUP_CREATED_BY_LOCAL_USER" = "Sinä loit ryhmän.";
+"GROUP_CREATED_BY_LOCAL_USER" = "Loit ryhmän.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ lisäsi sinut ryhmään.";
@@ -2300,13 +2315,13 @@
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ otti ryhmälinkin käyttöön. Ylläpitäjä tarkistaa liittymispyynnöt.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Ryhmälinkki on otettu käyttöön. Liittymispyynnöt eivät ole käytössä.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Ryhmälinkki on otettu käyttöön. Ylläpitäjä ei tarkista liittymispyyntöjä.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Otit ryhmälinkin käyttöön. Liittymispyynnöt eivät ole käytössä.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Otit ryhmälinkin käyttöön. Ylläpitäjä ei tarkista liittymispyyntöjä.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ otti ryhmälinkin käyttöön. Liittymispyynnöt eivät ole käytössä.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ otti ryhmälinkin käyttöön. Ylläpitäjä ei tarkista liittymispyyntöjä.";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = "Ryhmälinkki on luotu uudelleen.";
@@ -2318,52 +2333,52 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ loi ryhmälinkin uudelleen.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Liittymispyynnöt on poistettu käytöstä.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Ylläpitäjä ei tarkista ryhmälinkkien liittymispyyntöjä.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Poistit ylläpitäjän hyväksymisvaatimuksen ryhmälinkin kautta käytöstä.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Poistit ylläpitäjän hyväksynnän ryhmälinkillä liittyttäessä.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ poisti ylläpitäjän hyväksymisvaatimuksen ryhmälinkin kautta käytöstä.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ poisti ylläpitäjän hyväksynnän ryhmälinkillä liittyttäessä.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Liittymispyynnöt on otettu käyttöön.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Ylläpitäjä tarkistaa ryhmälinkkien liittymispyynnöt.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Otit liittymispyynnöt käyttöön.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Otit käyttöön ylläpitäjän hyväksynnän ryhmälinkillä liittyttäessä.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ otti liittymispyynnöt käyttöön.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ otti käyttöön ylläpitäjän hyväksynnän ryhmälinkillä liittyttäessä.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Et voi lisätä käyttäjää %@ automaattisesti tähän ryhmään. Heidät on kutsuttu liittymään, eivätkä näe ryhmäviestejä ennen kuin he hyväksyvät kutsun.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Et voi lisätä käyttäjää %@ automaattisesti tähän ryhmään. Hänet on kutsuttu liittymään ryhmään, ja hän näkee ryhmäviestit vasta hyväksyttyään kutsun.";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Et voi lisätä näitä käyttäjiä automaattisesti tähän ryhmään. Heidät on kutsuttu liittymään, eivätkä näe ryhmäviestejä ennen kuin he hyväksyvät kutsun.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Et voi lisätä näitä käyttäjiä automaattisesti tähän ryhmään. Heidät on kutsuttu liittymään ryhmään, ja he näkee ryhmäviestit vasta hyväksyttyään kutsun.";
 
 /* The title for the 'group invites' view. */
 "GROUP_INVITES_VIEW_TITLE" = "Jäsenkutsut";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Ryhmäasetuksia muutettiin. Nyt kaikki voivat lähettää viestejä.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Ryhmän asetuksia muutettiin ja nyt kaikki jäsenet voivat lähettää viestejä.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Muutit ryhmän asetukset sellaisiksi, että kaikki ryhmän jäsenet voivat lähettää viestejä.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Muutit ryhmän asetuksia ja nyt kaikki ryhmän jäsenet voivat lähettää viestejä.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ muutti ryhmäasetuksia siten, että kaikki voivat lähettää viestejä.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ muutti ryhmän asetuksia ja nyt kaikki jäsenet voivat lähettää viestejä.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Ryhmäasetuksia muutettiin. Nyt vain järjestelmänvalvojat voivat lähettää viestejä.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Ryhmän asetuksia muutettiin ja nyt vain ylläpitäjät voivat lähettää viestejä.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Muutit ryhmäasetukset siten, että vain järjestelmänvalvojat voivat lähettää viestejä.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Muutit ryhmän asetuksia ja nyt vain ylläpitäjät voivat lähettää viestejä.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ muutti ryhmäasetuksia siten, että vain järjestelmänvalvojat voivat lähettää viestejä.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ muutti ryhmän asetuksia ja nyt vain ylläpitäjät voivat lähettää viestejä.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Et voi liittyä ryhmään linkin avulla koska ylläpitäjä poisti sinut ryhmästä.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Et voi liittyä ryhmään ryhmälinkin avulla, koska ylläpitäjä poisti sinut ryhmästä.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Tämä ryhmälinkki ei ole enää kelvollinen.";
@@ -2444,7 +2459,7 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "Luo uudelleen";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Nollataanko ryhmälinkki? Ryhmään ei voi enää liittyä nykyistä linkkiä käyttäen.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Haluatko varmasti asettaa ryhmälinkin uudelleen? Ryhmään ei voi enää liittyä nykyistä linkkiä käyttäen.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Jaa";
@@ -2459,7 +2474,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Jaa Signalilla";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Linkin kautta voi liittyä ryhmään sekä nähdä sen nimi ja jäsenet. Jaa se vain luotettaville ihmisille.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Kuka tahansa, jolla on tämä linkki, näkee ryhmän nimen ja kuvan ja voi pyytää liittymistä jäseneksi. Jaa linkki vain henkilöille, joihin luotat.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "Ryhmälinkki";
@@ -2564,7 +2579,7 @@
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ hyväksyi kutsusi liittyä ryhmään.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ hyväksyi kutsun liittyä ryhmään käyttäjältä %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ hyväksyi käyttäjän %2$@kutsun liittyä ryhmään.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Lisäsit käyttäjän %@.";
@@ -2654,7 +2669,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Kutsut";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Liittymispyynnöt & kutsut";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Liittymispyynnöt ja kutsut";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "%1$@ ryhmässä %2$@";
@@ -2663,25 +2678,25 @@
 "GROUP_UPDATED" = "Ryhmä päivitetty.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "Ryhmäkuva poistettiin.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Ryhmän kuva poistettiin.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Poistit ryhmäkuvan.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Poistit ryhmän kuvan.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ poisti ryhmäkuvan.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ poisti ryhmän kuvan.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Ryhmäkuva päivitettiin.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Ryhmän kuva päivitettiin.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Päivitit ryhmäkuvan.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Päivitit ryhmän kuvan.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ päivitti ryhmäkuvan.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ päivitti ryhmän kuvan.";
 
 /* Info message indicating that the group was updated by the local user. */
-"GROUP_UPDATED_BY_LOCAL_USER" = "Sinä päivitit ryhmää.";
+"GROUP_UPDATED_BY_LOCAL_USER" = "Päivitit ryhmää.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ päivitti ryhmää.";
@@ -2714,13 +2729,13 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ poisti ryhmän nimen.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Muutit ryhmän nimeksi \"%@\".";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Muutit ryhmän nimeksi %@.";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ muutti ryhmän nimeksi \"%2$@\".";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ muutti ryhmän nimeksi %2$@.";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Ryhmän nimi on nyt \"%@\".";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Ryhmän nimi on nyt %@.";
 
 /* Message indicating that the group was migrated. */
 "GROUP_WAS_MIGRATED" = "Tämä ryhmä päivitettiin uudeksi ryhmäksi.";
@@ -2744,7 +2759,7 @@
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Lähetä viesti ylläpitäjälle";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Valitse uusi ylläpitäjä tälle ryhmälle ennen kuin lähdet.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Valitse uusi ylläpitäjä tälle ryhmälle ennen kuin poistut ryhmästä.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Käyttäjä on jo ryhmässä.";
@@ -2765,55 +2780,55 @@
 "GROUPS_INVITE_FRIENDS_BUTTON" = "Kutsu ystäviä";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Vanhan tyylin ryhmät ovat ryhmiä, jotka eivät ole yhteensopivia uusien ryhmien ominaisuuksien kanssa, kuten ylläpitäjyyden ja kuvaavien ryhmäpäivityksien.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Vanhan tyyppiset ryhmät eivät ole yhteensopivia uusien ryhmien ominaisuuksien kanssa, kuten ylläpitäjätoimintojen ja kuvaavien ryhmäpäivityksien.";
 
 /* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Mitä ovat vanhan tyylin ryhmät?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Mitä ovat vanhan tyyppiset ryhmät?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Vanhoja ryhmiä ei voi vielä päivittää uusiksi ryhmiksi, mutta voit luoda uuden ryhmän samoilla jäsenillä, jos he käyttävät Signalin uusinta versiota.\n\nSignal tulee tarjoamaan tavan päivittää vanhan tyylin ryhmiä tulevaisuudessa.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Vanhan tyyppisiä ryhmiä ei voi vielä päivittää uusiksi ryhmiksi, mutta voit luoda uuden ryhmän samoilla jäsenillä, jos he käyttävät Signalin uusinta versiota.\n\nSignal tulee tarjoamaan tavan päivittää vanhan tyylin ryhmät tulevaisuudessa.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Voinko päivittää vanhan ryhmän?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Voinko päivittää vanhan tyyppisen ryhmän?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Uuden ryhmän luomiseksi kaikkien jäsenten tulee päivittää Signalin uusimpaan versioon.";
 
 /* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Vanhan tyyliset vs. uudet ryhmät";
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Vanhan tyyppiset ja uudet ryhmät";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Ryhmän päivittämällä käyttöön tulee uusia ominaisuuksia, kuten @maininnat ja ylläpitäjät. Jäsenille, jotka eivät ole jakaneet nimeään tai kuvaansa tässä ryhmässä, lähetetään kutsu. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Päivitä tämä ryhmä ottaaksesi käyttöön uudet ominaisuudet kuten @maininnat ja ylläpitäjät. Jäsenille, jotka eivät ole jakaneet nimeään tai kuvaansa tässä ryhmässä, lähetetään kutsu. %@";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Uuteen ryhmään päivittäminen epäonnistui";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Tätä ryhmää ei pystytä päivittämään uudeksi ryhmäksi, koska siinä on liian monta jäsentä. Ryhmässä voi olla enintään %@ jäsentä.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Tätä ryhmää ei voida päivittää uuden tyyppiseksi, koska se on liian suuri. Ryhmässä voi olla enintään  %@ jäsentä.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Kun kaikki nykyiset ryhmän jäsenet käyttävät Signalin versiota, jossa liittyminen uuteen ryhmään on mahdollista, tämä ryhmä päivitetään.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Kaikki päivitystä edeltävä viestihistoria ja media tulee säilymään.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Kaikki päivitystä edeltävä viestihistoria ja media säilyy.";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Tämä on vanhan tyylin ryhmä. Ylläpitäjän kaltaiset ominaisuudet ovat käytettävissä vain uusissa ryhmissä. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Tämä on vanhan tyyppinen ryhmä. Ylläpitäjätoiminnot ja uudet ominaisuudet ovat käytettävissä vain uusissa ryhmissä.%@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Tätä vanhan tyylin ryhmää ei voida päivittää uudeksi ryhmäksi. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Tätä vanhan tyyppistä ryhmää ei voida päivittää uudeksi ryhmäksi. %@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Tätä vanhan tyylin ryhmää ei voida päivittää uudeksi ryhmäksi, koska se on liian iso. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Tätä vanhan tyyppistä ryhmää ei voida päivittää uuden tyyppiseksi, koska se on liian suuri. %@";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Tämä on vanhan tyylin ryhmä. Käyttääksesi uusia ominaisuuksia, kuten @mainintoja ja ylläpitäjyyttä, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Tämä on vanhan tyyppinen ryhmä. Käyttääksesi uusia ominaisuuksia, kuten @mainintoja ja ylläpitäjyyttä,%@";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Vanhan tyylin ryhmä";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "Vanhan tyyppinen ryhmä";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Sinun on hyväksyttävä kutsu liittyä tähän ryhmään uudelleen, etkä saa ryhmäviestejä ennen kuin olet hyväksynyt.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Sinun on hyväksyttävä kutsu liittyä tähän ryhmään uudelleen. Saat ryhmäviestit vasta hyväksyttyäsi kutsun.";
 
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Mitä uudet ryhmät ovat?";
@@ -2822,7 +2837,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Kaikki päivitystä edeltävä viestihistoria ja media on säilytetty.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Uuden tyylin ryhmät tukevat nyt @mainintoja ja ylläpitäjiä, sekä muita ominaisuuksia tulevaisuudessa.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Uudet ryhmät tukevat nyt @mainintoja ja ylläpitäjiä, sekä muita ominaisuuksia tulevaisuudessa.";
 
 /* Title for the 'new groups' alert view. */
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "Uudet ryhmät";
@@ -2849,13 +2864,13 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Kaikki päivitystä edeltävä viestihistoria ja media on säilytetty.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Tämä jäsen poistettiin ryhmästä ja ei voi liittyä uudelleen, ennen kuin hän on päivittänyt:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Nämä jäsenet poistettiin ryhmästä. He eivät voi liittyä uudelleen, ennen kuin he ovat päivittäneet:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Nämä jäsenet poistettiin ryhmästä ja eivät voi liittyä uudelleen ryhmään, ennen kuin he ovat päivittäneet:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Nämä jäsenet poistettiin ryhmästä. He eivät voi liittyä uudelleen, ennen kuin he ovat päivittäneet:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Tämän jäsenen on hyväksyttävä kutsu liittyä uudelleen tähän ryhmään, eikä hän saa ryhmäviestejä ennen kuin hän hyväksyy:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Tämän jäsenen on hyväksyttävä kutsu liittyä tähän ryhmään uudelleen. Hän saa ryhmäviestit vasta hyväksyttyään kutsun.";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Näiden jäsenten tulee hyväksyä kutsu liittyä tähän ryhmään takaisin, ja eivät saa ryhmän viestejä ennen kuin he hyväksyvät:";
@@ -2864,10 +2879,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Tämä jäsen ei voi liittyä uusiin ryhmiin, ja hänet poistetaan ryhmästä:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Nämä jäsenet eivät pysty liittymään uusiin ryhmiin, ja heidät poistetaan tästä ryhmästä:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Tämä jäsen ei voi liittyä uusiin ryhmiin, ja hänet poistetaan ryhmästä:";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Päivitä uuden tyylin ryhmään";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Päivitä uuteen ryhmään";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Päivitä tämä ryhmä";
@@ -2876,7 +2891,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Tätä ryhmää ei voitu juuri nyt päivittää uuteen ryhmään.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Tätä ryhmää ei voitu päivittää uuteen ryhmään, koska et ole yhdistettynä internettiin. Yritä myöhemmin uudelleen.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Tätä ryhmää ei voitu päivittää uuteen ryhmään, koska et ole yhdistettynä internetiin. Yritä myöhemmin uudelleen.";
 
 /* Title for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Päivityksen viimeistely epäonnistui";
@@ -2888,7 +2903,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "päivitä tämä ryhmä";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Ennen kuin lähdet, valitse uusi ylläpitäjä tälle ryhmälle.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Ennen kuin poistut ryhmästä, valitse uusi ylläpitäjä tälle ryhmälle.";
 
 /* Title for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Valitse uusi ylläpitäjä";
@@ -2900,7 +2915,7 @@
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Suositeltu jäsenmäärä saavutettu";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Lisätäänkö jäsen kuitenkin?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Lisätäänkö jäsen silti?";
 
 /* Label for button that lets the user view the request to join the group. */
 "GROUPS_VIEW_REQUEST_BUTTON" = "Näytä pyyntö";
@@ -2927,13 +2942,13 @@
 "HOME_VIEW_DRAFT_PREFIX" = "Luonnos:";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Muun muassa %@ käyttävät jo Signalia.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Osa yhteystiedoistasi käyttää jo Signalia, esimerkiksi %@. ";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Muun muassa %@ ja %@ käyttävät jo Signalia.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Osa yhteystiedoistasi käyttää jo Signalia, esimerkiksi %@ ja %@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Muun muassa %@, %@ ja %@ käyttävät jo Signalia.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Osa yhteystiedoistasi käyttää jo Signalia, esimerkiksi %@, %@ ja %@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Aloita ensimmäinen keskustelu.";
@@ -2945,7 +2960,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Viestipyyntö";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Ei hakutuloksia haulle \"%@\"";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Ei hakutuloksia haulle %@";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Arkisto";
@@ -2966,13 +2981,13 @@
 "IMAGE_EDITOR_BLUR_TOAST" = "Sumenna kasvoja tai alueita piirtämällä";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Et voi jakaa useampaa kuin %@ kappaletta.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Voit jakaa enintään %@ kohdetta.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
 "IMAGE_PICKER_CHANGE_PHOTOS" = "Vaihda kuvat";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Myönnä täysi käyttöoikeus Asetukset-sovelluksen kautta tai muuta, mihin kuviin Signalilla on pääsy.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Anna Signalille täydet käyttöoikeudet Asetuksissa tai vaihda, mitä kuvia Signal voi käyttää.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Etkö näe kuviasi?";
@@ -2987,7 +3002,7 @@
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Vastattu toisella laitteella.";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Peruutettiin koska puhelu on käynnissä toisella laitteella.";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Puhelu peruttu – puhelu käynnissä toisella laitteella.";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Hylätty toisella laitteella.";
@@ -3011,10 +3026,10 @@
 "IN_CALL_TERMINATED" = "Puhelu loppui.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Arkistoon siirretyt mykistetyt chatit pysyvät mykistettynä, vaikka uusia viestejä saapuu.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Arkistoon siirretyt chatit siirretään Saapuneisiin, kun niihin saapuu uusi viesti.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Ei keskusteluja.\nAloita lähettämällä viesti kaverille.";
@@ -3035,7 +3050,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Tarrat";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Nauhoita kaksoisnapauttamalla ja pitämällä. Lähetä irrottamalla. Peru pyyhkäisemällä vasemmalle. Nauhoita toistaiseksi kaksoisnapauttamalla ja pyyhkäisemällä ylös.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Tallenna kaksoisnapauttamalla ja painamalla pitkään. Lähetä irrottamalla tai peru pyyhkäisemällä vasemmalle. Lukitse tallennus käyntiin kaksoisnapauttamalla ja pyyhkäisemällä ylös.";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Ääniviesti";
@@ -3053,7 +3068,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Kutsu kavereita Signaliin";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Hae";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Haku";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Kutsu kavereita";
@@ -3080,7 +3095,7 @@
 "KEY_COMMAND_CONVERSATION_INFO" = "Siirry keskustelutietoihin";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Tarkenna syöttökenttä";
+"KEY_COMMAND_FOCUS_COMPOSER" = "Tarkenna syöttökenttään";
 
 /* A keyboard command to open the current conversations GIF picker. */
 "KEY_COMMAND_GIF_SEARCH" = "Siirry GIF-hakuun";
@@ -3122,13 +3137,13 @@
 "LEAVE_GROUP_FAILED" = "Ryhmästä poistuessa tapahtui virhe.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Tämä ei ole oikeanlainen QR-koodi. Tarkista, että olet skannaamassa sen laitteen ruudulla näkyvää QR-koodia, jonka haluat yhdistää.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Tämä QR-koodi ei kelpaa. Tarkista, että olet skannaamassa sen laitteen näytöllä näkyvää QR-koodia, johon haluat yhdistää.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Laitteen yhdistäminen epäonnistui";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Tämä laite voi jatkossa nähdä ryhmäsi ja yhteystietosi, lukea kaikki viestisi ja lähettää viestejä sinun nimelläsi.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Tämä laite voi jatkossa nähdä ryhmäsi ja yhteystietosi, lukea kaikki viestisi ja lähettää viestejä sinun nimissäsi.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Yhdistetäänkö tämä laite?";
@@ -3137,7 +3152,7 @@
 "LINK_DEVICE_RESTART" = "Yritä uudelleen";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skannaa yhdistettävän laitteen ruudulla näkyvä QR-koodi.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skannaa yhdistettävän laitteen näytöllä näkyvä QR-koodi.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Yhdistä uusi laite skannaamalla QR-koodi.";
@@ -3161,16 +3176,16 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Tarvitsetko apua?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Kummallakin laitteella, avaa Asetukset";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Avaa Asetukset molemmissa laitteissa";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Ota käyttöön \"Paikallinen verkko\"";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Ota käyttöön Paikallinen verkko";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Avaa Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Siirry kohtaan Signal";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Ota käyttöön paikallinen verkkoyhteys";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Ota käyttöön paikallinen verkko";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Etsi nimellä tai osoitteella";
@@ -3254,10 +3269,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Soita";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Äänipuhelu";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime-äänipuhelu";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Videopuhelu";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime-videopuhelu";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Lähetä tekstiviesti";
@@ -3302,10 +3317,10 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Epäonnistui";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Lähetys on tauotettu";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Lähetys keskeytetty";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Lukenut";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Luettu";
 
 /* Status label for messages which are sending. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Lähetetään";
@@ -3314,13 +3329,13 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Lähetetty käyttäjälle";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Sivuutettu";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Ohitettu";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Lähetetään";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Katsottu";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Nähty";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Vastaanotettu";
@@ -3347,13 +3362,13 @@
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Ilmoita roskapostista ja estä";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Estetyt henkilöt eivät voi soittaa sinulle tai lähettää sinulle viestejä.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Estetyt käyttäjät eivät voi soittaa sinulle tai lähettää sinulle viestejä.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Estetäänkö %@?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Poistut tästä ryhmästä etkä enää vastaanota viestejä tai päivityksiä.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Poistut tästä ryhmästä etkä enää saa viestejä tai päivityksiä.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Estetäänkö ja poistutaanko ryhmästä %@?";
@@ -3368,19 +3383,19 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Poistetaanko keskustelu?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Poista ja poistu";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Poista ja poistu ryhmästä";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Poistut tästä ryhmästä ja se poistetaan kaikilta laitteiltasi.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Poistut tästä ryhmästä ja ryhmä poistetaan kaikilta laitteiltasi.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Poistetaanko ja poistutaanko ryhmästä?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Tarkista pyynnöt huolellisesti. Signal löysi toisen samannimisen yhteystiedon.";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Tarkista pyynnöt huolellisesti. Signal löysi toisen saman nimisen yhteystiedon.";
 
 /* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Sinun yhteystieto";
+"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Yhteystietosi";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Jos et ole varma lähettäjän henkilöllisyydestä, tarkista henkilötiedot alta.";
@@ -3398,7 +3413,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Tarkista pyyntö";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Ilmoitettu spammista ja blokattu";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Ilmoitettu roskapostista ja estetty";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Hyväksy";
@@ -3464,19 +3479,19 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Osittain lähetetty, napauta nähdäksesi lisätietoja";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Lähettäminen pysäytetty";
+"MESSAGE_STATUS_PENDING" = "Lähetys keskeytetty";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Tauotettu";
+"MESSAGE_STATUS_PENDING_SHORT" = "Keskeytetty";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Luettu";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Sivuutettu";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Ohitettu";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Lähettäminen epäonnistui.";
+"MESSAGE_STATUS_SEND_FAILED" = "Lähetys epäonnistui";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Lähetetään...";
@@ -3512,19 +3527,19 @@
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Soita videopuheluita Signalilla sallimalla kameran käyttö iOS:n asetuksissa.";
 
 /* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal tarvitsee oikeutta käyttää kameraa.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal tarvitsee oikeuden käyttää kameraa.";
 
 /* Alert body indicating the user has denied location permissions */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Voit antaa tämän käyttöoikeuden laitteesi Asetuksista.";
 
 /* Alert title indicating the user has denied location permissions */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Tämän toiminnon käyttämiseksi Signal tarvitsee lupaa saada laitteesi sijainti.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Tämän toiminnon käyttämiseksi Signal tarvitsee luvan käyttää laitteesi sijaintitietoa.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Voit antaa tämän käyttöoikeuden iOS-asetuksissa.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Voit antaa käyttöoikeuden iOS-asetuksissa.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Tämän toiminnon käyttämiseksi Signal tarvitsee lupaa päästä laitteesi mediakirjastoon.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Tämän toiminnon käyttämiseksi Signal tarvitsee luvan käyttää laitteesi mediakirjastoa.";
 
 /* Generic indicator that no value is available for display */
 "MISSING_VALUE" = "Ei mitään";
@@ -3635,7 +3650,7 @@
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Uusi viesti henkilölle:";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Käyttäjää ei löytynyt. Kutsutaanko tekstiviestillä?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Käyttäjää ei löytynyt. Lähetetäänkö kutsu tekstiviestillä?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Viestit itselleni";
@@ -3671,13 +3686,13 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Otetaanko Ilmoitukset käyttöön?";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Toimintoihin kuuluu Merkitse luetuksi, Vastaa ja Soita takaisin.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Toimintoihin kuuluvat Merkitse luetuksi, Vastaa ja Soita takaisin.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Ei nimeä eikä sisältöä";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Toista apin ollessa auki";
+"NOTIFICATIONS_SECTION_INAPP" = "Toista, kun sovellus on auki";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Lisää mukautettu ääni…";
@@ -3716,16 +3731,16 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Ohita ja luo uusi tunnusluku";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Jos et muista tunnuslukuasi, voit luoda uuden. Voit rekisteröidä ja käyttää tiliäsi, mutta menetät tallennetut asetukset, kuten profiilitietosi.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Jos et muista tunnuslukuasi, voit luoda uuden. Voit rekisteröityä ja käyttää tiliäsi, mutta menetät tallennetut asetukset, kuten profiilitietosi.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Ohitetaanko tunnusluvun syöttö?";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Lisää ripaus ihmisyyttä viesteihisi";
+"ONBOARDING_CAPTCHA_TITLE" = "Lisää vähän inhimillisyyttä viesteihisi";
 
 /* Explanation on the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Edellisestä käyttökerrasta on kulunut niin paljon aikaa, että sinun on rekisteröidyttävä Signaliin uudelleen.";
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Edellisestä käyttökerrasta on kulunut niin kauan, että sinun on rekisteröidyttävä Signaliin uudelleen.";
 
 /* Title of the 'onboarding after dropped YDB' view. */
 "ONBOARDING_DROPPED_YDB_TITLE" = "Rekisteröidy Signaliin";
@@ -3737,10 +3752,10 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Yhdistä iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Napauttamalla ”Rekisteröi iPad” voit luoda aivan uuden Signal-tilin tai siirtää olemassa olevan tilin tähän iPadiin. Tämä poistaa Signalin käytöstä toiselta laitteelta, jos se on tällä hetkellä rekisteröity samalla puhelinnumerolla.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Napauttamalla Rekisteröi iPad voit luoda uuden Signal-tilin tai siirtää olemassa olevan tilin tähän iPadiin. Tämä poistaa Signalin käytöstä muissa samalla puhelinnumerolla rekisteröidyissä laitteissa.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Napauttamalla “Yhdistä iPhone” voit yhdistää puhelimesi olemassa olevaan tiliin. Puhelimen yhdistämistä ei yleensä suositella, ja se rajoittaa joitain toimintoja, kuten soittamista.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Napauttamalla Yhdistä iPhone voit yhdistää puhelimesi olemassa olevaan tiliin. Puhelimen yhdistämistä ei yleensä suositella, ja se rajoittaa joitain toimintoja, kuten soittamista.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Rekisteröi tämä iPad";
@@ -3749,7 +3764,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Yhdistä tämä iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Tämän iPadin rekisteröiminen poistaa Signalin käytöstä toiselta laitteelta, jos se on tällä hetkellä rekisteröity samalla puhelinnumerolla.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Tämän iPadin rekisteröiminen poistaa Signalin käytöstä muissa samalla puhelinnumerolla rekisteröidyissä laitteissa.";
 
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "iPhonen yhdistämistä ei suositella. Se rajoittaa myös ydintoimintoja.";
@@ -3758,16 +3773,16 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Myönnä käyttöoikeudet";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Ilmoitusten ja yhteystietojen salliminen mahdollistaa uusista viesteistä tiedottamisen ja tuntemiesi ihmisten löytämisen. Yhteystiedot salataan, eikä Signal-sovellus käsittele niitä.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Ilmoitusten ja yhteystietojen salliminen mahdollistaa uusista viesteistä ilmoittamisen ja tuntemiesi ihmisten löytämisen. Yhteystiedot salataan, eikä Signal-sovellus käsittele niitä.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Myönnä käyttöoikeudet";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Valitse ketkä voivat löytää sinut Signalista puhelinnumerolla %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Valitse kuka voi löytää sinut Signalista puhelinnumerolla %@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Ketkä voivat löytää sinut puhelinnumerollasi?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Kuka voi löytää sinut puhelinnumerollasi?";
 
 /* Placeholder string for phone number field during registration */
 "ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Puhelinnumero";
@@ -3782,7 +3797,7 @@
 "ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Puhelinnumero";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Virheellinen puhelinnumero. Syötä voimassa oleva puhelinnumero rekisteröidäksesi.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Virheellinen puhelinnumero. Syötä kelvollinen puhelinnumero vaihtaaksesi numeroa.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Tunnuslukuyritykset ovat loppuneet, mutta voit silti käyttää Signal-tiliäsi luomalla uuden tunnusluvun. Yksityisyys- ja tietoturvasyistä tili palautetaan ilman tallennettuja profiilitietoja tai asetuksia.";
@@ -3803,7 +3818,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Väärä tunnusluku";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Syötä tilille valitsemasi tunnusluku. Se ei ole sama kuin tekstiviestivahvistuskoodisi.";
+"ONBOARDING_PIN_EXPLANATION" = "Syötä tilille valitsemasi tunnusluku. Se ei ole sama kuin saamasi tekstiviestivahvistuskoodi.";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "Syötä tunnusluku";
@@ -3821,7 +3836,7 @@
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Käyttöehdot ja tietosuoja";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Ota yksityisyys mukaasi.\nOle itsesi jokaisessa viestissä.";
+"ONBOARDING_SPLASH_TITLE" = "Yksityisyys aina mukana.\nOle itsesi jokaisessa viestissä.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Väärä numero?";
@@ -3863,7 +3878,7 @@
 "OUTAGE_WARNING" = "Signalissa ilmenee tällä hetkellä teknisiä ongelmia. Työskentelemme parhaillaan palvelun palauttamiseksi.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "Soitit yhteystiedolle %@";
+"OUTGOING_CALL_FORMAT" = "Soitit käyttäjälle %@";
 
 /* Button used to decline a payment request. */
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "Hylkää pyyntö";
@@ -3929,16 +3944,16 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Yhteysvirhe";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Sinulla ei ole tarpeeksi saldoa maksaaksesi tämän maksun.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Sinulla ei ole tarpeeksi saldoa tämän maksun maksamiseksi.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Sinulla ei ole tarpeeksi saldoa maksaaksesi tämän maksun. Sinun nykyinen saldosi on %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Sinulla ei ole tarpeeksi saldoa tämän maksun maksamiseksi. Saldosi on %@.";
 
 /* Indicates that a payment failed due to being invalid. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Virheellinen tapahtuma";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Maksut edellyttää Signalin uusinta versiota.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Maksut-toiminto edellyttää Signalin uusinta versiota.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Maksua ei ole vielä varmennettu";
@@ -4016,7 +4031,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Tuntematon virhe";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Jatka";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Valmis";
 
 /* Status indicator for incoming payments which have not yet been verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Varmentamon";
@@ -4025,7 +4040,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "Varmennettu";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Jatka";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Valmis";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Lähetetään...";
@@ -4037,7 +4052,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Käsittelyssä";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Varmentamon";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Varmentamaton";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "Varmennettu";
@@ -4112,7 +4127,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Peruutetaanko ryhmäkutsu käyttäjältä %@?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Muiden ryhmän jäsenten kutsumat henkilöt näytetään vasta sitten, kun nämä liittyvät ryhmään. He eivät näe ryhmän viestejä ennen liittymistä.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Muiden ryhmän jäsenten kutsumien henkilöiden tiedot näytetään vasta, kun he liittyvät ryhmään. He eivät näe ryhmän viestejä ennen liittymistä.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Luettelon henkilöt yrittävät liittyä ryhmään %@ ryhmälinkin kautta.";
@@ -4124,7 +4139,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Muiden kutsumat";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Sinun kutsumat";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Lähettämäsi kutsut";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Virhe saapuvan viestin käsittelyssä";
@@ -4142,13 +4157,13 @@
 "PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Kerran katsottava video";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Katso kuvaa";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Näytä kuva";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Katso video";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Näytä video";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEWED" = "Katsottu";
+"PER_MESSAGE_EXPIRATION_VIEWED" = "Nähty";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Kaikki";
@@ -4160,7 +4175,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Ei kukaan";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Kukaan Signalissa ei tule löytämään sinua puhelinnumerosi perusteella. Et tule näkymään yhteyshenkilönä ihmisille, joilla on puhelinnumerosi heidän yhteystiedoissa, eivätkä muut voi löytää sinua puhelinnumerosi avulla.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Kukaan Signalissa ei voi löytää sinua puhelinnumerosi perusteella. Et näy yhteyshenkilönä ihmisille, joilla on puhelinnumerosi yhteystiedoissaan. Muut käyttäjät eivät löydä sinua puhelinnumerosi avulla.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Esimerkki: %@";
@@ -4175,7 +4190,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Kaikki";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Puhelinnumerosi näkyy ihmisille ja ryhmille, joille lähetät viestejä. Ihmiset, joilla on puhelinnumerosi heidän puhelimen yhteystiedoissa, näkevät sen myös Signalissa.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Puhelinnumerosi näkyy ihmisille ja ryhmille, joille lähetät viestejä. Ihmiset, joilla on puhelinnumerosi puhelimensa yhteystiedoissa, näkevät sen myös Signalissa.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Ei kukaan";
@@ -4238,10 +4253,10 @@
 "PIN_CHANGE_ERROR_MESSAGE" = "Uutta tunnuslukua ei voitu luoda. Vanha tunnuslukusi on poistettu käytöstä. Tarkista yhteytesi ja yritä uudelleen.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN-tunnuksen vaihto epäonnistui";
+"PIN_CHANGE_ERROR_TITLE" = "Tunnusluvun muutos epäonnistui";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "Vähintään 4 merkkiä";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "Tunnusluvussa on oltava vähintään 4 merkkiä";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Vaihda tunnusluku";
@@ -4262,7 +4277,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Poista tunnusluku käytöstä";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Jos poistat tunnusluvun käytöstä, menetät kaikki tietosi rekisteröityessäsi Signaliin uudelleen, ellet siirrä tietojasi toisesta iOS-laitteesta. Et voi myöskään ottaa rekisteröinnin lukitusta käyttöön.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Jos poistat tunnusluvun käytöstä, menetät kaikki tietosi rekisteröityessäsi Signaliin uudelleen, ellet siirrä tietojasi toisesta iOS-laitteesta. Et voi myöskään ottaa rekisteröintiestoa käyttöön, jos tunnusluku on pois päältä.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Varoitus";
@@ -4274,7 +4289,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Tunnusluvun luonti epäonnistui";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Tunnusluvulla salataan Signaliin tallentamasi tiedot. Profiilisi, asetuksesi ja yhteystietosi palautetaan, kun asennat Signalin uudelleen. Tunnuslukua ei tarvita sovelluksen avaamiseen.";
+"PIN_CREATION_EXPLANATION" = "Tunnusluvulla salataan Signaliin tallentamasi tiedot, jotta vain sinä pääset niihin käsiksi. Profiilisi, asetuksesi ja yhteystietosi palautetaan, kun asennat Signalin uudelleen. Tunnuslukua ei tarvita sovelluksen avaamiseen.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Lisätietoa tunnusluvuista";
@@ -4289,7 +4304,7 @@
 "PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Ei verkkoyhteyttä";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "Vähintään 4 numeroa";
+"PIN_CREATION_NUMERIC_HINT" = "Tunnusluvussa on oltava vähintään 4 numeroa.";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Syötä tunnusluku uudelleen";
@@ -4370,7 +4385,7 @@
 "PIN_REMINDER_TITLE" = "Syötä Signal-tunnuslukusi";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "Tunnusluvun on oltava vähintään 4 numeroa.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "Tunnusluvussa on oltava vähintään 4 numeroa.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
 "PINNED_CONVERSATION_LIMIT" = "Voit kiinnittää enintään 4 keskustelua.";
@@ -4382,7 +4397,7 @@
 "PINS_MEGAPHONE_ACTION" = "Luo tunnusluku";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Viimeistele Signal-tunnuslukusi luonti.";
+"PINS_MEGAPHONE_BODY" = "Viimeistele Signal-tunnusluvun luonti.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "Luo tunnusluku";
@@ -4394,7 +4409,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Toista media";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@ ei ole varmennettu";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Käyttäjää%@ ei ole merkitty varmennetuksi.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Varmennettu";
@@ -4409,22 +4424,22 @@
 "PRIVACY_UNVERIFY_BUTTON" = "Poista varmennus";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Tämä ei näytä olevan sinun ja yhteystiedon %@ turvanumero. Tarkista että olet varmentamassa oikeaa yhteystietoa.";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Tämä ei ole sinun ja käyttäjän %@ turvanumero. Tarkista, että olet varmentamassa oikeaa yhteystietoa.";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Leikepöydällä oleva numero ei näytä olevan oikea turvanumero tälle keskustelulle.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Leikepöydällä oleva numero ei ole oikea turvanumero tälle keskustelulle.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ei löytänyt turvanumeroa leikepöydältä. Oletko varmasti kopioinut sen oikein?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Turvanumero on yksilöllinen aina kahden Signal-käyttäjän välillä. Tarkista vielä uudelleen, että yhteystiedon %@ laiteessa näkyy juuri teidän turvanumero.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Turvanumero on yksilöllinen aina kahden Signal-käyttäjän välillä. Tarkista vielä, että käyttäjän %@ laitteessa näkyy juuri tämä turvanumero.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Sinulla on käytössä vanha versio Signalista. Sinun tulee ensin päivittää, jotta voit varmentaa.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Käytössäsi on vanha Signal-versio Signalista. Päivitä sovellus, jotta voit varmentaa.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Vastapuolella on käytössä vanha versio Signalista. Hänen tulee ensin päivittää, jotta voit varmentaa.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Vastapuolella on käytössä vanha versio Signalista. Hänen tulee ensin päivittää, jotta voitte varmentaa.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skannattu koodi ei näytä olevan turvanumero. Onko teillä kummallakin viimeisin versio Signalista käytössä?";
@@ -4508,7 +4523,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Internet-yhteys vaaditaan profiilin päivittämiseen.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profiili on salattu päästä päähän. Se näkyy yhteyshenkilöillesi, kun aloitat tai hyväksyt uusia keskusteluja.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profiili on salattu päästä päähän. Profiilisi ja sen muutokset näkyvät yhteyshenkilöillesi, kun aloitat tai hyväksyt uusia keskusteluja.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Tallenna";
@@ -4547,10 +4562,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Alkuperäistä viestiä ei löytynyt.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reagoi tarinaasi";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "lähetti reaktion tarinaasi";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reagoi käyttäjän %@ tarinaan.";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "lähetti reaktion käyttäjän %@ tarinaan.";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Tarina";
@@ -4577,55 +4592,52 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Kaikki %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagoi %@ viestiisi";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "lähetti reaktion %@ viestiisi";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagoi %@ albumillesi";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "lähetti reaktion %@ albumiisi";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagoi %@ ääniviestillesi";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "lähetti reaktion %@ ääniviestiisi";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reagoi %@ jakamallesi yhteystiedolle";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "lähetti reaktion %@ jakamaasi yhteystietoon";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reagoi %@ tiedostollesi";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "lähetti reaktion %@ tiedostoosi";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagoi %@ GIF:illesi";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "lähetti reaktion %@ GIF:iisi.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reagoi %@ kuvallesi";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "lähetti reaktion %@ kuvaasi";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagoi %@ tarrallesi";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "lähetti reaktion %@ tarraasi";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagoi %@ viestiin: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "lähetti reaktion %@ viestiin: %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagoi %@ videollesi";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "lähetti reaktion %@ videoosi";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagoi %@ kerran katsottavalle mediallesi";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "lähetti reaktion %@ kerran katsottavaan mediaasi";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagoi %@ ääniviestillesi";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "lähetti reaktion %@ ääniviestiisi";
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "Sinä";
 
 /* Pressing this button marks a thread as read */
-"READ_ACTION" = "Luettu";
+"READ_ACTION" = "Merkitse luetuksi";
 
 /* Error message indicating that a user can't be added to a group until they upgrade their app. */
 "RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Tätä käyttäjää ei voida lisätä ryhmään, ennen kuin hän on päivittänyt Signalin.";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Käyttäjää ei voi valita.";
-
-/* Error message indicating that a user can't receive gifts. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_RECEIVE_GIFT_BADGES" = "Tämä käyttäjä ei voi saada lahjoja, ennen kuin hän on päivittänyt Signalin.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Unohdin tunnuslukuni.";
@@ -4655,10 +4667,10 @@
 "REGISTER_CONTACTS_WELCOME" = "Tervetuloa!";
 
 /* action sheet body */
-"REGISTER_RATE_LIMITING_BODY" = "Olet yrittänyt liian monta kertaa. Yritä uudelleen jonkin minuutin päästä.";
+"REGISTER_RATE_LIMITING_BODY" = "Olet yrittänyt liian monta kertaa. Yritä uudelleen hetken kuluttua.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "Olet yrittänyt liian monta kertaa. Yritä uudelleen jonkin minuutin päästä.";
+"REGISTER_RATE_LIMITING_ERROR" = "Olet yrittänyt liian monta kertaa. Yritä uudelleen hetken kuluttua.";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Push-ilmoitusten uudellenrekisteröinti epäonnistui.";
@@ -4673,10 +4685,10 @@
 "REGISTRATION_ERROR" = "Virhe rekisteröitymisessä";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Laitteen aktivointi edellyttää lähettämämme koodin syöttämistä.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Laitteen aktivointi edellyttää sinulle lähettämämme koodin syöttämistä.";
 
 /* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "Jatka tarkistamalla puhelimesi Internet-yhteys ja yritä uudelleen.";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "Jatka tarkistamalla puhelimesi internet-yhteys ja yritä uudelleen.";
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Tarkista verkkoyhteytesi";
@@ -4691,7 +4703,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Sinun täytyy rekisteröityä, ennen kuin voit lähettää viestin.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Tällä numerolla oli aiemmin rekisteröity tili, joka on siirrettävissä.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Tällä numerolle on aiemmin rekisteröity tili, joka on siirrettävissä.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Vahvistus epäonnistui";
@@ -4730,7 +4742,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "Hylkää";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "Puhelinnumero, jota yrität rekisteröidä, on jo rekisteröity toisella palvelimella. Pura ensin rekisteröintisi sieltä ja yritä sitten uudelleen.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Puhelinnumero, jota yrität rekisteröidä, on jo rekisteröity toisella palvelimella. Pousta ensin rekisteröintisi toiselta palvelimelta ja yritä sitten uudelleen.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = " Poista esikatselu";
@@ -4742,7 +4754,7 @@
 "REREGISTER_FOR_PUSH" = "Push-ilmoitusten uudelleenrekisteröinti";
 
 /* Configure reactions reset button text */
-"RESET" = "Nollaa";
+"RESET" = "Palauta alkuasetuksiin";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Yritä uudelleen";
@@ -4751,16 +4763,16 @@
 "RETURN_CALL_PILL_BUTTON" = "Palaa";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Lisää ryhmään joka tapauksessa";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Lisää ryhmään silti";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Soita joka tapauksessa";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Soita silti";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Lähetä joka tapauksessa";
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Lähetä silti";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Seuraavat henkilöt ovat saattaneet uudelleenasentaa tai vaihtaneet laitteita. Varmenna turvanumerosi heidän kanssaan yksityisyyden takaamiseksi.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Seuraavat henkilöt ovat saattaneet asentaa sovelluksen uudelleen tai vaihtaa laitetta. Varmenna turvanumerosi heidän kanssaan yksityisyyden takaamiseksi.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Aikaisemmin varmennettu";
@@ -4775,7 +4787,7 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Keskustelumme Signal-turvanumero:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Sinun ja yhteystiedon %@ turvanumero on vaihtunut. Saatat halua varmentaa sen.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Turvanumerosi käyttäjän %@ kanssa on vaihtunut. Saatat halua varmentaa sen.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Skannaa yhteystietosi laitteessa näkyvä QR-koodi.";
@@ -4796,13 +4808,13 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Liian monta epäonnistunutta tunnistautumista. Yritä myöhemmin uudelleen.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Sinun täytyy asettaa pääsykoodi puhelimesi asetuksista, jotta voit käyttää ruudun lukitusta.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Aseta pääsykoodi puhelimesi asetuksista, jotta voit käyttää näytön lukitusta.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Sinun täytyy asettaa pääsykoodi puhelimesi asetuksista, jotta voit käyttää ruudun lukitusta.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Aseta pääsykoodi puhelimesi asetuksista, jotta voit käyttää näytön lukitusta.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Sinun täytyy asettaa pääsykoodi puhelimesi asetuksista, jotta voit käyttää ruudun lukitusta.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Aseta pääsykoodi puhelimesi asetuksista, jotta voit käyttää näytön lukitusta.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Avaa Signal tunnistautumalla";
@@ -4820,7 +4832,7 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Etsi nimellä tai numerolla";
 
 /* placeholder text in an empty search field */
-"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Hae";
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Haku";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
 "SEARCH_SECTION_CONTACTS" = "Muut yhteystiedot";
@@ -4835,10 +4847,10 @@
 "SEARCH_SECTION_MESSAGES" = "Viestit";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Yhdistyskoodia ei voitu noutaa";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Yhdistämiseen tarvittavaa koodia ei voitu noutaa";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Laitteen liittäminen toiseen tiliin edellyttää laitteen asetusten nollaamista. Poistetaanko kaikki toimintohistoria, kuten viestit, tiedostot ja puhelut? Toimintoa ei voi perua.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Laitteen liittäminen toiseen tiliin edellyttää laitteen asetusten palauttamista. Poistetaanko kaikki Signal-historia, kuten viestit, tiedostot ja puhelut? Toimintoa ei voi perua.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Poista kaikki";
@@ -4847,10 +4859,10 @@
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Tili ei täsmää";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Päivitä Signal tällä laitteella linkittääksesi sen puhelimeesi.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Tämän laitteen Signal on päivitettävä ennen puhelimen yhdistämistä.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Ei tuettu versio";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Ei-tuettu versio";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Toisella laitteellasi on vanha Signalin versio, joka ei tue iPadin QR-koodien skannausta. Asenna Signalin uusin versio ja yritä uudelleen.";
@@ -4871,7 +4883,7 @@
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Valitse nimi";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Viimeistele yhdistys";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Viimeistele yhdistäminen";
 
 /* header text before the user can link this device */
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Aloita tämän iPadin yhdistäminen avaamalla Signal puhelimessasi";
@@ -4880,13 +4892,13 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Minulla ei ole Signalia puhelimessa…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Siirry puhelimesi App Store -sovellukseen, asenna Signal, suorita rekisteröintiprosessi ja yhdistä sitten iPad samaan tiliin.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Siirry puhelimesi App Store -sovellukseen, asenna Signal, viimeistele rekisteröintiprosessi ja yhdistä sitten iPad samaan tiliin.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Asenna Signal puhelimeesi";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Avaa Signal-asetukset napauttamalla profiilikuvaasi. Napauta Yhdistetyt laitteet ja Yhdistä uusi laite ja skannaa sitten tämä koodi puhelimellasi:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Avaa Signal-asetukset napauttamalla profiilikuvaasi. Napauta Yhdistetyt laitteet, sitten Yhdistä uusi laite ja skannaa sitten tämä koodi puhelimellasi:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Saa apua iPadin yhdistämiseen täältä";
@@ -4931,7 +4943,7 @@
 "SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "Menetät kaikki otetut kuvat ja videot.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Kytketäänkö monikuvakuvaus pois päältä?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Kutsutaanko kaveri suojaamattomalla tekstiviestillä?";
@@ -4946,10 +4958,10 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "Vakio";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signalin sisältö salataan päästä päähän, mutta ajoittain keskustelu voidaan joutua päivittämään. Se ei vaikuta tietoturvaan, mutta tämän yhteyshenkilön viimeisin viesti ei välttämättä näy, ja voit pyytää häntä lähettämään sen uudelleen.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signalin sisältö salataan päästä päähän. Tästä syystä keskustelu täytyy joskus päivittää. Tämä ei vaikuta tietoturvaan. Tämän yhteyshenkilön viimeisin viesti ei välttämättä näy. Voit pyytää häntä lähettämään sen uudelleen.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "Keskustelutuokio on päivitetty";
+"SESSION_REFRESH_ALERT_TITLE" = "Keskustelu on päivitetty";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Valitse kuvista";
@@ -4967,7 +4979,7 @@
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Estä";
 
 /* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Kierrä sensuuria";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Sensuurin kiertäminen";
 
 /* Label for the 'manual censorship circumvention' country. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Sijainti";
@@ -4979,7 +4991,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Puhelinnumerosi sijaintiin perustuva sensuurin kiertäminen otettu käyttöön.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Olet manuaalisesti poistanut käytöstä sensuurin kiertämisen.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Olet poistanut sensuurin kiertämisen käytöstä käsin.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Sensuurin kiertäminen toimii ainoastaan laitteen ollessa Internet-yhteydessä.";
@@ -5009,7 +5021,7 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Virhelokit";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Näytä yhteystietoihin tallennetut henkilökuvat.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Näytä yhteystietoihin tallennetut yhteystietokuvat.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
 "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Järjestelmän yhteystietokuvat";
@@ -5084,7 +5096,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Vaihda puhelinnumeroa";
 
 /* Title for the 'change phone number' views in settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Muokkaa numeroa";
+"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Vaihda numero";
 
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "Keskustelut";
@@ -5093,7 +5105,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Tyhjennä keskusteluhistoria";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Tekijänoikeussuojattu Signal Messenger\nLisensoitu GPLv3-lisenssillä";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLisensoitu GPLv3-lisenssillä";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Datankäyttö";
@@ -5114,7 +5126,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Automaattinen lataus";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Nollaa automaattisen latauksen asetukset";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Palauta automaattisen latauksen asetukset";
 
 /* Item title for the sent media quality setting */
 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Lähetettävän median laatu";
@@ -5150,7 +5162,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Tuhoa kaikki tiedot";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Haluatko varmasti tuhota kaiken sisällön, kuten viestit, liitteet ja puhelut? Tätä toimintoa ei voi perua.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Haluatko varmasti tuhota kaiken Signal-historian, kuten viestit, liitteet ja puhelut? Tätä toimintoa ei voi perua.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Poista kaikki";
@@ -5177,19 +5189,19 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Viestin ääni";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Arkistoon siirretyt mykistetyt chatit pysyvät mykistettynä, vaikka uusia viestejä saapuu.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Pidä mykistetyt chatit arkistossa";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Käyttöehdot ja yksityisyydensuoja";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Luo esikatselukuvia linkeistä";
+"SETTINGS_LINK_PREVIEWS" = "Luo linkkien esikatselukuvat";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Näytä verkkosivuston esikatselu lähettämiisi linkkeihin.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Näytä lähettämiesi linkkien esikatselu verkkosivustoilta.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Ei koskaan";
@@ -5216,7 +5228,7 @@
 "SETTINGS_MESSAGING" = "Viestintä";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "Näytä milloin muut ovat kirjoittamassa viestiä ja päinvastoin.";
+"SETTINGS_MESSAGING_FOOTER" = "Näytä, milloin muut ovat kirjoittamassa viestiä ja päinvastoin. jos asetus on pois päältä, et näe muiden käyttäjien lukukuittauksia tai kirjoitusilmaisinta.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Asetukset";
@@ -5225,10 +5237,10 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Sisällytä mykistetyt keskustelut";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Viestiluvun laskenta";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Ilmoitusten lukumäärä";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Valitse mitä tietoja puhelu- ja viesti-ilmoituksissa näytetään, jotka näytetään myös puhelimen ollessa lukittu.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Puheluiden ja viestien ilmoitukset näytetään myös puhelimen ollessa lukittu.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Ilmoitusten sisältö";
@@ -5270,7 +5282,7 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ kurssilla %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Maksut eivät ole enää saatavilla Signalissa. Varat voi yhä siirtää toiseen kauppapaikkaan, mutta varojen lisääminen tai maksujen lähettäminen ja vastaanottaminen ei ole enää mahdollista.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signalin maksutoiminto ei ole enää käytettävissä. Varat voi yhä siirtää toiseen kauppapaikkaan, mutta varojen lisääminen tai maksujen lähettäminen ja vastaanottaminen ei ole enää mahdollista.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
 "SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Maksuja ei voi ottaa pois käytöstä, koska saldotieto ei ole saatavilla. Tarkista verkkoyhteys ja yritä uudelleen.";
@@ -5279,10 +5291,10 @@
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Maksu epäonnistui, koska saldotieto ei ole saatavilla. Tarkista verkkoyhteys ja yritä uudelleen.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Maksut eivät ole enää saatavilla Signalissa. Varat voi yhä siirtää toiseen kauppapaikkaan, mutta varojen lisääminen tai maksujen lähettäminen ja vastaanottaminen ei ole enää mahdollista.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signalin maksutoiminto ei ole enää käytettävissä. Varat voi yhä siirtää toiseen kauppapaikkaan, mutta varojen lisääminen tai maksujen lähettäminen ja vastaanottaminen ei ole enää mahdollista.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Maksut eivät ole enää saatavilla Signalissa. Varat voi yhä siirtää toiseen kauppapaikkaan, mutta varojen lisääminen tai maksujen lähettäminen ja vastaanottaminen ei ole enää mahdollista.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signalin maksutoiminto ei ole enää käytettävissä. Varat voi yhä siirtää toiseen kauppapaikkaan, mutta varojen lisääminen tai maksujen lähettäminen ja vastaanottaminen ei ole enää mahdollista.";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Muunnokset ovat vain arvioita ja saattavat olla epätarkkoja.";
@@ -5300,7 +5312,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Poista maksut käytöstä";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Mobilecoin-maksut eivät ole enää käytössä Signalissa jos maksut otetaan pois käytöstä.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Mobilecoin-maksut eivät ole enää käytössä Signalissa, jos maksut otetaan pois käytöstä.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Poistetaanko maksut käytöstä?";
@@ -5336,7 +5348,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "Tietoa MobileCoinista";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Lisää varoja Signalissa käyttöä varten lähettämällä MobileCoineja lompakko-osoitteeseen.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Voit lisätä rahaa käytettäväksi Signalissa lähettämällä MobileCoineja lompakko-osoitteeseen.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Varojen lisääminen";
@@ -5390,7 +5402,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Maksut otettu käyttöön.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "MobileCoin on uusi yksityisyyden suojaan keskittyvä digitaalinen valuutta. Aloita ottamalla käyttöön.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "MobileCoin on uusi yksityisyyden suojaan keskittyvä digitaalinen valuutta. Aloita ottamalla se käyttöön.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Ota maksut uudelleen käyttöön";
@@ -5426,7 +5438,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Sinä";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Lähetetty";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Lähetit";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Vastaanottaja %@";
@@ -5435,22 +5447,22 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Tila";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Tapahtuman tiedot kuten summa ja aika tallennetaan MobileCoiniin.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Tapahtuman tiedot, mm. summa ja aika tallennetaan MobileCoiniin.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Jos siirtoon vaadittavat kolikot eivät mene tasan, veloitetaan \"kolikonjärjestelymaksu\". Järjestelyn jälkeen maksujen lähettäminen on jälleen mahdollista.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Jos siirtoon vaadittavat kolikot eivät mene tasan, summasta peritään kolikoiden siivousmaksu. Siivouksen jälkeen maksujen lähettäminen on jälleen mahdollista.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Sinulla ei ole tarpeeksi saldoa maksaaksesi tämän maksun. Sinun nykyinen saldosi on %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Sinulla ei ole tarpeeksi saldoa tämän maksun maksamiseksi. Saldosi on %@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Varat eivät riitä";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "Henkilöltä %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "Käyttäjältä %@";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "Henkilölle %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "Käyttäjälle %@";
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Maksut otettu pois käytöstä";
@@ -5462,13 +5474,13 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_INCOMING" = "Vastaanotettu";
 
 /* Label for the 'outgoing payments' mode of the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "Lähetetty";
+"SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "Lähetetyt";
 
 /* Label for the 'recent payments' section in the payment settings. */
 "SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Viimeisimmät maksut";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Ennen tunnusluvun ottamista pois käytöstä ota ylös palautuslause, joka tarvitaan tilin palauttamiseen.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Ennen tunnusluvun ottamista pois käytöstä tallenna palautuslause. Sitä tarvitaan maksutilin palauttamiseen.";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Tallenna palautuslause";
@@ -5486,7 +5498,7 @@
 "SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Palauta maksutili";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Varmista, että salalause on kirjoitettu oikein.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Varmista, että palautuslause on kirjoitettu oikein.";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Varmenna palautuslause";
@@ -5516,7 +5528,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Liitä palautuslause";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Palautuslause on 24 sanasta muodostuva ainutlaatuinen merkkijono. Voit sen avulla palauttaa maksutilisi.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Palautuslause on ainutlaatuinen 24-sanainen lause, joka vaaditaan maksutilin palauttamiseen";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Syötä palautuslause";
@@ -5591,7 +5603,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "Toinen sanoista on väärin, yritä uudelleen.";
 
 /* Error indicating that all words of the payments passphrase are not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Molemmat sanat ovat vääriä, yritä uudelleen.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Molemmat sanat ovat väärin, yritä uudelleen.";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "%@. sana";
@@ -5642,10 +5654,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Löytää minut puhelinnumeron perusteella";
 
 /* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "Nähdä minun puhelinnumero";
+"SETTINGS_PHONE_NUMBER_SHARING" = "Nähdä puhelinnumeroni";
 
 /* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Nähdä minun puhelinnumero";
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Nähdä puhelinnumeroni";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Poista muistutukset käytöstä";
@@ -5678,7 +5690,7 @@
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Lisäasetukset";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Näytä puhelut äskeisissä";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Näytä puhelut äskeiset-näkymässä";
 
 /* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "Yksityisyys";
@@ -5696,7 +5708,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Ota käyttöön";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Jos et muista Signal-tunnuslukua kun rekisteröit Signalin uudelleen, tili lukitaan 7 päiväksi.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Jos et muista Signal-tunnuslukua, kun rekisteröit Signalin uudelleen, tili lukitaan 7 päiväksi.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Otetaanko rekisteröintiesto käyttöön?";
@@ -5708,16 +5720,16 @@
 "SETTINGS_REREGISTER_BUTTON" = "Rekisteröidy uudelleen";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Automaattisen ruudun lukituksen odotusaika";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Automaattisen näytön lukituksen aika-asetus";
 
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Ruudun lukitus";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Näytön lukitus";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Piilota näytön sisältö apinvaihtajassa";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Näytä puhelut Äskeiset-listalla iOS:n Puhelin-apissa.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Näytä puhelut iOS:n Puhelin-sovelluksen Äskeiset-listalla";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Äänet";
@@ -5741,7 +5753,7 @@
 "SETTINGS_SECURITY_TITLE" = "Turvallisuus";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Korkealaatuiden median lähetys kuluttaa enemmän dataa.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Korkealaatuisen median lähetys kuluttaa enemmän dataa.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Kuvat ja videot";
@@ -5750,16 +5762,16 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Jaa yhteystiedot iOS:n kanssa";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Salli iOS:lle pääsy Signal-yhteystietojen ja keskustelujen ominaisuuksien, kuten jakamisehdotusten, käyttöä varten.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Salli iOS:lle käyttöoikeus Signal-yhteystietoihin ja keskusteluihin, jotta tietyt ominaisuudet toimivat, mm. jakamisehdotukset";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Salli iOS:lle pääsy Signal-yhteystietojen ja keskustelujen ominaisuuksiin, kuten jakamisehdotuksiin ja ilmoituksiin, käyttöä varten.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Salli iOS:lle käyttöoikeus Signal-yhteystietoihin ja keskusteluihin, jotta tietyt ominaisuudet toimivat, mm. jakamisehdotukset";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Rekisteröintiesto";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Vaadi Signal-tunnuslukua aina kun tällä puhelinnumerolla rekisteröidytään Signaliin.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Vaadi Signal-tunnuslukua aina, kun tällä puhelinnumerolla rekisteröidytään Signaliin.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Kirjoittamisen ilmaisin";
@@ -5789,19 +5801,19 @@
 "SHARE_ACTION_MESSAGE" = "Viesti";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Turvanumerosi yhteystiedon %@ kanssa on vaihtunut hiljattain. Saatat halua varmentaa sen ohjelmassa ennen uudelleenlähettämistä.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Turvanumerosi yhteystiedon %@ kanssa on vaihtunut hiljattain. Saatat halua varmentaa sen ennen viestin uudelleen lähettämistä.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "Ladataan...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Rekisteröidy avaamalla Signal-appi.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Rekisteröidy avaamalla Signal";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Ei rekisteröity";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Rekisteröidy tai päivitä avaamalla Signal-appi.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Rekisteröidy tai päivitä avaamalla Signal";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Ei valmis";
@@ -5810,7 +5822,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Liitteen lähetys epäonnistui";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Lähetetään %1$@/%2$@...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Lähetetään %1$@ / %2$@...";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Lähetetään...";
@@ -5822,7 +5834,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Jaa Signaliin";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
-"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Jakoehdotusten käytöstä poistaminen epäonnistui.";
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Jakamisehdotusten käytöstä poistaminen epäonnistui.";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Näytä turvanumero";
@@ -5834,7 +5846,7 @@
 "SMS_INVITE_BODY" = "Tule käyttämään Signalia! Tässä linkki:";
 
 /* table cell label in conversation settings */
-"SOUND_AND_NOTIFICATION_SETTINGS" = "Äänet & ilmoitukset";
+"SOUND_AND_NOTIFICATION_SETTINGS" = "Äänet ja ilmoitukset";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Ei mitään";
@@ -5843,22 +5855,22 @@
 "SPAM_CAPTCHA_COMPLETED_TOAST" = "Tarkistus suoritettu.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Jos päätät ohittaa vahvistuksen, saatat menettää muiden ihmisten viestejä ja viestien lähettäminen voi epäonnistua.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Jos päätät ohittaa vahvistuksen, saatat menettää muiden lähettämiä viestejä ja omien viestiesi lähettäminen voi epäonnistua.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Jatketaanko vahvistamatta?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Suorita vermennus, jotta SIgnal pystyy estämään roskaviestityksen.\n\nVoit jatkaa viestitystä suoritettuasi varmennustoiminnon. Kaikki tauotetut viestit lähetetään automaattisesti.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Suorita varmennus, jotta SIgnal pystyy vähentämään roskapostia.\n\nViestin lähettämistä ja vastaanottamista voi jatkaa, kun olet viimeistellyt varmennuksen. Kaikki pysäytetyt viestit lähtevät automaattisesti.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Varmenna, jotta voit jatkaa viestintää";
+"SPAM_CAPTCHA_SHEET_TITLE" = "Varmenna jatkaaksesi viestintää Signalissa.";
 
 /* Action to skip verification */
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Ohita varmennus";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Tee verifikaatio";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Tee varmennus loppuun";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Tarraviesti";
@@ -5885,7 +5897,7 @@
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Tarroja ei ole asennettu";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Saapuvien viestien tarrat tulevat näkymään tässä";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Vastaanotetut tarrat näytetään tässä";
 
 /* Title for the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_TITLE" = "Tarrat";
@@ -5963,7 +5975,7 @@
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Vastaa";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reagoi tarinaan";
+"STORY_REPLY_REACTION" = "Lähetti reaktion tarinaan";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Vastaa";
@@ -5975,7 +5987,7 @@
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Lahjoita";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Kaltaisesi ihmiset pitävät Signalin pystyssä. Lahjoita projektille, saat kunniamerkin.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal toimii kaltaistesi ihmisten tuella. Tee lahjoitus ja ansaitse merkki.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Ei nyt";
@@ -5984,7 +5996,7 @@
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "Ryhdy tukijaksi";
 
 /* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Kopioitu tilaajatunnus leikepöydälle";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Tilaajatunnus kopioitu leikepöydälle";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Turvanumerosi yhteystiedon %@ kanssa täsmää. Voit nyt merkitä tämän yhteystiedon varmennetuksi.";
@@ -6029,7 +6041,7 @@
 "SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal-versio: %@";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal iOS tukipyyntö";
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOS -tukipyyntö";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "Mitä mieltä olet? (valinnainen)";
@@ -6044,22 +6056,22 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Ladataan";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal on voittoa tavoittelematon taho, jolla ei ole sijoittajia eikä mainostajia – voimamme on ihmisissä jotka käyttävät ja arvostavat Signalia. Tee toistuva kuukausilahjoitus ja saat profiiliisi kunniamerkin, jolla osoitat tukevasi projektia.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal on voittoa tavoittelematon organisaatio, jolla ei ole sijoittajia eikä mainostajia. Toimimme Signalia käyttävien ja arvostavien ihmisten yhteisön voimalla. Tee toistuva kuukausilahjoitus ja ansaitse profiiliisi merkki, jolla osoitat tukevasi Signalia.";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal on sitoutunut kehittämään avoimen lähdekoodin teknologiaa, joka suojaa yksityisyyttäsi, ilmaisunvapauttasi ja varmistaa turvallisen maailmanlaajuisen viestinnän.\n\nLahjoituksesi auttaa ylläpitämään ja kehittämään Signalia eteenpäin ja mahdollistaa turvallisen viestinnän miljoonille. Ei mainoksia. Ei seurantaa. Ei pelleilyä.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Tue tekniikkaa, joka on rakennettu sinua varten — eikä sinun datasi keräämiseen — liittymällä yhteisöön joka pitää sitä yllä.";
+"SUSTAINER_READ_MORE_TITLE" = "Tue teknologiaa, joka on rakennettu sinua varten, ei datan tarpeisiin. Liity yhteisöön, joka pitää Signalia yllä.";
 
 /* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Miksi lahjoittaa?";
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Miksi kannattaa lahjoittaa?";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Käsitellään edelleen";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Hanki %@-kunniamerkki";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Hanki %@-merkki";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Peruuta tilaus";
@@ -6068,19 +6080,19 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Vahvista";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Sinua ei veloiteta uudelleen. Kunniamerkkisi poistetaan profiilistasi laskutusjaksosi lopussa.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Sinua ei veloiteta uudelleen. Merkki poistetaan profiilistasi laskutusjaksosi lopussa.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Vahvista peruutus?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Kunniamerkkiä ei voitu lisätä. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Merkkiä ei voitu lisätä. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Kunniamerkkiäsi ei voitu lisätä tilillesi. Ota yhteyttä tukeen.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Merkkiä ei voitu lisätä tilillesi. Ota yhteyttä tukeen.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Kunniamerkkiä ei voitu lisätä";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Merkkiä ei voitu lisätä";
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "Ota yhteys tukeen.";
@@ -6092,13 +6104,13 @@
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Virhe käsiteltäessä maksua. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/kk";
+"SUSTAINER_VIEW_PRICING" = "%@ / kk";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Eräänyy %@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " ·  Päättyy %@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Uudistuu %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Uusiutuu %@";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Käsitellään maksua...";
@@ -6107,13 +6119,13 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Käsitellään transaktiota…";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Lue lisää.";
+"SUSTAINER_VIEW_READ_MORE" = "Lue lisää";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Uudistuu %@";
+"SUSTAINER_VIEW_RENEWAL" = "Uusiutuu %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Maksuasi käsitellään vielä. Tämä voi kestää muutamia minuutteja yhteydestäsi riippuen.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Maksua käsitellään vielä. Tämä voi kestää muutamia minuutteja yhteydestäsi riippuen.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Tilauksesi on peruttu.";
@@ -6122,10 +6134,10 @@
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Ei nyt";
 
 /* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Kaltaisesti ihmiset pitävät Signalin tehokkaana.";
+"SUSTAINER_VIEW_TITLE" = "Signal toimii kaltaistesi ihmisten tuella.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Sinulta veloitetaan uuden tilauksen täysi summa (%@) tänään. Tilauksesi uudistetaan kuukausittain.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Sinulta veloitetaan uuden tilauksen täysi summa (%@) tänään. Tilaus uusiutuu kuukausittain.";
 
 /* Update Subscription? Action sheet title */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Päivitä tilaus?";
@@ -6134,7 +6146,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Päivitä";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Tee toistuva kuukausilahjoitus Signalille ja tue tekniikkaa, joka on rakennettu sinua varten, ei datasi keräämistä varten.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Tee toistuva kuukausilahjoitus Signalille. Tue teknologiaa, joka on rakennettu sinua varten, ei datan tarpeisiin.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Ei käytössä";
@@ -6146,13 +6158,13 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Varmenna";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Viestit katoavat, kun niiden lähettämisestä on %@.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Viestien katoamisaika on asetettu arvoon %@, kun lähetät viestin.";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Ei yhteisiä ryhmiä. Tarkista pyynnöt huolellisesti.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Ei kontakteja tässä ryhmässä. Tarkista pyynnöt huolellisesti.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Ei yhteystietoja tässä ryhmässä. Tarkista pyynnöt huolellisesti.";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Vaihda emoji napauttamalla";
@@ -6254,7 +6266,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Signal on päivitetty uusimpaan versioon. Voit nyt vastaanottaa tämän viestityypin laitteellasi.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Voit pyytää yhteyshenkilöä %@ lähettämään tämän viestin uudelleen, nyt kun käytät ajantasaista Signal-versiota.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Voit pyytää käyttäjää %@ lähettämään tämän viestin uudelleen, nyt kun käytät ajantasaista Signal-versiota.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Voit pyytää lähettäjää lähettämään tämän viestin uudelleen, nyt kun käytät ajan tasalla olevaa Signal-versiota.";
@@ -6272,7 +6284,7 @@
 "UNKNOWN_VALUE" = "Tuntematon";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "Poista";
+"UNLINK_ACTION" = "Poista yhdistäminen";
 
 /* Alert message to confirm unlinking a device */
 "UNLINK_CONFIRMATION_ALERT_BODY" = "Tällä laitteella ei voi enää lähettää tai vastaanottaa viestejä.";
@@ -6284,7 +6296,7 @@
 "UNLINKED_WARNING" = "Laite ei ole enää yhdistetty. Yhdistä Signal uudelleen puhelimeesi jatkaaksesi viestintää.";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal ei onnistunut poistamaan laitettasi.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal ei onnistunut poistamaan laitteesi yhdistämistä.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Nimeämätön laite";
@@ -6296,7 +6308,7 @@
 "UNPINNED_SECTION_TITLE" = "Keskustelut";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Lukematon";
+"UNREAD_ACTION" = "Merkitse lukemattomaksi";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Vastaanotettiin liite, jota ei tueta.";
@@ -6305,10 +6317,10 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Laitteesi ei tue tätä ominaisuutta.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Turvanumerosi kontaktin %@ kanssa on vaihtunut, luultavasti koska hän on uudelleenasentanut Signalin tai vaihtanut käyttämäänsä laitetta. Varmenna uusi turvanumero napauttamalla Varmenna. Toiminto on valinnainen.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Turvanumerosi yhteystiedon %@ kanssa on vaihtunut, luultavasti koska hän on uudelleenasentanut Signalin tai vaihtanut käyttämäänsä laitetta. Vahvista uusi turvanumero napauttamalla Vahvista. Toiminto on valinnainen.";
 
 /* Action to verify a safety number after it has changed */
-"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Varmenna";
+"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Vahvista";
 
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "Päivitä yhteystieto";
@@ -6317,10 +6329,10 @@
 "UPDATE_GROUP_FAILED" = "Ryhmän päivittäminen epäonnistui.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Ryhmän päivitys ei onnistunut. Tarkista verkkoyhteytesi ja yritä uudelleen.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Ryhmän päivittäminen ei onnistunut. Tarkista verkkoyhteytesi ja yritä uudelleen.";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Signalin käyttäjätunnukset ovat valinnaisia. Jos päätät luoda käyttäjätunnuksen, muut Signalin käyttäjät voivat löytää sinut tällä käyttäjätunnuksella ja ottaa sinuun yhteyttä tietämättään puhelinnumeroasi.";
+"USERNAME_DESCRIPTION" = "Käyttäjätunnukset ovat valinnaisia Signalissa. Jos päätät luoda käyttäjätunnuksen, muut Signal-käyttäjät voivat löytää sinut käyttäjätunnuksen perusteella ilman puhelinnumeroasi.";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Käyttäjätunnukset voivat sisältää vain merkkejä a–z, 0–9 ja _";
@@ -6365,22 +6377,22 @@
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Merkitsit yhteystiedon %@ varmentamattomaksi.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Merkitsit yhteystiedon %@ varmentamattomaksi toisessa laitteessa.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Merkitsit yhteystiedon %@ varmentamattomaksi toisella laitteellasi.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Merkitsit yhteystiedon %@ varmennetuksi.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Merkitsit yhteystiedon %@ varmennetuksi toisessa laitteessa.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Merkitsit yhteystiedon %@ varmennetuksi toisella laitteellasi.";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Varmennuksen tila vaihtui.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Näytä turvanumerot";
+"VERIFY_PRIVACY" = "Näytä turvanumero";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "Näytä turvanumerot";
+"VERIFY_PRIVACY_MULTIPLE" = "Tarkista turvanumerot";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "Videopuhelu";
@@ -6392,7 +6404,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Napauttamalla tätä viesti katoaa sen jälkeen, kun se on katsottu.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Lähtevät kerran katsottavat mediatiedostot poistetaan automaattisesti lähettämisen jälkeen.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Lähtevät, kerran katsottavat mediatiedostot poistetaan automaattisesti lähettämisen jälkeen";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Hylkää pyyhkäisemällä";
@@ -6446,43 +6458,43 @@
 "WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Taustakuvan poistaminen epäonnistui. Yritä myöhemmin uudelleen ja tarvittaessa ota yhteyttä tukeen.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Taustakuvien poistaminen epäonnistui. Yritä myöhemmin uudelleen ja tarvittaessa ota yhteyttä tukeen.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Taustakuvien palauttaminen epäonnistui. Yritä myöhemmin uudelleen ja tarvittaessa ota yhteyttä tukeen.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Poista kaikki värit";
+"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Palauta kaikki värit";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Poista kaikki taustakuvat";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Palauta kaikki taustakuvat";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Ohitetaanko kaikki keskustelujen vanhat värit?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Ohitetaanko kaikki keskustelujen värit?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Poista keskustelujen väri";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Palauta keskustelujen värit";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Poista keskustelun väri";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Palauta keskustelun väri";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Poista taustakuva";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Palauta taustakuva";
 
 /* Label for 'reset default chat color' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Poista vakiovärit";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Palauta vakiovärit";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Poista keskustelujen väri";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Palauta keskustelujen värit";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Poista vakiotaustakuva";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Palauta vakiotaustakuva";
 
 /* Reset wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Poista taustakuvat";
+"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Palauta taustakuvat";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Ohitetaanko kaikki taustakuvat?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Poista taustakuva";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Palauta taustakuva";
 
 /* Set chat color action in color and wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Keskustelun väri";
