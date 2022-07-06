@@ -107,6 +107,13 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         do {
             // Crash if storage can't be initialized.
             storage = try GRDBStorage(dbURL: databaseUrl, keyspec: GRDBDatabaseStorageAdapter.keyspec)
+            let center = NotificationCenter.default
+            center.removeObserver(storage.pool,
+                                  name: NSNotification.Name(rawValue: "UIApplicationDidReceiveMemoryWarningNotification"),
+                                  object: nil)
+            center.removeObserver(storage.pool,
+                                  name: NSNotification.Name(rawValue: "UIApplicationDidEnterBackgroundNotification"),
+                                  object: nil)
         } catch {
             owsFail("\(error.grdbErrorForLogging)")
         }
