@@ -708,7 +708,18 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             cameraModal.cameraFirstCaptureSendFlow.delegate = self;
             cameraModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
 
-            [self presentViewController:cameraModal animated:YES completion:nil];
+            // Defer hiding status bar until modal is fully onscreen
+            // to prevent unwanted shifting upwards of the entire presenter VC's view.
+            BOOL modalHidesStatusBar = cameraModal.topViewController.prefersStatusBarHidden;
+            if (!modalHidesStatusBar) {
+                cameraModal.modalPresentationCapturesStatusBarAppearance = YES;
+            }
+            [self presentViewController:cameraModal animated:YES completion:^{
+                if (modalHidesStatusBar) {
+                    cameraModal.modalPresentationCapturesStatusBarAppearance = YES;
+                    [cameraModal setNeedsStatusBarAppearanceUpdate];
+                }
+            }];
         }];
     }];
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -9,35 +9,35 @@ import UIKit
 // * Tries to fail quickly to avoid conflicts with other GRs, especially pans/swipes.
 // * Captures a bunch of useful "pan state" that makes using this GR much easier
 //   than UIPanGestureRecognizer.
-public class ImageEditorPanGestureRecognizer: UIPanGestureRecognizer {
+class ImageEditorPanGestureRecognizer: UIPanGestureRecognizer {
 
-    public weak var referenceView: UIView?
+    weak var referenceView: UIView?
 
     // Capture the location history of this gesture.
-    public var locationHistory = [CGPoint]()
+    var locationHistory = [CGPoint]()
 
-    public var locationFirst: CGPoint? {
+    var locationFirst: CGPoint? {
         return locationHistory.first
     }
 
     // MARK: - Touch Handling
 
     @objc
-    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         updateLocationHistory(event: event)
 
         super.touchesBegan(touches, with: event)
     }
 
     @objc
-    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
         updateLocationHistory(event: event)
 
         super.touchesMoved(touches, with: event)
     }
 
     @objc
-    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
         updateLocationHistory(event: event)
 
         super.touchesEnded(touches, with: event)
@@ -62,7 +62,7 @@ public class ImageEditorPanGestureRecognizer: UIPanGestureRecognizer {
         locationHistory.append(location)
     }
 
-    public override func reset() {
+    override func reset() {
         super.reset()
 
         locationHistory.removeAll()

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -9,45 +9,45 @@ import UIKit
 // * Accepts any number of touches in any locations.
 // * Isn't blocked by any other GR.
 // * Blocks all other GRs.
-public class PermissiveGestureRecognizer: UIGestureRecognizer {
+class PermissiveGestureRecognizer: UIGestureRecognizer {
 
     @objc
-    public override func canPrevent(_ preventedGestureRecognizer: UIGestureRecognizer) -> Bool {
+    override func canPrevent(_ preventedGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
 
     @objc
-    public override func canBePrevented(by preventingGestureRecognizer: UIGestureRecognizer) -> Bool {
+    override func canBePrevented(by preventingGestureRecognizer: UIGestureRecognizer) -> Bool {
         return false
     }
 
     @objc
-    public override func shouldRequireFailure(of otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    override func shouldRequireFailure(of otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return false
     }
 
     @objc
-    public override func shouldBeRequiredToFail(by otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    override func shouldBeRequiredToFail(by otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
 
     @objc
-    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 
     @objc
-    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 
     @objc
-    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 
     @objc
-    public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 

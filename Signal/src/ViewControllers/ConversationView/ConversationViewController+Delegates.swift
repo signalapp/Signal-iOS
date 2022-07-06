@@ -2,14 +2,11 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import Foundation
 import AVFoundation
+import Foundation
+import SignalUI
 
 extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
-
-    public func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
-        // no-op
-    }
 
     public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
                                    didApproveAttachments attachments: [SignalAttachment],
@@ -51,6 +48,13 @@ extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
         }
         inputToolbar.setMessageBody(newMessageBody, animated: false)
     }
+
+    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) { }
+
+    public func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) { }
+}
+
+extension ConversationViewController: AttachmentApprovalViewControllerDataSource {
 
     public var attachmentApprovalTextInputContextIdentifier: String? { textInputContextIdentifier }
 

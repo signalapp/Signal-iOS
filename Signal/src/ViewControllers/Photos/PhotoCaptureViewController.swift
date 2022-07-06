@@ -8,6 +8,7 @@ import Lottie
 import Photos
 import UIKit
 import SignalMessaging
+import SignalUI
 
 protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewControllerDidFinish(_ photoCaptureViewController: PhotoCaptureViewController)
@@ -150,10 +151,11 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
 
     override var prefersStatusBarHidden: Bool {
-        guard !CurrentAppContext().hasActiveCall else {
-            return false
-        }
-        return true
+        !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !CurrentAppContext().hasActiveCall
+    }
+
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        .lightContent
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -174,19 +176,6 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
                     self.previewView.alpha = 1
                 }
             })
-        }
-    }
-
-    override func viewSafeAreaInsetsDidChange() {
-        super.viewSafeAreaInsetsDidChange()
-
-        // we pin to a constant rather than margin, because on notched devices the
-        // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
-        // is locked to portrait.
-        // Only grab this once -- otherwise when we swipe to dismiss this is updated and the top bar jumps to having zero offset
-        if topBarOffsetFromTop.constant == 0 {
-            let maxInsetDimension = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
-            topBarOffsetFromTop.constant = max(maxInsetDimension, previewView.frame.minY)
         }
     }
 
@@ -259,7 +248,6 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
 
     private let topBar = TopBar(frame: .zero)
-    private var topBarOffsetFromTop: NSLayoutConstraint!
 
     private let bottomBar = BottomBar(frame: .zero)
     private var bottomBarVerticalPositionConstraint: NSLayoutConstraint!
@@ -305,7 +293,14 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         topBar.batchModeButton.addTarget(self, action: #selector(didTapBatchMode), for: .touchUpInside)
         topBar.flashModeButton.addTarget(self, action: #selector(didTapFlashMode), for: .touchUpInside)
         topBar.autoPinWidthToSuperview()
-        topBarOffsetFromTop = topBar.autoPinEdge(toSuperviewEdge: .top)
+        if UIDevice.current.isIPad {
+            topBar.autoPinEdge(toSuperviewSafeArea: .top)
+        } else {
+            // This constraint produces result visually identical to layout implemented in MediaTopBar.install(in:).
+            // MediaTopBar.install(in:) can't be used here because attaching to the top safe area
+            // would yield incorrect layout during interactive dismiss.
+            topBar.autoPinEdge(.top, to: .top, of: previewView)
+        }
 
         view.addSubview(bottomBar)
         bottomBar.isCompactHeightLayout = !UIDevice.current.hasIPhoneXNotch
@@ -487,8 +482,6 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         if !isRecordingVideo {
             topBar.mode = isIPadUIInRegularMode ? .closeButton : .cameraControls
         }
-        topBar.layoutMargins.leading = isIPadUIInRegularMode ? 24 : 4
-        topBar.layoutMargins.top = isIPadUIInRegularMode ? 10 : 0
         bottomBar.isHidden = isIPadUIInRegularMode
         sideBar?.isHidden = !isIPadUIInRegularMode
     }
@@ -832,22 +825,23 @@ extension PhotoCaptureViewController: CameraZoomSelectionControlDelegate {
 
 private struct ButtonImages {
     static let close = UIImage(named: "media-composer-close")
-    static let switchCamera = UIImage(named: "media-composer-switch-camera-24")
+    static let switchCamera = UIImage(named: "media-composer-switch-camera")
 
-    static let batchModeOn = UIImage(named: "media-composer-create-album-solid-24")
-    static let batchModeOff = UIImage(named: "media-composer-create-album-outline-24")
+    static let batchModeOn = UIImage(named: "media-composer-create-album-solid")
+    static let batchModeOff = UIImage(named: "media-composer-create-album-outline")
 
-    static let flashOn = UIImage(named: "media-composer-flash-filled-24")
-    static let flashOff = UIImage(named: "media-composer-flash-outline-24")
-    static let flashAuto = UIImage(named: "media-composer-flash-auto-24")
+    static let flashOn = UIImage(named: "media-composer-flash-filled")
+    static let flashOff = UIImage(named: "media-composer-flash-outline")
+    static let flashAuto = UIImage(named: "media-composer-flash-auto")
 }
 
-private class TopBar: UIView {
-    let closeButton = CameraOverlayButton(image: ButtonImages.close, userInterfaceStyleOverride: .dark)
+private class TopBar: MediaTopBar {
+
+    let closeButton = RoundMediaButton(image: ButtonImages.close, backgroundStyle: .blur)
 
     private let cameraControlsContainerView: UIStackView
-    let flashModeButton = CameraOverlayButton(image: ButtonImages.flashAuto, userInterfaceStyleOverride: .dark)
-    let batchModeButton = CameraOverlayButton(image: ButtonImages.batchModeOff, userInterfaceStyleOverride: .dark)
+    let flashModeButton = RoundMediaButton(image: ButtonImages.flashAuto, backgroundStyle: .blur)
+    let batchModeButton = RoundMediaButton(image: ButtonImages.batchModeOff, backgroundStyle: .blur)
 
     let recordingTimerView = RecordingTimerView(frame: .zero)
 
@@ -856,21 +850,23 @@ private class TopBar: UIView {
 
         super.init(frame: frame)
 
-        layoutMargins = UIEdgeInsets(hMargin: 4, vMargin: 0)
-
         addSubview(closeButton)
-        closeButton.autoPinHeightToSuperviewMargins()
-        closeButton.autoPinLeadingToSuperviewMargin()
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        closeButton.layoutMarginsGuide.leadingAnchor.constraint(equalTo: controlsLayoutGuide.leadingAnchor).isActive = true
+        closeButton.topAnchor.constraint(equalTo: controlsLayoutGuide.topAnchor).isActive = true
+        closeButton.bottomAnchor.constraint(equalTo: controlsLayoutGuide.bottomAnchor).isActive = true
 
         addSubview(recordingTimerView)
-        recordingTimerView.autoPinTopToSuperviewMargin(withInset: 8)
-        recordingTimerView.autoPinBottomToSuperviewMargin(withInset: 8)
-        recordingTimerView.autoHCenterInSuperview()
+        recordingTimerView.translatesAutoresizingMaskIntoConstraints = false
+        recordingTimerView.centerYAnchor.constraint(equalTo: controlsLayoutGuide.centerYAnchor).isActive = true
+        recordingTimerView.centerXAnchor.constraint(equalTo: controlsLayoutGuide.centerXAnchor).isActive = true
 
         cameraControlsContainerView.spacing = 0
         addSubview(cameraControlsContainerView)
-        cameraControlsContainerView.autoPinHeightToSuperviewMargins()
-        cameraControlsContainerView.autoPinTrailingToSuperviewMargin()
+        cameraControlsContainerView.translatesAutoresizingMaskIntoConstraints = false
+        cameraControlsContainerView.topAnchor.constraint(equalTo: controlsLayoutGuide.topAnchor).isActive = true
+        cameraControlsContainerView.bottomAnchor.constraint(equalTo: controlsLayoutGuide.bottomAnchor).isActive = true
+        flashModeButton.layoutMarginsGuide.trailingAnchor.constraint(equalTo: controlsLayoutGuide.trailingAnchor).isActive = true
     }
 
     @available(*, unavailable, message: "Use init(frame:) instead")
@@ -924,7 +920,8 @@ private class BottomBar: UIView {
     }
 
     let photoLibraryButton = MediaPickerThumbnailButton(frame: .zero)
-    let switchCameraButton = CameraOverlayButton(image: ButtonImages.switchCamera, backgroundStyle: .solid, userInterfaceStyleOverride: .dark)
+    let switchCameraButton = RoundMediaButton(image: ButtonImages.switchCamera,
+                                              backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor))
     let controlButtonsLayoutGuide = UILayoutGuide() // area encompassing Photo Library and Switch Camera buttons.
 
     let captureControl = CameraCaptureControl(axis: .horizontal)
@@ -935,7 +932,7 @@ private class BottomBar: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        layoutMargins = UIEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 10)
+        preservesSuperviewLayoutMargins = true
 
         addLayoutGuide(controlButtonsLayoutGuide)
         addConstraints([ controlButtonsLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
@@ -949,13 +946,13 @@ private class BottomBar: UIView {
 
         photoLibraryButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(photoLibraryButton)
-        addConstraints([ photoLibraryButton.leadingAnchor.constraint(equalTo: controlButtonsLayoutGuide.leadingAnchor),
+        addConstraints([ photoLibraryButton.layoutMarginsGuide.leadingAnchor.constraint(equalTo: controlButtonsLayoutGuide.leadingAnchor),
                          photoLibraryButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor),
                          photoLibraryButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor) ])
 
         switchCameraButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(switchCameraButton)
-        addConstraints([ switchCameraButton.trailingAnchor.constraint(equalTo: controlButtonsLayoutGuide.trailingAnchor),
+        addConstraints([ switchCameraButton.layoutMarginsGuide.trailingAnchor.constraint(equalTo: controlButtonsLayoutGuide.trailingAnchor),
                          switchCameraButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor),
                          switchCameraButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor) ])
 
@@ -994,9 +991,9 @@ private class SideBar: UIView {
     }
 
     private let cameraControlsContainerView: UIStackView
-    let flashModeButton = CameraOverlayButton(image: ButtonImages.flashAuto, userInterfaceStyleOverride: .dark)
-    let batchModeButton = CameraOverlayButton(image: ButtonImages.batchModeOff, userInterfaceStyleOverride: .dark)
-    let switchCameraButton = CameraOverlayButton(image: ButtonImages.switchCamera, userInterfaceStyleOverride: .dark)
+    let flashModeButton = RoundMediaButton(image: ButtonImages.flashAuto, backgroundStyle: .blur)
+    let batchModeButton = RoundMediaButton(image: ButtonImages.batchModeOff, backgroundStyle: .blur)
+    let switchCameraButton = RoundMediaButton(image: ButtonImages.switchCamera, backgroundStyle: .blur)
 
     let photoLibraryButton = MediaPickerThumbnailButton(frame: .zero)
 
@@ -1148,7 +1145,7 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
 private class MediaPickerThumbnailButton: UIButton {
 
-    private static let visibleSize: CGFloat = 36
+    private static let visibleSize: CGFloat = 42
 
     func configure() {
         contentEdgeInsets = UIEdgeInsets(margin: 8)
@@ -1274,7 +1271,7 @@ private class RecordingTimerView: PillView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 0)
+        layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 9)
 
         let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         addSubview(backgroundView)

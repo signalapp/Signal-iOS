@@ -1,67 +1,55 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import UIKit
 import AVFoundation
+import UIKit
 
-public enum VideoEditorError: Error {
+private enum VideoEditorError: Error {
     case cancelled
 }
 
-@objc
-public protocol VideoEditorModelObserver: AnyObject {
+protocol VideoEditorModelObserver: AnyObject {
     func videoEditorModelDidChange(_ model: VideoEditorModel)
 }
 
 // MARK: -
 
-@objc
-public class VideoEditorModel: NSObject {
+class VideoEditorModel: NSObject {
+
     private let lock = UnfairLock()
 
-    @objc
-    public let srcVideoPath: String
+    let srcVideoPath: String
 
-    @objc
-    public let untrimmedDuration: CMTime
+    let untrimmedDuration: CMTime
 
-    @objc
-    public var untrimmedDurationSeconds: TimeInterval {
+    var untrimmedDurationSeconds: TimeInterval {
         return untrimmedDuration.seconds
     }
 
-    @objc
-    public var trimmedDurationSeconds: TimeInterval {
+    var trimmedDurationSeconds: TimeInterval {
         return max(0, trimmedEndSeconds - trimmedStartSeconds)
     }
 
-    @objc
-    public private(set) var trimmedStartSeconds: TimeInterval = 0
+    private(set) var trimmedStartSeconds: TimeInterval = 0
 
-    @objc
-    public private(set) var trimmedEndSeconds: TimeInterval = 0
+    private(set) var trimmedEndSeconds: TimeInterval = 0
 
-    @objc
-    public let naturalSize: CGSize
+    let naturalSize: CGSize
 
-    @objc
-    public let displaySize: CGSize
+    let displaySize: CGSize
 
-    @objc
-    public static let minimumDurationSeconds: TimeInterval = 1
+    static let minimumDurationSeconds: TimeInterval = 1
 
     private var minimumDurationSeconds: TimeInterval {
         return VideoEditorModel.minimumDurationSeconds
     }
 
-    @objc
-    public var canBeTrimmed: Bool {
+    var canBeTrimmed: Bool {
         return untrimmedDurationSeconds > minimumDurationSeconds
     }
 
-    @objc
-    public var isTrimmed: Bool {
+    var isTrimmed: Bool {
         return trimmedStartSeconds > 0 || trimmedEndSeconds < untrimmedDurationSeconds
     }
 
@@ -69,7 +57,7 @@ public class VideoEditorModel: NSObject {
     //
     // * They are invalid.
     // * We can't determine their size / aspect-ratio.
-    public init(srcVideoPath: String) throws {
+    init(srcVideoPath: String) throws {
         self.srcVideoPath = srcVideoPath
 
         guard OWSMediaUtils.isValidVideo(path: srcVideoPath) else {
@@ -100,10 +88,10 @@ public class VideoEditorModel: NSObject {
         }
 
         guard asset.isPlayable,
-            asset.isExportable,
-            asset.isReadable,
-            !asset.hasProtectedContent else {
-                throw OWSAssertionError("Invalid content.")
+              asset.isExportable,
+              asset.isReadable,
+              !asset.hasProtectedContent else {
+            throw OWSAssertionError("Invalid content.")
         }
 
         self.untrimmedDuration = duration
@@ -115,8 +103,7 @@ public class VideoEditorModel: NSObject {
         super.init()
     }
 
-    @objc
-    public func trimToStartSeconds(_ value: TimeInterval) {
+    func trimToStartSeconds(_ value: TimeInterval) {
         // Ensure:
         //
         // * Trimmed start > 0
@@ -131,8 +118,7 @@ public class VideoEditorModel: NSObject {
         fireModelDidChange()
     }
 
-    @objc
-    public func trimToEndSeconds(_ value: TimeInterval) {
+    func trimToEndSeconds(_ value: TimeInterval) {
         // Ensure:
         //
         // * Trimmed end > 0 + minimum duration
@@ -151,8 +137,7 @@ public class VideoEditorModel: NSObject {
 
     private var observers = [Weak<VideoEditorModelObserver>]()
 
-    @objc
-    public func add(observer: VideoEditorModelObserver) {
+    func add(observer: VideoEditorModelObserver) {
         observers.append(Weak(value: observer))
     }
 
@@ -168,7 +153,7 @@ public class VideoEditorModel: NSObject {
 
     // MARK: - Rendering
 
-    public var needsRender: Bool { isTrimmed }
+    var needsRender: Bool { isTrimmed }
     fileprivate var currentRender: Render?
 
     // Whenever the model state changes, we need to discard any ongoing render.
@@ -182,7 +167,7 @@ public class VideoEditorModel: NSObject {
     // This method can be used to access the rendered output.
     // It can also be used to eagerly initiate a render (if
     // necessary) to reduce perceived render time.
-    public func ensureCurrentRender() -> Render {
+    func ensureCurrentRender() -> Render {
         return lock.withLock {
             if let render = self.currentRender {
                 return render
@@ -200,7 +185,7 @@ extension VideoEditorModel {
     // Represents an attempt to render the output.
     // Contains a copy of the model state at the
     // time the render is enqueued.
-    public class Render {
+    class Render {
         fileprivate let srcVideoPath: String
         fileprivate let untrimmedDuration: CMTime
         fileprivate let trimmedStartSeconds: TimeInterval
@@ -238,7 +223,7 @@ extension VideoEditorModel {
             /// Returns an unowned reference to the render output file. This path is valid as long as the `Result`
             /// is valid and file has not been consumed by `consumeResultPath()`. Caller should make a copy
             /// of this file if they'd like the render result to outlive these events.
-            public func getResultPath() -> String {
+            func getResultPath() -> String {
                 lock.withLock {
                     // Something else has already taken ownership of this file
                     // It's probably still valid, but worth flagging as an issue.
@@ -249,7 +234,7 @@ extension VideoEditorModel {
 
             /// Returns a path to the render result. Receiver is responsible for deleting the resulting file
             /// This should be called once at most
-            public func consumeResultPath() throws -> String {
+            func consumeResultPath() throws -> String {
                 // Since the path is being consumed, we no longer own it.
                 // If we didn't already own it, we should make a copy of the unowned filepath
                 // It's incorrect and worthy of a failDebug, but it's also probably still valid.

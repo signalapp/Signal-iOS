@@ -90,7 +90,7 @@ extension SharingThreadPickerViewController {
 
     func approve() {
         do {
-            let vc = try buildApprovalViewController()
+            let vc = try buildApprovalViewController(withCancelButton: false)
             navigationController?.pushViewController(vc, animated: true)
         } catch {
             shareViewDelegate?.shareViewFailed(error: error)
@@ -104,10 +104,10 @@ extension SharingThreadPickerViewController {
             throw OWSAssertionError("Unexpectedly missing conversation for selected thread")
         }
         selection.add(conversationItem)
-        return try buildApprovalViewController()
+        return try buildApprovalViewController(withCancelButton: true)
     }
 
-    func buildApprovalViewController() throws -> UIViewController {
+    func buildApprovalViewController(withCancelButton: Bool) throws -> UIViewController {
         guard let attachments = attachments, let firstAttachment = attachments.first else {
             throw OWSAssertionError("Unexpectedly missing attachments")
         }
@@ -148,9 +148,12 @@ extension SharingThreadPickerViewController {
             approvalView.delegate = self
 
         } else {
-            let approvalView = AttachmentApprovalViewController(options: .hasCancel, sendButtonImageName: "send-solid-24", attachmentApprovalItems: attachments.map { AttachmentApprovalItem(attachment: $0, canSave: false) })
+            let approvalItems = attachments.map { AttachmentApprovalItem(attachment: $0, canSave: false) }
+            let approvalVCOptions: AttachmentApprovalViewControllerOptions = withCancelButton ? [ .hasCancel ] : []
+            let approvalView = AttachmentApprovalViewController(options: approvalVCOptions, attachmentApprovalItems: approvalItems)
             approvalVC = approvalView
             approvalView.approvalDelegate = self
+            approvalView.approvalDataSource = self
         }
 
         return approvalVC
@@ -603,10 +606,6 @@ extension SharingThreadPickerViewController: ContactShareApprovalViewControllerD
 
 extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDelegate {
 
-    func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
-        // We can ignore this event.
-    }
-
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
         self.approvalMessageBody = newMessageBody
     }
@@ -629,6 +628,11 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDel
     func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) {
         owsFailDebug("Cannot add more to message forwards.")
     }
+}
+
+// MARK: -
+
+extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDataSource {
 
     var attachmentApprovalTextInputContextIdentifier: String? {
         return nil

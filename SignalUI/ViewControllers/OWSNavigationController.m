@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    self.ows_preferredStatusBarStyle = UIStatusBarStyleDefault;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(themeDidChange:)
                                                  name:ThemeDidChangeNotification
@@ -136,6 +137,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
+    if (self.ows_preferredStatusBarStyle != UIStatusBarStyleDefault) {
+        return self.ows_preferredStatusBarStyle;
+    }
     if (!CurrentAppContext().isMainApp) {
         return super.preferredStatusBarStyle;
     } else {

@@ -2,6 +2,8 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
+import SignalUI
+
 @objc
 public protocol SendMessageDelegate: AnyObject {
     func sendMessageFlowDidComplete(threads: [TSThread])
@@ -285,16 +287,13 @@ extension SendMessageFlow {
             pushViewController(approvalView, animated: true)
         case .media(let signalAttachmentProviders, let messageBody):
             let options: AttachmentApprovalViewControllerOptions = .hasCancel
-            let sendButtonImageName = "send-solid-24"
-
             let attachmentApprovalItems = try signalAttachmentProviders.map { signalAttachmentProvider -> AttachmentApprovalItem in
                 let signalAttachment = try signalAttachmentProvider.buildAttachmentForSending()
                 return AttachmentApprovalItem(attachment: signalAttachment, canSave: false)
             }
-            let approvalViewController = AttachmentApprovalViewController(options: options,
-                                                                          sendButtonImageName: sendButtonImageName,
-                                                                          attachmentApprovalItems: attachmentApprovalItems)
+            let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
             approvalViewController.approvalDelegate = self
+            approvalViewController.approvalDataSource = self
             approvalViewController.messageBody = messageBody
 
             pushViewController(approvalViewController, animated: true)
@@ -558,10 +557,6 @@ extension SendMessageFlow: ContactShareApprovalViewControllerDelegate {
 
 extension SendMessageFlow: AttachmentApprovalViewControllerDelegate {
 
-    func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
-        // We can ignore this event.
-    }
-
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
         // TODO: We could update unapprovedContent to reflect newMessageBody.
     }
@@ -584,13 +579,18 @@ extension SendMessageFlow: AttachmentApprovalViewControllerDelegate {
         // TODO: Extend SendMessageFlow to handle camera first capture flow, share extension.
         owsFailDebug("Cannot add more to message forwards.")
     }
+}
+
+// MARK: -
+
+extension SendMessageFlow: AttachmentApprovalViewControllerDataSource {
 
     var attachmentApprovalTextInputContextIdentifier: String? {
         return nil
     }
 
     var attachmentApprovalRecipientNames: [String] {
-        selectedConversations.map { $0.titleWithSneakyTransaction }
+        []
     }
 
     var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {

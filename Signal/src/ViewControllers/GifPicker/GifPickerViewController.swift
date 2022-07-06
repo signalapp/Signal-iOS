@@ -5,12 +5,13 @@
 import Foundation
 import SignalServiceKit
 import SignalMessaging
+import SignalUI
 
-@objc
-public class GifPickerNavigationViewController: OWSNavigationController {
+class GifPickerNavigationViewController: OWSNavigationController {
 
-    @objc
-    public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
+    weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
+    weak var approvalDataSource: AttachmentApprovalViewControllerDataSource?
+    private let initialMessageBody: MessageBody?
 
     lazy var gifPickerViewController: GifPickerViewController = {
         let gifPickerViewController = GifPickerViewController()
@@ -18,10 +19,11 @@ public class GifPickerNavigationViewController: OWSNavigationController {
         return gifPickerViewController
     }()
 
-    @objc
-    override init() {
+    required init(initialMessageBody: MessageBody?) {
+        self.initialMessageBody = initialMessageBody
         super.init()
         pushViewController(gifPickerViewController, animated: false)
+        delegate = self
     }
 }
 
@@ -30,10 +32,10 @@ extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
         AssertIsOnMainThread()
 
         let attachmentApprovalItem = AttachmentApprovalItem(attachment: attachment, canSave: false)
-        let attachmentApproval = AttachmentApprovalViewController(options: [],
-                                                                  sendButtonImageName: "send-solid-24",
-                                                                  attachmentApprovalItems: [attachmentApprovalItem])
+        let attachmentApproval = AttachmentApprovalViewController(options: [], attachmentApprovalItems: [attachmentApprovalItem])
+        attachmentApproval.messageBody = initialMessageBody
         attachmentApproval.approvalDelegate = self
+        attachmentApproval.approvalDataSource = self
         pushViewController(attachmentApproval, animated: true) {
             // Remove any selected state in case the user returns "back" to the gif picker.
             self.gifPickerViewController.clearSelectedState()
@@ -46,9 +48,6 @@ extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
 }
 
 extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDelegate {
-    public func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
-        approvalDelegate?.attachmentApprovalDidAppear(attachmentApproval)
-    }
 
     public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
                                    didApproveAttachments attachments: [SignalAttachment],
@@ -65,20 +64,45 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDel
         approvalDelegate?.attachmentApproval(attachmentApproval, didChangeMessageBody: newMessageBody)
     }
 
-    public func attachmentApprovalBackButtonTitle() -> String {
-        return CommonStrings.backButton
-    }
+    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) { }
+
+    public func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) { }
+}
+
+extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDataSource {
 
     public var attachmentApprovalTextInputContextIdentifier: String? {
-        return approvalDelegate?.attachmentApprovalTextInputContextIdentifier
+        return approvalDataSource?.attachmentApprovalTextInputContextIdentifier
     }
 
     public var attachmentApprovalRecipientNames: [String] {
-        return approvalDelegate?.attachmentApprovalRecipientNames ?? []
+        approvalDataSource?.attachmentApprovalRecipientNames ?? []
     }
 
     public var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
-        return approvalDelegate?.attachmentApprovalMentionableAddresses ?? []
+        return approvalDataSource?.attachmentApprovalMentionableAddresses ?? []
+    }
+}
+
+// MARK: -
+
+extension GifPickerNavigationViewController: UINavigationControllerDelegate {
+
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        updateNavigationBarVisibility(for: viewController, animated: animated)
+    }
+
+    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        updateNavigationBarVisibility(for: viewController, animated: animated)
+    }
+
+    private func updateNavigationBarVisibility(for viewController: UIViewController, animated: Bool) {
+        switch viewController {
+        case is AttachmentApprovalViewController:
+            setNavigationBarHidden(true, animated: animated)
+        default:
+            setNavigationBarHidden(false, animated: animated)
+        }
     }
 }
 

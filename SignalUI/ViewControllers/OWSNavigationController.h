@@ -28,6 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
 // regardless of which view is currently visible.
 @property (nonatomic, nullable) NSNumber *ows_prefersStatusBarHidden;
 
+// This is the property to use when the whole navigation stack
+// needs to have status bar in a fixed style, e.g. when presenting
+// a view controller modally in a fixed dark or light style.
+@property (nonatomic) UIStatusBarStyle ows_preferredStatusBarStyle;
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 - (instancetype)initWithNavigationBarClass:(nullable Class)navigationBarClass
                               toolbarClass:(nullable Class)toolbarClass NS_UNAVAILABLE;

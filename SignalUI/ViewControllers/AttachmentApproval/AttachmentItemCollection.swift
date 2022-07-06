@@ -1,27 +1,12 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalMessaging
 
-class AddMoreRailItem: GalleryRailItem {
-    func buildRailItemView() -> UIView {
-        let view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.33)
+class AddMoreRailItem: Equatable {
 
-        let iconView = UIImageView(image: #imageLiteral(resourceName: "plus-24").withRenderingMode(.alwaysTemplate))
-        iconView.tintColor = .ows_white
-        view.addSubview(iconView)
-        iconView.setCompressionResistanceHigh()
-        iconView.setContentHuggingHigh()
-        iconView.autoCenterInSuperview()
-
-        return view
-    }
-}
-
-extension AddMoreRailItem: Equatable {
     static func == (lhs: AddMoreRailItem, rhs: AddMoreRailItem) -> Bool {
         return true
     }
@@ -34,6 +19,22 @@ public struct AttachmentApprovalItem: Hashable {
     }
 
     public let attachment: SignalAttachment
+
+    enum `Type` {
+        case generic
+        case image
+        case video
+    }
+
+    var type: `Type` {
+        if imageEditorModel != nil {
+            return .image
+        }
+        if videoEditorModel != nil {
+            return .video
+        }
+        return .generic
+    }
 
     // This might be nil if the attachment is not a valid image.
     let imageEditorModel: ImageEditorModel?
@@ -92,10 +93,6 @@ public struct AttachmentApprovalItem: Hashable {
 
     // MARK: 
 
-    var captionText: String? {
-        return attachment.captionText
-    }
-
     func getThumbnailImage() -> UIImage? {
         return self.attachment.staticThumbnail()
     }
@@ -116,6 +113,7 @@ public struct AttachmentApprovalItem: Hashable {
 // MARK: -
 
 class AttachmentApprovalItemCollection {
+
     private (set) var attachmentApprovalItems: [AttachmentApprovalItem]
     let isAddMoreVisible: () -> Bool
 

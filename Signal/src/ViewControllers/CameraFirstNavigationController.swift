@@ -47,6 +47,12 @@ public class CameraFirstCaptureSendFlow: NSObject {
 
 extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController) {
+        // Restore status bar visibility (if current VC hides it) so that
+        // there's no visible UI updates in the presenter.
+        if sendMediaNavigationController.topViewController?.prefersStatusBarHidden ?? false {
+            sendMediaNavigationController.modalPresentationCapturesStatusBarAppearance = false
+            sendMediaNavigationController.setNeedsStatusBarAppearanceUpdate()
+        }
         delegate?.cameraFirstCaptureSendFlowDidCancel(self)
     }
 
@@ -68,20 +74,12 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
         self.approvalMessageBody = newMessageBody
     }
 
-    var sendMediaNavApprovalButtonImageName: String {
-        return "arrow-right-24"
-    }
-
-    var sendMediaNavCanSaveAttachments: Bool {
-        return true
-    }
-
     var sendMediaNavTextInputContextIdentifier: String? {
         return nil
     }
 
     var sendMediaNavRecipientNames: [String] {
-        return selectedConversations.map { $0.titleWithSneakyTransaction }
+        selectedConversations.map { $0.titleWithSneakyTransaction }
     }
 
     var sendMediaNavMentionableAddresses: [SignalServiceAddress] {
