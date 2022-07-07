@@ -60,7 +60,9 @@ public extension DebugLogger {
             get {
                 return [:]
             }
-            set {}
+            set {
+                _ = newValue
+            }
         }
 
         @inlinable public var logLevel: Logging.Logger.Level {
@@ -71,7 +73,9 @@ public extension DebugLogger {
                 return .info
                 #endif
             }
-            set {}
+            set {
+                _ = newValue
+            }
         }
     }
 }

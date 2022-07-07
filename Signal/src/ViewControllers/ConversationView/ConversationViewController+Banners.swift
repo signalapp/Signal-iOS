@@ -51,7 +51,7 @@ public extension ConversationViewController {
 
         let dismissButton = OWSButton(title: CommonStrings.dismissButton) { [weak self] in
             AssertIsOnMainThread()
-            viewState.isPendingMemberRequestsBannerHidden = true
+            viewState.hidePendingMemberRequestsBanner()
             self?.ensureBannerState()
         }
         dismissButton.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
@@ -96,7 +96,7 @@ public extension ConversationViewController {
             comment: "Button to allow user to review known name collisions with an incoming message request")
 
         banner.closeAction = { [weak self] in
-            viewState.isMessageRequestNameCollisionBannerHidden = true
+            viewState.hideMessageRequestNameCollisionBanner()
             self?.ensureBannerState()
         }
 
@@ -211,7 +211,7 @@ fileprivate extension ConversationViewController {
 
         let notNowButton = OWSButton(title: CommonStrings.notNowButton) { [weak self] in
             AssertIsOnMainThread()
-            viewState.isDroppedGroupMembersBannerHidden = true
+            viewState.hideDroppedGroupMembersBanner()
             self?.ensureBannerState()
         }
         notNowButton.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold

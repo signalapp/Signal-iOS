@@ -143,7 +143,7 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
 
     override var isModalInPresentation: Bool {
         get { hasUnsavedChanges }
-        set { owsFailDebug("Unsupported") }
+        set {}
     }
 
     // MARK: - TableContents

@@ -1495,6 +1495,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
         set {
             // By the nature of MarqueeLabel, this is 1
+            assert(newValue == 1)
             super.numberOfLines = 1
         }
     }
@@ -1506,6 +1507,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
         set {
             // By the nature of MarqueeLabel, this is false
+            assert(newValue == false)
             super.adjustsFontSizeToFitWidth = false
         }
     }
@@ -1516,6 +1518,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
         }
 
         set {
+            assert(newValue == 0.0)
             super.minimumScaleFactor = 0.0
         }
     }

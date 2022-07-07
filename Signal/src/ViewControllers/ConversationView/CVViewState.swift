@@ -349,7 +349,7 @@ public extension CVViewState {
             return abs(date.timeIntervalSinceNow) < hiddenDurationInterval
         }
 
-        func setIsHidden(_ threadUniqueId: String) {
+        func hide(_ threadUniqueId: String) {
             unfairLock.withLock {
                 hiddenDateMap[threadUniqueId] = Date()
             }
@@ -364,17 +364,26 @@ public extension CVViewState {
 
     var isPendingMemberRequestsBannerHidden: Bool {
         get { Self.isPendingMemberRequestsBannerHiding.isHidden(threadUniqueId) }
-        set { Self.isPendingMemberRequestsBannerHiding.setIsHidden(threadUniqueId) }
+    }
+
+    func hidePendingMemberRequestsBanner() {
+        Self.isPendingMemberRequestsBannerHiding.hide(threadUniqueId)
     }
 
     var isDroppedGroupMembersBannerHidden: Bool {
         get { Self.isDroppedGroupMembersBannerHiding.isHidden(threadUniqueId) }
-        set { Self.isDroppedGroupMembersBannerHiding.setIsHidden(threadUniqueId) }
+    }
+
+    func hideDroppedGroupMembersBanner() {
+        Self.isDroppedGroupMembersBannerHiding.hide(threadUniqueId)
     }
 
     var isMessageRequestNameCollisionBannerHidden: Bool {
         get { Self.isMessageRequestNameCollisionBannerHiding.isHidden(threadUniqueId) }
-        set { Self.isMessageRequestNameCollisionBannerHiding.setIsHidden(threadUniqueId) }
+    }
+
+    func hideMessageRequestNameCollisionBanner() {
+        Self.isMessageRequestNameCollisionBannerHiding.hide(threadUniqueId)
     }
 }
 
