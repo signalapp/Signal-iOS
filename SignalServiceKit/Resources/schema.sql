@@ -1331,6 +1331,7 @@ CREATE
             ,"subscriptionLevel" INTEGER
             ,"amount" NUMERIC NOT NULL
             ,"currencyCode" TEXT NOT NULL
+            ,"receiptType" INTEGER
         )
 ;
 

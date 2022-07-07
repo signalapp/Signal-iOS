@@ -7,7 +7,7 @@ import PassKit
 import LibSignalClient
 import SignalServiceKit
 
-public enum OneTimeBadgeLevel: UInt64 {
+public enum OneTimeBadgeLevel: UInt64, CaseIterable {
     case boostBadge = 1
     case giftBadge = 100
 }
@@ -1180,6 +1180,17 @@ extension SubscriptionManager {
     }
 
     public class func getBadge(level: OneTimeBadgeLevel) -> Promise<ProfileBadge> {
+        firstly {
+            getOneTimeBadges()
+        }.map { oneTimeBadges in
+            guard let result = oneTimeBadges[level] else {
+                owsFail("No badge for this level was found")
+            }
+            return result
+        }
+    }
+
+    public class func getOneTimeBadges() -> Promise<[OneTimeBadgeLevel: ProfileBadge]> {
         let request = OWSRequestFactory.boostBadgesRequest()
 
         return firstly {
@@ -1200,15 +1211,22 @@ extension SubscriptionManager {
                 throw OWSAssertionError("Missing or invalid response.")
             }
 
-            let badgeLevel: [String: Any] = try levelsParser.required(key: String(level.rawValue))
+            var result = [OneTimeBadgeLevel: ProfileBadge]()
 
-            guard let levelParser = ParamParser(responseObject: badgeLevel) else {
-                throw OWSAssertionError("Missing or invalid response.")
+            for level in OneTimeBadgeLevel.allCases {
+                let badgeLevel: [String: Any]? = try? levelsParser.optional(key: String(level.rawValue))
+                guard let badgeLevel = badgeLevel else { continue }
+
+                guard let levelParser = ParamParser(responseObject: badgeLevel) else {
+                    throw OWSAssertionError("Missing or invalid response.")
+                }
+
+                let badgeJson: [String: Any] = try levelParser.required(key: "badge")
+
+                result[level] = try ProfileBadge(jsonDictionary: badgeJson)
             }
 
-            let badgeJson: [String: Any] = try levelParser.required(key: "badge")
-
-            return try ProfileBadge(jsonDictionary: badgeJson)
+            return result
         }
     }
 }

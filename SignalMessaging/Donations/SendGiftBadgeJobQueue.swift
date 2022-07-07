@@ -245,6 +245,13 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
     override public func didSucceed() {
         databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
+
+            DonationReceipt(
+                receiptType: .gift,
+                timestamp: Date(),
+                amount: amount,
+                currencyCode: currencyCode
+            ).anyInsert(transaction: transaction)
         }
         postJobEventNotification(.jobSucceeded)
     }

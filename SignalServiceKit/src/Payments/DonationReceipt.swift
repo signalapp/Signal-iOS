@@ -6,10 +6,17 @@ import Foundation
 import GRDB
 
 public final class DonationReceipt: NSObject, SDSCodableModel {
+    public enum DonationReceiptType {
+        case boost
+        case subscription(subscriptionLevel: UInt)
+        case gift
+    }
+
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
         case uniqueId
         case timestamp
+        case receiptType
         case subscriptionLevel
         case currencyCode
         case amount
@@ -17,31 +24,84 @@ public final class DonationReceipt: NSObject, SDSCodableModel {
 
     public var id: RowId?
     public let uniqueId: String
+    public let receiptType: DonationReceiptType
     public let timestamp: Date
-    public let subscriptionLevel: UInt?
     public let amount: Decimal
     public let currencyCode: Currency.Code
 
     public static let databaseTableName = "model_DonationReceipt"
 
-    public var isBoost: Bool { subscriptionLevel == nil }
-
     public var localizedName: String {
-        isBoost
-        ? NSLocalizedString("DONATION_RECEIPT_ONE_TIME", comment: "Title for one-time donation receipts")
-        : NSLocalizedString("DONATION_RECEIPT_RECURRING", comment: "Title for recurring donation receipts")
+        switch receiptType {
+        case .boost: return NSLocalizedString("DONATION_RECEIPT_ONE_TIME", comment: "Title for one-time donation receipts")
+        case .subscription: return NSLocalizedString("DONATION_RECEIPT_RECURRING", comment: "Title for recurring donation receipts")
+        case .gift: return NSLocalizedString("DONATION_RECEIPT_GIFT", comment: "Title for gift donation receipts")
+        }
     }
 
     public init(
+        receiptType: DonationReceiptType,
         timestamp: Date,
-        subscriptionLevel: UInt? = nil,
         amount: Decimal,
         currencyCode: Currency.Code
     ) {
         self.uniqueId = UUID().uuidString
+        self.receiptType = receiptType
         self.timestamp = timestamp
-        self.subscriptionLevel = subscriptionLevel
         self.amount = amount
         self.currencyCode = currencyCode
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        id = try container.decodeIfPresent(RowId.self, forKey: .id)
+        uniqueId = try container.decode(String.self, forKey: .uniqueId)
+        timestamp = try container.decode(Date.self, forKey: .timestamp)
+        amount = try container.decode(Decimal.self, forKey: .amount)
+        currencyCode = try container.decode(Currency.Code.self, forKey: .currencyCode)
+
+        let subscriptionLevel = try container.decodeIfPresent(UInt.self, forKey: .subscriptionLevel)
+        let rawReceiptType = try container.decodeIfPresent(UInt.self, forKey: .receiptType)
+        switch rawReceiptType {
+        case nil:
+            Logger.info("Parsing an older donation receipt")
+            if let subscriptionLevel = subscriptionLevel {
+                receiptType = .subscription(subscriptionLevel: subscriptionLevel)
+            } else {
+                receiptType = .boost
+            }
+        case 0:
+            receiptType = .boost
+        case 1:
+            guard let subscriptionLevel = subscriptionLevel else {
+                owsFail("Found a donation receipt, marked as a subscription, with no subscription level")
+            }
+            receiptType = .subscription(subscriptionLevel: subscriptionLevel)
+        case 2:
+            receiptType = .gift
+        default:
+            owsFail("Found a donation receipt with an unknown receipt type")
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encodeIfPresent(id, forKey: .id)
+        try container.encode(uniqueId, forKey: .uniqueId)
+        try container.encode(timestamp, forKey: .timestamp)
+        try container.encode(amount, forKey: .amount)
+        try container.encode(currencyCode, forKey: .currencyCode)
+
+        switch receiptType {
+        case .boost:
+            try container.encode(0, forKey: .receiptType)
+        case .subscription(let subscriptionLevel):
+            try container.encode(1, forKey: .receiptType)
+            try container.encode(subscriptionLevel, forKey: .subscriptionLevel)
+        case .gift:
+            try container.encode(2, forKey: .receiptType)
+        }
     }
 }

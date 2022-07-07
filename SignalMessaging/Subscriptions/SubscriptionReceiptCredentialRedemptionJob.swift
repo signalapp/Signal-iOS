@@ -229,16 +229,14 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
 
     override public func didSucceed() {
         self.databaseStorage.write { transaction in
-            var subscriptionLevel: UInt?
             if !self.isBoost {
                 SubscriptionManager.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
-                subscriptionLevel = targetSubscriptionLevel
             }
 
             if let amount = amount, let currencyCode = currencyCode {
                 DonationReceipt(
+                    receiptType: self.isBoost ? .boost : .subscription(subscriptionLevel: targetSubscriptionLevel),
                     timestamp: Date(),
-                    subscriptionLevel: subscriptionLevel,
                     amount: amount,
                     currencyCode: currencyCode
                 ).anyInsert(transaction: transaction)

@@ -11,14 +11,16 @@ import BonMot
 
 public class ProfileBadgeLookup {
     let boostBadge: ProfileBadge?
+    let giftBadge: ProfileBadge?
     let badgesBySubscriptionLevel: [UInt: ProfileBadge]
 
     public convenience init() {
-        self.init(boostBadge: nil, subscriptionLevels: [])
+        self.init(boostBadge: nil, giftBadge: nil, subscriptionLevels: [])
     }
 
-    public init(boostBadge: ProfileBadge?, subscriptionLevels: [SubscriptionLevel]) {
+    public init(boostBadge: ProfileBadge?, giftBadge: ProfileBadge?, subscriptionLevels: [SubscriptionLevel]) {
         self.boostBadge = boostBadge
+        self.giftBadge = giftBadge
 
         var badgesBySubscriptionLevel = [UInt: ProfileBadge]()
         for subscriptionLevel in subscriptionLevels {
@@ -28,10 +30,10 @@ public class ProfileBadgeLookup {
     }
 
     private func get(donationReceipt: DonationReceipt) -> ProfileBadge? {
-        if let subscriptionLevel = donationReceipt.subscriptionLevel {
-            return badgesBySubscriptionLevel[subscriptionLevel]
-        } else {
-            return boostBadge
+        switch donationReceipt.receiptType {
+        case .boost: return boostBadge
+        case .subscription(let subscriptionLevel): return badgesBySubscriptionLevel[subscriptionLevel]
+        case .gift: return giftBadge
         }
     }
 
@@ -43,6 +45,7 @@ public class ProfileBadgeLookup {
     public func attemptToPopulateBadgeAssets(populateAssetsOnBadge: (ProfileBadge) -> Promise<Void>) -> Guarantee<Void> {
         var badgesToLoad = Array(badgesBySubscriptionLevel.values)
         if let boostBadge = boostBadge { badgesToLoad.append(boostBadge) }
+        if let giftBadge = giftBadge { badgesToLoad.append(giftBadge) }
 
         let promises = badgesToLoad.map { populateAssetsOnBadge($0) }
         return Promise.when(fulfilled: promises).recover { _ in Guarantee.value(()) }

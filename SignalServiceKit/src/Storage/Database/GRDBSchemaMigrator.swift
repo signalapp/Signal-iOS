@@ -165,6 +165,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addStoryThreadColumns
         case addUnsavedMessagesToSendToJobRecord
         case addColumnsForSendGiftBadgeDurableJob
+        case addDonationReceiptTypeColumn
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -213,7 +214,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 38
+    public static let grdbSchemaVersionLatest: UInt = 39
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1818,6 +1819,16 @@ public class GRDBSchemaMigrator: NSObject {
                     table.add(column: "messageText", .text)
                     table.add(column: "paymentIntentClientSecret", .text)
                     table.add(column: "paymentMethodId", .text)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addDonationReceiptTypeColumn) { db in
+            do {
+                try db.alter(table: "model_DonationReceipt") { (table: TableAlteration) -> Void in
+                    table.add(column: "receiptType", .numeric)
                 }
             } catch {
                 owsFail("Error: \(error)")
