@@ -275,7 +275,15 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
     }
     
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 50
+        let section: MediaGalleryViewModel.SectionModel = self.viewModel.galleryData[section]
+        
+        switch section.model {
+            case .emptyGallery, .loadOlder, .loadNewer:
+                return MediaTileViewController.loadMoreHeaderHeight
+            
+            case .galleryMonth:
+                return 50
+        }
     }
 }
 
