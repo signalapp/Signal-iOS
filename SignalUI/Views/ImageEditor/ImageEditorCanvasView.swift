@@ -233,11 +233,12 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
 
         // This emulates the behavior of contentMode = .scaleAspectFit using iOS auto layout constraints.
         var constraints = [NSLayoutConstraint]()
-        NSLayoutConstraint.autoSetPriority(.defaultHigh - 100) {
+        NSLayoutConstraint.autoSetPriority(.defaultHigh + 100) {
             constraints.append(contentView.autoAlignAxis(.vertical, toSameAxisOf: superview, withOffset: centerOffset.x))
             constraints.append(contentView.autoAlignAxis(.horizontal, toSameAxisOf: superview, withOffset: centerOffset.y))
         }
         constraints.append(contentView.autoPinEdge(.top, to: .top, of: superview, withOffset: layoutMargins.top, relation: .greaterThanOrEqual))
+        constraints.append(contentView.autoPinEdge(.bottom, to: .bottom, of: superview, withOffset: -layoutMargins.bottom, relation: .lessThanOrEqual))
         constraints.append(contentView.autoPin(toAspectRatio: aspectRatio.width / aspectRatio.height))
         constraints.append(contentView.autoMatch(.width, to: .width, of: superview, withMultiplier: 1.0, relation: .lessThanOrEqual))
         constraints.append(contentView.autoMatch(.height, to: .height, of: superview, withMultiplier: 1.0, relation: .lessThanOrEqual))
