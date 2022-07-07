@@ -1024,7 +1024,7 @@ extension AttachmentApprovalViewController: MentionTextViewDelegate {
     }
 
     public func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
-        return bottomToolView
+        return bottomToolView.attachmentTextToolbar
     }
 
     public func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
