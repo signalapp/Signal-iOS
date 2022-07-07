@@ -228,7 +228,6 @@ open class MentionTextView: OWSTextView {
     }
 
     private weak var pickerView: MentionPicker?
-    private weak var pickerReferenceBackdrop: UIView?
     private weak var pickerViewTopConstraint: NSLayoutConstraint?
     private func didBeginTypingMention() {
         guard let mentionDelegate = mentionDelegate else { return }
@@ -268,23 +267,11 @@ open class MentionTextView: OWSTextView {
 
         ImpactHapticFeedback.impactOccured(style: .light)
 
-        let style = mentionDelegate.textViewMentionStyle(self)
-        if style == .composingAttachment {
-            pickerView.alpha = 0
-            let referenceBackdrop = UIView()
-            referenceBackdrop.backgroundColor = UIColor.ows_gray80
-            pickerParentView.insertSubview(referenceBackdrop, belowSubview: pickerReferenceView)
-            referenceBackdrop.autoPin(toEdgesOf: pickerReferenceView)
-            referenceBackdrop.alpha = 0
-            self.pickerReferenceBackdrop = referenceBackdrop
-        }
-
         pickerParentView.layoutIfNeeded()
 
         // Slide up.
         UIView.animate(withDuration: 0.25) {
             pickerView.alpha = 1
-            self.pickerReferenceBackdrop?.alpha = 1
             animationTopConstraint.isActive = false
             self.pickerViewTopConstraint = pickerView.autoPinEdge(.bottom, to: .top, of: pickerReferenceView)
             pickerParentView.layoutIfNeeded()
@@ -296,10 +283,7 @@ open class MentionTextView: OWSTextView {
 
         guard let pickerView = pickerView else { return }
 
-        let referenceBackdrop = pickerReferenceBackdrop
-
         self.pickerView = nil
-        self.pickerReferenceBackdrop = nil
 
         let pickerViewTopConstraint = self.pickerViewTopConstraint
         self.pickerViewTopConstraint = nil
@@ -308,7 +292,6 @@ open class MentionTextView: OWSTextView {
             let pickerReferenceView = mentionDelegate.textViewMentionPickerReferenceView(self),
             let pickerParentView = mentionDelegate.textViewMentionPickerParentView(self) else {
                 pickerView.removeFromSuperview()
-                referenceBackdrop?.removeFromSuperview()
                 return
         }
 
@@ -316,7 +299,6 @@ open class MentionTextView: OWSTextView {
 
         // Slide down.
         UIView.animate(withDuration: 0.25, animations: {
-            referenceBackdrop?.alpha = 0
             pickerViewTopConstraint?.isActive = false
             pickerView.autoPinEdge(.top, to: .top, of: pickerReferenceView)
             pickerParentView.layoutIfNeeded()
@@ -324,7 +306,6 @@ open class MentionTextView: OWSTextView {
             if style == .composingAttachment { pickerView.alpha = 0 }
         }) { _ in
             pickerView.removeFromSuperview()
-            referenceBackdrop?.removeFromSuperview()
         }
     }
 
