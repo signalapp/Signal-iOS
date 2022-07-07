@@ -660,4 +660,5 @@
 "MESSAGE_TRIMMING_TITLE" = "Message Trimming";
 "MESSAGE_TRIMMING_OPEN_GROUP_TITLE" = "Delete Old Open Group Messages";
 "MESSAGE_TRIMMING_OPEN_GROUP_DESCRIPTION" = "Automatically delete open group messages which are older than 6 months when starting the app";
- 
+"MEDIA_TAB_TITLE" = "Media";
+"DOCUMENT_TAB_TITLE" = "Document";

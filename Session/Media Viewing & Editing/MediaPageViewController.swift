@@ -471,7 +471,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         
         // Otherwise if we came via the conversation screen we need to push a new
         // instance of MediaTileViewController
-        let tileViewController: MediaTileViewController = MediaGalleryViewModel.createTileViewController(
+        let tileViewController: MediaTileViewController = MediaGalleryViewModel.createMediaTileViewController(
             threadId: self.viewModel.threadId,
             threadVariant: self.viewModel.threadVariant,
             focusedAttachmentId: currentItem.attachment.id,
