@@ -171,7 +171,7 @@ class ImageEditorViewController: OWSViewController {
     }
     var currentStroke: ImageEditorStrokeItem? {
         didSet {
-            updateControlsVisibility(animated: true)
+            updateControlsVisibility(animated: true, slideButtonsInOut: false)
             updateTopBar()
         }
     }
@@ -279,7 +279,7 @@ class ImageEditorViewController: OWSViewController {
         super.viewWillAppear(animated)
 
         UIView.performWithoutAnimation {
-            setControls(hidden: true)
+            setControls(hidden: true, slideButtonsInOut: true)
         }
     }
 
@@ -367,34 +367,38 @@ class ImageEditorViewController: OWSViewController {
         model.canUndo() && firstUndoOperationId != model.currentUndoOperationId()
     }
 
-    func updateControlsVisibility(animated: Bool, completion: ((Bool) -> Void)? = nil) {
-        setControls(hidden: shouldHideControls, animated: animated, completion: completion)
+    func updateControlsVisibility(animated: Bool, slideButtonsInOut: Bool = true, completion: ((Bool) -> Void)? = nil) {
+        setControls(hidden: shouldHideControls, animated: animated, slideButtonsInOut: slideButtonsInOut, completion: completion)
     }
 
-    private func setControls(hidden: Bool, animated: Bool, completion: ((Bool) -> Void)? = nil) {
+    private func setControls(hidden: Bool, animated: Bool, slideButtonsInOut: Bool, completion: ((Bool) -> Void)? = nil) {
         if animated {
             UIView.animate(withDuration: 0.15,
                            animations: {
-                self.setControls(hidden: hidden)
+                self.setControls(hidden: hidden, slideButtonsInOut: slideButtonsInOut)
 
                 // Animate layout changes made within bottomBar.setControls(hidden:).
-                self.bottomBar.setNeedsDisplay()
-                self.bottomBar.layoutIfNeeded()
+                if slideButtonsInOut {
+                    self.bottomBar.setNeedsDisplay()
+                    self.bottomBar.layoutIfNeeded()
+                }
             },
                            completion: completion)
         } else {
-            setControls(hidden: hidden)
+            setControls(hidden: hidden, slideButtonsInOut: slideButtonsInOut)
             if let completion = completion {
                 completion(true)
             }
         }
     }
 
-    private func setControls(hidden: Bool) {
+    private func setControls(hidden: Bool, slideButtonsInOut: Bool) {
         let alpha: CGFloat = hidden ? 0 : 1
         topBar.alpha = alpha
         bottomBar.alpha = alpha
-        bottomBar.setControls(hidden: hidden)
+        if slideButtonsInOut {
+            bottomBar.setControls(hidden: hidden)
+        }
 
         switch mode {
         case .draw:
@@ -442,14 +446,14 @@ class ImageEditorViewController: OWSViewController {
         if mode == .text {
             finishTextEditing(applyEdits: false)
         }
-        setControls(hidden: true, animated: true, completion: completion)
+        setControls(hidden: true, animated: true, slideButtonsInOut: true, completion: completion)
     }
 
     private func prepareToFinish(completion: ((Bool) -> Void)?) {
         if mode == .text {
             finishTextEditing(applyEdits: true)
         }
-        setControls(hidden: true, animated: true, completion: completion)
+        setControls(hidden: true, animated: true, slideButtonsInOut: true, completion: completion)
     }
 
     private func discardAndDismiss() {
