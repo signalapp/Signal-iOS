@@ -42,6 +42,7 @@ public class RoundMediaButton: UIButton {
         contentEdgeInsets = UIEdgeInsets(margin: Self.defaultContentInset)
         layoutMargins = UIEdgeInsets(margin: Self.defaultInset)
         tintColor = Theme.darkThemePrimaryColor
+        insetsLayoutMarginsFromSafeArea = false
 
         switch backgroundStyle {
         case .solid, .blur:
