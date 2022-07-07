@@ -40,6 +40,8 @@ class ImageEditorCropViewController: OWSViewController {
     private let cropView = CropView(frame: UIScreen.main.bounds)
     private let rotationControl = RotationControl()
 
+    private lazy var bottomBar = ImageEditorBottomBar(buttonProvider: self)
+
     // Holds both toolbar and rotation control.
     private let footerView = UIView()
 
@@ -125,7 +127,6 @@ class ImageEditorCropViewController: OWSViewController {
         rotationControl.autoHCenterInSuperview()
         rotationControl.autoPinEdge(.leading, to: .leading, of: footerView, withOffset: 0, relation: .greaterThanOrEqual)
 
-        let bottomBar = ImageEditorBottomBar(buttonProvider: self)
         bottomBar.cancelButton.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
         bottomBar.doneButton.addTarget(self, action: #selector(didTapDone), for: .touchUpInside)
         footerView.addSubview(bottomBar)
@@ -152,6 +153,18 @@ class ImageEditorCropViewController: OWSViewController {
         updateResetButtonAppearance()
 
         setupRotationControlActions()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        setControls(hidden: true, animated: false)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        setControls(hidden: false, animated: true)
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -296,6 +309,31 @@ class ImageEditorCropViewController: OWSViewController {
 
         // De-conflict the gestures; the pan gesture has priority.
         panGestureRecognizer.shouldBeRequiredToFail(by: pinchGestureRecognizer)
+    }
+
+    private func setControls(hidden: Bool, animated: Bool, completion: ((Bool) -> Void)? = nil) {
+        if animated {
+            UIView.animate(withDuration: 0.15,
+                           animations: {
+                self.setControls(hidden: hidden)
+
+                // Animate layout changes made within bottomBar.setControls(hidden:).
+                self.bottomBar.setNeedsDisplay()
+                self.bottomBar.layoutIfNeeded()
+            },
+                           completion: completion)
+        } else {
+            setControls(hidden: hidden)
+            if let completion = completion {
+                completion(true)
+            }
+        }
+    }
+
+    private func setControls(hidden: Bool) {
+        let alpha: CGFloat = hidden ? 0 : 1
+        footerView.alpha = alpha
+        bottomBar.setControls(hidden: hidden)
     }
 
     // MARK: - Gestures
@@ -812,13 +850,19 @@ extension ImageEditorCropViewController {
 
     @objc
     private func didTapCancel() {
-        dismiss(animated: false)
+        setControls(hidden: true, animated: true) { finished in
+            guard finished else { return }
+            self.dismiss(animated: false)
+        }
     }
 
     @objc
     private func didTapDone() {
         model.replace(transform: transform)
-        dismiss(animated: false)
+        setControls(hidden: true, animated: true) { finished in
+            guard finished else { return }
+            self.dismiss(animated: false)
+        }
     }
 
     @objc

@@ -462,6 +462,7 @@ class ImageEditorViewController: OWSViewController {
             }
         } else {
             prepareToDismiss { finished in
+                guard finished else { return }
                 self.dismiss(animated: false)
             }
         }
