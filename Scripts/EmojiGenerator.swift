@@ -76,7 +76,7 @@ struct EmojiModel {
             let base: Character
             let skintoneSequence: SkinToneSequence
 
-            static func <(lhs: Self, rhs: Self) -> Bool {
+            static func < (lhs: Self, rhs: Self) -> Bool {
                 for (leftElement, rightElement) in zip(lhs.skintoneSequence, rhs.skintoneSequence) {
                     if leftElement.sortId != rightElement.sortId {
                         return leftElement.sortId < rightElement.sortId

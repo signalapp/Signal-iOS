@@ -50,7 +50,7 @@ public class ProfileBadge: NSObject, Codable {
         duration = try params.optional(key: "duration")
     }
 
-    static func ==(lhs: ProfileBadge, rhs: ProfileBadge) -> Bool {
+    static func == (lhs: ProfileBadge, rhs: ProfileBadge) -> Bool {
         return type(of: lhs) == type(of: rhs) &&
             lhs.id == rhs.id &&
             lhs.rawCategory == rhs.rawCategory &&

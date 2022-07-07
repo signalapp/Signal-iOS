@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -45,7 +45,7 @@ public enum AvatarType: Equatable {
         }
     }
 
-    public static func ==(lhs: AvatarType, rhs: AvatarType) -> Bool {
+    public static func == (lhs: AvatarType, rhs: AvatarType) -> Bool {
         switch (lhs, rhs) {
         case (.image(let lhs), .image(let rhs)):
             // We implement a custom "Equatable", since two URLs

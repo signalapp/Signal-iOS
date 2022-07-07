@@ -411,7 +411,7 @@ private struct KeyRecipient: Codable, Dependencies {
             self.registrationId = registrationId
         }
 
-        static func ==(lhs: Device, rhs: Device) -> Bool {
+        static func == (lhs: Device, rhs: Device) -> Bool {
             // We can only be sure that a device hasn't changed if the registrationIds are the same
             // If either registrationId is nil, that means the Device was constructed before we had a session
             // established for the device.

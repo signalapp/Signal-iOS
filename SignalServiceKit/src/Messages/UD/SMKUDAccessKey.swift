@@ -47,7 +47,7 @@ public class SMKUDAccessKey: NSObject {
     }
 
     /// Used to compose multiple Unidentified-Access-Keys for the multiRecipient endpoint
-    public static func ^(lhs: SMKUDAccessKey, rhs: SMKUDAccessKey) -> SMKUDAccessKey {
+    public static func ^ (lhs: SMKUDAccessKey, rhs: SMKUDAccessKey) -> SMKUDAccessKey {
         owsAssert(lhs.keyData.count == SMKUDAccessKey.kUDAccessKeyLength)
         owsAssert(rhs.keyData.count == SMKUDAccessKey.kUDAccessKeyLength)
 
