@@ -205,16 +205,14 @@ public class AttachmentPrepViewController: OWSViewController {
         }
     }
 
-    private func presentFullScreen(viewController: UIViewController, completion: (() -> Void)? = nil) {
+    private func presentFullScreen(viewController: UIViewController) {
         if let presentedViewController = presentedViewController {
             owsAssertDebug(false, "Already has presented view controller. [\(presentedViewController)]")
             presentedViewController.dismiss(animated: false)
         }
 
-        let navigationController = OWSNavigationController(rootViewController: viewController)
-        navigationController.modalPresentationStyle = .fullScreen
-        navigationController.setNavigationBarHidden(true, animated: false)
-        presentFullScreen(navigationController, animated: false, completion: completion)
+        viewController.modalPresentationStyle = .fullScreen
+        presentFullScreen(viewController, animated: false)
     }
 
     final func presentMediaTool(viewController: UIViewController) {
