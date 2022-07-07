@@ -1,1 +1,2 @@
-Nhiều lỗi được sửa để ứng dụng của bạn có thể chạy một cách trơn tru. Các thay đổi thú vị hơn nữa sắp xuất hiện!
+• We’ve improved the media editor, making it easier than ever for you to customize photos and videos before you send them.
+• Handful of bug fixes to keep your app running smoothly. More exciting changes on the horizon!

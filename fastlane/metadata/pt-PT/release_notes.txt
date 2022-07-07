@@ -1,1 +1,2 @@
-Algumas correções de bugs para manter o bom funcionamento da app. Há mais mudanças empolgantes a caminho!
+• We’ve improved the media editor, making it easier than ever for you to customize photos and videos before you send them.
+• Handful of bug fixes to keep your app running smoothly. More exciting changes on the horizon!

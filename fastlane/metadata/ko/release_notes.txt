@@ -1,1 +1,2 @@
-앱의 원활한 사용을 위해 몇 가지 수정 사항을 적용했습니다. 앞으로 다가올 더 많은 변경 사항을 기대해 주세요!
+• We’ve improved the media editor, making it easier than ever for you to customize photos and videos before you send them.
+• Handful of bug fixes to keep your app running smoothly. More exciting changes on the horizon!

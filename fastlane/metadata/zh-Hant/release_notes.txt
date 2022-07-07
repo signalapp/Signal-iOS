@@ -1,1 +1,2 @@
-我們修復了多項問題，好讓各位的 App 運作更順暢。未來，還有許多精彩的更新內容待你挖掘！
+• We’ve improved the media editor, making it easier than ever for you to customize photos and videos before you send them.
+• Handful of bug fixes to keep your app running smoothly. More exciting changes on the horizon!
