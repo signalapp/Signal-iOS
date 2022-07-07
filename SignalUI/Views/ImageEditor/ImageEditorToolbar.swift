@@ -73,7 +73,7 @@ class ImageEditorBottomBar: UIView {
 
     let stackView = UIStackView()
 
-    private var areControlsHidden = true
+    private var areControlsHidden = false
     private var stackViewPositionConstraint: NSLayoutConstraint?
 
     required init(buttonProvider: ImageEditorBottomBarButtonProvider?) {
@@ -103,7 +103,7 @@ class ImageEditorBottomBar: UIView {
         stackView.autoPinLeadingToSuperviewMargin(withInset: -cancelButton.layoutMargins.leading)
         stackView.autoPinTrailingToSuperviewMargin(withInset: -doneButton.layoutMargins.trailing)
         stackView.heightAnchor.constraint(equalTo: layoutMarginsGuide.heightAnchor).isActive = true
-        setControls(hidden: true)
+        setControls(hidden: false)
     }
 
     @available(*, unavailable, message: "Use init(buttonProvider:)")
