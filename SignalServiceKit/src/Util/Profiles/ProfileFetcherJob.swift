@@ -723,7 +723,7 @@ public class ProfileFetcherJob: NSObject {
             guard status == .expired else {
                 return
             }
-            guard let _ = self else {
+            guard self != nil else {
                 return
             }
             Logger.error("background task time ran out before profile fetch completed.")

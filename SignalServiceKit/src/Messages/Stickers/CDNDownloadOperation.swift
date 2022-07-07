@@ -64,7 +64,7 @@ open class CDNDownloadOperation: OWSOperation {
                                             hasCheckedContentLength: hasCheckedContentLength)
             }
         }.map(on: .global()) { [weak self] (response: OWSUrlDownloadResponse) -> Void in
-            guard let _ = self else {
+            guard self != nil else {
                 throw OWSAssertionError("Operation has been deallocated.")
             }
             let downloadUrl = response.downloadUrl

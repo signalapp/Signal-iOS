@@ -369,7 +369,7 @@ public class SystemContactsFetcher: NSObject {
                 return
             }
 
-            guard let _ = self else {
+            guard self != nil else {
                 return
             }
             Logger.error("background task time ran out before contacts fetch completed.")
