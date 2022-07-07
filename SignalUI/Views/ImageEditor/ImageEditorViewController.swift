@@ -568,14 +568,14 @@ extension ImageEditorViewController: ImageEditorBottomBarButtonProvider {
         let textButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-toolbar-text"), backgroundStyle: .solid(.clear))
         textButton.addTarget(self, action: #selector(didTapAddText(sender:)), for: .touchUpInside)
 
-        let stickerButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-toolbar-emoji"), backgroundStyle: .solid(.clear))
-        stickerButton.addTarget(self, action: #selector(didTapAddSticker(sender:)), for: .touchUpInside)
+//        let stickerButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-toolbar-emoji"), backgroundStyle: .solid(.clear))
+//        stickerButton.addTarget(self, action: #selector(didTapAddSticker(sender:)), for: .touchUpInside)
 
         let blurButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-toolbar-blur"), backgroundStyle: .solid(.clear))
         blurButton.tag = Mode.blur.rawValue
         blurButton.addTarget(self, action: #selector(didTapBlur(sender:)), for: .touchUpInside)
 
-        let buttons = [ penButton, textButton, stickerButton, blurButton ]
+        let buttons = [ penButton, textButton, blurButton ]
         for button in buttons {
             button.setBackgroundColor(.ows_white, for: .highlighted)
             button.setBackgroundColor(.ows_white, for: .selected)
