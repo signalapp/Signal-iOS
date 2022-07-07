@@ -27,6 +27,8 @@ protocol MemberViewDelegate: AnyObject {
 
     func memberViewShouldShowMemberCount() -> Bool
 
+    func memberViewShouldAllowBlockedSelection() -> Bool
+
     func memberViewMemberCountForDisplay() -> Int
 
     func memberViewIsPreExistingMember(_ recipient: PickedRecipient,
@@ -345,7 +347,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
 
         if isCurrentMember {
             removeRecipient(recipient)
-        } else if isBlocked {
+        } else if isBlocked && !memberViewDelegate.memberViewShouldAllowBlockedSelection() {
             BlockListUIUtils.showUnblockAddressActionSheet(address,
                                                            from: self) { isStillBlocked in
                 if !isStillBlocked {

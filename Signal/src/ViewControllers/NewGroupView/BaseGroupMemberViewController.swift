@@ -267,6 +267,8 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return groupMemberViewDelegate.groupMemberViewShouldShowMemberCount()
     }
 
+    func memberViewShouldAllowBlockedSelection() -> Bool { false }
+
     func memberViewMemberCountForDisplay() -> Int {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")

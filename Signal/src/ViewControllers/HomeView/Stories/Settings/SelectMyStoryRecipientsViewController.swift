@@ -52,17 +52,35 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
             action: #selector(savePressed))
         navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
 
-        if recipientSet.isEmpty {
-            title = NSLocalizedString(
-                "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE",
-                comment: "The title for the 'select members for new group' view.")
+        switch mode {
+        case .explicit:
+            if recipientSet.isEmpty {
+                title = NSLocalizedString(
+                    "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE",
+                    comment: "The title for the 'select connections for story' view.")
 
-        } else {
-            let format = NSLocalizedString(
-                "NEW_GROUP_MEMBERS_VIEW_TITLE_%d",
-                tableName: "PluralAware",
-                comment: "The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members.")
-            title = String.localizedStringWithFormat(format, recipientSet.count)
+            } else {
+                let format = NSLocalizedString(
+                    "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d",
+                    tableName: "PluralAware",
+                    comment: "The title for the 'select connections for story' view if already some connections are selected. Embeds {{number}} of connections.")
+                title = String.localizedStringWithFormat(format, recipientSet.count)
+            }
+        case .blockList:
+            if recipientSet.isEmpty {
+                title = NSLocalizedString(
+                    "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE",
+                    comment: "The title for the 'select excluded connections for story' view.")
+
+            } else {
+                let format = NSLocalizedString(
+                    "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d",
+                    tableName: "PluralAware",
+                    comment: "The title for the 'select excluded connections for story' view if already some connections are selected. Embeds {{number}} of excluded connections.")
+                title = String.localizedStringWithFormat(format, recipientSet.count)
+            }
+        case .none:
+            owsFailDebug("Unexpected mode")
         }
     }
 
@@ -116,6 +134,8 @@ extension SelectMyStoryRecipientsViewController: MemberViewDelegate {
     func memberViewGetRecipientStateForRecipient(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> RecipientPickerRecipientState? { nil }
 
     func memberViewShouldShowMemberCount() -> Bool { false }
+
+    func memberViewShouldAllowBlockedSelection() -> Bool { mode == .blockList }
 
     func memberViewMemberCountForDisplay() -> Int { recipientSet.count }
 
