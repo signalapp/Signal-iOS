@@ -2,6 +2,7 @@
 
 import UIKit
 import GRDB
+import YYImage
 import SessionUIKit
 import SessionMessagingKit
 
@@ -112,8 +113,8 @@ public final class ProfilePictureView: UIView {
         guard !publicKey.isEmpty || openGroupProfilePicture != nil else { return }
         
         func getProfilePicture(of size: CGFloat, for publicKey: String, profile: Profile?) -> (image: UIImage, isTappable: Bool) {
-            if let profile: Profile = profile, let profilePicture: UIImage = ProfileManager.profileAvatar(profile: profile) {
-                return (profilePicture, true)
+            if let profile: Profile = profile, let profileData: Data = ProfileManager.profileAvatar(profile: profile), let image: YYImage = YYImage(data: profileData) {
+                return (image, true)
             }
             
             return (
@@ -179,7 +180,7 @@ public final class ProfilePictureView: UIView {
             hasTappableProfilePicture = isTappable
         }
         
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = Colors.unimportant
         imageView.layer.cornerRadius = (targetSize / 2)
         additionalImageView.layer.cornerRadius = (targetSize / 2)
@@ -187,11 +188,11 @@ public final class ProfilePictureView: UIView {
     
     // MARK: - Convenience
     
-    private func getImageView() -> UIImageView {
-        let result = UIImageView()
+    private func getImageView() -> YYAnimatedImageView {
+        let result = YYAnimatedImageView()
         result.layer.masksToBounds = true
         result.backgroundColor = Colors.unimportant
-        result.contentMode = .scaleAspectFit
+        result.contentMode = .scaleAspectFill
         
         return result
     }

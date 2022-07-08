@@ -518,6 +518,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 show(
                     threadViewModel.threadId,
                     variant: threadViewModel.threadVariant,
+                    isMessageRequest: (threadViewModel.threadIsMessageRequest == true),
                     with: .none,
                     focusedInteractionId: nil,
                     animated: true
@@ -651,6 +652,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     func show(
         _ threadId: String,
         variant: SessionThread.Variant,
+        isMessageRequest: Bool,
         with action: ConversationViewModel.Action,
         focusedInteractionId: Int64?,
         animated: Bool
@@ -659,8 +661,17 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
             presentedVC.dismiss(animated: false, completion: nil)
         }
         
-        let conversationVC: ConversationVC = ConversationVC(threadId: threadId, threadVariant: variant, focusedInteractionId: focusedInteractionId)
-        self.navigationController?.setViewControllers([ self, conversationVC ], animated: animated)
+        let finalViewControllers: [UIViewController] = [
+            self,
+            (isMessageRequest ? MessageRequestsViewController() : nil),
+            ConversationVC(
+                threadId: threadId,
+                threadVariant: variant,
+                focusedInteractionId: focusedInteractionId
+            )
+        ].compactMap { $0 }
+        
+        self.navigationController?.setViewControllers(finalViewControllers, animated: animated)
     }
     
     @objc private func openSettings() {

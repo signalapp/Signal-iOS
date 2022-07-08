@@ -170,7 +170,8 @@ final class DisplayNameVC: BaseVC {
         ProfileManager.updateLocal(
             queue: DispatchQueue.global(qos: .default),
             profileName: displayName,
-            avatarImage: nil,
+            image: nil,
+            imageFilePath: nil,
             requiredSync: false
         )
         let pnModeVC = PNModeVC()

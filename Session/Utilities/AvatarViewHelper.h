@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)avatarActionSheetTitle;
 
-- (void)avatarDidChange:(UIImage *)image;
+- (void)avatarDidChange:(nullable UIImage *)image filePath:(nullable NSString *)filePath;
 
 - (UIViewController *)fromViewController;
 

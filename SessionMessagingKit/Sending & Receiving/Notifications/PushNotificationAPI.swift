@@ -7,9 +7,19 @@ import SessionUtilitiesKit
 
 @objc(LKPushNotificationAPI)
 public final class PushNotificationAPI : NSObject {
-    struct RequestBody: Codable {
+    struct RegistrationRequestBody: Codable {
         let token: String
         let pubKey: String?
+    }
+    
+    struct NotifyRequestBody: Codable {
+        enum CodingKeys: String, CodingKey {
+            case data
+            case sendTo = "send_to"
+        }
+        
+        let data: String
+        let sendTo: String
     }
     
     struct ClosedGroupRequestBody: Codable {
@@ -42,7 +52,7 @@ public final class PushNotificationAPI : NSObject {
     // MARK: - Registration
     
     public static func unregister(_ token: Data) -> Promise<Void> {
-        let requestBody: RequestBody = RequestBody(token: token.toHexString(), pubKey: nil)
+        let requestBody: RegistrationRequestBody = RegistrationRequestBody(token: token.toHexString(), pubKey: nil)
         
         guard let body: Data = try? JSONEncoder().encode(requestBody) else {
             return Promise(error: HTTP.Error.invalidJSON)
@@ -92,7 +102,7 @@ public final class PushNotificationAPI : NSObject {
 
     public static func register(with token: Data, publicKey: String, isForcedUpdate: Bool) -> Promise<Void> {
         let hexEncodedToken: String = token.toHexString()
-        let requestBody: RequestBody = RequestBody(token: hexEncodedToken, pubKey: publicKey)
+        let requestBody: RegistrationRequestBody = RegistrationRequestBody(token: hexEncodedToken, pubKey: publicKey)
         
         guard let body: Data = try? JSONEncoder().encode(requestBody) else {
             return Promise(error: HTTP.Error.invalidJSON)
@@ -202,5 +212,34 @@ public final class PushNotificationAPI : NSObject {
     @objc(performOperation:forClosedGroupWithPublicKey:userPublicKey:)
     public static func objc_performOperation(_ operation: ClosedGroupOperation, for closedGroupPublicKey: String, publicKey: String) -> AnyPromise {
         return AnyPromise.from(performOperation(operation, for: closedGroupPublicKey, publicKey: publicKey))
+    }
+    
+    // MARK: - Notify
+    
+    public static func notify(
+        recipient: String,
+        with message: String,
+        maxRetryCount: UInt? = nil,
+        queue: DispatchQueue = DispatchQueue.global()
+    ) -> Promise<Void> {
+        let requestBody: NotifyRequestBody = NotifyRequestBody(data: message, sendTo: recipient)
+        
+        guard let body: Data = try? JSONEncoder().encode(requestBody) else {
+            return Promise(error: HTTP.Error.invalidJSON)
+        }
+        
+        let url = URL(string: "\(server)/notify")!
+        var request: URLRequest = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.allHTTPHeaderFields = [ Header.contentType.rawValue: "application/json" ]
+        request.httpBody = body
+        
+        let retryCount: UInt = (maxRetryCount ?? PushNotificationAPI.maxRetryCount)
+        let promise: Promise<Void> = attempt(maxRetryCount: retryCount, recoveringOn: queue) {
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
+                .map { _ in }
+        }
+        
+        return promise
     }
 }

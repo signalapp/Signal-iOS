@@ -14,9 +14,6 @@ class ChatSettingsViewController: OWSTableViewController {
         self.updateTableContents()
         
         ViewControllerUtilities.setUpDefaultSessionStyle(for: self, title: "CHATS_TITLE".localized(), hasCustomBackButton: false)
-        
-        let closeButton: UIBarButtonItem = UIBarButtonItem(image: UIImage(named: "X"), style: .plain, target: self, action: #selector(close(_:)))
-        self.navigationItem.leftBarButtonItem = closeButton
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -47,9 +44,11 @@ class ChatSettingsViewController: OWSTableViewController {
     // MARK: - Actions
     
     @objc private func didToggleTrimOpenGroupsSwitch(_ sender: UISwitch) {
+        let switchIsOn: Bool = sender.isOn
+        
         Storage.shared.writeAsync(
             updates: { db in
-                db[.trimOpenGroupMessagesOlderThanSixMonths] = !sender.isOn
+                db[.trimOpenGroupMessagesOlderThanSixMonths] = !switchIsOn
             },
             completion: { [weak self] _, _ in
                 self?.updateTableContents()

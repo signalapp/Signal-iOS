@@ -258,7 +258,6 @@ public final class Storage {
                         defer { keySpec.resetBytes(in: 0..<keySpec.count) } // Reset content immediately after use
                         
                         try SSKDefaultKeychainStorage.shared.set(data: keySpec, service: keychainService, key: dbCipherKeySpecKey)
-                        print("RAWR new keySpec generated and saved")
                         return keySpec
                     }
                     catch {

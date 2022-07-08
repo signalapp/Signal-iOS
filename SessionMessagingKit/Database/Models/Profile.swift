@@ -72,31 +72,6 @@ public struct Profile: Codable, Identifiable, Equatable, Hashable, FetchableReco
         )
         """
     }
-    
-    // MARK: - PersistableRecord
-    
-    public func save(_ db: Database) throws {
-        let oldProfile: Profile? = try? Profile.fetchOne(db, id: id)
-        
-        try performSave(db)
-        
-        db.afterNextTransactionCommit { db in
-            // Delete old profile picture if needed
-            if let oldProfilePictureFileName: String = oldProfile?.profilePictureFileName, oldProfilePictureFileName != profilePictureFileName {
-                let path: String = ProfileManager.profileAvatarFilepath(filename: oldProfilePictureFileName)
-                
-                DispatchQueue.global(qos: .default).async {
-                    OWSFileSystem.deleteFileIfExists(path)
-                }
-            }
-            
-            // FIXME: Remove this once the OWSConversationSettingsViewController has been refactored and is observing DB changes
-            if id != getUserHexEncodedPublicKey(db) {
-                let userInfo = [ Notification.Key.profileRecipientId.rawValue: id ]
-                NotificationCenter.default.post(name: .otherUsersProfileDidChange, object: nil, userInfo: userInfo)
-            }
-        }
-    }
 }
 
 // MARK: - Codable

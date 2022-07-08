@@ -366,9 +366,10 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
                 // Only incoming messages
                 (self.variant == .standardIncoming || self.variant == .standardIncomingDeleted) &&
                 
-                // Show if the next message has a different sender or has a "date break"
+                // Show if the next message has a different sender, isn't a standard message or has a "date break"
                 (
                     self.authorId != nextModel?.authorId ||
+                    (nextModel?.variant != .standardIncoming && nextModel?.variant != .standardIncomingDeleted) ||
                     shouldShowDateOnNextModel
                 ) &&
                 

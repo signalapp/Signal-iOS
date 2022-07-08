@@ -34,12 +34,14 @@ public enum UpdateProfilePictureJob: JobExecutor {
         
         // Note: The user defaults flag is updated in ProfileManager
         let profile: Profile = Profile.fetchOrCreateCurrentUser()
-        let profilePicture: UIImage? = ProfileManager.profileAvatar(id: profile.id)
+        let profileFilePath: String? = profile.profilePictureFileName
+            .map { ProfileManager.profileAvatarFilepath(filename: $0) }
         
         ProfileManager.updateLocal(
             queue: queue,
             profileName: profile.name,
-            avatarImage: profilePicture,
+            image: nil,
+            imageFilePath: profileFilePath,
             requiredSync: true,
             success: { _, _ in success(job, false) },
             failure: { error in failure(job, error, false) }

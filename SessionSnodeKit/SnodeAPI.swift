@@ -134,7 +134,6 @@ public final class SnodeAPI {
                     to: snode,
                     invoking: method,
                     with: parameters,
-                    using: .v3,
                     associatedWith: publicKey
                 )
                 .map2 { responseData in
@@ -207,7 +206,6 @@ public final class SnodeAPI {
             attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
                 HTTP.execute(.post, url, parameters: parameters, useSeedNodeURLSession: true)
                     .map2 { responseData -> Set<Snode> in
-                        // TODO: Validate this works
                         guard let snodePool: SnodePoolResponse = try? JSONDecoder().decode(SnodePoolResponse.self, from: responseData) else {
                             throw SnodeAPIError.snodePoolUpdatingFailed
                         }
@@ -261,7 +259,6 @@ public final class SnodeAPI {
                 
                 return invoke(.oxenDaemonRPCCall, on: snode, parameters: parameters)
                     .map2 { responseData in
-                        // TODO: Validate this works
                         guard let snodePool: SnodePoolResponse = try? JSONDecoder().decode(SnodePoolResponse.self, from: responseData) else {
                             throw SnodeAPIError.snodePoolUpdatingFailed
                         }

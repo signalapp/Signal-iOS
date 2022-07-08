@@ -1465,6 +1465,9 @@ enum _003_YDBToGRDBMigration: Migration {
         db[.hasSentAMessage] = (legacyPreferences[SMKLegacy.preferencesKeyHasSentAMessageKey] as? Bool == true)
         db[.isReadyForAppExtensions] = CurrentAppContext().appUserDefaults().bool(forKey: SMKLegacy.preferencesKeyIsReadyForAppExtensions)
         
+        // We want this setting to be on by default
+        db[.trimOpenGroupMessagesOlderThanSixMonths] = true
+        
         Storage.update(progress: 1, for: self, in: target) // In case this is the last migration
     }
     

@@ -174,6 +174,7 @@ final class ContextMenuVC: UIViewController {
             animations: { [weak self] in
                 self?.blurView.effect = nil
                 self?.menuView.alpha = 0
+                self?.snapshot.alpha = 0
                 self?.timestampLabel.alpha = 0
             },
             completion: { [weak self] _ in

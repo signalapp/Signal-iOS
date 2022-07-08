@@ -224,6 +224,15 @@ public enum MessageReceiver {
             default: fatalError()
         }
         
+        // Perform any required post-handling logic
+        try MessageReceiver.postHandleMessage(db, message: message, openGroupId: openGroupId)
+    }
+    
+    public static func postHandleMessage(
+        _ db: Database,
+        message: Message,
+        openGroupId: String?
+    ) throws {
         // When handling any non-typing indicator message we want to make sure the thread becomes
         // visible (the only other spot this flag gets set is when sending messages)
         switch message {

@@ -7,7 +7,6 @@ import SessionMessagingKit
 import SignalUtilitiesKit
 
 final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
-    private var profilePictureToBeUploaded: UIImage?
     private var displayNameToBeUploaded: String?
     private var isEditingDisplayName = false { didSet { handleIsEditingDisplayNameChanged() } }
     
@@ -419,34 +418,47 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         }
     }
     
-    func avatarDidChange(_ image: UIImage) {
-        let maxSize = Int(ProfileManager.maxAvatarDiameter)
-        profilePictureToBeUploaded = image.resizedImage(toFillPixelSize: CGSize(width: maxSize, height: maxSize))
-        updateProfile(isUpdatingDisplayName: false, isUpdatingProfilePicture: true)
+    func avatarDidChange(_ image: UIImage?, filePath: String?) {
+        updateProfile(
+            profilePicture: image,
+            profilePictureFilePath: filePath,
+            isUpdatingDisplayName: false,
+            isUpdatingProfilePicture: true
+        )
     }
     
     func clearAvatar() {
-        profilePictureToBeUploaded = nil
-        updateProfile(isUpdatingDisplayName: false, isUpdatingProfilePicture: true)
+        updateProfile(
+            profilePicture: nil,
+            profilePictureFilePath: nil,
+            isUpdatingDisplayName: false,
+            isUpdatingProfilePicture: true
+        )
     }
     
-    private func updateProfile(isUpdatingDisplayName: Bool, isUpdatingProfilePicture: Bool) {
+    private func updateProfile(
+        profilePicture: UIImage?,
+        profilePictureFilePath: String?,
+        isUpdatingDisplayName: Bool,
+        isUpdatingProfilePicture: Bool
+    ) {
         let userDefaults = UserDefaults.standard
         let name: String? = (displayNameToBeUploaded ?? Profile.fetchOrCreateCurrentUser().name)
-        let profilePicture: UIImage? = (profilePictureToBeUploaded ?? ProfileManager.profileAvatar(id: getUserHexEncodedPublicKey()))
+        let imageFilePath: String? = (profilePictureFilePath ?? ProfileManager.profileAvatarFilepath(id: getUserHexEncodedPublicKey()))
         
-        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self, displayNameToBeUploaded, profilePictureToBeUploaded] modalActivityIndicator in
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self, displayNameToBeUploaded] modalActivityIndicator in
             ProfileManager.updateLocal(
                 queue: DispatchQueue.global(qos: .default),
                 profileName: (name ?? ""),
-                avatarImage: profilePicture,
+                image: profilePicture,
+                imageFilePath: imageFilePath,
                 requiredSync: true,
                 success: { db, updatedProfile in
                     if displayNameToBeUploaded != nil {
                         userDefaults[.lastDisplayNameUpdate] = Date()
                     }
                     
-                    if profilePictureToBeUploaded != nil {
+                    if isUpdatingProfilePicture {
                         userDefaults[.lastProfilePictureUpdate] = Date()
                     }
                     
@@ -462,7 +474,6 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
                                     threadVariant: .contact
                                 )
                                 self?.displayNameLabel.text = name
-                                self?.profilePictureToBeUploaded = nil
                                 self?.displayNameToBeUploaded = nil
                             }
                         }
@@ -556,7 +567,12 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         }
         isEditingDisplayName = false
         displayNameToBeUploaded = displayName
-        updateProfile(isUpdatingDisplayName: true, isUpdatingProfilePicture: false)
+        updateProfile(
+            profilePicture: nil,
+            profilePictureFilePath: nil,
+            isUpdatingDisplayName: true,
+            isUpdatingProfilePicture: false
+        )
     }
     
     @objc private func showEditProfilePictureUI() {

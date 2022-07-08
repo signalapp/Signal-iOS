@@ -12,7 +12,7 @@ public struct ProfileManager {
     private static let nameDataLength: UInt = 26
     public static let maxAvatarDiameter: CGFloat = 640
     
-    private static var profileAvatarCache: Atomic<[String: UIImage]> = Atomic([:])
+    private static var profileAvatarCache: Atomic<[String: Data]> = Atomic([:])
     private static var currentAvatarDownloads: Atomic<Set<String>> = Atomic([])
     
     // MARK: - Functions
@@ -21,7 +21,7 @@ public struct ProfileManager {
         return ((profileName.data(using: .utf8)?.count ?? 0) > nameDataLength)
     }
     
-    public static func profileAvatar(_ db: Database? = nil, id: String) -> UIImage? {
+    public static func profileAvatar(_ db: Database? = nil, id: String) -> Data? {
         guard let db: Database = db else {
             return Storage.shared.read { db in profileAvatar(db, id: id) }
         }
@@ -30,9 +30,9 @@ public struct ProfileManager {
         return profileAvatar(profile: profile)
     }
     
-    public static func profileAvatar(profile: Profile) -> UIImage? {
+    public static func profileAvatar(profile: Profile) -> Data? {
         if let profileFileName: String = profile.profilePictureFileName, !profileFileName.isEmpty {
-            return loadProfileAvatar(for: profileFileName)
+            return loadProfileAvatar(for: profileFileName, profile: profile)
         }
         
         if let profilePictureUrl: String = profile.profilePictureUrl, !profilePictureUrl.isEmpty {
@@ -42,22 +42,36 @@ public struct ProfileManager {
         return nil
     }
     
-    private static func loadProfileAvatar(for fileName: String) -> UIImage? {
-        if let cachedImage: UIImage = profileAvatarCache.wrappedValue[fileName] {
-            return cachedImage
+    private static func loadProfileAvatar(for fileName: String, profile: Profile) -> Data? {
+        if let cachedImageData: Data = profileAvatarCache.wrappedValue[fileName] {
+            return cachedImageData
         }
         
         guard
             !fileName.isEmpty,
             let data: Data = loadProfileData(with: fileName),
-            data.isValidImage,
-            let image: UIImage = UIImage(data: data)
+            data.isValidImage
         else {
+            // If we can't load the avatar or it's an invalid/corrupted image then clear out
+            // the 'profilePictureFileName' and try to re-download
+            Storage.shared.writeAsync(
+                updates: { db in
+                    _ = try? Profile
+                        .filter(id: profile.id)
+                        .updateAll(db, Profile.Columns.profilePictureFileName.set(to: nil))
+                },
+                completion: { _, _ in
+                    // Try to re-download the avatar if it has a URL
+                    if let profilePictureUrl: String = profile.profilePictureUrl, !profilePictureUrl.isEmpty {
+                        downloadAvatar(for: profile)
+                    }
+                }
+            )
             return nil
         }
     
-        profileAvatarCache.mutate { $0[fileName] = image }
-        return image
+        profileAvatarCache.mutate { $0[fileName] = data }
+        return data
     }
     
     private static func loadProfileData(with fileName: String) -> Data? {
@@ -97,6 +111,20 @@ public struct ProfileManager {
         
         return path
     }()
+    
+    public static func profileAvatarFilepath(_ db: Database? = nil, id: String) -> String? {
+        guard let db: Database = db else {
+            return Storage.shared.read { db in profileAvatarFilepath(db, id: id) }
+        }
+        
+        let maybeFileName: String? = try? Profile
+            .filter(id: id)
+            .select(.profilePictureFileName)
+            .asRequest(of: String.self)
+            .fetchOne(db)
+        
+        return maybeFileName.map { ProfileManager.profileAvatarFilepath(filename: $0) }
+    }
     
     public static func profileAvatarFilepath(filename: String) -> String {
         guard !filename.isEmpty else { return "" }
@@ -148,45 +176,46 @@ public struct ProfileManager {
                 .done(on: queue) { data in
                     currentAvatarDownloads.mutate { $0.remove(profile.id) }
                     
+                    guard let latestProfile: Profile = Storage.shared.read({ db in try Profile.fetchOne(db, id: profile.id) }) else {
+                        return
+                    }
+                    
+                    guard
+                        let latestProfileKey: OWSAES256Key = latestProfile.profileEncryptionKey,
+                        !latestProfileKey.keyData.isEmpty,
+                        latestProfileKey == profileKeyAtStart
+                    else {
+                        OWSLogger.warn("Ignoring avatar download for obsolete user profile.")
+                        return
+                    }
+                    
+                    guard profileUrlStringAtStart == latestProfile.profilePictureUrl else {
+                        OWSLogger.warn("Avatar url has changed during download.")
+                        
+                        if latestProfile.profilePictureUrl?.isEmpty == false {
+                            self.downloadAvatar(for: latestProfile)
+                        }
+                        return
+                    }
+                    
+                    guard let decryptedData: Data = decryptProfileData(data: data, key: profileKeyAtStart) else {
+                        OWSLogger.warn("Avatar data for \(profile.id) could not be decrypted.")
+                        return
+                    }
+                    
+                    try? decryptedData.write(to: URL(fileURLWithPath: filePath), options: [.atomic])
+                    
+                    guard UIImage(contentsOfFile: filePath) != nil else {
+                        OWSLogger.warn("Avatar image for \(profile.id) could not be loaded.")
+                        return
+                    }
+                    
+                    // Store the updated 'profilePictureFileName'
                     Storage.shared.write { db in
-                        guard let latestProfile: Profile = try Profile.fetchOne(db, id: profile.id) else {
-                            return
-                        }
-                        
-                        guard
-                            let latestProfileKey: OWSAES256Key = latestProfile.profileEncryptionKey,
-                            !latestProfileKey.keyData.isEmpty,
-                            latestProfileKey == profileKeyAtStart
-                        else {
-                            OWSLogger.warn("Ignoring avatar download for obsolete user profile.")
-                            return
-                        }
-                        
-                        guard profileUrlStringAtStart == latestProfile.profilePictureUrl else {
-                            OWSLogger.warn("Avatar url has changed during download.")
-                            
-                            if latestProfile.profilePictureUrl?.isEmpty == false {
-                                self.downloadAvatar(for: latestProfile)
-                            }
-                            return
-                        }
-                        
-                        guard let decryptedData: Data = decryptProfileData(data: data, key: profileKeyAtStart) else {
-                            OWSLogger.warn("Avatar data for \(profile.id) could not be decrypted.")
-                            return
-                        }
-                        
-                        try? decryptedData.write(to: URL(fileURLWithPath: filePath), options: [.atomic])
-                        
-                        guard let image: UIImage = UIImage(contentsOfFile: filePath) else {
-                            OWSLogger.warn("Avatar image for \(profile.id) could not be loaded.")
-                            return
-                        }
-                        
                         _ = try? Profile
                             .filter(id: profile.id)
                             .updateAll(db, Profile.Columns.profilePictureFileName.set(to: fileName))
-                        profileAvatarCache.mutate { $0[fileName] = image }
+                        profileAvatarCache.mutate { $0[fileName] = decryptedData }
                     }
                     
                     // Redundant but without reading 'backgroundTask' it will warn that the variable
@@ -209,7 +238,8 @@ public struct ProfileManager {
     public static func updateLocal(
         queue: DispatchQueue,
         profileName: String,
-        avatarImage: UIImage?,
+        image: UIImage?,
+        imageFilePath: String?,
         requiredSync: Bool,
         success: ((Database, Profile) throws -> ())? = nil,
         failure: ((ProfileManagerError) -> ())? = nil
@@ -218,8 +248,60 @@ public struct ProfileManager {
             // If the profile avatar was updated or removed then encrypt with a new profile key
             // to ensure that other users know that our profile picture was updated
             let newProfileKey: OWSAES256Key = OWSAES256Key.generateRandom()
+            let maxAvatarBytes: UInt = (5 * 1000 * 1000)
+            let avatarImageData: Data?
             
-            guard let avatarImage: UIImage = avatarImage else {
+            do {
+                avatarImageData = try {
+                    guard var image: UIImage = image else {
+                        guard let imageFilePath: String = imageFilePath else { return nil }
+                        
+                        let data: Data = try Data(contentsOf: URL(fileURLWithPath: imageFilePath))
+                        
+                        guard data.count <= maxAvatarBytes else {
+                            // Our avatar dimensions are so small that it's incredibly unlikely we wouldn't
+                            // be able to fit our profile photo (eg. generating pure noise at our resolution
+                            // compresses to ~200k)
+                            SNLog("Animated profile avatar was too large.")
+                            SNLog("Updating service with profile failed.")
+                            throw ProfileManagerError.avatarUploadMaxFileSizeExceeded
+                        }
+                        
+                        return data
+                    }
+                    
+                    if image.size.width != maxAvatarDiameter || image.size.height != maxAvatarDiameter {
+                        // To help ensure the user is being shown the same cropping of their avatar as
+                        // everyone else will see, we want to be sure that the image was resized before this point.
+                        SNLog("Avatar image should have been resized before trying to upload")
+                        image = image.resizedImage(toFillPixelSize: CGSize(width: maxAvatarDiameter, height: maxAvatarDiameter))
+                    }
+                    
+                    guard let data: Data = image.jpegData(compressionQuality: 0.95) else {
+                        SNLog("Updating service with profile failed.")
+                        throw ProfileManagerError.avatarWriteFailed
+                    }
+                    
+                    guard data.count <= maxAvatarBytes else {
+                        // Our avatar dimensions are so small that it's incredibly unlikely we wouldn't
+                        // be able to fit our profile photo (eg. generating pure noise at our resolution
+                        // compresses to ~200k)
+                        SNLog("Suprised to find profile avatar was too large. Was it scaled properly? image: \(image)")
+                        SNLog("Updating service with profile failed.")
+                        throw ProfileManagerError.avatarUploadMaxFileSizeExceeded
+                    }
+                    
+                    return data
+                }()
+            }
+            catch {
+                if let profileManagerError: ProfileManagerError = error as? ProfileManagerError {
+                    failure?(profileManagerError)
+                }
+                return
+            }
+            
+            guard let data: Data = avatarImageData else {
                 // If we have no image then we need to make sure to remove it from the profile
                 Storage.shared.writeAsync { db in
                     let existingProfile: Profile = Profile.fetchOrCreateCurrentUser(db)
@@ -255,39 +337,18 @@ public struct ProfileManager {
 
             // If we have a new avatar image, we must first:
             //
-            // * Encode it to JPEG.
             // * Write it to disk.
             // * Encrypt it
             // * Upload it to asset service
             // * Send asset service info to Signal Service
             OWSLogger.verbose("Updating local profile on service with new avatar.")
-            let maxAvatarBytes: UInt = (5 * 1000 * 1000)
-            var image: UIImage = avatarImage
-
-            if image.size.width != maxAvatarDiameter || image.size.height != maxAvatarDiameter {
-                // To help ensure the user is being shown the same cropping of their avatar as
-                // everyone else will see, we want to be sure that the image was resized before this point.
-                SNLog("Avatar image should have been resized before trying to upload")
-                image = image.resizedImage(toFillPixelSize: CGSize(width: maxAvatarDiameter, height: maxAvatarDiameter))
-            }
-
-            guard let data: Data = image.jpegData(compressionQuality: 0.95) else {
-                SNLog("Updating service with profile failed.")
-                failure?(.avatarWriteFailed)
-                return
-            }
             
-            guard data.count <= maxAvatarBytes else {
-                // Our avatar dimensions are so small that it's incredibly unlikely we wouldn't
-                // be able to fit our profile photo (eg. generating pure noise at our resolution
-                // compresses to ~200k)
-                SNLog("Suprised to find profile avatar was too large. Was it scaled properly? image: \(image)")
-                SNLog("Updating service with profile failed.")
-                failure?(.avatarImageTooLarge)
-                return
-            }
-            
-            let fileName: String = UUID().uuidString.appendingFileExtension("jpg")
+            let fileName: String = UUID().uuidString
+                .appendingFileExtension(
+                    imageFilePath
+                        .map { URL(fileURLWithPath: $0).pathExtension }
+                        .defaulting(to: "jpg")
+                )
             let filePath: String = ProfileManager.profileAvatarFilepath(filename: fileName)
             
             // Write the avatar to disk
@@ -324,7 +385,7 @@ public struct ProfileManager {
                             .saved(db)
                         
                         // Update the cached avatar image value
-                        profileAvatarCache.mutate { $0[fileName] = avatarImage }
+                        profileAvatarCache.mutate { $0[fileName] = data }
                         
                         SNLog("Successfully updated service with profile.")
                         try success?(db, profile)

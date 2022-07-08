@@ -16,6 +16,7 @@ public enum GarbageCollectionJob: JobExecutor {
     public static var requiresThreadId: Bool = false
     public static let requiresInteractionId: Bool = false
     public static let approxSixMonthsInSeconds: TimeInterval = (6 * 30 * 24 * 60 * 60)
+    private static let minInteractionsToTrim: Int = 2000
     
     public static func run(
         _ job: Job,
@@ -68,6 +69,8 @@ public enum GarbageCollectionJob: JobExecutor {
                 if typesToCollect.contains(.oldOpenGroupMessages) && db[.trimOpenGroupMessagesOlderThanSixMonths] {
                     let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
                     let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+                    let threadIdLiteral: SQL = SQL(stringLiteral: Interaction.Columns.threadId.name)
+                    let minInteractionsToTrimSql: SQL = SQL("\(GarbageCollectionJob.minInteractionsToTrim)")
                     
                     try db.execute(literal: """
                         DELETE FROM \(Interaction.self)
@@ -78,7 +81,17 @@ public enum GarbageCollectionJob: JobExecutor {
                                 \(SQL("\(thread[.variant]) = \(SessionThread.Variant.openGroup)")) AND
                                 \(thread[.id]) = \(interaction[.threadId])
                             )
-                            WHERE \(interaction[.timestampMs]) < \(timestampNow - approxSixMonthsInSeconds)
+                            JOIN (
+                                SELECT
+                                    COUNT(\(interaction.alias[Column.rowID])) AS interactionCount,
+                                    \(interaction[.threadId])
+                                FROM \(Interaction.self)
+                                GROUP BY \(interaction[.threadId])
+                            ) AS interactionInfo ON interactionInfo.\(threadIdLiteral) = \(interaction[.threadId])
+                            WHERE (
+                                \(interaction[.timestampMs]) < \(timestampNow - approxSixMonthsInSeconds) AND
+                                interactionInfo.interactionCount >= \(minInteractionsToTrimSql)
+                            )
                         )
                     """)
                 }
