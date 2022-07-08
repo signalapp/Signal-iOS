@@ -272,15 +272,12 @@ class GroupAttributesEditorHelper: NSObject {
             return completion()
         }
 
-        guard let newGroupModel = buildNewGroupModel() else {
-            let error = OWSAssertionError("Couldn't build group model.")
-            GroupViewUtils.showUpdateErrorUI(error: error)
-            return
-        }
+        let groupUpdateToPerform = self.buildGroupUpdate()
+
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: fromViewController,
             updatePromiseBlock: {
-                self.updateGroupThreadPromise(newGroupModel: newGroupModel)
+                self.updateGroupThreadPromise(update: groupUpdateToPerform)
             },
             completion: { _ in
                 completion()
@@ -288,43 +285,26 @@ class GroupAttributesEditorHelper: NSObject {
         )
     }
 
-    private func buildNewGroupModel() -> TSGroupModel? {
-        guard let groupModelOriginal = groupModelOriginal else { return nil }
-
-        do {
-            return try databaseStorage.read { transaction in
-                var builder = groupModelOriginal.asBuilder
-                builder.name = self.groupNameCurrent
-                builder.descriptionText = self.groupDescriptionCurrent
-                builder.avatarData = self.avatarCurrent?.imageData
-                return try builder.build(transaction: transaction)
-            }
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return nil
-        }
+    private func buildGroupUpdate() -> GroupManager.GroupUpdate {
+        .attributes(
+            name: groupNameCurrent,
+            description: groupDescriptionCurrent,
+            avatarData: avatarCurrent?.imageData
+        )
     }
 
-    private func updateGroupThreadPromise(newGroupModel: TSGroupModel) -> Promise<Void> {
-        guard let localAddress = tsAccountManager.localAddress else {
-            return Promise(error: OWSAssertionError("Missing localAddress."))
-        }
-
+    private func updateGroupThreadPromise(update: GroupManager.GroupUpdate) -> Promise<Void> {
         guard let oldGroupModel = groupModelOriginal else {
             return Promise(error: OWSAssertionError("Missing groupModelOriginal."))
         }
 
         return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(
+            GroupManager.messageProcessingPromise(
                 for: oldGroupModel,
                 description: self.logTag
             )
         }.then(on: .global()) { _ in
-            GroupManager.localUpdateExistingGroup(
-                oldGroupModel: oldGroupModel,
-                newGroupModel: newGroupModel,
-                groupUpdateSourceAddress: localAddress
-            )
+            GroupManager.updateExistingGroup(existingGroupModel: oldGroupModel, update: update)
         }.asVoid()
     }
 }

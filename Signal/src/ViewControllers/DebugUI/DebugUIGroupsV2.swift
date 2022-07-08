@@ -28,10 +28,10 @@ class DebugUIGroupsV2: DebugUIPage {
                 self?.sendGroupUpdate(groupThread: groupThread)
             })
 
-            if groupThread.isGroupV2Thread {
+            if let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 {
                 // v2 Group
                 sectionItems.append(OWSTableItem(title: "Kick other group members.") { [weak self] in
-                    self?.kickOtherGroupMembers(groupThread: groupThread)
+                    self?.kickOtherGroupMembers(groupModel: groupModelV2)
                 })
             } else {
                 // v1 Group
@@ -532,36 +532,21 @@ class DebugUIGroupsV2: DebugUIPage {
         }
     }
 
-    private func kickOtherGroupMembers(groupThread: TSGroupThread) {
-
+    private func kickOtherGroupMembers(groupModel: TSGroupModelV2) {
         guard let localAddress = tsAccountManager.localAddress else {
             return owsFailDebug("Missing localAddress.")
         }
 
-        let oldGroupModel = groupThread.groupModel
+        let uuidsToKick = groupModel.groupMembership.allMembersOfAnyKind.filter { address in
+            address != localAddress
+        }.compactMap({ $0.uuid })
 
-        let oldGroupMembership = oldGroupModel.groupMembership
-        var groupMembershipBuilder = oldGroupMembership.asBuilder
-        for address in oldGroupMembership.allMembersOfAnyKind {
-            if address != localAddress {
-                groupMembershipBuilder.remove(address)
+        GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModel, uuids: uuidsToKick)
+            .done { _ in
+                Logger.info("Success.")
+            }.catch { error in
+                owsFailDebug("Error: \(error)")
             }
-        }
-        let newGroupMembership = groupMembershipBuilder.build()
-        firstly { () -> Promise<TSGroupThread> in
-            var groupModelBuilder = oldGroupModel.asBuilder
-            groupModelBuilder.groupMembership = newGroupMembership
-            let newGroupModel = try databaseStorage.read { transaction in
-                try groupModelBuilder.buildAsV2(transaction: transaction)
-            }
-            return GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
-                                                         newGroupModel: newGroupModel,
-                                                         groupUpdateSourceAddress: localAddress)
-        }.done { (_) -> Void in
-            Logger.info("Success.")
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
     }
 
     private func sendInvalidGroupMessages(contactThread: TSContactThread) {

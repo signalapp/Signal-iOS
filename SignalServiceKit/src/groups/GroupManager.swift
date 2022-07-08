@@ -268,9 +268,10 @@ public class GroupManager: NSObject {
                 // Before we create a v2 group, we need to separate out the
                 // pending and non-pending members.  If we already know we're
                 // going to create a v1 group, we shouldn't separate them.
-                let groupMembership = self.separateInvitedMembers(in: proposedGroupMembership,
-                                                                  oldGroupModel: nil,
-                                                                  transaction: transaction)
+                let groupMembership = self.separateInvitedMembersForNewGroup(
+                    withMembership: proposedGroupMembership,
+                    transaction: transaction
+                )
 
                 guard groupMembership.isFullMember(localAddress) else {
                     throw OWSAssertionError("Missing localAddress.")
@@ -383,53 +384,27 @@ public class GroupManager: NSObject {
     // * We know their UUID.
     // * We know their profile key.
     // * We have a profile key credential for them.
-    private static func separateInvitedMembers(in newGroupMembership: GroupMembership,
-                                               oldGroupModel: TSGroupModel?,
-                                               transaction: SDSAnyReadTransaction) -> GroupMembership {
+    private static func separateInvitedMembersForNewGroup(withMembership newGroupMembership: GroupMembership,
+                                                          transaction: SDSAnyReadTransaction) -> GroupMembership {
         guard let localUuid = tsAccountManager.localUuid else {
             owsFailDebug("Missing localUuid.")
             return newGroupMembership
         }
         let localAddress = SignalServiceAddress(uuid: localUuid)
-        var newMembers: Set<SignalServiceAddress>
         var builder = GroupMembership.Builder()
-        if let oldGroupModel = oldGroupModel {
-            // Updating existing group
-            let oldGroupMembership = oldGroupModel.groupMembership
 
-            builder.copyInvalidInvites(from: oldGroupMembership)
-
-            assert(oldGroupModel.groupsVersion == .V2)
-            newMembers = newGroupMembership.allMembersOfAnyKind.subtracting(oldGroupMembership.allMembersOfAnyKind)
-
-            // Carry over existing members as they stand.
-            let existingMembers = oldGroupMembership.allMembersOfAnyKind.intersection(newGroupMembership.allMembersOfAnyKind)
-            for address in existingMembers {
-                if oldGroupMembership.isInvitedMember(address),
-                   newGroupMembership.isFullMember(address) {
-                    // If we're adding a pending member, treat them as a new member.
-                    newMembers.insert(address)
-                } else if oldGroupMembership.isRequestingMember(address),
-                          newGroupMembership.isFullMember(address) {
-                    // If we're adding a requesting member, treat them as a new member.
-                    newMembers.insert(address)
-                } else {
-                    builder.copyMember(address, from: oldGroupMembership)
-                }
-            }
-        } else {
-            // Creating new group
-
-            // First, skip separation when creating v1 groups.
-            guard canUseV2(for: newGroupMembership.allMembersOfAnyKind, transaction: transaction) else {
-                // If any member of a new group doesn't support groups v2,
-                // we're going to create a v1 group.  In that case, we
-                // don't want to separate out pending members.
-                return newGroupMembership
-            }
-
-            newMembers = newGroupMembership.allMembersOfAnyKind
+        guard canUseV2(for: newGroupMembership.allMembersOfAnyKind, transaction: transaction) else {
+            // We should never be in this position anymore, since V1 groups are
+            // dead, but we do this just in case until we revisit the GV1 code
+            // more holistically.
+            //
+            // If any member of a new group doesn't support groups v2,
+            // we're going to create a v1 group.  In that case, we
+            // don't want to separate out pending members.
+            return newGroupMembership
         }
+
+        let newMembers = newGroupMembership.allMembersOfAnyKind
 
         // We only need to separate new members.
         for address in newMembers {
@@ -673,7 +648,7 @@ public class GroupManager: NSObject {
                                                      groupUpdateSourceAddress: SignalServiceAddress?,
                                                      transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
         let groupId = proposedGroupModel.groupId
-        let updateInfo: UpdateInfo
+        let updateInfo: UpdateInfoV1
         do {
             updateInfo = try updateInfoV1(groupModel: proposedGroupModel,
                                           transaction: transaction)
@@ -710,26 +685,12 @@ public class GroupManager: NSObject {
 
     // MARK: - Update Existing Group
 
-    private struct UpdateInfo {
+    private struct UpdateInfoV1 {
         let groupId: Data
         let newGroupModel: TSGroupModel
     }
 
-    public static func localUpdateExistingGroup(oldGroupModel: TSGroupModel?,
-                                                newGroupModel: TSGroupModel,
-                                                groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
-
-        if let newGroupModel = newGroupModel as? TSGroupModelV2 {
-            return localUpdateExistingGroupV2(oldGroupModel: oldGroupModel,
-                                              newGroupModel: newGroupModel,
-                                              groupUpdateSourceAddress: groupUpdateSourceAddress)
-        } else {
-            return localUpdateExistingGroupV1(groupModel: newGroupModel,
-                                              groupUpdateSourceAddress: groupUpdateSourceAddress)
-        }
-    }
-
-    private static func localUpdateExistingGroupV1(groupModel proposedGroupModel: TSGroupModel,
+    fileprivate static func localUpdateExistingGroupV1(groupModel proposedGroupModel: TSGroupModel,
                                                    groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
 
         return self.databaseStorage.write(.promise) { (transaction) throws -> UpsertGroupResult in
@@ -757,83 +718,8 @@ public class GroupManager: NSObject {
         }
     }
 
-    private static func localUpdateExistingGroupV2(oldGroupModel: TSGroupModel?,
-                                                   newGroupModel proposedGroupModel: TSGroupModelV2,
-                                                   groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
-
-        guard let oldGroupModel = oldGroupModel as? TSGroupModelV2 else {
-            return Promise(error: OWSAssertionError("Invalid group model."))
-        }
-
-        return firstly { () -> Promise<Void> in
-            self.tryToEnableGroupsV2(for: Array(proposedGroupModel.groupMembership.allMembersOfAnyKind), isBlocking: true, ignoreErrors: true)
-        }.then(on: .global()) { () -> Promise<Void> in
-            return self.ensureLocalProfileHasCommitmentIfNecessary()
-        }.then(on: DispatchQueue.global()) { () -> Promise<String?> in
-            if oldGroupModel.avatarHash == proposedGroupModel.avatarHash && oldGroupModel.avatarUrlPath != nil {
-                // Skip redundant upload; the avatar hasn't changed.
-                return Promise.value(oldGroupModel.avatarUrlPath)
-            }
-            guard let avatarData = proposedGroupModel.avatarData else {
-                // No avatar to upload.
-                return Promise.value(nil)
-            }
-            return firstly {
-                // Upload avatar.
-                return self.groupsV2Swift.uploadGroupAvatar(avatarData: avatarData,
-                                                            groupSecretParamsData: oldGroupModel.secretParamsData)
-            }.map(on: .global()) { (avatarUrlPath: String) throws -> String? in
-                // Convert Promise<String> to Promise<String?>
-                return avatarUrlPath
-            }
-        }.map(on: .global()) { (avatarUrlPath: String?) throws -> GroupsV2OutgoingChanges in
-            return try databaseStorage.read { transaction in
-                var proposedGroupModel = proposedGroupModel
-                if let avatarUrlPath = avatarUrlPath {
-                    var builder = proposedGroupModel.asBuilder
-                    builder.avatarUrlPath = avatarUrlPath
-                    proposedGroupModel = try builder.buildAsV2(transaction: transaction)
-                }
-
-                let updateInfo = try self.updateInfoV2(oldGroupModel: oldGroupModel,
-                                                       newGroupModel: proposedGroupModel,
-                                                       transaction: transaction)
-
-                guard let newGroupModel = updateInfo.newGroupModel as? TSGroupModelV2 else {
-                    throw OWSAssertionError("Invalid group model.")
-                }
-
-                // When building the change set, it's important that we
-                // diff the "new/proposed" group model against the "old"
-                // group model, not the "current" group model. This avoids
-                // reverting changes from other users.
-                //
-                // The "old" group model reflects the group model the user
-                // used as a point of departure for their updates. The
-                // "current" group model reflects the state of the database
-                // which may have changed since the user started editing.
-                // The "new" group model is the "old" model, updated to
-                // reflect the user intent.
-                //
-                // Let's say Alice and Bob edit the group at the same time.
-                // Alice changes the group name and Bob changes the group
-                // avatar.  Alice updates the group first.  When Bob's
-                // client tries to update, it should only reflect Bob's
-                // intent - to change the group avatar.
-                return try self.groupsV2Swift.buildChangeSet(oldGroupModel: oldGroupModel,
-                                                                    newGroupModel: newGroupModel)
-            }
-        }.then(on: .global()) { (changes: GroupsV2OutgoingChanges) throws -> Promise<TSGroupThread> in
-            return self.groupsV2Swift.updateExistingGroupOnService(changes: changes,
-                                                                   requiredRevision: nil)
-        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
-                  description: "Update existing group") {
-            GroupsV2Error.timeout
-        }
-    }
-
     private static func updateInfoV1(groupModel proposedGroupModel: TSGroupModel,
-                                     transaction: SDSAnyReadTransaction) throws -> UpdateInfo {
+                                     transaction: SDSAnyReadTransaction) throws -> UpdateInfoV1 {
         let groupId = proposedGroupModel.groupId
         guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
             throw OWSAssertionError("Thread does not exist.")
@@ -861,65 +747,7 @@ public class GroupManager: NSObject {
             throw GroupsV2Error.redundantChange
         }
 
-        return UpdateInfo(groupId: groupId, newGroupModel: newGroupModel)
-    }
-
-    private static func updateInfoV2(oldGroupModel: TSGroupModelV2,
-                                     newGroupModel proposedGroupModel: TSGroupModelV2,
-                                     transaction: SDSAnyReadTransaction) throws -> UpdateInfo {
-
-        let groupId = proposedGroupModel.groupId
-        let proposedGroupMembership = proposedGroupModel.groupMembership
-        guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-            throw OWSAssertionError("Thread does not exist.")
-        }
-        guard let currentGroupModel = thread.groupModel as? TSGroupModelV2 else {
-            throw OWSAssertionError("Invalid groupModel.")
-        }
-        guard let localAddress = tsAccountManager.localAddress else {
-            throw OWSAssertionError("Missing localAddress.")
-        }
-
-        for address in proposedGroupMembership.allMembersOfAnyKind {
-            guard address.uuid != nil else {
-                throw OWSAssertionError("Group v2 member missing uuid.")
-            }
-        }
-        // Before we update a v2 group, we need to separate out the
-        // pending and non-pending members.
-        let groupMembership = self.separateInvitedMembers(in: proposedGroupMembership,
-                                                          oldGroupModel: oldGroupModel,
-                                                          transaction: transaction)
-
-        // Don't try to modify a v2 group if we're not a member.
-        guard groupMembership.isFullMember(localAddress) else {
-            throw OWSAssertionError("Missing localAddress.")
-        }
-
-        let hasAvatarUrlPath = proposedGroupModel.avatarUrlPath != nil
-        let hasAvatarData = proposedGroupModel.avatarData != nil
-        guard hasAvatarUrlPath == hasAvatarData else {
-            throw OWSAssertionError("hasAvatarUrlPath: \(hasAvatarData) != hasAvatarData.")
-        }
-
-        // We don't need to increment the revision here,
-        // this is a "proposed" new group model; we'll
-        // eventually derive a new group model from
-        // protos received from the service and apply
-        // that the to the local database.
-        let newRevision = currentGroupModel.revision
-
-        var builder = proposedGroupModel.asBuilder
-        builder.groupMembership = groupMembership
-        builder.groupV2Revision = newRevision
-        let newGroupModel = try builder.build(transaction: transaction)
-
-        if currentGroupModel.isEqual(to: newGroupModel, comparisonMode: .compareAll) {
-            // Skip redundant update.
-            throw GroupsV2Error.redundantChange
-        }
-
-        return UpdateInfo(groupId: groupId, newGroupModel: newGroupModel)
+        return UpdateInfoV1(groupId: groupId, newGroupModel: newGroupModel)
     }
 
     // MARK: - Disappearing Messages
@@ -2390,5 +2218,191 @@ public extension GroupManager {
 public extension Error {
     var isNetworkFailureOrTimeout: Bool {
         return GroupManager.isNetworkFailureOrTimeout(self)
+    }
+}
+
+// MARK: - Update existing groups
+
+extension GroupManager {
+    public enum GroupUpdate: CustomStringConvertible {
+        case addNormalMembers(uuids: [UUID])
+        case attributes(name: String?, description: String?, avatarData: Data?)
+
+        public var newUuids: [UUID] {
+            if case .addNormalMembers(let uuids) = self {
+                return uuids
+            }
+
+            return []
+        }
+
+        public var newName: String? {
+            if case .attributes(let .some(name), _, _) = self {
+                return name
+            }
+
+            return nil
+        }
+
+        public var newDescriptionText: String? {
+            if case .attributes(_, let .some(description), _) = self {
+                return description
+            }
+
+            return nil
+        }
+
+        public var newAvatarData: Data? {
+            if case .attributes(_, _, let .some(avatarData)) = self {
+                return avatarData
+            }
+
+            return nil
+        }
+
+        public var description: String {
+            switch self {
+            case .addNormalMembers:
+                return "Add new members with role .normal"
+            case .attributes(let name, let description, let avatarData):
+                var message = "Update attributes:"
+                message += name != nil ? " name" : ""
+                message += description != nil ? " description" : ""
+                message += avatarData != nil ? " settingAvatarData" : " clearingAvatarData"
+                return message
+            }
+        }
+    }
+
+    public static func updateExistingGroup(
+        existingGroupModel: TSGroupModel,
+        update: GroupUpdate
+    ) -> Promise<TSGroupThread> {
+        if let existingGroupModelV2 = existingGroupModel as? TSGroupModelV2 {
+            return updateExistingGroupV2(existingGroupModel: existingGroupModelV2, update: update)
+        } else {
+            return updateExistingGroupV1(existingGroupModel: existingGroupModel, update: update)
+        }
+    }
+
+    private static func updateExistingGroupV2(
+        existingGroupModel: TSGroupModelV2,
+        update: GroupUpdate
+    ) -> Promise<TSGroupThread> {
+        firstly { () -> Promise<Void> in
+            // Ensure all eventual members of the group have GV2 enabled
+
+            var allMembers = existingGroupModel.groupMembership.allMemberUuidsOfAnyKind
+            if case .addNormalMembers(let uuids) = update {
+                allMembers.formUnion(uuids)
+            }
+
+            return self.tryToEnableGroupsV2(
+                for: allMembers.map { SignalServiceAddress(uuid: $0) },
+                isBlocking: true,
+                ignoreErrors: true
+            )
+        }.then(on: .global()) { () throws -> Promise<String?> in
+            // Upload new avatar data, if present
+
+            if case .attributes(_, _, let .some(avatarData)) = update {
+                // Skip upload if the new avatar data is the same as the existing
+                if let existingAvatarHash = existingGroupModel.avatarHash,
+                   try existingAvatarHash == TSGroupModel.hash(forAvatarData: avatarData) {
+                    return .value(nil)
+                }
+
+                return self.groupsV2Swift.uploadGroupAvatar(
+                    avatarData: avatarData,
+                    groupSecretParamsData: existingGroupModel.secretParamsData
+                ).map { Optional.some($0) }
+            }
+
+            return .value(nil)
+        }.then(on: .global()) { (avatarUrlPath: String?) in
+            self.updateGroupV2(groupModel: existingGroupModel,
+                               description: update.description) { groupChangeSet in
+                guard let localUuid = tsAccountManager.localUuid else {
+                    owsFailDebug("Missing localUuid")
+                    return
+                }
+
+                self.databaseStorage.read { transaction in
+                    if let title = update.newName?.ows_stripped(),
+                       title != existingGroupModel.groupName {
+                        groupChangeSet.setTitle(title)
+                    }
+
+                    let maybeNewDescriptionText = update.newDescriptionText?.ows_stripped()
+                    if maybeNewDescriptionText != existingGroupModel.descriptionText {
+                        groupChangeSet.setDescriptionText(maybeNewDescriptionText)
+                    }
+
+                    // We checked in the previous step if we have avatar data
+                    // that is equivalent to the existing. If we have a URL we
+                    // have a new avatar, but we also might be clearing it.
+                    if let avatarData = update.newAvatarData, let avatarUrlPath = avatarUrlPath {
+                        groupChangeSet.setAvatar((data: avatarData, urlPath: avatarUrlPath))
+                    } else if update.newAvatarData == nil, existingGroupModel.avatarData != nil {
+                        groupChangeSet.setAvatar(nil)
+                    }
+
+                    for uuid in update.newUuids {
+                        owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(uuid))
+
+                        // Important that at this point we already have the
+                        // profile keys for these users
+                        let isPending = !self.groupsV2Swift.hasProfileKeyCredential(
+                            for: SignalServiceAddress(uuid: uuid),
+                            transaction: transaction
+                        )
+
+                        if isPending || (uuid != localUuid && DebugFlags.groupsV2forceInvites.get()) {
+                            groupChangeSet.addInvitedMember(uuid, role: .normal)
+                        } else {
+                            groupChangeSet.addMember(uuid, role: .normal)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static func updateExistingGroupV1(
+        existingGroupModel: TSGroupModel,
+        update: GroupUpdate
+    ) -> Promise<TSGroupThread> {
+        firstly { () throws -> Promise<TSGroupModel> in
+            // Construct new group model based on update
+
+            var newGroupModelBuilder = existingGroupModel.asBuilder
+
+            newGroupModelBuilder.name = update.newName
+            newGroupModelBuilder.descriptionText = update.newDescriptionText
+            newGroupModelBuilder.avatarData = update.newAvatarData
+
+            var newGroupMembershipBuilder = existingGroupModel.groupMembership.asBuilder
+            for uuid in update.newUuids {
+                newGroupMembershipBuilder.remove(uuid)
+                newGroupMembershipBuilder.addFullMember(uuid, role: .normal)
+            }
+
+            newGroupModelBuilder.groupMembership = newGroupMembershipBuilder.build()
+
+            let newGroupModel = try databaseStorage.read { transaction in
+                try newGroupModelBuilder.build(transaction: transaction)
+            }
+
+            return .value(newGroupModel)
+        }.then(on: .global()) { (newGroupModel: TSGroupModel) -> Promise<TSGroupThread> in
+            guard let localAddress = self.tsAccountManager.localAddress else {
+                return Promise(error: OWSAssertionError("Missing local address."))
+            }
+
+            return self.localUpdateExistingGroupV1(
+                groupModel: newGroupModel,
+                groupUpdateSourceAddress: localAddress
+            )
+        }
     }
 }

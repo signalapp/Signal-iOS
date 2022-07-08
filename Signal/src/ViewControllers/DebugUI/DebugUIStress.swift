@@ -142,20 +142,15 @@ public extension DebugUIStress {
     }
 
     class func copyToAnotherGroup(srcGroupThread: TSGroupThread, dstGroupThread: TSGroupThread) {
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("Missing localAddress.")
-            return
-        }
-
         let membersToAdd = srcGroupThread.groupMembership.allMembersOfAnyKind.subtracting(dstGroupThread.groupMembership.allMembersOfAnyKind)
+
         firstly { () -> Promise<Void> in
             for member in membersToAdd {
                 Logger.verbose("Candidate member: \(member)")
             }
             return GroupManager.tryToEnableGroupsV2(for: Array(membersToAdd), isBlocking: true, ignoreErrors: true)
         }.then { () -> Promise<TSGroupThread> in
-            let oldGroupModel = dstGroupThread.groupModel
-            let newGroupModel = try self.databaseStorage.read { (transaction: SDSAnyReadTransaction) throws -> TSGroupModel in
+            let uuidsToAdd = try self.databaseStorage.read { transaction -> [UUID] in
                 let validMembersToAdd: [SignalServiceAddress]
                 if dstGroupThread.isGroupV1Thread {
                     validMembersToAdd = membersToAdd.filter { $0.phoneNumber != nil }
@@ -173,19 +168,11 @@ public extension DebugUIStress {
                     throw OWSAssertionError("No valid members to add.")
                 }
 
-                var groupModelBuilder = oldGroupModel.asBuilder
-                var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder
-                groupMembershipBuilder.addFullMembers(Set(validMembersToAdd), role: .`normal`)
-                groupModelBuilder.groupMembership = groupMembershipBuilder.build()
-                return try groupModelBuilder.build(transaction: transaction)
-            }
-            guard oldGroupModel.groupsVersion == newGroupModel.groupsVersion else {
-                throw OWSAssertionError("Group Version failure.")
+                return membersToAdd.compactMap { $0.uuid }
             }
 
-            return GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
-                                                         newGroupModel: newGroupModel,
-                                                         groupUpdateSourceAddress: localAddress)
+            return GroupManager.updateExistingGroup(existingGroupModel: dstGroupThread.groupModel,
+                                                    update: .addNormalMembers(uuids: uuidsToAdd))
         }.done { (groupThread) in
             Logger.info("Complete.")
 
@@ -196,48 +183,30 @@ public extension DebugUIStress {
     }
 
     class func addDebugMembersToGroup(_ groupThread: TSGroupThread) {
+        let oldGroupModel = groupThread.groupModel
 
         let e164ToAdd: [String] = [
             "+16785621057"
         ]
-        let membersToAdd = Set(e164ToAdd.map { SignalServiceAddress(phoneNumber: $0) })
 
-        let oldGroupModel = groupThread.groupModel
-        let newGroupModel: TSGroupModel
-        do {
-            newGroupModel = try databaseStorage.read { transaction in
-                var builder = oldGroupModel.asBuilder
-                let oldGroupMembership = oldGroupModel.groupMembership
-                var groupMembershipBuilder = oldGroupMembership.asBuilder
-                for address in membersToAdd {
-                    assert(address.isValid)
-                    guard !oldGroupMembership.isMemberOfAnyKind(address) else {
-                        Logger.warn("Recipient is already in group.")
-                        continue
-                    }
-                    // GroupManager will separate out members as pending if necessary.
-                    groupMembershipBuilder.addFullMember(address, role: .normal)
+        let uuidsToAdd = e164ToAdd
+            .map { SignalServiceAddress(phoneNumber: $0) }
+            .compactMap { $0.uuid }
+            .filter { uuid in
+                if oldGroupModel.groupMembership.isMemberOfAnyKind(uuid) {
+                    Logger.warn("Recipient is already in group.")
+                    return false
                 }
-                builder.groupMembership = groupMembershipBuilder.build()
-                return try builder.build(transaction: transaction)
-            }
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return
-        }
 
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("Missing localAddress.")
-            return
-        }
+                return true
+            }
 
         firstly { () -> Promise<Void> in
             return GroupManager.messageProcessingPromise(for: oldGroupModel,
                                                          description: self.logTag())
         }.then(on: .global()) { _ in
-            GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
-                                                  newGroupModel: newGroupModel,
-                                                  groupUpdateSourceAddress: localAddress)
+            GroupManager.updateExistingGroup(existingGroupModel: oldGroupModel,
+                                             update: .addNormalMembers(uuids: uuidsToAdd))
         }.done(on: .global()) { (_) in
             Logger.info("Complete.")
         }.catch(on: .global()) { error in

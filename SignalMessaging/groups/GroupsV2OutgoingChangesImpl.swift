@@ -54,9 +54,10 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
     // similar changes made by other group members/clients.  We can & must skip
     // redundant changes.
 
-    // Non-nil if the title changed.
-    // When clearing the title, this will be the empty string.
+    // Non-nil if changed. Should not be able to be set to an empty string.
     private var newTitle: String?
+
+    // Non-nil if changed. Empty string is allowed.
     private var newDescriptionText: String?
 
     public var newAvatarData: Data?
@@ -107,156 +108,24 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         self.groupSecretParamsData = groupModel.secretParamsData
     }
 
-    // MARK: - Original Intent
-
-    public class func buildForDiffBetween(
-        oldGroupModel: TSGroupModelV2,
-        newGroupModel: TSGroupModelV2
-    ) throws -> GroupsV2OutgoingChangesImpl {
-        let changes = GroupsV2OutgoingChangesImpl(for: oldGroupModel)
-
-        try changes.calculateDiffBetween(
-            oldGroupModel: oldGroupModel,
-            newGroupModel: newGroupModel
-        )
-
-        return changes
-    }
-
-    // Calculate the intended changes of the local user
-    // by diffing two group models.
-    private func calculateDiffBetween(
-        oldGroupModel: TSGroupModelV2,
-        newGroupModel: TSGroupModelV2
-    ) throws {
-        guard groupId == oldGroupModel.groupId else {
-            throw OWSAssertionError("Mismatched groupId.")
-        }
-        guard groupId == newGroupModel.groupId else {
-            throw OWSAssertionError("Mismatched groupId.")
-        }
-
-        // GroupsV2 TODO: Will production implementation of encryptString() pad?
-        let oldTitle = oldGroupModel.groupName?.ows_stripped() ?? " "
-        let newTitle = newGroupModel.groupName?.ows_stripped() ?? " "
-        if oldTitle != newTitle {
-            setTitle(newTitle)
-        }
-
-        let oldDescription = oldGroupModel.descriptionText?.nilIfEmpty?.ows_stripped()
-        let newDescription = newGroupModel.descriptionText?.nilIfEmpty?.ows_stripped()
-        if oldDescription != newDescription {
-            setDescriptionText(newDescription)
-        }
-
-        if oldGroupModel.avatarHash != newGroupModel.avatarHash {
-            let hasAvatarUrlPath = newGroupModel.avatarUrlPath != nil
-            let hasAvatarData = newGroupModel.avatarData != nil
-            guard hasAvatarUrlPath == hasAvatarData else {
-                throw OWSAssertionError("hasAvatarUrlPath: \(hasAvatarData) != hasAvatarData.")
-            }
-
-            setAvatar(avatarData: newGroupModel.avatarData,
-                      avatarUrlPath: newGroupModel.avatarUrlPath)
-        }
-
-        let oldGroupMembership = oldGroupModel.groupMembership
-        let newGroupMembership = newGroupModel.groupMembership
-
-        let oldUserUuids = oldGroupMembership.allMemberUuidsOfAnyKind
-        let newUserUuids = newGroupMembership.allMemberUuidsOfAnyKind
-
-        for uuid in newUserUuids.subtracting(oldUserUuids) {
-            guard !newGroupMembership.isRequestingMember(uuid) else {
-                owsFailDebug("Pending request members should never be added by diffing models.")
-                continue
-            }
-            let isAdministrator = newGroupMembership.isFullOrInvitedAdministrator(uuid)
-            let isPending = newGroupMembership.isInvitedMember(uuid)
-            let role: TSGroupMemberRole = isAdministrator ? .administrator : .normal
-            if isPending {
-                addInvitedMember(uuid, role: role)
-            } else {
-                addMember(uuid, role: role)
-            }
-        }
-
-        for uuid in oldUserUuids.subtracting(newUserUuids) {
-            removeMember(uuid)
-        }
-
-        for invalidInvite in oldGroupMembership.invalidInvites {
-            if !newGroupMembership.hasInvalidInvite(forUserId: invalidInvite.userId) {
-                removeInvalidInvite(invalidInvite: invalidInvite)
-            }
-        }
-
-        for uuid in oldUserUuids.intersection(newUserUuids) {
-            if oldGroupMembership.isInvitedMember(uuid),
-               newGroupMembership.isFullMember(uuid) {
-                addMember(uuid, role: .normal)
-            } else if oldGroupMembership.isRequestingMember(uuid),
-                      newGroupMembership.isFullMember(uuid) {
-                // We only currently support accepting join requests
-                // with "normal" role.
-                addMember(uuid, role: .normal)
-            }
-        }
-
-        let oldMemberUuids = Set(oldGroupMembership.fullMembers.compactMap { $0.uuid })
-        let newMemberUuids = Set(newGroupMembership.fullMembers.compactMap { $0.uuid })
-        for uuid in oldMemberUuids.intersection(newMemberUuids) {
-            let oldIsAdministrator = oldGroupMembership.isFullMemberAndAdministrator(uuid)
-            let newIsAdministrator = newGroupMembership.isFullMemberAndAdministrator(uuid)
-            guard oldIsAdministrator != newIsAdministrator else {
-                continue
-            }
-            let role: TSGroupMemberRole = newIsAdministrator ? .administrator : .normal
-            changeRoleForMember(uuid, role: role)
-        }
-
-        if oldGroupModel.inviteLinkPassword != newGroupModel.inviteLinkPassword {
-            owsFailDebug("We should never change the invite link password by diffing group models.")
-        }
-
-        let oldAccess = oldGroupModel.access
-        let newAccess = newGroupModel.access
-        if oldAccess.members != newAccess.members {
-            setAccessForMembers(newAccess.members)
-        }
-        if oldAccess.attributes != newAccess.attributes {
-            setAccessForAttributes(newAccess.attributes)
-        }
-        if oldAccess.addFromInviteLink != newAccess.addFromInviteLink {
-            owsFailDebug("We should never change the invite link access by diffing group models.")
-        }
-
-        if oldGroupModel.isAnnouncementsOnly != newGroupModel.isAnnouncementsOnly {
-            self.isAnnouncementsOnly = newGroupModel.isAnnouncementsOnly
-        }
-    }
-
-    @objc
-    public func setTitle(_ value: String?) {
+    public func setTitle(_ value: String) {
         owsAssertDebug(self.newTitle == nil)
-        // Non-nil if the title changed.
-        self.newTitle = value ?? ""
+        owsAssertDebug(!value.isEmpty)
+        self.newTitle = value
     }
 
-    @objc
     public func setDescriptionText(_ value: String?) {
         owsAssertDebug(self.newDescriptionText == nil)
         self.newDescriptionText = value ?? ""
     }
 
-    @objc
-    public func setAvatar(avatarData: Data?, avatarUrlPath: String?) {
+    public func setAvatar(_ avatar: (data: Data, urlPath: String)?) {
         owsAssertDebug(self.newAvatarData == nil)
         owsAssertDebug(self.newAvatarUrlPath == nil)
         owsAssertDebug(!self.shouldUpdateAvatar)
 
-        self.newAvatarData = avatarData
-        self.newAvatarUrlPath = avatarUrlPath
+        self.newAvatarData = avatar?.data
+        self.newAvatarUrlPath = avatar?.urlPath
         self.shouldUpdateAvatar = true
     }
 

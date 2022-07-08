@@ -93,33 +93,24 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
 
 private extension AddGroupMembersViewController {
 
-    func buildNewGroupModel() -> TSGroupModel? {
-        do {
-            return try databaseStorage.read { transaction in
-                var builder = self.oldGroupModel.asBuilder
-                let oldGroupMembership = self.oldGroupModel.groupMembership
-                var groupMembershipBuilder = oldGroupMembership.asBuilder
-                let addresses = self.newRecipientSet.orderedMembers.compactMap { $0.address }
-                guard !addresses.isEmpty else {
-                    owsFailDebug("No valid recipients.")
-                    return nil
+    func buildGroupUpdate() -> GroupManager.GroupUpdate? {
+        let newUuids = newRecipientSet.orderedMembers
+            .compactMap { recipient -> UUID? in
+                if let uuid = recipient.address?.uuid,
+                   !oldGroupModel.groupMembership.isFullMember(uuid) {
+                    owsFailDebug("Missing UUID, or recipient is already in group!")
+                    return uuid
                 }
-                for address in addresses {
-                    guard !oldGroupMembership.isFullMember(address) else {
-                        owsFailDebug("Recipient is already in group.")
-                        continue
-                    }
-                    // GroupManager will separate out members as pending if necessary.
-                    groupMembershipBuilder.remove(address)
-                    groupMembershipBuilder.addFullMember(address, role: .normal)
-                }
-                builder.groupMembership = groupMembershipBuilder.build()
-                return try builder.build(transaction: transaction)
+
+                return nil
             }
-        } catch {
-            owsFailDebug("Error: \(error)")
+
+        guard !newUuids.isEmpty else {
+            owsFailDebug("No valid recipients")
             return nil
         }
+
+        return .addNormalMembers(uuids: newUuids)
     }
 
     func updateGroupThreadAndDismiss() {
@@ -137,35 +128,28 @@ private extension AddGroupMembersViewController {
             return dismissAndUpdateDelegate()
         }
 
-        guard let newGroupModel = buildNewGroupModel() else {
-                                                        let error = OWSAssertionError("Couldn't build group model.")
-                                                        GroupViewUtils.showUpdateErrorUI(error: error)
-                                                        return
+        guard let groupUpdateToPerform = buildGroupUpdate() else {
+            let error = OWSAssertionError("Couldn't build group update.")
+            GroupViewUtils.showUpdateErrorUI(error: error)
+            return
         }
+
         GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
                                                         updatePromiseBlock: {
-                                                            self.updateGroupThreadPromise(newGroupModel: newGroupModel)
+                                                            self.updateGroupThreadPromise(update: groupUpdateToPerform)
         },
                                                         completion: { _ in
                                                             dismissAndUpdateDelegate()
         })
     }
 
-    func updateGroupThreadPromise(newGroupModel: TSGroupModel) -> Promise<Void> {
-
-        let oldGroupModel = self.oldGroupModel
-
-        guard let localAddress = tsAccountManager.localAddress else {
-            return Promise(error: OWSAssertionError("Missing localAddress."))
-        }
-
-        return firstly { () -> Promise<Void> in
+    func updateGroupThreadPromise(update: GroupManager.GroupUpdate) -> Promise<Void> {
+        firstly { () -> Promise<Void> in
             return GroupManager.messageProcessingPromise(for: oldGroupModel,
                                                          description: self.logTag)
         }.then(on: .global()) { _ in
-            GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
-                                                  newGroupModel: newGroupModel,
-                                                  groupUpdateSourceAddress: localAddress)
+            GroupManager.updateExistingGroup(existingGroupModel: self.oldGroupModel,
+                                             update: update)
         }.asVoid()
     }
 }

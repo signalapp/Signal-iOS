@@ -105,9 +105,6 @@ public protocol GroupsV2Swift: GroupsV2 {
 
     func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot>
 
-    func buildChangeSet(oldGroupModel: TSGroupModelV2,
-                        newGroupModel: TSGroupModelV2) throws -> GroupsV2OutgoingChanges
-
     // On success returns a group thread model that reflects the
     // latest state in the service, which (due to races) might
     // reflect changes after the change set.
@@ -169,6 +166,12 @@ public protocol GroupsV2OutgoingChanges: AnyObject {
     var newAvatarData: Data? { get }
     var newAvatarUrlPath: String? { get }
 
+    func setTitle(_ value: String)
+
+    func setDescriptionText(_ value: String?)
+
+    func setAvatar(_ avatar: (data: Data, urlPath: String)?)
+
     func addMember(_ uuid: UUID, role: TSGroupMemberRole)
 
     func removeMember(_ uuid: UUID)
@@ -180,6 +183,8 @@ public protocol GroupsV2OutgoingChanges: AnyObject {
     func setAccessForMembers(_ value: GroupV2Access)
 
     func setAccessForAttributes(_ value: GroupV2Access)
+
+    func addInvitedMember(_ uuid: UUID, role: TSGroupMemberRole)
 
     func promoteInvitedMember(_ uuid: UUID)
 
@@ -549,11 +554,6 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
 
     public func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
                                          changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
-        owsFail("Not implemented.")
-    }
-
-    public func buildChangeSet(oldGroupModel: TSGroupModelV2,
-                               newGroupModel: TSGroupModelV2) throws -> GroupsV2OutgoingChanges {
         owsFail("Not implemented.")
     }
 

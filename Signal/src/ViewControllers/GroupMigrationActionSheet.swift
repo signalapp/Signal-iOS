@@ -565,9 +565,6 @@ private extension GroupMigrationActionSheet {
     }
 
     private func reAddDroppedMembersPromise(members: Set<SignalServiceAddress>) -> Promise<Void> {
-        guard let localAddress = tsAccountManager.localAddress else {
-            return Promise(error: OWSAssertionError("Missing localAddress."))
-        }
         guard let oldGroupModel = self.groupThread.groupModel as? TSGroupModelV2 else {
             return Promise(error: OWSAssertionError("Invalid groupModel."))
         }
@@ -575,32 +572,25 @@ private extension GroupMigrationActionSheet {
         return firstly { () -> Promise<Void> in
             GroupManager.messageProcessingPromise(for: oldGroupModel,
                                                   description: self.logTag)
-        }.map(on: .global()) { (_) in
-            let oldGroupMembership = oldGroupModel.groupMembership
-            var membershipBuilder = oldGroupMembership.asBuilder
-            // We don't need to sort out full and invited members;
-            // GroupManager will take care of that.
-            var addedCount = 0
-            for address in members {
-                guard !oldGroupMembership.allMembersOfAnyKind.contains(address) else {
-                    continue
+        }.map(on: .global()) { _ -> GroupManager.GroupUpdate in
+            let uuidsToAdd = members
+                .compactMap { address -> UUID? in
+                    if let uuid = address.uuid,
+                       !oldGroupModel.groupMembership.isMemberOfAnyKind(uuid) {
+                        return uuid
+                    }
+
+                    return nil
                 }
-                membershipBuilder.addFullMember(address, role: .normal)
-                addedCount += 1
-            }
-            guard addedCount > 0 else {
+
+            guard !uuidsToAdd.isEmpty else {
                 throw OWSAssertionError("No members to add.")
             }
-            var groupModelBuilder = oldGroupModel.asBuilder
-            groupModelBuilder.groupMembership = membershipBuilder.build()
-            let newGroupModel = try Self.databaseStorage.read { transaction in
-                try groupModelBuilder.buildAsV2(transaction: transaction)
-            }
-            return newGroupModel
-        }.then(on: .global()) { (newGroupModel) in
-            GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
-                                                  newGroupModel: newGroupModel,
-                                                  groupUpdateSourceAddress: localAddress)
+
+            return .addNormalMembers(uuids: uuidsToAdd)
+        }.then(on: .global()) { groupUpdate in
+            GroupManager.updateExistingGroup(existingGroupModel: oldGroupModel,
+                                             update: groupUpdate)
         }.asVoid()
     }
 

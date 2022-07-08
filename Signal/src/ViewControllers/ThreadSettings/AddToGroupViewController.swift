@@ -190,8 +190,9 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     private func addToGroupStep2(_ groupThread: TSGroupThread, shortName: String) {
         let oldGroupModel = groupThread.groupModel
-        guard let newGroupModel = buildNewGroupModel(oldGroupModel: oldGroupModel) else {
-            let error = OWSAssertionError("Couldn't build group model.")
+
+        guard let groupUpdateToPerform = buildGroupUpdate(oldGroupModel: oldGroupModel) else {
+            let error = OWSAssertionError("Couldn't build group update.")
             GroupViewUtils.showUpdateErrorUI(error: error)
             return
         }
@@ -200,7 +201,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
             fromViewController: self,
             updatePromiseBlock: {
                 self.updateGroupThreadPromise(oldGroupModel: oldGroupModel,
-                                              newGroupModel: newGroupModel)
+                                              update: groupUpdateToPerform)
             },
             completion: { [weak self] _ in
                 self?.notifyOfAddedAndDismiss(groupThread: groupThread, shortName: shortName)
@@ -221,43 +222,28 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     // MARK: -
 
-    func buildNewGroupModel(oldGroupModel: TSGroupModel) -> TSGroupModel? {
-        do {
-            return try databaseStorage.read { transaction in
-                var builder = oldGroupModel.asBuilder
-                let oldGroupMembership = oldGroupModel.groupMembership
-                var groupMembershipBuilder = oldGroupMembership.asBuilder
-
-                guard !oldGroupMembership.isMemberOfAnyKind(self.address) else {
-                    owsFailDebug("Recipient is already in group.")
-                    return nil
-                }
-                // GroupManager will separate out members as pending if necessary.
-                groupMembershipBuilder.addFullMember(self.address, role: .normal)
-
-                builder.groupMembership = groupMembershipBuilder.build()
-                return try builder.build(transaction: transaction)
-            }
-        } catch {
-            owsFailDebug("Error: \(error)")
+    private func buildGroupUpdate(oldGroupModel: TSGroupModel) -> GroupManager.GroupUpdate? {
+        guard !oldGroupModel.groupMembership.isMemberOfAnyKind(self.address) else {
+            owsFailDebug("Receipient is already in group")
             return nil
         }
+
+        guard let uuid = self.address.uuid else {
+            owsFailDebug("Address missing UUID")
+            return nil
+        }
+
+        return .addNormalMembers(uuids: [uuid])
     }
 
-    func updateGroupThreadPromise(oldGroupModel: TSGroupModel,
-                                  newGroupModel: TSGroupModel) -> Promise<Void> {
-
-        guard let localAddress = TSAccountManager.localAddress else {
-            return Promise(error: OWSAssertionError("Missing localAddress."))
-        }
+    private func updateGroupThreadPromise(oldGroupModel: TSGroupModel,
+                                          update: GroupManager.GroupUpdate) -> Promise<Void> {
 
         return firstly { () -> Promise<Void> in
             return GroupManager.messageProcessingPromise(for: oldGroupModel,
                                                          description: self.logTag)
         }.then(on: .global()) { _ in
-            GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
-                                                  newGroupModel: newGroupModel,
-                                                  groupUpdateSourceAddress: localAddress)
+            GroupManager.updateExistingGroup(existingGroupModel: oldGroupModel, update: update)
         }.asVoid()
     }
 

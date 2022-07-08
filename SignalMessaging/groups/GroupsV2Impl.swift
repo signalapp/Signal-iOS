@@ -1331,16 +1331,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         return temporalCredentials
     }
 
-    // MARK: - Change Set
-
-    public func buildChangeSet(oldGroupModel: TSGroupModelV2,
-                               newGroupModel: TSGroupModelV2) throws -> GroupsV2OutgoingChanges {
-        try GroupsV2OutgoingChangesImpl.buildForDiffBetween(
-            oldGroupModel: oldGroupModel,
-            newGroupModel: newGroupModel
-        )
-    }
-
     // MARK: - Protos
 
     public func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data {
