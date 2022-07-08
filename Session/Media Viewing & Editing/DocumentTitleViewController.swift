@@ -246,30 +246,22 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
         
         switch section.model {
             case .emptyGallery, .loadOlder, .loadNewer:
-                return nil
+            let headerView: DocumentStaticHeaderView = DocumentStaticHeaderView()
+            headerView.configure(
+                title: {
+                    switch section.model {
+                        case .emptyGallery: return "DOCUMENT_TILES_EMPTY_DOCUMENT".localized()
+                        case .loadOlder: return "DOCUMENT_TILES_LOADING_OLDER_LABEL".localized()
+                        case .loadNewer: return "DOCUMENT_TILES_LOADING_MORE_RECENT_LABEL".localized()
+                        case .galleryMonth: return ""   // Impossible case
+                    }
+                }()
+            )
+            return headerView
                 
             case .galleryMonth(let date):
-                let headerView: UIView = UIView()
-                let label = UILabel()
-                label.textColor = Colors.text
-                label.text = date.localizedString
-
-                let blurEffect = UIBlurEffect(style: .dark)
-                let blurEffectView = UIVisualEffectView(effect: blurEffect)
-
-                blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
-                headerView.backgroundColor = isLightMode ? Colors.cellBackground : UIColor.ows_black.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-
-                headerView.addSubview(blurEffectView)
-                headerView.addSubview(label)
-
-                blurEffectView.autoPinEdgesToSuperviewEdges()
-                blurEffectView.isHidden = isLightMode
-                label.autoPinEdge(toSuperviewMargin: .trailing)
-                label.autoPinEdge(toSuperviewMargin: .leading)
-                label.autoVCenterInSuperview()
-                
+                let headerView: DocumentSectionHeaderView = DocumentSectionHeaderView()
+                headerView.configure(title: date.localizedString)
                 return headerView
         }
     }
@@ -379,5 +371,67 @@ class DocumentCell: UITableViewCell {
         let attachment = item.attachment
         titleLabel.text = attachment.sourceFilename ?? "File"
         detailLabel.text = "\(OWSFormat.formatFileSize(UInt(attachment.byteCount)))"
+    }
+}
+
+class DocumentSectionHeaderView: UIView {
+    
+    let label: UILabel
+
+    override init(frame: CGRect) {
+        label = UILabel()
+        label.textColor = Colors.text
+
+        let blurEffect = UIBlurEffect(style: .dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+        super.init(frame: frame)
+
+        self.backgroundColor = isLightMode ? Colors.cellBackground : UIColor.ows_black.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+
+        self.addSubview(blurEffectView)
+        self.addSubview(label)
+
+        blurEffectView.autoPinEdgesToSuperviewEdges()
+        blurEffectView.isHidden = isLightMode
+        label.autoPinEdge(toSuperviewMargin: .trailing)
+        label.autoPinEdge(toSuperviewMargin: .leading)
+        label.autoVCenterInSuperview()
+    }
+
+    @available(*, unavailable, message: "Unimplemented")
+    required init?(coder aDecoder: NSCoder) {
+        notImplemented()
+    }
+
+    public func configure(title: String) {
+        self.label.text = title
+    }
+}
+
+class DocumentStaticHeaderView: UIView {
+    
+    let label = UILabel()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        addSubview(label)
+
+        label.textColor = Colors.text
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(top: 0, leading: Values.largeSpacing, bottom: 0, trailing: Values.largeSpacing))
+    }
+
+    @available(*, unavailable, message: "Unimplemented")
+    required public init?(coder aDecoder: NSCoder) {
+        notImplemented()
+    }
+
+    public func configure(title: String) {
+        self.label.text = title
     }
 }

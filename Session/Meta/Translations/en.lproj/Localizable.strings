@@ -662,3 +662,6 @@
 "MESSAGE_TRIMMING_OPEN_GROUP_DESCRIPTION" = "Automatically delete open group messages which are older than 6 months when starting the app";
 "MEDIA_TAB_TITLE" = "Media";
 "DOCUMENT_TAB_TITLE" = "Document";
+"DOCUMENT_TILES_EMPTY_DOCUMENT" = "You don't have any document in this conversation.";
+"DOCUMENT_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Document…";
+"DOCUMENT_TILES_LOADING_OLDER_LABEL" = "Loading Older Document…";
