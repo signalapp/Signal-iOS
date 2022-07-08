@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -31,7 +31,7 @@ class AppVersionTests: SSKBaseTestSwift {
             ("5.35.1.3", "5.35.1.2", .orderedDescending),
             ("5.35.2.0", "5.35.1.2", .orderedDescending),
             ("5.36.0.0", "5.35.1.2", .orderedDescending),
-            ("6.0.0.0", "5.35.1.2", .orderedDescending),
+            ("6.0.0.0", "5.35.1.2", .orderedDescending)
         ]
 
         testCases.forEach {
