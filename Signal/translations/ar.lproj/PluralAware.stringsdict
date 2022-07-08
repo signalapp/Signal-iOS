@@ -99,7 +99,7 @@
 			<key>one</key>
 			<string>يُستخدم هذا اللون المخصص في 1 دردشة. هل تريد حذفه لجميع الدردشات؟</string>
 			<key>other</key>
-			<string>يُستخدم هذا اللون المخصص في %d دردشات. هل تريد حذفه لجميع الدردشات؟</string>
+			<string>يُستخدم هذا اللون المُخصص في %d دردشات. هل تريد حذفه لجميع الدردشات؟</string>
 			<key>two</key>
 			<string>يُستخدم هذا اللون المخصص في %d دردشات. هل تريد حذفه لجميع الدردشات؟</string>
 			<key>zero</key>
@@ -303,10 +303,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d دقائق</string>
+			<key>many</key>
+			<string>%d دقائق</string>
 			<key>one</key>
-			<string>%dm</string>
+			<string>%d دقيقة</string>
 			<key>other</key>
-			<string>%dm</string>
+			<string>%d دقائق</string>
+			<key>two</key>
+			<string>%d دقائق</string>
+			<key>zero</key>
+			<string>%d دقائق</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -367,10 +375,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>وصلت المجموعة إلى الحد الأقصى لـ %d أعضاء.</string>
+			<key>many</key>
+			<string>وصلت المجموعة إلى الحد الأقصى لـ %d أعضاء.</string>
 			<key>one</key>
-			<string>Maximum group size of %d member reached.</string>
+			<string>وصلت المجموعة إلى الحد الأقصى لـ %d عضو.</string>
 			<key>other</key>
-			<string>Maximum group size of %d members reached.</string>
+			<string>وصلت المجموعة إلى الحد الأقصى لـ %d أعضاء.</string>
+			<key>two</key>
+			<string>وصلت المجموعة إلى الحد الأقصى لـ %d أعضاء.</string>
+			<key>zero</key>
+			<string>وصلت المجموعة إلى الحد الأقصى لـ %d أعضاء.</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -438,7 +454,7 @@
 			<key>one</key>
 			<string>ﻻ يمكن إنشاء هذه المجموعة ﻷن 1 عضو يستخدم إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالته قبل إنشاء المجموعة. %2$@</string>
 			<key>other</key>
-			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة. %2$@</string>
+			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بالأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة. %2$@</string>
 			<key>two</key>
 			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة. %2$@</string>
 			<key>zero</key>
@@ -462,7 +478,7 @@
 			<key>one</key>
 			<string>ﻻ يمكن إنشاء المجموعة ﻷن 1 عضو يستخدم إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوم بتحديث Signal، أو عليك إزالته قبل إنشاء المجموعة.</string>
 			<key>other</key>
-			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة.</string>
+			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب جديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة.</string>
 			<key>two</key>
 			<string>ﻻ يمكن إنشاء المجموعة ﻷن %d أعضاء يستخدمون إصدارا قديمًا من Signal. يُمكنك إنشاء مجموعة بأسلوب الجديد بعد أن يقوموا بتحديث Signal، أو عليك إزالتهم قبل إنشاء المجموعة.</string>
 			<key>zero</key>
@@ -510,7 +526,7 @@
 			<key>one</key>
 			<string>تعمل مجموعات Signal بشكل أفضل مع 1 عضو. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
 			<key>other</key>
-			<string>تعمل مجموعات Signal بشكل أفضل مع %d أعضاء أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
+			<string>تعمل مجموعات Signal بشكل أفضل مع %d أعضاء أو أقل. سَيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
 			<key>two</key>
 			<string>تعمل مجموعات Signal بشكل أفضل مع %d أعضاء أو أقل. سيؤدي إضافة المزيد من الأعضاء إلى تأخر في إرسال الرسائل واستلامها.</string>
 			<key>zero</key>
@@ -534,7 +550,7 @@
 			<key>one</key>
 			<string>وصل عدد المُشاركين إلى الحد الأقصى لـ 1 مشارك. يُرجى المُحاولة مرة أُخرى لاحقاً.</string>
 			<key>other</key>
-			<string>وصل عدد المُشاركين إلى الحد الأقصى لـ %d مشارك. يُرجى المُحاولة مرة أُخرى لاحقاً.</string>
+			<string>وصل عدد المُشاركين إلى الحد الأقصى لـ %d مُشارك. يُرجى المُحاولة مرة أُخرى لاحقاً.</string>
 			<key>two</key>
 			<string>وصل عدد المُشاركين إلى الحد الأقصى لـ %d مشاركين. يُرجى المُحاولة مرة أُخرى لاحقاً.</string>
 			<key>zero</key>
@@ -558,7 +574,7 @@
 			<key>one</key>
 			<string>في هذه المُكالمة. 1 شخص</string>
 			<key>other</key>
-			<string>في هذه المُكالمة. %d شخص</string>
+			<string>في هذه المُكالمة. %d شخص/أشخاص</string>
 			<key>two</key>
 			<string>في هذه المُكالمة. %d أشخاص</string>
 			<key>zero</key>
@@ -846,7 +862,7 @@
 			<key>one</key>
 			<string>تم إلغاء الدعوة إلى المجموعة لـ 1 شخص.</string>
 			<key>other</key>
-			<string>تم إلغاء دعوات إلى المجموعة لـ %d  أشخاص</string>
+			<string>تم إلغاء دعوات إلى المجموعة لـ %d أشخاص</string>
 			<key>two</key>
 			<string>تم إلغاء دعوات إلى المجموعة لـ %d أشخاص.</string>
 			<key>zero</key>
@@ -870,7 +886,7 @@
 			<key>one</key>
 			<string>ألغى %2$@ دعوة إلى المجموعة لـ 1 شخص.</string>
 			<key>other</key>
-			<string>ألغى %2$@ دعوة إلى المجموعة لـ %d  أشخاص.</string>
+			<string>ألغى %2$@ دعوة إلى المجموعة لـ %d أشخاص.</string>
 			<key>two</key>
 			<string>ألغى %2$@ دعوة إلى المجموعة لـ %d أشخاص.</string>
 			<key>zero</key>
@@ -1374,7 +1390,7 @@
 			<key>one</key>
 			<string>تبقت لديك 1 محاولة. إذا استنفذتَ جميع المُحاولات، يُمكنك إنشاء رمز PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة مِثل معلومات حسابك الشخصي.</string>
 			<key>other</key>
-			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، يُمكنك إنشاء رمز PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة مِثل معلومات حسابك الشخصي.</string>
+			<string>تبقّت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، يُمكنك إنشاء رمز PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة مِثل معلومات حسابك الشخصي.</string>
 			<key>two</key>
 			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، يُمكنك إنشاء رمز PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة مِثل معلومات حسابك الشخصي.</string>
 			<key>zero</key>
@@ -1398,7 +1414,7 @@
 			<key>one</key>
 			<string>تبقت لديك 1 محاولة. إذا استنفذتَ جميع المُحاولات، سوف يُقفل حسابك. بعد سبعة أيام من الخمول، ستتمكن من إعادة التسجيل دون إدخال رمز ـPIN الخاص بك. سيتم مسح حسابك وحذف جميع المُحتويات نهائياً.</string>
 			<key>other</key>
-			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، سوف يُقفل حسابك. بعد سبعة أيام من الخمول، ستتمكن من إعادة التسجيل دون إدخال رمز ـPIN الخاص بك. سيتم مسح حسابك وحذف جميع المُحتويات نهائياً.</string>
+			<string>تبقّت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، سَيُقفل حسابك. بعد سبعة أيام من الخمول، سَتتمكن من إعادة التسجيل دون إدخال رمز PIN الخاص بك. سيتم مسح حسابك وحذف جميع المُحتويات نهائياً.</string>
 			<key>two</key>
 			<string>تبقت لديك %d محاولات. إذا استنفذتَ جميع المُحاولات، سوف يُقفل حسابك. بعد سبعة أيام من الخمول، ستتمكن من إعادة التسجيل دون إدخال رمز ـPIN الخاص بك. سيتم مسح حسابك وحذف جميع المُحتويات نهائياً.</string>
 			<key>zero</key>
@@ -1439,10 +1455,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>عضو في %2$@ و %3$@ و %d مجموعات أخرى</string>
+			<key>many</key>
+			<string>عضو في %2$@ و %3$@ و %d مجموعات أخرى</string>
 			<key>one</key>
-			<string>Member of %2$@, %3$@, and 1 additional group</string>
+			<string>عضو في %2$@ و %3$@ و 1 مجموعة أخرى</string>
 			<key>other</key>
-			<string>Member of %2$@, %3$@, and %d additional groups</string>
+			<string>عضو في %2$@ و %3$@ و %d مجموعات أخرى</string>
+			<key>two</key>
+			<string>عضو في %2$@ و %3$@ و %d مجموعات أخرى</string>
+			<key>zero</key>
+			<string>عضو في %2$@ و %3$@ و %d مجموعات أخرى</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -1455,10 +1479,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d أيام</string>
+			<key>many</key>
+			<string>%d أيام</string>
 			<key>one</key>
-			<string>1 day</string>
+			<string>1 يوم</string>
 			<key>other</key>
-			<string>%d days</string>
+			<string>%d أيام</string>
+			<key>two</key>
+			<string>%d أيام</string>
+			<key>zero</key>
+			<string>%d أيام</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
@@ -1471,10 +1503,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d أيام</string>
+			<key>many</key>
+			<string>%d أيام</string>
 			<key>one</key>
-			<string>1d</string>
+			<string>1 يوم</string>
 			<key>other</key>
-			<string>%dd</string>
+			<string>%d أيام</string>
+			<key>two</key>
+			<string>%d أيام</string>
+			<key>zero</key>
+			<string>%d أيام</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_%d</key>
@@ -1487,10 +1527,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d ساعات</string>
+			<key>many</key>
+			<string>%d ساعات</string>
 			<key>one</key>
-			<string>1 hour</string>
+			<string>1 ساعة</string>
 			<key>other</key>
-			<string>%d hours</string>
+			<string>%d ساعات</string>
+			<key>two</key>
+			<string>%d ساعات</string>
+			<key>zero</key>
+			<string>%d ساعات</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
@@ -1503,10 +1551,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d ساعات</string>
+			<key>many</key>
+			<string>%d ساعات</string>
 			<key>one</key>
-			<string>1h</string>
+			<string>1 ساعة</string>
 			<key>other</key>
-			<string>%dh</string>
+			<string>%d ساعات</string>
+			<key>two</key>
+			<string>%d ساعات</string>
+			<key>zero</key>
+			<string>%d ساعات</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_%d</key>
@@ -1519,10 +1575,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d دقائق</string>
+			<key>many</key>
+			<string>%d دقائق</string>
 			<key>one</key>
-			<string>1 minute</string>
+			<string>1 دقيقة</string>
 			<key>other</key>
-			<string>%d minutes</string>
+			<string>%d دقائق</string>
+			<key>two</key>
+			<string>%d دقائق</string>
+			<key>zero</key>
+			<string>%d دقائق</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
@@ -1535,10 +1599,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d دقائق</string>
+			<key>many</key>
+			<string>%d دقائق</string>
 			<key>one</key>
-			<string>1m</string>
+			<string>1 دقيقة</string>
 			<key>other</key>
-			<string>%dm</string>
+			<string>%d دقائق</string>
+			<key>two</key>
+			<string>%d دقائق</string>
+			<key>zero</key>
+			<string>%d دقائق</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_%d</key>
@@ -1551,10 +1623,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d ثواني</string>
+			<key>many</key>
+			<string>%d ثواني</string>
 			<key>one</key>
-			<string>1 second</string>
+			<string>1 ثانية</string>
 			<key>other</key>
-			<string>%d seconds</string>
+			<string>%d ثواني</string>
+			<key>two</key>
+			<string>%d ثواني</string>
+			<key>zero</key>
+			<string>%d ثواني</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
@@ -1567,10 +1647,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d ثواني</string>
+			<key>many</key>
+			<string>%d ثواني</string>
 			<key>one</key>
-			<string>1s</string>
+			<string>1 ثانية</string>
 			<key>other</key>
-			<string>%ds</string>
+			<string>%d ثواني</string>
+			<key>two</key>
+			<string>%d ثواني</string>
+			<key>zero</key>
+			<string>%d ثواني</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_%d</key>
@@ -1583,10 +1671,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d أسابيع</string>
+			<key>many</key>
+			<string>%d أسابيع</string>
 			<key>one</key>
-			<string>1 week</string>
+			<string>1 أسبوع</string>
 			<key>other</key>
-			<string>%d weeks</string>
+			<string>%d أسابيع</string>
+			<key>two</key>
+			<string>%d أسابيع</string>
+			<key>zero</key>
+			<string>%d أسابيع</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
@@ -1599,10 +1695,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d أسابيع</string>
+			<key>many</key>
+			<string>%d أسابيع</string>
 			<key>one</key>
-			<string>1w</string>
+			<string>1 أسبوع</string>
 			<key>other</key>
-			<string>%dw</string>
+			<string>%d أسابيع</string>
+			<key>two</key>
+			<string>%d أسابيع</string>
+			<key>zero</key>
+			<string>%d أسابيع</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_YEARS_%d</key>
@@ -1615,10 +1719,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d سنوات</string>
+			<key>many</key>
+			<string>%d سنوات</string>
 			<key>one</key>
-			<string>1 year</string>
+			<string>1 سنة</string>
 			<key>other</key>
-			<string>%d years</string>
+			<string>%d سنوات</string>
+			<key>two</key>
+			<string>%d سنوات</string>
+			<key>zero</key>
+			<string>%d سنوات</string>
 		</dict>
 	</dict>
 </dict>

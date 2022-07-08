@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "보관";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Original";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Square";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "캡션 글자 제한 초과";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "캡션 추가…";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "캡션";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "첨부 파일 내보내기에 실패했습니다.";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "미디어 품질";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "받는 사람: %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "보내기";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "첨부 파일";
@@ -464,7 +464,7 @@
 "BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "Redeemed";
+"BADGE_GIFTING_REDEEMED" = "사용함";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "지속 기간: %@";
@@ -479,7 +479,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "월간 기부가 자동 취소되었습니다. %@ %@ 배지가 더이상 프로필에 표시되지 않습니다.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "너무 오랫동안 활동을 중단하여 월간 구독이 자동으로 취소되었습니다. %@ 배지가 더는 프로필에 표시되지 않습니다.\n\nSignal을 계속 사용할 수는 있지만 Signal 앱을 지원하고 배지를 재활성화하려면 지금 기부를 갱신하세요.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "너무 오랫동안 활동을 중단하여 월간 구독이 자동으로 취소되었습니다. %@ 배지가 더는 프로필에 표시되지 않습니다.\n\nSignal을 계속 사용할 수는 있지만 Signal 앱을 지지하고 배지를 재활성화하려면 지금 갱신하세요.";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "부스트, 감사합니다!";
@@ -1667,16 +1667,16 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "다른 결제 방법을 시도하거나 은행에 자세한 정보를 문의하세요.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Apple Pay의 결제 수단이 최신 정보인지 확인하세요. 그렇지 않다면 업데이트하고 다시 시도하세요. 그래도 문제가 계속되면 은행에 문의하세요.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Apple Pay의 결제 방법이 최신 정보인지 확인하세요. 그렇지 않다면 업데이트하고 다시 시도하세요. 그래도 문제가 계속되면 은행에 문의하세요.";
 
 /* Donation payment error for decline failures where the card is not supported. */
 "DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "카드가 이 구입 유형을 지원하지 않습니다. 다른 결제 방법을 시도하거나 은행에 자세한 정보를 문의하세요.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "카드가 만료되었습니다. Apple Pay의 결제 수단이 최신 정보인지 확인하세요. 그렇지 않다면 업데이트하고 다시 시도하세요.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "카드가 만료되었습니다. Apple Pay의 결제 방법이 최신 정보인지 확인하세요. 그렇지 않다면 업데이트하고 다시 시도하세요.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "카드 번호가 잘못되었습니다. Apple Pay에 입력한 결제 수단이 올바른지 확인하세요. 그렇지 않다면 업데이트하고 다시 시도하세요.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "카드 번호가 잘못되었습니다. Apple Pay에 입력한 결제 방법이 올바른지 확인하세요. 그렇지 않다면 업데이트하고 다시 시도하세요.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
 "DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "CVC 번호가 잘못됐습니다. Apple Pay에 CVC 번호를 제대로 입력했는지 확인하세요. 번호가 잘못됐다면 업데이트하고 다시 시도하세요.";
@@ -1685,10 +1685,10 @@
 "DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "카드 잔액이 부족합니다. 다른 결제 수단으로 다시 시도하거나 은행에 문의하여 자세한 정보를 확인하세요.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "결제 수단의 만료 월이 잘못됐습니다. Apple Pay에서 업데이트하고 다시 시도하세요.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "결제 방법의 만료 월이 잘못됐습니다. Apple Pay에서 업데이트하고 다시 시도하세요.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "결제 수단의 만료 연도가 잘못됐습니다. Apple Pay에서 업데이트하고 다시 시도하세요.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "결제 방법의 만료 연도가 잘못됐습니다. Apple Pay에서 업데이트하고 다시 시도하세요.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "카드 번호가 잘못됐습니다. Apple Pay에서 업데이트하고 다시 시도하세요.";
@@ -3217,6 +3217,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "모든 미디어";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Clear All";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Discard Changes";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "You will lose any changes you have made to this photo";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Discard Changes?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "초기화";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Add Message";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "View Once Media";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3516,9 +3537,6 @@
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "조회함";
-
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "새 메시지";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ 님은 더 이상 검증된 사용자가 아닙니다. 탭하여 설정을 엽니다.";

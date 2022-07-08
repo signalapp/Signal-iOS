@@ -155,10 +155,10 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Impossible d’ouvrir Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "L'ouverture de Signal a échoué, car votre appareil ne dispose pas de suffisamment d'espace de stockage. Pour utiliser Signal, libérez de l'espace en allant dans Réglages.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Espace de stockage faible";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Les données transférées de votre ancien appareil n’ont pas pu être restaurées. Veuillez envoyer un journal de débogage à support@signal.org afin que nous puissions examiner ce problème. Si vous réinstallez Signal, l’historique de vos messages pourrait être perdu.";
@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Archiver";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Original";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Square";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "La limite de la légende est atteinte.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Ajoutez une légende…";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Légende";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Échec d’exportation du fichier joint.";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Qualité du média";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message pour %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Envoyer";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Fichier joint";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Donnez un Coup de pouce à Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Votre macaron Boost a expiré et ne peut plus être affiché sur votre profil.\n\nVous pouvez continuer à utiliser Signal, mais si vous souhaitez soutenir notre technologie pensée pour vous, rejoignez nos donateurs mensuels.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Votre macaron Boost a expiré et ne peut plus être affiché sur votre profil.\n\nVous pouvez le prolonger pour 30 jours en effectuant un don ponctuel.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Devenir donateur mensuel";
@@ -413,7 +413,7 @@
 "BADGE_GIFTING_CHAT_EXPIRED" = "Expiré";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Offrez un macaron en effectuant un don à Signal au nom de la personne destinataire qui recevra un macaron à afficher sur sa photo de profil. ";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Offrir un macaron";
@@ -422,7 +422,7 @@
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Choisir le destinataire";
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirmer le cadeau";
 
 /* Error message indicating that a user can't receive gifts. */
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "This user can't receive gifts until they upgrade Signal.";
@@ -431,22 +431,22 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Offrir un macaron";
 
 /* Text telling the user that their gift is a one-time donation */
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Don ponctuel";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Votre paiement n’a pas pu être traité et vous n’avez pas été débité. Veuillez réessayer.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Le paiement a échoué";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Votre paiement a été accepté, mais votre destinataire n'a pas reçu son macaron. Veuillez contacter le centre d'aide Signal.";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Échec de l'envoi du macaron";
 
 /* Shown on the list of chats when the most recent message is a gift you received from someone else. */
 "BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
@@ -467,7 +467,7 @@
 "BADGE_GIFTING_REDEEMED" = "Échangé";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "Derniers %@";
 
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "Afficher";
@@ -476,7 +476,7 @@
 "BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "You’ve received a gift badge from %@. Display this badge on your profile to build awareness for donating to Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Votre don mensuel récurrent a été automatiquement annulé. %@ Votre macaron %@ n'est plus affiché sur votre profil.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Votre don mensuel a automatiquement été résilié car vous êtes resté inactif trop longtemps. Votre macaron %@ n’est plus visible sur votre profil.\n\nVous pouvez continuer à utiliser Signal, mais pour soutenir l’appli et réactiver votre macaron, renouvelez votre don maintenant.";
@@ -1667,31 +1667,31 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Essayez un autre mode de paiement ou contactez votre banque pour plus d’informations.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Vérifiez si votre mode de paiement est à jour dans Apple Pay. Dans le cas contraire, mettez-le à jour puis réessayez. Si le problème persiste, contactez votre banque.";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Votre carte ne permet pas ce type d’achat. Essayez un autre mode de paiement ou contactez votre banque pour plus d'informations.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Votre carte a expiré. Vérifiez si votre mode de paiement est à jour dans Apple Pay. Dans le cas contraire, mettez-le à jour et réessayez.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Le numéro de votre carte est incorrect. Vérifiez si votre mode de paiement a bien été saisi dans Apple Pay. Dans le cas contraire, mettez-le à jour et réessayez.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Votre code de sécurité est incorrect. Vérifiez si votre code de sécurité a bien été saisi dans Apple Pay. Dans le cas contraire, mettez-le à jour et réessayez.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Les fonds disponibles sur votre carte sont insuffisants. Veuillez essayer un autre mode de paiement ou contacter votre banque pour en savoir plus.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "La date de validité de votre mode de paiement est incorrecte. Mettez-la à jour dans Apple Pay et réessayez.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "L'année d'expiration de votre mode de paiement est incorrecte. Mettez-la à jour dans Apple Pay et réessayez";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Votre numéro de carte est incorrect. Mettez-le à jour dans Google Pay puis réessayez.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
 "DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Essayez à nouveau d’effectuer le paiement ou contactez votre banque pour plus d’informations.";
@@ -1700,7 +1700,7 @@
 "DONATION_PAYMENT_ERROR_OTHER" = "Essayez un autre mode de paiement ou contactez votre banque pour plus d’informations.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Vérifiez si votre mode de paiement est à jour dans Apple Pay. Dans le cas contraire, mettez-le à jour et réessayez.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Montant";
@@ -1715,7 +1715,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Partager le reçu";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Nous vous remercions pour votre soutien à Signal. Votre contribution participe au développement d'une technologie open source basée sur la confidentialité et la protection de la libre expression pour une communication mondiale sécurisée. Si vous êtes résident américain, conservez ce reçu pour vos impôts. Signal Technology Foundation est une organisation à but non lucratif exempte d'impôts aux États-Unis en vertu de la section 501c3 de l'Internal Revenue Code. Notre numéro d'identification fiscale fédéral est 82-4506840.";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "Une fois";
@@ -3038,10 +3038,10 @@
 "IN_CALL_TERMINATED" = "Appel terminé";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Les conversations en sourdine sont archivées, y compris après réception d'un nouveau message.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Les conversations archivées sont déplacées vers la boîte de réception à l'arrivée d'un nouveau message.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Aucune conversation pour l’instant.\nCommencez en envoyant un message à un ami.";
@@ -3216,6 +3216,27 @@
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Tous les médias";
+
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Clear All";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Discard Changes";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "You will lose any changes you have made to this photo";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Discard Changes?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "Réinitialiser";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Add Message";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "View Once Media";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %@";
@@ -3516,9 +3537,6 @@
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Visualisé";
-
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Nouveau message";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ n’est plus marqué comme confirmé. Touchez pour plus d’options.";
@@ -4952,10 +4970,10 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Désactiver";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "Vous allez perdre votre contenu photo et vidéo.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Désactiver la fonction multimode ?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Inviter un ami par texto non sécurisé ?";
@@ -5201,10 +5219,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Son de message";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Les conversations en sourdine sont archivées, y compris après réception d'un nouveau message.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Garder les conversations en sourdine archivées";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Conditions générales et politique de confidentialité";
@@ -5945,22 +5963,22 @@
 "STORIES_HIDE_STORY_ACTION" = "Cacher l’histoire";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "Aucune mise à jour à afficher actuellement.\nAppuyez sur +Non pour ajouter du contenu à votre Story.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Aucune réponse pour le moment";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "New Private Story";
+"STORIES_SETTINGS_NEW_STORY" = "Nouvelle Story privée";
 
 /* Footer for the 'Private Stories' section of the stories settings */
 "STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Les histoires privées ne peuvent être vues que par les personnes que vous y avez ajoutées. Vous seul pouvez voir le nom de l’histoire.";
 
 /* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
+"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Stories privées";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "Confidentialité de la story";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Partager";
@@ -6071,7 +6089,7 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal est un organisme sans but lucratif, sans annonceurs ni investisseurs, soutenue uniquement par les gens qui l’utilisent et l’apprécient. Faites un don mensuel récurrent et recevez un macaron de profil pour afficher votre soutien.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "La technologie open source Signal œuvre à la protection de la vie privée, des données personnelles et de la liberté d'expression pour une communication sécurisée au-delà des continents.\n\nEn contribuant au projet Signal, vous soutenez un projet et financez le développement et le fonctionnement d’une appli utilisée par des millions de personnes qui souhaitent échanger de manière confidentielle et protégée. Aucune publicité, aucun traqueur, vraiment.";
 
 /* Title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_TITLE" = "Soutenez une technologie conçue pour vous – pas pour vos données – en rejoignant la communauté qui porte Signal.";

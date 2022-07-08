@@ -28,10 +28,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>Add Member</string>
 			<key>other</key>
-			<string>Add Members</string>
+			<string>မန်ဘာ ပေါင်းထည့်ရန်</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -183,10 +181,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 Member</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>မန်ဘာ %d ဦး</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -215,8 +211,6 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>%dm</string>
 			<key>other</key>
 			<string>%dm</string>
 		</dict>
@@ -535,10 +529,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 Member</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>မန်ဘာ %d ဦး</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -615,10 +607,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>Group Story · 1 Viewer</string>
 			<key>other</key>
-			<string>Group Story · %d Viewers</string>
+			<string>အဖွဲ့ စတိုရီ · ကြည့်ရှုသူ %d ဦး</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -775,10 +765,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 Viewer</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>ကြည့်ရှုသူ %d ဦး</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -791,10 +779,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 Member</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>မန်ဘာ %d ဦး</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -1079,8 +1065,6 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1m</string>
 			<key>other</key>
 			<string>%dm</string>
 		</dict>

@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "காப்பகம்";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Original";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Square";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "தலைப்பு வரம்பை அடைந்தது.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "ஒரு தலைப்பை சேர்க்க…";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "தலைப்பு";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "இணைப்பு ஏற்றுமதி செய்யத் தவறிவிட்டது.";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "மீடியா தரம்";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "க்கு செய்தி %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "அனுப்புக";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "இணைப்பு";
@@ -1868,10 +1868,10 @@
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "செய்திகள் கிடைக்கப் பெறாததால் அவற்றை முன்னனுப்ப முடியவில்லை.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "செய்தியை அனுப்ப முடியவில்லை ";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "காணொளியை சேமிக்க முடியவில்லை";
@@ -1967,7 +1967,7 @@
 "ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "சிக்னல் பீட்டா: பிழை ஏற்பட்டது";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "உங்கள் சாதனம் இனி இணைக்கப்படவில்லை. மேலும் செய்திகளை அனுப்ப மீண்டும் இணைக்கவும்";
@@ -3217,6 +3217,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "அனைத்து மீடியா";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Clear All";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Discard Changes";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "You will lose any changes you have made to this photo";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Discard Changes?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "மீட்டமைக்க";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Add Message";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "View Once Media";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3281,10 +3302,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "அழைப்பு";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "ஃபேஸ்டைம் ஆடியோ";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "முகநேர வீடியோ ";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "அனுப்பு உரை செய்தி";
@@ -3516,9 +3537,6 @@
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "பார்க்கப்பட்டவை";
-
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "புதிய தகவல்";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ இனி சரிபார்க்கப்பட்டதாக குறிக்கப்படவில்லை. விருப்பங்களுக்குத் தட்டவும்.";
@@ -4409,7 +4427,7 @@
 "PINS_MEGAPHONE_ACTION" = "பின் உருவாக்கவும்";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "உங்கள்  சிக்னல் பின்னை உருவாக்கி முடிக்கவும் ";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "பின்னை உருவாக்கவும்";
@@ -4715,7 +4733,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "நீங்கள் ஒரு செய்தியை அனுப்புவதற்கு முன்பு பதிவு செய்ய வேண்டும்.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "இந்த எண்ணில் பரிமாற்றத்திற்குக் கிடைக்கக்கூடிய முன்பு பதிவுசெய்யப்பட்ட கணக்கு ஒன்று இருக்கிறது.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "சரிபார்ப்பு தோல்வியுற்றது";
@@ -4757,7 +4775,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "நீங்கள் பதிவு செய்ய முயற்சிக்கும் தொலைபேசி எண் ஏற்கனவே வேறொரு சேவையகத்தில் பதிவு செய்யப்பட்டுள்ளது, தயவுசெய்து அங்கிருந்து பதிவுசெய்து மீண்டும் முயற்சிக்கவும்.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = "முன்னோட்டத்தை  நீக்கவும் ";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "புதிய நிர்வாகியைத் தேர்வுசெய்க";
@@ -5540,7 +5558,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "மீட்பு சொற்றொடரை ஒட்டவும்";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "உங்கள்  மீட்பு சொற்றொடர்  24 வார்த்தை சொற்றொடர் ஆகும். அதை பயன்படுத்தி உங்கள் கட்டணக் கணக்கை மீட்கலாம்.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "உள்ளிடவும் மீட்பு சொற்றொடர்";
@@ -5771,13 +5789,13 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "புகைப்படங்கள் மற்றும் வீடியோக்கள்";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
+"SETTINGS_SHARING_SUGGESTIONS" = "ஐ.ஓ.எஸ் உடன் தொடர்புகளைப் பகிரவும்";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "பரிந்துரைகளைப் பகிர்தல் போன்ற அம்சங்களுக்கான சிக்னல் தொடர்புகள் மற்றும் அரட்டைகளுக்கு ஐ.ஓ.எஸ் அணுகலை அனுமதிக்கவும்.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "பரிந்துரைகள் மற்றும் அறிவிப்புகளைப் பகிர்தல் போன்ற அம்சங்களுக்கான சிக்னல் தொடர்புகள் மற்றும் அரட்டைகளுக்கு ஐ.ஓ.எஸ் அணுகலை அனுமதிக்கவும்.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "பதிவு பூட்டு";
