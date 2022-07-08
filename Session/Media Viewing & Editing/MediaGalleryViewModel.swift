@@ -256,11 +256,21 @@ public class MediaGalleryViewModel {
             let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
             let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
             
-            return SQL("""
-                \(attachment[.isVisualMedia]) = \(mediaType == .media ? true : false) AND
-                \(attachment[.isValid]) = true AND
-                \(interaction[.threadId]) = \(threadId)
-            """)
+            switch (mediaType) {
+                case .media:
+                    return SQL("""
+                        \(attachment[.isVisualMedia]) = true AND
+                        \(attachment[.isValid]) = true AND
+                        \(interaction[.threadId]) = \(threadId)
+                    """)
+                case .document:
+                    return SQL("""
+                        \(attachment[.isVisualMedia]) = false AND
+                        \(attachment[.isValid]) = true AND
+                        \(attachment[.variant]) = \(Attachment.Variant.standard) AND
+                        \(interaction[.threadId]) = \(threadId) AND
+                    """)
+            }
         }
         
         fileprivate static let galleryOrderSQL: SQL = {
