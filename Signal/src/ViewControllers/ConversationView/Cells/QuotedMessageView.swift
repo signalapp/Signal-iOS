@@ -527,17 +527,20 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                     }
                     let maskLayer = CAShapeLayer()
                     quotedImageView.addLayoutBlock { view in
-                        let maskRect = view.bounds.insetBy(dx: 1, dy: 1)
+                        let borderWidth: CGFloat = 1
+                        assert(borderWidth <= Self.sharpCornerRadius)
+                        assert(borderWidth <= Self.wideCornerRadius)
+                        let maskRect = view.bounds.insetBy(dx: borderWidth, dy: borderWidth)
                         maskLayer.path = UIBezierPath.roundedRect(
                             maskRect,
                             sharpCorners: UIView.uiRectCorner(
                                 forOWSDirectionalRectCorner: sharpCorners.intersection(eligibleCorners)
                             ),
-                            sharpCornerRadius: Self.sharpCornerRadius,
+                            sharpCornerRadius: Self.sharpCornerRadius - borderWidth,
                             wideCorners: UIView.uiRectCorner(
                                 forOWSDirectionalRectCorner: eligibleCorners.subtracting(sharpCorners)
                             ),
-                            wideCornerRadius: Self.wideCornerRadius
+                            wideCornerRadius: Self.wideCornerRadius - borderWidth
                         ).cgPath
                     }
                     quotedImageView.layer.mask = maskLayer
