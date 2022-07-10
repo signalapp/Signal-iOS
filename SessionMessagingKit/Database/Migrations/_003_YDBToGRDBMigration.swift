@@ -18,6 +18,9 @@ enum _003_YDBToGRDBMigration: Migration {
     
     static func migrate(_ db: Database) throws {
         guard let dbConnection: YapDatabaseConnection = SUKLegacy.newDatabaseConnection() else {
+            // We want this setting to be on by default (even if there isn't a legacy database)
+            db[.trimOpenGroupMessagesOlderThanSixMonths] = true
+            
             SNLog("[Migration Warning] No legacy database, skipping \(target.key(with: self))")
             return
         }
