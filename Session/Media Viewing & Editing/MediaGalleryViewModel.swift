@@ -268,7 +268,7 @@ public class MediaGalleryViewModel {
                         \(attachment[.isVisualMedia]) = false AND
                         \(attachment[.isValid]) = true AND
                         \(attachment[.variant]) = \(Attachment.Variant.standard) AND
-                        \(interaction[.threadId]) = \(threadId) AND
+                        \(interaction[.threadId]) = \(threadId)
                     """)
             }
         }
