@@ -198,6 +198,43 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
             }
             return
         }
+        
+        let isInsertingAtTop: Bool = {
+            let oldFirstSectionIsLoadMore: Bool = (
+                self.viewModel.galleryData.first?.model == .loadNewer ||
+                self.viewModel.galleryData.first?.model == .loadOlder
+            )
+            let oldTargetSectionIndex: Int = (oldFirstSectionIsLoadMore ? 1 : 0)
+            
+            guard
+                let newTargetSectionIndex = updatedGalleryData
+                    .firstIndex(where: { $0.model == self.viewModel.galleryData[safe: oldTargetSectionIndex]?.model }),
+                let oldFirstItem: MediaGalleryViewModel.Item = self.viewModel.galleryData[safe: oldTargetSectionIndex]?.elements.first,
+                let newFirstItemIndex = updatedGalleryData[safe: newTargetSectionIndex]?.elements.firstIndex(of: oldFirstItem)
+            else { return false }
+            
+            return (newTargetSectionIndex > oldTargetSectionIndex || newFirstItemIndex > 0)
+        }()
+        
+        CATransaction.begin()
+        
+        if isInsertingAtTop { CATransaction.setDisableActions(true) }
+        
+        self.tableView.reload(
+            using: StagedChangeset(source: self.viewModel.galleryData, target: updatedGalleryData),
+            with: .automatic,
+            interrupt: { $0.changeCount > MediaTileViewController.itemPageSize }
+        ) { [weak self] updatedData in
+            self?.viewModel.updateGalleryData(updatedData)
+        }
+        
+        CATransaction.setCompletionBlock { [weak self] in
+            // If one of the "load more" sections is still visible once the animation completes then
+            // trigger another "load more" (after a small delay to minimize animation bugginess)
+            self?.autoLoadNextPageIfNeeded()
+        }
+        CATransaction.commit()
+        
     }
     
     // MARK: - Interactions
@@ -272,6 +309,10 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
             case .galleryMonth:
                 return 50
         }
+    }
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
     }
 }
 
