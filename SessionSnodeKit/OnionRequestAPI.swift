@@ -7,7 +7,7 @@ import PromiseKit
 import SessionUtilitiesKit
 
 public protocol OnionRequestAPIType {
-    static func sendOnionRequest(to snode: Snode, invoking method: SnodeAPIEndpoint, with parameters: JSON, using version: OnionRequestAPIVersion, associatedWith publicKey: String?) -> Promise<Data>
+    static func sendOnionRequest(to snode: Snode, invoking method: SnodeAPIEndpoint, with parameters: JSON, associatedWith publicKey: String?) -> Promise<Data>
     static func sendOnionRequest(_ request: URLRequest, to server: String, using version: OnionRequestAPIVersion, with x25519PublicKey: String) -> Promise<(OnionRequestResponseInfoType, Data?)>
 }
 
@@ -310,7 +310,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     }
 
     /// Builds an onion around `payload` and returns the result.
-    private static func buildOnion(around payload: Data, targetedAt destination: OnionRequestAPIDestination, version: OnionRequestAPIVersion) -> Promise<OnionBuildingResult> {
+    private static func buildOnion(around payload: Data, targetedAt destination: OnionRequestAPIDestination) -> Promise<OnionBuildingResult> {
         var guardSnode: Snode!
         var targetSnodeSymmetricKey: Data! // Needed by invoke(_:on:with:) to decrypt the response sent back by the destination
         var encryptionResult: AESGCM.EncryptionResult!
@@ -323,7 +323,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                 guardSnode = path.first!
                 
                 // Encrypt in reverse order, i.e. the destination first
-                return encrypt(payload, for: destination, with: version)
+                return encrypt(payload, for: destination)
                     .then2 { r -> Promise<AESGCM.EncryptionResult> in
                         targetSnodeSymmetricKey = r.symmetricKey
                         
@@ -356,14 +356,15 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     // MARK: - Public API
     
     /// Sends an onion request to `snode`. Builds new paths as needed.
-    public static func sendOnionRequest(to snode: Snode, invoking method: SnodeAPIEndpoint, with parameters: JSON, using version: OnionRequestAPIVersion, associatedWith publicKey: String? = nil) -> Promise<Data> {
+    public static func sendOnionRequest(to snode: Snode, invoking method: SnodeAPIEndpoint, with parameters: JSON, associatedWith publicKey: String? = nil) -> Promise<Data> {
         let payloadJson: JSON = [ "method" : method.rawValue, "params" : parameters ]
         
         guard let payload: Data = try? JSONSerialization.data(withJSONObject: payloadJson, options: []) else {
             return Promise(error: HTTP.Error.invalidJSON)
         }
         
-        return sendOnionRequest(with: payload, to: OnionRequestAPIDestination.snode(snode), version: version)
+        /// **Note:** Currently the service nodes only support V3 Onion Requests
+        return sendOnionRequest(with: payload, to: OnionRequestAPIDestination.snode(snode), version: .v3)
             .map { _, maybeData in
                 guard let data: Data = maybeData else { throw HTTP.Error.invalidResponse }
                 
@@ -410,42 +411,43 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         var guardSnode: Snode?
         
         Threading.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
-            buildOnion(around: payload, targetedAt: destination, version: version).done2 { intermediate in
-                guardSnode = intermediate.guardSnode
-                let url = "\(guardSnode!.address):\(guardSnode!.port)/onion_req/v2"
-                let finalEncryptionResult = intermediate.finalEncryptionResult
-                let onion = finalEncryptionResult.ciphertext
-                if case OnionRequestAPIDestination.server = destination, Double(onion.count) > 0.75 * Double(maxRequestSize) {
-                    SNLog("Approaching request size limit: ~\(onion.count) bytes.")
-                }
-                let parameters: JSON = [
-                    "ephemeral_key" : finalEncryptionResult.ephemeralPublicKey.toHexString()
-                ]
-                let body: Data
-                do {
-                    body = try encode(ciphertext: onion, json: parameters)
-                } catch {
-                    return seal.reject(error)
-                }
-                let destinationSymmetricKey = intermediate.destinationSymmetricKey
-                
-                HTTP.execute(.post, url, body: body)
-                    .done2 { responseData in
-                        handleResponse(
-                            responseData: responseData,
-                            destinationSymmetricKey: destinationSymmetricKey,
-                            version: version,
-                            destination: destination,
-                            seal: seal
-                        )
+            buildOnion(around: payload, targetedAt: destination)
+                .done2 { intermediate in
+                    guardSnode = intermediate.guardSnode
+                    let url = "\(guardSnode!.address):\(guardSnode!.port)/onion_req/v2"
+                    let finalEncryptionResult = intermediate.finalEncryptionResult
+                    let onion = finalEncryptionResult.ciphertext
+                    if case OnionRequestAPIDestination.server = destination, Double(onion.count) > 0.75 * Double(maxRequestSize) {
+                        SNLog("Approaching request size limit: ~\(onion.count) bytes.")
                     }
-                    .catch2 { error in
-                        seal.reject(error)
+                    let parameters: JSON = [
+                        "ephemeral_key" : finalEncryptionResult.ephemeralPublicKey.toHexString()
+                    ]
+                    let body: Data
+                    do {
+                        body = try encode(ciphertext: onion, json: parameters)
+                    } catch {
+                        return seal.reject(error)
                     }
-            }
-            .catch2 { error in
-                seal.reject(error)
-            }
+                    let destinationSymmetricKey = intermediate.destinationSymmetricKey
+                    
+                    HTTP.execute(.post, url, body: body)
+                        .done2 { responseData in
+                            handleResponse(
+                                responseData: responseData,
+                                destinationSymmetricKey: destinationSymmetricKey,
+                                version: version,
+                                destination: destination,
+                                seal: seal
+                            )
+                        }
+                        .catch2 { error in
+                            seal.reject(error)
+                        }
+                }
+                .catch2 { error in
+                    seal.reject(error)
+                }
         }
         
         promise.catch2 { error in // Must be invoked on Threading.workQueue

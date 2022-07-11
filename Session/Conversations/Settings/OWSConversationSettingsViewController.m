@@ -53,8 +53,6 @@ CGFloat kIconViewLength = 24;
         return self;
     }
 
-    [self commonInit];
-
     return self;
 }
 
@@ -64,8 +62,6 @@ CGFloat kIconViewLength = 24;
     if (!self) {
         return self;
     }
-
-    [self commonInit];
 
     return self;
 }
@@ -77,31 +73,10 @@ CGFloat kIconViewLength = 24;
         return self;
     }
 
-    [self commonInit];
-
     return self;
 }
 
-- (void)commonInit
-{
-
-    [self observeNotifications];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark
-
-- (void)observeNotifications
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(otherUsersProfileDidChange:)
-                                                 name:NSNotification.otherUsersProfileDidChange
-                                               object:nil];
-}
 
 - (void)configureWithThreadId:(NSString *)threadId threadName:(NSString *)threadName isClosedGroup:(BOOL)isClosedGroup isOpenGroup:(BOOL)isOpenGroup isNoteToSelf:(BOOL)isNoteToSelf {
     self.threadId = threadId;
@@ -964,9 +939,10 @@ CGFloat kIconViewLength = 24;
 
 #pragma mark - Notifications
 
+// FIXME: When this screen gets refactored, make sure to observe changes for relevant profile image updates
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
 {
-    NSString *recipientId = notification.userInfo[NSNotification.profileRecipientIdKey];
+    NSString *recipientId = @"";//notification.userInfo[NSNotification.profileRecipientIdKey];
     OWSAssertDebug(recipientId.length > 0);
 
     if (recipientId.length > 0 && !self.isClosedGroup && !self.isOpenGroup && self.threadId == recipientId) {

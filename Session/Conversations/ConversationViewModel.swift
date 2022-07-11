@@ -185,6 +185,16 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                         
                         return SQL("LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(interaction[.threadId])")
                     }()
+                ),
+                PagedData.ObservedChanges(
+                    table: Profile.self,
+                    columns: [.profilePictureFileName],
+                    joinToPagedType: {
+                        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+                        let profile: TypedTableAlias<Profile> = TypedTableAlias()
+                        
+                        return SQL("LEFT JOIN \(Profile.self) ON \(profile[.id]) = \(interaction[.authorId])")
+                    }()
                 )
             ],
             filterSQL: MessageViewModel.filterSQL(threadId: threadId),

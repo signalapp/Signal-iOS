@@ -100,7 +100,7 @@ public final class Storage {
         migrations: [TargetMigrations],
         async: Bool = true,
         onProgressUpdate: ((CGFloat, TimeInterval) -> ())?,
-        onComplete: @escaping (Bool, Bool) -> ()
+        onComplete: @escaping (Error?, Bool) -> ()
     ) {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return }
         
@@ -176,7 +176,7 @@ public final class Storage {
         }
         
         // Store the logic to run when the migration completes
-        let migrationCompleted: (Error?) -> () = { [weak self] error in
+        let migrationCompleted: (Database, Error?) -> () = { [weak self] db, error in
             self?.hasCompletedMigrations = true
             self?.migrationProgressUpdater = nil
             SUKLegacy.clearLegacyDatabaseInstance()
@@ -186,18 +186,27 @@ public final class Storage {
                 SNLog("[Migration Error] Migration failed with error: \(error)")
             }
             
-            onComplete((error == nil), needsConfigSync)
+            // TODO: Remove this once everyone has updated
+            var finalError: Error? = error
+            let jobTableInfo: [Row] = (try? Row.fetchAll(db, sql: "PRAGMA table_info(\(Job.databaseTableName))"))
+                .defaulting(to: [])
+            if !jobTableInfo.contains(where: { $0["name"] == "shouldSkipLaunchBecomeActive" }) {
+                finalError = StorageError.devRemigrationRequired
+            }
+            // TODO: Remove this once everyone has updated
+            
+            onComplete(finalError, needsConfigSync)
         }
         
         // Note: The non-async migration should only be used for unit tests
         guard async else {
             do { try self.migrator?.migrate(dbWriter) }
-            catch { migrationCompleted(error) }
+            catch { try? dbWriter.read { db in migrationCompleted(db, error) } }
             return
         }
         
-        self.migrator?.asyncMigrate(dbWriter) { _, error in
-            migrationCompleted(error)
+        self.migrator?.asyncMigrate(dbWriter) { db, error in
+            migrationCompleted(db, error)
         }
     }
     
@@ -249,7 +258,6 @@ public final class Storage {
                         defer { keySpec.resetBytes(in: 0..<keySpec.count) } // Reset content immediately after use
                         
                         try SSKDefaultKeychainStorage.shared.set(data: keySpec, service: keychainService, key: dbCipherKeySpecKey)
-                        print("RAWR new keySpec generated and saved")
                         return keySpec
                     }
                     catch {

@@ -263,7 +263,6 @@
 		B8DE1FB626C22FCB0079C9CE /* CallMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DE1FB526C22FCB0079C9CE /* CallMessage.swift */; };
 		B8EB20EE2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8EB20ED2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift */; };
 		B8EB20F02640F7F000773E52 /* OpenGroupInvitationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8EB20EF2640F7F000773E52 /* OpenGroupInvitationView.swift */; };
-		B8F5F56525EC8453003BF8D4 /* Notification+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F56425EC8453003BF8D4 /* Notification+Contacts.swift */; };
 		B8F5F58325EC94A6003BF8D4 /* Collection+Subscripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F58225EC94A6003BF8D4 /* Collection+Subscripting.swift */; };
 		B8F5F60325EDE16F003BF8D4 /* DataExtractionNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F60225EDE16F003BF8D4 /* DataExtractionNotification.swift */; };
 		B8F5F71A25F1B35C003BF8D4 /* MediaPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F71925F1B35C003BF8D4 /* MediaPlaceholderView.swift */; };
@@ -1300,7 +1299,6 @@
 		B8EB20E6263F7E4B00773E52 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B8EB20ED2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisibleMessage+OpenGroupInvitation.swift"; sourceTree = "<group>"; };
 		B8EB20EF2640F7F000773E52 /* OpenGroupInvitationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupInvitationView.swift; sourceTree = "<group>"; };
-		B8F5F56425EC8453003BF8D4 /* Notification+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Contacts.swift"; sourceTree = "<group>"; };
 		B8F5F58225EC94A6003BF8D4 /* Collection+Subscripting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Subscripting.swift"; sourceTree = "<group>"; };
 		B8F5F60225EDE16F003BF8D4 /* DataExtractionNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtractionNotification.swift; sourceTree = "<group>"; };
 		B8F5F71925F1B35C003BF8D4 /* MediaPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlaceholderView.swift; sourceTree = "<group>"; };
@@ -2634,7 +2632,6 @@
 				FD17D79A27F40ADA00122BE0 /* LegacyDatabase */,
 				FD17D79427F3E03300122BE0 /* Migrations */,
 				FD09796C27FA6C8B00936362 /* Models */,
-				B8F5F56425EC8453003BF8D4 /* Notification+Contacts.swift */,
 			);
 			path = Database;
 			sourceTree = "<group>";
@@ -5182,7 +5179,6 @@
 				FDC438C927BB706500C60D73 /* SendDirectMessageRequest.swift in Sources */,
 				C3A71D1F25589AC30043A11F /* WebSocketResources.pb.swift in Sources */,
 				FDF0B74B28061F7A004C14C5 /* InteractionAttachment.swift in Sources */,
-				B8F5F56525EC8453003BF8D4 /* Notification+Contacts.swift in Sources */,
 				FD09796E27FA6D0000936362 /* Contact.swift in Sources */,
 				C38D5E8D2575011E00B6A65C /* MessageSender+ClosedGroups.swift in Sources */,
 				FD5C72F7284F0E560029977D /* MessageReceiver+ReadReceipts.swift in Sources */,
@@ -6806,7 +6802,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 354;
+				CURRENT_PROJECT_VERSION = 356;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6878,7 +6874,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 354;
+				CURRENT_PROJECT_VERSION = 356;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

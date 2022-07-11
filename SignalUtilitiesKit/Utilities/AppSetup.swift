@@ -11,7 +11,7 @@ public enum AppSetup {
     public static func setupEnvironment(
         appSpecificBlock: @escaping () -> (),
         migrationProgressChanged: ((CGFloat, TimeInterval) -> ())? = nil,
-        migrationsCompletion: @escaping (Bool, Bool) -> ()
+        migrationsCompletion: @escaping (Error?, Bool) -> ()
     ) {
         guard !AppSetup.hasRun else { return }
         
@@ -60,7 +60,7 @@ public enum AppSetup {
     public static func runPostSetupMigrations(
         backgroundTask: OWSBackgroundTask? = nil,
         migrationProgressChanged: ((CGFloat, TimeInterval) -> ())? = nil,
-        migrationsCompletion: @escaping (Bool, Bool) -> ()
+        migrationsCompletion: @escaping (Error?, Bool) -> ()
     ) {
         var backgroundTask: OWSBackgroundTask? = (backgroundTask ?? OWSBackgroundTask(labelStr: #function))
         
@@ -71,9 +71,9 @@ public enum AppSetup {
                 SNMessagingKit.migrations()
             ],
             onProgressUpdate: migrationProgressChanged,
-            onComplete: { success, needsConfigSync in
+            onComplete: { error, needsConfigSync in
                 DispatchQueue.main.async {
-                    migrationsCompletion(success, needsConfigSync)
+                    migrationsCompletion(error, needsConfigSync)
                     
                     // The 'if' is only there to prevent the "variable never read" warning from showing
                     if backgroundTask != nil { backgroundTask = nil }

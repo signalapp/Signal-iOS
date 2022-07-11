@@ -16,6 +16,7 @@ public enum GarbageCollectionJob: JobExecutor {
     public static var requiresThreadId: Bool = false
     public static let requiresInteractionId: Bool = false
     public static let approxSixMonthsInSeconds: TimeInterval = (6 * 30 * 24 * 60 * 60)
+    private static let minInteractionsToTrim: Int = 2000
     
     public static func run(
         _ job: Job,
@@ -68,6 +69,8 @@ public enum GarbageCollectionJob: JobExecutor {
                 if typesToCollect.contains(.oldOpenGroupMessages) && db[.trimOpenGroupMessagesOlderThanSixMonths] {
                     let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
                     let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+                    let threadIdLiteral: SQL = SQL(stringLiteral: Interaction.Columns.threadId.name)
+                    let minInteractionsToTrimSql: SQL = SQL("\(GarbageCollectionJob.minInteractionsToTrim)")
                     
                     try db.execute(literal: """
                         DELETE FROM \(Interaction.self)
@@ -78,7 +81,17 @@ public enum GarbageCollectionJob: JobExecutor {
                                 \(SQL("\(thread[.variant]) = \(SessionThread.Variant.openGroup)")) AND
                                 \(thread[.id]) = \(interaction[.threadId])
                             )
-                            WHERE \(interaction[.timestampMs]) < \(timestampNow - approxSixMonthsInSeconds)
+                            JOIN (
+                                SELECT
+                                    COUNT(\(interaction.alias[Column.rowID])) AS interactionCount,
+                                    \(interaction[.threadId])
+                                FROM \(Interaction.self)
+                                GROUP BY \(interaction[.threadId])
+                            ) AS interactionInfo ON interactionInfo.\(threadIdLiteral) = \(interaction[.threadId])
+                            WHERE (
+                                \(interaction[.timestampMs]) < \(timestampNow - approxSixMonthsInSeconds) AND
+                                interactionInfo.interactionCount >= \(minInteractionsToTrimSql)
+                            )
                         )
                     """)
                 }
@@ -234,6 +247,41 @@ public enum GarbageCollectionJob: JobExecutor {
                         )
                     """)
                 }
+                
+                if typesToCollect.contains(.orphanedProfiles) {
+                    let profile: TypedTableAlias<Profile> = TypedTableAlias()
+                    let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+                    let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+                    let quote: TypedTableAlias<Quote> = TypedTableAlias()
+                    let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
+                    let contact: TypedTableAlias<Contact> = TypedTableAlias()
+                    let blindedIdLookup: TypedTableAlias<BlindedIdLookup> = TypedTableAlias()
+                    
+                    try db.execute(literal: """
+                        DELETE FROM \(Profile.self)
+                        WHERE \(Column.rowID) IN (
+                            SELECT \(profile.alias[Column.rowID])
+                            FROM \(Profile.self)
+                            LEFT JOIN \(SessionThread.self) ON \(thread[.id]) = \(profile[.id])
+                            LEFT JOIN \(Interaction.self) ON \(interaction[.authorId]) = \(profile[.id])
+                            LEFT JOIN \(Quote.self) ON \(quote[.authorId]) = \(profile[.id])
+                            LEFT JOIN \(GroupMember.self) ON \(groupMember[.profileId]) = \(profile[.id])
+                            LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(profile[.id])
+                            LEFT JOIN \(BlindedIdLookup.self) ON (
+                                blindedIdLookup.blindedId = \(profile[.id]) OR
+                                blindedIdLookup.sessionId = \(profile[.id])
+                            )
+                            WHERE (
+                                \(thread[.id]) IS NULL AND
+                                \(interaction[.authorId]) IS NULL AND
+                                \(quote[.authorId]) IS NULL AND
+                                \(groupMember[.profileId]) IS NULL AND
+                                \(contact[.id]) IS NULL AND
+                                \(blindedIdLookup[.blindedId]) IS NULL
+                            )
+                        )
+                    """)
+                }
             },
             completion: { _, _ in
                 // Dispatch async so we can swap from the write queue to a read one (we are done writing)
@@ -353,6 +401,9 @@ public enum GarbageCollectionJob: JobExecutor {
                         return
                     }
                     
+                    // Update the 'lastGarbageCollection' date to prevent this job from running again
+                    // for the next 23 hours
+                    UserDefaults.standard[.lastGarbageCollection] = Date()
                     success(job, false)
                 }
             }
@@ -373,6 +424,7 @@ extension GarbageCollectionJob {
         case orphanedOpenGroupCapabilities
         case orphanedBlindedIdLookups
         case approvedBlindedContactRecords
+        case orphanedProfiles
         case orphanedAttachments
         case orphanedAttachmentFiles
         case orphanedProfileAvatars

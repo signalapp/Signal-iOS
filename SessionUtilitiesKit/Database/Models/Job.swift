@@ -31,7 +31,8 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         case failureCount
         case variant
         case behaviour
-        case shouldBlockFirstRunEachSession
+        case shouldBlock
+        case shouldSkipLaunchBecomeActive
         case nextRunTimestamp
         case threadId
         case interactionId
@@ -136,12 +137,16 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     /// How the job should behave
     public let behaviour: Behaviour
     
-    /// When the app starts or returns from the background this flag controls whether the job should prevent other
-    /// jobs from starting until after it completes
+    /// When the app starts this flag controls whether the job should prevent other jobs from starting until after it completes
     ///
-    /// **Note:** `OnLaunch` blocking jobs will be started on launch and all others will be triggered when becoming
-    /// active but the "blocking" behaviour will only occur if there are no other jobs already running
-    public let shouldBlockFirstRunEachSession: Bool
+    /// **Note:** This flag is only supported for jobs with an `OnLaunch` behaviour because there is no way to guarantee
+    /// jobs with any other behaviours will be added to the JobRunner before all the `OnLaunch` blocking jobs are completed
+    /// resulting in the JobRunner no longer blocking
+    public let shouldBlock: Bool
+    
+    /// When the app starts it also triggers any `OnActive` jobs, this flag controls whether the job should skip this initial `OnActive`
+    /// trigger (generally used for the same job registered with both `OnLaunch` and `OnActive` behaviours)
+    public let shouldSkipLaunchBecomeActive: Bool
     
     /// Seconds since epoch to indicate the next datetime that this job should run
     public let nextRunTimestamp: TimeInterval
@@ -184,17 +189,25 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         failureCount: UInt,
         variant: Variant,
         behaviour: Behaviour,
-        shouldBlockFirstRunEachSession: Bool,
+        shouldBlock: Bool,
+        shouldSkipLaunchBecomeActive: Bool,
         nextRunTimestamp: TimeInterval,
         threadId: String?,
         interactionId: Int64?,
         details: Data?
     ) {
+        Job.ensureValidBehaviour(
+            behaviour: behaviour,
+            shouldBlock: shouldBlock,
+            shouldSkipLaunchBecomeActive: shouldSkipLaunchBecomeActive
+        )
+        
         self.id = id
         self.failureCount = failureCount
         self.variant = variant
         self.behaviour = behaviour
-        self.shouldBlockFirstRunEachSession = shouldBlockFirstRunEachSession
+        self.shouldBlock = shouldBlock
+        self.shouldSkipLaunchBecomeActive = shouldSkipLaunchBecomeActive
         self.nextRunTimestamp = nextRunTimestamp
         self.threadId = threadId
         self.interactionId = interactionId
@@ -205,15 +218,23 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         failureCount: UInt = 0,
         variant: Variant,
         behaviour: Behaviour = .runOnce,
-        shouldBlockFirstRunEachSession: Bool = false,
+        shouldBlock: Bool = false,
+        shouldSkipLaunchBecomeActive: Bool = false,
         nextRunTimestamp: TimeInterval = 0,
         threadId: String? = nil,
         interactionId: Int64? = nil
     ) {
+        Job.ensureValidBehaviour(
+            behaviour: behaviour,
+            shouldBlock: shouldBlock,
+            shouldSkipLaunchBecomeActive: shouldSkipLaunchBecomeActive
+        )
+        
         self.failureCount = failureCount
         self.variant = variant
         self.behaviour = behaviour
-        self.shouldBlockFirstRunEachSession = shouldBlockFirstRunEachSession
+        self.shouldBlock = shouldBlock
+        self.shouldSkipLaunchBecomeActive = shouldSkipLaunchBecomeActive
         self.nextRunTimestamp = nextRunTimestamp
         self.threadId = threadId
         self.interactionId = interactionId
@@ -224,13 +245,19 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         failureCount: UInt = 0,
         variant: Variant,
         behaviour: Behaviour = .runOnce,
-        shouldBlockFirstRunEachSession: Bool = false,
+        shouldBlock: Bool = false,
+        shouldSkipLaunchBecomeActive: Bool = false,
         nextRunTimestamp: TimeInterval = 0,
         threadId: String? = nil,
         interactionId: Int64? = nil,
         details: T?
     ) {
         precondition(T.self != Job.self, "[Job] Fatal error trying to create a Job with a Job as it's details")
+        Job.ensureValidBehaviour(
+            behaviour: behaviour,
+            shouldBlock: shouldBlock,
+            shouldSkipLaunchBecomeActive: shouldSkipLaunchBecomeActive
+        )
         
         guard
             let details: T = details,
@@ -240,11 +267,29 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         self.failureCount = failureCount
         self.variant = variant
         self.behaviour = behaviour
-        self.shouldBlockFirstRunEachSession = shouldBlockFirstRunEachSession
+        self.shouldBlock = shouldBlock
+        self.shouldSkipLaunchBecomeActive = shouldSkipLaunchBecomeActive
         self.nextRunTimestamp = nextRunTimestamp
         self.threadId = threadId
         self.interactionId = interactionId
         self.details = detailsData
+    }
+    
+    fileprivate static func ensureValidBehaviour(
+        behaviour: Behaviour,
+        shouldBlock: Bool,
+        shouldSkipLaunchBecomeActive: Bool
+    ) {
+        // Blocking jobs can only run on launch as we can't guarantee that any other behaviours will get added
+        // to the JobRunner before any prior blocking jobs have completed (resulting in them being non-blocking)
+        precondition(
+            !shouldBlock || behaviour == .recurringOnLaunch || behaviour == .runOnceNextLaunch,
+            "[Job] Fatal error trying to create a blocking job which doesn't run on launch"
+        )
+        precondition(
+            !shouldSkipLaunchBecomeActive || behaviour == .recurringOnActive,
+            "[Job] Fatal error trying to create a job which skips on 'OnActive' triggered during launch with doesn't run on active"
+        )
     }
     
     // MARK: - Custom Database Interaction
@@ -306,7 +351,8 @@ public extension Job {
             failureCount: failureCount,
             variant: self.variant,
             behaviour: self.behaviour,
-            shouldBlockFirstRunEachSession: self.shouldBlockFirstRunEachSession,
+            shouldBlock: self.shouldBlock,
+            shouldSkipLaunchBecomeActive: self.shouldSkipLaunchBecomeActive,
             nextRunTimestamp: nextRunTimestamp,
             threadId: self.threadId,
             interactionId: self.interactionId,
@@ -322,7 +368,8 @@ public extension Job {
             failureCount: self.failureCount,
             variant: self.variant,
             behaviour: self.behaviour,
-            shouldBlockFirstRunEachSession: self.shouldBlockFirstRunEachSession,
+            shouldBlock: self.shouldBlock,
+            shouldSkipLaunchBecomeActive: self.shouldSkipLaunchBecomeActive,
             nextRunTimestamp: self.nextRunTimestamp,
             threadId: self.threadId,
             interactionId: self.interactionId,

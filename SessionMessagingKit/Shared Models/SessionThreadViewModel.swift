@@ -574,7 +574,6 @@ public extension SessionThreadViewModel {
                 
                 (\(SQL("\(thread[.id]) = \(userPublicKey)"))) AS \(ViewModel.threadIsNoteToSelfKey),
                 (
-                    \(thread[.shouldBeVisible]) = true AND
                     \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND
                     \(SQL("\(thread[.id]) != \(userPublicKey)")) AND
                     IFNULL(\(contact[.isApproved]), false) = false

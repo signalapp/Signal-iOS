@@ -14,4 +14,6 @@ public enum StorageError: Error {
     case objectNotSaved
     
     case invalidSearchPattern
+    
+    case devRemigrationRequired
 }

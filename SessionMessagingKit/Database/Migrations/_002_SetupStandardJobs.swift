@@ -21,19 +21,19 @@ enum _002_SetupStandardJobs: Migration {
             _ = try Job(
                 variant: .disappearingMessages,
                 behaviour: .recurringOnLaunch,
-                shouldBlockFirstRunEachSession: true
+                shouldBlock: true
             ).inserted(db)
             
             _ = try Job(
                 variant: .failedMessageSends,
                 behaviour: .recurringOnLaunch,
-                shouldBlockFirstRunEachSession: true
+                shouldBlock: true
             ).inserted(db)
             
             _ = try Job(
                 variant: .failedAttachmentDownloads,
                 behaviour: .recurringOnLaunch,
-                shouldBlockFirstRunEachSession: true
+                shouldBlock: true
             ).inserted(db)
             
             _ = try Job(

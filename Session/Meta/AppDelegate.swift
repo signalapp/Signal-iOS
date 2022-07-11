@@ -66,9 +66,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     minEstimatedTotalTime: minEstimatedTotalTime
                 )
             },
-            migrationsCompletion: { [weak self] successful, needsConfigSync in
-                guard successful else {
-                    self?.showFailedMigrationAlert()
+            migrationsCompletion: { [weak self] error, needsConfigSync in
+                guard error == nil else {
+                    self?.showFailedMigrationAlert(error: error)
                     return
                 }
                 
@@ -142,14 +142,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         AppReadiness.runNowOrWhenAppDidBecomeReady { [weak self] in
             self?.handleActivation()
-        }
-
-        /// Clear all notifications whenever we become active
-        ///
-        /// **Note:** It looks like when opening the app from a notification, `userNotificationCenter(didReceive)` is
-        /// no longer always called before we become active so we need to dispatch this to run on the next run loop
-        DispatchQueue.main.async { [weak self] in
-            self?.clearAllNotificationsAndRestoreBadgeCount()
+            
+            /// Clear all notifications whenever we become active once the app is ready
+            ///
+            /// **Note:** It looks like when opening the app from a notification, `userNotificationCenter(didReceive)` is
+            /// no longer always called before `applicationDidBecomeActive` we need to trigger the "clear notifications" logic
+            /// within the `runNowOrWhenAppDidBecomeReady` callback and dispatch to the next run loop to ensure it runs after
+            /// the notification has actually been handled
+            DispatchQueue.main.async { [weak self] in
+                self?.clearAllNotificationsAndRestoreBadgeCount()
+            }
         }
 
         // On every activation, clear old temp directories.
@@ -225,43 +227,58 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
-    private func showFailedMigrationAlert() {
+    private func showFailedMigrationAlert(error: Error?) {
         let alert = UIAlertController(
             title: "Session",
-            message: "DATABASE_MIGRATION_FAILED".localized(),
+            message: ((error as? StorageError) == StorageError.devRemigrationRequired ?
+                "The database has changed since the last version and you need to re-migrate (this will close the app and migrate on the next launch)" :
+                "DATABASE_MIGRATION_FAILED".localized()
+            ),
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "modal_share_logs_title".localized(), style: .default) { _ in
-            ShareLogsModal.shareLogs(from: alert) { [weak self] in
-                self?.showFailedMigrationAlert()
-            }
-        })
-        alert.addAction(UIAlertAction(title: "vc_restore_title".localized(), style: .destructive) { _ in
-            // Remove the legacy database and any message hashes that have been migrated to the new DB
-            try? SUKLegacy.deleteLegacyDatabaseFilesAndKey()
-            
-            Storage.shared.write { db in
-                try SnodeReceivedMessageInfo.deleteAll(db)
-            }
-            
-            // The re-run the migration (should succeed since there is no data)
-            AppSetup.runPostSetupMigrations(
-                migrationProgressChanged: { [weak self] progress, minEstimatedTotalTime in
-                    self?.loadingViewController?.updateProgress(
-                        progress: progress,
-                        minEstimatedTotalTime: minEstimatedTotalTime
-                    )
-                },
-                migrationsCompletion: { [weak self] successful, needsConfigSync in
-                    guard successful else {
-                        self?.showFailedMigrationAlert()
-                        return
+        
+        switch (error as? StorageError) {
+            case .devRemigrationRequired:
+                alert.addAction(UIAlertAction(title: "Re-Migrate Database", style: .default) { _ in
+                    Storage.deleteDatabaseFiles()
+                    try? Storage.deleteDbKeys()
+                    exit(1)
+                })
+                
+            default:
+                alert.addAction(UIAlertAction(title: "modal_share_logs_title".localized(), style: .default) { _ in
+                    ShareLogsModal.shareLogs(from: alert) { [weak self] in
+                        self?.showFailedMigrationAlert(error: error)
+                    }
+                })
+                alert.addAction(UIAlertAction(title: "vc_restore_title".localized(), style: .destructive) { _ in
+                    // Remove the legacy database and any message hashes that have been migrated to the new DB
+                    try? SUKLegacy.deleteLegacyDatabaseFilesAndKey()
+                    
+                    Storage.shared.write { db in
+                        try SnodeReceivedMessageInfo.deleteAll(db)
                     }
                     
-                    self?.completePostMigrationSetup(needsConfigSync: needsConfigSync)
-                }
-            )
-        })
+                    // The re-run the migration (should succeed since there is no data)
+                    AppSetup.runPostSetupMigrations(
+                        migrationProgressChanged: { [weak self] progress, minEstimatedTotalTime in
+                            self?.loadingViewController?.updateProgress(
+                                progress: progress,
+                                minEstimatedTotalTime: minEstimatedTotalTime
+                            )
+                        },
+                        migrationsCompletion: { [weak self] error, needsConfigSync in
+                            guard error == nil else {
+                                self?.showFailedMigrationAlert(error: error)
+                                return
+                            }
+                            
+                            self?.completePostMigrationSetup(needsConfigSync: needsConfigSync)
+                        }
+                    )
+                })
+        }
+        
         alert.addAction(UIAlertAction(title: "Close", style: .default) { _ in
             DDLog.flushLog()
             exit(0)

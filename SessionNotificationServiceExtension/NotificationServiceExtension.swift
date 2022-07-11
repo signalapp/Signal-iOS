@@ -67,16 +67,26 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
                         return
                     }
                     
+                    let maybeVariant: SessionThread.Variant? = processedMessage.threadId
+                        .map { threadId in
+                            try? SessionThread
+                                .filter(id: threadId)
+                                .select(.variant)
+                                .asRequest(of: SessionThread.Variant.self)
+                                .fetchOne(db)
+                        }
+                    let isOpenGroup: Bool = (maybeVariant == .openGroup)
+                    
                     switch processedMessage.messageInfo.message {
                         case let visibleMessage as VisibleMessage:
                             let interactionId: Int64 = try MessageReceiver.handleVisibleMessage(
                                 db,
                                 message: visibleMessage,
                                 associatedWithProto: processedMessage.proto,
-                                openGroupId: nil,
+                                openGroupId: (isOpenGroup ? processedMessage.threadId : nil),
                                 isBackgroundPoll: false
                             )
-                        
+                            
                             // Remove the notifications if there is an outgoing messages from a linked device
                             if
                                 let interaction: Interaction = try? Interaction.fetchOne(db, id: interactionId),
@@ -127,6 +137,13 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
                             
                         default: break
                     }
+                    
+                    // Perform any required post-handling logic
+                    try MessageReceiver.postHandleMessage(
+                        db,
+                        message: processedMessage.messageInfo.message,
+                        openGroupId: (isOpenGroup ? processedMessage.threadId : nil)
+                    )
                 }
                 catch {
                     if let error = error as? MessageReceiverError, error.isRetryable {

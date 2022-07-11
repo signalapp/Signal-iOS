@@ -38,6 +38,15 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     
     // MARK: - UI Components
     
+    private lazy var viewsToMoveForReply: [UIView] = [
+        bubbleView,
+        bubbleBackgroundView,
+        profilePictureView,
+        replyButton,
+        timerView,
+        messageStatusImageView
+    ]
+    
     private lazy var profilePictureView: ProfilePictureView = {
         let result: ProfilePictureView = ProfilePictureView()
         result.set(.height, to: Values.verySmallProfilePictureSize)
@@ -619,8 +628,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         super.prepareForReuse()
         
         unloadContent?()
-        let viewsToMove = [ bubbleView, profilePictureView, replyButton, timerView, messageStatusImageView ]
-        viewsToMove.forEach { $0.transform = .identity }
+        viewsToMoveForReply.forEach { $0.transform = .identity }
         replyButton.alpha = 0
         timerView.prepareForReuse()
     }
@@ -726,9 +734,6 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     @objc private func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
         guard let cellViewModel: MessageViewModel = self.viewModel else { return }
         
-        let viewsToMove: [UIView] = [
-            bubbleView, bubbleBackgroundView, profilePictureView, replyButton, timerView, messageStatusImageView
-        ]
         let translationX = gestureRecognizer.translation(in: self).x.clamp(-CGFloat.greatestFiniteMagnitude, 0)
         
         switch gestureRecognizer.state {
@@ -739,7 +744,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 let damping: CGFloat = 20
                 let sign: CGFloat = -1
                 let x = (damping * (sqrt(abs(translationX)) / sqrt(damping))) * sign
-                viewsToMove.forEach { $0.transform = CGAffineTransform(translationX: x, y: 0) }
+                viewsToMoveForReply.forEach { $0.transform = CGAffineTransform(translationX: x, y: 0) }
                 if timerView.isHidden {
                     replyButton.alpha = abs(translationX) / VisibleMessageCell.maxBubbleTranslationX
                 } else {
@@ -778,10 +783,9 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     }
 
     private func resetReply() {
-        let viewsToMove = [ bubbleView, profilePictureView, replyButton, timerView, messageStatusImageView ]
-        UIView.animate(withDuration: 0.25) {
-            viewsToMove.forEach { $0.transform = .identity }
-            self.replyButton.alpha = 0
+        UIView.animate(withDuration: 0.25) { [weak self] in
+            self?.viewsToMoveForReply.forEach { $0.transform = .identity }
+            self?.replyButton.alpha = 0
         }
     }
 

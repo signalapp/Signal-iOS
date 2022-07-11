@@ -16,8 +16,16 @@ enum _002_SetupStandardJobs: Migration {
         try autoreleasepool {
             _ = try Job(
                 variant: .getSnodePool,
+                behaviour: .recurringOnLaunch,
+                shouldBlock: true
+            ).inserted(db)
+            
+            // Note: We also want this job to run both onLaunch and onActive as we want it to block
+            // 'onLaunch' and 'onActive' doesn't support blocking jobs
+            _ = try Job(
+                variant: .getSnodePool,
                 behaviour: .recurringOnActive,
-                shouldBlockFirstRunEachSession: true
+                shouldSkipLaunchBecomeActive: true
             ).inserted(db)
         }
         

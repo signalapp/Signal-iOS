@@ -1049,7 +1049,10 @@ extension Attachment {
         
         uploadPromise
             .done(on: queue) { fileId in
-                // Save the final upload info
+                /// Save the final upload info
+                ///
+                /// **Note:** We **MUST** use the `.with` function here to ensure the `isValid` flag is
+                /// updated correctly
                 let uploadedAttachment: Attachment? = Storage.shared.write { db in
                     try updatedAttachment?
                         .with(

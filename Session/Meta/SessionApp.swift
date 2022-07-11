@@ -10,15 +10,21 @@ public struct SessionApp {
     // MARK: - View Convenience Methods
     
     public static func presentConversation(for threadId: String, action: ConversationViewModel.Action = .none, animated: Bool) {
-        let maybeThread: SessionThread? = Storage.shared.write { db in
-            try SessionThread.fetchOrCreate(db, id: threadId, variant: .contact)
+        let maybeThreadInfo: (thread: SessionThread, isMessageRequest: Bool)? = Storage.shared.write { db in
+            let thread: SessionThread = try SessionThread.fetchOrCreate(db, id: threadId, variant: .contact)
+            
+            return (thread, thread.isMessageRequest(db))
         }
         
-        guard let variant: SessionThread.Variant = maybeThread?.variant else { return }
+        guard
+            let variant: SessionThread.Variant = maybeThreadInfo?.thread.variant,
+            let isMessageRequest: Bool = maybeThreadInfo?.isMessageRequest
+        else { return }
         
         self.presentConversation(
             for: threadId,
             threadVariant: variant,
+            isMessageRequest: isMessageRequest,
             action: action,
             focusInteractionId: nil,
             animated: animated
@@ -28,6 +34,7 @@ public struct SessionApp {
     public static func presentConversation(
         for threadId: String,
         threadVariant: SessionThread.Variant,
+        isMessageRequest: Bool,
         action: ConversationViewModel.Action,
         focusInteractionId: Int64?,
         animated: Bool
@@ -37,6 +44,7 @@ public struct SessionApp {
                 self.presentConversation(
                     for: threadId,
                     threadVariant: threadVariant,
+                    isMessageRequest: isMessageRequest,
                     action: action,
                     focusInteractionId: focusInteractionId,
                     animated: animated
@@ -48,6 +56,7 @@ public struct SessionApp {
         homeViewController.wrappedValue?.show(
             threadId,
             variant: threadVariant,
+            isMessageRequest: isMessageRequest,
             with: action,
             focusedInteractionId: focusInteractionId,
             animated: animated

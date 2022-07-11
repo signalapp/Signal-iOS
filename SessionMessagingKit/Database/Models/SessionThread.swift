@@ -174,7 +174,12 @@ public extension SessionThread {
             (includeNonVisible || shouldBeVisible) &&
             variant == .contact &&
             id != getUserHexEncodedPublicKey(db) && // Note to self
-            (try? Contact.fetchOne(db, id: id))?.isApproved != true
+            (try? Contact
+                .filter(id: id)
+                .select(.isApproved)
+                .asRequest(of: Bool.self)
+                .fetchOne(db))
+                .defaulting(to: false) == false
         )
     }
 }
@@ -196,7 +201,7 @@ public extension SessionThread {
         """
     }
     
-    static func unreadMessageRequestsThreadIdQuery(userPublicKey: String) -> SQLRequest<Int64> {
+    static func unreadMessageRequestsThreadIdQuery(userPublicKey: String, includeNonVisible: Bool = false) -> SQLRequest<String> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
@@ -210,7 +215,7 @@ public extension SessionThread {
             )
             LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
             WHERE (
-                \(SessionThread.isMessageRequest(userPublicKey: userPublicKey))
+                \(SessionThread.isMessageRequest(userPublicKey: userPublicKey, includeNonVisible: includeNonVisible))
             )
             GROUP BY \(thread[.id])
         """
@@ -243,6 +248,50 @@ public extension SessionThread {
             variant == .contact &&
             id == getUserHexEncodedPublicKey(db)
         )
+    }
+    
+    func shouldShowNotification(_ db: Database, for interaction: Interaction, isMessageRequest: Bool) -> Bool {
+        // Ensure that the thread isn't muted and either the thread isn't only notifying for mentions
+        // or the user was actually mentioned
+        guard
+            Date().timeIntervalSince1970 > (self.mutedUntilTimestamp ?? 0) &&
+            (
+                self.variant == .contact ||
+                !self.onlyNotifyForMentions ||
+                interaction.hasMention
+            )
+        else { return false }
+        
+        let userPublicKey: String = getUserHexEncodedPublicKey(db)
+        
+        // No need to notify the user for self-send messages
+        guard interaction.authorId != userPublicKey else { return false }
+        
+        // If the thread is a message request then we only want to notify for the first message
+        if self.variant == .contact && isMessageRequest {
+            let hasHiddenMessageRequests: Bool = db[.hasHiddenMessageRequests]
+            
+            // If the user hasn't hidden the message requests section then only show the notification if
+            // all the other message request threads have been read
+            if !hasHiddenMessageRequests {
+                let numUnreadMessageRequestThreads: Int = (try? SessionThread
+                    .unreadMessageRequestsThreadIdQuery(userPublicKey: userPublicKey, includeNonVisible: true)
+                    .fetchCount(db))
+                    .defaulting(to: 1)
+                
+                guard numUnreadMessageRequestThreads == 1 else { return false }
+            }
+            
+            // We only want to show a notification for the first interaction in the thread
+            guard ((try? self.interactions.fetchCount(db)) ?? 0) <= 1 else { return false }
+            
+            // Need to re-show the message requests section if it had been hidden
+            if hasHiddenMessageRequests {
+                db[.hasHiddenMessageRequests] = false
+            }
+        }
+        
+        return true
     }
     
     static func displayName(
