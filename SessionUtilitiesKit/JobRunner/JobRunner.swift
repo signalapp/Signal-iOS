@@ -772,6 +772,19 @@ private final class JobQueue {
                         .with(nextRunTimestamp: (Date().timeIntervalSince1970 + 1))
                         .saved(db)
                 }
+                
+            // For `recurringOnLaunch/Active` jobs which have already run, we want to clear their
+            // `failureCount` and `nextRunTimestamp` to prevent them from endlessly running over
+            // and over and reset their retry backoff in case they fail next time
+            case .recurringOnLaunch, .recurringOnActive:
+                Storage.shared.write { db in
+                    _ = try job
+                        .with(
+                            failureCount: 0,
+                            nextRunTimestamp: 0
+                        )
+                        .saved(db)
+                }
             
             default: break
         }

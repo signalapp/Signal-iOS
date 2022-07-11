@@ -579,10 +579,8 @@ public extension SessionThreadViewModel {
                     IFNULL(\(contact[.isApproved]), false) = false
                 ) AS \(ViewModel.threadIsMessageRequestKey),
                 (
-                    \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND (
-                        IFNULL(\(contact[.isApproved]), false) = false OR
-                        IFNULL(\(contact[.didApproveMe]), false) = false
-                    )
+                    \(SQL("\(thread[.variant]) = \(SessionThread.Variant.contact)")) AND
+                    IFNULL(\(contact[.didApproveMe]), false) = false
                 ) AS \(ViewModel.threadRequiresApprovalKey),
                 \(thread[.shouldBeVisible]) AS \(ViewModel.threadShouldBeVisibleKey),
         
