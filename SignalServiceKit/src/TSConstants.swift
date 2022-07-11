@@ -205,12 +205,8 @@ private class TSConstantsProduction: TSConstantsProtocol {
     // key material from during registration. These must be ordered from
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
-    public let keyBackupPreviousEnclaves = [
-        KeyBackupEnclave(
-            name: "fe7c1bfae98f9b073d220366ea31163ee82f6d04bead774f71ca8e5c40847bfe",
-            mrenclave: "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87",
-            serviceId: "fe7c1bfae98f9b073d220366ea31163ee82f6d04bead774f71ca8e5c40847bfe"
-        )
+    public let keyBackupPreviousEnclaves: [KeyBackupEnclave] = [
+        // Add the current `keyBackupEnclave` value here when replacing it.
     ]
 
     public let applicationGroup = "group.org.whispersystems.signal.group"
@@ -273,17 +269,8 @@ private class TSConstantsStaging: TSConstantsProtocol {
     // key material from during registration. These must be ordered from
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
-    public let keyBackupPreviousEnclaves = [
-        KeyBackupEnclave(
-            name: "dcd2f0b7b581068569f19e9ccb6a7ab1a96912d09dde12ed1464e832c63fa948",
-            mrenclave: "9db0568656c53ad65bb1c4e1b54ee09198828699419ec0f63cf326e79827ab23",
-            serviceId: "446a6e51956e0eed502c6d9626476cea5b7278829098c34ca0cdce329753a8ee"
-        ),
-        KeyBackupEnclave(
-            name: "823a3b2c037ff0cbe305cc48928cfcc97c9ed4a8ca6d49af6f7d6981fb60a4e9",
-            mrenclave: "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87",
-            serviceId: "16b94ac6d2b7f7b9d72928f36d798dbb35ed32e7bb14c42b4301ad0344b46f29"
-        )
+    public let keyBackupPreviousEnclaves: [KeyBackupEnclave] = [
+        // Add the current `keyBackupEnclave` value here when replacing it.
     ]
 
     public let applicationGroup = "group.org.whispersystems.signal.group.staging"
