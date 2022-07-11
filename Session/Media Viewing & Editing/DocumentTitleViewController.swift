@@ -242,18 +242,18 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
         
         switch section.model {
             case .emptyGallery, .loadOlder, .loadNewer:
-            let headerView: DocumentStaticHeaderView = DocumentStaticHeaderView()
-            headerView.configure(
-                title: {
-                    switch section.model {
-                        case .emptyGallery: return "DOCUMENT_TILES_EMPTY_DOCUMENT".localized()
-                        case .loadOlder: return "DOCUMENT_TILES_LOADING_OLDER_LABEL".localized()
-                        case .loadNewer: return "DOCUMENT_TILES_LOADING_MORE_RECENT_LABEL".localized()
-                        case .galleryMonth: return ""   // Impossible case
-                    }
-                }()
-            )
-            return headerView
+                let headerView: DocumentStaticHeaderView = DocumentStaticHeaderView()
+                headerView.configure(
+                    title: {
+                        switch section.model {
+                            case .emptyGallery: return "DOCUMENT_TILES_EMPTY_DOCUMENT".localized()
+                            case .loadOlder: return "DOCUMENT_TILES_LOADING_OLDER_LABEL".localized()
+                            case .loadNewer: return "DOCUMENT_TILES_LOADING_MORE_RECENT_LABEL".localized()
+                            case .galleryMonth: return ""   // Impossible case
+                        }
+                    }()
+                )
+                return headerView
                 
             case .galleryMonth(let date):
                 let headerView: DocumentSectionHeaderView = DocumentSectionHeaderView()
