@@ -154,7 +154,7 @@ class BadgeThanksSheet: InteractiveSheetViewController {
             }
 
             if state == .redeemed {
-                self.receiptManager.giftWasRedeemed(incomingMessage, transaction: transaction)
+                self.receiptManager.incomingGiftWasRedeemed(incomingMessage, transaction: transaction)
 
                 ExperienceUpgradeManager.snoozeExperienceUpgrade(
                     .subscriptionMegaphone,

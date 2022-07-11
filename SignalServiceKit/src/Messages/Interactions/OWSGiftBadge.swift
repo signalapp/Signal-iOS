@@ -15,6 +15,7 @@ public enum GiftBadgeError: Error {
 public enum OWSGiftBadgeRedemptionState: Int {
     case pending = 1
     case redeemed = 2
+    case opened = 3
     // TODO: (GB) Add a failure state.
 }
 

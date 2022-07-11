@@ -157,6 +157,9 @@ class GiftBadgeView: ManualStackView {
         if state.isIncoming {
             // TODO: (GB) Alter this value based on whether or not the badge has been redeemed.
             switch state.redemptionState {
+            case .opened:
+                owsFailDebug("Only outgoing gifts can be permanently opened")
+                fallthrough
             case .pending:
                 return CommonStrings.redeemGiftButton
             case .redeemed:
@@ -413,7 +416,7 @@ private enum WrapState {
 private extension GiftBadgeView.State {
     var wrapState: WrapState {
         switch self.redemptionState {
-        case .redeemed:
+        case .redeemed, .opened:
             return .unwrapped
         case .pending:
             return .wrapped

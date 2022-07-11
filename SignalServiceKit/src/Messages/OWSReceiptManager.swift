@@ -145,11 +145,27 @@ public extension OWSReceiptManager {
         }
     }
 
-    func enqueueLinkedDeviceViewedReceipt(forMessage message: TSIncomingMessage,
+    func enqueueLinkedDeviceViewedReceipt(forIncomingMessage message: TSIncomingMessage,
                                           transaction: SDSAnyWriteTransaction) {
 
         self.enqueueLinkedDeviceViewedReceipt(
             messageAuthorAddress: message.authorAddress,
+            messageUniqueId: message.uniqueId,
+            messageIdTimestamp: message.timestamp,
+            transaction: transaction
+        )
+    }
+
+    func enqueueLinkedDeviceViewedReceipt(forOutgoingMessage message: TSOutgoingMessage,
+                                          transaction: SDSAnyWriteTransaction) {
+
+        guard let localAddress = self.tsAccountManager.localAddress(with: transaction) else {
+            owsFailDebug("no local address")
+            return
+        }
+
+        self.enqueueLinkedDeviceViewedReceipt(
+            messageAuthorAddress: localAddress,
             messageUniqueId: message.uniqueId,
             messageIdTimestamp: message.timestamp,
             transaction: transaction

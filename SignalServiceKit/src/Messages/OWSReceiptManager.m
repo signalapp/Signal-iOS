@@ -153,7 +153,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             }
             break;
         case OWSReceiptCircumstanceOnThisDevice: {
-            [self enqueueLinkedDeviceViewedReceiptForMessage:message transaction:transaction];
+            [self enqueueLinkedDeviceViewedReceiptForIncomingMessage:message transaction:transaction];
             [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
 
             if (message.authorAddress.isLocalAddress) {
@@ -171,7 +171,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             break;
         }
         case OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest:
-            [self enqueueLinkedDeviceViewedReceiptForMessage:message transaction:transaction];
+            [self enqueueLinkedDeviceViewedReceiptForIncomingMessage:message transaction:transaction];
             if ([self areReadReceiptsEnabled]) {
                 [self.pendingReceiptRecorder recordPendingViewedReceiptForMessage:message
                                                                            thread:thread
@@ -216,9 +216,15 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     }
 }
 
-- (void)giftWasRedeemed:(TSIncomingMessage *)incomingMessage transaction:(SDSAnyWriteTransaction *)transaction
+- (void)incomingGiftWasRedeemed:(TSIncomingMessage *)incomingMessage transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self enqueueLinkedDeviceViewedReceiptForMessage:incomingMessage transaction:transaction];
+    [self enqueueLinkedDeviceViewedReceiptForIncomingMessage:incomingMessage transaction:transaction];
+    [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
+}
+
+- (void)outgoingGiftWasOpened:(TSOutgoingMessage *)outgoingMessage transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self enqueueLinkedDeviceViewedReceiptForOutgoingMessage:outgoingMessage transaction:transaction];
     [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
 }
 
@@ -514,8 +520,10 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                            block:^(TSMessage *_Nonnull obj) {
                                                if ([obj isKindOfClass:[TSIncomingMessage class]]) {
                                                    obj.giftBadge.redemptionState = OWSGiftBadgeRedemptionStateRedeemed;
+                                               } else if ([obj isKindOfClass:[TSOutgoingMessage class]]) {
+                                                   obj.giftBadge.redemptionState = OWSGiftBadgeRedemptionStateOpened;
                                                } else {
-                                                   // TODO: (GB) Sync opened state for outgoing gift messages.
+                                                   OWSFailDebug(@"Unexpected giftBadge message");
                                                }
                                            }];
         return;

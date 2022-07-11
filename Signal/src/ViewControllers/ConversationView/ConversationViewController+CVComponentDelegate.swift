@@ -330,7 +330,23 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func cvc_willUnwrapGift(_ itemViewModel: CVItemViewModelImpl) {
         self.viewState.unwrappedGiftMessageIds.insert(itemViewModel.interaction.uniqueId)
-        // TODO: (GB) If this is outgoing, mark it as permanently opened.
+        self.markGiftAsOpened(itemViewModel.interaction)
+    }
+
+    private func markGiftAsOpened(_ interaction: TSInteraction) {
+        guard let outgoingMessage = interaction as? TSOutgoingMessage else {
+            return
+        }
+        guard outgoingMessage.giftBadge?.redemptionState == .pending else {
+            return
+        }
+        self.databaseStorage.asyncWrite { transaction in
+            outgoingMessage.anyUpdateOutgoingMessage(transaction: transaction) {
+                $0.giftBadge?.redemptionState = .opened
+            }
+
+            self.receiptManager.outgoingGiftWasOpened(outgoingMessage, transaction: transaction)
+        }
     }
 
     public func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge) {
