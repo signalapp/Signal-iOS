@@ -198,8 +198,6 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
             }
             return
         }
-        
-        
     }
     
     // MARK: - Interactions
@@ -224,12 +222,10 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
     // MARK: - UITableViewDataSource
     
     public func numberOfSections(in tableView: UITableView) -> Int {
-        print("numberOfSections: \(self.viewModel.galleryData.count)")
         return self.viewModel.galleryData.count
     }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("rows: \(self.viewModel.galleryData[section])")
         return self.viewModel.galleryData[section].elements.count
     }
     
