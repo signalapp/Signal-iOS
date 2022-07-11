@@ -1699,12 +1699,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         return CVComponentAndView(key: key, component: subcomponent, componentView: subcomponentView)
     }
 
-    private func activeComponentKeys() -> Set<CVComponentKey> {
-        Set(CVComponentKey.allCases.filter { key in
-            nil != subcomponent(forKey: key)
-        })
-    }
-
     public func albumItemView(forAttachment attachment: TSAttachmentStream,
                               componentView: CVComponentView) -> UIView? {
         guard let componentView = componentView as? CVComponentViewMessage else {
