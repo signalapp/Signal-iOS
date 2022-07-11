@@ -140,17 +140,40 @@ public class OWSHttpHeaders: NSObject {
     @objc
     public static var acceptLanguageHeaderKey: String { "Accept-Language" }
 
+    /// See [RFC4647](https://www.rfc-editor.org/rfc/rfc4647#section-2.2).
+    private static let languageRangeRegex = try! NSRegularExpression(pattern: #"^(?:\*|[a-z]{1,8})(?:-(?:\*|(?:[a-z0-9]{1,8})))*$"#, options: .caseInsensitive)
+
+    /// Format languages for the `Accept-Language` header per [RFC9110][0].
+    ///
+    /// Languages should be passed in order of preference.
+    ///
+    /// Languages that aren't valid per [RFC4647][1] are omitted, because the server also does this validation.
+    ///
+    /// Up to 10 valid languages are returned.
+    /// This is for simplicity, and also to [avoid generating 'q' values that are too long][2].
+    ///
+    /// [0]: https://www.rfc-editor.org/rfc/rfc9110.html#name-accept-language
+    /// [1]: https://www.rfc-editor.org/rfc/rfc4647#section-2.2
+    /// [2]: https://www.rfc-editor.org/rfc/rfc9110.html#quality.values
+    static func formatAcceptLanguageHeader(_ languages: [String]) -> String {
+        let formattedLanguages = languages
+            .lazy
+            .filter { languageRangeRegex.hasMatch(input: $0) }
+            .prefix(10)
+            .enumerated()
+            .map { idx, language -> String in
+                let q = 1.0 - (Float(idx) * 0.1)
+                // ["If no 'q' parameter is present, the default weight is 1."][0]
+                // [0]: https://www.rfc-editor.org/rfc/rfc9110.html#section-12.4.2
+                if q == 1 { return language }
+                return String(format: "\(language);q=%0.1g", q)
+            }
+        return formattedLanguages.isEmpty ? "*" : formattedLanguages.joined(separator: ", ")
+    }
+
     @objc
     public static var acceptLanguageHeaderValue: String {
-        // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
-        let components = Locale.preferredLanguages.enumerated().compactMap { (index, languageCode) -> String? in
-            let qualityWeight: Float = 1.0 - (Float(index) * 0.1)
-            guard qualityWeight >= 0.5 else {
-                return nil
-            }
-            return String(format: "\(languageCode);q=%0.1g", qualityWeight)
-        }
-        return components.joined(separator: ", ")
+        formatAcceptLanguageHeader(Locale.preferredLanguages)
     }
 
     @objc
