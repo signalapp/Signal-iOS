@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalUI/OWSViewController.h>
@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL allowsAddByPhoneNumber;
 /// Defaults to `YES`
 @property (nonatomic) BOOL shouldHideLocalRecipient;
+/// Defaults to `YES`
+@property (nonatomic) BOOL includeBlockedContacts;
 /// Defaults to `YES`
 @property (nonatomic) BOOL allowsSelectingUnregisteredPhoneNumbers;
 /// Defaults to `YES`

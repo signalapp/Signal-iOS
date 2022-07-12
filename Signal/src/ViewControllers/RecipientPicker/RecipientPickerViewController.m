@@ -85,6 +85,7 @@ const NSUInteger kMinimumSearchLength = 1;
 
     _allowsAddByPhoneNumber = YES;
     _shouldHideLocalRecipient = YES;
+    _includeBlockedContacts = YES;
     _allowsSelectingUnregisteredPhoneNumbers = YES;
     _shouldShowGroups = YES;
     _shouldShowInvites = NO;
@@ -551,7 +552,24 @@ const NSUInteger kMinimumSearchLength = 1;
 
 - (NSArray<OWSTableSection *> *)contactsSection
 {
-    if (self.allSignalAccounts.count < 1) {
+    NSArray<SignalAccount *> *signalAccountsToShow = self.allSignalAccounts;
+
+    // As an optimization, we can skip the database lookup in some cases.
+    if (!self.includeBlockedContacts && self.allSignalAccounts.count > 0) {
+        __block NSSet<SignalServiceAddress *> *addressesToSkip;
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            addressesToSkip = [self.blockingManager blockedAddressesWithTransaction:transaction];
+        }];
+
+        // This is an optimization for users that have no blocked addresses.
+        if (addressesToSkip.count > 0) {
+            NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
+                NSDictionary *bindings) { return ![addressesToSkip containsObject:signalAccount.recipientAddress]; }];
+            signalAccountsToShow = [self.allSignalAccounts filteredArrayUsingPredicate:predicate];
+        }
+    }
+
+    if (signalAccountsToShow.count < 1) {
         // No Contacts
         OWSTableSection *contactsSection = [OWSTableSection new];
 
@@ -559,10 +577,11 @@ const NSUInteger kMinimumSearchLength = 1;
             if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
 
                 [contactsSection
-                    addItem:[OWSTableItem softCenterLabelItemWithText:
-                                              NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
-                                                  @"A label that indicates the user has no Signal contacts.")
-                                                      customRowHeight:UITableViewAutomaticDimension]];
+                    addItem:[OWSTableItem
+                                softCenterLabelItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
+                                                                @"A label that indicates the user has no Signal "
+                                                                @"contacts that they haven't blocked.")
+                                            customRowHeight:UITableViewAutomaticDimension]];
             } else {
                 UITableViewCell *loadingCell = [OWSTableItem newCell];
                 OWSAssertDebug(loadingCell.contentView);
@@ -600,7 +619,7 @@ const NSUInteger kMinimumSearchLength = 1;
         for (NSUInteger i = 0; i < self.collation.sectionTitles.count; i++) {
             collatedSignalAccounts[i] = [NSMutableArray new];
         }
-        for (SignalAccount *signalAccount in self.allSignalAccounts) {
+        for (SignalAccount *signalAccount in signalAccountsToShow) {
             NSInteger section = [self.collation sectionForObject:signalAccount
                                          collationStringSelector:@selector(stringForCollation)];
 
@@ -632,7 +651,7 @@ const NSUInteger kMinimumSearchLength = 1;
             [self buildSectionWithTitle:NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
                                             @"Table section header for contact listing when composing a new message")];
 
-        for (SignalAccount *signalAccount in self.allSignalAccounts) {
+        for (SignalAccount *signalAccount in signalAccountsToShow) {
             [contactsSection
                 addItem:[self itemForRecipient:[PickedRecipient forAddress:signalAccount.recipientAddress]]];
         }
@@ -679,8 +698,16 @@ const NSUInteger kMinimumSearchLength = 1;
 
     OWSAssertIsOnMainThread();
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSSet<SignalServiceAddress *> *addressesToSkip = self.includeBlockedContacts
+            ? [NSSet alloc]
+            : [self.blockingManager blockedAddressesWithTransaction:transaction];
+
         for (SignalAccount *signalAccount in filteredSignalAccounts) {
             hasSearchResults = YES;
+
+            if ([addressesToSkip containsObject:signalAccount.recipientAddress]) {
+                continue;
+            }
 
             NSString *_Nullable phoneNumber = signalAccount.recipientAddress.phoneNumber;
             if (phoneNumber) {
