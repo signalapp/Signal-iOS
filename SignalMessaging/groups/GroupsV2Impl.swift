@@ -1809,7 +1809,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                 membershipBuilder.remove(localUuid)
                 membershipBuilder.addRequestingMember(localUuid)
                 builder.groupMembership = membershipBuilder.build()
-                let newGroupModel = try builder.build(transaction: transaction)
+                let newGroupModel = try builder.build()
 
                 groupThread.update(with: newGroupModel, transaction: transaction)
 
@@ -1853,7 +1853,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                 membershipBuilder.addRequestingMember(localUuid)
                 builder.groupMembership = membershipBuilder.build()
 
-                let groupModel = try builder.build(transaction: transaction)
+                let groupModel = try builder.build()
                 let groupThread = TSGroupThread(groupModelPrivate: groupModel,
                                                 transaction: transaction)
                 groupThread.anyInsert(transaction: transaction)
@@ -2002,7 +2002,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             var membershipBuilder = oldGroupMembership.asBuilder
             membershipBuilder.remove(localUuid)
             builder.groupMembership = membershipBuilder.build()
-            let newGroupModel = try builder.build(transaction: transaction)
+            let newGroupModel = try builder.build()
 
             groupThread.update(with: newGroupModel, transaction: transaction)
 
@@ -2144,7 +2144,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                     membershipBuilder.addRequestingMember(localUuid)
                 }
                 builder.groupMembership = membershipBuilder.build()
-                let newGroupModel = try builder.build(transaction: transaction)
+                let newGroupModel = try builder.build()
 
                 groupThread.update(with: newGroupModel, transaction: transaction)
 

@@ -178,9 +178,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
             addToGroupStep2(groupThread, shortName: shortName)
             return
         }
-        let doesUserSupportGroupsV2 = databaseStorage.read { transaction in
-            GroupManager.doesUserSupportGroupsV2(address: self.address, transaction: transaction)
-        }
+        let doesUserSupportGroupsV2 = GroupManager.doesUserSupportGroupsV2(address: self.address)
         guard doesUserSupportGroupsV2 else {
             GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)
             return

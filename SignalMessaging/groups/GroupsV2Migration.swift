@@ -486,7 +486,7 @@ fileprivate extension GroupsV2Migration {
             try self.databaseStorage.write { transaction in
                 let builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
                                                                          transaction: transaction)
-                return try builder.buildAsV2(transaction: transaction)
+                return try builder.buildAsV2()
             }
         }.then(on: .global()) { (newGroupModelV2: TSGroupModelV2) throws -> Promise<TSGroupThread> in
             let newDisappearingMessageToken = groupV2Snapshot.disappearingMessageToken
@@ -673,7 +673,7 @@ fileprivate extension GroupsV2Migration {
 
         groupModelBuilder.addedByAddress = nil
 
-        return try groupModelBuilder.buildAsV2(transaction: transaction)
+        return try groupModelBuilder.buildAsV2()
     }
 
     static func migrateGroupOnService(proposedGroupModel: TSGroupModelV2,
@@ -687,7 +687,7 @@ fileprivate extension GroupsV2Migration {
             let createdGroupModel = try self.databaseStorage.write { (transaction) throws -> TSGroupModelV2 in
                 let builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
                                                                          transaction: transaction)
-                return try builder.buildAsV2(transaction: transaction)
+                return try builder.buildAsV2()
             }
             if proposedGroupModel != createdGroupModel {
                 Logger.verbose("proposedGroupModel: \(proposedGroupModel.debugDescription)")

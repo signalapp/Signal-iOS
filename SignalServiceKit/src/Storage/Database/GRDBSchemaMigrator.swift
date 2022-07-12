@@ -1985,7 +1985,7 @@ public class GRDBSchemaMigrator: NSObject {
                 builder.avatarUrlPath = nil
 
                 do {
-                    let newGroupModel = try builder.build(transaction: transaction.asAnyWrite)
+                    let newGroupModel = try builder.build()
                     groupThread.update(with: newGroupModel, transaction: transaction.asAnyWrite)
                 } catch {
                     owsFail("Failed to remove invalid group avatar during migration: \(error)")

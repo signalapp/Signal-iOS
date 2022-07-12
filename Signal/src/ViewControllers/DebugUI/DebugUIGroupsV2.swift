@@ -176,7 +176,7 @@ class DebugUIGroupsV2: DebugUIPage {
         var defaultMembershipBuilder = GroupMembership.Builder()
         defaultMembershipBuilder.addFullMember(localAddress, role: .administrator)
         defaultModelBuilder.groupMembership = defaultMembershipBuilder.build()
-        let defaultModel = try defaultModelBuilder.build(transaction: transaction)
+        let defaultModel = try defaultModelBuilder.build()
         let defaultDMToken = DisappearingMessageToken.disabledToken
 
         do {
@@ -199,7 +199,7 @@ class DebugUIGroupsV2: DebugUIPage {
 
             var modelBuilder2 = model1.asBuilder
             modelBuilder2.groupV2Revision = 1
-            let model2 = try modelBuilder2.build(transaction: transaction)
+            let model2 = try modelBuilder2.build()
             let dmToken2 = defaultDMToken
 
             GroupManager.insertGroupUpdateInfoMessage(groupThread: groupThread,
@@ -253,7 +253,7 @@ class DebugUIGroupsV2: DebugUIPage {
             modelBuilder2.groupMembership = groupMembershipBuilder1.build()
             modelBuilder2.groupAccess = .adminOnly
 
-            let model2 = try modelBuilder2.build(transaction: transaction)
+            let model2 = try modelBuilder2.build()
             let dmToken2 = DisappearingMessageToken(isEnabled: true, durationSeconds: 30)
 
             GroupManager.insertGroupUpdateInfoMessage(groupThread: groupThread,
@@ -319,15 +319,15 @@ class DebugUIGroupsV2: DebugUIPage {
             modelBuilder1.groupsVersion = groupsVersion
             modelBuilder1.groupAccess = .defaultForV2
             modelBuilder1.groupMembership = defaultMembershipBuilder.build()
-            let model1 = try modelBuilder1.build(transaction: transaction)
+            let model1 = try modelBuilder1.build()
 
             var modelBuilder2 = model1.asBuilder
             modelBuilder2.groupAccess = .adminOnly
-            let model2 = try modelBuilder2.build(transaction: transaction)
+            let model2 = try modelBuilder2.build()
 
             var modelBuilder3 = model1.asBuilder
             modelBuilder3.groupAccess = .allAccess
-            let model3 = try modelBuilder3.build(transaction: transaction)
+            let model3 = try modelBuilder3.build()
 
             let dmToken = defaultDMToken
 
@@ -376,7 +376,7 @@ class DebugUIGroupsV2: DebugUIPage {
                 groupMembershipBuilder1.addFullMember(member, role: .normal)
             }
             modelBuilder1.groupMembership = groupMembershipBuilder1.build()
-            let model1 = try modelBuilder1.build(transaction: transaction)
+            let model1 = try modelBuilder1.build()
 
             var modelBuilder2 = defaultModel.asBuilder
             var groupMembershipBuilder2 = defaultModel.groupMembership.asBuilder
@@ -385,7 +385,7 @@ class DebugUIGroupsV2: DebugUIPage {
                 groupMembershipBuilder2.addFullMember(member, role: .administrator)
             }
             modelBuilder2.groupMembership = groupMembershipBuilder2.build()
-            let model2 = try modelBuilder2.build(transaction: transaction)
+            let model2 = try modelBuilder2.build()
 
             let dmToken = defaultDMToken
 
@@ -421,7 +421,7 @@ class DebugUIGroupsV2: DebugUIPage {
 
             var modelBuilder1 = defaultModel.asBuilder
             modelBuilder1.groupMembership = GroupMembership()
-            let model1 = try modelBuilder1.build(transaction: transaction)
+            let model1 = try modelBuilder1.build()
 
             var modelBuilder2 = defaultModel.asBuilder
             var groupMembershipBuilder2 = defaultModel.groupMembership.asBuilder
@@ -430,7 +430,7 @@ class DebugUIGroupsV2: DebugUIPage {
                 groupMembershipBuilder2.addFullMember(member, role: .administrator)
             }
             modelBuilder2.groupMembership = groupMembershipBuilder2.build()
-            let model2 = try modelBuilder2.build(transaction: transaction)
+            let model2 = try modelBuilder2.build()
 
             let dmToken = defaultDMToken
 
@@ -478,7 +478,7 @@ class DebugUIGroupsV2: DebugUIPage {
                 // Model 1: Empty.
                 var modelBuilder1 = defaultModel.asBuilder
                 modelBuilder1.groupMembership = GroupMembership()
-                let model1 = try modelBuilder1.build(transaction: transaction)
+                let model1 = try modelBuilder1.build()
 
                 // Model 2: Invited.
                 var modelBuilder2 = defaultModel.asBuilder
@@ -488,7 +488,7 @@ class DebugUIGroupsV2: DebugUIPage {
                     groupMembershipBuilder2.addInvitedMember(member, role: .normal, addedByUuid: inviterUuid)
                 }
                 modelBuilder2.groupMembership = groupMembershipBuilder2.build()
-                let model2 = try modelBuilder2.build(transaction: transaction)
+                let model2 = try modelBuilder2.build()
 
                 // Model 3: Active members.
                 var modelBuilder3 = defaultModel.asBuilder
@@ -498,7 +498,7 @@ class DebugUIGroupsV2: DebugUIPage {
                     groupMembershipBuilder3.addFullMember(member, role: .administrator)
                 }
                 modelBuilder3.groupMembership = groupMembershipBuilder3.build()
-                let model3 = try modelBuilder3.build(transaction: transaction)
+                let model3 = try modelBuilder3.build()
 
                 let dmToken = defaultDMToken
 

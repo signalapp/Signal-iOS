@@ -81,13 +81,11 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
     }
 
     private var membersDoNotSupportGroupsV2: [PickedRecipient] {
-        return databaseStorage.read { transaction in
-            self.recipientSet.orderedMembers.filter {
-                guard let address = $0.address else {
-                    return false
-                }
-                return !GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction)
+        recipientSet.orderedMembers.filter {
+            guard let address = $0.address else {
+                return false
             }
+            return !GroupManager.doesUserSupportGroupsV2(address: address)
         }
     }
 

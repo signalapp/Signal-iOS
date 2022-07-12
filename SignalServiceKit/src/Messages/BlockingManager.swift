@@ -296,7 +296,7 @@ extension BlockingManager {
             } else if let currentThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
                 return currentThread.groupModel
             } else {
-                return GroupManager.fakeGroupModel(groupId: groupId, transaction: transaction)
+                return GroupManager.fakeGroupModel(groupId: groupId)
             }
         }
 
@@ -345,7 +345,7 @@ extension BlockingManager {
                 } else if let currentThread = TSGroupThread.fetch(groupId: blockedGroupId, transaction: transaction) {
                     return currentThread.groupModel
                 } else {
-                    return GroupManager.fakeGroupModel(groupId: blockedGroupId, transaction: transaction)
+                    return GroupManager.fakeGroupModel(groupId: blockedGroupId)
                 }
             }.compactMapValues { $0 }
 

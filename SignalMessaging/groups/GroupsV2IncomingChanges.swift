@@ -50,8 +50,7 @@ public class GroupsV2IncomingChanges: Dependencies {
     class func applyChangesToGroupModel(groupThread: TSGroupThread,
                                         changeActionsProto: GroupsProtoGroupChangeActions,
                                         downloadedAvatars: GroupV2DownloadedAvatars,
-                                        groupModelOptions: TSGroupModelOptions,
-                                        transaction: SDSAnyReadTransaction) throws -> ChangedGroupModel {
+                                        groupModelOptions: TSGroupModelOptions) throws -> ChangedGroupModel {
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
         }
@@ -596,7 +595,7 @@ public class GroupsV2IncomingChanges: Dependencies {
 
         builder.apply(options: groupModelOptions)
 
-        let newGroupModel = try builder.buildAsV2(transaction: transaction)
+        let newGroupModel = try builder.buildAsV2()
 
         return ChangedGroupModel(oldGroupModel: oldGroupModel,
                                  newGroupModel: newGroupModel,

@@ -61,7 +61,7 @@ public struct TSGroupModelBuilder: Dependencies {
         }
         TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
         guard let oldGroupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-            // Group not uet in db.
+            // Group not yet in db.
             return builder
         }
         let oldGroupModel = oldGroupThread.groupModel
@@ -108,13 +108,12 @@ public struct TSGroupModelBuilder: Dependencies {
                          groupSecretParamsData: groupSecretParamsData)
     }
 
-    public func build(transaction: SDSAnyReadTransaction) throws -> TSGroupModel {
+    public func build() throws -> TSGroupModel {
 
         try checkUsers()
 
         let allUsers = groupMembership.allMembersOfAnyKind
-        let groupsVersion = buildGroupsVersion(for: allUsers,
-                                               transaction: transaction)
+        let groupsVersion = buildGroupsVersion(for: allUsers)
 
         let newGroupSeed = self.newGroupSeed ?? NewGroupSeed()
 
@@ -204,8 +203,8 @@ public struct TSGroupModelBuilder: Dependencies {
         }
     }
 
-    public func buildAsV2(transaction: SDSAnyReadTransaction) throws -> TSGroupModelV2 {
-        guard let model = try build(transaction: transaction) as? TSGroupModelV2 else {
+    public func buildAsV2() throws -> TSGroupModelV2 {
+        guard let model = try build() as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
         }
         return model
@@ -252,8 +251,7 @@ public struct TSGroupModelBuilder: Dependencies {
         }
     }
 
-    private func buildGroupsVersion(for members: Set<SignalServiceAddress>,
-                                    transaction: SDSAnyReadTransaction) -> GroupsVersion {
+    private func buildGroupsVersion(for members: Set<SignalServiceAddress>) -> GroupsVersion {
         if let value = groupsVersion {
             return value
         }
@@ -262,7 +260,7 @@ public struct TSGroupModelBuilder: Dependencies {
             Logger.info("Creating v1 group due to debug flag.")
             return .V1
         }
-        let canUseV2 = GroupManager.canUseV2(for: members, transaction: transaction)
+        let canUseV2 = GroupManager.canUseV2(for: members)
         if canUseV2 {
             Logger.info("Creating v2 group.")
             return GroupManager.defaultGroupsVersion

@@ -188,9 +188,7 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
             owsFailDebug("Invalid recipient.")
             return false
         }
-        return databaseStorage.read { transaction in
-            return GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction)
-        }
+        return GroupManager.doesUserSupportGroupsV2(address: address)
     }
 
     func groupMemberViewShouldShowMemberCount() -> Bool {
@@ -225,7 +223,7 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
             // We can "add" pending or requesting members if they support gv2
             // and we know their profile key credential.
             let canAddMember: Bool = {
-                guard GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction) else {
+                guard GroupManager.doesUserSupportGroupsV2(address: address) else {
                     return false
                 }
                 return self.groupsV2.hasProfileKeyCredential(for: address, transaction: transaction)

@@ -87,14 +87,11 @@ public extension DebugUIStress {
             guard GroupManager.defaultGroupsVersion == .V2 else {
                 throw OWSAssertionError("Groups v2 not enabled.")
             }
-            let members = try self.databaseStorage.read { (transaction: SDSAnyReadTransaction) throws -> [SignalServiceAddress] in
-                let members: [SignalServiceAddress] = oldGroupThread.groupModel.groupMembers.filter { address in
-                    GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction)
-                }
-                guard GroupManager.canUseV2(for: Set(members), transaction: transaction) else {
-                    throw OWSAssertionError("Error filtering users.")
-                }
-                return members
+            let members: [SignalServiceAddress] = oldGroupThread.groupModel.groupMembers.filter { address in
+                GroupManager.doesUserSupportGroupsV2(address: address)
+            }
+            guard GroupManager.canUseV2(for: Set(members)) else {
+                throw OWSAssertionError("Error filtering users.")
             }
             for member in members {
                 Logger.verbose("Member: \(member)")
@@ -150,13 +147,13 @@ public extension DebugUIStress {
             }
             return GroupManager.tryToEnableGroupsV2(for: Array(membersToAdd), isBlocking: true, ignoreErrors: true)
         }.then { () -> Promise<TSGroupThread> in
-            let uuidsToAdd = try self.databaseStorage.read { transaction -> [UUID] in
+            let uuidsToAdd: [UUID] = try {
                 let validMembersToAdd: [SignalServiceAddress]
                 if dstGroupThread.isGroupV1Thread {
                     validMembersToAdd = membersToAdd.filter { $0.phoneNumber != nil }
                 } else {
                     validMembersToAdd = membersToAdd.filter { address in
-                        GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction)
+                        GroupManager.doesUserSupportGroupsV2(address: address)
                     }
                 }
 
@@ -168,8 +165,8 @@ public extension DebugUIStress {
                     throw OWSAssertionError("No valid members to add.")
                 }
 
-                return membersToAdd.compactMap { $0.uuid }
-            }
+                return validMembersToAdd.compactMap { $0.uuid }
+            }()
 
             return GroupManager.updateExistingGroup(existingGroupModel: dstGroupThread.groupModel,
                                                     update: .addNormalMembers(uuids: uuidsToAdd))

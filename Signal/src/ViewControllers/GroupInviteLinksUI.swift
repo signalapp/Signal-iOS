@@ -432,8 +432,6 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
             owsFailDebug("missing local address")
             return false
         }
-        return databaseStorage.read { transaction in
-            GroupManager.doesUserSupportGroupsV2(address: localAddress, transaction: transaction)
-        }
+        return GroupManager.doesUserSupportGroupsV2(address: localAddress)
     }
 }

@@ -456,8 +456,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift, GroupV2Updates {
         let changedGroupModel = try GroupsV2IncomingChanges.applyChangesToGroupModel(groupThread: groupThread,
                                                                                      changeActionsProto: changeActionsProto,
                                                                                      downloadedAvatars: downloadedAvatars,
-                                                                                     groupModelOptions: [],
-                                                                                     transaction: transaction)
+                                                                                     groupModelOptions: [])
         guard changedGroupModel.newGroupModel.revision > changedGroupModel.oldGroupModel.revision else {
             throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.revision).")
         }
@@ -760,7 +759,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift, GroupV2Updates {
                 builder.wasJustCreatedByLocalUser = true
             }
 
-            let newGroupModel = try builder.build(transaction: transaction)
+            let newGroupModel = try builder.build()
 
             let newDisappearingMessageToken = snapshot.disappearingMessageToken
             let didAddLocalUserToV2Group = self.didAddLocalUserToV2Group(groupChange: firstGroupChange,
@@ -846,7 +845,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift, GroupV2Updates {
             var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: snapshot,
                                                                      transaction: transaction)
             builder.apply(options: groupModelOptions)
-            newGroupModel = try builder.build(transaction: transaction)
+            newGroupModel = try builder.build()
             newDisappearingMessageToken = snapshot.disappearingMessageToken
             newProfileKeys = snapshot.profileKeys
         } else if let changeActionsProto = groupChange.changeActionsProto {
@@ -854,8 +853,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift, GroupV2Updates {
                 groupThread: groupThread,
                 changeActionsProto: changeActionsProto,
                 downloadedAvatars: groupChange.downloadedAvatars,
-                groupModelOptions: groupModelOptions,
-                transaction: transaction)
+                groupModelOptions: groupModelOptions)
             newGroupModel = changedGroupModel.newGroupModel
             newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken
             newProfileKeys = changedGroupModel.profileKeys
@@ -1025,7 +1023,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift, GroupV2Updates {
                 }
             }
 
-            let newGroupModel = try builder.buildAsV2(transaction: transaction)
+            let newGroupModel = try builder.buildAsV2()
             let newDisappearingMessageToken = groupV2Snapshot.disappearingMessageToken
             // groupUpdateSourceAddress is nil because we don't know the
             // author(s) of changes reflected in the snapshot.

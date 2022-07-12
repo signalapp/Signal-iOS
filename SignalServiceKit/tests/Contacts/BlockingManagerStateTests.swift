@@ -354,8 +354,6 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
     }
 
     func generateRandomGroupModel() -> TSGroupModel {
-        databaseStorage.read {
-            GroupManager.fakeGroupModel(groupId: TSGroupModel.generateRandomV1GroupId(), transaction: $0)!
-        }
+        GroupManager.fakeGroupModel(groupId: TSGroupModel.generateRandomV1GroupId())!
     }
 }

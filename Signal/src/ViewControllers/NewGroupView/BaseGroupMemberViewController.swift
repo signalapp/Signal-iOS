@@ -204,9 +204,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
     }
 
     private func doesRecipientSupportGroupsV2(_ address: SignalServiceAddress) -> Bool {
-        return databaseStorage.read { transaction in
-            return GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction)
-        }
+        return GroupManager.doesUserSupportGroupsV2(address: address)
     }
 
     func tryToEnableGroupsV2ForAddress(_ address: SignalServiceAddress,
