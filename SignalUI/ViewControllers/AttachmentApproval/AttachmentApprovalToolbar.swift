@@ -396,17 +396,15 @@ private class MediaToolbar: UIView {
         super.init(frame: frame)
 
         preservesSuperviewLayoutMargins = true
-        layoutMargins.top = 2
-        let bottomMargin: CGFloat = UIDevice.current.hasIPhoneXNotch ? 0 : -8
 
-        let spacerView = UIView()
-        let stackView = UIStackView(arrangedSubviews: [ penToolButton, cropToolButton, mediaQualityButton, saveMediaButton, spacerView, sendButton ])
+        let stackView = UIStackView(arrangedSubviews: [ penToolButton, cropToolButton, mediaQualityButton,
+                                                        saveMediaButton, UIView.transparentSpacer(), sendButton ])
         stackView.spacing = 4
         addSubview(stackView)
         stackView.autoPinLeadingToSuperviewMargin(withInset: -penToolButton.layoutMargins.leading)
         sendButton.layoutMarginsGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor).isActive = true
-        stackView.autoPinTopToSuperviewMargin()
-        stackView.autoPinEdge(.bottom, to: .bottom, of: self, withOffset: bottomMargin)
+        stackView.autoPinEdge(toSuperviewEdge: .top)
+        stackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: UIDevice.current.hasIPhoneXNotch ? 0 : 8)
 
         stackView.arrangedSubviews.compactMap { $0 as? UIButton }.forEach { button in
             button.setCompressionResistanceHigh()

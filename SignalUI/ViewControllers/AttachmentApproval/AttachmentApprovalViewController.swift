@@ -116,6 +116,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         self.dataSource = self
         self.delegate = self
 
+        // This fixes an issue with keyboard flashing white while being dismissed.
+        if #available(iOS 13, *) {
+            overrideUserInterfaceStyle = .dark
+        }
+
         NotificationCenter.default.addObserver(forName: .OWSApplicationDidBecomeActive, object: nil, queue: .main) { [weak self] _ in
             guard let self = self else { return }
             self.updateContents()

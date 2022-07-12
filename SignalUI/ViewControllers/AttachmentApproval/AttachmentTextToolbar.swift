@@ -61,6 +61,7 @@ class AttachmentTextToolbar: UIView {
         preservesSuperviewLayoutMargins = true
         translatesAutoresizingMaskIntoConstraints = false
         layoutMargins.top = 10
+        layoutMargins.bottom = 10
 
         textView.mentionDelegate = self
 
@@ -68,8 +69,6 @@ class AttachmentTextToolbar: UIView {
 
         addSubview(textViewContainer)
         textViewContainer.autoPinEdgesToSuperviewMargins()
-
-        textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
 
         // We pin edges explicitly rather than doing something like:
         //  textView.autoPinEdges(toSuperviewMarginsExcludingEdge: .right)
@@ -118,12 +117,17 @@ class AttachmentTextToolbar: UIView {
         // Otherwise we risk obscuring too much of the content.
         return UIDevice.current.orientation.isPortrait ? 160 : 100
     }
-    private var textViewHeightConstraint: NSLayoutConstraint?
+    private lazy var textViewMinimumHeightConstraint: NSLayoutConstraint = {
+        textView.heightAnchor.constraint(greaterThanOrEqualToConstant: kMinTextViewHeight)
+    }()
+    private lazy var textViewHeightConstraint: NSLayoutConstraint = {
+        textView.heightAnchor.constraint(equalToConstant: kMinTextViewHeight)
+    }()
 
     private func updateContent() {
         AssertIsOnMainThread()
         updateAppearance()
-        updateHeight(textView: textView)
+        updateHeight()
     }
 
     private func updateAppearance() {
@@ -226,6 +230,8 @@ class AttachmentTextToolbar: UIView {
 
         wrapperView.addSubview(textView)
         textView.autoPinEdgesToSuperviewEdges()
+        wrapperView.addConstraint(textViewHeightConstraint)
+        wrapperView.addConstraint(textViewMinimumHeightConstraint)
 
         wrapperView.addSubview(placeholderTextView)
         placeholderTextView.autoPinEdges(toEdgesOf: textView)
@@ -238,12 +244,8 @@ class AttachmentTextToolbar: UIView {
         textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
         textView.backgroundColor = .clear
         textView.tintColor = Theme.darkThemePrimaryColor
-        textView.font = .ows_dynamicTypeBody
+        textView.font = .ows_dynamicTypeBodyClamped
         textView.textColor = Theme.darkThemePrimaryColor
-
-        // Check the system font size and increase text inset accordingly
-        // to keep the text vertically centered
-        textView.updateVerticalInsetsForDynamicBodyType(defaultInsets: 7)
         textView.textContainerInset.left = 7
         textView.textContainerInset.right = 7
         return textView
@@ -343,16 +345,13 @@ extension AttachmentTextToolbar: UITextViewDelegate {
 
 extension AttachmentTextToolbar {
 
-    private func updateHeight(textView: UITextView) {
-        guard let textViewHeightConstraint = textViewHeightConstraint else {
-            owsFailDebug("Missing constraint.")
-            return
-        }
+    private func updateHeight() {
+        // Minimum text area size defines text field size when input field isn't active.
+        let placeholderTextViewHeight = clampedHeight(for: placeholderTextView)
+        textViewMinimumHeightConstraint.constant = placeholderTextViewHeight
 
-        // compute new height assuming width is unchanged
-        let currentSize = textView.frame.size
-        let textViewHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
-
+        // Always keep height of the text field in expanded state current.
+        let textViewHeight = clampedHeight(for: textView)
         if textViewHeightConstraint.constant != textViewHeight {
             Logger.debug("TextView height changed: \(textViewHeightConstraint.constant) -> \(textViewHeight)")
             textViewHeightConstraint.constant = textViewHeight
@@ -361,7 +360,8 @@ extension AttachmentTextToolbar {
         textViewHeightConstraint.isActive = isEditingText
     }
 
-    private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {
+    private func clampedHeight(for textView: UITextView) -> CGFloat {
+        let fixedWidth = textView.width
         let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
         return CGFloatClamp(contentSize.height, kMinTextViewHeight, maxTextViewHeight)
     }
