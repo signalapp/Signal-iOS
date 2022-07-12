@@ -149,6 +149,12 @@ public class CVViewState: NSObject {
 
     public var lastKeyboardAnimationDate: Date?
 
+    // MARK: - Gift Badges
+
+    var shakenGiftMessageIds = Set<String>()
+
+    var unwrappedGiftMessageIds = Set<String>()
+
     // MARK: - 
 
     public required init(threadViewModel: ThreadViewModel,

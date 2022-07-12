@@ -171,6 +171,7 @@ public class CVComponentState: Equatable, Dependencies {
     let linkPreview: LinkPreview?
 
     struct GiftBadge: Equatable {
+        let messageUniqueId: String
         let loader: GiftBadgeView.BadgeLoader
         let expirationDate: Date
         let redemptionState: OWSGiftBadgeRedemptionState
@@ -769,7 +770,7 @@ fileprivate extension CVComponentState.Builder {
         }
 
         if let giftBadge = message.giftBadge {
-            return try buildGiftBadge(giftBadge: giftBadge)
+            return try buildGiftBadge(messageUniqueId: message.uniqueId, giftBadge: giftBadge)
         }
 
         do {
@@ -1142,7 +1143,7 @@ fileprivate extension CVComponentState.Builder {
         }
     }
 
-    private mutating func buildGiftBadge(giftBadge: OWSGiftBadge) throws -> CVComponentState {
+    private mutating func buildGiftBadge(messageUniqueId: String, giftBadge: OWSGiftBadge) throws -> CVComponentState {
         let (rawLevel, expirationDate) = try giftBadge.getReceiptDetails()
         // TODO: (GB) What should we do with unexpected/malformed gifts? Ignore them? Show an error?
         guard let level = OneTimeBadgeLevel(rawValue: rawLevel), level == .giftBadge else {
@@ -1150,6 +1151,7 @@ fileprivate extension CVComponentState.Builder {
         }
         let badgeLoader = GiftBadgeView.BadgeLoader(level: level)
         self.giftBadge = GiftBadge(
+            messageUniqueId: messageUniqueId,
             loader: badgeLoader,
             expirationDate: expirationDate,
             redemptionState: giftBadge.redemptionState

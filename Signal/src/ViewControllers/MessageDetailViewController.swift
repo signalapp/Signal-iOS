@@ -948,6 +948,13 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {}
 
+    // Never wrap gifts on the message details screen
+    func cvc_willWrapGift(_ messageUniqueId: String) -> Bool { false }
+
+    func cvc_willShakeGift(_ messageUniqueId: String) -> Bool { false }
+
+    func cvc_willUnwrapGift(_ itemViewModel: CVItemViewModelImpl) {}
+
     func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge) {}
 
     func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}

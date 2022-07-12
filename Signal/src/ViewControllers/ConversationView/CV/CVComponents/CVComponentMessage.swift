@@ -394,7 +394,17 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         let contentViewSwipeToReplyWrapper = componentView.contentViewSwipeToReplyWrapper
         if let bubbleView = outerBubbleView {
             bubbleView.addSubview(outerContentView)
-            contentViewSwipeToReplyWrapper.subview = bubbleView
+
+            if let (giftWrapView, bubbleViewPartner) = self.configureGiftWrapIfNeeded(messageView: componentView) {
+                let wrapper = ManualLayoutView(name: "containerForOverlay")
+                wrapper.addSubviewToFillSuperviewEdges(bubbleView)
+                wrapper.addSubviewToFillSuperviewEdges(giftWrapView)
+                contentViewSwipeToReplyWrapper.subview = wrapper
+
+                bubbleViewPartner.setBubbleViewHost(bubbleView)
+            } else {
+                contentViewSwipeToReplyWrapper.subview = bubbleView
+            }
 
             if let componentAndView = findActiveComponentAndView(key: .bodyMedia,
                                                                  messageView: componentView) {
@@ -792,6 +802,18 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                    subviews: contentSubviews)
             return contentStack
         }
+    }
+
+    private func configureGiftWrapIfNeeded(
+        messageView componentView: CVComponentViewMessage
+    ) -> (ManualLayoutView, OWSBubbleViewPartner)? {
+        guard
+            let componentAndView = self.findActiveComponentAndView(key: .giftBadge, messageView: componentView),
+            let giftBadgeComponent = componentAndView.component as? CVComponentGiftBadge
+        else {
+            return nil
+        }
+        return giftBadgeComponent.configureGiftWrapIfNeeded(componentView: componentAndView.componentView)
     }
 
     // The "message" contents of this component are vertically
@@ -2008,13 +2030,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         public func contextMenuContentView() -> UIView? {
-            // Use contentStack for non-colored balloons
-            if chatColorView.superview == nil {
-                return contentStack
-            } else {
-                chatColorView.animationsEnabled = true
-                return chatColorView
-            }
+            chatColorView.animationsEnabled = true
+            return contentViewSwipeToReplyWrapper
         }
 
         public func contextMenuAuxiliaryContentView() -> UIView? {

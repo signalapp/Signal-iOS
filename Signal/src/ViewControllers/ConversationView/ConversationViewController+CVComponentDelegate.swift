@@ -315,6 +315,24 @@ extension ConversationViewController: CVComponentDelegate {
         GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)
     }
 
+    public func cvc_willWrapGift(_ messageUniqueId: String) -> Bool {
+        // If a gift is unwrapped at roughly the same we're reloading the
+        // conversation for an unrelated reason, there's a chance we'll try to
+        // re-wrap a gift that was just unwrapped. This provides an opportunity to
+        // override that behavior.
+        return !self.viewState.unwrappedGiftMessageIds.contains(messageUniqueId)
+    }
+
+    public func cvc_willShakeGift(_ messageUniqueId: String) -> Bool {
+        let (justInserted, _) = self.viewState.shakenGiftMessageIds.insert(messageUniqueId)
+        return justInserted
+    }
+
+    public func cvc_willUnwrapGift(_ itemViewModel: CVItemViewModelImpl) {
+        self.viewState.unwrappedGiftMessageIds.insert(itemViewModel.interaction.uniqueId)
+        // TODO: (GB) If this is outgoing, mark it as permanently opened.
+    }
+
     public func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge) {
         AssertIsOnMainThread()
 
@@ -368,7 +386,7 @@ extension ConversationViewController: CVComponentDelegate {
     public func cvc_beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation {
         AssertIsOnMainThread()
 
-        if maximumDuration > 0.5 {
+        if maximumDuration > 0.8 {
             owsFailDebug("Animation is too long, skipping.")
             return {}
         }

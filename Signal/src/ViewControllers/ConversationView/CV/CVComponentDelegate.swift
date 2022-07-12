@@ -90,8 +90,6 @@ public protocol CVComponentDelegate {
 
     func cvc_didTapGroupInviteLink(url: URL)
 
-    func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge)
-
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl)
 
     func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl)
@@ -104,6 +102,35 @@ public protocol CVComponentDelegate {
     var isConversationPreview: Bool { get }
 
     var wallpaperBlurProvider: WallpaperBlurProvider? { get }
+
+    // MARK: - Gift Badges
+
+    /// Invoked just before a gift is wrapped.
+    ///
+    /// This allows the view controller to indicate that a particular gift
+    /// shouldn't be wrapped (or that *no* gifts should be wrapped, by always
+    /// returning false).
+    ///
+    /// This may not be invoked if the gift has already been redeemed.
+    ///
+    /// - Parameter messageUniqueId: The gift's TSMessage's uniqueId.
+    /// - Returns: Whether or not the gift should be wrapped.
+    func cvc_willWrapGift(_ messageUniqueId: String) -> Bool
+
+    /// Invoked just before a gift is shaken.
+    ///
+    /// This allows the view controller to indicate that a particular gift
+    /// shouldn't be shaken (or that it shouldn’t be shaken again).
+    ///
+    /// - Parameter messageUniqueId: The gift's TSMessage's uniqueId.
+    /// - Returns: Whether or not the gift should be shaken.
+    func cvc_willShakeGift(_ messageUniqueId: String) -> Bool
+
+    /// Invoked just before a gift is unwrapped.
+    func cvc_willUnwrapGift(_ itemViewModel: CVItemViewModelImpl)
+
+    /// Invoked when the button on a gift is tapped.
+    func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge)
 
     // MARK: - Selection
 
