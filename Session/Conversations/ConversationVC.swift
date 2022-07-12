@@ -209,7 +209,10 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     lazy var messageRequestView: UIView = {
         let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.isHidden = (self.viewModel.threadData.threadIsMessageRequest == false)
+        result.isHidden = (
+            self.viewModel.threadData.threadIsMessageRequest == false ||
+            self.viewModel.threadData.threadRequiresApproval == true
+        )
         result.setGradient(Gradients.defaultBackground)
 
         return result
@@ -558,9 +561,19 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
         
         if initialLoad || viewModel.threadData.threadIsMessageRequest != updatedThreadData.threadIsMessageRequest {
-            messageRequestView.isHidden = (updatedThreadData.threadIsMessageRequest == false)
             scrollButtonMessageRequestsBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == true)
             scrollButtonBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == false)
+        }
+        
+        if
+            initialLoad ||
+                viewModel.threadData.threadRequiresApproval != updatedThreadData.threadRequiresApproval ||
+                viewModel.threadData.threadIsMessageRequest != updatedThreadData.threadIsMessageRequest
+        {
+            messageRequestView.isHidden = (
+                updatedThreadData.threadIsMessageRequest == false ||
+                updatedThreadData.threadRequiresApproval == true
+            )
         }
         
         if initialLoad || viewModel.threadData.threadUnreadCount != updatedThreadData.threadUnreadCount {
@@ -871,7 +884,13 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             navigationItem.rightBarButtonItems = []
         }
         else {
-            guard let threadData: SessionThreadViewModel = threadData, threadData.threadRequiresApproval == false else {
+            guard
+                let threadData: SessionThreadViewModel = threadData,
+                (
+                    threadData.threadRequiresApproval == false &&
+                    threadData.threadIsMessageRequest == false
+                )
+            else {
                 // Note: Adding empty buttons because without it the title alignment is busted (Note: The size was
                 // taken from the layout inspector for the back button in Xcode
                 navigationItem.rightBarButtonItems = [
@@ -914,7 +933,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                     settingsButtonItem.accessibilityLabel = "Settings button"
                     settingsButtonItem.isAccessibilityElement = true
                     
-                    if SessionCall.isEnabled && !threadData.threadIsNoteToSelf && threadData.threadIsMessageRequest == false {
+                    if SessionCall.isEnabled && !threadData.threadIsNoteToSelf {
                         let callButton = UIBarButtonItem(
                             image: UIImage(named: "Phone"),
                             style: .plain,
