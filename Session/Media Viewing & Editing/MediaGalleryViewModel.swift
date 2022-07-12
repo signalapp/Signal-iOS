@@ -268,6 +268,7 @@ public class MediaGalleryViewModel {
                         \(attachment[.isVisualMedia]) = false AND
                         \(attachment[.isValid]) = true AND
                         \(attachment[.variant]) = \(Attachment.Variant.standard) AND
+                        \(attachment[.sourceFilename]) <> 'session-audio-message' AND
                         \(interaction[.threadId]) = \(threadId)
                     """)
             }
