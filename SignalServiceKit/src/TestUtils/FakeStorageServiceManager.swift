@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,11 +10,13 @@ public class FakeStorageServiceManager: NSObject, StorageServiceManagerProtocol 
     public func recordPendingDeletions(deletedAddresses: [SignalServiceAddress]) {}
     public func recordPendingDeletions(deletedGroupV1Ids: [Data]) {}
     public func recordPendingDeletions(deletedGroupV2MasterKeys: [Data]) {}
+    public func recordPendingDeletions(deletedStoryDistributionListIds: [Data]) {}
 
     public func recordPendingUpdates(updatedAccountIds: [AccountId]) {}
     public func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
     public func recordPendingUpdates(updatedGroupV1Ids: [Data]) {}
     public func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {}
+    public func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
     public func recordPendingUpdates(groupModel: TSGroupModel) {}
     public func recordPendingLocalAccountUpdates() {}
 

@@ -136,6 +136,7 @@ struct StorageServiceProtos_ManifestRecord {
       case groupv1 // = 2
       case groupv2 // = 3
       case account // = 4
+      case storyDistributionList // = 5
       case UNRECOGNIZED(Int)
 
       init() {
@@ -149,6 +150,7 @@ struct StorageServiceProtos_ManifestRecord {
         case 2: self = .groupv1
         case 3: self = .groupv2
         case 4: self = .account
+        case 5: self = .storyDistributionList
         default: self = .UNRECOGNIZED(rawValue)
         }
       }
@@ -160,6 +162,7 @@ struct StorageServiceProtos_ManifestRecord {
         case .groupv1: return 2
         case .groupv2: return 3
         case .account: return 4
+        case .storyDistributionList: return 5
         case .UNRECOGNIZED(let i): return i
         }
       }
@@ -182,6 +185,7 @@ extension StorageServiceProtos_ManifestRecord.Key.TypeEnum: CaseIterable {
     .groupv1,
     .groupv2,
     .account,
+    .storyDistributionList,
   ]
 }
 
@@ -226,6 +230,14 @@ struct StorageServiceProtos_StorageRecord {
     set {record = .account(newValue)}
   }
 
+  var storyDistributionList: StorageServiceProtos_StoryDistributionListRecord {
+    get {
+      if case .storyDistributionList(let v)? = record {return v}
+      return StorageServiceProtos_StoryDistributionListRecord()
+    }
+    set {record = .storyDistributionList(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Record: Equatable {
@@ -233,6 +245,7 @@ struct StorageServiceProtos_StorageRecord {
     case groupV1(StorageServiceProtos_GroupV1Record)
     case groupV2(StorageServiceProtos_GroupV2Record)
     case account(StorageServiceProtos_AccountRecord)
+    case storyDistributionList(StorageServiceProtos_StoryDistributionListRecord)
 
   #if !swift(>=4.1)
     static func ==(lhs: StorageServiceProtos_StorageRecord.OneOf_Record, rhs: StorageServiceProtos_StorageRecord.OneOf_Record) -> Bool {
@@ -254,6 +267,10 @@ struct StorageServiceProtos_StorageRecord {
       }()
       case (.account, .account): return {
         guard case .account(let l) = lhs, case .account(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.storyDistributionList, .storyDistributionList): return {
+        guard case .storyDistributionList(let l) = lhs, case .storyDistributionList(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -666,6 +683,28 @@ extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: CaseIterabl
 
 #endif  // swift(>=4.2)
 
+struct StorageServiceProtos_StoryDistributionListRecord {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var identifier: Data = Data()
+
+  var name: String = String()
+
+  var recipientUuids: [String] = []
+
+  var deletedAtTimestamp: UInt64 = 0
+
+  var allowsReplies: Bool = false
+
+  var isBlockList: Bool = false
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
 #if swift(>=5.5) && canImport(_Concurrency)
 extension StorageServiceProtos_StorageItem: @unchecked Sendable {}
 extension StorageServiceProtos_StorageItems: @unchecked Sendable {}
@@ -687,6 +726,7 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation: @unchecked Send
 extension StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier: @unchecked Sendable {}
 extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: @unchecked Sendable {}
 extension StorageServiceProtos_AccountRecord.Payments: @unchecked Sendable {}
+extension StorageServiceProtos_StoryDistributionListRecord: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -976,6 +1016,7 @@ extension StorageServiceProtos_ManifestRecord.Key.TypeEnum: SwiftProtobuf._Proto
     2: .same(proto: "GROUPV1"),
     3: .same(proto: "GROUPV2"),
     4: .same(proto: "ACCOUNT"),
+    5: .same(proto: "STORY_DISTRIBUTION_LIST"),
   ]
 }
 
@@ -986,6 +1027,7 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
     2: .same(proto: "groupV1"),
     3: .same(proto: "groupV2"),
     4: .same(proto: "account"),
+    5: .same(proto: "storyDistributionList"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1046,6 +1088,19 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
           self.record = .account(v)
         }
       }()
+      case 5: try {
+        var v: StorageServiceProtos_StoryDistributionListRecord?
+        var hadOneofValue = false
+        if let current = self.record {
+          hadOneofValue = true
+          if case .storyDistributionList(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.record = .storyDistributionList(v)
+        }
+      }()
       default: break
       }
     }
@@ -1072,6 +1127,10 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
     case .account?: try {
       guard case .account(let v)? = self.record else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    }()
+    case .storyDistributionList?: try {
+      guard case .storyDistributionList(let v)? = self.record else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     }()
     case nil: break
     }
@@ -1730,6 +1789,68 @@ extension StorageServiceProtos_AccountRecord.Payments: SwiftProtobuf.Message, Sw
   static func ==(lhs: StorageServiceProtos_AccountRecord.Payments, rhs: StorageServiceProtos_AccountRecord.Payments) -> Bool {
     if lhs.enabled != rhs.enabled {return false}
     if lhs.paymentsEntropy != rhs.paymentsEntropy {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension StorageServiceProtos_StoryDistributionListRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".StoryDistributionListRecord"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "identifier"),
+    2: .same(proto: "name"),
+    3: .same(proto: "recipientUuids"),
+    4: .same(proto: "deletedAtTimestamp"),
+    5: .same(proto: "allowsReplies"),
+    6: .same(proto: "isBlockList"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.identifier) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      case 3: try { try decoder.decodeRepeatedStringField(value: &self.recipientUuids) }()
+      case 4: try { try decoder.decodeSingularUInt64Field(value: &self.deletedAtTimestamp) }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self.allowsReplies) }()
+      case 6: try { try decoder.decodeSingularBoolField(value: &self.isBlockList) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.identifier.isEmpty {
+      try visitor.visitSingularBytesField(value: self.identifier, fieldNumber: 1)
+    }
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
+    }
+    if !self.recipientUuids.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.recipientUuids, fieldNumber: 3)
+    }
+    if self.deletedAtTimestamp != 0 {
+      try visitor.visitSingularUInt64Field(value: self.deletedAtTimestamp, fieldNumber: 4)
+    }
+    if self.allowsReplies != false {
+      try visitor.visitSingularBoolField(value: self.allowsReplies, fieldNumber: 5)
+    }
+    if self.isBlockList != false {
+      try visitor.visitSingularBoolField(value: self.isBlockList, fieldNumber: 6)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_StoryDistributionListRecord, rhs: StorageServiceProtos_StoryDistributionListRecord) -> Bool {
+    if lhs.identifier != rhs.identifier {return false}
+    if lhs.name != rhs.name {return false}
+    if lhs.recipientUuids != rhs.recipientUuids {return false}
+    if lhs.deletedAtTimestamp != rhs.deletedAtTimestamp {return false}
+    if lhs.allowsReplies != rhs.allowsReplies {return false}
+    if lhs.isBlockList != rhs.isBlockList {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -94,6 +94,7 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
             self.thread.updateWithStoryViewMode(
                 self.mode,
                 addresses: self.recipientSet.orderedMembers.compactMap { $0.address },
+                updateStorageService: true,
                 transaction: transaction
             )
         }

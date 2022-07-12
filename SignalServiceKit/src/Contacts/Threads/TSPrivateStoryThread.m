@@ -135,6 +135,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
 - (void)updateWithStoryViewMode:(TSThreadStoryViewMode)storyViewMode
                       addresses:(NSArray<SignalServiceAddress *> *)addresses
+           updateStorageService:(BOOL)updateStorageService
                     transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdatePrivateStoryThreadWithTransaction:transaction
@@ -142,14 +143,39 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
                                                    thread.storyViewMode = storyViewMode;
                                                    thread.addresses = addresses;
                                                }];
+
+    if (updateStorageService) {
+        [SSKEnvironment.storageServiceManager
+            recordPendingUpdatesWithUpdatedStoryDistributionListIds:@[ self.distributionListIdentifier ]];
+    }
 }
 
-- (void)updateWithAllowsReplies:(BOOL)allowsReplies transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithAllowsReplies:(BOOL)allowsReplies
+           updateStorageService:(BOOL)updateStorageService
+                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdatePrivateStoryThreadWithTransaction:transaction
                                                block:^(TSPrivateStoryThread *thread) {
                                                    thread.allowsReplies = allowsReplies;
                                                }];
+
+    if (updateStorageService) {
+        [SSKEnvironment.storageServiceManager
+            recordPendingUpdatesWithUpdatedStoryDistributionListIds:@[ self.distributionListIdentifier ]];
+    }
+}
+
+- (void)updateWithName:(NSString *)name
+    updateStorageService:(BOOL)updateStorageService
+             transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdatePrivateStoryThreadWithTransaction:transaction
+                                               block:^(TSPrivateStoryThread *thread) { thread.name = name; }];
+
+    if (updateStorageService) {
+        [SSKEnvironment.storageServiceManager
+            recordPendingUpdatesWithUpdatedStoryDistributionListIds:@[ self.distributionListIdentifier ]];
+    }
 }
 
 @end

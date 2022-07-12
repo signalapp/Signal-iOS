@@ -61,12 +61,19 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 - (void)updateWithStoryViewMode:(TSThreadStoryViewMode)storyViewMode
                       addresses:(NSArray<SignalServiceAddress *> *)addresses
+           updateStorageService:(BOOL)updateStorageService
                     transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateWithStoryViewMode(_:addresses:transaction:));
+    NS_SWIFT_NAME(updateWithStoryViewMode(_:addresses:updateStorageService:transaction:));
 
 - (void)updateWithAllowsReplies:(BOOL)allowsReplies
+           updateStorageService:(BOOL)updateStorageService
                     transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateWithAllowsReplies(_:transaction:));
+    NS_SWIFT_NAME(updateWithAllowsReplies(_:updateStorageService:transaction:));
+
+- (void)updateWithName:(NSString *)name
+    updateStorageService:(BOOL)updateStorageService
+             transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(updateWithName(_:updateStorageService:transaction:));
 
 @end
 

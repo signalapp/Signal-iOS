@@ -89,6 +89,14 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     }
 
     @objc
+    public func recordPendingDeletions(deletedStoryDistributionListIds: [Data]) {
+        let operation = StorageServiceOperation.recordPendingDeletions(deletedStoryDistributionListIds: deletedStoryDistributionListIds)
+        StorageServiceOperation.operationQueue.addOperation(operation)
+
+        scheduleBackupIfNecessary()
+    }
+
+    @objc
     public func recordPendingUpdates(updatedAccountIds: [AccountId]) {
         let operation = StorageServiceOperation.recordPendingUpdates(updatedAccountIds: updatedAccountIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
@@ -115,6 +123,14 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     @objc
     public func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {
         let operation = StorageServiceOperation.recordPendingUpdates(updatedGroupV2MasterKeys: updatedGroupV2MasterKeys)
+        StorageServiceOperation.operationQueue.addOperation(operation)
+
+        scheduleBackupIfNecessary()
+    }
+
+    @objc
+    public func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {
+        let operation = StorageServiceOperation.recordPendingUpdates(updatedStoryDistributionListIds: updatedStoryDistributionListIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
         scheduleBackupIfNecessary()
@@ -460,6 +476,48 @@ class StorageServiceOperation: OWSOperation {
         state.save(transaction: transaction)
     }
 
+    // MARK: - Mark Pending Changes: Private Stories
+
+    fileprivate static func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) -> Operation {
+        return BlockOperation {
+            databaseStorage.write { transaction in
+                recordPendingUpdates(updatedStoryDistributionListIds: updatedStoryDistributionListIds, transaction: transaction)
+            }
+        }
+    }
+
+    private static func recordPendingUpdates(updatedStoryDistributionListIds: [Data], transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
+
+        var state = State.current(transaction: transaction)
+
+        for identifier in updatedStoryDistributionListIds {
+            state.storyDistributionListChangeMap[identifier] = .updated
+        }
+
+        state.save(transaction: transaction)
+    }
+
+    fileprivate static func recordPendingDeletions(deletedStoryDistributionListIds: [Data]) -> Operation {
+        return BlockOperation {
+            databaseStorage.write { transaction in
+                recordPendingDeletions(deletedStoryDistributionListIds: deletedStoryDistributionListIds, transaction: transaction)
+            }
+        }
+    }
+
+    private static func recordPendingDeletions(deletedStoryDistributionListIds: [Data], transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
+
+        var state = State.current(transaction: transaction)
+
+        for identifier in deletedStoryDistributionListIds {
+            state.storyDistributionListChangeMap[identifier] = .deleted
+        }
+
+        state.save(transaction: transaction)
+    }
+
     // MARK: - Backup
 
     private func backupPendingChanges() {
@@ -625,6 +683,66 @@ class StorageServiceOperation: OWSOperation {
                     }
             }
 
+            // Build an up-to-date storage item for every pending private story update
+            updatedItems +=
+                state.storyDistributionListChangeMap.lazy.filter { $0.value == .updated }.compactMap { dlistIdentifier, _ in
+                    do {
+                        // If there is an existing identifier for this story,
+                        // mark it for deletion. We generate a fresh identifier
+                        // every time a record changes so other devices
+                        // know which records have changes to fetch.
+                        if let storageIdentifier = state.storyDistributionListIdentifierToStorageIdentifierMap[dlistIdentifier] {
+                            deletedIdentifiers.append(storageIdentifier)
+                        }
+
+                        // Generate a fresh identifier
+                        let storageIdentifier = StorageService.StorageIdentifier.generate(type: .storyDistributionList)
+                        state.storyDistributionListIdentifierToStorageIdentifierMap[dlistIdentifier] = storageIdentifier
+
+                        // We need to preserve the unknown fields, if any, so we don't
+                        // blow away data written by newer versions of the app
+                        let unknownFields = state.storyDistributionListIdentifierToRecordWithUnknownFields[dlistIdentifier]?.unknownFields
+
+                        let storyDistributionListRecord = try StorageServiceProtoStoryDistributionListRecord.build(
+                            for: dlistIdentifier,
+                            unknownFields: unknownFields,
+                            transaction: transaction
+                        )
+
+                        if storyDistributionListRecord.hasUnknownFields {
+                            state.storyDistributionListIdentifierToRecordWithUnknownFields[dlistIdentifier] = storyDistributionListRecord
+                        } else {
+                            state.storyDistributionListIdentifierToRecordWithUnknownFields[dlistIdentifier] = nil
+                        }
+
+                        let storageItem = try StorageService.StorageItem(
+                            identifier: storageIdentifier,
+                            storyDistributionList: storyDistributionListRecord
+                        )
+
+                        // Clear pending changes
+                        state.storyDistributionListChangeMap[dlistIdentifier] = nil
+
+                        return storageItem
+                    } catch {
+                        // If the story we're trying to backup is no longer associated with
+                        // any known thread, we no longer need to care about it. It's possible
+                        // that story was deleted in the interim.
+                        if case StorageService.StorageError.storyMissing = error {
+                            Logger.info("Clearing data for missing dlistIdentifier \(dlistIdentifier).")
+
+                            state.storyDistributionListIdentifierToStorageIdentifierMap[dlistIdentifier] = nil
+                            state.storyDistributionListIdentifierToRecordWithUnknownFields[dlistIdentifier] = nil
+                            state.storyDistributionListChangeMap[dlistIdentifier] = nil
+                        } else {
+                            // If for some reason we failed, we'll just skip it and try this story again next backup.
+                            owsFailDebug("Unexpectedly failed to process changes for story \(error)")
+                        }
+
+                        return nil
+                    }
+            }
+
             if state.localAccountChangeState == .updated {
                 let accountItem: StorageService.StorageItem? = {
                     do {
@@ -731,6 +849,25 @@ class StorageServiceOperation: OWSOperation {
                 // Remove this group from the mapping
                 state.groupV2MasterKeyToIdentifierMap[groupMasterKey] = nil
                 state.groupV2MasterKeyToRecordWithUnknownFields[groupMasterKey] = nil
+
+                return identifier
+        }
+
+        // Lookup the identifier for every pending story deletion
+        deletedIdentifiers +=
+            state.storyDistributionListChangeMap.lazy.filter { $0.value == .deleted }.compactMap { dlistIdentifier, _ in
+                // Clear the pending change
+                state.storyDistributionListChangeMap[dlistIdentifier] = nil
+
+                guard let identifier = state.storyDistributionListIdentifierToStorageIdentifierMap[dlistIdentifier] else {
+                    // This story doesn't exist in our records, it may have been
+                    // added and then deleted before a backup occurred. We can safely skip it.
+                    return nil
+                }
+
+                // Remove this story from the mapping
+                state.storyDistributionListIdentifierToStorageIdentifierMap[dlistIdentifier] = nil
+                state.storyDistributionListIdentifierToRecordWithUnknownFields[dlistIdentifier] = nil
 
                 return identifier
         }
@@ -887,43 +1024,64 @@ class StorageServiceOperation: OWSOperation {
             }
 
             TSGroupThread.anyEnumerate(transaction: transaction) { thread, _ in
-                guard let groupThread = thread as? TSGroupThread else { return }
+                if let groupThread = thread as? TSGroupThread {
+                    switch groupThread.groupModel.groupsVersion {
+                    case .V1:
+                        let groupId = groupThread.groupModel.groupId
+                        let identifier = StorageService.StorageIdentifier.generate(type: .groupv1)
+                        state.groupV1IdToIdentifierMap[groupId] = identifier
 
-                switch groupThread.groupModel.groupsVersion {
-                case .V1:
-                    let groupId = groupThread.groupModel.groupId
-                    let identifier = StorageService.StorageIdentifier.generate(type: .groupv1)
-                    state.groupV1IdToIdentifierMap[groupId] = identifier
+                        do {
+                            let groupV1Record = try StorageServiceProtoGroupV1Record.build(for: groupId, transaction: transaction)
+                            allItems.append(
+                                try .init(identifier: identifier, groupV1: groupV1Record)
+                            )
+                        } catch {
+                            // We'll just skip it, something may be wrong with our local data.
+                            // We'll try and backup this group again when something changes.
+                            owsFailDebug("failed to build group record with error: \(error)")
+                        }
+                    case .V2:
+                        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                            owsFailDebug("Invalid group model.")
+                            return
+                        }
 
-                    do {
-                        let groupV1Record = try StorageServiceProtoGroupV1Record.build(for: groupId, transaction: transaction)
-                        allItems.append(
-                            try .init(identifier: identifier, groupV1: groupV1Record)
-                        )
-                    } catch {
-                        // We'll just skip it, something may be wrong with our local data.
-                        // We'll try and backup this group again when something changes.
-                        owsFailDebug("failed to build group record with error: \(error)")
+                        do {
+                            let groupMasterKey = try GroupsV2Protos.masterKeyData(forGroupModel: groupModel)
+                            let identifier = StorageService.StorageIdentifier.generate(type: .groupv2)
+                            state.groupV2MasterKeyToIdentifierMap[groupMasterKey] = identifier
+
+                            let groupV2Record = try StorageServiceProtoGroupV2Record.build(for: groupMasterKey, transaction: transaction)
+                            allItems.append(
+                                try .init(identifier: identifier, groupV2: groupV2Record)
+                            )
+                        } catch {
+                            // We'll just skip it, something may be wrong with our local data.
+                            // We'll try and backup this group again when something changes.
+                            owsFailDebug("failed to build group record with error: \(error)")
+                        }
                     }
-                case .V2:
-                    guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                        owsFailDebug("Invalid group model.")
+                } else if let storyThread = thread as? TSPrivateStoryThread {
+                    guard let distributionListId = storyThread.distributionListIdentifier else {
+                        owsFailDebug("Missing distribution list id for story thread \(thread.uniqueId)")
                         return
                     }
+                    let identifier = StorageService.StorageIdentifier.generate(type: .storyDistributionList)
+                    state.storyDistributionListIdentifierToStorageIdentifierMap[distributionListId] = identifier
 
                     do {
-                        let groupMasterKey = try GroupsV2Protos.masterKeyData(forGroupModel: groupModel)
-                        let identifier = StorageService.StorageIdentifier.generate(type: .groupv2)
-                        state.groupV2MasterKeyToIdentifierMap[groupMasterKey] = identifier
-
-                        let groupV2Record = try StorageServiceProtoGroupV2Record.build(for: groupMasterKey, transaction: transaction)
+                        let storyDistributionListRecord = try StorageServiceProtoStoryDistributionListRecord.build(
+                            for: distributionListId,
+                            transaction: transaction
+                        )
                         allItems.append(
-                            try .init(identifier: identifier, groupV2: groupV2Record)
+                            try .init(identifier: identifier, storyDistributionList: storyDistributionListRecord)
                         )
                     } catch {
                         // We'll just skip it, something may be wrong with our local data.
-                        // We'll try and backup this group again when something changes.
-                        owsFailDebug("failed to build group record with error: \(error)")
+                        // We'll try and backup this story again when something changes.
+                        owsFailDebug("failed to build story record with error: \(error)")
                     }
                 }
             }
@@ -1083,15 +1241,21 @@ class StorageServiceOperation: OWSOperation {
                     orphanedGroupV2Count += 1
                 }
 
+                var orphanedStoryDistributionListCount = 0
+                for (dlistIdentifier, storageIdentifier) in mutableState.storyDistributionListIdentifierToStorageIdentifierMap where !allManifestItems.contains(storageIdentifier) {
+                    mutableState.storyDistributionListChangeMap[dlistIdentifier] = .updated
+                    orphanedStoryDistributionListCount += 1
+                }
+
                 var orphanedAccountCount = 0
                 for (accountId, identifier) in mutableState.accountIdToIdentifierMap where !allManifestItems.contains(identifier) {
                     mutableState.accountIdChangeMap[accountId] = .updated
                     orphanedAccountCount += 1
                 }
 
-                let pendingChangesCount = mutableState.accountIdChangeMap.count + mutableState.groupV1ChangeMap.count + mutableState.groupV2ChangeMap.count
+                let pendingChangesCount = mutableState.accountIdChangeMap.count + mutableState.groupV1ChangeMap.count + mutableState.groupV2ChangeMap.count + mutableState.storyDistributionListChangeMap.count
 
-                Logger.info("Successfully merged with remote manifest version: \(manifest.version). \(pendingChangesCount) pending updates remaining including \(orphanedAccountCount) orphaned accounts and \(orphanedGroupV1Count) orphaned v1 groups and \(orphanedGroupV2Count) orphaned v2 groups.")
+                Logger.info("Successfully merged with remote manifest version: \(manifest.version). \(pendingChangesCount) pending updates remaining including \(orphanedAccountCount) orphaned accounts and \(orphanedGroupV1Count) orphaned v1 groups and \(orphanedGroupV2Count) orphaned v2 groups and \(orphanedStoryDistributionListCount) orphaned story distribution lists.")
 
                 mutableState.save(clearConsecutiveConflicts: true, transaction: transaction)
 
@@ -1167,6 +1331,13 @@ class StorageServiceOperation: OWSOperation {
                                 state: &mutableState,
                                 transaction: transaction
                             )
+                        } else if let storyDistributionListRecord = item.storyDistributionListRecord {
+                            self.mergeStoryDistributionListRecordWithLocalDistributionListAndUpdateState(
+                                storyDistributionListRecord,
+                                identifier: item.identifier,
+                                state: &mutableState,
+                                transaction: transaction
+                            )
                         } else if case .account = item.identifier.type {
                             owsFailDebug("unexpectedly found account record in remaining items")
                         } else {
@@ -1213,7 +1384,8 @@ class StorageServiceOperation: OWSOperation {
             .contact,
             .groupv1,
             .groupv2,
-            .account
+            .account,
+            .storyDistributionList
         ]
 
         var state = State.current(transaction: transaction)
@@ -1323,6 +1495,26 @@ class StorageServiceOperation: OWSOperation {
                 (oldCountOfGroupV2RecordsWithUnknownFields, state.groupV2MasterKeyToRecordWithUnknownFields.count)
         }
 
+        let oldCountOfStoryDistributionListRecordsWithUnknownFields = state.storyDistributionListIdentifierToRecordWithUnknownFields.count
+        if oldCountOfStoryDistributionListRecordsWithUnknownFields != 0 {
+            for (dlistIdentifier, record) in state.storyDistributionListIdentifierToRecordWithUnknownFields {
+                guard let identifier = state.storyDistributionListIdentifierToStorageIdentifierMap[dlistIdentifier] else {
+                    owsFailDebug("Unexpectedly missing identifier for story distribution list with unknownFields \(dlistIdentifier)")
+                    state.storyDistributionListIdentifierToRecordWithUnknownFields[dlistIdentifier] = nil
+                    continue
+                }
+
+                mergeStoryDistributionListRecordWithLocalDistributionListAndUpdateState(
+                    record,
+                    identifier: identifier,
+                    state: &state,
+                    transaction: transaction
+                )
+            }
+            resolvedRecordCountPerType[.storyDistributionList] =
+                (oldCountOfStoryDistributionListRecordsWithUnknownFields, state.storyDistributionListIdentifierToRecordWithUnknownFields.count)
+        }
+
         guard !resolvedRecordCountPerType.isEmpty else { return }
 
         let mutatedCountString = resolvedRecordCountPerType.lazy.map { type, counts in
@@ -1337,6 +1529,8 @@ class StorageServiceOperation: OWSOperation {
                     return "group v1 record"
                 case .groupv2:
                     return "group v2 record"
+                case .storyDistributionList:
+                    return "story distribution list record"
                 case .unknown:
                     return "unknown record"
                 case .UNRECOGNIZED:
@@ -1554,6 +1748,44 @@ class StorageServiceOperation: OWSOperation {
         }
     }
 
+    private func mergeStoryDistributionListRecordWithLocalDistributionListAndUpdateState(
+        _ storyDistributionListRecord: StorageServiceProtoStoryDistributionListRecord,
+        identifier: StorageService.StorageIdentifier,
+        state: inout State,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        switch storyDistributionListRecord.mergeWithLocalDistributionList(transaction: transaction) {
+        case .invalid:
+            // This record was invalid, ignore it.
+            // we'll clear it out in the next backup.
+            break
+
+        case .needsUpdate(let dlistIdentifier):
+            // If the record has unknown fields, we need to hold on to it, so that
+            // when we later update this record, we can preserve the unknown fields
+            state.storyDistributionListIdentifierToRecordWithUnknownFields[dlistIdentifier]
+                = storyDistributionListRecord.hasUnknownFields ? storyDistributionListRecord : nil
+
+            // our local version was newer, flag this account as needing a sync
+            state.storyDistributionListChangeMap[dlistIdentifier] = .updated
+
+            // update the mapping
+            state.storyDistributionListIdentifierToStorageIdentifierMap[dlistIdentifier] = identifier
+
+        case .resolved(let dlistIdentifier):
+            // If the record has unknown fields, we need to hold on to it, so that
+            // when we later update this record, we can preserve the unknown fields
+            state.storyDistributionListIdentifierToRecordWithUnknownFields[dlistIdentifier]
+                = storyDistributionListRecord.hasUnknownFields ? storyDistributionListRecord : nil
+
+            // We're all resolved, so if we had a pending change for this contact clear it out.
+            state.storyDistributionListChangeMap[dlistIdentifier] = nil
+
+            // update the mapping
+            state.storyDistributionListIdentifierToStorageIdentifierMap[dlistIdentifier] = identifier
+        }
+    }
+
     // MARK: - State
 
     private static var maxConsecutiveConflicts = 3
@@ -1595,6 +1827,17 @@ class StorageServiceOperation: OWSOperation {
             set { _groupV2MasterKeyToRecordWithUnknownFields = newValue }
         }
 
+        private var _storyDistributionListIdentifierToStorageIdentifierMap: [Data: StorageService.StorageIdentifier]?
+        var storyDistributionListIdentifierToStorageIdentifierMap: [Data: StorageService.StorageIdentifier] {
+            get { _storyDistributionListIdentifierToStorageIdentifierMap ?? [:] }
+            set { _storyDistributionListIdentifierToStorageIdentifierMap = newValue }
+        }
+        private var _storyDistributionListIdentifierToRecordWithUnknownFields: [Data: StorageServiceProtoStoryDistributionListRecord]?
+        var storyDistributionListIdentifierToRecordWithUnknownFields: [Data: StorageServiceProtoStoryDistributionListRecord] {
+            get { _storyDistributionListIdentifierToRecordWithUnknownFields ?? [:] }
+            set { _storyDistributionListIdentifierToRecordWithUnknownFields = newValue }
+        }
+
         var unknownIdentifiersTypeMap: [StorageServiceProtoManifestRecordKeyType: [StorageService.StorageIdentifier]] = [:]
         var unknownIdentifiers: [StorageService.StorageIdentifier] { unknownIdentifiersTypeMap.values.flatMap { $0 } }
 
@@ -1609,6 +1852,12 @@ class StorageServiceOperation: OWSOperation {
         var groupV1ChangeMap: [Data: ChangeState] = [:]
         var groupV2ChangeMap: [Data: ChangeState] = [:]
 
+        private var _storyDistributionListChangeMap: [Data: ChangeState]?
+        var storyDistributionListChangeMap: [Data: ChangeState] {
+            get { _storyDistributionListChangeMap ?? [:] }
+            set { _storyDistributionListChangeMap = newValue }
+        }
+
         var allIdentifiers: [StorageService.StorageIdentifier] {
             var allIdentifiers = [StorageService.StorageIdentifier]()
             if let localAccountIdentifier = localAccountIdentifier {
@@ -1618,6 +1867,7 @@ class StorageServiceOperation: OWSOperation {
             allIdentifiers += accountIdToIdentifierMap.values
             allIdentifiers += groupV1IdToIdentifierMap.values
             allIdentifiers += groupV2MasterKeyToIdentifierMap.values
+            allIdentifiers += storyDistributionListIdentifierToStorageIdentifierMap.values
 
             // We must persist any unknown identifiers, as they are potentially associated with
             // valid records that this version of the app doesn't yet understand how to parse.

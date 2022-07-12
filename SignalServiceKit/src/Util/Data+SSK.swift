@@ -57,3 +57,9 @@ public extension UUID {
         return withUnsafeBytes(of: self.uuid) { Data($0) }
     }
 }
+
+public extension UUID {
+    init(data: Data) {
+        self.init(uuid: data.withUnsafeBytes { $0.load(as: uuid_t.self) })
+    }
+}

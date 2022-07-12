@@ -6,6 +6,9 @@ import Foundation
 
 public extension TSPrivateStoryThread {
     @objc
+    var distributionListIdentifier: Data? { UUID(uuidString: uniqueId)?.data }
+
+    @objc
     class var myStoryUniqueId: String {
         // My Story always uses a UUID of all 0s
         "00000000-0000-0000-0000-000000000000"

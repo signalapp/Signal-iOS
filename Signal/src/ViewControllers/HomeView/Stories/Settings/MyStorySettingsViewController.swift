@@ -45,7 +45,12 @@ class MyStorySettingsViewController: OWSTableViewController2 {
                 showDisclosureIndicator: false
             ) { [weak self] in
                 Self.databaseStorage.write { transaction in
-                    myStoryThread.updateWithStoryViewMode(.blockList, addresses: [], transaction: transaction)
+                    myStoryThread.updateWithStoryViewMode(
+                        .blockList,
+                        addresses: [],
+                        updateStorageService: true,
+                        transaction: transaction
+                    )
                 }
                 self?.updateTableContents()
             })
@@ -133,7 +138,7 @@ class MyStorySettingsViewController: OWSTableViewController2 {
         let myStoryThread: TSPrivateStoryThread! = databaseStorage.read { TSPrivateStoryThread.getMyStory(transaction: $0) }
         guard myStoryThread.allowsReplies != toggle.isOn else { return }
         databaseStorage.write { transaction in
-            myStoryThread.updateWithAllowsReplies(toggle.isOn, transaction: transaction)
+            myStoryThread.updateWithAllowsReplies(toggle.isOn, updateStorageService: true, transaction: transaction)
         }
     }
 

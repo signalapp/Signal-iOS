@@ -962,3 +962,113 @@ extension PinnedThreadManager {
         return pinnedConversationProtos
     }
 }
+
+// MARK: - Story Distribution List Record
+
+extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
+
+    static func build(
+        for distributionListIdentifier: Data,
+        unknownFields: SwiftProtobuf.UnknownStorage? = nil,
+        transaction: SDSAnyReadTransaction
+    ) throws -> StorageServiceProtoStoryDistributionListRecord {
+        guard let story = TSPrivateStoryThread.anyFetchPrivateStoryThread(
+            uniqueId: UUID(data: distributionListIdentifier).uuidString,
+            transaction: transaction
+        ) else {
+            throw StorageService.StorageError.storyMissing
+        }
+
+        var builder = StorageServiceProtoStoryDistributionListRecord.builder()
+
+        builder.setIdentifier(distributionListIdentifier)
+        builder.setName(story.name)
+        builder.setRecipientUuids(story.addresses.compactMap { $0.uuidString })
+        builder.setAllowsReplies(story.allowsReplies)
+        builder.setIsBlockList(story.storyViewMode == .blockList)
+
+        // Unknown
+
+        if let unknownFields = unknownFields {
+            builder.setUnknownFields(unknownFields)
+        }
+
+        return try builder.build()
+    }
+
+    enum MergeState {
+        case resolved(Data)
+        case needsUpdate(Data)
+        case invalid
+    }
+
+    func mergeWithLocalDistributionList(transaction: SDSAnyWriteTransaction) -> MergeState {
+        guard let identifier = identifier else {
+            owsFailDebug("identifier unexpectedly missing for distribution list")
+            return .invalid
+        }
+
+        // Our general merge philosophy is that the latest value on the service
+        // is always right. There are some edge cases where this could cause
+        // user changes to get blown away, such as if you're changing values
+        // simultaneously on two devices or if you force quit the application,
+        // your battery dies, etc. before it has had a chance to sync.
+        //
+        // In general, to try and mitigate these issues, we try and very proactively
+        // push any changes up to the storage service as contact information
+        // should not be changing very frequently.
+        //
+        // Should this prove unreliable, we may need to start maintaining time stamps
+        // representing the remote and local last update time for every value we sync.
+        // For now, we'd like to avoid that as it adds its own set of problems.
+
+        let uniqueId = UUID(data: identifier).uuidString
+
+        var mergeState: MergeState = .resolved(identifier)
+
+        if let story = TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: uniqueId, transaction: transaction) {
+            // My Story has a hardcoded, localized name that we don't sync
+            if !story.isMyStory {
+                let localName = story.name
+                if let name = name, localName != name {
+                    story.updateWithName(name, updateStorageService: false, transaction: transaction)
+                } else if !hasName {
+                    mergeState = .needsUpdate(identifier)
+                }
+            }
+
+            let localAllowsReplies = story.allowsReplies
+            if allowsReplies != localAllowsReplies {
+                story.updateWithAllowsReplies(allowsReplies, updateStorageService: false, transaction: transaction)
+            }
+
+            let localStoryIsBlocklist = story.storyViewMode == .blockList
+            let localStoryAddressUuidStrings = story.addresses.compactMap { $0.uuidString }
+
+            if localStoryIsBlocklist != isBlockList || Set(recipientUuids) != Set(localStoryAddressUuidStrings) {
+                story.updateWithStoryViewMode(
+                    isBlockList ? .blockList : .explicit,
+                    addresses: recipientUuids.map { SignalServiceAddress(uuidString: $0) },
+                    updateStorageService: false,
+                    transaction: transaction
+                )
+            }
+        } else {
+            guard let name = name else {
+                owsFailDebug("new private story missing required name")
+                return .invalid
+            }
+
+            let newStory = TSPrivateStoryThread(
+                uniqueId: uniqueId,
+                name: name,
+                allowsReplies: allowsReplies,
+                addresses: recipientUuids.map { SignalServiceAddress(uuidString: $0) },
+                viewMode: isBlockList ? .blockList : .explicit
+            )
+            newStory.anyInsert(transaction: transaction)
+        }
+
+        return mergeState
+    }
+}

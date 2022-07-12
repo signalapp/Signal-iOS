@@ -10,11 +10,14 @@ public protocol StorageServiceManagerProtocol {
     func recordPendingDeletions(deletedAddresses: [SignalServiceAddress])
     func recordPendingDeletions(deletedGroupV1Ids: [Data])
     func recordPendingDeletions(deletedGroupV2MasterKeys: [Data])
+    func recordPendingDeletions(deletedStoryDistributionListIds: [Data])
 
     func recordPendingUpdates(updatedAccountIds: [AccountId])
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress])
     func recordPendingUpdates(updatedGroupV1Ids: [Data])
     func recordPendingUpdates(updatedGroupV2MasterKeys: [Data])
+    func recordPendingUpdates(updatedStoryDistributionListIds: [Data])
+
     // A convenience method that calls recordPendingUpdates(updatedGroupV1Ids:)
     // or recordPendingUpdates(updatedGroupV2MasterKeys:).
     func recordPendingUpdates(groupModel: TSGroupModel)
@@ -39,6 +42,7 @@ public struct StorageService: Dependencies {
         case itemDecryptionFailed(identifier: StorageIdentifier)
         case networkError(statusCode: Int, underlyingError: Error)
         case accountMissing
+        case storyMissing
 
         // MARK: 
 
@@ -56,6 +60,8 @@ public struct StorageService: Dependencies {
                 // If this is a server error, retry
                 return statusCode >= 500
             case .accountMissing:
+                return false
+            case .storyMissing:
                 return false
             }
         }
@@ -147,6 +153,15 @@ public struct StorageService: Dependencies {
             return record
         }
 
+        public var storyDistributionListRecord: StorageServiceProtoStoryDistributionListRecord? {
+            guard case .storyDistributionList = type else { return nil }
+            guard case .storyDistributionList(let record) = record.record else {
+                owsFailDebug("unexpectedly missing story distribution list record")
+                return nil
+            }
+            return record
+        }
+
         public init(identifier: StorageIdentifier, contact: StorageServiceProtoContactRecord) throws {
             var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.contact(contact))
@@ -168,6 +183,12 @@ public struct StorageService: Dependencies {
         public init(identifier: StorageIdentifier, account: StorageServiceProtoAccountRecord) throws {
             var storageRecord = StorageServiceProtoStorageRecord.builder()
             storageRecord.setRecord(.account(account))
+            self.init(identifier: identifier, record: try storageRecord.build())
+        }
+
+        public init(identifier: StorageIdentifier, storyDistributionList: StorageServiceProtoStoryDistributionListRecord) throws {
+            var storageRecord = StorageServiceProtoStorageRecord.builder()
+            storageRecord.setRecord(.storyDistributionList(storyDistributionList))
             self.init(identifier: identifier, record: try storageRecord.build())
         }
 
@@ -632,6 +653,8 @@ extension StorageServiceProtoManifestRecordKeyType: CustomStringConvertible {
             return ".groupv2"
         case .account:
             return ".account"
+        case .storyDistributionList:
+            return ".storyDistributionList"
         case .UNRECOGNIZED:
             return ".UNRECOGNIZED"
         }

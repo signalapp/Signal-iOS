@@ -692,6 +692,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
     case groupv1 // 2
     case groupv2 // 3
     case account // 4
+    case storyDistributionList // 5
     case UNRECOGNIZED(Int)
 
     public init() {
@@ -705,6 +706,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
             case 2: self = .groupv1
             case 3: self = .groupv2
             case 4: self = .account
+            case 5: self = .storyDistributionList
             default: self = .UNRECOGNIZED(rawValue)
         }
     }
@@ -716,6 +718,7 @@ public enum StorageServiceProtoManifestRecordKeyType: SwiftProtobuf.Enum {
             case .groupv1: return 2
             case .groupv2: return 3
             case .account: return 4
+            case .storyDistributionList: return 5
             case .UNRECOGNIZED(let i): return i
         }
     }
@@ -728,6 +731,7 @@ private func StorageServiceProtoManifestRecordKeyTypeWrap(_ value: StorageServic
     case .groupv1: return .groupv1
     case .groupv2: return .groupv2
     case .account: return .account
+    case .storyDistributionList: return .storyDistributionList
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
     }
 }
@@ -739,6 +743,7 @@ private func StorageServiceProtoManifestRecordKeyTypeUnwrap(_ value: StorageServ
     case .groupv1: return .groupv1
     case .groupv2: return .groupv2
     case .account: return .account
+    case .storyDistributionList: return .storyDistributionList
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
     }
 }
@@ -1031,6 +1036,7 @@ public enum StorageServiceProtoStorageRecordOneOfRecord {
     case groupV1(StorageServiceProtoGroupV1Record)
     case groupV2(StorageServiceProtoGroupV2Record)
     case account(StorageServiceProtoAccountRecord)
+    case storyDistributionList(StorageServiceProtoStoryDistributionListRecord)
 }
 
 private func StorageServiceProtoStorageRecordOneOfRecordWrap(_ value: StorageServiceProtos_StorageRecord.OneOf_Record) throws -> StorageServiceProtoStorageRecordOneOfRecord {
@@ -1039,6 +1045,7 @@ private func StorageServiceProtoStorageRecordOneOfRecordWrap(_ value: StorageSer
     case .groupV1(let value): return .groupV1(try StorageServiceProtoGroupV1Record(value))
     case .groupV2(let value): return .groupV2(try StorageServiceProtoGroupV2Record(value))
     case .account(let value): return .account(try StorageServiceProtoAccountRecord(value))
+    case .storyDistributionList(let value): return .storyDistributionList(try StorageServiceProtoStoryDistributionListRecord(value))
     }
 }
 
@@ -1048,6 +1055,7 @@ private func StorageServiceProtoStorageRecordOneOfRecordUnwrap(_ value: StorageS
     case .groupV1(let value): return .groupV1(value.proto)
     case .groupV2(let value): return .groupV2(value.proto)
     case .account(let value): return .account(value.proto)
+    case .storyDistributionList(let value): return .storyDistributionList(value.proto)
     }
 }
 
@@ -3023,6 +3031,207 @@ extension StorageServiceProtoAccountRecord {
 
 extension StorageServiceProtoAccountRecordBuilder {
     public func buildIgnoringErrors() -> StorageServiceProtoAccountRecord? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - StorageServiceProtoStoryDistributionListRecord
+
+public struct StorageServiceProtoStoryDistributionListRecord: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: StorageServiceProtos_StoryDistributionListRecord
+
+    public var identifier: Data? {
+        guard hasIdentifier else {
+            return nil
+        }
+        return proto.identifier
+    }
+    public var hasIdentifier: Bool {
+        return !proto.identifier.isEmpty
+    }
+
+    public var name: String? {
+        guard hasName else {
+            return nil
+        }
+        return proto.name
+    }
+    public var hasName: Bool {
+        return !proto.name.isEmpty
+    }
+
+    public var recipientUuids: [String] {
+        return proto.recipientUuids
+    }
+
+    public var deletedAtTimestamp: UInt64 {
+        return proto.deletedAtTimestamp
+    }
+    public var hasDeletedAtTimestamp: Bool {
+        return true
+    }
+
+    public var allowsReplies: Bool {
+        return proto.allowsReplies
+    }
+    public var hasAllowsReplies: Bool {
+        return true
+    }
+
+    public var isBlockList: Bool {
+        return proto.isBlockList
+    }
+    public var hasIsBlockList: Bool {
+        return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_StoryDistributionListRecord) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_StoryDistributionListRecord(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate init(_ proto: StorageServiceProtos_StoryDistributionListRecord) throws {
+        // MARK: - Begin Validation Logic for StorageServiceProtoStoryDistributionListRecord -
+
+        // MARK: - End Validation Logic for StorageServiceProtoStoryDistributionListRecord -
+
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension StorageServiceProtoStoryDistributionListRecord {
+    public static func builder() -> StorageServiceProtoStoryDistributionListRecordBuilder {
+        return StorageServiceProtoStoryDistributionListRecordBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoStoryDistributionListRecordBuilder {
+        var builder = StorageServiceProtoStoryDistributionListRecordBuilder()
+        if let _value = identifier {
+            builder.setIdentifier(_value)
+        }
+        if let _value = name {
+            builder.setName(_value)
+        }
+        builder.setRecipientUuids(recipientUuids)
+        if hasDeletedAtTimestamp {
+            builder.setDeletedAtTimestamp(deletedAtTimestamp)
+        }
+        if hasAllowsReplies {
+            builder.setAllowsReplies(allowsReplies)
+        }
+        if hasIsBlockList {
+            builder.setIsBlockList(isBlockList)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct StorageServiceProtoStoryDistributionListRecordBuilder {
+
+    private var proto = StorageServiceProtos_StoryDistributionListRecord()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setIdentifier(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.identifier = valueParam
+    }
+
+    public mutating func setIdentifier(_ valueParam: Data) {
+        proto.identifier = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setName(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.name = valueParam
+    }
+
+    public mutating func setName(_ valueParam: String) {
+        proto.name = valueParam
+    }
+
+    public mutating func addRecipientUuids(_ valueParam: String) {
+        proto.recipientUuids.append(valueParam)
+    }
+
+    public mutating func setRecipientUuids(_ wrappedItems: [String]) {
+        proto.recipientUuids = wrappedItems
+    }
+
+    public mutating func setDeletedAtTimestamp(_ valueParam: UInt64) {
+        proto.deletedAtTimestamp = valueParam
+    }
+
+    public mutating func setAllowsReplies(_ valueParam: Bool) {
+        proto.allowsReplies = valueParam
+    }
+
+    public mutating func setIsBlockList(_ valueParam: Bool) {
+        proto.isBlockList = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> StorageServiceProtoStoryDistributionListRecord {
+        return try StorageServiceProtoStoryDistributionListRecord(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try StorageServiceProtoStoryDistributionListRecord(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension StorageServiceProtoStoryDistributionListRecord {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoStoryDistributionListRecordBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoStoryDistributionListRecord? {
         return try! self.build()
     }
 }
