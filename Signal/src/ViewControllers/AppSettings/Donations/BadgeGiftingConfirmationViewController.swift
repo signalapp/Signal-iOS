@@ -24,6 +24,13 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         self.thread = thread
     }
 
+    private class func showRecipientIsBlockedError() {
+        OWSActionSheets.showActionSheet(title: NSLocalizedString("BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE",
+                                                                 comment: "Title for error message dialog indicating that the person you're trying to send to has been blocked."),
+                                        message: NSLocalizedString("BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY",
+                                                                   comment: "Error message indicating that the person you're trying to send has been blocked."))
+    }
+
     // MARK: - Callbacks
 
     public override func viewDidLoad() {
@@ -45,6 +52,14 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     public override func themeDidChange() {
         super.themeDidChange()
         setUpBottomFooter()
+    }
+
+    private func isRecipientBlocked(transaction: SDSAnyReadTransaction) -> Bool {
+        self.blockingManager.isAddressBlocked(self.thread.contactAddress, transaction: transaction)
+    }
+
+    private func isRecipientBlockedWithSneakyTransaction() -> Bool {
+        databaseStorage.read { self.isRecipientBlocked(transaction: $0) }
     }
 
     /// Queries the database to see if the recipient can receive gift badges.
@@ -96,7 +111,12 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     }
 
     @objc
-    private func checkRecipientCapabilityAndRequestApplePay() {
+    private func checkRecipientAndRequestApplePay() {
+        guard !isRecipientBlockedWithSneakyTransaction() else {
+            Self.showRecipientIsBlockedError()
+            return
+        }
+
         firstly(on: .main) { [weak self] () -> Promise<Bool> in
             guard let self = self else { return Promise.value(false) }
             return self.canReceiveGiftBadgesWithUi()
@@ -319,7 +339,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         }()
 
         let applePayButton = ApplePayButton { [weak self] in
-            self?.checkRecipientCapabilityAndRequestApplePay()
+            self?.checkRecipientAndRequestApplePay()
         }
 
         for view in [amountView, applePayButton] {
@@ -391,6 +411,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
     }
 
     enum SendGiftBadgeError: Error {
+        case recipientIsBlocked
         case failedAndUserNotCharged
         case failedAndUserMaybeCharged
         case userClosedBeforeChargeCompleted
@@ -521,7 +542,13 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                 }
             }
 
-            self.databaseStorage.write { transaction in
+            try self.databaseStorage.write { transaction in
+                // We should already have checked this earlier, but it's possible that the state has changed on another device.
+                // We'll also check this inside the job before running it.
+                guard !self.isRecipientBlocked(transaction: transaction) else {
+                    throw SendGiftBadgeError.recipientIsBlocked
+                }
+
                 // If we've gotten this far, we want to snooze the megaphone.
                 ExperienceUpgradeManager.snoozeExperienceUpgrade(.subscriptionMegaphone,
                                                                  transaction: transaction.unwrapGrdbWrite)
@@ -540,15 +567,14 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
 
             return promise.done(on: .main) {
                 owsAssertDebug(hasCharged, "Expected \"charge succeeded\" event")
-                // We shouldn't need to dismiss the Apple Pay sheet here, but if the `chargeSucceeded` event was missed, we do our best.
-                wrappedCompletion(.init(status: .success, errors: nil))
                 finish()
             }.recover(on: .main) { error in
-                wrappedCompletion(.init(status: .failure, errors: [error]))
                 finish()
                 throw error
             }
         }.done { [weak self] in
+            // We shouldn't need to dismiss the Apple Pay sheet here, but if the `chargeSucceeded` event was missed, we do our best.
+            wrappedCompletion(.init(status: .success, errors: nil))
             guard let self = self else { return }
             SignalApp.shared().presentConversation(for: self.thread, action: .none, animated: false)
             self.dismiss(animated: true)
@@ -557,9 +583,13 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                 owsFail("\(error)")
             }
 
+            wrappedCompletion(.init(status: .failure, errors: [error]))
+
             switch error {
             case .userClosedBeforeChargeCompleted:
                 break
+            case .recipientIsBlocked:
+                Self.showRecipientIsBlockedError()
             case .failedAndUserNotCharged:
                 OWSActionSheets.showActionSheet(title: NSLocalizedString("BADGE_GIFTING_PAYMENT_FAILED_TITLE",
                                                                          comment: "Title for the action sheet when you try to send a gift badge but the payment failed"),
