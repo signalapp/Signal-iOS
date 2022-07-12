@@ -3550,12 +3550,12 @@
 				763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */,
 				34A9559C271B510500B05242 /* AttachmentApprovalViewController.swift */,
 				34A95598271B510500B05242 /* AttachmentItemCollection.swift */,
+				766035AA286FEC2F00F6B71C /* AttachmentPrepContentView.swift */,
 				34A95599271B510500B05242 /* AttachmentPrepViewController.swift */,
 				34A9559E271B510500B05242 /* AttachmentTextToolbar.swift */,
 				34A95597271B510500B05242 /* AttachmentTextView.swift */,
 				7628DDC0280750BC009AA53D /* ExpandableContactListView.swift */,
 				766035A8286CE4CB00F6B71C /* MediaTopBar.swift */,
-				766035AA286FEC2F00F6B71C /* AttachmentPrepContentView.swift */,
 			);
 			path = AttachmentApproval;
 			sourceTree = "<group>";

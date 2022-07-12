@@ -6,6 +6,7 @@ import UIKit
 
 class AttachmentPrepContentView: UIView {
 
+    // See comments in AttachmentApprovalViewController.updateContentLayoutMargins(for:).
     let contentLayoutGuide = UILayoutGuide()
     private lazy var contentLayoutGuideLeading = contentLayoutGuide.leadingAnchor.constraint(equalTo: leadingAnchor, constant: contentLayoutMargins.leading)
     private lazy var contentLayoutGuideTop = contentLayoutGuide.topAnchor.constraint(equalTo: topAnchor, constant: contentLayoutMargins.top)

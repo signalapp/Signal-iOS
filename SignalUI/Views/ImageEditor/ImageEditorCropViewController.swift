@@ -32,6 +32,8 @@ class ImageEditorCropViewController: OWSViewController {
 
     let clipView = OWSLayerView()
 
+    let contentAlignmentLayoutGuide = UILayoutGuide()
+
     let croppedContentView = OWSLayerView()
     let uncroppedContentView = UIView()
 
@@ -108,10 +110,7 @@ class ImageEditorCropViewController: OWSViewController {
         wrapperView.addSubview(uncroppedContentView)
         uncroppedContentView.autoPin(toEdgesOf: croppedContentView)
         wrapperView.setContentHuggingLow()
-
         view.addSubview(wrapperView)
-        wrapperView.autoPinTopToSuperviewMargin()
-        wrapperView.autoPinWidthToSuperviewMargins()
 
         // MARK: - Crop View
 
@@ -136,9 +135,37 @@ class ImageEditorCropViewController: OWSViewController {
 
         footerView.preservesSuperviewLayoutMargins = true
         view.addSubview(footerView)
-        footerView.autoPinEdge(.top, to: .bottom, of: wrapperView)
         footerView.autoPinWidthToSuperview()
         footerView.autoPinEdge(toSuperviewEdge: .bottom)
+
+        // MARK: - Content Layout Guide
+        // The purpose of this layout logic is to make animation of transition to/from crop view seamless.
+        // Seamlessness is achieved when image center stays the same in both "review" and "crop" screens.
+        // This is why `contentAlignmentLayoutGuide` is constructed to copy `AttachmentPrepContentView.contentLayoutGuide`,
+        // which defines image size and position in "review" screen.
+        //
+        // Top of the `contentAlignmentLayoutGuide` is constrained using logic
+        // from `AttachmentApprovalViewController.updateContentLayoutMargins(for:)`.
+        //
+        // Bottom of the `contentAlignmentLayoutGuide` is constrained to the top of the `bottomBar`,
+        // not `footerView` (which includes rotation control). This works because bottom content layout margin
+        // in `AttachmentPrepContentView` is calculated as the height of ImageEditorBottomBar (same as `bottomBar` in this VC).
+        view.addLayoutGuide(contentAlignmentLayoutGuide)
+        if UIDevice.current.hasIPhoneXNotch {
+            view.addConstraint(contentAlignmentLayoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor))
+        } else {
+            view.addConstraint(contentAlignmentLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor))
+        }
+        view.addConstraint(contentAlignmentLayoutGuide.bottomAnchor.constraint(equalTo: bottomBar.topAnchor))
+        view.addConstraints([
+            contentAlignmentLayoutGuide.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            contentAlignmentLayoutGuide.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor) ])
+
+        wrapperView.autoPinEdge(.bottom, to: .top, of: footerView, withOffset: 0, relation: .lessThanOrEqual)
+        view.addConstraints([
+            wrapperView.leadingAnchor.constraint(equalTo: contentAlignmentLayoutGuide.leadingAnchor),
+            wrapperView.trailingAnchor.constraint(equalTo: contentAlignmentLayoutGuide.trailingAnchor),
+            wrapperView.centerYAnchor.constraint(equalTo: contentAlignmentLayoutGuide.centerYAnchor) ])
 
         // MARK: - Reset Button
         view.addSubview(resetButton)

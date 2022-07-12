@@ -269,11 +269,25 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     private func updateContentLayoutMargins(for viewController: AttachmentPrepViewController) {
+        // The goal of all this layout logic is to lay out content in Review screen
+        // the same way it will be laid out in Edit mode (drawing etc) so that activating editing tools
+        // does not create any changes to media's size and position.
+        // However AttachmentPrepViewController's view is always full screen and is managed by UIPageViewController,
+        // which makes it not possible to constrain any of its subviews to the bottom toolbar.
+        // The solution is to allow to set layout margins in AttachmentPrepViewController's view externally,
+        // which is achieved through use of AttachmentPrepContentView.contentLayoutMargins.
+
         var contentLayoutMargins: UIEdgeInsets = .zero
+        // On devices with a screen notch at the top content is constrained to safe area inset so that status bar is visible.
+        // On all other devices content is pinned to the top of the screen (status bar is hidden on those devices).
         if UIDevice.current.hasIPhoneXNotch {
             contentLayoutMargins.top = view.safeAreaInsets.top
         }
 
+        // Generally it is necessary to constrain bottom of the content in the current page to the top
+        // of bottom toolbar in review screen. However, for images we have "edit" mode and we want
+        // the bottom margin to not change when switching to/from "edit" mode, with edit mode toolbar's height
+        // being the one to be used in the review screen.
         if let mediaEditingToolbarHeight = viewController.mediaEditingToolbarHeight {
             contentLayoutMargins.bottom = mediaEditingToolbarHeight
         } else {
