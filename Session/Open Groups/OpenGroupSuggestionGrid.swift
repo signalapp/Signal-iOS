@@ -245,7 +245,7 @@ extension OpenGroupSuggestionGrid {
             label.text = room.name
             
             // Only continue if we have a room image
-            guard let imageId: Int64 = room.imageId else {
+            guard let imageId: String = room.imageId else {
                 imageView.isHidden = true
                 return
             }

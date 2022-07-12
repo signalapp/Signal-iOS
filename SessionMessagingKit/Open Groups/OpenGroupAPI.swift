@@ -700,7 +700,7 @@ public enum OpenGroupAPI {
     
     public static func downloadFile(
         _ db: Database,
-        fileId: Int64,
+        fileId: String,
         from roomToken: String,
         on server: String,
         using dependencies: SMKDependencies = SMKDependencies()

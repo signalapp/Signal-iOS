@@ -339,11 +339,17 @@ public final class MessageSender {
                 .joined(separator: ".")
         }
         
+        // Note: It's possible to send a message and then delete the open group you sent the message to
+        // which would go into this case, so rather than handling it as an invalid state we just want to
+        // error in a non-retryable way
         guard
             let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: threadId),
             let userEdKeyPair: Box.KeyPair = Identity.fetchUserEd25519KeyPair(db),
             case .openGroup(let roomToken, let server, let whisperTo, let whisperMods, let fileIds) = destination
-        else { preconditionFailure() }
+        else {
+            seal.reject(MessageSenderError.invalidMessage)
+            return promise
+        }
         
         message.sender = {
             let capabilities: [Capability.Variant] = (try? Capability

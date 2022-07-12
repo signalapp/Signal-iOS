@@ -411,7 +411,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
                             
                             guard targetIndex > halfPageSize else { return 0 }
                             guard targetIndex < (totalCount - halfPageSize) else {
-                                return (totalCount - currentPageInfo.pageSize)
+                                return max(0, (totalCount - currentPageInfo.pageSize))
                             }
 
                             return (targetIndex - halfPageSize)

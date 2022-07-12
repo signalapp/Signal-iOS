@@ -145,15 +145,15 @@ public struct ProfileManager {
             // Download already in flight; ignore
             return
         }
-        guard
-            let profileUrlStringAtStart: String = profile.profilePictureUrl,
-            let profileUrlAtStart: URL = URL(string: profileUrlStringAtStart)
-        else {
+        guard let profileUrlStringAtStart: String = profile.profilePictureUrl else {
             SNLog("Skipping downloading avatar for \(profile.id) because url is not set")
             return
         }
         guard
-            let fileId: Int64 = Int64(profileUrlAtStart.lastPathComponent),
+            let fileId: String = profileUrlStringAtStart
+                .split(separator: "/")
+                .last
+                .map({ String($0) }),
             let profileKeyAtStart: OWSAES256Key = profile.profileEncryptionKey,
             profileKeyAtStart.keyData.count > 0
         else {

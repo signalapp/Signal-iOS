@@ -87,8 +87,10 @@ public enum AttachmentDownloadJob: JobExecutor {
         let downloadPromise: Promise<Data> = {
             guard
                 let downloadUrl: String = attachment.downloadUrl,
-                let fileAsString: String = downloadUrl.split(separator: "/").last.map({ String($0) }),
-                let file: Int64 = Int64(fileAsString)
+                let fileId: String = downloadUrl
+                    .split(separator: "/")
+                    .last
+                    .map({ String($0) })
             else {
                 return Promise(error: AttachmentDownloadError.invalidUrl)
             }
@@ -98,13 +100,13 @@ public enum AttachmentDownloadJob: JobExecutor {
                     return nil  // Not an open group so just use standard FileServer upload
                 }
                 
-                return OpenGroupAPI.downloadFile(db, fileId: file, from: openGroup.roomToken, on: openGroup.server)
+                return OpenGroupAPI.downloadFile(db, fileId: fileId, from: openGroup.roomToken, on: openGroup.server)
                     .map { _, data in data }
             })
             
             return (
                 maybeOpenGroupDownloadPromise ??
-                FileServerAPI.download(file, useOldServer: downloadUrl.contains(FileServerAPI.oldServer))
+                FileServerAPI.download(fileId, useOldServer: downloadUrl.contains(FileServerAPI.oldServer))
             )
         }()
         

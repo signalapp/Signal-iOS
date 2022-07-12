@@ -1461,10 +1461,15 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             var lastSize: CGSize = .zero
             
             self.tableView.afterNextLayoutSubviews(
-                when: { [weak self] a, b, updatedContentSize in
-                    guard (CACurrentMediaTime() - initialUpdateTime) < 2 && lastSize != updatedContentSize else {
-                        return true
-                    }
+                when: { [weak self] numSections, numRowInSections, updatedContentSize in
+                    // If too much time has passed or the section/row count doesn't match then
+                    // just stop the callback
+                    guard
+                        (CACurrentMediaTime() - initialUpdateTime) < 2 &&
+                        lastSize != updatedContentSize &&
+                        numSections > targetIndexPath.section &&
+                        numRowInSections[targetIndexPath.section] > targetIndexPath.row
+                    else { return true }
                     
                     lastSize = updatedContentSize
                     

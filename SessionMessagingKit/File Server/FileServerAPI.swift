@@ -41,11 +41,11 @@ public final class FileServerAPI: NSObject {
             .decoded(as: FileUploadResponse.self, on: .global(qos: .userInitiated))
     }
     
-    public static func download(_ file: Int64, useOldServer: Bool) -> Promise<Data> {
+    public static func download(_ fileId: String, useOldServer: Bool) -> Promise<Data> {
         let serverPublicKey: String = (useOldServer ? oldServerPublicKey : serverPublicKey)
         let request = Request<NoBody, Endpoint>(
             server: (useOldServer ? oldServer : server),
-            endpoint: .fileIndividual(fileId: file)
+            endpoint: .fileIndividual(fileId: fileId)
         )
         
         return send(request, serverPublicKey: serverPublicKey)

@@ -650,8 +650,11 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                     }
                     
                     if let bodyAsString = json["body"] as? String {
-                        guard let bodyAsData = bodyAsString.data(using: .utf8), let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else {
-                            return seal.reject(HTTP.Error.invalidJSON)
+                        guard let bodyAsData = bodyAsString.data(using: .utf8) else {
+                            return seal.reject(HTTP.Error.invalidResponse)
+                        }
+                        guard let body = try? JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else {
+                            return seal.reject(OnionRequestAPIError.httpRequestFailedAtDestination(statusCode: UInt(statusCode), data: bodyAsData, destination: destination))
                         }
                         
                         if let timestamp = body["t"] as? Int64 {
