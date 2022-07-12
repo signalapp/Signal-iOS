@@ -264,6 +264,7 @@ public class MediaGalleryViewModel {
                         \(interaction[.threadId]) = \(threadId)
                     """)
                 case .document:
+                    // FIXME: Remove "\(attachment[.sourceFilename]) <> 'session-audio-message'" when all platforms send the voice message properly
                     return SQL("""
                         \(attachment[.isVisualMedia]) = false AND
                         \(attachment[.isValid]) = true AND
