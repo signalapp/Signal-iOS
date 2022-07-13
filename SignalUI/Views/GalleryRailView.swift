@@ -115,6 +115,11 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         cellViews.compactMap { $0.item }
     }
 
+    /**
+     * If enabled, `GalleryRailView` will hide itself if there is less than two items.
+     */
+    var hidesAutomatically = true
+
     // MARK: Initializers
 
     override init(frame: CGRect) {
@@ -149,24 +154,11 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         UIView.animate(withDuration: animationDuration, animations: animations, completion: completion)
     }
 
-    public func configureCellViews(itemProvider: GalleryRailItemProvider?,
-                                   focusedItem: GalleryRailItem?,
+    public func configureCellViews(itemProvider: GalleryRailItemProvider,
+                                   focusedItem: GalleryRailItem,
                                    cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView,
                                    animated: Bool = true) {
         let animationDuration: TimeInterval = 0.2
-
-        guard let itemProvider = itemProvider else {
-            animate(animationDuration: animationDuration,
-                    animated: animated,
-                    animations: {
-                        self.alpha = 0
-                self.isHidden = true
-            }, completion: { _ in
-                self.alpha = 1
-            })
-            self.cellViews = []
-            return
-        }
 
         let areRailItemsIdentical = { (lhs: [GalleryRailItem], rhs: [GalleryRailItem]) -> Bool in
             guard lhs.count == rhs.count else {
@@ -185,32 +177,38 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
                     animated: animated,
                     animations: {
                 self.updateFocusedItem(focusedItem)
-                self.layoutIfNeeded()
             })
+            return
         }
 
         self.itemProvider = itemProvider
 
-        guard itemProvider.railItems.count > 1 else {
+        guard itemProvider.railItems.count > 1 || !hidesAutomatically else {
             let cellViews = scrollView.subviews
 
             animate(animationDuration: animationDuration, animated: animated,
-                           animations: {
-                            cellViews.forEach { $0.isHidden = true }
-                            self.isHidden = true
+                    animations: {
+                cellViews.forEach { $0.isHidden = true }
+                self.alpha = 0
             },
-                           completion: { _ in cellViews.forEach { $0.removeFromSuperview() } })
+                    completion: { _ in
+                cellViews.forEach { $0.removeFromSuperview() }
+                self.isHidden = true
+                self.alpha = 1
+            })
             self.cellViews = []
             return
         }
 
         scrollView.subviews.forEach { $0.removeFromSuperview() }
 
-        animate(animationDuration: animationDuration,
-                animated: true,
-                animations: {
-            self.isHidden = false
-        })
+        if hidesAutomatically {
+            animate(animationDuration: animationDuration,
+                    animated: true,
+                    animations: {
+                self.isHidden = false
+            })
+        }
 
         let cellViews = buildCellViews(items: itemProvider.railItems, cellViewBuilder: cellViewBuilder)
         self.cellViews = cellViews
@@ -260,7 +258,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         case keepCentered, keepWithinBounds
     }
     var scrollFocusMode: ScrollFocusMode = .keepCentered
-    func updateFocusedItem(_ focusedItem: GalleryRailItem?) {
+    func updateFocusedItem(_ focusedItem: GalleryRailItem) {
         var selectedCellView: GalleryRailCellView?
         cellViews.forEach { cellView in
             if let item = cellView.item, item.isEqualToGalleryRailItem(focusedItem) {

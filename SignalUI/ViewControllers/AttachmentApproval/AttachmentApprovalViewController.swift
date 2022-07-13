@@ -80,11 +80,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     var isViewOnceEnabled = false
 
-    lazy var outputQualityLevel: ImageQualityLevel = databaseStorage.read { .default(transaction: $0) } {
-        didSet {
-            updateContents()
-        }
-    }
+    lazy var outputQualityLevel: ImageQualityLevel = databaseStorage.read { .default(transaction: $0) }
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
     public weak var approvalDataSource: AttachmentApprovalViewControllerDataSource?
@@ -123,7 +119,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         NotificationCenter.default.addObserver(forName: .OWSApplicationDidBecomeActive, object: nil, queue: .main) { [weak self] _ in
             guard let self = self else { return }
-            self.updateContents()
+            self.updateContents(animated: false)
         }
     }
 
@@ -246,7 +242,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         topBar.update(withRecipientNames: approvalDataSource?.attachmentApprovalRecipientNames ?? [])
 
-        updateContents()
+        updateContents(animated: false)
 
         if let currentPageViewController = currentPageViewController {
             self.updateContentLayoutMargins(for: currentPageViewController)
@@ -308,9 +304,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         viewController.contentView.contentLayoutMargins = contentLayoutMargins
     }
 
-    private func updateContents() {
-        updateBottomToolView()
-        updateMediaRail()
+    private func updateContents(animated: Bool) {
+        updateBottomToolView(animated: animated)
+        updateMediaRail(animated: animated)
     }
 
     // MARK: - Input Accessory
@@ -344,20 +340,22 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
     }
 
-    private func updateBottomToolView() {
+    private func updateBottomToolView(animated: Bool) {
         guard let currentPageViewController = currentPageViewController else { return }
-
-        bottomToolView.isMediaQualityHighEnabled = outputQualityLevel == .high
 
         let doneButtonAssetResourceName = options.contains(.isNotFinalScreen) ? "arrow-right-24" : "send-solid-24"
         let configuration =
         AttachmentApprovalToolbar.Configuration(isAddMoreVisible: isAddMoreVisible,
                                                 isMediaStripVisible: attachmentApprovalItems.count > 1,
+                                                isMediaHighQualityEnabled: outputQualityLevel == .high,
+                                                isViewOnceOn: isViewOnceEnabled,
                                                 canToggleViewOnce: options.contains(.canToggleViewOnce),
                                                 canChangeMediaQuality: options.contains(.canChangeQualityLevel),
                                                 canSaveMedia: currentPageViewController.canSaveMedia,
                                                 doneButtonAssetResourceName: doneButtonAssetResourceName)
-        bottomToolView.update(currentAttachmentItem: currentPageViewController.attachmentApprovalItem, configuration: configuration)
+        bottomToolView.update(currentAttachmentItem: currentPageViewController.attachmentApprovalItem,
+                              configuration: configuration,
+                              animated: animated)
     }
 
     public var messageBody: MessageBody? {
@@ -397,19 +395,25 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return
         }
 
-        // TODO: Special case animations when number of items after deletion is 1.
-        UIView.animate(withDuration: 0.2,
-                       animations: {
-                        // shrink stack view item until it disappears
-                        cell.isHidden = true
+        attachmentApprovalItemCollection.remove(item: attachmentApprovalItem)
+        approvalDelegate?.attachmentApproval(self, didRemoveAttachment: attachmentApprovalItem.attachment)
 
-                        // simultaneously fade out
-                        cell.alpha = 0
+        // Special logic if there is just one item after deletion.
+        // Fade out the entire rail view because it won't be visible after animations complete.
+        guard attachmentApprovalItems.count > 1 else {
+            updateContents(animated: true)
+            return
+        }
+
+        // If rail view is still be visible after deletion it looks better
+        // if cell for deleted item is faded out.
+        UIView.animate(withDuration: 0.15,
+                       animations: {
+            cell.isHidden = true
+            cell.alpha = 0
         },
                        completion: { _ in
-                        self.attachmentApprovalItemCollection.remove(item: attachmentApprovalItem)
-                        self.approvalDelegate?.attachmentApproval(self, didRemoveAttachment: attachmentApprovalItem.attachment)
-                        self.updateContents()
+            self.updateContents(animated: true)
         })
     }
 
@@ -441,13 +445,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             // use compact scale when keyboard is popped.
             let scale: AttachmentPrepViewController.AttachmentViewScale = self.bottomToolView.isEditingMediaMessage ? .compact : .fullsize
             pendingPage.setAttachmentViewScale(scale, animated: false)
-
-            UIView.animate(withDuration: 0.3, animations: {
-                self.bottomToolView.set(supplementaryView: pendingPage.toolbarSupplementaryView)
-                self.bottomToolView.setNeedsLayout()
-                self.bottomToolView.layoutIfNeeded()
-                self.updateContentLayoutMargins(for: pendingPage)
-            })
         }
     }
 
@@ -469,15 +466,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
         }
 
-        // Restore previous state of the toolbar if transition was canceled.
-        if !transitionCompleted {
-            UIView.animate(withDuration: 0.3, animations: {
-                self.bottomToolView.set(supplementaryView: self.currentPageViewController?.toolbarSupplementaryView)
-                self.bottomToolView.setNeedsLayout()
-                self.bottomToolView.layoutIfNeeded()
-            })
+        updateContents(animated: true)
+        if let currentPageViewController = currentPageViewController {
+            updateSupplementaryToolbarView(using: currentPageViewController, animated: true)
         }
-        updateContents()
     }
 
     // MARK: - UIPageViewControllerDataSource
@@ -549,7 +541,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     private func setCurrentItem(_ item: AttachmentApprovalItem,
                                 direction: UIPageViewController.NavigationDirection,
-                                animated isAnimated: Bool) {
+                                animated: Bool) {
 
         guard let page = buildPage(item: item) else {
             owsFailDebug("unexpectedly unable to build new page")
@@ -563,16 +555,28 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         updateContentLayoutMargins(for: page)
 
         Logger.debug("currentItem for attachment: \(item.attachment.debugDescription)")
-        setViewControllers([page], direction: direction, animated: isAnimated) {  [weak self] _ in
-            guard let self = self else { return }
-            self.bottomToolView.set(supplementaryView: page.toolbarSupplementaryView)
-            self.updateContents()
-            self.updateContentLayoutMargins(for: page)
+        setViewControllers([page], direction: direction, animated: animated)
+
+        // This does make animations smoother.
+        DispatchQueue.main.async {
+            self.updateContents(animated: animated)
+            self.updateSupplementaryToolbarView(using: page, animated: animated)
         }
-        updateMediaRail()
     }
 
-    func updateMediaRail(animated: Bool = false, isTypingMention: Bool = false) {
+    private func updateSupplementaryToolbarView(using viewController: AttachmentPrepViewController, animated: Bool) {
+        if animated {
+            UIView.animate(withDuration: 0.25) {
+                self.bottomToolView.set(supplementaryView: viewController.toolbarSupplementaryView)
+                self.bottomToolView.setNeedsLayout()
+                self.bottomToolView.layoutIfNeeded()
+            }
+        } else {
+            bottomToolView.set(supplementaryView: viewController.toolbarSupplementaryView)
+        }
+    }
+
+    func updateMediaRail(animated: Bool = false) {
         guard isViewLoaded else { return }
 
         guard let currentItem = self.currentItem else {
@@ -594,7 +598,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
         }
 
-        galleryRailView.configureCellViews(itemProvider: isTypingMention ? nil : attachmentApprovalItemCollection,
+        galleryRailView.configureCellViews(itemProvider: attachmentApprovalItemCollection,
                                            focusedItem: currentItem,
                                            cellViewBuilder: cellViewBuilder,
                                            animated: animated)
@@ -823,8 +827,7 @@ extension AttachmentApprovalViewController {
         isViewOnceEnabled = !isViewOnceEnabled
         preferences.setWasViewOnceTooltipShown()
 
-        bottomToolView.isViewOnceOn = isViewOnceEnabled
-        updateBottomToolView()
+        updateBottomToolView(animated: true)
     }
 
     @objc
@@ -947,6 +950,7 @@ extension AttachmentApprovalViewController {
                 isSelected: outputQualityLevel == .standard,
                 action: { [weak self] in
                     self?.outputQualityLevel = .standard
+                    self?.updateBottomToolView(animated: false)
                     actionSheet.dismiss(animated: true)
                 }
             ),
@@ -959,6 +963,7 @@ extension AttachmentApprovalViewController {
                 isSelected: outputQualityLevel == .high,
                 action: { [weak self] in
                     self?.outputQualityLevel = .high
+                    self?.updateBottomToolView(animated: false)
                     actionSheet.dismiss(animated: true)
                 }
             )
@@ -1027,17 +1032,9 @@ extension AttachmentApprovalViewController {
 
 extension AttachmentApprovalViewController: MentionTextViewDelegate {
 
-    public func textViewDidBeginTypingMention(_ textView: MentionTextView) {
-        guard !textViewMentionPickerPossibleAddresses(textView).isEmpty else { return }
+    public func textViewDidBeginTypingMention(_ textView: MentionTextView) { }
 
-        updateMediaRail(animated: true, isTypingMention: true)
-    }
-
-    public func textViewDidEndTypingMention(_ textView: MentionTextView) {
-        guard !textViewMentionPickerPossibleAddresses(textView).isEmpty else { return }
-
-        updateMediaRail(animated: true, isTypingMention: false)
-    }
+    public func textViewDidEndTypingMention(_ textView: MentionTextView) { }
 
     public func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
         return view

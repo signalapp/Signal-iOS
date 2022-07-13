@@ -11,32 +11,12 @@ class AttachmentApprovalToolbar: UIView {
     struct Configuration: Equatable {
         var isAddMoreVisible = true
         var isMediaStripVisible = false
+        var isMediaHighQualityEnabled = false
+        var isViewOnceOn = false
         var canToggleViewOnce = true
         var canChangeMediaQuality = true
         var canSaveMedia = false
         var doneButtonAssetResourceName = "send-solid-24"
-
-        static func == (lhs: Self, rhs: Self) -> Bool {
-            if lhs.isAddMoreVisible != rhs.isAddMoreVisible {
-                return false
-            }
-            if lhs.isMediaStripVisible != rhs.isMediaStripVisible {
-                return false
-            }
-            if lhs.canToggleViewOnce != rhs.canToggleViewOnce {
-                return false
-            }
-            if lhs.canChangeMediaQuality != rhs.canChangeMediaQuality {
-                return false
-            }
-            if lhs.canSaveMedia != rhs.canSaveMedia {
-                return false
-            }
-            if lhs.doneButtonAssetResourceName != rhs.doneButtonAssetResourceName {
-                return false
-            }
-            return true
-        }
     }
 
     var configuration: Configuration
@@ -88,33 +68,18 @@ class AttachmentApprovalToolbar: UIView {
         return attachmentTextToolbar.isEditingText
     }
 
-    var isViewOnceOn: Bool = false {
-        didSet {
-            updateContents()
-        }
-    }
-
-    var isMediaQualityHighEnabled: Bool {
-        get {
-            mediaToolbar.isMediaQualityHighEnabled
-        }
-        set {
-            mediaToolbar.isMediaQualityHighEnabled = newValue
-        }
-    }
-
     private var currentAttachmentItem: AttachmentApprovalItem?
 
     override init(frame: CGRect) {
         configuration = Configuration()
 
         attachmentTextToolbar = AttachmentTextToolbar()
-        attachmentTextToolbar.isViewOnceEnabled = isViewOnceOn
+        attachmentTextToolbar.setIsViewOnce(enabled: configuration.isViewOnceOn, animated: false)
 
         galleryRailView = GalleryRailView()
+        galleryRailView.hidesAutomatically = false
         galleryRailView.scrollFocusMode = .keepWithinBounds
         galleryRailView.autoSetDimension(.height, toSize: 60)
-        galleryRailView.alpha = 0 // match default value of `isMediaStripVisible`
 
         super.init(frame: frame)
 
@@ -127,9 +92,9 @@ class AttachmentApprovalToolbar: UIView {
     }
 
     private func createContents() {
-        self.backgroundColor = .clear
-        self.layoutMargins.bottom = 0
-        self.preservesSuperviewLayoutMargins = true
+        backgroundColor = .clear
+        layoutMargins.bottom = 0
+        preservesSuperviewLayoutMargins = true
 
         attachmentTextToolbar.delegate = self
 
@@ -147,8 +112,6 @@ class AttachmentApprovalToolbar: UIView {
         backgroundView.autoPinWidthToSuperview()
         backgroundView.autoPinEdge(.top, to: .bottom, of: galleryRailView)
         backgroundView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -30)
-
-        mediaToolbar.isMediaQualityHighEnabled = isMediaQualityHighEnabled
 
         addSubview(containerStackView)
         containerStackView.autoPinEdge(.top, to: .bottom, of: galleryRailView)
@@ -182,49 +145,62 @@ class AttachmentApprovalToolbar: UIView {
 
     // MARK: 
 
-    private func updateContents() {
-        galleryRailView.alpha = configuration.isMediaStripVisible && !isEditingMediaMessage ? 1 : 0
+    private func updateContents(animated: Bool) {
+        // Show/hide Gallery Rail.
+        let isGalleryRailViewVisible = configuration.isMediaStripVisible && !isEditingMediaMessage
+        galleryRailView.setIsHidden(!isGalleryRailViewVisible, animated: animated)
 
-        singleMediaActionButtonsContainer.isHidden = configuration.isMediaStripVisible || isEditingMediaMessage
+        // Show/hide [+] Add Media button and "View Once" toggle.
+        let isSingleMediaActionsVisible = !configuration.isMediaStripVisible && !isEditingMediaMessage
+        singleMediaActionButtonsContainer.setIsHidden(!isSingleMediaActionsVisible, animated: animated)
 
-        buttonAddMedia.isHidden = !configuration.isAddMoreVisible
+        // [+] Add Media might also be hidden independently of Media Rail and View Once.
+        buttonAddMedia.setIsHidden(!configuration.isAddMoreVisible, animated: animated)
+
+        // Update image and visibility of the "View Once" button.
+        let viewOnceButtonImage = UIImage(imageLiteralResourceName: configuration.isViewOnceOn ? "media-editor-view-once" : "media-editor-view-infinite")
+        buttonViewOnce.setImage(viewOnceButtonImage, animated: animated)
+        buttonViewOnce.setIsHidden(!configuration.canToggleViewOnce, animated: animated)
 
         supplementaryViewContainer?.isHiddenInStackView = isEditingMediaMessage
 
-        let viewOnceImageName = isViewOnceOn ? "media-editor-view-once" : "media-editor-view-infinite"
-        buttonViewOnce.setImage(UIImage(named: viewOnceImageName), for: .normal)
-        buttonViewOnce.isHidden = !configuration.canToggleViewOnce
+        attachmentTextToolbar.setIsViewOnce(enabled: configuration.isViewOnceOn, animated: animated)
 
-        attachmentTextToolbar.isViewOnceEnabled = isViewOnceOn
-
+        // Visibility of bottom buttons only changes when user starts/finishes composing text message.
+        // In that case `updateContents(animated:)` is called from within an animation block
+        // and since `mediaToolbar` is in a stack view it is necessary to modify `isHiddenInStackView`
+        // to get a nice animation.
         mediaToolbar.isHiddenInStackView = isEditingMediaMessage
+
         mediaToolbar.sendButton.setImage(UIImage(named: configuration.doneButtonAssetResourceName), for: .normal)
-        mediaToolbar.mediaQualityButton.isHiddenInStackView = !configuration.canChangeMediaQuality
-        mediaToolbar.saveMediaButton.isHiddenInStackView = !configuration.canSaveMedia
-        mediaToolbar.availableTools = {
+        mediaToolbar.setIsMediaQualityHigh(enabled: configuration.isMediaHighQualityEnabled, animated: animated)
+
+        let availableButtons: MediaToolbar.AvailableButtons = {
             guard let currentAttachmentItem = currentAttachmentItem else {
                 return []
             }
-            var options: MediaToolbar.AvailableTools = []
+            var buttons: MediaToolbar.AvailableButtons = []
             if configuration.canSaveMedia {
-                options.insert(.save)
+                buttons.insert(.save)
+            }
+            if configuration.canChangeMediaQuality {
+                buttons.insert(.mediaQuality)
             }
             switch currentAttachmentItem.type {
             case .image:
-                options.insert(.pen)
-                options.insert(.crop)
+                buttons.insert(.pen)
+                buttons.insert(.crop)
 
             default:
                 break
             }
-            return options
+            return buttons
         }()
+        mediaToolbar.set(availableButtons: availableButtons, animated: animated)
 
         updateFirstResponder()
 
         showViewOnceTooltipIfNecessary()
-
-        layoutSubviews()
     }
 
     override func resignFirstResponder() -> Bool {
@@ -236,7 +212,7 @@ class AttachmentApprovalToolbar: UIView {
     }
 
     private func updateFirstResponder() {
-        if isViewOnceOn {
+        if configuration.isViewOnceOn {
             if isEditingMediaMessage {
                 attachmentTextToolbar.textView.resignFirstResponder()
             }
@@ -245,7 +221,9 @@ class AttachmentApprovalToolbar: UIView {
         // first responder;
     }
 
-    func update(currentAttachmentItem: AttachmentApprovalItem, configuration: Configuration) {
+    func update(currentAttachmentItem: AttachmentApprovalItem,
+                configuration: Configuration,
+                animated: Bool) {
         // De-bounce
         guard self.currentAttachmentItem != currentAttachmentItem || self.configuration != configuration else {
             updateFirstResponder()
@@ -255,7 +233,7 @@ class AttachmentApprovalToolbar: UIView {
         self.currentAttachmentItem = currentAttachmentItem
         self.configuration = configuration
 
-        updateContents()
+        updateContents(animated: animated)
     }
 
     // MARK: 
@@ -272,12 +250,12 @@ class AttachmentApprovalToolbar: UIView {
 extension AttachmentApprovalToolbar: AttachmentTextToolbarDelegate {
 
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        updateContents()
+        updateContents(animated: true)
         attachmentTextToolbarDelegate?.attachmentTextToolbarDidBeginEditing(attachmentTextToolbar)
     }
 
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        updateContents()
+        updateContents(animated: true)
         attachmentTextToolbarDelegate?.attachmentTextToolbarDidEndEditing(attachmentTextToolbar)
     }
 
@@ -308,7 +286,7 @@ extension AttachmentApprovalToolbar {
         guard !configuration.isMediaStripVisible else {
             return false
         }
-        guard !isViewOnceOn && configuration.canToggleViewOnce else {
+        guard !configuration.isViewOnceOn && configuration.canToggleViewOnce else {
             return false
         }
         guard !preferences.wasViewOnceTooltipShown() else {
@@ -374,21 +352,33 @@ extension AttachmentApprovalToolbar {
 
 private class MediaToolbar: UIView {
 
-    struct AvailableTools: OptionSet {
+    struct AvailableButtons: OptionSet {
         let rawValue: Int
 
-        static let pen  = AvailableTools(rawValue: 1 << 0)
-        static let crop = AvailableTools(rawValue: 1 << 1)
-        static let save = AvailableTools(rawValue: 1 << 2)
+        static let pen  = AvailableButtons(rawValue: 1 << 0)
+        static let crop = AvailableButtons(rawValue: 1 << 1)
+        static let save = AvailableButtons(rawValue: 1 << 2)
+        static let mediaQuality = AvailableButtons(rawValue: 1 << 3)
 
-        static let all: AvailableTools = [ .pen, .crop, .save ]
+        static let all: AvailableButtons = [ .pen, .crop, .save, .mediaQuality ]
     }
 
-    var availableTools: AvailableTools = .all {
-        didSet {
-            penToolButton.isHiddenInStackView = !availableTools.contains(.pen)
-            cropToolButton.isHiddenInStackView = !availableTools.contains(.crop)
-            saveMediaButton.isHiddenInStackView = !availableTools.contains(.save)
+    func set(availableButtons: AvailableButtons, animated: Bool) {
+        guard animated else {
+            penToolButton.isHidden = !availableButtons.contains(.pen)
+            cropToolButton.isHidden = !availableButtons.contains(.crop)
+            saveMediaButton.isHidden = !availableButtons.contains(.save)
+            mediaQualityButton.isHidden = !availableButtons.contains(.mediaQuality)
+            return
+        }
+        let updateButtonBlock: ((UIButton, Bool) -> Void) = { button, isHidden in
+            button.isHiddenInStackView = isHidden
+        }
+        UIView.animate(withDuration: 0.2) {
+            updateButtonBlock(self.penToolButton, !availableButtons.contains(.pen))
+            updateButtonBlock(self.cropToolButton, !availableButtons.contains(.crop))
+            updateButtonBlock(self.saveMediaButton, !availableButtons.contains(.save))
+            updateButtonBlock(self.mediaQualityButton, !availableButtons.contains(.mediaQuality))
         }
     }
 
@@ -429,10 +419,11 @@ private class MediaToolbar: UIView {
         return button
     }()
 
-    var isMediaQualityHighEnabled: Bool = false {
-        didSet {
-            let image = isMediaQualityHighEnabled ? #imageLiteral(resourceName: "media-editor-quality-high") : #imageLiteral(resourceName: "media-editor-quality")
-            mediaQualityButton.setImage(image, for: .normal)
-        }
+    private static let imageMediaQualityHigh = #imageLiteral(resourceName: "media-editor-quality-high")
+    private static let imageMediaQualityStandard = #imageLiteral(resourceName: "media-editor-quality")
+
+    fileprivate func setIsMediaQualityHigh(enabled: Bool, animated: Bool) {
+        let image = enabled ? MediaToolbar.imageMediaQualityHigh : MediaToolbar.imageMediaQualityStandard
+        mediaQualityButton.setImage(image, animated: animated)
     }
 }

@@ -376,6 +376,35 @@ public extension UIView {
         view.layoutMargins = .zero
         return view
     }
+
+    func setIsHidden(_ isHidden: Bool, animated: Bool) {
+        setIsHidden(isHidden, withAnimationDuration: animated ? 0.2 : 0)
+    }
+
+    func setIsHidden(_ isHidden: Bool, withAnimationDuration duration: TimeInterval) {
+        guard duration > 0, isHidden != self.isHidden else {
+            self.isHidden = isHidden
+            return
+        }
+
+        let initialAlpha = alpha
+        if !isHidden && initialAlpha > 0 {
+            UIView.performWithoutAnimation {
+                self.alpha = 0
+                self.isHidden = false
+            }
+        }
+
+        UIView.animate(withDuration: duration,
+                       animations: {
+            self.alpha = isHidden ? 0 : initialAlpha
+        },
+                       completion: { finished in
+            guard finished else { return }
+            self.isHidden = isHidden
+            self.alpha = initialAlpha
+        })
+    }
 }
 
 // MARK: -
@@ -535,6 +564,20 @@ public extension UIButton {
         let imageView = UIButton()
         imageView.setTemplateImageName(imageName, tintColor: tintColor)
         return imageView
+    }
+
+    func setImage(_ image: UIImage?, animated: Bool) {
+        setImage(image, withAnimationDuration: animated ? 0.2 : 0)
+    }
+
+    func setImage(_ image: UIImage?, withAnimationDuration duration: TimeInterval) {
+        guard duration > 0 else {
+            setImage(image, for: .normal)
+            return
+        }
+        UIView.transition(with: self, duration: duration, options: .transitionCrossDissolve) {
+            self.setImage(image, for: .normal)
+        }
     }
 }
 

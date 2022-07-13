@@ -25,10 +25,11 @@ class AttachmentTextToolbar: UIView {
     // Forward mention-related calls directly to the view controller.
     weak var mentionTextViewDelegate: MentionTextViewDelegate?
 
-    var isViewOnceEnabled: Bool = false {
-        didSet {
-            updateContent()
-        }
+    private var isViewOnceEnabled: Bool = false
+    func setIsViewOnce(enabled: Bool, animated: Bool) {
+        guard isViewOnceEnabled != enabled else { return }
+        isViewOnceEnabled = enabled
+        updateContent(animated: animated)
     }
 
     var isEditingText: Bool {
@@ -46,7 +47,7 @@ class AttachmentTextToolbar: UIView {
 
         set {
             textView.messageBody = newValue
-            updateAppearance()
+            updateAppearance(animated: false)
         }
     }
 
@@ -95,7 +96,7 @@ class AttachmentTextToolbar: UIView {
             return constraint
         }())
 
-        updateContent()
+        updateContent(animated: false)
     }
 
     @available(*, unavailable, message: "Use init(frame:) instead")
@@ -124,13 +125,13 @@ class AttachmentTextToolbar: UIView {
         textView.heightAnchor.constraint(equalToConstant: kMinTextViewHeight)
     }()
 
-    private func updateContent() {
+    private func updateContent(animated: Bool) {
         AssertIsOnMainThread()
-        updateAppearance()
+        updateAppearance(animated: animated)
         updateHeight()
     }
 
-    private func updateAppearance() {
+    private func updateAppearance(animated: Bool) {
         let hasText: Bool = {
             guard let text = self.textView.text else {
                 return false
@@ -138,11 +139,11 @@ class AttachmentTextToolbar: UIView {
             return !text.isEmpty
         }()
 
-        addMessageButton.isHidden = hasText || isEditingText || isViewOnceEnabled
-        viewOnceMediaLabel.isHidden = !isViewOnceEnabled
-        textViewContainer.isHidden = (!hasText && !isEditingText) || isViewOnceEnabled
-        placeholderTextView.isHidden = hasText
-        doneButton.isHiddenInStackView = !isEditingText
+        addMessageButton.setIsHidden(hasText || isEditingText || isViewOnceEnabled, animated: animated)
+        viewOnceMediaLabel.setIsHidden(!isViewOnceEnabled, animated: animated)
+        textViewContainer.setIsHidden((!hasText && !isEditingText) || isViewOnceEnabled, animated: animated)
+        placeholderTextView.setIsHidden(hasText, animated: animated)
+        doneButton.setIsHidden(!isEditingText, animated: animated)
 
         if let blueCircleView = doneButton.subviews.first(where: { $0 is CircleView }) {
             doneButton.sendSubviewToBack(blueCircleView)
@@ -301,7 +302,7 @@ extension AttachmentTextToolbar: MentionTextViewDelegate {
 extension AttachmentTextToolbar: UITextViewDelegate {
 
     public func textViewDidChange(_ textView: UITextView) {
-        updateContent()
+        updateContent(animated: false)
         delegate?.attachmentTextToolbarDidChange(self)
     }
 
@@ -332,14 +333,14 @@ extension AttachmentTextToolbar: UITextViewDelegate {
                                               changeInLength: 0,
                                               invalidatedRange: NSRange(location: 0, length: 0))
         delegate?.attachmentTextToolbarDidBeginEditing(self)
-        updateContent()
+        updateContent(animated: true)
     }
 
     public func textViewDidEndEditing(_ textView: UITextView) {
         textView.textContainer.lineBreakMode = .byTruncatingTail
         textView.textContainer.maximumNumberOfLines = 1
         delegate?.attachmentTextToolbarDidEndEditing(self)
-        updateContent()
+        updateContent(animated: true)
     }
 }
 

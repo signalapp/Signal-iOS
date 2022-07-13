@@ -17,7 +17,7 @@ class ApprovalRailCellView: GalleryRailCellView {
 
     weak var approvalRailCellDelegate: ApprovalRailCellViewDelegate?
 
-    lazy var deleteButton: UIButton = {
+    private lazy var deleteButton: UIButton = {
         let button = OWSButton { [weak self] in
             guard let strongSelf = self else { return }
 
@@ -29,25 +29,39 @@ class ApprovalRailCellView: GalleryRailCellView {
             strongSelf.approvalRailCellDelegate?.approvalRailCellView(strongSelf, didRemoveItem: attachmentApprovalItem)
         }
 
+        button.alpha = 0
+        button.bounds = CGRect(origin: .zero, size: CGSize(square: 24))
         button.setImage(#imageLiteral(resourceName: "media-composer-trash"), for: .normal)
         button.tintColor = .white
-        button.autoSetDimensions(to: CGSize(square: 24))
         return button
     }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        addSubview(deleteButton)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        deleteButton.center = bounds.center
+    }
 
     override func setIsSelected(_ isSelected: Bool) {
         super.setIsSelected(isSelected)
 
         if isSelected {
             if let approvalRailCellDelegate = self.approvalRailCellDelegate,
-                approvalRailCellDelegate.canRemoveApprovalRailCellView(self) {
+               approvalRailCellDelegate.canRemoveApprovalRailCellView(self) {
 
-                addSubview(deleteButton)
-                deleteButton.autoCenterInSuperview()
+                deleteButton.alpha = 1
                 dimmerView.backgroundColor = .ows_blackAlpha50
             }
         } else {
-            deleteButton.removeFromSuperview()
+            deleteButton.alpha = 0
             dimmerView.backgroundColor = .clear
         }
     }
