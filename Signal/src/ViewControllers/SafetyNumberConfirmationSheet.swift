@@ -76,7 +76,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
     @objc
     class func presentIfNecessary(addresses: [SignalServiceAddress], confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
 
-        let untrustedAddresses = untrustedIdentitiesForSending(addresses: addresses)
+        let untrustedAddresses = untrustedIdentitiesForSendingWithSneakyTransaction(addresses: addresses)
 
         guard !untrustedAddresses.isEmpty else {
             // No identities to confirm, no alert to present.
@@ -93,7 +93,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
         return true
     }
 
-    private class func untrustedIdentitiesForSending(addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
+    private class func untrustedIdentitiesForSendingWithSneakyTransaction(addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
         databaseStorage.read { transaction in
             addresses.filter { Self.identityManager.untrustedIdentityForSending(to: $0, transaction: transaction) != nil }
         }
