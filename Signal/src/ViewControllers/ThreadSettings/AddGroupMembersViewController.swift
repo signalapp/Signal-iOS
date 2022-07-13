@@ -99,10 +99,10 @@ private extension AddGroupMembersViewController {
             .compactMap { recipient -> UUID? in
                 if let uuid = recipient.address?.uuid,
                    !oldGroupModel.groupMembership.isFullMember(uuid) {
-                    owsFailDebug("Missing UUID, or recipient is already in group!")
                     return uuid
                 }
 
+                owsFailDebug("Missing UUID, or recipient is already in group!")
                 return nil
             }
 

@@ -2216,39 +2216,7 @@ public extension Error {
 extension GroupManager {
     public enum GroupUpdate: CustomStringConvertible {
         case addNormalMembers(uuids: [UUID])
-        case attributes(name: String?, description: String?, avatarData: Data?)
-
-        public var newUuids: [UUID] {
-            if case .addNormalMembers(let uuids) = self {
-                return uuids
-            }
-
-            return []
-        }
-
-        public var newName: String? {
-            if case .attributes(let .some(name), _, _) = self {
-                return name
-            }
-
-            return nil
-        }
-
-        public var newDescriptionText: String? {
-            if case .attributes(_, let .some(description), _) = self {
-                return description
-            }
-
-            return nil
-        }
-
-        public var newAvatarData: Data? {
-            if case .attributes(_, _, let .some(avatarData)) = self {
-                return avatarData
-            }
-
-            return nil
-        }
+        case attributes(title: String?, description: String?, avatarData: Data?)
 
         public var description: String {
             switch self {
@@ -2318,39 +2286,43 @@ extension GroupManager {
                 }
 
                 self.databaseStorage.read { transaction in
-                    if let title = update.newName?.ows_stripped(),
-                       title != existingGroupModel.groupName {
-                        groupChangeSet.setTitle(title)
-                    }
+                    switch update {
+                    case .attributes(let title, let description, let avatarData):
+                        if let title = title?.ows_stripped(),
+                           title != existingGroupModel.groupName {
+                            groupChangeSet.setTitle(title)
+                        }
 
-                    let maybeNewDescriptionText = update.newDescriptionText?.ows_stripped()
-                    if maybeNewDescriptionText != existingGroupModel.descriptionText {
-                        groupChangeSet.setDescriptionText(maybeNewDescriptionText)
-                    }
+                        if let description = description?.ows_stripped(),
+                           description != existingGroupModel.descriptionText {
+                            groupChangeSet.setDescriptionText(description)
+                        } else if description == nil, existingGroupModel.descriptionText != nil {
+                            groupChangeSet.setDescriptionText(nil)
+                        }
 
-                    // We checked in the previous step if we have avatar data
-                    // that is equivalent to the existing. If we have a URL we
-                    // have a new avatar, but we also might be clearing it.
-                    if let avatarData = update.newAvatarData, let avatarUrlPath = avatarUrlPath {
-                        groupChangeSet.setAvatar((data: avatarData, urlPath: avatarUrlPath))
-                    } else if update.newAvatarData == nil, existingGroupModel.avatarData != nil {
-                        groupChangeSet.setAvatar(nil)
-                    }
+                        // Having a URL from the previous step means this data
+                        // represents a new avatar, which we have already uploaded.
+                        if let avatarData = avatarData, let avatarUrlPath = avatarUrlPath {
+                            groupChangeSet.setAvatar((data: avatarData, urlPath: avatarUrlPath))
+                        } else if avatarData == nil, existingGroupModel.avatarData != nil {
+                            groupChangeSet.setAvatar(nil)
+                        }
+                    case .addNormalMembers(let newUuids):
+                        for uuid in newUuids {
+                            owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(uuid))
 
-                    for uuid in update.newUuids {
-                        owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(uuid))
+                            // Important that at this point we already have the
+                            // profile keys for these users
+                            let isPending = !self.groupsV2Swift.hasProfileKeyCredential(
+                                for: SignalServiceAddress(uuid: uuid),
+                                transaction: transaction
+                            )
 
-                        // Important that at this point we already have the
-                        // profile keys for these users
-                        let isPending = !self.groupsV2Swift.hasProfileKeyCredential(
-                            for: SignalServiceAddress(uuid: uuid),
-                            transaction: transaction
-                        )
-
-                        if isPending || (uuid != localUuid && DebugFlags.groupsV2forceInvites.get()) {
-                            groupChangeSet.addInvitedMember(uuid, role: .normal)
-                        } else {
-                            groupChangeSet.addMember(uuid, role: .normal)
+                            if isPending || (uuid != localUuid && DebugFlags.groupsV2forceInvites.get()) {
+                                groupChangeSet.addInvitedMember(uuid, role: .normal)
+                            } else {
+                                groupChangeSet.addMember(uuid, role: .normal)
+                            }
                         }
                     }
                 }
@@ -2367,17 +2339,19 @@ extension GroupManager {
 
             var newGroupModelBuilder = existingGroupModel.asBuilder
 
-            newGroupModelBuilder.name = update.newName
-            newGroupModelBuilder.descriptionText = update.newDescriptionText
-            newGroupModelBuilder.avatarData = update.newAvatarData
-
-            var newGroupMembershipBuilder = existingGroupModel.groupMembership.asBuilder
-            for uuid in update.newUuids {
-                newGroupMembershipBuilder.remove(uuid)
-                newGroupMembershipBuilder.addFullMember(uuid, role: .normal)
+            switch update {
+            case .attributes(let title, let description, let avatarData):
+                newGroupModelBuilder.name = title
+                newGroupModelBuilder.descriptionText = description
+                newGroupModelBuilder.avatarData = avatarData
+            case .addNormalMembers(let newUuids):
+                var newGroupMembershipBuilder = existingGroupModel.groupMembership.asBuilder
+                for uuid in newUuids {
+                    newGroupMembershipBuilder.remove(uuid)
+                    newGroupMembershipBuilder.addFullMember(uuid, role: .normal)
+                }
+                newGroupModelBuilder.groupMembership = newGroupMembershipBuilder.build()
             }
-
-            newGroupModelBuilder.groupMembership = newGroupMembershipBuilder.build()
 
             let newGroupModel = try newGroupModelBuilder.build()
 

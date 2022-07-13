@@ -293,7 +293,7 @@ class GroupAttributesEditorHelper: NSObject {
 
     private func buildGroupUpdate() -> GroupManager.GroupUpdate {
         .attributes(
-            name: groupNameCurrent,
+            title: groupNameCurrent,
             description: groupDescriptionCurrent,
             avatarData: avatarCurrent?.imageData
         )
