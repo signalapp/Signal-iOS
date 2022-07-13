@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,17 +15,27 @@ extension GroupViewHelper {
     private func showMemberActionConfirmationActionSheet(address: SignalServiceAddress,
                                                          titleFormat: String,
                                                          actionTitle: String,
-                                                         updatePromiseBlock: @escaping () -> Promise<Void>) {
-        guard let fromViewController = fromViewController else {
-            owsFailDebug("Missing fromViewController.")
+                                                         updateDescription: String,
+                                                         updateBlock: @escaping (TSGroupModelV2, UUID) -> Promise<Void>) {
+        guard let fromViewController = fromViewController,
+              let oldGroupModel = delegate?.currentGroupModel as? TSGroupModelV2,
+              oldGroupModel.groupMembership.isMemberOfAnyKind(address),
+              let uuid = address.uuid
+        else {
+            GroupViewUtils.showUpdateErrorUI(error: OWSAssertionError("Invalid parameters for update: \(updateDescription)"))
             return
         }
+
         let actionBlock = {
-            GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: fromViewController,
-                                                            updatePromiseBlock: updatePromiseBlock,
-                                                            completion: { [weak self] _ in
-                                                                self?.delegate?.groupViewHelperDidUpdateGroup()
-            })
+            GroupViewUtils.updateGroupWithActivityIndicator(
+                fromViewController: fromViewController,
+                withGroupModel: oldGroupModel,
+                updateDescription: updateDescription,
+                updateBlock: { updateBlock(oldGroupModel, uuid) },
+                completion: { [weak self] _ in
+                    self?.delegate?.groupViewHelperDidUpdateGroup()
+                }
+            )
         }
         let title = String(format: titleFormat, contactsManager.displayName(for: address))
         let actionSheet = ActionSheetController(title: title)
@@ -63,27 +73,11 @@ extension GroupViewHelper {
                                              comment: "Label for 'make group admin' button in conversation settings view.")
         showMemberActionConfirmationActionSheet(address: address,
                                                 titleFormat: titleFormat,
-                                                actionTitle: actionTitle) {
-                                                    self.makeGroupAdminPromise(address: address)
-        }
-    }
-
-    private func makeGroupAdminPromise(address: SignalServiceAddress) -> Promise<Void> {
-        guard let oldGroupModel = delegate?.currentGroupModel as? TSGroupModelV2 else {
-            return Promise(error: OWSAssertionError("Missing group model."))
-        }
-        guard oldGroupModel.groupMembership.isMemberOfAnyKind(address) else {
-            return Promise(error: OWSAssertionError("Not a group member."))
-        }
-        guard let uuid = address.uuid else {
-            return Promise(error: OWSAssertionError("Invalid member address."))
-        }
-        return firstly {
-            return GroupManager.messageProcessingPromise(for: oldGroupModel,
-                                                         description: "Make group admin")
-        }.then(on: .global()) {
+                                                actionTitle: actionTitle,
+                                                updateDescription: "Make group admin") { oldGroupModel, uuid in
             GroupManager.changeMemberRoleV2(groupModel: oldGroupModel, uuid: uuid, role: .administrator)
-        }.asVoid()
+                .asVoid()
+        }
     }
 
     // MARK: - Revoke Group Admin
@@ -110,27 +104,11 @@ extension GroupViewHelper {
                                              comment: "Label for 'revoke group admin' button in conversation settings view.")
         showMemberActionConfirmationActionSheet(address: address,
                                                 titleFormat: titleFormat,
-                                                actionTitle: actionTitle) {
-                                                    self.revokeGroupAdminPromise(address: address)
-        }
-    }
-
-    private func revokeGroupAdminPromise(address: SignalServiceAddress) -> Promise<Void> {
-        guard let oldGroupModel = delegate?.currentGroupModel as? TSGroupModelV2 else {
-            return Promise(error: OWSAssertionError("Missing group model."))
-        }
-        guard oldGroupModel.groupMembership.isMemberOfAnyKind(address) else {
-            return Promise(error: OWSAssertionError("Not a group member."))
-        }
-        guard let uuid = address.uuid else {
-            return Promise(error: OWSAssertionError("Invalid member address."))
-        }
-        return firstly {
-            return GroupManager.messageProcessingPromise(for: oldGroupModel,
-                                                         description: "Revoke group admin")
-        }.then(on: .global()) {
+                                                actionTitle: actionTitle,
+                                                updateDescription: "Revoke group admin") { oldGroupModel, uuid in
             GroupManager.changeMemberRoleV2(groupModel: oldGroupModel, uuid: uuid, role: .normal)
-        }.asVoid()
+                .asVoid()
+        }
     }
 
     // MARK: - Remove From Group
@@ -160,26 +138,10 @@ extension GroupViewHelper {
                                              comment: "Label for 'remove from group' button in conversation settings view.")
         showMemberActionConfirmationActionSheet(address: address,
                                                 titleFormat: titleFormat,
-                                                actionTitle: actionTitle) {
-                                                    self.removeFromGroupPromise(address: address)
-        }
-    }
-
-    private func removeFromGroupPromise(address: SignalServiceAddress) -> Promise<Void> {
-        guard let oldGroupModel = delegate?.currentGroupModel as? TSGroupModelV2 else {
-            return Promise(error: OWSAssertionError("Missing group model."))
-        }
-        guard oldGroupModel.groupMembership.isMemberOfAnyKind(address) else {
-            return Promise(error: OWSAssertionError("Not a group member."))
-        }
-        guard let uuid = address.uuid else {
-            return Promise(error: OWSAssertionError("Invalid member address."))
-        }
-        return firstly {
-            return GroupManager.messageProcessingPromise(for: oldGroupModel,
-                                                         description: "Remove user from group")
-        }.then(on: .global()) {
+                                                actionTitle: actionTitle,
+                                                updateDescription: "Remove user from group") { oldGroupModel, uuid in
             GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: oldGroupModel, uuids: [uuid])
-        }.asVoid()
+                .asVoid()
+        }
     }
 }

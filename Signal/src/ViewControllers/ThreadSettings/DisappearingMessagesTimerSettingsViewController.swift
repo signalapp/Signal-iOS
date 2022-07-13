@@ -205,34 +205,20 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            updatePromiseBlock: {
-                self.updateConfigurationPromise(configuration, thread: thread)
+            withThread: thread,
+            updateDescription: "Update disappearing messages configuration",
+            updateBlock: { () -> Promise<Void> in
+                // We're sending a message, so we're accepting any pending message request.
+                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
+
+                return GroupManager.localUpdateDisappearingMessages(thread: thread,
+                                                                    disappearingMessageToken: configuration.asToken)
             },
             completion: { [weak self] _ in
                 self?.completion(configuration)
                 self?.dismiss(animated: true)
             }
         )
-    }
-
-    private func updateConfigurationPromise(
-        _ configuration: OWSDisappearingMessagesConfiguration,
-        thread: TSThread
-    ) -> Promise<Void> {
-        return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(
-                for: thread,
-                description: "Update disappearing messages configuration"
-            )
-        }.map(on: .global()) {
-            // We're sending a message, so we're accepting any pending message request.
-            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
-        }.then(on: .global()) {
-            GroupManager.localUpdateDisappearingMessages(
-                thread: thread,
-                disappearingMessageToken: configuration.asToken
-            )
-        }
     }
 }
 

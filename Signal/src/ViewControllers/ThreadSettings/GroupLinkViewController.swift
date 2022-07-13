@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -226,29 +226,20 @@ public class GroupLinkViewUtils {
                                description: String,
                                fromViewController: UIViewController,
                                completion: @escaping (TSGroupThread) -> Void) {
-        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: fromViewController,
-                                                        updatePromiseBlock: { () -> Promise<TSGroupThread> in
-                                                            self.updateLinkModePromise(groupModelV2: groupModelV2,
-                                                                                       linkMode: linkMode,
-                                                                                       description: description)
-                                                        },
-                                                        completion: { (groupThread: TSGroupThread?) in
-                                                            guard let groupThread = groupThread else {
-                                                                owsFailDebug("Missing groupThread.")
-                                                                return
-                                                            }
-                                                            completion(groupThread)
-                                                        })
-    }
-
-    static func updateLinkModePromise(groupModelV2: TSGroupModelV2,
-                                      linkMode: GroupsV2LinkMode,
-                                      description: String) -> Promise<TSGroupThread> {
-        return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: groupModelV2, description: description)
-        }.then(on: .global()) { _ in
-            GroupManager.updateLinkModeV2(groupModel: groupModelV2, linkMode: linkMode)
-        }
+        GroupViewUtils.updateGroupWithActivityIndicator(
+            fromViewController: fromViewController,
+            withGroupModel: groupModelV2,
+            updateDescription: description,
+            updateBlock: { () -> Promise<TSGroupThread> in
+                GroupManager.updateLinkModeV2(groupModel: groupModelV2, linkMode: linkMode)
+            },
+            completion: { (groupThread: TSGroupThread?) in
+                guard let groupThread = groupThread else {
+                    owsFailDebug("Missing groupThread.")
+                    return
+                }
+                completion(groupThread)
+            })
     }
 
     static func linkMode(isGroupInviteLinkEnabled: Bool, approveNewMembers: Bool) -> GroupsV2LinkMode {
@@ -365,25 +356,20 @@ private extension GroupLinkViewController {
     }
 
     func resetLink() {
-        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
-                                                        updatePromiseBlock: { () -> Promise<TSGroupThread> in
-                                                            self.resetLinkPromise()
-        },
-                                                        completion: { [weak self] (groupThread: TSGroupThread?) in
-                                                            guard let groupThread = groupThread else {
-                                                                owsFailDebug("Missing groupThread.")
-                                                                return
-                                                            }
-                                                            self?.updateView(groupThread: groupThread)
-        })
-    }
-
-    func resetLinkPromise() -> Promise<TSGroupThread> {
-        let groupModelV2 = self.groupModelV2
-        return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: groupModelV2, description: self.logTag)
-        }.then(on: .global()) { _ in
-            GroupManager.resetLinkV2(groupModel: groupModelV2)
-        }
+        GroupViewUtils.updateGroupWithActivityIndicator(
+            fromViewController: self,
+            withGroupModel: self.groupModelV2,
+            updateDescription: self.logTag,
+            updateBlock: { () -> Promise<TSGroupThread> in
+                GroupManager.resetLinkV2(groupModel: self.groupModelV2)
+            },
+            completion: { [weak self] (groupThread: TSGroupThread?) in
+                guard let groupThread = groupThread else {
+                    owsFailDebug("Missing groupThread.")
+                    return
+                }
+                self?.updateView(groupThread: groupThread)
+            }
+        )
     }
 }

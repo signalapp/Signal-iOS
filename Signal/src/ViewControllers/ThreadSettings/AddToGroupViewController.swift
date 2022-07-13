@@ -197,9 +197,11 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            updatePromiseBlock: {
-                self.updateGroupThreadPromise(oldGroupModel: oldGroupModel,
-                                              update: groupUpdateToPerform)
+            withGroupModel: oldGroupModel,
+            updateDescription: self.logTag,
+            updateBlock: {
+                GroupManager.updateExistingGroup(existingGroupModel: oldGroupModel,
+                                                 update: groupUpdateToPerform)
             },
             completion: { [weak self] _ in
                 self?.notifyOfAddedAndDismiss(groupThread: groupThread, shortName: shortName)
@@ -232,17 +234,6 @@ public class AddToGroupViewController: OWSTableViewController2 {
         }
 
         return .addNormalMembers(uuids: [uuid])
-    }
-
-    private func updateGroupThreadPromise(oldGroupModel: TSGroupModel,
-                                          update: GroupManager.GroupUpdate) -> Promise<Void> {
-
-        return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: oldGroupModel,
-                                                         description: self.logTag)
-        }.then(on: .global()) { _ in
-            GroupManager.updateExistingGroup(existingGroupModel: oldGroupModel, update: update)
-        }.asVoid()
     }
 
     // MARK: -

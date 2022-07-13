@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SignalCoreKit
 
 @objc
 class MemberRequestView: UIStackView {
@@ -102,32 +103,22 @@ class MemberRequestView: UIStackView {
     }
 
     func cancelMemberRequest() {
-        guard let fromViewController = fromViewController else {
-            owsFailDebug("Missing fromViewController.")
+        guard let fromViewController = fromViewController,
+              let groupThread = thread as? TSGroupThread,
+              let groupModelV2 = groupThread.groupModel as? TSGroupModelV2
+        else {
+            GroupViewUtils.showUpdateErrorUI(error: OWSAssertionError("Missing properties needed to update group"))
             return
         }
-        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: fromViewController,
-                                                        updatePromiseBlock: {
-                                                            self.cancelMemberRequestPromise()
-        },
-                                                        completion: { _ in
-                                                            // Do nothing.
-        })
-    }
 
-    func cancelMemberRequestPromise() -> Promise<Void> {
-        guard let groupThread = thread as? TSGroupThread else {
-            return Promise(error: OWSAssertionError("Invalid thread."))
-        }
-        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-            return Promise(error: OWSAssertionError("Invalid group model."))
-        }
-
-        return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: groupModelV2,
-                                                         description: self.logTag)
-        }.then(on: .global()) { _ in
-            GroupManager.cancelMemberRequestsV2(groupModel: groupModelV2)
-        }.asVoid()
+        GroupViewUtils.updateGroupWithActivityIndicator(
+            fromViewController: fromViewController,
+            withGroupModel: groupModelV2,
+            updateDescription: self.logTag,
+            updateBlock: {
+                GroupManager.cancelMemberRequestsV2(groupModel: groupModelV2)
+            },
+            completion: nil
+        )
     }
 }

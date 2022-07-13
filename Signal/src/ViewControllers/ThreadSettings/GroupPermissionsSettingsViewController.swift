@@ -347,16 +347,13 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         // into a single change.
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            updatePromiseBlock: {
-                firstly { () -> Promise<Void> in
-                    GroupManager.messageProcessingPromise(
-                        for: self.thread,
-                        description: "Update group permissions"
-                    )
-                }.map(on: .global()) {
-                    // We're sending a message, so we're accepting any pending message request.
-                    ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: self.thread)
-                }.then { () -> Promise<Void> in
+            withThread: thread,
+            updateDescription: "Update group permissions",
+            updateBlock: { () -> Promise<Void> in
+                // We're sending a message, so we're accepting any pending message request.
+                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: self.thread)
+
+                return firstly { () -> Promise<Void> in
                     if self.newAccessMembers != self.oldAccessMembers {
                         return GroupManager.changeGroupMembershipAccessV2(
                             groupModel: self.groupModelV2,

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 protocol AddGroupMembersViewControllerDelegate: AnyObject {
     func addGroupMembersViewDidUpdate()
@@ -134,23 +135,16 @@ private extension AddGroupMembersViewController {
             return
         }
 
-        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
-                                                        updatePromiseBlock: {
-                                                            self.updateGroupThreadPromise(update: groupUpdateToPerform)
-        },
-                                                        completion: { _ in
-                                                            dismissAndUpdateDelegate()
-        })
-    }
-
-    func updateGroupThreadPromise(update: GroupManager.GroupUpdate) -> Promise<Void> {
-        firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: oldGroupModel,
-                                                         description: self.logTag)
-        }.then(on: .global()) { _ in
-            GroupManager.updateExistingGroup(existingGroupModel: self.oldGroupModel,
-                                             update: update)
-        }.asVoid()
+        GroupViewUtils.updateGroupWithActivityIndicator(
+            fromViewController: self,
+            withGroupModel: self.oldGroupModel,
+            updateDescription: self.logTag,
+            updateBlock: {
+                GroupManager.updateExistingGroup(existingGroupModel: self.oldGroupModel,
+                                                 update: groupUpdateToPerform)
+            },
+            completion: { _ in dismissAndUpdateDelegate() }
+        )
     }
 }
 

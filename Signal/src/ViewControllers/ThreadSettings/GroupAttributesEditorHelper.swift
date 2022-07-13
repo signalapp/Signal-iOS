@@ -272,16 +272,22 @@ class GroupAttributesEditorHelper: NSObject {
             return completion()
         }
 
+        guard let oldGroupModel = groupModelOriginal else {
+            GroupViewUtils.showUpdateErrorUI(error: OWSAssertionError("Missing groupModelOriginal"))
+            return
+        }
+
         let groupUpdateToPerform = self.buildGroupUpdate()
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: fromViewController,
-            updatePromiseBlock: {
-                self.updateGroupThreadPromise(update: groupUpdateToPerform)
+            withGroupModel: oldGroupModel,
+            updateDescription: self.logTag,
+            updateBlock: {
+                GroupManager.updateExistingGroup(existingGroupModel: oldGroupModel,
+                                                 update: groupUpdateToPerform)
             },
-            completion: { _ in
-                completion()
-            }
+            completion: { _ in completion() }
         )
     }
 
@@ -291,21 +297,6 @@ class GroupAttributesEditorHelper: NSObject {
             description: groupDescriptionCurrent,
             avatarData: avatarCurrent?.imageData
         )
-    }
-
-    private func updateGroupThreadPromise(update: GroupManager.GroupUpdate) -> Promise<Void> {
-        guard let oldGroupModel = groupModelOriginal else {
-            return Promise(error: OWSAssertionError("Missing groupModelOriginal."))
-        }
-
-        return firstly { () -> Promise<Void> in
-            GroupManager.messageProcessingPromise(
-                for: oldGroupModel,
-                description: self.logTag
-            )
-        }.then(on: .global()) { _ in
-            GroupManager.updateExistingGroup(existingGroupModel: oldGroupModel, update: update)
-        }.asVoid()
     }
 }
 

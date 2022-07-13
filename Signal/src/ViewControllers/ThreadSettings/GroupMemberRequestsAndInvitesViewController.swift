@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 protocol GroupMemberRequestsAndInvitesViewControllerDelegate: AnyObject {
     func requestsAndInvitesViewDidUpdate()
@@ -463,53 +464,43 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 private extension GroupMemberRequestsAndInvitesViewController {
 
     func revokePendingInvites(addresses: [SignalServiceAddress]) {
-        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
-                                                        updatePromiseBlock: {
-                                                            self.revokePendingInvitesPromise(addresses: addresses)
-        },
-                                                        completion: { [weak self] groupThread in
-                                                            self?.reloadContent(groupThread: groupThread)
-        })
-    }
-
-    func revokePendingInvitesPromise(addresses: [SignalServiceAddress]) -> Promise<TSGroupThread> {
-        guard let groupModelV2 = groupModel as? TSGroupModelV2 else {
-            return Promise(error: OWSAssertionError("Invalid group model."))
-        }
         let uuids = addresses.compactMap { $0.uuid }
-        guard !uuids.isEmpty else {
-            return Promise(error: OWSAssertionError("Invalid addresses."))
+        guard let groupModelV2 = groupModel as? TSGroupModelV2, !uuids.isEmpty else {
+            GroupViewUtils.showUpdateErrorUI(error: OWSAssertionError("Invalid group model or addresses"))
+            return
         }
 
-        return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: groupModel,
-                                                         description: self.logTag)
-        }.then(on: .global()) { _ in
-            GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModelV2, uuids: uuids)
-        }
+        GroupViewUtils.updateGroupWithActivityIndicator(
+            fromViewController: self,
+            withGroupModel: groupModelV2,
+            updateDescription: self.logTag,
+            updateBlock: {
+                GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModelV2,
+                                                             uuids: uuids)
+            },
+            completion: { [weak self] groupThread in
+                self?.reloadContent(groupThread: groupThread)
+            }
+        )
     }
 
     func revokeInvalidInvites() {
-        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
-                                                        updatePromiseBlock: {
-                                                            self.revokeInvalidInvitesPromise()
-        },
-                                                        completion: { [weak self] groupThread in
-                                                            self?.reloadContent(groupThread: groupThread)
-        })
-    }
-
-    func revokeInvalidInvitesPromise() -> Promise<TSGroupThread> {
         guard let groupModelV2 = groupModel as? TSGroupModelV2 else {
-            return Promise(error: OWSAssertionError("Invalid group model."))
+            GroupViewUtils.showUpdateErrorUI(error: OWSAssertionError("Invalid group model"))
+            return
         }
 
-        return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: groupModel,
-                                                         description: self.logTag)
-        }.then(on: .global()) { _ in
-            GroupManager.revokeInvalidInvites(groupModel: groupModelV2)
-        }
+        GroupViewUtils.updateGroupWithActivityIndicator(
+            fromViewController: self,
+            withGroupModel: groupModelV2,
+            updateDescription: self.logTag,
+            updateBlock: {
+                GroupManager.revokeInvalidInvites(groupModel: groupModelV2)
+            },
+            completion: { [weak self] groupThread in
+                self?.reloadContent(groupThread: groupThread)
+            }
+        )
     }
 }
 
@@ -556,36 +547,30 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
     }
 
     func acceptOrDenyMemberRequests(address: SignalServiceAddress, shouldAccept: Bool) {
-        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
-                                                        updatePromiseBlock: {
-                                                            self.acceptOrDenyMemberRequestsPromise(addresses: [address],
-                                                                                             shouldAccept: shouldAccept)
-        },
-                                                        completion: { [weak self] groupThread in
-                                                            guard let self = self else { return }
-                                                            if shouldAccept {
-                                                                self.presentRequestApprovedToast(address: address)
-                                                            } else {
-                                                                self.presentRequestDeniedToast(address: address)
-                                                            }
-                                                            self.reloadContent(groupThread: groupThread)
-        })
-    }
-
-    func acceptOrDenyMemberRequestsPromise(addresses: [SignalServiceAddress], shouldAccept: Bool) -> Promise<TSGroupThread> {
-        guard let groupModelV2 = groupModel as? TSGroupModelV2 else {
-            return Promise(error: OWSAssertionError("Invalid group model."))
-        }
-        let uuids = addresses.compactMap { $0.uuid }
-        guard !uuids.isEmpty else {
-            return Promise(error: OWSAssertionError("Invalid addresses."))
+        guard let groupModelV2 = groupModel as? TSGroupModelV2,
+              let uuid = address.uuid
+        else {
+            GroupViewUtils.showUpdateErrorUI(error: OWSAssertionError("Invalid group model or address"))
+            return
         }
 
-        return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: groupModel,
-                                                         description: self.logTag)
-        }.then(on: .global()) { _ in
-            GroupManager.acceptOrDenyMemberRequestsV2(groupModel: groupModelV2, uuids: uuids, shouldAccept: shouldAccept)
-        }
+        GroupViewUtils.updateGroupWithActivityIndicator(
+            fromViewController: self,
+            withGroupModel: groupModelV2,
+            updateDescription: self.logTag,
+            updateBlock: { () -> Promise<TSGroupThread> in
+                GroupManager.acceptOrDenyMemberRequestsV2(groupModel: groupModelV2,
+                                                          uuids: [uuid],
+                                                          shouldAccept: shouldAccept)
+            },
+            completion: { [weak self] groupThread in
+                guard let self = self else { return }
+                if shouldAccept {
+                    self.presentRequestApprovedToast(address: address)
+                } else {
+                    self.presentRequestDeniedToast(address: address)
+                }
+                self.reloadContent(groupThread: groupThread)
+            })
     }
 }
