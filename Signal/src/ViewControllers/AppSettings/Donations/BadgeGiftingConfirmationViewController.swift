@@ -110,6 +110,25 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         return resultPromise
     }
 
+    private enum SafetyNumberConfirmationResult {
+        case userDidNotConfirmSafetyNumberChange
+        case userConfirmedSafetyNumberChangeOrNoChangeWasNeeded
+    }
+
+    private func showSafetyNumberConfirmationIfNecessary() -> (needsUserInteraction: Bool, promise: Promise<SafetyNumberConfirmationResult>) {
+        let (promise, future) = Promise<SafetyNumberConfirmationResult>.pending()
+
+        let needsUserInteraction = SafetyNumberConfirmationSheet.presentIfNecessary(address: thread.contactAddress,
+                                                                                    confirmationText: SafetyNumberStrings.confirmSendButton) { didConfirm in
+            future.resolve(didConfirm ? .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded : .userDidNotConfirmSafetyNumberChange)
+        }
+        if !needsUserInteraction {
+            future.resolve(.userConfirmedSafetyNumberChangeOrNoChangeWasNeeded)
+        }
+
+        return (needsUserInteraction: needsUserInteraction, promise: promise)
+    }
+
     @objc
     private func checkRecipientAndRequestApplePay() {
         guard !isRecipientBlockedWithSneakyTransaction() else {
@@ -118,17 +137,28 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         }
 
         firstly(on: .main) { [weak self] () -> Promise<Bool> in
-            guard let self = self else { return Promise.value(false) }
+            guard let self = self else {
+                throw SendGiftBadgeError.userCanceledBeforeChargeCompleted
+            }
             return self.canReceiveGiftBadgesWithUi()
-        }.done(on: .main) { [weak self] canReceiveGiftBadges in
-            guard let self = self else { return }
-
+        }.then(on: .main) { [weak self] canReceiveGiftBadges -> Promise<SafetyNumberConfirmationResult> in
+            guard let self = self else {
+                throw SendGiftBadgeError.userCanceledBeforeChargeCompleted
+            }
             guard canReceiveGiftBadges else {
-                OWSActionSheets.showActionSheet(title: NSLocalizedString("BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE",
-                                                                         comment: "Title for error message dialog indicating that a user can't receive gifts."),
-                                                message: NSLocalizedString("BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY",
-                                                                           comment: "Error message indicating that a user can't receive gifts."))
-                return
+                throw SendGiftBadgeError.cannotReceiveGiftBadges
+            }
+            return self.showSafetyNumberConfirmationIfNecessary().promise
+        }.done(on: .main) { [weak self] safetyNumberConfirmationResult in
+            guard let self = self else {
+                throw SendGiftBadgeError.userCanceledBeforeChargeCompleted
+            }
+
+            switch safetyNumberConfirmationResult {
+            case .userDidNotConfirmSafetyNumberChange:
+                throw SendGiftBadgeError.userCanceledBeforeChargeCompleted
+            case .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded:
+                break
             }
 
             let request = DonationUtilities.newPaymentRequest(for: NSDecimalNumber(value: self.price), currencyCode: self.currencyCode)
@@ -143,6 +173,27 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 }
             }
         }.catch { error in
+            if let error = error as? SendGiftBadgeError {
+                switch error {
+                case .userCanceledBeforeChargeCompleted:
+                    return
+                case .cannotReceiveGiftBadges:
+                    OWSActionSheets.showActionSheet(
+                        title: NSLocalizedString(
+                            "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE",
+                            comment: "Title for error message dialog indicating that a user can't receive gifts."
+                        ),
+                        message: NSLocalizedString(
+                            "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY",
+                            comment: "Error message indicating that a user can't receive gifts."
+                        )
+                    )
+                    return
+                default:
+                    break
+                }
+            }
+
             owsFailDebugUnlessNetworkFailure(error)
             OWSActionSheets.showActionSheet(title: NSLocalizedString("BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE",
                                                                      comment: "Title for error message dialog indicating that you can't send the gift badge for some reason."),
@@ -414,7 +465,8 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
         case recipientIsBlocked
         case failedAndUserNotCharged
         case failedAndUserMaybeCharged
-        case userClosedBeforeChargeCompleted
+        case cannotReceiveGiftBadges
+        case userCanceledBeforeChargeCompleted
     }
 
     private func prepareToPay(authorizedPayment: PKPayment) -> Promise<PreparedPayment> {
@@ -466,8 +518,24 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                 if !(error is SendGiftBadgeError) { owsFailDebugUnlessNetworkFailure(error) }
                 throw SendGiftBadgeError.failedAndUserNotCharged
             }
+        }.then { [weak self] preparedPayment -> Promise<PreparedPayment> in
+            guard let self = self else { throw SendGiftBadgeError.userCanceledBeforeChargeCompleted }
+
+            let safetyNumberConfirmationResult = self.showSafetyNumberConfirmationIfNecessary()
+            if safetyNumberConfirmationResult.needsUserInteraction {
+                wrappedCompletion(.init(status: .success, errors: nil))
+            }
+
+            return safetyNumberConfirmationResult.promise.map { safetyNumberConfirmationResult in
+                switch safetyNumberConfirmationResult {
+                case .userDidNotConfirmSafetyNumberChange:
+                    throw SendGiftBadgeError.userCanceledBeforeChargeCompleted
+                case .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded:
+                    return preparedPayment
+                }
+            }
         }.then { [weak self] preparedPayment -> Promise<Void> in
-            guard let self = self else { throw SendGiftBadgeError.userClosedBeforeChargeCompleted }
+            guard let self = self else { throw SendGiftBadgeError.userCanceledBeforeChargeCompleted }
 
             // Durably enqueue a job to (1) do the charge (2) redeem the receipt credential (3) enqueue
             // a gift badge message (and optionally a text message) to the recipient. We also want to
@@ -485,6 +553,25 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
 
             var modalActivityIndicatorViewController: ModalActivityIndicatorViewController?
             var shouldDismissActivityIndicator = false
+            func presentModalActivityIndicatorIfNotAlreadyPresented() {
+                guard modalActivityIndicatorViewController == nil else { return }
+                ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
+                    DispatchQueue.main.async {
+                        modalActivityIndicatorViewController = modal
+                        // Depending on how things are dispatched, we could need the modal closed immediately.
+                        if shouldDismissActivityIndicator {
+                            modal.dismiss {}
+                        }
+                    }
+                }
+            }
+
+            // This is unusual, but can happen if the Apple Pay sheet was dismissed earlier in the process,
+            // which can happen if the user needed to confirm a safety number change.
+            if hasCalledCompletion {
+                presentModalActivityIndicatorIfNotAlreadyPresented()
+            }
+
             var hasCharged = false
 
             // The happy path is two steps: payment method is charged (showing a spinner), then job finishes (opening the chat).
@@ -528,15 +615,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                     hasCharged = true
                     wrappedCompletion(.init(status: .success, errors: nil))
                     controller.dismiss()
-                    ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-                        DispatchQueue.main.async {
-                            modalActivityIndicatorViewController = modal
-                            // Depending on how things are dispatched, we could need the modal closed immediately.
-                            if shouldDismissActivityIndicator {
-                                modal.dismiss {}
-                            }
-                        }
-                    }
+                    presentModalActivityIndicatorIfNotAlreadyPresented()
                 case .jobSucceeded:
                     future.resolve(())
                 }
@@ -586,11 +665,11 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
             wrappedCompletion(.init(status: .failure, errors: [error]))
 
             switch error {
-            case .userClosedBeforeChargeCompleted:
+            case .userCanceledBeforeChargeCompleted:
                 break
             case .recipientIsBlocked:
                 Self.showRecipientIsBlockedError()
-            case .failedAndUserNotCharged:
+            case .failedAndUserNotCharged, .cannotReceiveGiftBadges:
                 OWSActionSheets.showActionSheet(title: NSLocalizedString("BADGE_GIFTING_PAYMENT_FAILED_TITLE",
                                                                          comment: "Title for the action sheet when you try to send a gift badge but the payment failed"),
                                                 message: NSLocalizedString("BADGE_GIFTING_PAYMENT_FAILED_BODY",
