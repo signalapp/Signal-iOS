@@ -94,7 +94,9 @@ class SafetyNumberConfirmationSheet: UIViewController {
     }
 
     private class func untrustedIdentitiesForSending(addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
-        return addresses.filter { Self.identityManager.untrustedIdentityForSending(to: $0) != nil }
+        databaseStorage.read { transaction in
+            addresses.filter { Self.identityManager.untrustedIdentityForSending(to: $0, transaction: transaction) != nil }
+        }
     }
 
     // MARK: -
