@@ -162,37 +162,30 @@ public class InputAccessoryViewPlaceholder: UIView {
         return .zero
     }
 
+    private var superviewCenterObserver: NSKeyValueObservation?
+
     public override func willMove(toSuperview newSuperview: UIView?) {
         super.willMove(toSuperview: newSuperview)
 
-        // By observing the "center" property of our superview, we can
+        // By observing the .center property of our superview, we can
         // follow along as the keyboard moves up and down.
-        superview?.removeObserver(self, forKeyPath: "center")
-        newSuperview?.addObserver(self, forKeyPath: "center", options: [.initial, .new], context: nil)
-    }
+        superviewCenterObserver?.invalidate()
+        superviewCenterObserver = superview?.observe(\.center, options: [.initial, .new]) { [weak self] (_, _) in
+            guard let self = self else { return }
 
-    deinit {
-        superview?.removeObserver(self, forKeyPath: "center")
-    }
+            // Do nothing unless the keyboard is currently presented.
+            // We're only checking for interactive dismissal, which
+            // can only happen while presented.
+            guard case .presented = self.keyboardState else { return }
 
-    public override func observeValue(
-        forKeyPath keyPath: String?,
-        of object: Any?,
-        change: [NSKeyValueChangeKey: Any]?,
-        context: UnsafeMutableRawPointer?
-    ) {
-        // Do nothing unless the keyboard is currently presented.
-        // We're only checking for interactive dismissal, which
-        // can only happen while presented.
-        guard case .presented = keyboardState else { return }
+            guard self.superview != nil else { return }
 
-        guard superview != nil else { return }
-
-        // While the visible keyboard height is greater than zero,
-        // and the keyboard is presented, we can safely assume
-        // an interactive dismissal is in progress.
-        if visibleKeyboardHeight > 0 {
-            delegate?.inputAccessoryPlaceholderKeyboardIsDismissingInteractively()
+            // While the visible keyboard height is greater than zero,
+            // and the keyboard is presented, we can safely assume
+            // an interactive dismissal is in progress.
+            if self.visibleKeyboardHeight > 0 {
+                self.delegate?.inputAccessoryPlaceholderKeyboardIsDismissingInteractively()
+            }
         }
     }
 
