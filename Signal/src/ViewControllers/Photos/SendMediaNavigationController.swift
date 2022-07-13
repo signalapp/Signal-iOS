@@ -185,7 +185,7 @@ class SendMediaNavigationController: OWSNavigationController {
         if attachmentDraftCollection.count == 0 {
             self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
         } else {
-            let alert = ActionSheetController(title: nil, message: nil)
+            let alert = ActionSheetController(title: nil, message: nil, theme: .translucentDark)
 
             let confirmAbandonText = NSLocalizedString("SEND_MEDIA_CONFIRM_ABANDON_ALBUM",
                                                        comment: "alert action, confirming the user wants to exit the media flow and abandon any photos they've taken")
@@ -339,7 +339,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
                                         comment: "In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded.")
         let buttonTitle = NSLocalizedString("SEND_MEDIA_TURN_OFF_MM_BUTTON",
                                             comment: "In-app camera: confirmation button in the prompt to turn off multi-mode.")
-        let actionSheet = ActionSheetController(title: title, message: message)
+        let actionSheet = ActionSheetController(title: title, message: message, theme: .translucentDark)
         actionSheet.addAction(ActionSheetAction(title: buttonTitle, style: .destructive) { _ in
             self.attachmentDraftCollection.removeAll()
             completion(true)

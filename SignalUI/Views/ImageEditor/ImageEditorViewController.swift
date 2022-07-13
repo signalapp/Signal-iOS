@@ -486,7 +486,7 @@ class ImageEditorViewController: OWSViewController {
                                                     comment: "Media Editor: Message for the 'Discard Changes' confirmation prompt.")
         let discardChangesButton = OWSLocalizedString("MEDIA_EDITOR_DISCARD_ALL_BUTTON",
                                                       comment: "Media Editor: Title for the button in 'Discard Changes' confirmation prompt.")
-        let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
+        let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage, theme: .translucentDark)
         actionSheet.addAction(ActionSheetAction(title: discardChangesButton, style: .destructive, handler: { _ in
             self.clearAll()
             if let completionHandler = completionHandler {

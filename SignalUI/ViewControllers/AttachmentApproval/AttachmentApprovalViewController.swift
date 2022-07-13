@@ -861,7 +861,8 @@ extension AttachmentApprovalViewController {
                             title: CommonStrings.errorAlertTitle,
                             message: OWSLocalizedString(
                                 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT",
-                                comment: "Error that outgoing attachments could not be exported."))
+                                comment: "Error that outgoing attachments could not be exported."),
+                            theme: .translucentDark)
                         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton, style: .default))
 
                         self.present(actionSheet, animated: true)
