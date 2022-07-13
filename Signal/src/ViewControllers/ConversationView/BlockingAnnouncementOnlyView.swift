@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SignalUI
 
 @objc
 class BlockingAnnouncementOnlyView: UIStackView {
@@ -112,20 +113,8 @@ class BlockingAnnouncementOnlyView: UIStackView {
 // MARK: -
 
 @objc
-class MessageUserSubsetSheet: InteractiveSheetViewController {
-    override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
-    private let tableViewController = OWSTableViewController2()
+class MessageUserSubsetSheet: OWSTableSheetViewController {
     private let addresses: [SignalServiceAddress]
-
-    var contentSizeHeight: CGFloat {
-        tableViewController.tableView.contentSize.height + tableViewController.tableView.adjustedContentInset.totalHeight
-    }
-    override var minimizedHeight: CGFloat {
-        return min(contentSizeHeight, maximizedHeight)
-    }
-    override var maximizedHeight: CGFloat {
-        min(contentSizeHeight, CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32))
-    }
 
     init(addresses: [SignalServiceAddress]) {
         owsAssertDebug(!addresses.isEmpty)
@@ -133,7 +122,15 @@ class MessageUserSubsetSheet: InteractiveSheetViewController {
 
         super.init()
 
-        createContent()
+        tableViewController.defaultSeparatorInsetLeading = (OWSTableViewController2.cellHInnerMargin +
+                                                            CGFloat(AvatarBuilder.smallAvatarSizePoints) +
+                                                            ContactCellView.avatarTextHSpacing)
+
+        tableViewController.tableView.register(
+            ContactTableViewCell.self,
+            forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
+
+        updateViewState()
     }
 
     public required init() {
@@ -142,54 +139,9 @@ class MessageUserSubsetSheet: InteractiveSheetViewController {
 
     // MARK: -
 
-    override public func viewDidLoad() {
-        super.viewDidLoad()
-
-        updateTableContents()
-    }
-
-    override func themeDidChange() {
-        super.themeDidChange()
-        updateTableContents()
-    }
-
-    private func createContent() {
-        addChild(tableViewController)
-        let tableView = tableViewController.tableView
-        tableViewController.shouldDeferInitialLoad = false
-        tableViewController.defaultSeparatorInsetLeading = (OWSTableViewController2.cellHInnerMargin +
-                                                                CGFloat(AvatarBuilder.smallAvatarSizePoints) +
-                                                                ContactCellView.avatarTextHSpacing)
-
-        tableView.register(ContactTableViewCell.self,
-                           forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
-        contentView.addSubview(tableViewController.view)
-        tableViewController.view.autoPinEdgesToSuperviewEdges()
-
-        updateViewState()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        updateViewState()
-    }
-
-    private var previousMinimizedHeight: CGFloat?
-    private var previousSafeAreaInsets: UIEdgeInsets?
-    private func updateViewState() {
-        if previousSafeAreaInsets != tableViewController.view.safeAreaInsets {
-            updateTableContents()
-            previousSafeAreaInsets = tableViewController.view.safeAreaInsets
-        }
-        if minimizedHeight != previousMinimizedHeight {
-            heightConstraint?.constant = minimizedHeight
-            previousMinimizedHeight = minimizedHeight
-        }
-    }
-
-    private func updateTableContents() {
+    public override func updateTableContents(shouldReload: Bool = true) {
         let contents = OWSTableContents()
+        defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
         let section = OWSTableSection()
         let header = NSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN",
@@ -222,6 +174,5 @@ class MessageUserSubsetSheet: InteractiveSheetViewController {
                     }
                 }))
         }
-        tableViewController.contents = contents
     }
 }

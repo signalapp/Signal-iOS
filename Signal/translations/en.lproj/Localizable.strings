@@ -1123,6 +1123,9 @@
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Always";
 
+/* table section header button to add a new story */
+"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
+
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
 
@@ -3714,6 +3717,21 @@
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find User";
+
+/* Subitle for create group story row on the 'new story sheet' */
+"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Share to an existing group";
+
+/* Title for create group story row on the 'new story sheet' */
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
+
+/* Subitle for create private story row on the 'new story sheet' */
+"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Visible only to specific people";
+
+/* Title for create private story row on the 'new story sheet' */
+"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "New Private Story";
+
+/* Title for the new story sheet */
+"NEW_STORY_SHEET_TITLE" = "Choose Story Type";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";

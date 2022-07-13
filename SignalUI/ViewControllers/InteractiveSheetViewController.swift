@@ -3,10 +3,9 @@
 //
 
 import Foundation
-import SignalUI
 import UIKit
 
-public class InteractiveSheetViewController: OWSViewController {
+open class InteractiveSheetViewController: OWSViewController {
     private let handleHeight: CGFloat = 5
     private let handleInsideMargin: CGFloat = 12
 
@@ -23,9 +22,9 @@ public class InteractiveSheetViewController: OWSViewController {
 
     public let contentView = UIView()
 
-    public var interactiveScrollViews: [UIScrollView] { [] }
+    open var interactiveScrollViews: [UIScrollView] { [] }
 
-    var sheetBackgroundColor: UIColor { Theme.actionSheetBackgroundColor }
+    open var sheetBackgroundColor: UIColor { Theme.actionSheetBackgroundColor }
 
     public weak var externalBackdropView: UIView?
     private lazy var _internalBackdropView = UIView()
@@ -33,9 +32,9 @@ public class InteractiveSheetViewController: OWSViewController {
     public var backdropColor = Theme.backdropColor
 
     public var maxWidth: CGFloat { 512 }
-    public var minHeight: CGFloat { 346 }
+    open var minHeight: CGFloat { 346 }
 
-    var handlePosition: HandlePosition { .inside }
+    open var handlePosition: HandlePosition { .inside }
     private let handle = UIView()
     private lazy var handleContainer = UIView()
 
@@ -45,7 +44,7 @@ public class InteractiveSheetViewController: OWSViewController {
         transitioningDelegate = self
     }
 
-    public func willDismissInteractively() {}
+    open func willDismissInteractively() {}
 
     // MARK: -
 
@@ -108,7 +107,7 @@ public class InteractiveSheetViewController: OWSViewController {
         setupInteractiveSizing()
     }
 
-    public override func themeDidChange() {
+    open override func themeDidChange() {
         super.themeDidChange()
 
         contentContainerView.backgroundColor = sheetBackgroundColor
@@ -130,11 +129,11 @@ public class InteractiveSheetViewController: OWSViewController {
 
     // MARK: - Resize / Interactive Dismiss
 
-    var heightConstraint: NSLayoutConstraint?
-    var minimizedHeight: CGFloat {
+    public var heightConstraint: NSLayoutConstraint?
+    open var minimizedHeight: CGFloat {
         return min(maximizedHeight, minHeight)
     }
-    var maximizedHeight: CGFloat {
+    open var maximizedHeight: CGFloat {
         return CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32)
     }
 
@@ -143,7 +142,7 @@ public class InteractiveSheetViewController: OWSViewController {
         view.layoutIfNeeded()
     }
 
-    let maxAnimationDuration: TimeInterval = 0.2
+    public let maxAnimationDuration: TimeInterval = 0.2
     private var startingHeight: CGFloat?
     private var startingTranslation: CGFloat?
 
@@ -382,7 +381,7 @@ private class InteractiveSheetAnimationController: UIPresentationController {
 }
 
 extension InteractiveSheetViewController: UIViewControllerTransitioningDelegate {
-    public func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+    open func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
         let controller = InteractiveSheetAnimationController(presentedViewController: presented, presenting: presenting, backdropColor: self.backdropColor)
         return controller
     }

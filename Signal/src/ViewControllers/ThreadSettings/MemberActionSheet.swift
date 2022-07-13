@@ -7,39 +7,13 @@ import ContactsUI
 import SignalUI
 
 @objc
-class MemberActionSheet: InteractiveSheetViewController {
-    let tableViewController = OWSTableViewController2()
-
+class MemberActionSheet: OWSTableSheetViewController {
     private var groupViewHelper: GroupViewHelper?
 
     var avatarView: PrimaryImageView?
     var thread: TSThread { threadViewModel.threadRecord }
     var threadViewModel: ThreadViewModel
     let address: SignalServiceAddress
-
-    override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
-
-    override var sheetBackgroundColor: UIColor {
-        // We can't use `tableViewController.tableBackgroundColor` directly because it changes
-        // depending on whether it's inside a view controller. When this variable is first used,
-        // `tableViewController` isn't a child yet, so the color will be different.
-        //
-        // In the long term, we should consider a larger refactor, likely by turning this sheet's
-        // contents into a "regular" view.
-        //
-        // See IOS-2468 for more details.
-        OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
-    }
-
-    var contentSizeHeight: CGFloat {
-        tableViewController.tableView.contentSize.height + tableViewController.tableView.adjustedContentInset.totalHeight
-    }
-    override var minimizedHeight: CGFloat {
-        return min(contentSizeHeight, maximizedHeight)
-    }
-    override var maximizedHeight: CGFloat {
-        min(contentSizeHeight, CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32))
-    }
 
     @objc
     init(address: SignalServiceAddress, groupViewHelper: GroupViewHelper?) {
@@ -49,7 +23,8 @@ class MemberActionSheet: InteractiveSheetViewController {
 
         super.init()
 
-        tableViewController.shouldDeferInitialLoad = false
+        tableViewController.defaultSeparatorInsetLeading =
+            OWSTableViewController2.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
     }
 
     public required init() {
@@ -91,41 +66,6 @@ class MemberActionSheet: InteractiveSheetViewController {
         viewController.present(self, animated: true)
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        tableViewController.defaultSeparatorInsetLeading = OWSTableViewController2.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
-        addChild(tableViewController)
-        contentView.addSubview(tableViewController.view)
-        tableViewController.view.autoPinEdgesToSuperviewEdges()
-
-        updateViewState()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        updateViewState()
-    }
-
-    private var previousMinimizedHeight: CGFloat?
-    private var previousSafeAreaInsets: UIEdgeInsets?
-    private func updateViewState() {
-        if previousSafeAreaInsets != tableViewController.view.safeAreaInsets {
-            updateTableContents()
-            previousSafeAreaInsets = tableViewController.view.safeAreaInsets
-        }
-        if minimizedHeight != previousMinimizedHeight {
-            heightConstraint?.constant = minimizedHeight
-            previousMinimizedHeight = minimizedHeight
-        }
-    }
-
-    override func themeDidChange() {
-        super.themeDidChange()
-        updateTableContents()
-    }
-
     func reloadThreadViewModel() {
         threadViewModel  = Self.fetchThreadViewModel(address: address)
         updateTableContents()
@@ -135,7 +75,7 @@ class MemberActionSheet: InteractiveSheetViewController {
     // as we are the delegate. This will get released when contact
     // editing has concluded.
     private var strongSelf: MemberActionSheet?
-    func updateTableContents(shouldReload: Bool = true) {
+    public override func updateTableContents(shouldReload: Bool = true) {
         let contents = OWSTableContents()
         defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 

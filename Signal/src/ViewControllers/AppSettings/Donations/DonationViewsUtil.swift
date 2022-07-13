@@ -59,8 +59,8 @@ public class SubscriptionReadMoreSheet: InteractiveSheetViewController {
     let stackView = UIStackView()
     public override var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
     public override var minHeight: CGFloat { min(740, CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32)) }
-    override var maximizedHeight: CGFloat { minHeight }
-    override var sheetBackgroundColor: UIColor { Theme.tableView2PresentedBackgroundColor }
+    public override var maximizedHeight: CGFloat { minHeight }
+    public override var sheetBackgroundColor: UIColor { Theme.tableView2PresentedBackgroundColor }
 
     // MARK: -
 

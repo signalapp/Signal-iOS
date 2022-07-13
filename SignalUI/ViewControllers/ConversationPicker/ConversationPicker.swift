@@ -397,7 +397,40 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         do {
             let section = OWSTableSection()
             if FeatureFlags.stories && !shouldHideStoriesSection && !conversationCollection.storyConversations.isEmpty {
-                section.headerTitle = Strings.storiesSection
+                let storiesHeaderView = UIStackView()
+                storiesHeaderView.addBackgroundView(withBackgroundColor: tableBackgroundColor)
+                storiesHeaderView.axis = .horizontal
+                storiesHeaderView.isLayoutMarginsRelativeArrangement = true
+                storiesHeaderView.layoutMargins = cellOuterInsetsWithMargin(
+                    top: (defaultSpacingBetweenSections ?? 0) + 12,
+                    left: Self.cellHInnerMargin * 0.5,
+                    bottom: 10,
+                    right: Self.cellHInnerMargin * 0.5
+                )
+                storiesHeaderView.layoutMargins.left += tableView.safeAreaInsets.left
+                storiesHeaderView.layoutMargins.right += tableView.safeAreaInsets.right
+
+                let textView = LinkingTextView()
+                textView.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
+                textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+                textView.text = Strings.storiesSection
+
+                storiesHeaderView.addArrangedSubview(textView)
+                storiesHeaderView.addArrangedSubview(.hStretchingSpacer())
+
+                let newStoryButton = OWSFlatButton.button(
+                    title: Strings.addNewStoryButton,
+                    font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold,
+                    titleColor: Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90,
+                    backgroundColor: .clear,
+                    target: self,
+                    selector: #selector(didTapNewStory)
+                )
+
+                storiesHeaderView.addArrangedSubview(newStoryButton)
+
+                section.customHeaderView = storiesHeaderView
+
                 addExpandableConversations(
                     to: section,
                     sectionIndex: .stories,
@@ -457,6 +490,12 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         setContents(contents, shouldReload: shouldReload)
         restoreSelection()
+    }
+
+    @objc
+    func didTapNewStory() {
+        let vc = NewStorySheet()
+        present(vc, animated: true)
     }
 
     private func addConversations(to section: OWSTableSection, conversations: [ConversationItem]) {
@@ -782,6 +821,7 @@ extension ConversationPickerViewController {
         static let signalContactsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS", comment: "table section header for section containing contacts")
         static let groupsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_GROUPS", comment: "table section header for section containing groups")
         static let storiesSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_STORIES", comment: "table section header for section containing stories")
+        static let addNewStoryButton = OWSLocalizedString("CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON", comment: "table section header button to add a new story")
     }
 }
 

@@ -5,6 +5,7 @@
 import Foundation
 import UIKit
 import SignalMessaging
+import SignalUI
 
 protocol BadgeExpirationSheetDelegate: AnyObject {
     func badgeExpirationSheetActionTapped(_ action: BadgeExpirationSheetAction)
@@ -162,26 +163,15 @@ public class BadgeExpirationSheetState {
     }()
 }
 
-class BadgeExpirationSheet: InteractiveSheetViewController {
+class BadgeExpirationSheet: OWSTableSheetViewController {
     private let state: BadgeExpirationSheetState
 
-    override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
-    override var sheetBackgroundColor: UIColor { tableViewController.tableBackgroundColor }
-    private var shouldMakeVisibleAndPrimary = false
-    public weak var delegate: BadgeExpirationSheetDelegate?
-
-    var contentSizeHeight: CGFloat {
+    public override var contentSizeHeight: CGFloat {
         tableViewController.tableView.layoutIfNeeded()
         return tableViewController.tableView.contentSize.height + tableViewController.tableView.adjustedContentInset.top
     }
-    override var minimizedHeight: CGFloat {
-        return min(contentSizeHeight, maximizedHeight)
-    }
-    override var maximizedHeight: CGFloat {
-        min(contentSizeHeight, CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32))
-    }
 
-    private let tableViewController = OWSTableViewController2()
+    public weak var delegate: BadgeExpirationSheetDelegate?
 
     public init(badge: ProfileBadge, mode: BadgeExpirationSheetState.Mode) {
         self.state = BadgeExpirationSheetState(badge: badge, mode: mode)
@@ -189,7 +179,6 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
 
         super.init()
 
-        tableViewController.shouldDeferInitialLoad = false
         updateTableContents()
     }
 
@@ -197,39 +186,9 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
         fatalError("init() has not been implemented")
     }
 
-    override public func viewDidLoad() {
-        super.viewDidLoad()
-
-        addChild(tableViewController)
-
-        contentView.addSubview(tableViewController.view)
-        tableViewController.view.autoPinEdgesToSuperviewEdges()
-
-        updateViewState()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        updateViewState()
-    }
-
-    private var previousMinimizedHeight: CGFloat?
-    private func updateViewState() {
-        if minimizedHeight != previousMinimizedHeight {
-            heightConstraint?.constant = minimizedHeight
-            previousMinimizedHeight = minimizedHeight
-        }
-    }
-
-    override func themeDidChange() {
-        super.themeDidChange()
-        updateTableContents()
-    }
-
-    private func updateTableContents() {
+    public override func updateTableContents(shouldReload: Bool = true) {
         let contents = OWSTableContents()
-        defer { tableViewController.contents = contents }
+        defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
         let headerSection = OWSTableSection()
         headerSection.hasBackground = false

@@ -6,29 +6,7 @@ import Foundation
 import SignalServiceKit
 import SignalUI
 
-class BadgeThanksSheet: InteractiveSheetViewController {
-    override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
-    override var sheetBackgroundColor: UIColor { tableViewController.tableBackgroundColor }
-    private var shouldMakeVisibleAndPrimary = false
-
-    var contentSizeHeight: CGFloat {
-        // The table view doesn't have the correct height during normal layout
-        // passes. To correct that problem, we call `layoutIfNeeded()`. However,
-        // doing this causes `tableView.adjustedContentInset.bottom` to diverge
-        // from its expected value of `view.safeAreaInsets.bottom` during
-        // interactive drag animations, which results in really odd/jumpy layout
-        // behavior. Given we always show this view attached to the bottom of the
-        // screen, use `view.safeAreaInsets.bottom` directly for now.
-        tableViewController.tableView.contentSize.height + self.view.safeAreaInsets.bottom
-    }
-    override var minimizedHeight: CGFloat {
-        return min(contentSizeHeight, maximizedHeight)
-    }
-    override var maximizedHeight: CGFloat {
-        min(contentSizeHeight, CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32))
-    }
-
-    private let tableViewController = OWSTableViewController2()
+class BadgeThanksSheet: OWSTableSheetViewController {
 
     enum BadgeType {
         case boost
@@ -39,6 +17,7 @@ class BadgeThanksSheet: InteractiveSheetViewController {
     private let badge: ProfileBadge
     private let badgeType: BadgeType
 
+    private lazy var shouldMakeVisibleAndPrimary = badgeType.isRecurring || !hasAnySustainerBadge
     private lazy var profileSnapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
     private lazy var hasAnySustainerBadge = profileSnapshot.profileBadgeInfo?.first { SubscriptionBadgeIds.contains($0.badgeId) } != nil
     private lazy var visibleBadges = profileSnapshot.profileBadgeInfo?.filter { $0.isVisible ?? false } ?? []
@@ -61,7 +40,6 @@ class BadgeThanksSheet: InteractiveSheetViewController {
 
         super.init()
 
-        tableViewController.shouldDeferInitialLoad = false
         updateTableContents()
     }
 
@@ -204,42 +182,9 @@ class BadgeThanksSheet: InteractiveSheetViewController {
 
     // MARK: -
 
-    override public func viewDidLoad() {
-        super.viewDidLoad()
-
-        addChild(tableViewController)
-
-        contentView.addSubview(tableViewController.view)
-        tableViewController.view.autoPinEdgesToSuperviewEdges()
-
-        shouldMakeVisibleAndPrimary = self.badgeType.isRecurring || !self.hasAnySustainerBadge
-
-        updateViewState()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        self.tableViewController.tableView.layoutIfNeeded()
-        updateViewState()
-    }
-
-    private var previousMinimizedHeight: CGFloat?
-    private func updateViewState() {
-        if minimizedHeight != previousMinimizedHeight {
-            heightConstraint?.constant = minimizedHeight
-            previousMinimizedHeight = minimizedHeight
-        }
-    }
-
-    override func themeDidChange() {
-        super.themeDidChange()
-        updateTableContents()
-    }
-
-    private func updateTableContents() {
+    public override func updateTableContents(shouldReload: Bool = true) {
         let contents = OWSTableContents()
-        defer { tableViewController.contents = contents }
+        defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
         let headerSection = OWSTableSection()
         headerSection.hasBackground = false

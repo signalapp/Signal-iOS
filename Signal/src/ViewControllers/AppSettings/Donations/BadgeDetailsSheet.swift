@@ -7,22 +7,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class BadgeDetailsSheet: InteractiveSheetViewController {
-    override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
-    override var sheetBackgroundColor: UIColor { tableViewController.tableBackgroundColor }
-
-    var contentSizeHeight: CGFloat {
-        tableViewController.tableView.contentSize.height + tableViewController.tableView.adjustedContentInset.totalHeight
-    }
-    override var minimizedHeight: CGFloat {
-        return min(contentSizeHeight, maximizedHeight)
-    }
-    override var maximizedHeight: CGFloat {
-        min(contentSizeHeight, CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32))
-    }
-
-    private let tableViewController = OWSTableViewController2()
-
+class BadgeDetailsSheet: OWSTableSheetViewController {
     public enum Owner: Equatable {
         // TODO: Eventually we won't need a short name for self, the server will provide copy for us.
         case local(shortName: String)
@@ -52,7 +37,6 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
         self.focusedBadge = focusedBadge
         self.owner = owner
         super.init()
-        createContent()
     }
 
     public required init() {
@@ -61,49 +45,9 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
 
     // MARK: -
 
-    override public func viewDidLoad() {
-        super.viewDidLoad()
-
-        updateTableContents()
-    }
-
-    override func themeDidChange() {
-        super.themeDidChange()
-        updateTableContents()
-    }
-
-    private func createContent() {
-        addChild(tableViewController)
-        tableViewController.shouldDeferInitialLoad = false
-
-        contentView.addSubview(tableViewController.view)
-        tableViewController.view.autoPinEdgesToSuperviewEdges()
-
-        updateViewState()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-        updateViewState()
-    }
-
-    private var previousMinimizedHeight: CGFloat?
-    private var previousSafeAreaInsets: UIEdgeInsets?
-    private func updateViewState() {
-        if previousSafeAreaInsets != tableViewController.view.safeAreaInsets {
-            updateTableContents()
-            previousSafeAreaInsets = tableViewController.view.safeAreaInsets
-        }
-        if minimizedHeight != previousMinimizedHeight {
-            heightConstraint?.constant = minimizedHeight
-            previousMinimizedHeight = minimizedHeight
-        }
-    }
-
-    private func updateTableContents() {
+    override public func updateTableContents(shouldReload: Bool = true) {
         let contents = OWSTableContents()
-        defer { tableViewController.contents = contents }
+        defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
         let focusedBadgeSection = OWSTableSection()
         focusedBadgeSection.hasBackground = false
