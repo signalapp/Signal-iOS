@@ -704,7 +704,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             }
 
             CameraFirstCaptureNavigationController *cameraModal =
-                [CameraFirstCaptureNavigationController cameraFirstModal];
+                [CameraFirstCaptureNavigationController cameraFirstModalWithStoriesOnly:NO];
             cameraModal.cameraFirstCaptureSendFlow.delegate = self;
             cameraModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
 

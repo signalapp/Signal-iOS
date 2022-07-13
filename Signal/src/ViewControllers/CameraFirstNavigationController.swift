@@ -23,6 +23,12 @@ public class CameraFirstCaptureSendFlow: NSObject {
     private let selection = ConversationPickerSelection()
     var selectedConversations: [ConversationItem] { selection.conversations }
 
+    private let storiesOnly: Bool
+    public init(storiesOnly: Bool) {
+        self.storiesOnly = storiesOnly
+        super.init()
+    }
+
     private func updateMentionCandidates() {
         AssertIsOnMainThread()
 
@@ -62,7 +68,12 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
 
         let pickerVC = ConversationPickerViewController(selection: selection)
         pickerVC.pickerDelegate = self
-        pickerVC.sectionOptions.insert(.stories)
+        if storiesOnly {
+            pickerVC.isStorySectionExpanded = true
+            pickerVC.sectionOptions = .stories
+        } else {
+            pickerVC.sectionOptions.insert(.stories)
+        }
         sendMediaNavigationController.pushViewController(pickerVC, animated: true)
     }
 
