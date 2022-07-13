@@ -191,7 +191,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     OWSAssertDebug(transaction);
     OWSAssertDebug(devicesToAdd.count > 0 || devicesToRemove.count > 0);
 
-    SignalRecipient *recipient = [self getOrCreateLowTrustRecipientWithAdddress:address transaction:transaction];
+    SignalRecipient *recipient = [self getOrCreateLowTrustRecipientWithAddress:address transaction:transaction];
     [recipient updateWithDevicesToAdd:devicesToAdd devicesToRemove:devicesToRemove transaction:transaction];
 }
 
@@ -299,14 +299,14 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
     switch (trustLevel) {
         case SignalRecipientTrustLevelLow:
-            return [self getOrCreateLowTrustRecipientWithAdddress:address transaction:transaction];
+            return [self getOrCreateLowTrustRecipientWithAddress:address transaction:transaction];
         case SignalRecipientTrustLevelHigh:
             return [self getOrCreateHighTrustRecipientWithAddress:address markAsRegistered:YES transaction:transaction];
     }
 }
 
-+ (SignalRecipient *)getOrCreateLowTrustRecipientWithAdddress:(SignalServiceAddress *)address
-                                                  transaction:(SDSAnyWriteTransaction *)transaction
++ (SignalRecipient *)getOrCreateLowTrustRecipientWithAddress:(SignalServiceAddress *)address
+                                                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(transaction);
@@ -614,7 +614,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(transaction);
 
-    SignalRecipient *recipient = [self getOrCreateLowTrustRecipientWithAdddress:address transaction:transaction];
+    SignalRecipient *recipient = [self getOrCreateLowTrustRecipientWithAddress:address transaction:transaction];
 
     if (recipient.devices.count > 0) {
         OWSLogDebug(@"Marking recipient as not registered: %@", address);
