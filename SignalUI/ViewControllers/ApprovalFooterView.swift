@@ -12,6 +12,8 @@ public enum ApprovalMode: UInt {
     case send
     // This is not the final step of approval; continuing will not send.
     case next
+    // This is the final step of approval; but it does not send it just selects.
+    case select
     // This step is not yet ready to proceed.
     case loading
 }
@@ -231,6 +233,7 @@ fileprivate extension ApprovalMode {
         switch self {
         case .next: return CommonStrings.nextButton
         case .send: return MessageStrings.sendButton
+        case .select: return CommonStrings.doneButton
         case .loading: return nil
         }
     }
@@ -239,6 +242,7 @@ fileprivate extension ApprovalMode {
         switch self {
         case .next: return "arrow-right-24"
         case .send: return "send-solid-24"
+        case .select: return "check-24"
         case .loading: return nil
         }
     }

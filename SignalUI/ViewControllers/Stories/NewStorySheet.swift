@@ -6,11 +6,18 @@ import Foundation
 import UIKit
 
 public class NewStorySheet: OWSTableSheetViewController {
-    public required init() {
+    let selectItemsInParent: (([StoryConversationItem]) -> Void)?
+    public required init(selectItemsInParent: (([StoryConversationItem]) -> Void)?) {
+        self.selectItemsInParent = selectItemsInParent
+
         super.init()
 
         tableViewController.defaultSeparatorInsetLeading =
             OWSTableViewController2.cellHInnerMargin + 48 + OWSTableItem.iconSpacing
+    }
+
+    public required init() {
+        fatalError("init() has not been implemented")
     }
 
     public override func updateTableContents(shouldReload: Bool = true) {
@@ -25,7 +32,7 @@ public class NewStorySheet: OWSTableSheetViewController {
             let label = UILabel()
             label.font = UIFont.ows_dynamicTypeHeadlineClamped
             label.textColor = Theme.primaryTextColor
-            label.text = NSLocalizedString("NEW_STORY_SHEET_TITLE", comment: "Title for the new story sheet")
+            label.text = OWSLocalizedString("NEW_STORY_SHEET_TITLE", comment: "Title for the new story sheet")
             label.textAlignment = .center
 
             let cell = OWSTableItem.newCell()
@@ -40,22 +47,27 @@ public class NewStorySheet: OWSTableSheetViewController {
         contents.addSection(optionsSection)
         optionsSection.add(buildOptionItem(
             icon: .settingsPrivacy,
-            title: NSLocalizedString("NEW_STORY_SHEET_PRIVATE_STORY_TITLE",
+            title: OWSLocalizedString("NEW_STORY_SHEET_PRIVATE_STORY_TITLE",
                                      comment: "Title for create private story row on the 'new story sheet'"),
-            subtitle: NSLocalizedString("NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE",
+            subtitle: OWSLocalizedString("NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE",
                                         comment: "Subitle for create private story row on the 'new story sheet'"),
             action: {
-
+                OWSActionSheets.showActionSheet(title: LocalizationNotNeeded("Creating private stories is not yet implemented."))
             }))
 
         optionsSection.add(buildOptionItem(
             icon: .settingsShowGroup,
-            title: NSLocalizedString("NEW_STORY_SHEET_GROUP_STORY_TITLE",
+            title: OWSLocalizedString("NEW_STORY_SHEET_GROUP_STORY_TITLE",
                                      comment: "Title for create group story row on the 'new story sheet'"),
-            subtitle: NSLocalizedString("NEW_STORY_SHEET_GROUP_STORY_SUBTITLE",
+            subtitle: OWSLocalizedString("NEW_STORY_SHEET_GROUP_STORY_SUBTITLE",
                                         comment: "Subitle for create group story row on the 'new story sheet'"),
-            action: {
-
+            action: { [weak self] in
+                guard let self = self else { return }
+                let presentingViewController = self.presentingViewController
+                self.dismiss(animated: true) {
+                    let vc = NewGroupStoryViewController(selectItemsInParent: self.selectItemsInParent)
+                    presentingViewController?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                }
             }))
     }
 

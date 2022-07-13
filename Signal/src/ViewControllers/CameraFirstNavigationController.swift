@@ -62,7 +62,7 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
 
         let pickerVC = ConversationPickerViewController(selection: selection)
         pickerVC.pickerDelegate = self
-        pickerVC.shouldHideStoriesSection = false
+        pickerVC.sectionOptions.insert(.stories)
         sendMediaNavigationController.pushViewController(pickerVC, animated: true)
     }
 

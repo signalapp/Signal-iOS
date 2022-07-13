@@ -186,7 +186,7 @@ extension GroupConversationItem: ConversationItem {
 
 // MARK: -
 
-struct StoryConversationItem {
+public struct StoryConversationItem {
     enum ItemType {
         case groupStory(_ item: GroupConversationItem)
         case privateStory(_ item: PrivateStoryConversationItem)
@@ -204,15 +204,15 @@ struct StoryConversationItem {
 // MARK: -
 
 extension StoryConversationItem: ConversationItem {
-    var messageRecipient: MessageRecipient {
+    public var messageRecipient: MessageRecipient {
         unwrapped.messageRecipient
     }
 
-    func title(transaction: SDSAnyReadTransaction) -> String {
+    public func title(transaction: SDSAnyReadTransaction) -> String {
         unwrapped.title(transaction: transaction)
     }
 
-    func subtitle(transaction: SDSAnyReadTransaction) -> String? {
+    public func subtitle(transaction: SDSAnyReadTransaction) -> String? {
         guard let thread = getExistingThread(transaction: transaction) else {
             owsFailDebug("Unexpectedly missing story thread")
             return nil
@@ -243,23 +243,23 @@ extension StoryConversationItem: ConversationItem {
         }
     }
 
-    var image: UIImage? {
+    public var image: UIImage? {
         unwrapped.image
     }
 
-    var isBlocked: Bool {
+    public var isBlocked: Bool {
         unwrapped.isBlocked
     }
 
-    var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? {
+    public var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? {
         unwrapped.disappearingMessagesConfig
     }
 
-    func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread? {
+    public func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread? {
         unwrapped.getExistingThread(transaction: transaction)
     }
 
-    func getOrCreateThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
+    public func getOrCreateThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
         unwrapped.getOrCreateThread(transaction: transaction)
     }
 }

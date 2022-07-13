@@ -91,18 +91,33 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    public var shouldHideStoriesSection = true {
+    public struct SectionOptions: OptionSet {
+        public let rawValue: Int
+
+        public init(rawValue: Int) {
+            self.rawValue = rawValue
+        }
+
+        public static let stories  = SectionOptions(rawValue: 1 << 0)
+        public static let recents  = SectionOptions(rawValue: 1 << 1)
+        public static let contacts = SectionOptions(rawValue: 1 << 2)
+        public static let groups   = SectionOptions(rawValue: 1 << 3)
+
+        public static let all: SectionOptions = [.stories, .recents, .contacts, .groups]
+    }
+
+    public var sectionOptions: SectionOptions = [.recents, .contacts, .groups] {
         didSet {
-            if isViewLoaded {
-                updateTableContents()
-            }
+            if isViewLoaded { updateTableContents() }
         }
     }
+
+    public var threadFilter: (_ isIncluded: TSThread) -> Bool = { _ in true }
 
     public var maxStoryConversationsToRender = 2
     public var isStorySectionExpanded = false
 
-    public var shouldHideRecentConversationsTitle = false {
+    public var shouldHideRecentConversationsTitle: Bool = false {
         didSet {
             if isViewLoaded {
                 updateTableContents()
@@ -236,6 +251,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             let maxRecentCount = 25 - pinnedThreadIds.count
 
             let addThread = { (thread: TSThread) -> Void in
+                guard self.threadFilter(thread) else { return }
+
                 guard thread.canSendChatMessagesToThread(ignoreAnnouncementOnly: true) else {
                     return
                 }
@@ -244,10 +261,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 case let contactThread as TSContactThread:
                     let item = self.buildContactItem(contactThread.contactAddress, transaction: transaction)
                     seenAddresses.insert(contactThread.contactAddress)
-                    if pinnedThreadIds.contains(thread.uniqueId) {
+                    if self.sectionOptions.contains(.recents) && pinnedThreadIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         pinnedItemsByThreadId[thread.uniqueId] = recentItem
-                    } else if recentItems.count < maxRecentCount {
+                    } else if self.sectionOptions.contains(.recents) && recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         recentItems.append(recentItem)
                     } else {
@@ -258,10 +275,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                         return
                     }
                     let item = self.buildGroupItem(groupThread, transaction: transaction)
-                    if pinnedThreadIds.contains(thread.uniqueId) {
+                    if self.sectionOptions.contains(.recents) && pinnedThreadIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
                         pinnedItemsByThreadId[thread.uniqueId] = recentItem
-                    } else if recentItems.count < maxRecentCount {
+                    } else if self.sectionOptions.contains(.recents) && recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
                         recentItems.append(recentItem)
                     } else {
@@ -342,6 +359,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         return firstly(on: .global()) {
             Self.databaseStorage.read { transaction in
                 let groupItems = searchResults.groupThreads.compactMap { groupThread -> GroupConversationItem? in
+                    guard self.threadFilter(groupThread) else { return nil }
                     guard groupThread.canSendChatMessagesToThread(ignoreAnnouncementOnly: true) else {
                         return nil
                     }
@@ -396,7 +414,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         // Stories Section
         do {
             let section = OWSTableSection()
-            if FeatureFlags.stories && !shouldHideStoriesSection && !conversationCollection.storyConversations.isEmpty {
+            if FeatureFlags.stories && sectionOptions.contains(.stories) && !conversationCollection.storyConversations.isEmpty {
                 let storiesHeaderView = UIStackView()
                 storiesHeaderView.addBackgroundView(withBackgroundColor: tableBackgroundColor)
                 storiesHeaderView.axis = .horizontal
@@ -447,8 +465,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         // Recents Section
         do {
             let section = OWSTableSection()
-            if !conversationCollection.recentConversations.isEmpty {
-                if !shouldHideRecentConversationsTitle {
+            if sectionOptions.contains(.recents) && !conversationCollection.recentConversations.isEmpty {
+                if !shouldHideRecentConversationsTitle || sectionOptions == .recents {
                     section.headerTitle = Strings.recentsSection
                 }
                 addConversations(to: section, conversations: conversationCollection.recentConversations)
@@ -460,8 +478,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         // Contacts Section
         do {
             let section = OWSTableSection()
-            if !conversationCollection.contactConversations.isEmpty {
-                section.headerTitle = Strings.signalContactsSection
+            if sectionOptions.contains(.contacts) && !conversationCollection.contactConversations.isEmpty {
+                if sectionOptions != .contacts {
+                    section.headerTitle = Strings.signalContactsSection
+                }
                 addConversations(to: section, conversations: conversationCollection.contactConversations)
                 hasContents = true
             }
@@ -471,8 +491,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         // Groups Section
         do {
             let section = OWSTableSection()
-            if !conversationCollection.groupConversations.isEmpty {
-                section.headerTitle = Strings.groupsSection
+            if sectionOptions.contains(.groups) && !conversationCollection.groupConversations.isEmpty {
+                if sectionOptions != .groups {
+                    section.headerTitle = Strings.groupsSection
+                }
                 addConversations(to: section, conversations: conversationCollection.groupConversations)
                 hasContents = true
             }
@@ -494,7 +516,13 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     @objc
     func didTapNewStory() {
-        let vc = NewStorySheet()
+        let vc = NewStorySheet { [weak self] items in
+            guard let self = self else { return }
+            self.isStorySectionExpanded = true
+            self.conversationCollection = self.buildConversationCollection()
+            items.forEach { self.selection.add($0) }
+            self.restoreSelection()
+        }
         present(vc, animated: true)
     }
 
@@ -993,12 +1021,16 @@ public class ConversationPickerSelection {
     }
 
     public func remove(_ conversation: ConversationItem) {
-        conversations.removeAll { $0.messageRecipient == conversation.messageRecipient }
+        conversations.removeAll {
+            ($0 is StoryConversationItem) == (conversation is StoryConversationItem) && $0.messageRecipient == conversation.messageRecipient
+        }
         delegate?.conversationPickerSelectionDidRemove()
     }
 
     public func isSelected(conversation: ConversationItem) -> Bool {
-        !conversations.filter { $0.messageRecipient == conversation.messageRecipient }.isEmpty
+        !conversations.filter {
+            ($0 is StoryConversationItem) == (conversation is StoryConversationItem) && $0.messageRecipient == conversation.messageRecipient
+        }.isEmpty
     }
 }
 
@@ -1051,10 +1083,14 @@ private struct ConversationCollection {
                 return nil
             }
         case .group:
-            if let row = (recentConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
+            if conversation is StoryConversationItem {
+                if let row = (storyConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
+                    return IndexPath(row: row, section: ConversationPickerSection.stories.rawValue)
+                } else {
+                    return nil
+                }
+            } else if let row = (recentConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
                 return IndexPath(row: row, section: ConversationPickerSection.recents.rawValue)
-            } else if conversation is StoryConversationItem, let row = (storyConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
-                return IndexPath(row: row, section: ConversationPickerSection.stories.rawValue)
             } else if let row = (groupConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
                 return IndexPath(row: row, section: ConversationPickerSection.groups.rawValue)
             } else {

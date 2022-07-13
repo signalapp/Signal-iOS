@@ -133,7 +133,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
     }
 
     func showNewPrivateStoryView() {
-
+        OWSActionSheets.showActionSheet(title: LocalizationNotNeeded("Creating private stories is not yet implemented."))
     }
 
     func showPrivateStoryView(for thread: TSPrivateStoryThread) {

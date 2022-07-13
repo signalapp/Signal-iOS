@@ -962,6 +962,7 @@
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
 		88B6D673280770C4005D86EC /* TextAttachmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885275BF27E26775003F2F9B /* TextAttachmentView.swift */; };
 		88B6D674280770C4005D86EC /* StoryMessage+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B6D67128076F37005D86EC /* StoryMessage+SignalUI.swift */; };
+		88B986F4287F5B6500F8C74D /* NewGroupStoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B986F3287F5B6500F8C74D /* NewGroupStoryViewController.swift */; };
 		88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */; };
 		88BE44A626153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BE44A526153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift */; };
 		88BE44A82615451A00AE8E33 /* GroupPermissionsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BE44A72615451A00AE8E33 /* GroupPermissionsSettingsViewController.swift */; };
@@ -2384,6 +2385,7 @@
 		88B2234B284FABE600A25048 /* StoryThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryThumbnailView.swift; sourceTree = "<group>"; };
 		88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsDetailSheet.swift; sourceTree = "<group>"; };
 		88B6D67128076F37005D86EC /* StoryMessage+SignalUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StoryMessage+SignalUI.swift"; sourceTree = "<group>"; };
+		88B986F3287F5B6500F8C74D /* NewGroupStoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGroupStoryViewController.swift; sourceTree = "<group>"; };
 		88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionReactionState.swift; sourceTree = "<group>"; };
 		88BE44A526153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundAndNotificationsSettingsViewController.swift; sourceTree = "<group>"; };
 		88BE44A72615451A00AE8E33 /* GroupPermissionsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupPermissionsSettingsViewController.swift; sourceTree = "<group>"; };
@@ -4350,6 +4352,7 @@
 			isa = PBXGroup;
 			children = (
 				8868A088287F4514000E74A5 /* NewStorySheet.swift */,
+				88B986F3287F5B6500F8C74D /* NewGroupStoryViewController.swift */,
 			);
 			path = Stories;
 			sourceTree = "<group>";
@@ -6117,6 +6120,7 @@
 				3402AAB2271D9E180084CBAE /* ContactTableViewCell.swift in Sources */,
 				3402AA74271D9E180084CBAE /* OWSBubbleShapeView.swift in Sources */,
 				3402AA99271D9E180084CBAE /* OWSButton.swift in Sources */,
+				88B986F4287F5B6500F8C74D /* NewGroupStoryViewController.swift in Sources */,
 				3402AAA9271D9E180084CBAE /* GradientView.swift in Sources */,
 				3402AA69271D9DEC0084CBAE /* OWSQuotedReplyModel.m in Sources */,
 				342FFE57271DA8C9000AC89F /* OWSSounds+SignalUI.swift in Sources */,

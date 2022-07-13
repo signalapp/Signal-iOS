@@ -14,9 +14,9 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     var attachments: [SignalAttachment]? {
         didSet {
             if let attachments = attachments, attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo }) {
-                shouldHideStoriesSection = false
+                sectionOptions.insert(.stories)
             } else {
-                shouldHideStoriesSection = true
+                sectionOptions.remove(.stories)
             }
             updateApprovalMode()
         }
