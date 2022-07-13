@@ -7,8 +7,8 @@ import Curve25519Kit
 public struct SessionId {
     public enum Prefix: String, CaseIterable {
         case standard = "05"    // Used for identified users, open groups, etc.
-        case blinded = "15"     // Used for participants in open groups with blinding enabled
-        case unblinded = "00"   // Used for participants in open groups with blinding disabled
+        case blinded = "15"     // Used for authentication and participants in open groups with blinding enabled
+        case unblinded = "00"   // Used for authentication in open groups with blinding disabled
         
         public init?(from stringValue: String?) {
             guard let stringValue: String = stringValue else { return nil }

@@ -141,7 +141,7 @@ public enum SMKLegacy {
         internal var sender: String?
         internal var groupPublicKey: String?
         internal var openGroupServerMessageID: UInt64?
-        internal var openGroupServerTimestamp: UInt64?
+        internal var openGroupServerTimestamp: UInt64?  // Not used for anything
         internal var serverHash: String?
 
         // MARK: NSCoding
@@ -175,7 +175,6 @@ public enum SMKLegacy {
             result.sender = self.sender
             result.groupPublicKey = self.groupPublicKey
             result.openGroupServerMessageId = self.openGroupServerMessageID
-            result.openGroupServerTimestamp = self.openGroupServerTimestamp
             result.serverHash = self.serverHash
             
             return result

@@ -70,7 +70,7 @@ extension OpenGroupAPI {
         /// File ID of an uploaded file containing the room's image
         ///
         /// Omitted if there is no image
-        public let imageId: Int64?
+        public let imageId: String?
         
         /// Array of pinned message information (omitted entirely if there are no pinned messages)
         public let pinnedMessages: [PinnedMessage]?
@@ -150,6 +150,12 @@ extension OpenGroupAPI.Room {
     public init(from decoder: Decoder) throws {
         let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
         
+        // This logic is to future-proof the transition from int-based to string-based image ids
+        let maybeImageId: String? = (
+            ((try? container.decode(Int64.self, forKey: .imageId)).map { "\($0)" }) ??
+            (try? container.decode(String.self, forKey: .imageId))
+        )
+        
         self = OpenGroupAPI.Room(
             token: try container.decode(String.self, forKey: .token),
             name: try container.decode(String.self, forKey: .name),
@@ -160,7 +166,7 @@ extension OpenGroupAPI.Room {
             
             activeUsers: try container.decode(Int64.self, forKey: .activeUsers),
             activeUsersCutoff: try container.decode(Int64.self, forKey: .activeUsersCutoff),
-            imageId: try? container.decode(Int64.self, forKey: .imageId),
+            imageId: maybeImageId,
             pinnedMessages: try? container.decode([OpenGroupAPI.PinnedMessage].self, forKey: .pinnedMessages),
             
             admin: ((try? container.decode(Bool.self, forKey: .admin)) ?? false),

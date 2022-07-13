@@ -719,6 +719,99 @@ public final class SnodeAPI {
         return promise
     }
     
+    // MARK: Edit
+    
+    public static func updateExpiry(
+        publicKey: String,
+        edKeyPair: Box.KeyPair,
+        updatedExpiryMs: UInt64,
+        serverHashes: [String]
+    ) -> Promise<[String: (hashes: [String], expiry: UInt64)]> {
+        let publicKey = (Features.useTestnet ? publicKey.removingIdPrefixIfNeeded() : publicKey)
+        
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+            getSwarm(for: publicKey)
+                .then2 { swarm -> Promise<[String: (hashes: [String], expiry: UInt64)]> in
+                    // "expire" || expiry || messages[0] || ... || messages[N]
+                    let verificationBytes = SnodeAPIEndpoint.expire.rawValue.bytes
+                        .appending(contentsOf: "\(updatedExpiryMs)".data(using: .ascii)?.bytes)
+                        .appending(contentsOf: serverHashes.joined().bytes)
+                    
+                    guard
+                        let snode = swarm.randomElement(),
+                        let signature = sodium.sign.signature(
+                            message: verificationBytes,
+                            secretKey: edKeyPair.secretKey
+                        )
+                    else {
+                        throw SnodeAPIError.signingFailed
+                    }
+                    
+                    let parameters: JSON = [
+                        "pubkey" : publicKey,
+                        "pubkey_ed25519" : edKeyPair.publicKey.toHexString(),
+                        "expiry": updatedExpiryMs,
+                        "messages": serverHashes,
+                        "signature": signature.toBase64()
+                    ]
+                    
+                    return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                        invoke(.expire, on: snode, associatedWith: publicKey, parameters: parameters)
+                            .map2 { responseData -> [String: (hashes: [String], expiry: UInt64)] in
+                                guard let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON else {
+                                    throw HTTP.Error.invalidJSON
+                                }
+                                guard let swarm = responseJson["swarm"] as? JSON else { throw HTTP.Error.invalidJSON }
+                                
+                                var result: [String: (hashes: [String], expiry: UInt64)] = [:]
+                                    
+                                for (snodePublicKey, rawJSON) in swarm {
+                                    guard let json = rawJSON as? JSON else { throw HTTP.Error.invalidJSON }
+                                    guard (json["failed"] as? Bool ?? false) == false else {
+                                        if let reason = json["reason"] as? String, let statusCode = json["code"] as? String {
+                                            SNLog("Couldn't delete data from: \(snodePublicKey) due to error: \(reason) (\(statusCode)).")
+                                        }
+                                        else {
+                                            SNLog("Couldn't delete data from: \(snodePublicKey).")
+                                        }
+                                        result[snodePublicKey] = ([], 0)
+                                        continue
+                                    }
+                                    
+                                    guard
+                                        let hashes: [String] = json["updated"] as? [String],
+                                        let expiryApplied: UInt64 = json["expiry"] as? UInt64,
+                                        let signature: String = json["signature"] as? String
+                                    else {
+                                        throw HTTP.Error.invalidJSON
+                                    }
+                                    
+                                    // The signature format is ( PUBKEY_HEX || EXPIRY || RMSG[0] || ... || RMSG[N] || UMSG[0] || ... || UMSG[M] )
+                                    let verificationBytes = publicKey.bytes
+                                        .appending(contentsOf: "\(expiryApplied)".data(using: .ascii)?.bytes)
+                                        .appending(contentsOf: serverHashes.joined().bytes)
+                                        .appending(contentsOf: hashes.joined().bytes)
+                                    let isValid = sodium.sign.verify(
+                                        message: verificationBytes,
+                                        publicKey: Bytes(Data(hex: snodePublicKey)),
+                                        signature: Bytes(Data(base64Encoded: signature)!)
+                                    )
+                                    
+                                    // Ensure the signature is valid
+                                    guard isValid else {
+                                        throw SnodeAPIError.signatureVerificationFailed
+                                    }
+                                    
+                                    result[snodePublicKey] = (hashes, expiryApplied)
+                                }
+                                
+                                return result
+                            }
+                    }
+                }
+        }
+    }
+    
     // MARK: Delete
     
     public static func deleteMessage(publicKey: String, serverHashes: [String]) -> Promise<[String: Bool]> {
@@ -732,10 +825,16 @@ public final class SnodeAPI {
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
             getSwarm(for: publicKey)
                 .then2 { swarm -> Promise<[String: Bool]> in
+                    // "delete" || messages...
+                    let verificationBytes = SnodeAPIEndpoint.deleteMessage.rawValue.bytes
+                        .appending(contentsOf: serverHashes.joined().bytes)
+                    
                     guard
                         let snode = swarm.randomElement(),
-                        let verificationData = (SnodeAPIEndpoint.deleteMessage.rawValue + serverHashes.joined()).data(using: String.Encoding.utf8),
-                        let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)
+                        let signature = sodium.sign.signature(
+                            message: verificationBytes,
+                            secretKey: userED25519KeyPair.secretKey
+                        )
                     else {
                         throw SnodeAPIError.signingFailed
                     }
@@ -771,15 +870,11 @@ public final class SnodeAPI {
                                         }
                                         
                                         // The signature format is ( PUBKEY_HEX || RMSG[0] || ... || RMSG[N] || DMSG[0] || ... || DMSG[M] )
-                                        let verificationData = [
-                                            userX25519PublicKey,
-                                            serverHashes.joined(),
-                                            hashes.joined()
-                                        ]
-                                        .joined()
-                                        .data(using: String.Encoding.utf8)!
+                                        let verificationBytes = userX25519PublicKey.bytes
+                                            .appending(contentsOf: serverHashes.joined().bytes)
+                                            .appending(contentsOf: hashes.joined().bytes)
                                         let isValid = sodium.sign.verify(
-                                            message: Bytes(verificationData),
+                                            message: verificationBytes,
                                             publicKey: Bytes(Data(hex: snodePublicKey)),
                                             signature: Bytes(Data(base64Encoded: signature)!)
                                         )

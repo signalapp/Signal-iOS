@@ -446,10 +446,10 @@ public final class OpenGroupManager: NSObject {
             
             /// Start downloading the room image (if we don't have one or it's been updated)
             if
-                let imageId: Int64 = pollInfo.details?.imageId,
+                let imageId: String = pollInfo.details?.imageId,
                 (
                     openGroup.imageData == nil ||
-                    openGroup.imageId != "\(imageId)"
+                    openGroup.imageId != imageId
                 )
             {
                 OpenGroupManager.roomImage(db, fileId: imageId, for: roomToken, on: server, using: dependencies)
@@ -786,7 +786,7 @@ public final class OpenGroupManager: NSObject {
         .done(on: OpenGroupAPI.workQueue) { items in
             dependencies.storage.writeAsync { db in
                 items
-                    .compactMap { room -> (Int64, String)? in
+                    .compactMap { room -> (String, String)? in
                         // Try to insert an inactive version of the OpenGroup (use 'insert' rather than 'save'
                         // as we want it to fail if the room already exists)
                         do {
@@ -797,7 +797,7 @@ public final class OpenGroupManager: NSObject {
                                 isActive: false,
                                 name: room.name,
                                 roomDescription: room.roomDescription,
-                                imageId: room.imageId.map { "\($0)" },
+                                imageId: room.imageId,
                                 imageData: nil,
                                 userCount: room.activeUsers,
                                 infoUpdates: room.infoUpdates,
@@ -809,7 +809,7 @@ public final class OpenGroupManager: NSObject {
                         }
                         catch {}
                         
-                        guard let imageId: Int64 = room.imageId else { return nil }
+                        guard let imageId: String = room.imageId else { return nil }
                         
                         return (imageId, room.token)
                     }
@@ -845,7 +845,7 @@ public final class OpenGroupManager: NSObject {
     
     public static func roomImage(
         _ db: Database,
-        fileId: Int64,
+        fileId: String,
         for roomToken: String,
         on server: String,
         using dependencies: OGMDependencies = OGMDependencies()

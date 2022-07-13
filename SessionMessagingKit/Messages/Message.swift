@@ -14,7 +14,6 @@ public class Message: Codable {
     public var sender: String?
     public var groupPublicKey: String?
     public var openGroupServerMessageId: UInt64?
-    public var openGroupServerTimestamp: UInt64?
     public var serverHash: String?
 
     public var ttl: UInt64 { 14 * 24 * 60 * 60 * 1000 }
@@ -41,7 +40,6 @@ public class Message: Codable {
         sender: String? = nil,
         groupPublicKey: String? = nil,
         openGroupServerMessageId: UInt64? = nil,
-        openGroupServerTimestamp: UInt64? = nil,
         serverHash: String? = nil
     ) {
         self.id = id
@@ -52,7 +50,6 @@ public class Message: Codable {
         self.sender = sender
         self.groupPublicKey = groupPublicKey
         self.openGroupServerMessageId = openGroupServerMessageId
-        self.openGroupServerTimestamp = openGroupServerTimestamp
         self.serverHash = serverHash
     }
 

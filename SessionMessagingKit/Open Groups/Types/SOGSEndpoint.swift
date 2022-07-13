@@ -35,7 +35,7 @@ extension OpenGroupAPI {
         // Files
         
         case roomFile(String)
-        case roomFileIndividual(String, Int64)
+        case roomFileIndividual(String, String)
         
         // Inbox/Outbox (Message Requests)
         

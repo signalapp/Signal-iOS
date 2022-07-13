@@ -10,4 +10,5 @@ public enum SnodeAPIEndpoint: String {
     case oxenDaemonRPCCall = "oxend_request"
     case getInfo = "info"
     case clearAllData = "delete_all"
+    case expire = "expire"
 }
