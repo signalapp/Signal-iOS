@@ -94,7 +94,9 @@ class ExpandableContactListView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        updateTextLabelEdgesFading()
+        DispatchQueue.main.async {
+            self.updateTextLabelEdgesFading()
+        }
     }
 
     // MARK: - Layout
