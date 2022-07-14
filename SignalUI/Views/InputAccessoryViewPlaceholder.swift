@@ -170,7 +170,7 @@ public class InputAccessoryViewPlaceholder: UIView {
         // By observing the .center property of our superview, we can
         // follow along as the keyboard moves up and down.
         superviewCenterObserver?.invalidate()
-        superviewCenterObserver = superview?.observe(\.center, options: [.initial, .new]) { [weak self] (_, _) in
+        superviewCenterObserver = newSuperview?.observe(\.center, options: [.initial, .new]) { [weak self] (_, _) in
             guard let self = self else { return }
 
             // Do nothing unless the keyboard is currently presented.
