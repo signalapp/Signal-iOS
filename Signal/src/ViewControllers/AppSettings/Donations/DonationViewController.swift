@@ -316,7 +316,7 @@ class DonationViewController: OWSTableViewController2 {
 
                 let stackView = self.getHeroHeaderView()
                 cell.addSubview(stackView)
-                stackView.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(hMargin: 19, vMargin: 21))
+                stackView.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(hMargin: 0, vMargin: 6))
                 stackView.spacing = 20
 
                 let descriptionTextView = self.descriptionTextView
@@ -373,8 +373,6 @@ class DonationViewController: OWSTableViewController2 {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.alignment = .center
-        stackView.layoutMargins = UIEdgeInsets(hMargin: 19, vMargin: 0)
-        stackView.isLayoutMarginsRelativeArrangement = true
 
         stackView.addArrangedSubview(avatarView)
         stackView.setCustomSpacing(16, after: avatarView)
