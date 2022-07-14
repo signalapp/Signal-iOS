@@ -170,7 +170,7 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
 
     var roundCorners: Bool = false {
         didSet {
-            contentView.layer.cornerRadius = roundCorners ? 18 : 0
+            clipView.layer.cornerRadius = roundCorners ? 18 : 0
         }
     }
 
@@ -194,7 +194,6 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
         }
 
         contentView.isOpaque = false
-        contentView.layer.masksToBounds = true
         contentView.layer.addSublayer(imageLayer)
         contentView.layoutCallback = { [weak self] (_) in
             guard let strongSelf = self else {
