@@ -60,6 +60,8 @@ public class MediaView: UIView {
 
         backgroundColor = Colors.unimportant
         clipsToBounds = true
+        layer.masksToBounds = true
+        layer.cornerRadius = VisibleMessageCell.largeCornerRadius
 
         createContents()
     }
