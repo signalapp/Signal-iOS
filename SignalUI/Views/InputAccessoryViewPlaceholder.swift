@@ -158,6 +158,10 @@ public class InputAccessoryViewPlaceholder: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    deinit {
+        superviewCenterObserver?.invalidate()
+    }
+
     public override var intrinsicContentSize: CGSize {
         return .zero
     }
