@@ -46,13 +46,18 @@ public class NewStorySheet: OWSTableSheetViewController {
         optionsSection.customHeaderHeight = 28
         contents.addSection(optionsSection)
         optionsSection.add(buildOptionItem(
-            icon: .settingsPrivacy,
+            icon: .settingsPrivateStory,
             title: OWSLocalizedString("NEW_STORY_SHEET_PRIVATE_STORY_TITLE",
                                      comment: "Title for create private story row on the 'new story sheet'"),
             subtitle: OWSLocalizedString("NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE",
                                         comment: "Subitle for create private story row on the 'new story sheet'"),
-            action: {
-                OWSActionSheets.showActionSheet(title: LocalizationNotNeeded("Creating private stories is not yet implemented."))
+            action: { [weak self] in
+                guard let self = self else { return }
+                let presentingViewController = self.presentingViewController
+                self.dismiss(animated: true) {
+                    let vc = NewPrivateStoryRecipientsViewController(selectItemsInParent: self.selectItemsInParent)
+                    presentingViewController?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                }
             }))
 
         optionsSection.add(buildOptionItem(

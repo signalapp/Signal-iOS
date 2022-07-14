@@ -861,6 +861,22 @@
 			<string>%d Members</string>
 		</dict>
 	</dict>
+	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Viewer</string>
+			<key>other</key>
+			<string>%d Viewers</string>
+		</dict>
+	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

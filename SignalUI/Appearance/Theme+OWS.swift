@@ -74,6 +74,8 @@ public enum ThemeIcon: UInt {
     case contextMenuSelect
     case contextMenuInfo
 
+    case privateStory40
+
     case compose24
     case composeNewGroup
     case composeFindByPhoneNumber
@@ -281,6 +283,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "gift-solid-24" : "gift-outline-24"
         case .settingsPrivateStory:
             return isDarkThemeEnabled ? "private-story-solid-24" : "private-story-outline-24"
+        case .privateStory40:
+            return isDarkThemeEnabled ? "private-story-solid-40" : "private-story-outline-40"
 
         // Input Toolbar
         case .stickerButton:
