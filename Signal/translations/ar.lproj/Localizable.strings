@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "أرشفة";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "أصلي";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "مربع";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "لقد بلغت الحد الأقصى للتعليق.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "إضافة تعليق...";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "تسمية توضيحية";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "فشل تصدير المُرفق.";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "جودة الوسائط";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "إرسال إلى %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "أرسلْ";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "المُرفقات";
@@ -397,41 +397,53 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "لقد تم إلغاء التبرعات الشهرية";
 
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "شكراً لدعمك!";
+
 /* Text telling the user that they can add a message along with their gift badge */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "سيتم إرسال هديتك في رسالة من طرفك إلى المُستلم مباشرة. أضف رسالتك الخاصة أدناه.";
 
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "إضافة نص";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "يَتعذر إرسال الشارة المهداة. يُرجى تفقد اتصالك والمحاولة من جديد.";
 
 /* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "يتعذر إرسال الشارة المهداة";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
-"BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
+"BADGE_GIFTING_CHAT_EXPIRED" = "انتهت الصلاحية";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "قُم بإهداء شارة لِشخص ما عن طريق تقديم تبرع إلى Signal. سَيتلقون شارة لعرضها على حسابهم الشخصي.";
 
 /* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "أهدِ شارة";
 
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "اختر المُستلِم";
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "تأكيد الهدية";
 
 /* Error message indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "لا يمكن لهذا المستخدم تلقي الهدايا حتى يقوم بترقية Signal.";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "لا يمكن لهذا المُستخدم تلقي الهدايا حتى يقوم بترقية Signal.";
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "يتعذر إرسال الشارة المهداة";
+
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "يتعذر إرسال الشارة المهداة";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "أرسِل شارة كهدية";
 
 /* Text telling the user that their gift is a one-time donation */
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "التبرع مرة واحدة";
@@ -440,7 +452,7 @@
 "BADGE_GIFTING_PAYMENT_FAILED_BODY" = "تعذّر معالجة دفعتك ولم يتم تحصيل أي رسوم منك. يُرجى المحاولة مرة اخرى.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "فشل عملية الدّفع";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "تمت معالجة عمليات دفعك ولكن Signal لم يتمكن من إرسال شارة الهدية الخاصة بك. يُرجى الاتصال بالدعم.";
@@ -449,31 +461,34 @@
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "لم نتكمن من إرسال شارة الهدية";
 
 /* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 وصلتك هدية";
 
 /* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 لقد أرسلت هدية";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
-"BADGE_GIFTING_REDEEM" = "Redeem";
+"BADGE_GIFTING_REDEEM" = "اقبل الهدية";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
+"BADGE_GIFTING_REDEEM_LATER" = "يمكنك استرجاع شارتك لاحقًا";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ أرسل لك هدية";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "Redeemed";
+"BADGE_GIFTING_REDEEMED" = "تمّ الاسترداد";
+
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "هدية";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "تدوم %@";
 
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "إظهار";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "You’ve received a gift badge from %@. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "وصلتك شارة مُهداة من طرف %@. أظهر هذه الشارة على حسابك الشخصي لتُساهم في بناء التوعية للتبرع لصالح Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "تمّ إلغاء تبرعك الشهري المُتكرر تلقائيًا. %@ شارتك %@ لم تعد مرئية في ملفك الشخصي.";
@@ -989,10 +1004,10 @@
 "CONTACT_SUPPORT" = "الاتصال بالدعم";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "تبرّعات وشارات";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "تبرّعات وشارات";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "أودُ طَلبَ ميزَةٍ جديدَة";
@@ -1670,7 +1685,7 @@
 "DONATION_PAYMENT_ERROR_CALL_ISSUER" = "يُرجى التحقّق من أن طريقة دفعك في Apple Pay مُحينة. إن لم تكن كذلك، قم بتحيينها وحاول مجددًا. إن كنت لازلت تواجه مشاكل، يُرجى الاتصال بِبنكك.";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "لا تدعم بطاقتك هذا الصنف من المشتريات. يُرجى محاولة استخدام طريقة دفع أخرى أو التواصل مع مصرفك للحصول على مزيد من المعلومات.";
 
 /* Donation payment error for decline failures where the card has expired. */
 "DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "لقد انتهت صلاحية بطاقتك. يُرجى التحقّق من أن طريقة دفعك في Apple Pay محينة. إن لم تكن كذلك، قم بتحيينها وحاول من جديد.";
@@ -1679,7 +1694,7 @@
 "DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "رقم بطاقتك خاطئ. يُرجى التحقق من أنك أدخلت طريقة دفعك في Apple Pay بشكل صحيح. إن لم تكن كذلك، قم بتحيينها وحاول من جديد.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "رقم رمز التحقق من البطاقة (CVC) الخاص بك غير صحيح. تحقّق لمعرفة ما إذا كان رقم رمز التحقق من البطاقة (CVC) الخاص بك قد تم إدخاله بشكل صحيح في Apple Pay. إذا لم يكن كذلك، فحدّثه وحاول مرة أخرى.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
 "DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "لا تتوفر بطاقتك على مبالغ كافية لإتمام عملية الشراء هذه. يُرجى محاولة استخدام طريقة دفع أخرى أو الاتصال بِبنكك للمزيد من العملومات. ";
@@ -1691,7 +1706,7 @@
 "DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "سنة انتهاء الصلاحية التي أدخلتها في طريقة دفعك خاطئة. يُرجى تحيينها في Apple Pay والمحاولة من جديد.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "رقم بطاقتك غير صحيح. يُرجى تحديثه في Apple Pay والمحاولة مرة أخرى.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
 "DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "يُرجى محاولة إتمام الدفع مرة أخرى أو الاتصال بالمصرف الذي لديك حساب عنده للمزيد من المعلومات.";
@@ -1700,7 +1715,7 @@
 "DONATION_PAYMENT_ERROR_OTHER" = "يُرجى محاولة القيام بطريقة أخرى للدفع أو الاتصال بالمصرف الذي لديك عنده حساب للمزيد من المعلومات.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "يُرجى التحقّق من أن طريقة دفعك في Apple Pay مُحيّنة. إن لم تكن كذلك، قم بتحيينها وحاول مجددًا.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "المبلغ";
@@ -1716,6 +1731,9 @@
 
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "نشكرك على دعم Signal. تمكننا مساهمتك من الالتزام بمهمة تطوير تقنية خصوصية مفتوحة المصدر تحمي حرية التعبير وتتيح اتصالا عالميا آمنا للملايين عبر العالم. إذا كنت من المقيمين بالولايات المتحدة الأمريكية، يُرجى الاحتفاظ بهذا التوصيل للإدلاء به عند مصلحة الضرائب. إن ‫مؤسسة تكنولوجيا Signal‬ مؤسسة خيرية عمومية وغير ربحية، أُحدثَت بالولايات المتحدة اﻷمريكية، وهي معفية من الضرائب بموجب الفقرة 501c3 من قانون الإيرادات الداخلية. مُعرِّفنا الضريبي هو ‎.82-4506840‎";
+
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "هدية";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "مرة واحدة";
@@ -1742,7 +1760,7 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "التَّبّرُّع لِـ Signal";
 
 /* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "Gift a Badge";
+"DONATION_VIEW_GIFT" = "أهدِ شارة";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "لقد حدث خطأ في الشبكة. يُرجى التحقق من اتصالك بالانترنت ثم المحاولة مرة أخرى.";
@@ -3092,7 +3110,7 @@
 "JOIN_CALL_PILL_BUTTON" = "انضم";
 
 /* Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot */
-"JOINED_WITH_DOT" = "%@ · %@";
+"JOINED_WITH_DOT" = "%@ . %@";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "اذهب إلى جميع الوسائط";
@@ -3217,6 +3235,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "جميع الوسائط";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "محو الكل";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "التخلي عن التغييرات";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "سَتفقد أي تغييرات أحدثتها لهذه الصورة";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "التخلي عن التغييرات؟";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "إعادة التعيين";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "إضافة رسالة";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "وسائط للمشاهدة مرة واحدة";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3284,7 +3323,7 @@
 "MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "صوت فيس تايم";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "ڤيديو فيس تايم";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "فيديو فيس تايم";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "إرسال رسالة نصية";
@@ -3517,9 +3556,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "لقد تمَّ عرضه";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "رِسالة جديدة";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "إنَّ %@ لم يعُد مُعلَّم كمُتحقَّق مِنه. انقر للحُصول على الخيارات.";
 
@@ -3568,11 +3604,47 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "سَيظهر تحديث قِصتك هنا.";
 
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "إخفاء قصتك من أناس مُحددين";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "المشاركة مع جميع جهات الاتصال";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "قِصصي";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "قِصتي";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "قِصتي";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "مُؤخَّرًا غَيَّرَ اِسمَ مَلَفِّهِ الشَّخصِيِ مِن %1$@ إلى %2$@.";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "العودة";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "أضف إلى المجموعة على أي حال";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "اتصل على أي حال";
@@ -4952,7 +5024,7 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "تعطيل";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "ستفقد أي صور أو مقاطع فيديو تم التقاطها.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
 "SEND_MEDIA_TURN_OFF_MM_TITLE" = "إطفاء الوضع المُتعدد؟";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "إضافة مستخدم محظور";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "ليس لديك جهات اتصال على Signal.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5995,6 +6067,12 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "أنت";
 
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "تبرع";
 
@@ -6008,7 +6086,7 @@
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "كن من الداعمين";
 
 /* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "تمّ نسخ مُعرف المُشترِك إلى الحافظة";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "رقم أمانك مع %@ متطابق. يمكنك تعليم جهة الاتصال هذه كمتحقق منها.";
@@ -6407,7 +6485,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "مُراجعة أرقام الأمان";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
-"VIDEO_BROKEN" = "This video can’t be played";
+"VIDEO_BROKEN" = "تعذّر تشغيل هذا الفيديو";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "مُكالمة فيديو";

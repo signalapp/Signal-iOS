@@ -16,6 +16,20 @@
 			<string>%d 秒長嘅語音訊息</string>
 		</dict>
 	</dict>
+	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>加入成員</string>
+		</dict>
+	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -27,7 +41,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>係咪要加 %d 位成員到「%2$@」？</string>
+			<string>確定要將 %d 位成員加入「%2$@」？</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -44,20 +58,6 @@
 			<string>加入新成員</string>
 		</dict>
 	</dict>
-	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>加入成員</string>
-		</dict>
-	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -69,7 +69,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>有 %d 個聊天用緊呢隻自訂色彩。您係咪要喺全部聊天入面將佢刪除？</string>
+			<string>有 %d 個聊天用緊呢隻自訂顏色。你確定要喺所有聊天度刪除呢隻色？</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -83,7 +83,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>有 %d 個聊天用緊呢隻色彩。您係咪要喺全部聊天入面儲存變更？</string>
+			<string>有 %d 個聊天用緊呢隻顏色。你確定要喺所有聊天度儲存變更？</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -97,7 +97,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>係咪要刪除 %d 個聊天？</string>
+			<string>確定要刪除 %d 個聊天？</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -111,7 +111,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>系統會喺呢部裝置到刪除呢啲聊天內容。</string>
+			<string>系統會喺呢部裝置度刪除呢啲聊天。</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>您唔可以揀超過 %d 個聊天。</string>
+			<string>你唔可以揀多過 %d 個聊天。</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -204,7 +204,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d 分鐘之前</string>
+			<string>%d 分鐘前</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -218,7 +218,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>係咪要刪除 %d 個訊息？</string>
+			<string>確定要刪除 %d 個訊息？</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -263,6 +263,62 @@
 			<string>傳送 %d 個訊息</string>
 		</dict>
 	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>因為有 %d 個成員仲用緊舊版嘅 Signal，所以建立唔到群組。你可以等佢哋更新咗 Signal 之後建立新版群組，或者先將佢哋移除，然後再建立群組。%2$@</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>因為有 %d 個成員仲用緊舊版嘅 Signal，所以建立唔到呢個群組。你可以等佢哋更新咗 Signal 之後建立新版群組，或者先將佢哋移除，然後再建立群組。</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>有 %d 個成員未能重新加入新版群組。確定要宜家加返佢哋？</string>
+		</dict>
+	</dict>
+	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Signal 群組喺人數唔超過 %d 個成員嘅時候表現最好。超過呢個數字嘅話，收發訊息嘅時間就會延遲。</string>
+		</dict>
+	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -274,7 +330,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>呢個通話已經到咗 %d 個參與人數嘅上限。請您等一陣再試。</string>
+			<string>呢個通話已經到咗 %d 個參與人數嘅上限。請稍候再試。</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -289,62 +345,6 @@
 			<string>d</string>
 			<key>other</key>
 			<string>呢個通話有 %d 個人</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>%d 次觀看</string>
-		</dict>
-	</dict>
-	<key>PRIVATE_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>私人限時動態 · %d 次觀看</string>
-		</dict>
-	</dict>
-	<key>MY_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>%d 位觀看者</string>
-		</dict>
-	</dict>
-	<key>GROUP_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>群組限時動態 · %d 位觀看者</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -400,7 +400,49 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>發出左 %d 個邀請</string>
+			<string>發出咗 %d 個邀請</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>有 %d 個群組成員個名好似。</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>有 %d 個群組成員個名好似。你可以睇吓以下成員，或者選擇採取行動。</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>有 %d 個群組成員個名好似，你可以睇吓以下成員，或者選擇採取行動。</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -431,7 +473,7 @@
 			<string>%d 個成員</string>
 		</dict>
 	</dict>
-	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
+	<key>GROUP_REMOTE_USER_INVITED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -442,13 +484,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d 個群組成員個名差唔多。</string>
+			<string>邀請咗 %d 個人加入群組。</string>
 		</dict>
 	</dict>
-	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
+	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
+		<string>%1$#@text@</string>
 		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -456,21 +498,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d 個群組成員個名差唔多，請您睇睇下面嘅成員，或者要採取行動。</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>%d 個群組成員個名一樣，請您睇睇下面嘅成員，或者要採取行動。</string>
+			<string>%2$@ 邀請咗 %d 個人加入群組。</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -501,7 +529,7 @@
 			<string>%2$@ 撤回咗 %d 個人嘅群組邀請。</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
+	<key>GROUP_STORY_VIEWERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -512,21 +540,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>邀請咗 %d 個人加入群組。</string>
-		</dict>
-	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>%2$@ 邀請咗 %d 個人加入群組。</string>
+			<string>群組限時動態 · %d 次觀看</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -540,7 +554,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>有 %d 個成員加入唔到新版群組，並且已經喺群組到剷走咗。</string>
+			<string>有 %d 個成員加入唔到新版群組，並且已經喺群組移除。</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -557,62 +571,6 @@
 			<string>有 %d 個成員加入唔到新版群組，已經邀請咗佢地加入。</string>
 		</dict>
 	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>因為有 %d 個成員仲用緊舊版嘅 Signal，所以建立唔到群組。您可以等佢哋更新 Signal 之後建立新版群組，或者先將佢哋移除，再建立群組。%2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>因為有 %d 個成員仲用緊舊版嘅 Signal，所以建立唔到呢個群組。您可以等佢哋更新 Signal 之後建立新版群組，或者先將佢哋移除，再建立群組。</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>有 %d 個成員冇辦法重新加入新版群組。您要唔要而家加返佢哋？</string>
-		</dict>
-	</dict>
-	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>Signal 群組喺人數唔超過 %d 個成員嘅時候表現最好。加入得越多人就會令到收發訊息延遲。</string>
-		</dict>
-	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -624,7 +582,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>您唔可以分享超過 %d 個項目。</string>
+			<string>你唔可以分享超過 %d 個項目。</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -683,6 +641,20 @@
 			<string>%d 個項目</string>
 		</dict>
 	</dict>
+	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>你封鎖咗呢個群組入面嘅 %d 個成員</string>
+		</dict>
+	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -697,18 +669,50 @@
 			<string>揀選咗 %d 個</string>
 		</dict>
 	</dict>
-	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 person excluded</string>
+			<key>other</key>
+			<string>%d people excluded</string>
+		</dict>
+	</dict>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 person</string>
+			<key>other</key>
+			<string>%d people</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>您封鎖咗呢個群組入面嘅 %d 個成員</string>
+			<string>%d 次觀看</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -736,7 +740,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>PIN 碼唔啱。您剩返 %d 次嘗試機會。</string>
+			<string>PIN 碼唔啱。你仲有 %d 次機會。</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -764,7 +768,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d 個成員請求仲未處理。</string>
+			<string>仲有 %d 個成員請求未處理。</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -781,20 +785,6 @@
 			<string>撤回 %d 個無效嘅邀請</string>
 		</dict>
 	</dict>
-	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>係咪要撤回 %2$@ 發出嘅 %d 個邀請？</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -809,6 +799,20 @@
 			<string>撤回邀請</string>
 		</dict>
 	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>確定要撤回 %2$@ 發出嘅 %d 個邀請？</string>
+		</dict>
+	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -820,7 +824,21 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>我哋遲啲會提醒您。您一定要喺 %d 日之內建立 PIN 碼。</string>
+			<string>我哋稍後會提醒你。你必須喺 %d 日之內建立 PIN 碼。</string>
+		</dict>
+	</dict>
+	<key>PRIVATE_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>私人限時動態 · %d 次觀看</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -834,7 +852,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>您剩返 %d 次嘗試機會。如果機會用盡咗，您可以重新建立 PIN 碼。您可以登記同使用您嘅帳號，但係就會冇咗一啲之前儲存低嘅設定，例如您嘅個人資料。</string>
+			<string>你仲有 %d 次機會。如果用晒所有機會，你可以重新建立 PIN 碼。你可以登記同使用你嘅帳戶，但係就會冇咗一啲之前儲存咗嘅設定，例如你嘅個人檔案資料。</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -848,7 +866,53 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>您剩返 %d 次嘗試機會。如果機會用盡咗，您個帳號就會被鎖定。閒置 7 日之後，您可以唔需要用 PIN 碼嚟重新登記，而您嘅帳號同所有內容都會被刪除。</string>
+			<string>你仲有 %d 次機會。如果用晒所有機會，你嘅帳戶就會被鎖定。閒置 7 日之後，你可以喺冇 PIN 碼嘅情況下重新登記，而你嘅帳戶同所有內容都會被刪除。</string>
+		</dict>
+	</dict>
+	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Connection</string>
+			<key>other</key>
+			<string>%d Connections</string>
+		</dict>
+	</dict>
+	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Excluded</string>
+			<key>other</key>
+			<string>%d Excluded</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%d 次觀看</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -862,7 +926,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@、%3$@ 同埋另外 %d 個群組嘅成員</string>
+			<string>「%2$@」、「%3$@」同埋另外 %d 個群組嘅成員</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>

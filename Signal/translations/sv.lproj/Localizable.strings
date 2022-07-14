@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Arkivera";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Original";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Square";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Gräns för bildtext nådd.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Lägg till en bildtext…";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Rubrik";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Det gick inte att exportera bilagan.";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Mediekvalitet";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Meddelande till %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Skicka";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Bilaga";
@@ -397,6 +397,12 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Månatlig donation avbruten";
 
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "Tack för ditt stöd!";
+
 /* Text telling the user that they can add a message along with their gift badge */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Din gåva kommer att skickas i ett privat meddelande till mottagaren. Lägg till ditt eget meddelande nedan.";
 
@@ -429,6 +435,12 @@
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Cannot Send Gift Badge";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Skicka ett gåvomärke";
@@ -465,6 +477,9 @@
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
 "BADGE_GIFTING_REDEEMED" = "Inlöst";
+
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "Gåva";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Gäller i %@";
@@ -1716,6 +1731,9 @@
 
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Tack för att du stöder Signal. Ditt bidrag hjälper till att driva på uppdraget att utveckla öppen källkods integritetsteknik som skyddar yttrandefrihet och möjliggör säker global kommunikation för miljoner runt om i världen. Om du är bosatt i USA, spara detta kvitto för dina skatteuppgifter. Signal Technology Foundation är en skattebefriad ideell organisation i USA enligt avsnitt 501c3 i Internal Revenue Code. Vårt federala skatte-ID är 82–4506840.";
+
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "Gåva";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "En gång";
@@ -3217,6 +3235,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Alla media";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Clear All";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Discard Changes";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "You will lose any changes you have made to this photo";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Discard Changes?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "Återställ";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Add Message";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "View Once Media";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3517,9 +3556,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Visat";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Nytt meddelande";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ är inte markerad som verifierad längre. Tryck för alternativ.";
 
@@ -3568,11 +3604,47 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Uppdateringar av din berättelse kommer att visas här.";
 
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Hide your story from specific people";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Share with all connections";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Mina berättelser";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "Min berättelse";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "Min berättelse";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nyligen ändrat sitt profilnamn från %1$@ till %2$@.";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "Återgå";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Lägg till i grupp ändå";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Ring ändå";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Lägg till en blockerad användare";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Du har inga kontakter med Signal.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5994,6 +6066,12 @@
 
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "Du";
+
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Donera";

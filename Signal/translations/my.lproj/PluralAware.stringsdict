@@ -28,10 +28,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>Add Member</string>
 			<key>other</key>
-			<string>Add Members</string>
+			<string>မန်ဘာ ပေါင်းထည့်ရန်</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -183,10 +181,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 Member</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>မန်ဘာ %d ဦး</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -215,8 +211,6 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>%dm</string>
 			<key>other</key>
 			<string>%dm</string>
 		</dict>
@@ -535,10 +529,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 Member</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>မန်ဘာ %d ဦး</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -615,10 +607,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>Group Story · 1 Viewer</string>
 			<key>other</key>
-			<string>Group Story · %d Viewers</string>
+			<string>အဖွဲ့ စတိုရီ · ကြည့်ရှုသူ %d ဦး</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -765,7 +755,7 @@
 			<string>%d Selected</string>
 		</dict>
 	</dict>
-	<key>MY_STORY_VIEWERS_%d</key>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -776,9 +766,39 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 person excluded</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d people excluded</string>
+		</dict>
+	</dict>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 person</string>
+			<key>other</key>
+			<string>%d people</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>ကြည့်ရှုသူ %d ဦး</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -791,10 +811,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 Member</string>
 			<key>other</key>
-			<string>%d Members</string>
+			<string>မန်ဘာ %d ဦး</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -957,6 +975,38 @@
 			<string>You have %d attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
 		</dict>
 	</dict>
+	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Connection</string>
+			<key>other</key>
+			<string>%d Connections</string>
+		</dict>
+	</dict>
+	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Excluded</string>
+			<key>other</key>
+			<string>%d Excluded</string>
+		</dict>
+	</dict>
 	<key>STORY_VIEWS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1079,8 +1129,6 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1m</string>
 			<key>other</key>
 			<string>%dm</string>
 		</dict>

@@ -149,7 +149,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Bilinmeyen Veritabanı Sürümü";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal açılırken çalışırken bir sorun yaşadı. Bu sorunu gidermeye yardımcı olması için lütfen support@signal.org'e bir hata ayıklama günlüğü gönderin.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal açılmaya çalışırken bir sorun yaşadı. Bu sorunu gidermeye yardımcı olması için lütfen support@signal.org'e bir hata ayıklama günlüğü gönderin.";
 
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Signal Açılamadı";
@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Arşivle";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Orijinal";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Kare";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Başlık sınırına ulaşıldı.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Bir başlık ekleyin...";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Başlık";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Eklenti dışarı aktarılamadı.";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "İçerik kalitesi";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ kişisine ileti";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Gönder";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Eklenti";
@@ -397,6 +397,12 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Aylık Bağış İptal Edildi";
 
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "Desteğin için teşekkürler!";
+
 /* Text telling the user that they can add a message along with their gift badge */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Hediyeniz alıcıya 1'e 1 mesaj olarak gönderilecektir. Aşağıya kendi mesajınızı ekleyin.";
 
@@ -404,16 +410,16 @@
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "İleti ekle";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Hediye rozet gönderilemiyor. Bağlantını kontrol et ve tekrar dene.";
 
 /* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Hediye Rozet Gönderilemiyor";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Sona erdi";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Signal'e bağış yaparak dilediğin kişiye rozet hediye et. Hediye ettiğin kişi rozetini profilinde görüntüleyebilecek. ";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Bir Rozet Hediye Et";
@@ -428,7 +434,13 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "Bu kullanıcı Signal sürümünü yükseltene kadar hediye alamaz.";
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Hediye Rozet Gönderilemiyor";
+
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Hediye Rozet Gönderilemiyor";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Bir Hediye Rozeti Gönder";
@@ -449,22 +461,25 @@
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Rozet Hediyesi Başarısız Oldu";
 
 /* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 Bir hediye aldın";
 
 /* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 Bir hediye gönderdin";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "Ödeme";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
+"BADGE_GIFTING_REDEEM_LATER" = "Rozetini daha sonra kullanabilirsin.";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sana bir hediye gönderdi";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
 "BADGE_GIFTING_REDEEMED" = "Ödendi";
+
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "Hediye";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Son %@";
@@ -473,7 +488,7 @@
 "BADGE_GIFTING_VIEW" = "Görüntüle";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "You’ve received a gift badge from %@. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "%@'dan bir hediye rozeti aldın. Signal'e bağış yapma konusunda farkındalık oluşturmak için bu rozeti profilinde sergilemeye ne dersin?";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Yinelenen aylık bağışınız otomatik olarak iptal edildi. %@Rozetiniz %@ artık profilinizde görünmüyor.";
@@ -1001,10 +1016,10 @@
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Özellik İsteği";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Uygulamaya dair geri dönüt bırakmak istiyorum";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Uygulamaya dair geri dönüş bırakmak istiyorum";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Uygulama Geri Dönütü";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Uygulama Geri Dönüşü";
 
 /* The localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER" = "Başka bir şey";
@@ -1208,7 +1223,7 @@
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "İstekler ve Davetler";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Her Zaman";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Her Zaman Haber Ver";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Sessizdeyse Haber Verme";
@@ -1505,7 +1520,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Aktarımı Durdur";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Bu pencereyi kapatmak sürmekte olan aktarımı iptal edecektir, devam etmek istediğinizden emin misiniz?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Bu pencereyi kapatmak, sürmekte olan aktarımı iptal edecektir; devam etmek istediğinizden emin misiniz?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Aktarımı Durdur?";
@@ -1577,7 +1592,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Diğer cihazdaki çerçeve ile bu karekodu hizalayın.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Hatırllatmayı eski aygıtınızda görmüyor musunuz?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Hatırlatmayı eski aygıtınızda görmüyor musunuz?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Diğer Cihaz Bekleniyor...";
@@ -1717,6 +1732,9 @@
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Signal'i desteklediğiniz için teşekkür ederiz. Katkınız, ifade özgürlüğünü koruyan ve dünya çapında milyonlarca kişi için güvenli küresel iletişim sağlayan açık kaynaklı gizlilik teknolojisi geliştirme misyonunu desteklemeye yardımcı olur. Amerika Birleşik Devletleri'nde ikamet ediyorsanız, lütfen bu makbuzu vergi kayıtlarınız için saklayın. Signal Technology Foundation, Amerika Birleşik Devletleri'nde İç Gelir Yasası'nın 501c3 bölümü kapsamında vergiden muaf, kâr amacı gütmeyen bir kuruluştur. Federal Vergi Kimliğimiz 82-4506840'tır.";
 
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "Hediye";
+
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "Tek Seferlik";
 
@@ -1814,10 +1832,10 @@
 "EMAIL_INVITE_SUBJECT" = "Haydi Signal'e geçelim";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Cihazınız eposta gönderebilecek şekilde yapılandırılmamış. Yardım talep etmek için support@signal.org adresine eposta gönderebilir veya cihazınıza eposta kurabilirsiniz.";
+"EMAIL_SIGNAL_MESSAGE" = "Cihazınız eposta gönderebilecek şekilde yapılandırılmamış. Yardım talep etmek için support@signal.org adresine e-posta gönderebilir veya cihazınıza eposta kurabilirsiniz.";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Eposta kullanılamıyor";
+"EMAIL_SIGNAL_TITLE" = "E-posta kullanılamıyor";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Etkinlikler";
@@ -1838,7 +1856,7 @@
 "EMOJI_CATEGORY_RECENTS_NAME" = "Yakınlarda";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Gülenyüz &amp; Kişiler";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Gülenyüz & Kişiler";
 
 /* The name for the emoji category 'Symbols' */
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "Semboller";
@@ -1880,7 +1898,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "İleti gönderilemedi.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Eposta uygulaması açılamadı";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "E-posta uygulaması açılamadı";
 
 /* Error indicating that a support mailto link could not be created. */
 "ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Yardım talebi oluşturulamadı";
@@ -2999,7 +3017,7 @@
 "IMAGE_PICKER_CHANGE_PHOTOS" = "Fotoğrafları Değiştir";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Ayarlarda tam erişim hakkı verin veya Signal hangi fotoğraflara erişebiliri değiştirin.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Ayarlarda tam erişim hakkı verin veya Signal'in hangi fotoğraflara erişebileceğini değiştirin.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Fotoğraflarınızı göremiyor musunuz?";
@@ -3217,6 +3235,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Tüm Medyalar";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Hepsini Temizle";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Değişiklikleri İptal  Et";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "Bu fotoğrafta yaptığın tüm değişiklikleri kaybedeceksin";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Değişiklikleri İptal Et?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "Sıfırla";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Mesaj ekle";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Medyayı Bir Kez Görüntüle";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3371,7 +3410,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Engelle ve Sil";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "İstenmeyen olarak bildir ve Engelle";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "İstenmeyen Olarak Bildir ve Engelle";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Engellenen kişiler sizi arayamayacaklar veya ileti gönderemeyecekler.";
@@ -3517,9 +3556,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Görüldü";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Yeni İleti";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ artık doğrulanmış olarak işaretlenmiyor. Seçenekler için dokunun. ";
 
@@ -3568,11 +3604,47 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Hikayenizin güncellemeleri burada gösterilecek.";
 
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Hikayeni belirli kişilerden gizle";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Tüm bağlantılarla paylaş";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Hikayelerim";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "Hikayem";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "Hikayem";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Yakın zamanda profil adı %1$@ iken %2$@ olarak değiştirdi.";
@@ -4184,7 +4256,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Kişilerinde telefon numaranız olan herkes sizi Signal'de bir kişi olarak görecektir. Diğerleri sizi Arama kısmından bulabilecek.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Hiçkimse";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Hiç kimse";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Signal'de kimse telefon numaranızla sizi bulamayacak. Kişilerinizde telefon numaranız olan kişiler için kişi olarak görünmeyeceksiniz ve diğerleri arama kısmından telefon numaranızla sizi bulamaz.";
@@ -4205,10 +4277,10 @@
 "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Telefon numaranız, ileti gönderdiğiniz kişiler ve gruplar tarafından görülecektir. Numaranızı kişilerine ekleyen insanlar da sizi Signal'de görebileceklerdir.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY" = "Hiçkimse";
+"PHONE_NUMBER_SHARING_NOBODY" = "Hiç kimse";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Hiçkimse telefon numaranızı Signal'de göremeyecek.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Hiç kimse telefon numaranızı Signal'de göremeyecek.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -4439,7 +4511,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Bu numara %@ ile olan güvenlik numaranıza benzemiyor. Doğru kişi olduğundan emin misiniz?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Panonuzdaki sayı bu konuşmanın doğru güvenlik numarasına benzemiyor.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Panonuzdaki sayı, bu konuşmanın doğru güvenlik numarasına benzemiyor.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal, panonuzda herhangi bir güvenlik numarası bulamadı. Doğru şekilde kopyaladınız mı?";
@@ -4739,7 +4811,7 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Telefon Numarası Yok";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Bu telefon numarasına bir doğrulama kodu  gönderilecektir. Yukarıdaki telefon numaranız doğru mudur?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Bu telefon numarasına bir doğrulama kodu gönderilecektir. Yukarıdaki telefon numaranız doğru mudur?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Numara onaylama: %@";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "Geri Dön";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Yine de Gruba Ekle";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Yine de Ara";
@@ -4784,7 +4856,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Yine de Gönder";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Aşağıdaki kişiler cihazd değiştirmiş veya yeniden yükleme yapmış olabilir. Gizliliğinizden emin olmak için güvenlik numaranızı doğrulayın.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Aşağıdaki kişiler cihaz değiştirmiş veya yeniden yükleme yapmış olabilir. Gizliliğinizden emin olmak için güvenlik numaranızı doğrulayın.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Daha Önce Doğrulandı";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Engellenecek Kullanıcı Ekle";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal'de kişiniz yok.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5201,7 +5273,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "İleti Sesi";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Arşivlenen sessize alınan sohbetler, yeni bir mesaj geldiğinde arşivlenmiş olarak kalır.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Arşivlenerek sessize alınan sohbetler, yeni bir mesaj geldiğinde arşivlenmiş olarak kalır.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Sessize Alınmış Sohbetleri Arşivde Tutun";
@@ -5995,6 +6067,12 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "Siz";
 
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Bağış yapın";
 
@@ -6026,7 +6104,7 @@
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Bize sorundan bahsedin:";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Lütfen yardım talebinizi support@signal.org adresine epostalayın";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Lütfen yardım talebinizi support@signal.org adresine e-postalayın";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
 "SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filtre: %@";
@@ -6053,10 +6131,10 @@
 "SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal Sürümü: %@";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Sinyal iOS Destek İsteği";
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Destek İsteği";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "Nasıl hissediyorsunuz?";
+"SUPPORT_EMOJI_PROMPT" = "Nasıl hissediyorsunuz? (İsteğe bağlı)";
 
 /* Label in support request informing user about Signal FAQ */
 "SUPPORT_FAQ_PROMPT" = "SSS sayfamızı okudunuz mu?";
@@ -6407,7 +6485,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Güvenlik Numaralarını Gözden Geçir";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
-"VIDEO_BROKEN" = "This video can’t be played";
+"VIDEO_BROKEN" = "Bu video oynatılamıyor";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "Görüntülü Arama";

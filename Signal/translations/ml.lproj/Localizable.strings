@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "ആർക്കൈവ്";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Original";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Square";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "അടിക്കുറിപ്പ് പരിധി എത്തി";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "ഒരു അടിക്കുറിപ്പ് ചേർക്കുക…";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "അടിക്കുറിപ്പ്";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "അറ്റാച്ച്‌മെന്റ് എക്സ്‌പോർട്ട് ചെയ്യാൻ പരാജയപ്പെട്ടു";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "മീഡിയ ഗുണം";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = " %@- നുള്ള സന്ദേശം";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "അയയ്‌ക്കുക";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "അറ്റാച്ചുമെന്റ്";
@@ -397,6 +397,12 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "എല്ലാ മാസവും ആവർത്തിക്കുന്ന സംഭാവന റദ്ദാക്കി";
 
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "നിങ്ങളുടെ പിന്തുണയ്ക്ക് നന്ദി!";
+
 /* Text telling the user that they can add a message along with their gift badge */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE" = "സ്വീകർത്താവിന് നിങ്ങളുടെ ഗിഫ്റ്റ് നേരിട്ടുള്ള സന്ദേശമായി അയയ്ക്കും. ചുവടെ നിങ്ങളുടെ സന്ദേശം ചേർക്കുക.";
 
@@ -429,6 +435,12 @@
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Cannot Send Gift Badge";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "ഒരു ഗിഫ്റ്റ് ബാഡ്‍ജ് അയയ്ക്കുക";
@@ -465,6 +477,9 @@
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
 "BADGE_GIFTING_REDEEMED" = "റിഡീം ചെയ്‌തു";
+
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "ഗിഫ്റ്റ്";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "%@ നീണ്ടുനിൽക്കുന്നു";
@@ -1716,6 +1731,9 @@
 
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Signal-നെ പിന്തുണയ്ക്കുന്നതിന് നന്ദി. സംഭാഷണ സ്വാതന്ത്ര്യത്തെ സംരക്ഷിക്കുന്ന ഓപ്പൺ സോഴ്‌സ് സ്വകാര്യതാ സാങ്കേതികവിദ്യ വികസിപ്പിക്കാനും ലോകമെമ്പാടുമുള്ള ദശലക്ഷക്കണക്കിന് ആളുകൾക്ക് സുരക്ഷിതമായ ആഗോള ആശയവിനിമയം സാധ്യമാക്കാനും നിങ്ങളുടെ സംഭാവന സഹായിക്കുന്നു. നിങ്ങൾ യുണൈറ്റ് സ്റ്റേറ്റ്സിൽ താമസിക്കുന്ന ആളാണെങ്കിൽ ഈ രസീത് നിങ്ങളുടെ നികുതി രേഖകൾക്കായി സൂക്ഷിച്ചു വെയ്ക്കുക. Signal ടെക്നോളജി ഫൗണ്ടേഷൻ യുണൈറ്റഡ് സ്റ്റേറ്റ്സിലെ ഇന്‍റേണൽ റെവന്യൂ കോഡിന് കീഴിൽ വരുന്ന സെക്ഷൻ 501സി3 പ്രകാരം നികുതിയില്ലാത്ത ലാഭേതര സ്ഥാപനമാണ്. ഞങ്ങളുടെ ഫെഡറൽ നികുതി ഐഡി 82–4506840 ആണ്.";
+
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "ഗിഫ്റ്റ്";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "ഒറ്റത്തവണ";
@@ -3217,6 +3235,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "എല്ലാ മീഡിയകളും";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Clear All";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Discard Changes";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "You will lose any changes you have made to this photo";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Discard Changes?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "പുനഃക്രമീകരിക്കുക";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Add Message";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "View Once Media";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3517,9 +3556,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "കണ്ടു";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "പുതിയ സന്ദേശം";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ഇനിമേൽ വേരിഫൈ ചെയ്തതായി മാർക്ക് ചെയ്തിട്ടില്ല. ഓപ്ഷനുകൾക്കായി തട്ടുക.";
 
@@ -3568,11 +3604,47 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "നിങ്ങളുടെ സ്റ്റോറിയിലെ അപ്ഡേറ്റുകൾ ഇവിടെ ദൃശ്യമാകും.";
 
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "നിർദ്ദിഷ്‌ട ആളുകളിൽ നിന്ന് നിങ്ങളുടെ സ്റ്റോറി മറയ്ക്കുക";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "എല്ലാ കണക്ഷനുകളുമായും പങ്കിടുക";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "എന്റെ സ്റ്റോറീസ്";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "എന്റെ സ്റ്റോറി";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "എന്റെ സ്റ്റോറി";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "അടുത്തിടെ അവരുടെ പ്രൊഫൈൽ പേര്  %1$@-ൽ നിന്ന് %2$@-ലേക്ക് മാറ്റി.";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "മടങ്ങിവരവ്";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "ഏത് വിധേനയും ഗ്രൂപ്പിൽ ചേർക്കുക";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "ഏത് വിധേനയും കോൾ ചെയ്യുക";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "ബ്ലോക്ക് ചെയ്ത യൂസറെ ചേർക്കുക";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "നിങ്ങൾക്ക് Signal ൽ കോൺടാക്ടുകൾ ഇല്ല.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5994,6 +6066,12 @@
 
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "നിങ്ങൾ";
+
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "സംഭാവനചെയ്യുക";

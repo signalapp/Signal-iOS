@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "आर्काइव्ह";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "मूळ";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "चौकोन";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "कॅप्शन मर्यादा संपली.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "एक कॅप्शन जोडा...";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "कॅप्शन";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "संगल्न निर्यात करण्यात अयशस्वी";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "मिडिया दर्जा";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ यास संदेश";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "पाठवा";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "संलग्न";
@@ -397,6 +397,12 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "मासिक देणगी रद्द";
 
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "आपल्या समर्थनासाठी धन्यवाद !";
+
 /* Text telling the user that they can add a message along with their gift badge */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE" = "आपली भेट प्राप्तकर्त्याला १-१ संदेशात पाठवली जाईल. खाली आपला स्वतःचा संदेश जोडा.";
 
@@ -404,16 +410,16 @@
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "संदेश जोडा";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "भेट बॅज पाठवू शकत नाही. आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "भेट बॅज पाठवू शकत नाही";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "कालबाह्य झालेे";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Signal ला देणगी देऊन इतरांना बॅज भेट द्या. त्यांच्या प्रोफाईलवर प्रदर्शित करण्यासाठी त्यांना बॅज प्राप्त होईल.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "एक बॅज भेट करा ";
@@ -425,10 +431,16 @@
 "BADGE_GIFTING_CONFIRMATION_TITLE" = "भेटीची पुष्टी करा";
 
 /* Error message indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "हा वापरकर्ता जोपर्यंत तो Signal अद्यतनित करत नाहीत तो पर्यंत भेट प्राप्त करू शकणार नाही.  ";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "हा वापरकर्ता जोपर्यंत Signal अपग्रेड करत नाहीत तोपर्यंत तो भेट प्राप्त करू शकणार नाही.  ";
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "भेट बॅज पाठवू शकत नाही";
+
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "भेट बॅज पाठवू शकत नाही";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "एक भेट बॅज पाठवा";
@@ -449,22 +461,25 @@
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "बॅज भेट अयशस्वी झाली";
 
 /* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 आपणाला एक भेट मिळाली आहे";
 
 /* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 आपण एक भेट पाठवली आहे";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "रिडीम करा";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
+"BADGE_GIFTING_REDEEM_LATER" = "आपण आपला बॅज नंतर रिडीम करू शकता";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ ने आपणाला एक भेट पाठवली आहे";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
 "BADGE_GIFTING_REDEEMED" = "रिडीम केले";
+
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "भेट";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "शेवटचे %@";
@@ -473,7 +488,7 @@
 "BADGE_GIFTING_VIEW" = "बघा";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "You’ve received a gift badge from %@. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "आपणाला %@कडून एक भेट बॅज प्राप्त झालेला आहे. Signal ला देणगी देण्याबाबत जागरूकता निर्माण करण्यासाठी आपल्या प्रोफाईल वर हा बॅज प्रदर्शित करा.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "आपली आवर्ती मासिक देणगी स्वयंचलितपणे रद्द झाली आहे. %@ आपला %@ बॅज यापुढे आपल्या प्रोफाईलवर दिसणार नाही.";
@@ -1716,6 +1731,9 @@
 
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Signal ला समर्थन दिल्याबद्दल धन्यवाद. आपले योगदान मुक्त अभिव्यक्तीचे संरक्षण करणारे आणि जगभरातील लाखो लोकांसाठी सुरक्षित जागतिक संचार सक्षम करणारे ओपन सोर्स गोपनीयता तंत्रज्ञान विकसित करण्याच्या मिशनला चालना देण्यास मदत करते. आपण जर युनायटेड स्टेट्सचे रहिवासी असल्यास, कृपया आपल्या कर रेकॉर्डसाठी ही पावती जपून ठेवा. Signal Technology Foundation ही युनायटेड स्टेट्समधील अंतर्गत महसूल संहितेच्या कलम 501c3 अंतर्गत करमुक्त विना-नफा संस्था आहे. आमचा फेडरल टॅक्स आयडी 82-4506840 आहे.";
+
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "भेट";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "एक-वेळ ";
@@ -3217,6 +3235,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "सर्व मिडिया";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "सर्व साफ करा";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "बदल नाकारा";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "या फोटोमध्ये आपण केलेले कोणतेही बदल आपण गमवाल";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "बदल नाकारायचे?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "रीसेट करा";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "संदेश जोडा";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "एकदा मिडिया पहा";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3517,9 +3556,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "बघितले";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "नवीन संदेश";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ आता सत्यापित म्हणून चिन्हांकित नाही. पर्यायांकरिता टॅप करा.";
 
@@ -3568,11 +3604,47 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "आपल्या स्टोरीचे अपडेट्स येथे दाखवले जातील.";
 
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "विशिष्ट लोकांपासून आपली स्टोरी लपवा";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "सर्व कनेक्शन्ससोबत शेअर करा";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "माझ्या स्टोरीज";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "माझी स्टोरी";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "माझी स्टोरी";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "अलीकडे त्यांचे प्रोफाईल नाव %1$@ ते %2$@ वर बदलले.";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "परत जा";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "तरीही गटात जोडा";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "तरीही कॉल करा";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "अवरोधित वापरकर्ता जोडा";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "आपले कुठलेही संपर्क Signal वर नाहीत.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5995,6 +6067,12 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "आपण";
 
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "दान करा";
 
@@ -6407,7 +6485,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "सुरक्षितता नंबरचे पुनरावलोकन करा";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
-"VIDEO_BROKEN" = "This video can’t be played";
+"VIDEO_BROKEN" = "हा व्हिडिओ प्ले केला जाऊ शकत नाही";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "व्हिडीओ कॉल";

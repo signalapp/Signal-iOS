@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Lưu trữ";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Gốc";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Vuông";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Đã đạt giới hạn độ dài chú thích.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Thêm chú thích...";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Chú thích";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Không thể xuất tệp đính kèm.";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Chất lượng Đa phương tiện";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Tin nhắn tới %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Gửi";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Tệp đính kèm";
@@ -374,10 +374,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Quyên góp cho Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Huy hiệu Nhà quyên góp của bạn đã hết hạn và không thể hiển thị trên hồ sơ của bạn nữa.\n\nBạn có thể tiếp tục sử dụng Signal nhưng để hỗ trợ cho nền tảng công nghệ được xây dựng cho bạn, hãy cân nhắc việc trở thành một nhà ủng hộ với khoản ủng hộ hàng tháng.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Huy hiệu Nhà quyên góp của bạn đã hết hạn và không thể hiển thị trên hồ sơ của bạn nữa.\n\nBạn có thể tiếp tục sử dụng Signal nhưng để hỗ trợ cho nền tảng công nghệ được xây dựng cho bạn, hãy cân nhắc việc trở thành một nhà ủng hộ bằng việc ủng hộ hàng tháng.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Huy hiệu Nhà quyên góp của bạn đã hết hạn và không thể hiển thị trên hồ sơ của bạn nữa.\n\nBạn có thể kích hoạt lại Huy hiệu Nhà quyên góp thêm 30 ngày nữa với khoản quyên góp một lần.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Huy hiệu Nhà Ủng hộ của bạn đã hết hạn và không thể hiển thị trên hồ sơ của bạn nữa.\n\nBạn có thể kích hoạt lại Huy hiệu Nhà Ủng hộ thêm 30 ngày nữa với khoản ủng hộ một lần.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Trở thành người quyên góp";
@@ -397,6 +397,12 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Khoản Ủng hộ hàng tháng đã hủy";
 
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "Cảm ơn bạn đã đống góp!";
+
 /* Text telling the user that they can add a message along with their gift badge */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Quà tặng của bạn sẽ được gửi qua một tin nhắn trực tiếp với người nhận. Thêm tin nhắn của bạn dưới đây.";
 
@@ -404,16 +410,16 @@
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Thêm vào một tin nhắn";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Không thể gửi huy hiệu quà tặng. Hãy kiểm tra kết nối và thử lại.";
 
 /* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Không Thể Gửi Huy Hiệu Quà Tặng";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Đã hết hạn";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Tặng huy hiệu cho một người khác bằng cách ủng hộ cho Signal với tên của người đó. Người được nhận huy hiệu có thể hiển thị nó trên hồ sơ.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Tặng Huy hiệu";
@@ -425,10 +431,16 @@
 "BADGE_GIFTING_CONFIRMATION_TITLE" = "Xác nhận Quà tặng";
 
 /* Error message indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "Người dùng này không thể nhận quà tặng cho đến khi người này nâng cấp Signal.";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "Người dùng này không thể nhận quà cho đến khi người này nâng cấp Signal.";
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Không Thể Gửi Huy Hiệu Quà Tặng";
+
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Không Thể Gửi Huy Hiệu Quà Tặng";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Gửi một Huy hiệu Quà tặng";
@@ -449,22 +461,25 @@
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Không thể gửi tặng Huy hiệu";
 
 /* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 Bạn nhận được một món quà";
 
 /* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 Bạn đã gửi một món quà";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "Nhận";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
+"BADGE_GIFTING_REDEEM_LATER" = "Bạn có thể nhận huy hiệu của bạn sau";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ đã gửi một món quà cho bạn";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
 "BADGE_GIFTING_REDEEMED" = "Đã nhận";
+
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "Quà tặng";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Tồn tại trong %@";
@@ -473,7 +488,7 @@
 "BADGE_GIFTING_VIEW" = "Xem";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "You’ve received a gift badge from %@. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Bạn nhận được một huy hiệu từ %@. Hiển thị huy hiệu này trên hồ sơ của bạn để mọi người biết về việc ủng hộ cho Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Khoản ủng hộ hàng tháng của bạn đã được tự động hủy. %@ Huy hiệu %@ của bạn không còn hiển thị trên hồ sơ.";
@@ -1716,6 +1731,9 @@
 
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Cảm ơn bạn đã ủng hộ cho Signal. Đóng góp của bạn giúp duy trì sứ mệnh phát triển công nghệ mã nguồn mở hướng tới quyền riêng tư nhằm bảo vệ sự tự do biểu đạt và làm nền tảng cho môi trường giao tiếp bảo mật cho hàng triệu người trên thế giới. Nếu bạn là một cư dân của Hoa Kỳ, vui lòng giữ biên lai này cho hồ sơ thuế. Signal Technology Foundation là một tổ chức phi lợi nhuận được miễn trừ nghĩa vụ thuế ở Hoa Kỳ theo mục 501c3 của Internal Revenue Code. Mã số thuế Liên Bang của chúng tôi là 82-4506840.";
+
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "Quà tặng";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "Một lần";
@@ -3217,6 +3235,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Tất cả Tập tin đa phương tiện";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Xóa tất cả";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Bỏ thay đổi";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "Bạn sẽ mất tất cả các thay đổi bạn đã thực hiện trên ảnh này";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Bỏ thay đổi?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "Đặt lại";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Thêm Tin Nhắn";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Đa phương tiện Xem Một Lần";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3517,9 +3556,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Đã xem";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Tin nhắn Mới";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ không còn được xác minh. Chạm để xem các lựa chọn.";
 
@@ -3568,11 +3604,47 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Các cập nhật cho story của bạn sẽ hiển thị ở đây.";
 
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Ẩn story của bạn với một số người nhất định";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Chia sẻ với tất cả liên hệ";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Các Story của tôi";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "Story của tôi";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "Story của tôi";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Gần đây vừa đổi tên hồ sơ cá nhâ của họ từ %1$@ sang %2$@.";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "Quay về";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Vẫn tiếp tục Thêm vào Nhóm";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Vẫn tiếp tục Gọi";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Thêm Người dùng Bị chặn";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Bạn không có liên hệ nào trên Signal.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5102,7 +5174,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Đang xác minh %@";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Sử dụng mẫu này để đổi số điện thoại hiện tại của bạn thành số mới. Bạn không thể hoàn lại thay đổi này.\n\nTrước khi tiếp tục, hãy đảm bảo rằng số điện thoại mới của bạn có thể nhận SMS hoặc cuộc gọi.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Sử dụng mẫu này để đổi số điện thoại hiện tại của bạn thành số mới. Bạn không thể hoàn tác thay đổi này.\n\nTrước khi tiếp tục, hãy đảm bảo rằng số điện thoại mới của bạn có thể nhận SMS hoặc cuộc gọi.";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Đổi số điện thoại";
@@ -5995,6 +6067,12 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "Bạn";
 
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Ủng hộ";
 
@@ -6068,7 +6146,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Đang tải...";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal là một ứng dụng phi lợi nhuận, không kết hợp với các nhà quảng cáo hoặc nhà đầu tư, được duy trì bởi những ai sử dụng và trân trọng giá trị của Signal. Hãy gửi một khoản ủng hộ hàng tháng và nhận một huy hiệu trên hồ sơ để lan tỏa về sự ủng hộ của bạn.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal là một ứng dụng phi lợi nhuận, không kết hợp với các nhà quảng cáo hoặc nhà đầu tư, được duy trì bởi những ai sử dụng và trân trọng giá trị của Signal. Hãy ủng hộ hàng tháng và nhận một huy hiệu trên hồ sơ để lan tỏa về sự ủng hộ của bạn.";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal tích cực phát triển công nghệ mã nguồn mở phục vụ quyền riêng tư giúp bảo vệ sự tự do biểu đạt và tạo nền tảng bảo mật cho môi trường giao tiếp toàn cầu.\n\nKhoản ủng hộ của bạn giúp chúng tôi theo đuổi mục tiêu này và giúp chi trả cho chi phí phát triển và vận hành của một ứng dụng được tin dùng bởi hàng triệu người với mục đích giao tiếp riêng tư, bảo mật. Không quảng cáo. Không trình theo dõi. Không bông đùa.";
@@ -6158,7 +6236,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Cập nhật";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Gửi khoản ủng hộ hàng tháng cho Signal để hỗ trợ công nghệ được tạo ra dành cho bạn, không hướng đến việc lấy dữ liệu của bạn.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Hãy ủng hộ Signal hàng tháng để hỗ trợ công nghệ được tạo ra dành cho bạn, không hướng đến việc lấy dữ liệu của bạn.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Tắt";
@@ -6407,7 +6485,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Kiểm tra lại các Số An toàn";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
-"VIDEO_BROKEN" = "This video can’t be played";
+"VIDEO_BROKEN" = "Không thể phát video";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "Gọi video";

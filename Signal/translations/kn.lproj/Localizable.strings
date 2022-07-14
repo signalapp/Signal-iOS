@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "ಆರ್ಕೈವ್ ಮಾಡಿ";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Original";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Square";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "ಕ್ಯಾಪ್ಷನ್ ಮಿತಿಯನ್ನು ತಲುಪಿದೆ.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "ಕ್ಯಾಪ್ಷನ್ ಸೇರಿಸಿ";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "ಕ್ಯಾಪ್ಷನ್ ";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "ಲಗತ್ತನ್ನು ಎಕ್ಸ್‌‌‌ಪೋರ್ಟ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "ಮಾಧ್ಯಮ ಗುಣಮಟ್ಟ";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ ಗೆ ಸಂದೇಶ";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "ಕಳುಹಿಸು";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "ಲಗತ್ತು";
@@ -365,7 +365,7 @@
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
 
 /* The title for the badge configuration page */
-"BADGE_CONFIGURATION_TITLE" = "Badges";
+"BADGE_CONFIGURATION_TITLE" = "ಬ್ಯಾಡ್ಜ್‌ಗಳು";
 
 /* Text prompting the user to become a signal sustainer */
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
@@ -396,6 +396,12 @@
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
+
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "Thanks for your support!";
 
 /* Text telling the user that they can add a message along with their gift badge */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
@@ -429,6 +435,12 @@
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Cannot Send Gift Badge";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
@@ -465,6 +477,9 @@
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
 "BADGE_GIFTING_REDEEMED" = "Redeemed";
+
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "Gift";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
@@ -1160,7 +1175,7 @@
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "Badges";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "ಬ್ಯಾಡ್ಜ್‌ಗಳು";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "ನೀವು ಇನ್ನು ಮುಂದೆ ಈ ಬಳಕೆದಾರರಿಂದ ಸಂದೇಶಗಳು ಅಥವಾ ನವೀಕರಣಗಳನ್ನು ಸ್ವೀಕರಿಸುವುದಿಲ್ಲ.";
@@ -1717,6 +1732,9 @@
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
 
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "Gift";
+
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "One-time";
 
@@ -1751,7 +1769,7 @@
 "DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
 
 /* Title for the 'Badges' button on the donation screen */
-"DONATION_VIEW_MANAGE_BADGES" = "Badges";
+"DONATION_VIEW_MANAGE_BADGES" = "ಬ್ಯಾಡ್ಜ್‌ಗಳು";
 
 /* Title for the 'Manage Subscription' button on the donation screen */
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Manage Subscription";
@@ -2390,7 +2408,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "ಸಂದೇಶಗಳನ್ನು ಕಳುಹಿಸಲು ಅಡ್ಮಿನ್‌ಗಳಿಗೆ ಮಾತ್ರ ಅವಕಾಶವಾಗುವಂತೆ ಗುಂಪಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು %@ಅವರು ಬದಲಾಯಿಸಿದ್ದಾರೆ.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "ಅಡ್ಮಿನ್ ನಿಮ್ಮನ್ನು ತೆಗೆದುಹಾಕಿರುವ ಕಾರಣದಿಂದ ಗ್ರೂಪ್ ಲಿಂಕ್ ಮೂಲಕ ನೀವು ಈ ಗ್ರೂ್ ಸೇರಲು ಸಾಧ್ಯವಿಲ್ಲ.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ಈ ಗುಂಪಿನ ಲಿಂಕ್ ಇನ್ನು ಮುಂದೆ ಮಾನ್ಯವಾಗಿರುವುದಿಲ್ಲ.";
@@ -3217,6 +3235,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "ಎಲ್ಲಾ ಮೀಡಿಯಾ";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Clear All";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Discard Changes";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "You will lose any changes you have made to this photo";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Discard Changes?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "ಮರುಹೊಂದಿಸಿ";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Add Message";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "View Once Media";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3517,9 +3556,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "ವೀಕ್ಷಿಸಲಾಗಿದೆ";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "ಹೊಸ ಸಂದೇಶ";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ಅನ್ನು ಇನ್ನು ಮುಂದೆ ದೃಢೀಕೃತ ಎಂದು ಗುರುತಿಸಲಾಗಿಲ್ಲ. ಆಯ್ಕೆಗಳಿಗಾಗಿ ಟ್ಯಾಪ್ ಮಾಡಿ.";
 
@@ -3568,11 +3604,47 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "ನಿಮ್ಮ ಸ್ಟೋರಿಯ ಪರಿಷ್ಕರಣೆಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.";
 
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "ನಿರ್ದಿಷ್ಟ ಜನರಿಂದ ನಿಮ್ಮ ಸ್ಟೋರಿಯನ್ನು ಮರೆಯಾಗಿಸಿ";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "ಎಲ್ಲಾ ಸಂಪರ್ಕಗಳೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "ನನ್ನ ಸ್ಟೋರೀಸ್";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "ನನ್ನ ಸ್ಟೋರಿ";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "ನನ್ನ ಸ್ಟೋರಿ";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "ಇತ್ತೀಚೆಗೆ ಅವರು ತಮ್ಮ ಹೆಸರನ್ನು %1$@ ನಿಂದ %2$@ಕ್ಕೆ ಬದಲಾಯಿಸಿದ್ದಾರೆ.";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "ಹಿಂತಿರುಗಿ";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "ಯಾವುದೇ ರೀತಿಯಲ್ಲಿ ಗುಂಪಿಗೆ ಸೇರಿಸಿ";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "ಹೇಗಾದರೂ ಕರೆ ಮಾಡಿ";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "ನಿರ್ಬಂಧಿಸಿದ ಬಳಕೆದಾರರನ್ನು ಸೇರಿಸಿ";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal ನಲ್ಲಿ ನಿಮಗೆ ಯಾವುದೇ ಸಂಪರ್ಕಗಳಿಲ್ಲ.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5927,7 +5999,7 @@
 "STICKERS_UNINSTALL_BUTTON" = "ಅನ್‌‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ";
 
 /* Text indication a story caption can be tapped to read more. */
-"STORIES_CAPTION_READ_MORE" = "Read more";
+"STORIES_CAPTION_READ_MORE" = "ಇನ್ನಷ್ಟು ಓದಿ";
 
 /* Context menu action to copy the selected story reply */
 "STORIES_COPY_REPLY_ACTION" = "ನಕಲಿಸು";
@@ -5994,6 +6066,12 @@
 
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "ನೀವು";
+
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "ದಾನ ಮಾಡಿ";

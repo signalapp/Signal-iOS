@@ -149,7 +149,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "데이터베이스 버전을 알 수 없습니다.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal을 여는 도중 오류가 발생했습니다. support@signal.org에 디버그 로그를 보내서 문제를 해결할 수 있도록 도와주세요.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal을 여는 도중 오류가 발생했습니다. 문제 해결을 위해 support@signal.org에 디버그 로그를 보내주세요.";
 
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Signal을 열 수 없음";
@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "보관";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "원본";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "정사각형";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "캡션 글자 제한 초과";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "캡션 추가…";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "캡션";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "첨부 파일 내보내기에 실패했습니다.";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "미디어 품질";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "받는 사람: %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "보내기";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "첨부 파일";
@@ -362,7 +362,7 @@
 "BACK_BUTTON" = "뒤로";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "내 배지";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "나의 배지";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "배지";
@@ -397,6 +397,12 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "월간 기부 취소함";
 
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "지원해 주셔서 감사합니다!";
+
 /* Text telling the user that they can add a message along with their gift badge */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE" = "1:1 메시지에서 받는 사람에게 선물을 보냅니다. 나만의 메시지를 아래에 추가하세요.";
 
@@ -404,16 +410,16 @@
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "메시지 추가";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "선물 배지를 보낼 수 없습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "선물 배지를 보낼 수 없음";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "만료됨";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Signal에 기부하여 배지를 선물하세요. 프로필에 표시할 수 있는 배지가 제공됩니다.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "배지 선물하기";
@@ -428,7 +434,13 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "이 사용자는 Signal을 업그레이드해야 선물을 받을 수 있습니다.";
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "선물 배지를 보낼 수 없음";
+
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "선물 배지를 보낼 수 없음";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "선물 배지 보내기";
@@ -449,22 +461,25 @@
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "배지 선물 실패";
 
 /* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 선물을 받았습니다.";
 
 /* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 선물을 보냈습니다.";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "사용";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
+"BADGE_GIFTING_REDEEM_LATER" = "배지를 나중에 사용할 수 있습니다.";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ 님이 선물을 보냈습니다.";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "Redeemed";
+"BADGE_GIFTING_REDEEMED" = "사용함";
+
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "선물";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "지속 기간: %@";
@@ -473,13 +488,13 @@
 "BADGE_GIFTING_VIEW" = "보기";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "You’ve received a gift badge from %@. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "%@ 님이 선물 배지를 보냈습니다. 이 배지를 프로필에 표시하여 Signal 기부에 대해 널리 알려주세요.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "월간 기부가 자동 취소되었습니다. %@ %@ 배지가 더이상 프로필에 표시되지 않습니다.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "너무 오랫동안 활동을 중단하여 월간 구독이 자동으로 취소되었습니다. %@ 배지가 더는 프로필에 표시되지 않습니다.\n\nSignal을 계속 사용할 수는 있지만 Signal 앱을 지원하고 배지를 재활성화하려면 지금 기부를 갱신하세요.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "오랫동안 활동 기록이 없어 월간 정기 기부가 자동으로 취소되었습니다. %@ 배지가 더는 프로필에 표시되지 않습니다.\n\nSignal을 계속 사용할 수는 있지만 Signal 앱을 지지하고 배지를 재활성화하려면 지금 갱신하세요.";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "부스트, 감사합니다!";
@@ -788,7 +803,7 @@
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "이전 전화번호가 잘못됐습니다. 올바른 전화번호를 입력하여 번호를 변경하세요.";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "새 전화번호의 PIN을 입력하세요. PIN은 SMS 확인 코드와는 다릅니다.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "새 전화번호의 PIN을 입력하세요. PIN은 SMS 인증 코드와는 다릅니다.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "다음은 채팅 색상의 미리 보기입니다.";
@@ -1157,7 +1172,7 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "오디오";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Signal을 지원하여 배지를 받으세요. 배지를 탭하여 자세히 알아보세요.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Signal을 지원하고 배지를 받으세요. 배지를 탭하여 자세히 알아보세요.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "배지";
@@ -1667,16 +1682,16 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "다른 결제 방법을 시도하거나 은행에 자세한 정보를 문의하세요.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Apple Pay의 결제 수단이 최신 정보인지 확인하세요. 그렇지 않다면 업데이트하고 다시 시도하세요. 그래도 문제가 계속되면 은행에 문의하세요.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Apple Pay에서 결제 수단 정보가 최신 상태인지 확인하고, 그렇지 않을 경우 업데이트 후 다시 시도하세요. 그래도 문제가 계속되면 은행에 문의하세요.";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "카드가 이 구입 유형을 지원하지 않습니다. 다른 결제 방법을 시도하거나 은행에 자세한 정보를 문의하세요.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "카드가 이 구매 유형을 지원하지 않습니다. 다른 결제 수단을 선택하거나 은행에 자세한 정보를 문의하세요.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "카드가 만료되었습니다. Apple Pay의 결제 수단이 최신 정보인지 확인하세요. 그렇지 않다면 업데이트하고 다시 시도하세요.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "카드가 만료되었습니다. Apple Pay에서 결제 수단 정보가 최신 상태인지 확인하고, 그렇지 않을 경우 업데이트 후 다시 시도하세요.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "카드 번호가 잘못되었습니다. Apple Pay에 입력한 결제 수단이 올바른지 확인하세요. 그렇지 않다면 업데이트하고 다시 시도하세요.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "카드 번호가 잘못되었습니다. Apple Pay에 입력한 결제 수단 정보가 올바른지 확인하고, 그렇지 않은 경우 업데이트 후 다시 시도하세요.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
 "DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "CVC 번호가 잘못됐습니다. Apple Pay에 CVC 번호를 제대로 입력했는지 확인하세요. 번호가 잘못됐다면 업데이트하고 다시 시도하세요.";
@@ -1700,7 +1715,7 @@
 "DONATION_PAYMENT_ERROR_OTHER" = "다른 결제 방법을 시도하거나 은행에 자세한 정보를 문의하세요.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Apple Pay의 결제 정보가 최신 상태인지 확인하세요. 그렇지 않다면 정보를 업데이트하고 다시 시도하세요.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Apple Pay에서 결제 수단 정보가 최신 상태인지 확인하세요. 그렇지 않다면 정보를 업데이트하고 다시 시도하세요.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "금액";
@@ -1715,13 +1730,16 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "영수증 공유";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Signal을 지지해 주셔서 감사합니다. 귀하의 기여는 표현의 자유를 지키고, 전 세계 수백만 사용자에게 안전한 글로벌 커뮤니케이션을 제공하는 오픈 소스 프라이버시 기술을 개발하겠다는 Signal의 사명을 지키는 데 도움이 됩니다. 미국 거주자라면 세금 보고 시 시용할 수 있도록 이 영수증을 보관하세요. Signal Technology Foundation은 내국세법조항 501c3조에 의거하여 세금 공제를 받을 수 있는 비영리 기관입니다. Signal 연방세 ID는 82-4506840입니다.";
+"DONATION_RECEIPT_FOOTER" = "Signal을 지지해 주셔서 감사합니다. 귀하의 기여는 표현의 자유를 보호하고 전 세계 수백만 사용자에게 안전한 글로벌 커뮤니케이션을 제공하는 오픈 소스 프라이버시 기술을 개발하겠다는 Signal의 사명을 지키는 데 도움이 됩니다. 미국 거주자라면 세금 보고 시 사용할 수 있도록 이 영수증을 보관하세요. Signal Technology Foundation은 내국세법조항 501c3조에 의거하여 세금 공제를 받을 수 있는 비영리 기관입니다. Signal 연방세 ID는 82-4506840입니다.";
+
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "선물";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "1회성 기부";
 
 /* Title for recurring donation receipts */
-"DONATION_RECEIPT_RECURRING" = "반복 기부";
+"DONATION_RECEIPT_RECURRING" = "정기 기부";
 
 /* Title on donation receipts */
 "DONATION_RECEIPT_TITLE" = "기부 영수증";
@@ -1763,7 +1781,7 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "내 지원";
 
 /* Title for the 'one-time donation' link in the donation view */
-"DONATION_VIEW_ONE_TIME_DONATION" = "1회 후원";
+"DONATION_VIEW_ONE_TIME_DONATION" = "1회성 기부";
 
 /* Title for the 'other ways to give' section on the donation view */
 "DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "다른 기여 방법";
@@ -1772,7 +1790,7 @@
 "DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "영수증";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
-"DONATION_VIEW_SUBSCRIPTION_FAQ" = "구독 자주 묻는 질문";
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "구독 관련 FAQ";
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "Signal에 후원";
@@ -3053,7 +3071,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "휴대전화 또는 iPad에서 동기화된 메시지를 보내거나 받을 수 있습니다.\n보안을 위해 대화 기록은 새로 연결하는 기기로 전송되지 않습니다.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ 님이 전화번호를 바꿨습니다.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ 님이 전화번호를 변경했습니다.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ 님이 Signal에 가입했습니다!";
@@ -3216,6 +3234,27 @@
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "모든 미디어";
+
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "모두 지우기";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "변경 내용 취소";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "이 사진에 적용한 모든 변경 내용이 손실됩니다.";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "변경 내용을 취소할까요?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "초기화";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "메시지 추가";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "한 번만 볼 수 있는 미디어";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -3517,9 +3556,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "조회함";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "새 메시지";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ 님은 더 이상 검증된 사용자가 아닙니다. 탭하여 설정을 엽니다.";
 
@@ -3568,11 +3604,47 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "내 스토리에 대한 업데이트가 여기 표시됩니다.";
 
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "특정 사용자에게서 스토리 숨기기";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "모든 커넥션과 공유";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "내 스토리";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "내 스토리";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "내 스토리";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "최근에 프로필 이름을 %1$@에서 %2$@(으)로 변경했습니다.";
@@ -4262,7 +4334,7 @@
 "PIN_ACTION" = "고정";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "새 PIN을 만들 수 없습니다. 기존 PIN을 비활성화했습니다. 연결을 확인하고 다시 시도하세요.";
+"PIN_CHANGE_ERROR_MESSAGE" = "새로운 PIN을 만들 수 없습니다. 기존 PIN을 비활성화했습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
 "PIN_CHANGE_ERROR_TITLE" = "PIN 변경 실패";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "반환";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "무시하고 그룹에 추가";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "무시하고 전화";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "차단한 사용자 추가";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal에 연락처가 없습니다.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5072,13 +5144,13 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "전화번호 변경";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "전화번호를 %@번으로 바꿨습니다.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "전화번호가 %@(으)로 변경되었습니다.";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "번호 변경";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "전화번호를 %1$@번에서 %2$@번으로 바꿉니다.\n\n계속하기 전에 번호가 올바른지 확인하세요.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "전화번호를 %1$@에서 %2$@(으)로 변경합니다.\n\n계속하기 전에 번호가 올바른지 확인하세요.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "국가 코드";
@@ -5090,10 +5162,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "예시: %@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "내 새 번호";
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "나의 새로운 번호";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "내 이전 번호";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "나의 이전 번호";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "전화번호";
@@ -5102,7 +5174,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "%@ 확인 중";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "이 기능을 사용하여 현재 전화번호를 새 전화번호를 바꾸세요. 이 변경 내용은 취소할 수 없습니다.\n\n계속하기 전에 새 번호에서 SNS 또는 전화를 받을 수 있는지 확인하세요.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "이 기능을 사용하여 현재 전화번호를 새로운 전화번호로 변경하세요. 변경 후에는 취소할 수 없습니다.\n\n계속하기 전에 새로운 번호로 SNS 또는 전화를 받을 수 있는지 확인하세요.";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "전화번호 변경";
@@ -5774,7 +5846,7 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "iOS와 연락처 공유";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "추천 공유 등 기능을 위해 iOS에서 Signal 연락처와 채팅에 액세스하도록 허용합니다.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "추천 공유 등의 기능을 위해 iOS에서 Signal 연락처와 채팅에 액세스하도록 허용합니다.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "추천 공유, 알림 등 기능을 위해 iOS에서 Signal 연락처와 채팅에 액세스하도록 허용합니다.";
@@ -5969,7 +6041,7 @@
 "STORIES_TITLE" = "스토리";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "방문 링크";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "링크 방문";
 
 /* Text indicating a story that was replied to is no longer available. */
 "STORY_NO_LONGER_AVAILABLE" = "더는 사용할 수 없음";
@@ -5978,10 +6050,10 @@
 "STORY_PRIVACY_SETTINGS" = "개인정보";
 
 /* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "회신 <bold>1</bold>개";
+"STORY_REPLY_BUTTON_WITH_1_REPLY" = "답장 <bold>1</bold>개";
 
 /* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "회신 <bold>%@</bold>개";
+"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "답장 <bold>%@</bold>개";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "답장";
@@ -5994,6 +6066,12 @@
 
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "나";
+
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "기부";
@@ -6071,7 +6149,7 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal은 광고주와 투자자 없이 우리 앱을 사용하고 지지하는 사용자의 기여로만 운영됩니다. 월간 기부를 통해 배지를 받고 앱에 대한 지지를 공유하세요.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal은 표현의 자유를 지키고, 안전한 글로벌 커뮤니케이션을 지원하는 오픈 소스 프라이버시 기술을 개발하기 위해 항상 최선을 다하고 있습니다.\n\n여러분의 기부는 이러한 Signal의 사명을 이루는 데 도움이 되며, 수백만 사용자의 커뮤니케이션 프라이버시를 지키는 앱 개발과 운영 비용으로 쓰입니다. 이제 광고와 트래커에서 자유로운 메신저 앱을 즐기세요.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal은 표현의 자유를 보호하고 안전한 글로벌 커뮤니케이션을 지원하는 오픈 소스 프라이버시 기술을 개발하기 위해 항상 최선을 다하고 있습니다.\n\n여러분의 기부는 이러한 Signal의 사명을 이루는 데 도움이 되며, 수백만 사용자의 커뮤니케이션 프라이버시를 지키는 앱 개발과 운영 비용으로 쓰입니다. 이제 광고와 트래커에서 자유로운 메신저 앱을 즐기세요.";
 
 /* Title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_TITLE" = "Signal의 기둥 역할을 하는 커뮤니티와 함께하여 데이터가 아닌 사용자를 위해 설계된 기술을 지지해 주세요.";
@@ -6101,13 +6179,13 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "배지를 추가하지 못했습니다. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "배지를 계정에 추가할 수 없습니다. 지원에 문의하세요.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "배지를 계정에 추가할 수 없습니다. 고객 지원팀에 문의하세요.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "배지를 추가하지 못했습니다.";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "지원에 문의하세요.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "고객 지원팀으로 문의하세요.";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "결제 처리 중 오류가 발생했습니다.";
@@ -6131,13 +6209,13 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "거래 처리 중...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "자세히 알아보기.";
+"SUSTAINER_VIEW_READ_MORE" = "자세히 알아보기";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "%@ 갱신";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "구독을 아직 처리하는 중입니다. 연결 상태에 따라 몇 분이 걸릴 수 있습니다.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "아직 결제 처리 중입니다. 연결 상태에 따라 몇 분이 소요될 수 있습니다.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "구독을 취소했습니다.";
@@ -6407,7 +6485,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "안전 번호 검토";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
-"VIDEO_BROKEN" = "This video can’t be played";
+"VIDEO_BROKEN" = "이 동영상을 표시할 수 없습니다.";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "영상 통화";

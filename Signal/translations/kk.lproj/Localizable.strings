@@ -95,7 +95,7 @@
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
-"ALERT_DELIVERY_ISSUE_TITLE" = "Delivery Issue";
+"ALERT_DELIVERY_ISSUE_TITLE" = "Жеткізу кезіндегі ақау";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
@@ -125,7 +125,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Жауап беру";
 
 /* notification body */
-"APN_Message" = "You may have new messages";
+"APN_Message" = "Жаңа хаттарыңыз болуы мүмкін";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal қолданбасы іске қосылмайды. Осы мәселені зерттеп, ақаулықты түзету үшін дұрыстау журналын support@signal.org мекенжайына жіберіңіз.";
@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Мұрағат";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Original";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Square";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Тақырып шегіне жетті.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Тақырып қосу…";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Тақырып";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Тіркемені экспорттау сәтсіз болды.";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Хабарлама кімге: %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Жіберу";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Тіркеме";
@@ -397,6 +397,12 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
 
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "Thanks for your support!";
+
 /* Text telling the user that they can add a message along with their gift badge */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
 
@@ -430,11 +436,17 @@
 /* Title for error message dialog indicating that a user can't receive gifts. */
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
 
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Cannot Send Gift Badge";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
 
 /* Text telling the user that their gift is a one-time donation */
-"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "One-time Donation";
+"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Бір реттік демеушілік";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
 "BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
@@ -465,6 +477,9 @@
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
 "BADGE_GIFTING_REDEEMED" = "Redeemed";
+
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "Сыйлық";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
@@ -719,7 +734,7 @@
 "CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
 
 /* label for accepting incoming video calls as audio  only */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Answer without video";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Видеосыз жауап беру";
 
 /* label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Жауап беру";
@@ -728,7 +743,7 @@
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Дыбыстық";
 
 /* label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Қабылдамау";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Қоңырауды аяқтау";
@@ -824,7 +839,7 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
 
 /* Title for the chat list's default mode. */
-"CHAT_LIST_TITLE_INBOX" = "Chats";
+"CHAT_LIST_TITLE_INBOX" = "Чаттар";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chat Color & Wallpaper";
@@ -1013,10 +1028,10 @@
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "Басқа";
 
 /* The localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Төлемдер";
 
 /* A brief localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Төлемдер";
 
 /* Prompt telling the user to select a filter for their support request. */
 "CONTACT_SUPPORT_FILTER_PROMPT" = "Қандай көмек керек?";
@@ -1070,10 +1085,10 @@
 "CONTEXT_MENU_DELETE_MESSAGE" = "Жою";
 
 /* Context menu button title */
-"CONTEXT_MENU_DETAILS" = "Info";
+"CONTEXT_MENU_DETAILS" = "Ақпарат";
 
 /* Context menu button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "Forward";
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Алға";
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "Жауап қату";
@@ -1352,7 +1367,7 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Көбірек және Масштаб";
 
 /* Title for the 'currency picker' view in the app settings. */
-"CURRENCY_PICKER_VIEW_TITLE" = "Set Currency";
+"CURRENCY_PICKER_VIEW_TITLE" = "Валютаны орнату";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradient";
@@ -1661,7 +1676,7 @@
 "DONATE_MEGAPHONE_CANCEL" = "Қазір емес";
 
 /* Title for donate megaphone */
-"DONATE_MEGAPHONE_TITLE" = "Donate to Signal";
+"DONATE_MEGAPHONE_TITLE" = "Signal-ды демеу";
 
 /* Donation payment error for decline failures where authentication is required. */
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
@@ -1717,6 +1732,9 @@
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
 
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "Сыйлық";
+
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "One-time";
 
@@ -1736,7 +1754,7 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
 
 /* Text of the 'donate to signal' button on the donation screen */
-"DONATION_VIEW_DONATE_TO_SIGNAL" = "Donate to Signal";
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "Signal-ды демеу";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
@@ -1757,13 +1775,13 @@
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Manage Subscription";
 
 /* Title for the 'more' section on the donation screen */
-"DONATION_VIEW_MORE_SECTION_TITLE" = "More";
+"DONATION_VIEW_MORE_SECTION_TITLE" = "Толығырақ";
 
 /* Title for the 'my support' section in the donation view */
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "My Support";
 
 /* Title for the 'one-time donation' link in the donation view */
-"DONATION_VIEW_ONE_TIME_DONATION" = "One-time Donation";
+"DONATION_VIEW_ONE_TIME_DONATION" = "Бір реттік демеушілік";
 
 /* Title for the 'other ways to give' section on the donation view */
 "DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
@@ -1775,7 +1793,7 @@
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "Subscription FAQ";
 
 /* Title on the 'Donate to Signal' screen */
-"DONATION_VIEW_TITLE" = "Donate to Signal";
+"DONATION_VIEW_TITLE" = "Signal-ды демеу";
 
 /* Label for the currency picker button in donation views */
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Set currency";
@@ -2159,7 +2177,7 @@
 "GROUP_CALL_IS_FULL" = "Call is Full";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "Қоңырауға қосылу";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
@@ -2171,13 +2189,13 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "This may be because they have not verified your safety number change, there's a problem with their device, or they have blocked you.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Ол сіздің қауіпсіздік нөміріңіздің өзгерісін верификацияламаған, құрылғыларында ақау болуы немесе ол сізді блоктап қойған болуы мүмкін.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "Бұл жерде ешкім жоқ";
 
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
@@ -2204,7 +2222,7 @@
 "GROUP_CALL_RECONNECTING" = "Reconnecting";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Әлдебіреу осы қоңырауға өзгерген қауіпсіздік нөмірімен қосылды.";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
@@ -2213,10 +2231,10 @@
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Someone started a group call";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "Көріністерді өзгерту үшін жоғары свайп жасаңыз";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Start Call";
+"GROUP_CALL_START_BUTTON" = "Қоңырауды бастау";
 
 /* Tooltip highlighting group calls. */
 "GROUP_CALL_START_TOOLTIP" = "Топтық қоңырау шалу үшін осы жерді басыңыз";
@@ -2240,7 +2258,7 @@
 "GROUP_CALL_YOU" = "Сіз";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "You are in the group call";
+"GROUP_CALL_YOU_ARE_HERE" = "Топтық қоңырауға қатысып отырсыз";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
@@ -2264,7 +2282,7 @@
 "GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Group descriptions will be visible to members of this group and people who have been invited.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Топ сипаттамалары осы топтың мүшелеріне және шақырылған адамдарға көрінетін болады.";
 
 /* Title for the group description view. */
 "GROUP_DESCRIPTION_VIEW_TITLE" = "Group Description";
@@ -2339,7 +2357,7 @@
 "GROUP_INVITE_LINK_RESET" = " The group link was reset.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "You reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Топ сілтемесін қайта орнаттыңыз.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
@@ -2348,7 +2366,7 @@
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Топ сілтемесі үшін админ мақұлдауын өшірдіңіз.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
@@ -2357,7 +2375,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Топ сілтемесі үшін админ мақұлдауын қостыңыз.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
@@ -2528,7 +2546,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Сіз топқа қосылдыңыз.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "You joined the group via the group link.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Топқа топ сілтемесі арқылы қосылдыңыз.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ сізді алып тастады.";
@@ -2540,13 +2558,13 @@
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Топқа қосылу туралы өтінішіңізден бас тарттыңыз.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
 "GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "You sent a request to join the group.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Топқа қосылуға сұрау жібердіңіз.";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Сіздің әкімші ретіндегі артықшылықтарыңыз қайтарып алынды.";
@@ -2924,7 +2942,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Жаңа әкімші таңдау";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Recommended member limit reached";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Мүшелердің санына ұсынылған шекке жетті";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
@@ -3217,6 +3235,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Барлық ақпарат құралдары";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Clear All";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Discard Changes";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "You will lose any changes you have made to this photo";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Discard Changes?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "Reset";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Add Message";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "View Once Media";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3314,7 +3353,7 @@
 "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Sent time copied";
 
 /* Title for the 'sent from' section on the 'message details' view. */
-"MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "Sent from";
+"MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "Кімнен";
 
 /* Label for file size of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Файл өлшемі";
@@ -3323,7 +3362,7 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME түрінде";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Delivered to";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Кімге жеткізілді";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Сәтсіз болды";
@@ -3332,13 +3371,13 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Read by";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Оқыған";
 
 /* Status label for messages which are sending. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending to";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Sent to";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Кімге";
 
 /* Status label for messages which were skipped. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Өткізіп жіберілді";
@@ -3347,7 +3386,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Жүктеп салуда";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Көрген";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Алынды";
@@ -3413,13 +3452,13 @@
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "If you’re not sure who the request is from, review the contacts below and take action.";
 
 /* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Request";
+"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Өтініш";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Review Request";
 
 /* A button that updates a known contact's information to resolve a name collision */
-"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Update contact";
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Контактіні жаңарту";
 
 /* Button to allow user to review known name collisions with an incoming message request */
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Review Request";
@@ -3461,7 +3500,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Осы топқа қосылып, атыңыз бен фотосуретіңізді оның мүшелерімен бөлісу керек пе? Сіз қабылдамайынша олар сіздің өз хабарламасын көргеніңіз туралы білмейтін болады.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Осы топқа қосылу керек пе? Сіз қабылдамайынша, олар хаттарын оқығаныңызды білмейді.";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Бұғатын ағыту";
@@ -3517,9 +3556,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Қаралды";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Жаңа хабарлама";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ бұдан былай тексерілді деп таңбаланбайды. Таңдауға болатын нұсқаларды қарау үшін түртіңіз.";
 
@@ -3568,11 +3604,47 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Сториіңізде жаңартулар осы жерде көрініс табады.";
 
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Белгілі бір адамдардан стористеріңізді жасыру";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Барлық байланыспен бөлісу";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Менің сторилерім";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "Менің сториім";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "Менің сториім";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
@@ -3587,7 +3659,7 @@
 "NETWORK_INTERFACE_SET_CELLULAR" = "Cellular Only";
 
 /* String representing the 'never' condition of having no supported network interfaces */
-"NETWORK_INTERFACE_SET_NEVER" = "Never";
+"NETWORK_INTERFACE_SET_NEVER" = "Ешқашан";
 
 /* String representing only the wifi interface */
 "NETWORK_INTERFACE_SET_WIFI" = "Wi-Fi Only";
@@ -3947,7 +4019,7 @@
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Pay";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Төлеу";
 
 /* Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}. */
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
@@ -3986,10 +4058,10 @@
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
 
 /* Placeholder for the new payment or payment request message. */
-"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Note";
+"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Ескерпте";
 
 /* Label for the 'new payment' button. */
-"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Pay";
+"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Төлеу";
 
 /* Label for the 'total payment amount' indicator. */
 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
@@ -4001,7 +4073,7 @@
 "PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
 
 /* Label for the 'new payment request' button. */
-"PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "Request";
+"PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "Өтініш";
 
 /* Label for the payments notification banner for a single payment notification. */
 "PAYMENTS_NOTIFICATION_BANNER_1" = "1 new payment notification";
@@ -4184,7 +4256,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Nobody";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Ешкім";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
@@ -4205,7 +4277,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY" = "Nobody";
+"PHONE_NUMBER_SHARING_NOBODY" = "Ешкім";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal.";
@@ -4286,7 +4358,7 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Санды PIN код жасау";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Disable PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "PIN-кодты өшіру";
 
 /* Message of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
@@ -4301,7 +4373,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN код жасау сәтсіз болды";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "PIN-кодтар Signal-да сақталған ақпаратты шифрлайды, сондықтан оны тек сіз аша аласыз. Қайта орнатқанда, профиліңіз, параметрлеріңіз және контактілеріңіз қалпына келеді. Қолданбаны ашу үшін PIN-код керек емес.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
@@ -4343,7 +4415,7 @@
 "PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Disable PIN";
+"PIN_CREATION_SKIP" = "PIN-кодты өшіру";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "PIN код жасау";
@@ -4403,7 +4475,7 @@
 "PINNED_CONVERSATION_LIMIT" = "You can only pin up to 4 chats.";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "Pinned";
+"PINNED_SECTION_TITLE" = "Бекітілді";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "PIN код жасау";
@@ -4469,28 +4541,28 @@
 "PROCEED_BUTTON" = "Жалғастыру";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Write a few words about yourself…";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Өзіңіз туралы бірер сөз жазыңыз...";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Be kind";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Сыпайы болыңыз";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Coffee lover";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Кофені жақсы көретін адам";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Encrypted";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Шифрланған";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Free to chat";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Чат арқылы сөйлесуге дайын";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Taking a break";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Үзіліс";
 
 /* The 'Working on something new' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Working on something new";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Жаңа жобамен жұмыс істеп жатырмын";
 
 /* Title for the profile bio view. */
 "PROFILE_BIO_VIEW_TITLE" = "Мағлұмат";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "Return";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Топты бәрібір қосу";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Бәрібір қоңырау соғу";
@@ -4784,13 +4856,13 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Бәрібір жіберу";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Мына адамдар құрылғыларын қайта орнатқан немесе өзгерткен болуы мүмкін. Құпиялылықты сақтау үшін олармен қауіпсіздік нөмірін тексеріңіз.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
 
 /* Title for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Қауіпсіздік нөмірінің өзгерістері";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "View";
@@ -4850,7 +4922,7 @@
 "SEARCH_SECTION_CONTACTS" = "Басқа байланыстық тұлғалар";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "Chats";
+"SEARCH_SECTION_CONVERSATIONS" = "Чаттар";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "Топтар";
@@ -4964,7 +5036,7 @@
 "SEND_SMS_INVITE_TITLE" = "Төмендегі нөмірді Signal қолданбасына шақырғыңыз келе ме: ";
 
 /* String describing high quality sent media */
-"SENT_MEDIA_QUALITY_HIGH" = "High";
+"SENT_MEDIA_QUALITY_HIGH" = "Жоғары";
 
 /* String describing standard quality sent media */
 "SENT_MEDIA_QUALITY_STANDARD" = "Standard";
@@ -5021,10 +5093,10 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "PIN-кодты өшіру";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "PIN-кодты қосу";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Дұрыстау журналын жіберу";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Бұғатталған пайдаланушыны қосу";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal қолданбасында сіздің байланыстық тұлғаларыңыз жоқ.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5111,7 +5183,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Change Number";
 
 /* Title for the 'chats' link in settings. */
-"SETTINGS_CHATS" = "Chats";
+"SETTINGS_CHATS" = "Чаттар";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
@@ -5129,7 +5201,7 @@
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
 
 /* Section header for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_HEADER" = "Calls";
+"SETTINGS_DATA_CALL_SECTION_HEADER" = "Қоңыраулар";
 
 /* Footer for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
@@ -5186,7 +5258,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Signal-ды демеу";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "Анықтама";
@@ -5213,10 +5285,10 @@
 "SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Retrieve link previews directly from websites for messages you send.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Жіберетін хаттарыңыз үшін сілтеме нобайларын тікелей веб-сайттардан алыңыз.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Never";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Ешқашан";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi and Cellular";
@@ -5228,13 +5300,13 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "Дыбыстық";
 
 /* Label for the 'document' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "Documents";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "Құжаттар";
 
 /* Label for the 'photo' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "Photos";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "Фотосуреттер";
 
 /* Label for the 'video' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Videos";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Видеолар";
 
 /* Label for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING" = "Messaging";
@@ -5267,13 +5339,13 @@
 "SETTINGS_NOTIFICATIONS" = "Құлақтандырулар";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Іске қосу";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Іске қосу";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
@@ -5282,7 +5354,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Add Funds";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "To add funds, send MobileCoin to your wallet address. Start a transaction from your account on an exchange that supports MobileCoin, then scan the QR code or copy your wallet address.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Қаражатты қосу үшін MobileCoin-ды әмияныңыздың мекенжайына жіберіңіз. MobileCoin-ға қолдау көрсететін аккаунтыңыздан транзакцияны бастаңыз, содан кейін QR кодын сканерлеңіз немесе әмиянның мекенжайын көшіріңіз.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet Address Copied";
@@ -5294,7 +5366,7 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ at %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal қолданбасындағы төлемдер бұдан былай қолжетімді емес. Сонда да қаражатты айырбастау платформасына жіберуіңізге болады, дегенмен енді төлемдер жіберу және қабылдау немесе қаражатты қосу мүмкін емес.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
 "SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Can't deactivate payments because your balance is not available. Check your connection and try again.";
@@ -5303,22 +5375,22 @@
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Couldn't complete payment because your balance is not available. Check your connection and try again.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal қолданбасындағы төлемдер бұдан былай қолжетімді емес. Сонда да қаражатты айырбастау платформасына жіберуіңізге болады, дегенмен енді төлемдер жіберу және қабылдау немесе қаражатты қосу мүмкін емес.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal қолданбасындағы төлемдер бұдан былай қолжетімді емес. Сонда да қаражатты айырбастау платформасына жіберуіңізге болады, дегенмен енді төлемдер жіберу және қабылдау немесе қаражатты қосу мүмкін емес.";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversions are just estimates and may not be accurate.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Конвентациялар шамамен алынады және дәлме-дәл болмауы мүмкін.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
-"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "All Currencies";
+"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Барлық валюта";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Deactivate";
+"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Өшіру";
 
 /* Label for 'deactivate payments' button in the app settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deactivate Payments";
@@ -5327,7 +5399,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Deactivate Payments?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Төлемдерді өшіру керек пе?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deactivate Payments";
@@ -5372,7 +5444,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Update PIN";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "PIN-кодты жаңарту";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "With a high balance, you may want to update to an alphanumeric PIN to add more protection to your account.";
@@ -5408,13 +5480,13 @@
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Тіркелмеген";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Төлемдерді іске қосу";
 
 /* Message shown when payments are activated in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Use Signal to send and receive MobileCoin, a new privacy focused digital currency. Activate to get started.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Анонимді транзакцияларға негізделген цифрлық валюта болып есептелетін MobileCoin жіберу және алу үшін Signal қолданбасын пайдаланыңыз. Бастау үшін белсендіріңіз.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
@@ -5459,10 +5531,10 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Күй";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transaction details including the payment amount and time of transaction are part of the MobileCoin Ledger.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Транзакция мәліметтері, оның ішінде төлем сомасы және транзакция уақыты –MobileCoin тіркеу кітабының бір бөлігі.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Транзакцияны орындау үшін сіздің иелігіңіздегі койндарды біріктіру мүмкін болмаған жағдайда, \"Койнды тазалау ақысы\" алынады. Тазалаудың арқасында төлемдер жіберуге мүмкіндік аласыз.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
@@ -5477,7 +5549,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Төлемдер өшірілді.";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Барлығы";
@@ -5534,7 +5606,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Recovery phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Қалпына келтіру сөйлемі";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Paste Recovery Phrase";
@@ -5564,7 +5636,7 @@
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Мекенжай дұрыс емес";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR кодты сканерлеу";
@@ -5579,13 +5651,13 @@
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
 
 /* Label for the 'payments' section of the app settings. */
-"SETTINGS_PAYMENTS_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_TITLE" = "Төлемдер";
 
 /* Error indicating that it is not valid to send yourself a payment. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "You can transfer MobileCoin by completing a transfer to the wallet address provided by the exchange. The wallet address is the string of numbers and letters most commonly below the QR code.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Айырбастау платформасы арқылы берілген әмиян мекенжайына MobileCoin аударуыңызға болады. Әмиян мекенжайы – әдетте QR кодының астында тұратын сандар мен әріптерден құралған жол.";
 
 /* Error indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Check the wallet address you’re attempting to transfer to and try again.";
@@ -5594,7 +5666,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Incorrect Address";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "To: Scan or enter wallet address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "Кімге: Әмиян мекенжайын сканерлеңіз немесе енгізіңіз";
 
 /* Label for 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfer to Exchange";
@@ -5654,10 +5726,10 @@
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments (Beta)";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "Төлемдер (Бета нұсқасы)";
 
 /* Label for the payments wallet address. */
-"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Әмияныңыздың мекенжайы";
 
 /* Label for the 'phone number discoverability' setting. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find Me by Phone Number";
@@ -5804,7 +5876,7 @@
 "SETTINGS_VERSION" = "Нұсқа";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Who can…";
+"SETTINGS_WHO_CAN" = "Кімнің қолынан келеді...";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "Пошта";
@@ -5882,7 +5954,7 @@
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Complete verification";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Верификацияны аяқтау";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Жапсырма хабарламасы";
@@ -5936,7 +6008,7 @@
 "STORIES_DELETE_REPLY_ACTION" = "Жою";
 
 /* Context menu action to forward the selected story */
-"STORIES_FORWARD_STORY_ACTION" = "Forward";
+"STORIES_FORWARD_STORY_ACTION" = "Алға";
 
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
@@ -5972,7 +6044,7 @@
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
 
 /* Text indicating a story that was replied to is no longer available. */
-"STORY_NO_LONGER_AVAILABLE" = "No longer available";
+"STORY_NO_LONGER_AVAILABLE" = "Бұдан былай жоқ";
 
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "Құпиялық";
@@ -5994,6 +6066,12 @@
 
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "Сіз";
+
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Ерікті жарна енгізу";
@@ -6056,16 +6134,16 @@
 "SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "How do you feel? (Optional)";
+"SUPPORT_EMOJI_PROMPT" = "Қалайсыз? (міндетті емес)";
 
 /* Label in support request informing user about Signal FAQ */
-"SUPPORT_FAQ_PROMPT" = "Have you read our FAQ yet?";
+"SUPPORT_FAQ_PROMPT" = "Жиі қойылатын сұрақтарды оқыдыңыз ба?";
 
 /* Label describing support switch to attach debug logs */
 "SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
-"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Loading";
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Жүктеу";
 
 /* First block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
@@ -6173,10 +6251,10 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Ортақ топтар жоқ. Сұрауларды мұқият тексеріңіз.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Бұл топта контактілер жоқ. Сұрауларды мұқият тексеріңіз.";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Tap to replace an emoji";
@@ -6317,7 +6395,7 @@
 "UNPIN_ACTION" = "Босату";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "Chats";
+"UNPINNED_SECTION_TITLE" = "Чаттар";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Оқылмаған";
@@ -6422,7 +6500,7 @@
 "VIEW_ONCE_OUTGOING_TOAST" = "Бір рет қаралатын жолданатын ақпарат файлдары жіберілгеннен кейін автоматты түрде жойылады.";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to cancel";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Бас тарту үшін сырғытыңыз";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Дауысты хабарлама ";

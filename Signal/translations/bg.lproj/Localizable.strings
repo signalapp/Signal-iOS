@@ -71,7 +71,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Добавяне на нов член";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Already a member";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Вече е член";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ вече е член на %@ ";
@@ -119,7 +119,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Относно заявките за съобщения";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Отговор";
@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Архивиране";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Original";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Square";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Достигнат е лимитът за надписи.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Добави описание...";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Описание";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Неуспешно експортиране на прикачен файл.";
@@ -227,13 +233,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "По-бързо, по-малко данни";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Съобщение до %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Изпращане";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Качество на мултимедията";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Прикачен файл";
@@ -365,13 +365,13 @@
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
 
 /* The title for the badge configuration page */
-"BADGE_CONFIGURATION_TITLE" = "Badges";
+"BADGE_CONFIGURATION_TITLE" = "Значки";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Станете поддръжник";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Дайте подсилване на Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Значката ти за Boost е изтекла и вече не може да бъде показвана на профила ти.\n\nМожеш да продължиш да използваш Signal, но за да подкрепиш технологията, създадена специално за теб, помисли дали да не станетеш наш поддръжник чрез месечно дарение.";
@@ -380,10 +380,10 @@
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Значката ти за Boost е изтекла и вече не може да бъде показвана на профила ти.\n\nМожеш да активираш значката си за Boost за още 30 дни чрез еднократен принос.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Become a Sustainer";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Станете поддръжник";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Add a Boost";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Добавяне на подсилване";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
@@ -395,10 +395,16 @@
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Месечното дарение е отменено";
+
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "Благодарим ви за подкрепата!";
 
 /* Text telling the user that they can add a message along with their gift badge */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Подаръкът ви ще бъде изпратен в съобщение 1 на 1 до получателя.";
 
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Добави съобщение";
@@ -410,13 +416,13 @@
 "BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
-"BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
+"BADGE_GIFTING_CHAT_EXPIRED" = "Изтекло";
 
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
 
 /* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Подарете значка";
 
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
@@ -430,11 +436,17 @@
 /* Title for error message dialog indicating that a user can't receive gifts. */
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
 
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Cannot Send Gift Badge";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
 
 /* Text telling the user that their gift is a one-time donation */
-"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "One-time Donation";
+"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Еднократно дарение";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
 "BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
@@ -455,7 +467,7 @@
 "BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
-"BADGE_GIFTING_REDEEM" = "Redeem";
+"BADGE_GIFTING_REDEEM" = "Осребряване";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
@@ -464,7 +476,10 @@
 "BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "Redeemed";
+"BADGE_GIFTING_REDEEMED" = "Осребрено";
+
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "Подарък";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
@@ -482,19 +497,19 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "Thanks for the Boost!";
+"BADGE_THANKS_BOOST_TITLE" = "Благодарим за подсилването!";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Display on Profile";
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Показване на профила";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Благодарим ви за подкрепата!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "Когато имате повече от една значка, можете да изберете една от тях, която да бъде представена, за да я виждат другите в профила ви.";
 
 /* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
 "BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
@@ -581,10 +596,10 @@
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Enter Custom Amount";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Въведете индивидуална сума";
 
 /* Text explaining there are other ways to donate on the boost view. */
-"BOOST_VIEW_OTHER_WAYS" = "More Payment Options";
+"BOOST_VIEW_OTHER_WAYS" = "Още опции за плащане";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
 "BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
@@ -596,7 +611,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Give Signal a Boost";
+"BOOST_VIEW_TITLE" = "Дайте подсилване на Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Добави";
@@ -611,7 +626,7 @@
 "BUTTON_DONE" = "Готово";
 
 /* Label for the 'duplicate' button. */
-"BUTTON_DUPLICATE" = "Duplicate";
+"BUTTON_DUPLICATE" = "Дублиране";
 
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "Редакция";
@@ -632,7 +647,7 @@
 "BUTTON_OKAY" = "Добре";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "Previous";
+"BUTTON_PREVIOUS" = "Назад";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Изберете";
@@ -1160,7 +1175,7 @@
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "Badges";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "Значки";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
@@ -1205,7 +1220,7 @@
 "CONVERSATION_SETTINGS_MEMBER_INVITES" = "Покани";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Requests & Invites";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Заявки и покани";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
@@ -1352,7 +1367,7 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Преместване и мащабиране";
 
 /* Title for the 'currency picker' view in the app settings. */
-"CURRENCY_PICKER_VIEW_TITLE" = "Set Currency";
+"CURRENCY_PICKER_VIEW_TITLE" = "Задаване на валута";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Градиент";
@@ -1367,7 +1382,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Плътен";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Custom Color";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Персонализиран цвят";
 
 /* Tooltip highlighting the custom chat color controls. */
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Плъзнете, за да промените посоката на градиента";
@@ -1610,7 +1625,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Персонализирано време";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "дни";
@@ -1646,7 +1661,7 @@
 "DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Display badges on profile";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Показване на значки в профила";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Местоположението за заобикаляне на цензурата";
@@ -1664,7 +1679,7 @@
 "DONATE_MEGAPHONE_TITLE" = "Дари на Signal";
 
 /* Donation payment error for decline failures where authentication is required. */
-"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Опитайте с друг начин на плащане или се свържете с банката си за повече информация.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
 "DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
@@ -1694,19 +1709,19 @@
 "DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Try completing the payment again or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Опитайте да извършите плащането отново или се свържете с банката си за повече информация.";
 
 /* Donation payment error for unspecified decline failures. */
-"DONATION_PAYMENT_ERROR_OTHER" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_OTHER" = "Опитайте с друг начин на плащане или се свържете с банката си за повече информация.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
 
 /* Section title for donation amount on receipts */
-"DONATION_RECEIPT_AMOUNT" = "Amount";
+"DONATION_RECEIPT_AMOUNT" = "Сума";
 
 /* Section title for donation date on receipts */
-"DONATION_RECEIPT_DATE_PAID" = "Date paid";
+"DONATION_RECEIPT_DATE_PAID" = "Дата на плащане";
 
 /* Title on the view where you can see a single receipt */
 "DONATION_RECEIPT_DETAILS" = "Подробности";
@@ -1717,23 +1732,26 @@
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
 
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "Подарък";
+
 /* Title for one-time donation receipts */
-"DONATION_RECEIPT_ONE_TIME" = "One-time";
+"DONATION_RECEIPT_ONE_TIME" = "Еднократно";
 
 /* Title for recurring donation receipts */
-"DONATION_RECEIPT_RECURRING" = "Recurring";
+"DONATION_RECEIPT_RECURRING" = "Регулярно";
 
 /* Title on donation receipts */
-"DONATION_RECEIPT_TITLE" = "Donation receipt";
+"DONATION_RECEIPT_TITLE" = "Разписка за дарение";
 
 /* Section title for donation type on receipts */
 "DONATION_RECEIPT_TYPE" = "Type";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
-"DONATION_RECEIPTS" = "Donation Receipts";
+"DONATION_RECEIPTS" = "Разписки за дарения";
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
-"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
+"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Ако сте преинсталирали Signal, разписките за предишни дарения няма да бъдат налични.";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Дари на Signal";
@@ -1742,16 +1760,16 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
 
 /* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "Gift a Badge";
+"DONATION_VIEW_GIFT" = "Подарете значка";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
-"DONATION_VIEW_LOAD_FAILED" = "Network error. Check your connection and try again.";
+"DONATION_VIEW_LOAD_FAILED" = "Грешка в мрежата.";
 
 /* Text of the 'make a monthly donation' button on the donation screen */
 "DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
 
 /* Title for the 'Badges' button on the donation screen */
-"DONATION_VIEW_MANAGE_BADGES" = "Badges";
+"DONATION_VIEW_MANAGE_BADGES" = "Значки";
 
 /* Title for the 'Manage Subscription' button on the donation screen */
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Manage Subscription";
@@ -1763,16 +1781,16 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "My Support";
 
 /* Title for the 'one-time donation' link in the donation view */
-"DONATION_VIEW_ONE_TIME_DONATION" = "One-time Donation";
+"DONATION_VIEW_ONE_TIME_DONATION" = "Еднократно дарение";
 
 /* Title for the 'other ways to give' section on the donation view */
 "DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
 
 /* Title for the 'receipts' section on the donation screen */
-"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Receipts";
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Разписки";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
-"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Subscription FAQ";
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Често задавани въпроси за абонамент";
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "Дари на Signal";
@@ -1868,7 +1886,7 @@
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Съобщенията не можаха да се препратят, защото вече не са налични.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
@@ -2018,7 +2036,7 @@
 "FORWARD_MESSAGE" = "Препращане на съобщение";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Препратените съобщения вече се изпращат незабавно.";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
@@ -2261,7 +2279,7 @@
 "GROUP_DESCRIPTION_MORE" = "още";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Добавете описание на групата...";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Описанията на групите ще бъдат видими за членове на тази група и хора, които са поканени.";
@@ -2390,7 +2408,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Не можете да се присъедините към тази група чрез линка за групата, тъй като сте премахнати от администратор.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Груповата връзка не е валидна";
@@ -2417,10 +2435,10 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Please try again.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Това не е валиден линк на група. Уверете се, че целият линк е правилен и не е прекъснат, преди да се опитате да се присъедините.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Невалиден линк";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
@@ -2681,7 +2699,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Покани";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Requests & Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Заявки и покани";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
@@ -2714,16 +2732,16 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ актуализира групата.";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "Описанието на групата е премахнато.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Вие премахнахте описанието на групата.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "Описанието на групата е променено.";
 
 /* Message indicating that the group's description was changed by the local user.. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Променихте описанието на групата.";
@@ -3217,6 +3235,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Всички Медии";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Clear All";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Discard Changes";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "You will lose any changes you have made to this photo";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Discard Changes?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "Рестартирай";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Add Message";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "View Once Media";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3371,7 +3410,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Блокиране и изтриване";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Report Spam and Block";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Докладване на спам и блокиране";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Блокираните хора няма да могат да ви звънят и да ви изпращат съобщения.";
@@ -3473,7 +3512,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Отмени заявката за присъединяване към групата?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Заявката ви за присъединяване е изпратена до администратора на групата. Ще бъдете уведомени, когато той предприеме действие.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Доставено";
@@ -3516,9 +3555,6 @@
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Видяно";
-
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Ново Съобщение";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ вече не е отбелязан като проверен. Докоснете за настройки.";
@@ -3568,11 +3604,47 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Тук ще се показват актуализации по историята ти.";
 
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Скрийте историята си от определени хора";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Споделяне с всички връзки";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Моите истории";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "Моята история";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "Моята история";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
@@ -3839,10 +3911,10 @@
 "ONBOARDING_PROFILE_CREATION_TITLE" = "Your profile";
 
 /* Placeholder text for the family name field of the profile creation view. */
-"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Last Name (Optional)";
+"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Фамилия (по желание)";
 
 /* Placeholder text for the given name field of the profile creation view. */
-"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "First Name (Required)";
+"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "Собствено име (задължително)";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Условия и политика за поверителност";
@@ -4178,7 +4250,7 @@
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Видяно";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Всички";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
@@ -4193,13 +4265,13 @@
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Пример: %@";
 
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "My Contacts";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "Моите контакти";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Само вашите контакти ще видят телефонния ви номер в Signal.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_SHARING_EVERYBODY" = "Всички";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
@@ -4259,7 +4331,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Безименен албум";
 
 /* Pressing this button pins a thread */
-"PIN_ACTION" = "Pin";
+"PIN_ACTION" = "Закачане";
 
 /* Error body indicating that the attempt to change a PIN failed. */
 "PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
@@ -4484,7 +4556,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Свобден да чатиш";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Говорете свободно";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "В почивка";
@@ -4505,7 +4577,7 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
 
 /* Title for the profile name view. */
-"PROFILE_NAME_VIEW_TITLE" = "Your Name";
+"PROFILE_NAME_VIEW_TITLE" = "Вашето име";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Относно";
@@ -4526,10 +4598,10 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Собственото ви име е прекалено дълго.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Last Name (Optional)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Фамилия (по желание)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "First Name (Required)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Собствено име (задължително)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "Профилът може да се актуализира, само когато има връзка с интернет.";
@@ -4574,7 +4646,7 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Оригиналното съобщение не е намерено.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Реагира на вашата история";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "Return";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Добави към групата въпреки това";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Повикване";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Добавяне на блокиран потребител";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Нямате контакти в Signal.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5282,7 +5354,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Add Funds";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "To add funds, send MobileCoin to your wallet address. Start a transaction from your account on an exchange that supports MobileCoin, then scan the QR code or copy your wallet address.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "За да добавите средства, изпратете MobileCoin до адреса на своя портфейл. Започнете трансакция от акаунта си или от борса, която поддържа MobileCoin, след което сканирайте QR кода или копирайте адреса на портфейла си.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet Address Copied";
@@ -5294,7 +5366,7 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ at %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Функцията за плащания в Signal вече не е налична. Пак можете да прехвърляте средства към борса, но вече не можете да изпращате и получавате плащания или да добавяте средства.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
 "SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Can't deactivate payments because your balance is not available. Check your connection and try again.";
@@ -5303,16 +5375,16 @@
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Couldn't complete payment because your balance is not available. Check your connection and try again.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Функцията за плащания в Signal вече не е налична. Пак можете да прехвърляте средства към борса, но вече не можете да изпращате и получавате плащания или да добавяте средства.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Функцията за плащания в Signal вече не е налична. Пак можете да прехвърляте средства към борса, но вече не можете да изпращате и получавате плащания или да добавяте средства.";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversions are just estimates and may not be accurate.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Конверсиите са прогнозни и може да не бъдат точни.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
-"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "All Currencies";
+"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Всички валути";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
@@ -5336,7 +5408,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "It’s recommended that you transfer your funds to another wallet address before deactivating payments. If you choose not to transfer your funds now, they will remain in your wallet linked to Signal if you reactivate payments.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Your balance will remain in your wallet linked to Signal if you choose to reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Вашият баланс ще остане в портфейла ви, свързан със Signal, ако решите да активирате плащанията отново.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deactivate Without Transferring?";
@@ -5354,28 +5426,28 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin е нова дигитална валута, фокусирана върху поверителността.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "About MobileCoin";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "За MobileCoin";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "You can add funds for use in Signal by sending MobileCoin to your wallet address.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Можете да добавите средства за използване в Signal, като изпратите MobileCoin на адреса на портфейла си.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adding Funds";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "You can cash out MobileCoin anytime on an exchange that supports MobileCoin. Just make a transfer to your account at that exchange.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Можете да кеширате MobileCoin по всяко време на борса, която поддържа MobileCoin.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Кешаут";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Актуализирайте ПИН";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "With a high balance, you may want to update to an alphanumeric PIN to add more protection to your account.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "При висок баланс може да е добре да въведете буквено-цифров PIN код, за да защитите акаунта си по-добре.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Обновете своя ПИН";
@@ -5384,10 +5456,10 @@
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Recovery Phrase";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your payments account.";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Вашата фраза за възстановяване ви дава още един начин да възстановите акаунта си за плащания.";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Record recovery phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Запишете фразата за възстановяване";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
@@ -5414,7 +5486,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Use Signal to send and receive MobileCoin, a new privacy focused digital currency. Activate to get started.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Използвайте Сигнал, за да изпращате и получавате MobileCoin – нова дигитална валута с фокус върху поверителността.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
@@ -5459,10 +5531,10 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Статус";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transaction details including the payment amount and time of transaction are part of the MobileCoin Ledger.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Данните за трансакцията, включително сумата на плащането и часа на трансакцията, са част от Счетоводната книга на MobileCoin.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "„Такса за почистване на монети“ се начислява, когато монетите във ваше притежание не могат да се комбинират за завършване на трансакция. Почистването ще ви позволи да продължите да изпращате плащания.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
@@ -5534,7 +5606,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Recovery phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Фраза за възстановяване";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Paste Recovery Phrase";
@@ -5585,7 +5657,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "You can transfer MobileCoin by completing a transfer to the wallet address provided by the exchange. The wallet address is the string of numbers and letters most commonly below the QR code.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Можете да прехвърляте MobileCoin, като извършите прехвърляне до адреса на портфейл, предоставен от борсата. Адресът на портфейла е низа от числа и букви, които най-често се намират под QR кода.";
 
 /* Error indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Check the wallet address you’re attempting to transfer to and try again.";
@@ -5594,7 +5666,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Incorrect Address";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "To: Scan or enter wallet address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "До: Сканирайте или въведете адрес на портфейл";
 
 /* Label for 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfer to Exchange";
@@ -5630,7 +5702,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Ако решите да съхранявате фразата си за възстановяване в цифров вид, уверете се, че е съхранена по сигурен начин и на доверено място.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";
@@ -5648,7 +5720,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Не правете екранни снимки и не я изпращайте по имейл.";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
@@ -5657,7 +5729,7 @@
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "Плащания (в Бета)";
 
 /* Label for the payments wallet address. */
-"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Адресът на вашия портфейл";
 
 /* Label for the 'phone number discoverability' setting. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find Me by Phone Number";
@@ -5765,7 +5837,7 @@
 "SETTINGS_SECURITY_TITLE" = "App Security";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Изпращането на висококачествени мултимедийни файлове ще използва повече данни.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
@@ -5864,10 +5936,10 @@
 "SOUNDS_NONE" = "Никой";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "Проверката е завършена.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Ако изберете да пропуснете проверката, може да пропуснете съобщения от други хора и вашите съобщения да не бъдат изпратени.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
@@ -5948,7 +6020,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "В момента няма актуализации за показване.\nДокосни + и добави към историята си.";
 
 /* Indicates that this story has no replies yet */
-"STORIES_NO_REPLIES_YET" = "No replies yet";
+"STORIES_NO_REPLIES_YET" = "Все още няма отговори";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "Нова частна история";
@@ -5969,10 +6041,10 @@
 "STORIES_TITLE" = "Истории";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Посетете линка";
 
 /* Text indicating a story that was replied to is no longer available. */
-"STORY_NO_LONGER_AVAILABLE" = "No longer available";
+"STORY_NO_LONGER_AVAILABLE" = "Вече не е налично";
 
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "Поверителност";
@@ -5987,7 +6059,7 @@
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Отговори";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reacted to the story";
+"STORY_REPLY_REACTION" = "Реагира на историята";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Отговори";
@@ -5995,20 +6067,26 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "Вие";
 
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Дари";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal съществува благодарение на хора като вас.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Не Сега";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Станете поддръжник";
 
 /* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ID на абоната е копиран в клипборда";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Номерата ви за безопасност с %@ съвпадат. Можете да маркирате този контакт като проверен.";
@@ -6068,7 +6146,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Зареждане";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal е организация с нестопанска цел без рекламодатели или инвеститори и се поддържа само от хората, които я използват и ценят.";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
@@ -6077,7 +6155,7 @@
 "SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
 
 /* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Why Donate?";
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Защо да дарите?";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
@@ -6086,16 +6164,16 @@
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancel Subscription";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Отмяна на абонамента";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Потвърждение";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You won't be charged again. Your badge will be removed from your profile at the end of your billing period.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Повече няма да бъдете таксувани. Значката ще бъде премахната от профила ви в края на периода на таксуване.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Потвърждаване на отмяната?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
@@ -6107,7 +6185,7 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Моля, свържете се с поддръжката.";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
@@ -6137,7 +6215,7 @@
 "SUSTAINER_VIEW_RENEWAL" = "Renews %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Плащането ви все още се обработва. Това може да отнеме няколко минути в зависимост от връзката ви.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
@@ -6146,7 +6224,7 @@
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Не Сега";
 
 /* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal is powered by people like you.";
+"SUSTAINER_VIEW_TITLE" = "Значка";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
@@ -6158,7 +6236,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Обновяване";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Направете регулярно месечно дарение за Signal, за да поддържате една технология, създадена за вас, а не за вашите данни.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Деактивирано";
@@ -6176,7 +6254,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Нямате общи групи. Преглеждайте заявките внимателно.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "В тази група няма контакти. Прегледайте заявките внимателно.";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Натиснете, за да заместите емоджи";
@@ -6314,7 +6392,7 @@
 "UNNAMED_DEVICE" = "Неименувано Устройство";
 
 /* Pressing this button un-pins a thread */
-"UNPIN_ACTION" = "Unpin";
+"UNPIN_ACTION" = "Откачане";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "Чатове";

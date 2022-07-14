@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Arhivează";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Original";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Pătrat";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Limita titlului a fost atinsă.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Adaugă un titlu...";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Titlu";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Atașamentul nu a putut fi exportat.";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Calitate Media";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Mesaj către %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Trimite";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Atașament";
@@ -397,6 +397,12 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Donație lunară anulată";
 
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "Îți mulțumim pentru sprijin!";
+
 /* Text telling the user that they can add a message along with their gift badge */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Cadoul tău va fi trimis destinatarului printr-un mesaj direct. Adaugă propriul mesaj mai jos.";
 
@@ -404,16 +410,16 @@
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Adaugă un mesaj";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Nu se poate trimite insigna cadou. Verifică-ți conexiunea și încearcă din nou.";
 
 /* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Nu se Poate Trimite Insigna Cadou";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Expirat";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Oferă unei persoane o insignă printr-o donație către Signal. Astfel, va primi o insignă pe care o poate afișa la profil.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Oferă cadou o insignă";
@@ -428,7 +434,13 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "Acest utilizator nu poate primi cadouri până nu actualizează Signal.";
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Nu se Poate Trimite Insigna Cadou";
+
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Nu se Poate Trimite Insigna Cadou";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Trimite o insignă cadou";
@@ -449,22 +461,25 @@
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Cadoul Insignă a eșuat";
 
 /* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 Ai primit un cadou";
 
 /* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 Ai trimis un cadou";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "Revendică";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
+"BADGE_GIFTING_REDEEM_LATER" = "Poți să-ți revendici insigna mai târziu";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ ți-a trimis un cadou";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
 "BADGE_GIFTING_REDEEMED" = "Revendicat";
+
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "Cadou";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Durează %@";
@@ -473,7 +488,7 @@
 "BADGE_GIFTING_VIEW" = "Vizualizare";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "You’ve received a gift badge from %@. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Ai primit o insignă cadou de la %@. Afișează-ți insigna la profil ca să încurajezi și alte persoane să doneze la Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Donația ta lunară recurentă a fost anulată automat. %@ Insigna ta %@ nu mai este vizibilă la profil.";
@@ -749,7 +764,7 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Schimbă la apel video";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Apelează înapoi";
+"CALLBACK_BUTTON_TITLE" = "Apelează Înapoi";
 
 /* Indicates to the user that their camera is currently off. */
 "CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Camera ta este oprită";
@@ -875,7 +890,7 @@
 "CONFIRM_LEAVE_GROUP_TITLE" = "Ești sigur că vrei să părăsești grupul?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Asociază un dispozitiv nou";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Asociază un Dispozitiv Nou";
 
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "Confirmă";
@@ -1130,7 +1145,7 @@
 "CONVERSATION_SEARCH_NO_RESULTS" = "Nici o potrivire";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Setări conversație";
+"CONVERSATION_SETTINGS" = "Setări Conversație";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Adaugă membri";
@@ -1604,7 +1619,7 @@
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Se transmit datele";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Dispariție mesaje";
+"DISAPPEARING_MESSAGES" = "Dispariție Mesaje";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Mesajele din această conversație vor dispărea după %@.";
@@ -1716,6 +1731,9 @@
 
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Mulțumim pentru că susții Signal. Contribuția ta ajută la dezvoltarea tehnologiilor open source pentru confidențialitate care protejează libertatea de exprimare și facilitează o comunicare globală sigură pentru milioane de oameni din întreaga lume. Dacă ești rezident al Statelor Unite, te rugăm să păstrezi acest bon pentru dosarul tău fiscal. Signal Technology Foundation este o organizație non-profit scutită de impozit în Statele Unite, conform secțiunii 501c3 din Codul fiscal intern. Numărul nostru de identificare fiscală este 82-4506840.";
+
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "Cadou";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "O dată";
@@ -1856,7 +1874,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Ocupat";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Apelul a eșuat.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Apel Eșuat.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Contactele nu au putut fi accesate.";
@@ -2006,7 +2024,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marchează ca verificat";
 
 /* Label for button to reset a session. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Resetează sesiunea";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Resetează Sesiunea";
 
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Grupul a fost creat";
@@ -3035,7 +3053,7 @@
 "IN_CALL_SECURING" = "Apel preluat. Securizare în curs...";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Apelul a fost terminat.";
+"IN_CALL_TERMINATED" = "Apel Terminat.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Conversațiile pe silențios arhivate vor rămâne arhivate atunci când sosește un mesaj nou.";
@@ -3143,7 +3161,7 @@
 "LEAVE_BUTTON_TITLE" = "Părăsește";
 
 /* table cell label in conversation settings */
-"LEAVE_GROUP_ACTION" = "Părăsește grupul";
+"LEAVE_GROUP_ACTION" = "Părăsește Grupul";
 
 /* Error indicating that a group could not be left. */
 "LEAVE_GROUP_FAILED" = "A apărut o eroare la părăsirea grupului.";
@@ -3152,7 +3170,7 @@
 "LINK_DEVICE_INVALID_CODE_BODY" = "Acest cod QR nu este valid. Te rugăm să te asiguri că scanezi codul QR afișat pe dispozitivul pe care vrei să-l conectezi.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Conectarea dispozitivului a eșuat";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Conectarea Dispozitivului a Eșuat";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Acest dispozitiv va putea vedea grupurile și contactele tale, accesa conversațiile și să trimită mesaje în numele tău.";
@@ -3167,10 +3185,10 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scanează codul QR care este afișat pe dispozitivul pe care vrei să-l asociezi.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scanează codul QR pentru a conecta un dispozitiv nou.";
+"LINK_NEW_DEVICE_SUBTITLE" = "Scanează Codul QR pentru a conecta un dispozitiv nou.";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Asociază un dispozitiv nou";
+"LINK_NEW_DEVICE_TITLE" = "Asociază un Dispozitiv Nou";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Previzualizare Link";
@@ -3179,7 +3197,7 @@
 "LINKED_DEVICES_TITLE" = "Dispozitive asociate";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Asocierea dispozitivului a eșuat";
+"LINKING_DEVICE_FAILED_TITLE" = "Asocierea Dispozitivului a Eșuat";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Pentru a putea transfera contul tău Signal, este nevoie să activezi accesul la rețeaua locală pe ambele dispozitive.";
@@ -3216,6 +3234,27 @@
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Toate fișierele media";
+
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Șterge Tot";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Renunță la Schimbări";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "Vei pierde orice schimbări pe care le-ai făcut la această fotografie";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Renunți la Schimbări?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "Resetare";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Adaugă Mesaj";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Media Vizibilă o Singură Dată";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -3308,7 +3347,7 @@
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mesaj";
 
 /* Title for the compose view. */
-"MESSAGE_COMPOSEVIEW_TITLE" = "Mesaj nou";
+"MESSAGE_COMPOSEVIEW_TITLE" = "Mesaj Nou";
 
 /* Toast indicating that the user has copied the sent timestamp. */
 "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Timp de trimitere copiat";
@@ -3371,7 +3410,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blochează și șterge";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Raportează spamul și blochează";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Raportează spam și blochează";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Persoanele blocate nu vor putea să te sune sau să-ți trimită mesaje.";
@@ -3517,9 +3556,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Vizualizat";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Mesaj nou";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ nu mai este marcat ca fiind verificat. Apasă pentru opțiuni.";
 
@@ -3568,11 +3604,47 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Actualizări ale poveștii tale vor apărea aici.";
 
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Ascunde-ți povestea de anumite persoane";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Distribuie către toate conexiunile";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Poveștile mele";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "Povestea mea";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "Povestea Mea";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recent și-au schimbat numele profilului din %1$@ în %2$@.";
@@ -3620,7 +3692,7 @@
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Lipsește numele grupului";
 
 /* Used in place of the group name when a group has not yet been named. */
-"NEW_GROUP_DEFAULT_TITLE" = "Grup nou";
+"NEW_GROUP_DEFAULT_TITLE" = "Grup Nou";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ către %@";
@@ -3698,22 +3770,22 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Activezi notificările?";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Acțiuni includ \"Marchează ca citit\", \"Răspunde\" și \"Apelează înapoi.\"";
+"NOTIFICATIONS_FOOTER_WARNING" = "Acțiuni includ \"Marchează ca Citit\", \"Răspunde\" și \"Apelează Înapoi.\"";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Fără nume sau conținut";
+"NOTIFICATIONS_NONE" = "Fără Nume sau Conținut";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Redă cât timp aplicația este deschisă";
+"NOTIFICATIONS_SECTION_INAPP" = "Redă Cât Timp Aplicația este Deschisă";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Adaugă un ton personalizat...";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nume, conținut și acțiuni";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nume, Conținut și Acțiuni";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Doar numele";
+"NOTIFICATIONS_SENDER_ONLY" = "Doar Numele";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Afișează";
@@ -4544,7 +4616,7 @@
 "PROFILE_VIEW_TITLE" = "Profil";
 
 /* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "Marchează ca citit";
+"PUSH_MANAGER_MARKREAD" = "Marchează ca Citit";
 
 /* Notification action button title for 'react with thumbs up.' */
 "PUSH_MANAGER_REACT_WITH_THUMBS_UP" = "👍";
@@ -4694,7 +4766,7 @@
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Introdu numărul";
 
 /* No comment provided by engineer. */
-"REGISTRATION_ERROR" = "Eroare la înregistrare";
+"REGISTRATION_ERROR" = "Eroare la Înregistrare";
 
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Nu putem activa contul tău până nu verifici codul pe care ți l-am trimis.";
@@ -4718,7 +4790,7 @@
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "A existat un cont înregistrat anterior cu acest număr și este disponibil pentru a fi transferat.";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verificarea a eșuat";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verificarea a Eșuat";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Numerele pe care le-ai trimis nu se potrivesc cu ce am trimis noi. Vrei să verifici din nou?";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "Întoarce-te";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Adaugă la grup oricum";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Apelează oricum";
@@ -4802,7 +4874,7 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Numărul tău de siguranță pentru %@ s-a schimbat. S-ar putea să dorești să-l verifici.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Scanează codul QR de pe dispozitivul contactului tău.";
+"SCAN_CODE_INSTRUCTIONS" = "Scanează Codul QR de pe dispozitivul contactului tău.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "Scanează Codul QR";
@@ -4928,7 +5000,7 @@
 "SEE_ALL_BUTTON" = "Afișare toți membri";
 
 /* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "Trimite din nou";
+"SEND_AGAIN_BUTTON" = "Trimite din Nou";
 
 /* Label for the button to send a message */
 "SEND_BUTTON_TITLE" = "Trimite";
@@ -5012,7 +5084,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Ocolirea cenzurii nu este necesară; ești deja conectat la serviciul Signal.";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Activează jurnalul de depanare";
+"SETTINGS_ADVANCED_DEBUGLOG" = "Activează Jurnalul de Depanare";
 
 /* Label for the 'advanced pin settings' button. */
 "SETTINGS_ADVANCED_PIN_SETTINGS" = "Setări PIN avansate";
@@ -5027,7 +5099,7 @@
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Activare PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Trimite jurnal de depanare";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Trimite Jurnal de Depanare";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Jurnalele cu erori";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Adaugă un utilizator blocat";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Nu ai nici un contact pe Signal.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5114,7 +5186,7 @@
 "SETTINGS_CHATS" = "Conversații";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Șterge istoricul conversației";
+"SETTINGS_CLEAR_HISTORY" = "Șterge Istoricul Conversației";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Drepturi de autor Signal Messenger\nSub licența GPLv3";
@@ -5177,7 +5249,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Ești sigur că vrei să ștergi tot istoricul (mesaje, atașamente, istoric apeluri, etc.) ? Această acțiune este ireversibilă.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Șterge tot";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Șterge Tot";
 
 /* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "Dispariție mesaje";
@@ -5762,7 +5834,7 @@
 "SETTINGS_SECURITY_DETAIL_TOUCHID" = "Folosiți Touch ID pentru a debloca Signal.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Securitatea aplicației";
+"SETTINGS_SECURITY_TITLE" = "Securitatea Aplicației";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Trimiterea fișierelor media la calitate înaltă va duce la un consum mai mare de date.";
@@ -5849,7 +5921,7 @@
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "Eroare la dezactivarea sugestiilor pentru distribuire";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Afișează numărul de siguranță";
+"SHOW_SAFETY_NUMBER_ACTION" = "Afișează Numărul de Siguranță";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Afișează conversația";
@@ -5995,6 +6067,12 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "Tu";
 
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Donați";
 
@@ -6014,7 +6092,7 @@
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Numărul tău de siguranța cu %@ se potrivește. Poți marca acest contact ca fiind verificat.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Numărul de siguranță se potrivește!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Numărul de Siguranță se Potrivește!";
 
 /* Header of support description field */
 "SUPPORT_CONTACT_US_HEADER" = "Contactați-ne";
@@ -6257,7 +6335,7 @@
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Utilizatorul nu este în lista ta de contacte. Vrei să-l blochezi?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
-"UNKNOWN_CONTACT_NAME" = "Contact necunoscut";
+"UNKNOWN_CONTACT_NAME" = "Contact Necunoscut";
 
 /* Label for unknown countries. */
 "UNKNOWN_COUNTRY_NAME" = "Țară necunoscută";
@@ -6311,7 +6389,7 @@
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal nu a putut disocia dispozitivul tău.";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Dispozitiv fără nume";
+"UNNAMED_DEVICE" = "Dispozitiv Necunoscut";
 
 /* Pressing this button un-pins a thread */
 "UNPIN_ACTION" = "Anulare fixare";
@@ -6401,13 +6479,13 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Starea verificării s-a schimbat.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Afișează numărul de siguranță";
+"VERIFY_PRIVACY" = "Afișează Numărul de Siguranță";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Verifică numerele de siguranță";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
-"VIDEO_BROKEN" = "This video can’t be played";
+"VIDEO_BROKEN" = "Videoclipul nu poate fi redat";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "Apel Video";

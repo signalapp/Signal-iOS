@@ -16,6 +16,20 @@
 			<string>Mesej suara %d saat</string>
 		</dict>
 	</dict>
+	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Tambah Ahli</string>
+		</dict>
+	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -44,20 +58,6 @@
 			<string>Tambah Ahli Baru</string>
 		</dict>
 	</dict>
-	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>Tambah Ahli</string>
-		</dict>
-	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -69,7 +69,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Warna tersuai ini digunakan dalam %d sembang. Adakah anda mahu memadamkan ia untuk semua sembang?</string>
+			<string>Warna tersuai ini digunakan dalam %d sembang. Adakah anda mahu memadamkannya untuk semua sembang?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -263,6 +263,62 @@
 			<string>Hantar %d mesej</string>
 		</dict>
 	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Kumpulan ini tidak boleh dicipta kerana %d ahli menggunakan Signal versi yang lama. Anda boleh mencipta Kumpulan Gaya Baru dengan mereka selepas mereka mengemas kini Signal, atau mengalih keluar mereka sebelum mencipta kumpulan. %2$@</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Kumpulan ini tidak boleh dicipta kerana %d ahli menggunakan Signal versi yang lama. Anda boleh mencipta Kumpulan Gaya Baru dengan mereka selepas mereka mengemas kini Signal, atau mengalih keluar mereka sebelum mencipta kumpulan.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%d ahli tidak boleh ditambah semula ke Kumpulan Baru. Adakah anda mahu menambahkan mereka sekarang?</string>
+		</dict>
+	</dict>
+	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Kumpulan Signal berjalan dengan baik dengan %d ahli atau kurang. Menambahkan lebih banyak ahli akan menyebabkan kelewatan menghantar dan menerima mesej.</string>
+		</dict>
+	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -289,62 +345,6 @@
 			<string>d</string>
 			<key>other</key>
 			<string>Dalam panggilan ini . %d orang</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>%d tontonan</string>
-		</dict>
-	</dict>
-	<key>PRIVATE_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>Cerita Peribadi · %d Penonton</string>
-		</dict>
-	</dict>
-	<key>MY_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>%d Penonton</string>
-		</dict>
-	</dict>
-	<key>GROUP_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>Cerita Kumpulan · %d Penonton</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -403,34 +403,6 @@
 			<string>%d Jemputan Dihantar</string>
 		</dict>
 	</dict>
-	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>%d ahli</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>%d Ahli</string>
-		</dict>
-	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -473,7 +445,7 @@
 			<string>%d ahli kumpulan mempunyai nama yang sama, semak ahli di bawah atau pilih untuk ambil tindakan.</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -484,13 +456,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Jemputan ke kumpulan telah ditarik balik untuk %d orang.</string>
+			<string>%d ahli</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
+		<string>%#@text@</string>
 		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -498,7 +470,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@ telah menarik balik jemputan ke kumpulan untuk %d orang.</string>
+			<string>%d Ahli</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -529,6 +501,48 @@
 			<string>%2$@ menjemput %d orang ke kumpulan.</string>
 		</dict>
 	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Jemputan ke kumpulan telah ditarik balik untuk %d orang.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%2$@ telah menarik balik jemputan ke kumpulan untuk %d orang.</string>
+		</dict>
+	</dict>
+	<key>GROUP_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Cerita Kumpulan · %d Penonton</string>
+		</dict>
+	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -554,63 +568,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d ahli tidak dapat ditambahkan ke Kumpulan Baru dan telah dijemput untuk menyertai.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>Kumpulan ini tidak boleh dicipta kerana %d ahli menggunakan Signal versi yang lama. Anda boleh mencipta Kumpulan Gaya Baru dengan mereka selepas mereka mengemas kini Signal, atau mengalih keluar mereka sebelum mencipta kumpulan. %2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>Kumpulan ini tidak boleh dicipta kerana %d ahli menggunakan Signal versi yang lama. Anda boleh mencipta Kumpulan Gaya Baru dengan mereka selepas mereka mengemas kini Signal, atau mengalih keluar mereka sebelum mencipta kumpulan.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>%d ahli tidak boleh ditambah semula ke Kumpulan Baru. Adakah anda mahu menambahkan mereka sekarang?</string>
-		</dict>
-	</dict>
-	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>Kumpulan Signal berjalan dengan baik dengan %d ahli atau kurang. Menambahkan lebih banyak ahli akan menyebabkan kelewatan menghantar dan menerima mesej.</string>
+			<string>%d ahli tidak dapat ditambahkan ke Kumpulan Baru dan jemputan telah dihantar.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -638,7 +596,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d kumoulan yang sama</string>
+			<string>%d kumpulan yang sama</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -683,6 +641,20 @@
 			<string>%d Item </string>
 		</dict>
 	</dict>
+	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Anda Menyekat %d Ahli daripada Kumpulan Ini</string>
+		</dict>
+	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -697,18 +669,50 @@
 			<string>%d Dipilih</string>
 		</dict>
 	</dict>
-	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 person excluded</string>
+			<key>other</key>
+			<string>%d people excluded</string>
+		</dict>
+	</dict>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 person</string>
+			<key>other</key>
+			<string>%d people</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Anda Menyekat %d Ahli daripada Kumpulan Ini</string>
+			<string>%d Penonton</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -781,20 +785,6 @@
 			<string>Tarik balik %d jemputan tidak sah</string>
 		</dict>
 	</dict>
-	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>Tarik balik %d jemputan yang dihantar oleh "%2$@"?</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -807,6 +797,20 @@
 			<string>d</string>
 			<key>other</key>
 			<string>Tarik Balik Jemputan</string>
+		</dict>
+	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Tarik balik %d jemputan yang dihantar oleh "%2$@"?</string>
 		</dict>
 	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
@@ -823,6 +827,20 @@
 			<string>Kami akan ingatkan anda nanti. Mencipta PIN akan menjadi wajib dalam %d hari.</string>
 		</dict>
 	</dict>
+	<key>PRIVATE_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>Cerita Peribadi · %d Penonton</string>
+		</dict>
+	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -834,7 +852,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Anda mempunyai %d percubaan lagi. Jika anda kehabisan percubaan, anda boleh mencipta PIN baru. Anda boleh mendaftar dan menggunakan akaun anda, tapi anda akan kehilangan beberapa tetapan yang disimpan seperti maklumat profil anda.</string>
+			<string>Anda mempunyai %d percubaan lagi. Jika anda kehabisan percubaan, anda boleh mencipta PIN baru. Anda boleh mendaftar dan menggunakan akaun anda, tetapi anda akan kehilangan beberapa tetapan yang disimpan seperti maklumat profil anda.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -849,6 +867,52 @@
 			<string>d</string>
 			<key>other</key>
 			<string>Anda mempunyai %d percubaan lagi. Jika anda kehabisan percubaan, akaun anda akan dikunci. Selepas 7 hari tidak aktif, anda boleh mendaftar semula tanpa PIN anda. Akaun anda akan dibuang dan semua kandungan dipadam.</string>
+		</dict>
+	</dict>
+	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Connection</string>
+			<key>other</key>
+			<string>%d Connections</string>
+		</dict>
+	</dict>
+	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Excluded</string>
+			<key>other</key>
+			<string>%d Excluded</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>%d tontonan</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

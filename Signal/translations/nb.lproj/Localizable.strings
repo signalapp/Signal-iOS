@@ -92,13 +92,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Skjønner";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "En melding, klistremerke, reaksjon, lesebekreftelse eller vedlegg fra %@ kunne ikke sendes til deg i denne chatten.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "En melding, et klistremerke, en reaksjon, en lesebekreftelse eller et medium fra %@ kunne ikke sendes til deg i denne samtalen.";
 
 /* Title for delivery issue sheet */
-"ALERT_DELIVERY_ISSUE_TITLE" = "Problemer med sending";
+"ALERT_DELIVERY_ISSUE_TITLE" = "Problemer med levering";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "En melding, et klistremerke, en reaksjon, en lesebekreftelse eller et medium kunne ikke leveres til deg fra %@. Det kunne ha blitt sendt til deg direkte eller i en gruppe.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Kast";
@@ -137,7 +137,7 @@
 "APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "Open Signal Instead";
+"APP_LAUNCH_FAILURE_CONTINUE" = "Åpne Signal i stedet";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Kunne ikke laste inn databasen";
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal had a problem while trying to open. Please send a debug log to support@signal.org to help troubleshoot this issue.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Kunne ikke åpne Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal kunne ikke åpnes fordi du har for lite tilgjengelig lagringsplass på enheten. Gå til innstillingene dine og slett noen elementer for å åpne Signal.";
@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Arkiver";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Original";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Firkantet";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Maksimal lengde er nådd.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Legg til tekst…";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Tekst";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Vedlegg kunne ikke eksporteres.";
@@ -227,13 +233,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Raskere, mindre data";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Vedleggskvalitet";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Melding til %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Mediekvalitet";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Vedlegg";
@@ -386,34 +386,40 @@
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Add a Boost";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "Merket er utløpt";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Lær mer.";
 
 /* Button text when a badge expires, asking you to renew your subscription */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Forny abonnementet";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
 
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "Takk for støtten!";
+
 /* Text telling the user that they can add a message along with their gift badge */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Gaven blir sendt i en privat melding til mottakeren. Skriv inn meldingen din nedenfor.";
 
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Legg til en melding";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Kunne ikke sende merket. Sjekk internettilkoblingen din og prøv igjen.";
 
 /* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Kunne ikke sende merket";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
-"BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
+"BADGE_GIFTING_CHAT_EXPIRED" = "Utløpt";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gi noen et merke ved å gi en pengegave til Signal. Personen du velger ut, får et merke som vedkommende kan vise frem på profilen sin.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
@@ -422,13 +428,19 @@
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Velg Mottaker";
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Bekreft gave";
 
 /* Error message indicating that a user can't receive gifts. */
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "Denne brukeren må oppgradere Signal-appen for å motta gaver.";
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Kunne ikke sende merket";
+
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Kunne ikke sende merket";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
@@ -440,7 +452,7 @@
 "BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Betalingen mislyktes";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
@@ -449,31 +461,34 @@
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
 
 /* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 Du har fått en gave";
 
 /* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 Du har gitt en gave";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "Redeem";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
+"BADGE_GIFTING_REDEEM_LATER" = "Du kan hente ut merket ditt senere";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ har sendt deg en gave";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
 "BADGE_GIFTING_REDEEMED" = "Redeemed";
 
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "Gift";
+
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "Varer i %@";
 
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "Vis";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "You’ve received a gift badge from %@. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Du har fått et merke i gave fra %@. Vis frem merket i profilen din for å oppmuntre andre til å donere til Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
@@ -575,7 +590,7 @@
 "BLUR_TOOLTIP" = "Nytt: Visk ut ansikter eller tegn hvor som helst for viske ut.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Gi et engangsbeløp og få et Boost-merke i 30 dager.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Boost-merket ditt utløper %@.";
@@ -665,16 +680,16 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Innkommende taleanrop…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call at %@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Tapt anrop kl. %@";
 
 /* notification body for a call that was just missed */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Ubesvart taleanrop…";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Tapt anrop den %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Tapt anrop på %@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Du kan slå på mikrofontilgang i iOS-innstillingene for å ringe eller lage lydmeldinger i Signal.";
@@ -707,16 +722,16 @@
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Innkommende videoanrop…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call at %@";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Tapt videosamtale kl. %@";
 
 /* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Ubesvart videoanrop";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Tapt videosamtale den %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Tapt videosamtale på %@";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Svar uten video";
@@ -776,7 +791,7 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "Rediger bildet";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Det nye nummeret kan ikke være det samme som det gamle. Skriv inn et nytt telefonnummer for å bytte nummer.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Nummeret du oppgav hører ikke til kontoen din.";
@@ -1091,7 +1106,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Slett samtale?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Sett denne samtalen på lydløs i …";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 dag";
@@ -1109,7 +1124,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Evig tid";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Kun administratorer kan sende meldinger i denne gruppen.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Kun administratorer kan sende meldinger til denne gruppen.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grupper";
@@ -1295,7 +1310,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Alle medlemmer";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Velg hvem som kan sende meldinger og starte videosamtaler i gruppa.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Velg hvem som kan sende meldinger og starte samtaler i gruppen.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Sende meldinger";
@@ -1376,7 +1391,7 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Run";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Dette kan ta en stund (noen minutter) avhengig av hvor mye du har brukt Signal. Du kan trygt gå ut av Signal hvis det tar for lang tid.";
 
 /* Button to save database integrity check results to the debug log */
 "DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
@@ -1424,7 +1439,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Send e-post for hjelp";
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
-"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Eksporter logger";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send til deg selv";
@@ -1643,7 +1658,7 @@
 "DISMISS_BUTTON_TEXT" = "Avbryt";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Lukk meny";
+"DISMISS_CONTEXT_MENU" = "Lukk kontekstmeny";
 
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Vis merkene på profilen";
@@ -1664,58 +1679,61 @@
 "DONATE_MEGAPHONE_TITLE" = "Donér til Signal";
 
 /* Donation payment error for decline failures where authentication is required. */
-"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Prøv en annen betalingsmåte, eller ta kontakt med banken din.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Dobbeltsjekk at betalingsinformasjonen din er oppdatert i Apple Pay. Oppdater den hvis den ikke er det. Kontakt banken din hvis du fremdeles opplever problemer.";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Betalingskortet ditt kan ikke brukes til denne typen kjøp. Prøv en annen betalingsmåte, eller ta kontakt med banken din for å få mer informasjon.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Betalingskortet ditt er utløpt. Dobbeltsjekk at betalingsinformasjonen din er oppdatert i Apple Pay. Hvis den ikke er det, må du oppdatere den og prøve på nytt.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Kortnummeret stemmer ikke. Dobbeltsjekk at betalingsinformasjonen din er angitt riktig i Apple Pay. Hvis den ikke er det, må du oppdatere den og prøve på nytt.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "CVC-nummeret stemmer ikke. Dobbeltsjekk at CVC-nummeret ditt er angitt riktig i Apple Pay. Hvis det ikke er det, må du oppdatere det og prøve på nytt.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Betalingskortet ditt har ikke nok dekning til å fullføre kjøpet. Prøv en annen betalingsmåte, eller ta kontakt med banken din for å få mer informasjon.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Utløpsmåneden for betalingsmåten din stemmer ikke. Oppdater den i Apple Pay og prøv på nytt.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "Utløpsåret for betalingsmåten din stemmer ikke. Oppdater det i Apple Pay og prøv på nytt.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Kortnummeret stemmer ikke. Oppdater det i Apple Pay og prøv på nytt.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Try completing the payment again or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Prøv å gjennomføre betalingen igjen, eller ta kontakt med banken din for å få mer informasjon.";
 
 /* Donation payment error for unspecified decline failures. */
-"DONATION_PAYMENT_ERROR_OTHER" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_OTHER" = "Prøv en annen betalingsmåte, eller ta kontakt med banken din for å få mer informasjon.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Dobbeltsjekk at betalingsinformasjonen din er oppdatert i Apple Pay. Hvis den ikke er det, må du oppdatere den og prøve på nytt.";
 
 /* Section title for donation amount on receipts */
-"DONATION_RECEIPT_AMOUNT" = "Amount";
+"DONATION_RECEIPT_AMOUNT" = "Beløp";
 
 /* Section title for donation date on receipts */
-"DONATION_RECEIPT_DATE_PAID" = "Date paid";
+"DONATION_RECEIPT_DATE_PAID" = "Betalingsdato";
 
 /* Title on the view where you can see a single receipt */
 "DONATION_RECEIPT_DETAILS" = "Detaljer";
 
 /* Text on the button that exports the receipt */
-"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Share Receipt";
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Del kvitteringen";
 
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
+
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "Gift";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "One-time";
@@ -1745,7 +1763,7 @@
 "DONATION_VIEW_GIFT" = "Gift a Badge";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
-"DONATION_VIEW_LOAD_FAILED" = "Network error. Check your connection and try again.";
+"DONATION_VIEW_LOAD_FAILED" = "Nettverksfeil. Sjekk internettilkoblingen din og prøv igjen.";
 
 /* Text of the 'make a monthly donation' button on the donation screen */
 "DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
@@ -1754,7 +1772,7 @@
 "DONATION_VIEW_MANAGE_BADGES" = "Merker";
 
 /* Title for the 'Manage Subscription' button on the donation screen */
-"DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+"DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Administrer abonnementet";
 
 /* Title for the 'more' section on the donation screen */
 "DONATION_VIEW_MORE_SECTION_TITLE" = "Mer";
@@ -1778,7 +1796,7 @@
 "DONATION_VIEW_TITLE" = "Donér til Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Set currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Velg valuta";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Du kan tillate tilgang i iOS-innstillingene.";
@@ -1865,10 +1883,10 @@
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Kunne ikke videresende meldingen.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Kunne ikke videresende meldingen fordi den ikke er tilgjengelig.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Kunne ikke videresende meldingen fordi den ikke lenger er tilgjengelig.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Kunne ikke videresende meldingene fordi de ikke er tilgjengelige.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Kunne ikke videresende meldingene fordi de ikke lenger er tilgjengelige.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Kunne ikke videresende meldingene";
@@ -1964,10 +1982,10 @@
 "ERROR_NETWORK_FAILURE" = "Nettverksfeil";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Hjelp oss med å forbedre Signal ved å rapportere denne feilen og send logg fra enheten din til support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Hjelp oss med å forbedre Signal ved å rapportere denne feilen og sende feilsøkingslogg fra enheten din til support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: En feil oppsto";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: En feil oppstod";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Enheten din er ikke lenger tilkoblet. Vennligst koble til på nytt for å sende flere meldinger.";
@@ -2000,7 +2018,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "Velg et merke";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Utvalgt merke";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Merk som verifisert";
@@ -2372,13 +2390,13 @@
 "GROUP_INVITES_VIEW_TITLE" = "Medlemsinvitasjoner";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Gruppeinnstillingene ble endret for å gjøre det mulig for alle i gruppa å sende meldinger.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Gruppeinnstillingene ble endret for å gjøre det mulig for alle medlemmene å sende meldinger.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Du endret gruppeinnstillingene slik at alle kan sende meldinger.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Du endret gruppeinnstillingene slik at alle medlemmene kan sende meldinger.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ endret gruppeinnstillingene slik at alle kan sende meldinger.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ endret gruppeinnstillingene slik at alle medlemmene kan sende meldinger.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Gruppeinnstillingene ble satt til at kun administratorer kan sende meldinger.";
@@ -2390,7 +2408,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ endret gruppeinnstillingene slik at kun administratorer kan sende meldinger.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Du kan ikke bli med i denne gruppen via lenken fordi en administrator fjernet deg fra gruppen.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Denne gruppelenken er ikke lenger gyldig.";
@@ -2684,7 +2702,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Forespørsler og invitasjoner";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
-"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
+"GROUP_STORY_NAME_FORMAT" = "%1$@ til %2$@";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Gruppen oppdatert.";
@@ -2978,10 +2996,10 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Arkiv";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Velg samtaler";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
-"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Les alle";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Tegn hvor som helst for å viske ut";
@@ -3041,7 +3059,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Arkiverte chatter flyttes til innboksen når du får en ny melding.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Arkiverte samtaler flyttes til innboksen når du får en ny melding.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Ingen samtaler ennå.\nKom i gang ved å sende en melding til en venn.";
@@ -3053,7 +3071,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Du kan sende eller motta synkroniserte meldinger fra telefonen eller iPad. ↵For sikkerhets skyld blir ikke samtaleloggen overført til nye koblede enheter.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ har byttet telefonnummer.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ er på Signal! ";
@@ -3217,6 +3235,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Alle mediefiler";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Fjern alle";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Slett endringene";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "Dette vil slette alle endringene du har gjort i dette bildet";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Vil du slette endringene?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "Tilbakestill";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Legg til melding";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Se én gang-medier";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3272,7 +3311,7 @@
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Åpne gruppeinvitasjon";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Åpne link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Åpne lenke";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Se klistremerkepakken";
@@ -3281,7 +3320,7 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Ring";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime-samtale";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime-lydsamtale";
 
 /* Label for button to make a FaceTime video call to a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime-videosamtale";
@@ -3517,9 +3556,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Sett";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Ny melding";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ er ikke lenger merket som verifisert. Trykk for valg.";
 
@@ -3568,11 +3604,47 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Oppdateringer om storyen din vises her.";
 
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Skjul storyen din for utvalgte personer";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Del med alle på kontaktlisten";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Mine stories";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "Min story";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "Min story";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Endret nylig profilnavn fra %1$@ til %2$@.";
@@ -4262,10 +4334,10 @@
 "PIN_ACTION" = "Feste";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Kunne ikke lagre den nye PIN-koden. Den gamle PIN-koden din er inaktiv. Sjekk internettilkoblingen din og prøv igjen.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "Endring av PIN-kode mislyktes";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-koden må være minst 4 tegn";
@@ -4310,10 +4382,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-koder stemmer ikke overens. Prøv igjen.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Sjekk internettilkoblingen og prøv igjen.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Ikke koblet til internett";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN-koden må være minst 4 sifre.";
@@ -4361,7 +4433,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "Oppretting av PIN-kode mislyktes";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "PIN-koden kunne ikke endres. Sjekk internettilkoblingen og prøv igjen.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "For å hjelpe deg med å huske PIN-koden din, ber vi deg om å oppgi den med jevne mellomrom. Vi vil spørre mindre etter hvert.";
@@ -4574,10 +4646,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Opprinnelig melding ikke funnet.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reagerte på storyen din";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reagerte på storyen til %@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Story";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "Tilbake";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Legg til gruppen likevel";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Ring likevel";
@@ -4952,7 +5024,7 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Deaktiver";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "Alle bilder og videoer som er tatt, slettes.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
 "SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Legg til blokkert bruker";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Du har ingen kontakter på Signal.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5066,19 +5138,19 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Omdiriger alle samtaler via Signal-tjenesten for å unngå å avsløre IP-adressen din til kontakten din. Aktivering vil reduserer samtalekvaliteten.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Endre nummer";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Bytt telefonnummer";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Telefonnummeret ditt er endret til %@";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Change Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Endre telefonnummer";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Telefonnummeret ditt byttes fra %1$@ til %2$@.\n\nDobbeltsjekk at nummeret under er riktig før du går videre.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Landskode";
@@ -5090,25 +5162,25 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "Eksempel: %@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Ditt nye nummer";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Ditt gamle nummer";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Telefonnummer";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifiserer %@";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Velg dette for å bytte ut det nåværende telefonnummeret ditt. Dette kan ikke angres senere.\n\nDobbeltsjekk at det nye nummeret ditt kan motta både SMS og anrop før du fortsetter.";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Bytt telefonnummer";
 
 /* Title for the 'change phone number' views in settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Change Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Endre telefonnummer";
 
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "Samtaler";
@@ -5141,13 +5213,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Tilbakestill instillinger for automatisk nedlasting";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Kvalitet på sendte vedlegg";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Kvalitet på sendte medier";
 
 /* Section footer for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Velg hvilken oppløsning du ønsker på bilder og videoer du sender.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sendte vedlegg";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sendte medier";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Dataforbruk";
@@ -5204,7 +5276,7 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Hold lydløse samtaler arkivert";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Vilkår og personvernerklæring";
@@ -5282,7 +5354,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Legg til penger";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "To add funds, send MobileCoin to your wallet address. Start a transaction from your account on an exchange that supports MobileCoin, then scan the QR code or copy your wallet address.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Send MobileCoin til lommebokadressen din for å overføre penger. Åpne en ny transaksjon fra kontoen din med MobilCoin, og skann QR-koden eller kopier lommebokadressen din.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Lommebokadresse kopiert";
@@ -5297,10 +5369,10 @@
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Betalinger i Signal er ikke lenger tilgjengelige. Du kan fortsatt overføre midler til en veksler, men du kan ikke lenger sende eller motta betalinger eller legge til midler.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Betalingene kan ikke stoppes fordi kontosaldoen din ikke er tilgjengelig. Sørg for at du er koblet til internett og prøv igjen.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Betalingene kan ikke stoppes fordi saldoen din ikke er tilgjengelig. Sørg for at du er koblet til internett, og prøv igjen.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Betalingen kunne ikke gjennomføres fordi kontosaldoen din ikke er tilgjengelig. Sørg for at du er koblet til internett og prøv igjen.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Betalingen kunne ikke gjennomføres fordi saldoen din ikke er tilgjengelig. Sørg for at du er koblet til internett, og prøv igjen.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Betalinger i Signal er ikke lenger tilgjengelige. Du kan fortsatt overføre midler til en veksler, men du kan ikke lenger sende eller motta betalinger eller legge til midler.";
@@ -5309,7 +5381,7 @@
 "SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Betalinger i Signal er ikke lenger tilgjengelige. Du kan fortsatt overføre midler til en veksler, men du kan ikke lenger sende eller motta betalinger eller legge til midler.";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Valutakursen er kun et estimat og kan være unøyaktig.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Vekslingskursen er kun et estimat og kan være unøyaktig.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Alle valutaer";
@@ -5336,7 +5408,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Det anbefales at du overfører pengene til en annen lommebokadresse før du deaktiverer betalinger. Hvis du velger å ikke overføre pengene dine nå, vil de forbli i lommeboken som er knyttet til Signal hvis du aktiverer betalinger på nytt.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Kontosaldoen din vil holde seg i lommeboken du har koblet til Signal hvis du ønsker å reaktivere betalingene.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Kontosaldoen din vil holde seg i lommeboken du har koblet til Signal, hvis du ønsker å reaktivere betalingene.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deaktiver uten å overføre den gjenstående balansen?";
@@ -5360,22 +5432,22 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "Om MobileCoin";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Du kan legge til penger for å bruke i Signal ved å sende MobileCoin til kontonummeret ditt.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Du kan legge til penger til bruk i Signal ved å sende MobileCoin til lommebokadressen din.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adding Funds";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Overføre penger";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "You can cash out MobileCoin anytime on an exchange that supports MobileCoin. Just make a transfer to your account at that exchange.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Løse inn i kontanter";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Oppdater PIN";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Det kan være lurt å velge en sikrere PIN-kode som består av både tall og bokstaver når du har en høy kontosaldo.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Når du har en høy kontosaldo kan det være lurt å velge en sikrere PIN-kode som består av både tall og bokstaver.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Oppdater PIN-koden din";
@@ -5387,7 +5459,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Gjenopprettingspassordet ditt gjør det mulig å gjenopprette betalingskontoen din.";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Record recovery phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Skriv inn gjenopprettingspassord";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Ugyldig lommebokadresse";
@@ -5402,7 +5474,7 @@
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Betalinger er ikke aktivert";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Registrer på nytt for å sende penger.";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Ikke registrert";
@@ -5423,13 +5495,13 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Vi introduserer betalinger (Beta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Saldoen din vil gjenopprettes automatisk når du installerer Signal igjen hvis du bekrefter Signal-PINen din. Du kan også gjenopprette saldoen din med et gjenopprettingspassord, som er en setning på 24 ord som du velger selv. Skriv den ned og oppbevar den et trygt sted.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Saldoen din gjenopprettes automatisk når du installerer Signal igjen, hvis du bekrefter Signal-PIN-koden din. Du kan også gjenopprette saldoen din med et gjenopprettingspassord, som er en setning på 24 ord som du velger selv. Skriv den ned og oppbevar den på et trygt sted.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Legg til penger";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Block Number";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Blokknummer";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Nettverksgebyr";
@@ -5444,7 +5516,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Sent av";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ på %2$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ den %2$@";
 
 /* Indicates that you send the payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Deg";
@@ -5498,7 +5570,7 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Legg inn gjenopprettingsfrase";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Record Payments Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Skriv inn gjenopprettingspassord for betalinger";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Gjenværende balanse";
@@ -5552,7 +5624,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Skriv inn ord %@";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Feil gjenopprettingspassord";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Feil gjenopprettingspassord.";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Ordet er stavet feil.";
@@ -5561,7 +5633,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Skriv inn gjenopprettingsfrasen";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan QR-koden som tilhører mottakeren";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Skann QR-koden til mottakeren av overføringen.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Ugyldig adresse";
@@ -5582,13 +5654,13 @@
 "SETTINGS_PAYMENTS_TITLE" = "Betalinger";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Det er ikke mulig å overføre til kontonummeret du oppga. Skriv inn kontonummeret fra din Signal-lommebok og en gyldig valuta.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Det er ikke mulig å overføre til Signal-lommebokadressen du oppga. Skriv inn lommebokadressen fra kontoen din og en gyldig valuta.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Du kan overføre MobileCoin ved å fullføre en overføring til lommebokadressen oppgitt av veksleren. Lommebokadressen er rekken av siffer og bokstaver, som regel passert under QR-koden.";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Sjekk at kontonummeret du forsøker å overføre til stemmer og prøv igjen.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Sjekk at lommebokadressen du forsøker å overføre til, stemmer, og prøv igjen.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Ugyldig adresse";
@@ -5603,13 +5675,13 @@
 "SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Overfør til veksling";
 
 /* Message indicating that 'payments passphrase review' is complete. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Passord for gjenopprettelse satt.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Gjenopprettingspassordet er satt.";
 
 /* Label for 'confirm' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "Bekreft";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Skriv inn ord %1$@ og %2$@ fra gjenopprettingspassordet ditt.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Skriv inn ordene %1$@ og %2$@ fra gjenopprettingspassordet ditt.";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "Ett av ordene er feil. Prøv igjen.";
@@ -5636,7 +5708,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Kopier til utklippstavlen?";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "Se koden igjen";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "Se passordet igjen";
 
 /* Title for the first step of the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "Se gjenopprettingsfrasen";
@@ -5657,7 +5729,7 @@
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "Betalinger (Beta)";
 
 /* Label for the payments wallet address. */
-"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Lommebokadressen din";
 
 /* Label for the 'phone number discoverability' setting. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Finn meg via telefonnummer";
@@ -5774,10 +5846,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Del kontaktene med iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Gi iOS tilgang til kontaktene og chattene dine i Signal for å benytte deg av funksjoner som delingsforslag.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Gi iOS tilgang til kontaktene og samtalene dine i Signal for å benytte deg av funksjoner som delingsforslag.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Gi iOS tilgang til kontaktene og samtalene dine på Signal for å se funksjoner som delingsforslag og varsler.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registreringslås";
@@ -5939,16 +6011,16 @@
 "STORIES_FORWARD_STORY_ACTION" = "Videresend";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
+"STORIES_GO_TO_CHAT_ACTION" = "Gå til samtale";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Hide Story";
+"STORIES_HIDE_STORY_ACTION" = "Skjul story";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "Ingen oppdateringer akkurat nå.\nTrykk på + for å legge ut en story.";
 
 /* Indicates that this story has no replies yet */
-"STORIES_NO_REPLIES_YET" = "No replies yet";
+"STORIES_NO_REPLIES_YET" = "Ingen svar ennå";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "Ny privat story";
@@ -5969,31 +6041,37 @@
 "STORIES_TITLE" = "Stories";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Gå inn på lenken";
 
 /* Text indicating a story that was replied to is no longer available. */
-"STORY_NO_LONGER_AVAILABLE" = "No longer available";
+"STORY_NO_LONGER_AVAILABLE" = "Ikke lenger tilgjengelig";
 
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "Personvern";
 
 /* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";
+"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> svar";
 
 /* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> replies";
+"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> svar";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Svar";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reacted to the story";
+"STORY_REPLY_REACTION" = "Reagerte på storyen";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Svar";
 
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "Deg";
+
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Donér";
@@ -6008,7 +6086,7 @@
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "Bli en støttespiller";
 
 /* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Abonnent-ID kopiert til utklippstavlen";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Sikkerhetsnummeret for %@ stemmer. Du kan nå markere denne kontakten som verifisert.";
@@ -6080,7 +6158,7 @@
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Hvorfor donere?";
 
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Under behandling";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Få et %@-merke";
@@ -6092,7 +6170,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Bekreft";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Betalingen vil ikke trekkes igjen. Merket fjernes fra profilen din på slutten av betalingsperioden.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Betalingen vil ikke trekkes igjen. Merket fjernes fra profilen din på slutten av faktureringsperioden.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Bekrefte kanselleringen?";
@@ -6125,7 +6203,7 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = "· Fornyes %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Betalingen behandles...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Betalingen behandles ...";
 
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
@@ -6158,7 +6236,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Oppdater";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Sett opp en månedlig pengegave til Signal for å støtte teknologi som er utviklet for deg, ikke opplysningene dine.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Av";
@@ -6407,7 +6485,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Gjennomgå sikkerhetsnumre";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
-"VIDEO_BROKEN" = "This video can’t be played";
+"VIDEO_BROKEN" = "Videoen kan ikke spilles av";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "Videoanrop";

@@ -18,6 +18,22 @@
 			<string>Ujumbe wa Sauti Sekunde %d </string>
 		</dict>
 	</dict>
+	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Jumuisha Wanachama</string>
+			<key>other</key>
+			<string>Ongeza Wanachama</string>
+		</dict>
+	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -48,22 +64,6 @@
 			<string>Jumuisha Wanachama Wapya</string>
 			<key>other</key>
 			<string>Ongeza Wanachama Wapya</string>
-		</dict>
-	</dict>
-	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Jumuisha Wanachama</string>
-			<key>other</key>
-			<string>Ongeza Wanachama</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -301,6 +301,70 @@
 			<string>Tuma arafa %d</string>
 		</dict>
 	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Kikundi hiki hakiwezi kuundwa kwa sababu mwanachama 1 anatumia toleo la zamani la Signal. Unaweza kuunda Kikundi cha Mfumo Mpya baada ya yeye kupata toleo jipya la Signal, au ukamuondoa kabla ya kuunda kundi. %2$@</string>
+			<key>other</key>
+			<string>Kikundi hiki hakiwezi kuundwa kwa sababu wanachama %d wanatumia toleo la zamani la Signal. Unaweza kuunda Kikundi cha Mfumo Mpya baada ya wao kupata toleo jipya la Signal, au ukawaondoa kabla ya kuunda kikundi. %2$@</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Kikundi hiki hakiwezi kuundwa kwa sababu mwanachama 1 anatumia toleo la zamani la Signal. Unaweza kuunda Kikundi cha Mfumo Mpya baada ya kupata toleo jipya la Signal, au ukamuondoa kabla ya kuunda kundi.</string>
+			<key>other</key>
+			<string>Kikundi hiki hakiwezi kuundwa kwa sababu wanachama %dwanatumia toleo la zamani la Signal. Unaweza kuunda Kikundi cha Mfumo Mpya baada ya kupata toleo jipya la Signal, au ukawaondoa kabla ya kuunda kikundi.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>mwanachama 1 ameshindwa kuongezwa upya kwenye Kikundi Kipya. Unataka kumuongeza sasa hivi?</string>
+			<key>other</key>
+			<string>wanachama %d wameshindwa kuongezwa upya kwenye Kikundi Kipya. Unataka kuwaongeza sasa hivi?</string>
+		</dict>
+	</dict>
+	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Vikundi vya Signal vinakuwa fanisi zaidi na mwanachama 1 au chini yake. Kuongeza wanachama zaidi kutasababisha ucheleweshwaji wa kutumwa na kupokewa kwa arafa.</string>
+			<key>other</key>
+			<string>Vikundi vya Signal vina ufanisi zaidi na wanachama %d au chini yake. Kuongeza wanachama zaidi kutasababisha ucheleweshwaji wa kutumwa na kupokewa kwa arafa.</string>
+		</dict>
+	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -331,70 +395,6 @@
 			<string>Katika simu hii . Mtu 1</string>
 			<key>other</key>
 			<string>Katika simu hii. watu %d</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Imeangaliwa mara 1</string>
-			<key>other</key>
-			<string>Waangaliaji %d</string>
-		</dict>
-	</dict>
-	<key>PRIVATE_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Stori ya Siri . Imeaangaliwa mara 1</string>
-			<key>other</key>
-			<string>Stori ya Siri . Watazamaji %d</string>
-		</dict>
-	</dict>
-	<key>MY_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Imeangaliwa na 1</string>
-			<key>other</key>
-			<string>Watazamaji %d</string>
-		</dict>
-	</dict>
-	<key>GROUP_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Stori ya Kikundi . Imeangaliwa mara 1</string>
-			<key>other</key>
-			<string>Stori ya Kikundi . Watazamaji%d </string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -461,38 +461,6 @@
 			<string>Mialiko %d Imetumwa</string>
 		</dict>
 	</dict>
-	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Mwanachama 1</string>
-			<key>other</key>
-			<string>wanachama %d</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Mwanachama 1</string>
-			<key>other</key>
-			<string>Wanachama %d</string>
-		</dict>
-	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -541,7 +509,7 @@
 			<string>wanachama %d wa kikundi wana jina sawa, hakiki wanachama hapo chini au chagua kuchukua hatua.</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -552,15 +520,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Mialiko ya kikundi imebatilishwa kwa mtu 1.</string>
+			<string>Mwanachama 1</string>
 			<key>other</key>
-			<string>Mialiko ya kikundi imebatilishwa kwa watu %d.</string>
+			<string>wanachama %d</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
+		<string>%#@text@</string>
 		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -568,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@amebatilisha mualiko wa mtu 1 kwenye kikundi. </string>
+			<string>Mwanachama 1</string>
 			<key>other</key>
-			<string>%2$@amebatilisha mualiko kwenye kikundi kwa watu %d.</string>
+			<string>Wanachama %d</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -605,6 +573,54 @@
 			<string>%2$@ amealika watu %dkwenye kikundi.</string>
 		</dict>
 	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Mialiko ya kikundi imebatilishwa kwa mtu 1.</string>
+			<key>other</key>
+			<string>Mialiko ya kikundi imebatilishwa kwa watu %d.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@amebatilisha mualiko wa mtu 1 kwenye kikundi. </string>
+			<key>other</key>
+			<string>%2$@amebatilisha mualiko kwenye kikundi kwa watu %d.</string>
+		</dict>
+	</dict>
+	<key>GROUP_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Stori ya Kikundi . Imeangaliwa mara 1</string>
+			<key>other</key>
+			<string>Stori ya Kikundi . Watazamaji%d </string>
+		</dict>
+	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -635,70 +651,6 @@
 			<string>Mwanachama ameshindwa kuongezwa kwenye Kikundi Kipya na amealikwa kujiunga.</string>
 			<key>other</key>
 			<string>wanachama %d wameshindwa kuongezwa kwenye Kikundi Kipya na wamealikwa kujiunga.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Kikundi hiki hakiwezi kuundwa kwa sababu mwanachama 1 anatumia toleo la zamani la Signal. Unaweza kuunda Kikundi cha Mfumo Mpya baada ya yeye kupata toleo jipya la Signal, au ukamuondoa kabla ya kuunda kundi. %2$@</string>
-			<key>other</key>
-			<string>Kikundi hiki hakiwezi kuundwa kwa sababu wanachama %d wanatumia toleo la zamani la Signal. Unaweza kuunda Kikundi cha Mfumo Mpya baada ya wao kupata toleo jipya la Signal, au ukawaondoa kabla ya kuunda kikundi. %2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Kikundi hiki hakiwezi kuundwa kwa sababu mwanachama 1 anatumia toleo la zamani la Signal. Unaweza kuunda Kikundi cha Mfumo Mpya baada ya kupata toleo jipya la Signal, au ukamuondoa kabla ya kuunda kundi.</string>
-			<key>other</key>
-			<string>Kikundi hiki hakiwezi kuundwa kwa sababu wanachama %dwanatumia toleo la zamani la Signal. Unaweza kuunda Kikundi cha Mfumo Mpya baada ya kupata toleo jipya la Signal, au ukawaondoa kabla ya kuunda kikundi.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>mwanachama 1 ameshindwa kuongezwa upya kwenye Kikundi Kipya. Unataka kumuongeza sasa hivi?</string>
-			<key>other</key>
-			<string>wanachama %d wameshindwa kuongezwa upya kwenye Kikundi Kipya. Unataka kuwaongeza sasa hivi?</string>
-		</dict>
-	</dict>
-	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Vikundi vya Signal vinakuwa fanisi zaidi na mwanachama 1 au chini yake. Kuongeza wanachama zaidi kutasababisha ucheleweshwaji wa kutumwa na kupokewa kwa arafa.</string>
-			<key>other</key>
-			<string>Vikundi vya Signal vina ufanisi zaidi na wanachama %d au chini yake. Kuongeza wanachama zaidi kutasababisha ucheleweshwaji wa kutumwa na kupokewa kwa arafa.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -781,6 +733,22 @@
 			<string>Vitu %d</string>
 		</dict>
 	</dict>
+	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Umemzuia Mwachama 1 wa Kikundi Hiki</string>
+			<key>other</key>
+			<string>Umezuia Wanachama %d Kutoka kwa Kundi Hili</string>
+		</dict>
+	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -797,20 +765,52 @@
 			<string>Zimechaguliwa %d</string>
 		</dict>
 	</dict>
-	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
+		<string>%#@text@</string>
+		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Umemzuia Mwachama 1 wa Kikundi Hiki</string>
+			<string>1 person excluded</string>
 			<key>other</key>
-			<string>Umezuia Wanachama %d Kutoka kwa Kundi Hili</string>
+			<string>%d people excluded</string>
+		</dict>
+	</dict>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 person</string>
+			<key>other</key>
+			<string>%d people</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Imeangaliwa na 1</string>
+			<key>other</key>
+			<string>Watazamaji %d</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -893,22 +893,6 @@
 			<string>Batilisha mialiko %d batili</string>
 		</dict>
 	</dict>
-	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Batilisha mwaliko wa kikundi uliotumwa na "%2$@"?</string>
-			<key>other</key>
-			<string>Batilisha mialiko %d iliyotumwa na "%2$@"?</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -925,6 +909,22 @@
 			<string>Batilisha Mialiko</string>
 		</dict>
 	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Batilisha mwaliko wa kikundi uliotumwa na "%2$@"?</string>
+			<key>other</key>
+			<string>Batilisha mialiko %d iliyotumwa na "%2$@"?</string>
+		</dict>
+	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -939,6 +939,22 @@
 			<string>Tutakukumbusha baadae. Kutengeneza Nenosiri itakuwa ni lazima ndani ya siku 1.</string>
 			<key>other</key>
 			<string>Tutakukumbusha baadae. Kutengeneza Nenosiri itakuwa ni lazima ndani ya siku %d.</string>
+		</dict>
+	</dict>
+	<key>PRIVATE_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Stori ya Siri . Imeaangaliwa mara 1</string>
+			<key>other</key>
+			<string>Stori ya Siri . Watazamaji %d</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -971,6 +987,54 @@
 			<string>Umebakiwa na jaribio 1. Majaribio yote yakiisha, akaunti yako itafungwa. Baada ya siku 7 ya kutokutumika, unaweza kusajili tena bila kutumia Nenosiri. Akaunti yako itafutwa na yaliyomo yote kufutwa.</string>
 			<key>other</key>
 			<string>Umebakiwa na majaribio %d. Majaribio yote yakiisha, akaunti yako itafungwa. Baada ya siku 7 ya kutokutumika,  unaweza kusajili tena bila kutumia Nenosiri. Akaunti yako itafutwa na yaliyomo yote kufutwa.</string>
+		</dict>
+	</dict>
+	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Connection</string>
+			<key>other</key>
+			<string>%d Connections</string>
+		</dict>
+	</dict>
+	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Excluded</string>
+			<key>other</key>
+			<string>%d Excluded</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Imeangaliwa mara 1</string>
+			<key>other</key>
+			<string>Waangaliaji %d</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

@@ -2097,6 +2097,7 @@
 		500049CD28330189006A7466 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fa; path = translations/fa.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049CE28330191006A7466 /* pa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = pa; path = translations/pa.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049CF28330195006A7466 /* pa_PK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = pa_PK; path = translations/pa_PK.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		500FE46B2880914900FA090C /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = my; path = translations/my.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		503614CE282AF657008128B4 /* GiftBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftBadgeView.swift; sourceTree = "<group>"; };
 		503614D0282C5703008128B4 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ro; path = translations/ro.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D1282C5728008128B4 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fi; path = translations/fi.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
@@ -2523,7 +2524,7 @@
 		F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptViewController.swift; sourceTree = "<group>"; };
 		F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptsViewController.swift; sourceTree = "<group>"; };
 		F941B16F28412D5F00498CCD /* ApplePayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayButton.swift; sourceTree = "<group>"; };
-		F95427E5286E042200314EDA /* BadgeGiftThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BadgeGiftThanksSheet.swift; sourceTree = "<group>"; };
+		F95427E5286E042200314EDA /* BadgeGiftThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftThanksSheet.swift; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
@@ -7126,6 +7127,7 @@
 				34067EAF271621CD000407C3 /* ps */,
 				881A05FA2745DDD20020E0C8 /* yue */,
 				8824993E277116970097ED97 /* es_MX */,
+				500FE46B2880914900FA090C /* my */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

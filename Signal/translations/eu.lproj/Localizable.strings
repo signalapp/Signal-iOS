@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Artxibatu";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Original";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Square";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Goiburuko mugara iritsi da.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Gehitu goiburua...";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Goiburua";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Eranskina ezin izan da esportatu.";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Multimedia-edukien kalitatea";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Honentzako mezua: %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Bidali";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Eranskina";
@@ -383,7 +383,7 @@
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Bilaka zaitez sostengatzaile";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Add a Boost";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Gehitu bultzada bat";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
@@ -395,13 +395,19 @@
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Hileko dohaintza bertan behera";
+
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "Eskerrik asko zure laguntzagatik!";
 
 /* Text telling the user that they can add a message along with their gift badge */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Zure oparia batetik baterako mezu batean bidaliko zaio hartzaileari. Gehitu zure mezua behean.";
 
 /* Placeholder in the text field where you can add text for a message along with your gift */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Add a message";
+"BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Gehitu mezu bat";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
 "BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
@@ -416,7 +422,7 @@
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
 
 /* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Oparitu bereizgarri bat";
 
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
@@ -429,6 +435,12 @@
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Cannot Send Gift Badge";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
@@ -455,7 +467,7 @@
 "BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
-"BADGE_GIFTING_REDEEM" = "Redeem";
+"BADGE_GIFTING_REDEEM" = "Berreskuratu";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
@@ -464,7 +476,10 @@
 "BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "Redeemed";
+"BADGE_GIFTING_REDEEMED" = "Ordaindua";
+
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "Oparia";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
@@ -482,19 +497,19 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "Thanks for the Boost!";
+"BADGE_THANKS_BOOST_TITLE" = "Eskerrik asko zure bultzadagatik!";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Display on Profile";
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Erakutsi profilean";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Eskerrik asko zure laguntzagatik!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "Bereizgarri bat baino gehiago dituzunean, besteek zure profilean ikus dezaten agertzeko bat aukera dezakezu.";
 
 /* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
 "BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
@@ -581,10 +596,10 @@
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Enter Custom Amount";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Sartu zenbateko pertsonalizatua";
 
 /* Text explaining there are other ways to donate on the boost view. */
-"BOOST_VIEW_OTHER_WAYS" = "More Payment Options";
+"BOOST_VIEW_OTHER_WAYS" = "Ordaintzeko aukera gehiago";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
 "BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
@@ -611,7 +626,7 @@
 "BUTTON_DONE" = "Eginda";
 
 /* Label for the 'duplicate' button. */
-"BUTTON_DUPLICATE" = "Duplicate";
+"BUTTON_DUPLICATE" = "Bikoiztu";
 
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "Editatu";
@@ -632,7 +647,7 @@
 "BUTTON_OKAY" = "Ados";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "Previous";
+"BUTTON_PREVIOUS" = "Aurrekoa";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Aukeratu";
@@ -644,7 +659,7 @@
 "BUTTON_SHARE" = "Partekatu";
 
 /* Label for the 'start' button. */
-"BUTTON_START" = "Start";
+"BUTTON_START" = "Hasi";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Bidali";
@@ -800,13 +815,13 @@
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Another bubble";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "Kolorea zuk bakarrik ikusten duzu.";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "Kolorea zuk bakarrik ikusten duzu.";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "Kolorea zuk bakarrik ikusten duzu.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "auto";
@@ -821,7 +836,7 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Edit Color";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
+"CHAT_COLORS_AUTO_TOOLTIP" = "Auto-k kolorea horma-paperarekin lotzen du";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Txatak";
@@ -1103,7 +1118,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "astebete";
 
 /* 8 hours */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 hours";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 ordu";
 
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Beti";
@@ -1121,7 +1136,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Jendea";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Stories";
+"CONVERSATION_PICKER_SECTION_STORIES" = "Storie-ak";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Aukeratu hartzaileak";
@@ -1232,7 +1247,7 @@
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
 
 /* Label for button to mute a thread for eight hours. */
-"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
+"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 ordu";
 
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Isildu";
@@ -1352,25 +1367,25 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Mugitu eta Eskalatu";
 
 /* Title for the 'currency picker' view in the app settings. */
-"CURRENCY_PICKER_VIEW_TITLE" = "Set Currency";
+"CURRENCY_PICKER_VIEW_TITLE" = "Ezarri moneta";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradientea";
 
 /* Title for the 'hue' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Hue";
+"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Tonua";
 
 /* Title for the 'Saturation' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "Saturation";
+"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "Saturazioa";
 
 /* Label for the 'solid color' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Solid";
+"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Solidoa";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Custom Color";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Kolore pertsonalizatua";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Drag to change the direction of the gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Arrastatu gradientearen norabidea aldatzeko";
 
 /* Button to run the database integrity check */
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Run";
@@ -1610,13 +1625,13 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Solasaldi honetako mezuak desagertuko dira %@ igaro ondoren. ";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Denbora pertsonalizatua";
 
 /* The unit for a number of days */
-"DISAPPEARING_MESSAGES_DAYS" = "days";
+"DISAPPEARING_MESSAGES_DAYS" = "egunak";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Aktibatuta dagoenean, txat honetan bidalitako eta jasotako mezuak desagertuko dira behin ikusita.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Mezuak %@ ondoren desagertuko dira";
@@ -1631,13 +1646,13 @@
 "DISAPPEARING_MESSAGES_MINUTES" = "minutuak";
 
 /* The unit for a number of seconds */
-"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+"DISAPPEARING_MESSAGES_SECONDS" = "segunduak";
 
 /* subheading in privacy settings */
 "DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
 
 /* The unit for a number of weeks */
-"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
+"DISAPPEARING_MESSAGES_WEEKS" = "asteak";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Baztertu";
@@ -1646,7 +1661,7 @@
 "DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Display badges on profile";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Erakutsi bereizgarriak profilean";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Zentsura Ekiditeko Kokapena";
@@ -1664,7 +1679,7 @@
 "DONATE_MEGAPHONE_TITLE" = "Signal-i dohaintza eman";
 
 /* Donation payment error for decline failures where authentication is required. */
-"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Saiatu beste ordainketa-metodo bat edo jarri harremanetan zure bankuarekin informazio gehiago lortzeko.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
 "DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Begiratu ea ordainketa-metodoa eguneratuta dagoen Apple Pay-n. Hala ez bada, egunera ezazu eta saiatu berriro. Arazoak izaten jarraitzen baduzu, jarri harremanetan zure bankuarekin.";
@@ -1694,19 +1709,19 @@
 "DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Try completing the payment again or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Saiatu berriro ordainketa egiten edo jarri harremanetan zure bankuarekin informazio gehiago lortzeko.";
 
 /* Donation payment error for unspecified decline failures. */
-"DONATION_PAYMENT_ERROR_OTHER" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_OTHER" = "Saiatu beste ordainketa-metodo bat edo jarri harremanetan zure bankuarekin informazio gehiago lortzeko.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
 
 /* Section title for donation amount on receipts */
-"DONATION_RECEIPT_AMOUNT" = "Amount";
+"DONATION_RECEIPT_AMOUNT" = "Zenbatekoa";
 
 /* Section title for donation date on receipts */
-"DONATION_RECEIPT_DATE_PAID" = "Date paid";
+"DONATION_RECEIPT_DATE_PAID" = "Ordainketa data";
 
 /* Title on the view where you can see a single receipt */
 "DONATION_RECEIPT_DETAILS" = "Xehetasunak";
@@ -1717,23 +1732,26 @@
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
 
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "Oparia";
+
 /* Title for one-time donation receipts */
-"DONATION_RECEIPT_ONE_TIME" = "One-time";
+"DONATION_RECEIPT_ONE_TIME" = "Behin";
 
 /* Title for recurring donation receipts */
-"DONATION_RECEIPT_RECURRING" = "Recurring";
+"DONATION_RECEIPT_RECURRING" = "Errepikatzen";
 
 /* Title on donation receipts */
-"DONATION_RECEIPT_TITLE" = "Donation receipt";
+"DONATION_RECEIPT_TITLE" = "Dohaintzaren ordainagiria";
 
 /* Section title for donation type on receipts */
 "DONATION_RECEIPT_TYPE" = "Type";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
-"DONATION_RECEIPTS" = "Donation Receipts";
+"DONATION_RECEIPTS" = "Dohaintza ordainagiriak";
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
-"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
+"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Signal berriro instalatu baduzu, aurreko dohaintzen ordainagiriak ez dira erabilgarri egongo.";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Signal-i dohaintza eman";
@@ -1742,10 +1760,10 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
 
 /* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "Gift a Badge";
+"DONATION_VIEW_GIFT" = "Oparitu bereizgarri bat";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
-"DONATION_VIEW_LOAD_FAILED" = "Network error. Check your connection and try again.";
+"DONATION_VIEW_LOAD_FAILED" = "Sareko errorea. Egiaztatu konexioa eta saiatu berriro.";
 
 /* Text of the 'make a monthly donation' button on the donation screen */
 "DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
@@ -1769,10 +1787,10 @@
 "DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
 
 /* Title for the 'receipts' section on the donation screen */
-"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Receipts";
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Agiriak";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
-"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Subscription FAQ";
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "FAQ harpidetza";
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "Signal-i dohaintza eman";
@@ -1868,7 +1886,7 @@
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Ezin izan dira mezuak birbidali eskuragarri ez daudelako.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
@@ -2018,7 +2036,7 @@
 "FORWARD_MESSAGE" = "Birbidali mezua";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Birbidalitako mezuak berehala bidaltzen dira.";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
@@ -2030,7 +2048,7 @@
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "Bidalitako mezuak";
 
 /* Indicates that the user can add a text message to forwarded messages. */
-"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Add a message";
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Gehitu mezu bat";
 
 /* Title for the 'forward message(s)' view. */
 "FORWARD_MESSAGE_TITLE" = "Forward To";
@@ -2261,7 +2279,7 @@
 "GROUP_DESCRIPTION_MORE" = "gehiago";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Gehitu taldearen deskribapena…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Talde deskribapenak talde honetako kide eta gonbidatuentzat egongo dira ikusgai.";
@@ -2714,16 +2732,16 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@(e)k taldea eguneratu du. ";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "Taldearen deskribapena kendu da.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Taldearen deskribapena kendu duzu.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "Taldearen deskribapena aldatu da.";
 
 /* Message indicating that the group's description was changed by the local user.. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Taldearen deskribapena aldatu duzu.";
@@ -3217,6 +3235,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Multimedia guztia";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Clear All";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Discard Changes";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "You will lose any changes you have made to this photo";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Discard Changes?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "Berrabiarazi";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Add Message";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "View Once Media";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3371,7 +3410,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blokeatu eta ezabatu";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Report Spam and Block";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Salatu spam-a eta blokeatu";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blokeatutako pertsonek ezingo dizute deitu edo mezuak bidali.";
@@ -3517,9 +3556,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Ikusita";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Mezu berria";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ jada ez dago egiaztatu gisa markatuta. Ukitu aukerak ikusteko.";
 
@@ -3568,11 +3604,47 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Zure story-etarako eguneratzeak hemen agertuko dira.";
 
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Ezkutatu zure istorioa pertsona jakinei";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Partekatu konexio guztiekin";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Nire istorioak";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "Nire storie-a";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "Nire istorioa";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
@@ -3947,7 +4019,7 @@
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Pay";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Ordaindu";
 
 /* Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}. */
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
@@ -3986,10 +4058,10 @@
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
 
 /* Placeholder for the new payment or payment request message. */
-"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Note";
+"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Oharra";
 
 /* Label for the 'new payment' button. */
-"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Pay";
+"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Ordaindu";
 
 /* Label for the 'total payment amount' indicator. */
 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
@@ -4076,7 +4148,7 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "To send a payment to this user they need to accept a message request from you.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "To send a payment to this user they need to accept a message request from you. Send them a message to create a message request.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Erabiltzaile honi ordainketa bat bidaltzeko, zure mezu-eskaera onartu behar du. Bidali mezu bat mezu eskaera bat sortzeko.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Can’t send payment";
@@ -4505,7 +4577,7 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@erabiltzailea bere profilaren izena aldatu du. Orain %@ da.";
 
 /* Title for the profile name view. */
-"PROFILE_NAME_VIEW_TITLE" = "Your Name";
+"PROFILE_NAME_VIEW_TITLE" = "Zure izena";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Honi buruz";
@@ -4574,7 +4646,7 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Ezin izan da mezu originala aurkitu.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Zure storie-ari erreakzionatu dio";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "Itzuli";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Gehitu taldera edonola ere";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Deitu edonola ere";
@@ -4967,7 +5039,7 @@
 "SENT_MEDIA_QUALITY_HIGH" = "Altua";
 
 /* String describing standard quality sent media */
-"SENT_MEDIA_QUALITY_STANDARD" = "Standard";
+"SENT_MEDIA_QUALITY_STANDARD" = "Estandarra";
 
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signalek muturretik-muturrerako zifratzea erabiltzen dut eta noizbehinka txataren sesioa eguneratu beharko duzu. Honek ez du zure txataren segurtasunean eraginik baina agian kontaktu horren mezuren bat galdu egingo zenuen eta berriz bidaltzeko eskatu beharko zenioke zure kontaktuari.";
@@ -4985,7 +5057,7 @@
 "SET_WALLPAPER_TITLE" = "Ezarri hormairudia";
 
 /* Title for the 'account' link in settings. */
-"SETTINGS_ACCOUNT" = "Account";
+"SETTINGS_ACCOUNT" = "Kontua";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Blokeatu";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Gehitu blokeatutako erabiltzailea";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Zure kontaktuek ez dute Signal erabiltzen.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5075,7 +5147,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Change Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Aldatu zenbakia";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
@@ -5108,7 +5180,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
 
 /* Title for the 'change phone number' views in settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Change Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Aldatu zenbakia";
 
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "Txatak";
@@ -5183,7 +5255,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Ezkutatutako Mezuak";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Ezarri lehenetsitako desagerpen mezuen tenporizadore bat zuk hasitako txat berri guztientzat.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Signal-i dohaintza eman";
@@ -5261,7 +5333,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Jakinarazi...";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Jakinarazpenak";
@@ -5309,10 +5381,10 @@
 "SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal-eko ordainketak ez daude dagoeneko erabilgarri. Oraindik funtsak trukatu ditzakezu, baina ezin dituzu ordainketak bidali eta jaso, ezta funtsak gehitu ere.";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversions are just estimates and may not be accurate.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Konbertsioak aurreikuspenak baino ez dira eta agian ez dira zehatzak.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
-"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "All Currencies";
+"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Moneta guztiak";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
@@ -5336,7 +5408,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "It’s recommended that you transfer your funds to another wallet address before deactivating payments. If you choose not to transfer your funds now, they will remain in your wallet linked to Signal if you reactivate payments.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Your balance will remain in your wallet linked to Signal if you choose to reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Zure saldoa Signal-i lotutako diru-zorroan geratuko da ordainketak berriro aktibatzea aukeratzen baduzu.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deactivate Without Transferring?";
@@ -5354,40 +5426,40 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin pribatutasunera bideratutako dibisa digital berria da.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "About MobileCoin";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "MobileCoin-i buruz";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "You can add funds for use in Signal by sending MobileCoin to your wallet address.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Signal-en erabiltzeko funtsak gehi ditzakezu MobileCoin zure diru-zorroaren helbidera bidalita.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adding Funds";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "You can cash out MobileCoin anytime on an exchange that supports MobileCoin. Just make a transfer to your account at that exchange.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "MobileCoin edonoiz atera dezakezu MobileCoin onartzen duen truke batean. Egin transferentzia bat truke horretan zure kontura.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Kobratzen";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Eguneratu PINa";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "With a high balance, you may want to update to an alphanumeric PIN to add more protection to your account.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Balantze handia izanez gero, baliteke PIN alfanumeriko batera eguneratu nahi izatea zure kontuari babes gehiago emateko.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Update your PIN";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Eguneratu zure PINa";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Recovery Phrase";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your payments account.";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Berreskuratzeko esaldiak zure ordainketa-kontua leheneratzeko beste modu bat eskaintzen dizu.";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Record recovery phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Grabatu berreskuratzeko esaldia";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
@@ -5462,7 +5534,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transakzioaren xehetasunak ordainketaren zenbatekoa eta transakzioaren denbora barne, MobileCoin Ledger-en parte dira.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "\"Txanponen garbiketa\" kobratuko da zure jabetzako txanponak ezin direnean konbinatu transakzio bat burutzeko. Garbiketak ordainketak bidaltzen jarraitzen utziko dizu.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
@@ -5516,7 +5588,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirm Recovery Phrase";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Payments account restored.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Ordainketen kontua leheneratu da.";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Enter Manually";
@@ -5564,7 +5636,7 @@
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Helbide baliogabea";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR kodea eskaneatu";
@@ -5585,7 +5657,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "You can transfer MobileCoin by completing a transfer to the wallet address provided by the exchange. The wallet address is the string of numbers and letters most commonly below the QR code.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "MobileCoin alda dezakezu trukeak ematen duen diru-zorroaren helbidera transferentzia bat eginez. Karteraren helbidea QR kodea baino beherago dauden zenbaki eta letren lokarria da.";
 
 /* Error indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Check the wallet address you’re attempting to transfer to and try again.";
@@ -5594,7 +5666,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Incorrect Address";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "To: Scan or enter wallet address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "Zertarako: eskaneatzeko edo kartera helbidean sartzeko";
 
 /* Label for 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfer to Exchange";
@@ -5630,7 +5702,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Berreskuratzeko esaldia digitalki gordetzea erabakitzen baduzu, ziurtatu konfiantzazko leku batean segurtasunez gordeta dagoela.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";
@@ -5648,7 +5720,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Ez egin pantaila-argazkirik edo bidali posta elektronikoz.";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
@@ -5765,7 +5837,7 @@
 "SETTINGS_SECURITY_TITLE" = "App Security";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Kalitate handiko multimedia bidaltzeak datu gehiago erabiliko ditu.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
@@ -5864,10 +5936,10 @@
 "SOUNDS_NONE" = "Bat ere ez";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "Baieztapen osatua";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Egiaztapena saltatzea aukeratzen baduzu, baliteke beste pertsona batzuen mezuak galtzea eta zure mezuak ez bidaltzea.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
@@ -5948,13 +6020,13 @@
 "STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
 
 /* Indicates that this story has no replies yet */
-"STORIES_NO_REPLIES_YET" = "No replies yet";
+"STORIES_NO_REPLIES_YET" = "Erantzunik ez oraindik";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "New Private Story";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Story pribatuak gehitzen dituzun pertsonek soilik ikus ditzakete. Zuk bakarrik ikus dezakezu storie-aren izena.";
 
 /* Header for the 'Private Stories' section of the stories settings */
 "STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
@@ -5966,10 +6038,10 @@
 "STORIES_SHARE_STORY_ACTION" = "Partekatu";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "Storie-ak";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Ikusi linka";
 
 /* Text indicating a story that was replied to is no longer available. */
 "STORY_NO_LONGER_AVAILABLE" = "Ez dago erabilgarri";
@@ -5987,7 +6059,7 @@
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Erantzun";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reacted to the story";
+"STORY_REPLY_REACTION" = "Storie-ari erreakzionatu diozu";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Erantzun";
@@ -5995,11 +6067,17 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "Zu";
 
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Dohaintza egin";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal zure moduko jendeari esker da posible. Lagundu eta jaso bereizgarri bat.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Orain ez";
@@ -6008,7 +6086,7 @@
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "Bilaka zaitez sostengatzaile";
 
 /* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Harpidedun ID arbelean kopiatu da";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ erabiltzailearekin duzun segutasun zenbakia bat dator. Egiaztatu gisa marka dezakezu kontaktu hau.";
@@ -6068,7 +6146,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Kargatzen";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal irabazi-asmorik gabeko iragarlerik edo inbertitzailerik gabekoa da, erabiltzen eta baloratzen duten pertsonek soilik sostengatzen dute. Egin hilero behin eta berriz dohaintza bat eta jaso profileko bereizgarri bat zure laguntza partekatzeko.";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
@@ -6077,7 +6155,7 @@
 "SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
 
 /* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Why Donate?";
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Zergatik egin dohaintza";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
@@ -6086,16 +6164,16 @@
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancel Subscription";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Ezereztu harpidetza";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Onartu";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You won't be charged again. Your badge will be removed from your profile at the end of your billing period.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Ez zaizu berriro kobratuko. Zure bereizgarria zure profiletik kenduko da fakturazio epea amaitzean.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Ezeztapena berretsi?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
@@ -6107,7 +6185,7 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Mesedez, jarri harremanetan laguntzarekin.";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
@@ -6137,7 +6215,7 @@
 "SUSTAINER_VIEW_RENEWAL" = "Renews %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Zure ordainketa prozesatzen ari da oraindik. Minutu batzuk iraun ditzake zure konexioaren arabera.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
@@ -6146,7 +6224,7 @@
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Orain ez";
 
 /* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal is powered by people like you.";
+"SUSTAINER_VIEW_TITLE" = "Signal zu bezalako pertsonek sostengatzen dute.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
@@ -6158,7 +6236,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Eguneratu";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Egin behin eta berriro dohaintza bat hilero Signal-i zuretzat eraikitako teknologiari laguntzeko, ez zure datuak.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Desaktibatuta";
@@ -6179,7 +6257,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Kontakturik ez talde honetan. Errebisatu eskaerak arretaz.";
 
 /* Tap to Replace Emoji string for reaction configuration */
-"TAP_REPLACE_EMOJI" = "Tap to replace an emoji";
+"TAP_REPLACE_EMOJI" = "Klikatu emoji bat ordezkatzeko";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Mezu hau ezabatu da.";
@@ -6482,10 +6560,10 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Berrezarri hormairudi guztiak";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Would you like to override all chat colors?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Txat-kolore guztiak gainidatzi nahi dituzu?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Berrezarri txataren koloreak";
 
 /* Reset conversation chat color action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Reset Chat Color";
@@ -6497,7 +6575,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Reset Default Colors";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Berrezarri txataren koloreak";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Reset Default Wallpaper";
@@ -6506,7 +6584,7 @@
 "WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Reset Wallpapers";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Would you like to override all wallpapers?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Txat-kolore guztiak gainidatzi nahi dituzu?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Reset Wallpaper";

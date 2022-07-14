@@ -196,14 +196,20 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "காப்பகம்";
 
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_ORIGINAL" = "Original";
+
+/* One of the choices for pre-defined aspect ratio of a photo in media editor. */
+"ASPECT_RATIO_SQUARE" = "Square";
+
+/* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
+"ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
+
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "தலைப்பு வரம்பை அடைந்தது.";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "ஒரு தலைப்பை சேர்க்க…";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "தலைப்பு";
 
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "இணைப்பு ஏற்றுமதி செய்யத் தவறிவிட்டது.";
@@ -228,12 +234,6 @@
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "மீடியா தரம்";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "க்கு செய்தி %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "அனுப்புக";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "இணைப்பு";
@@ -365,13 +365,13 @@
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
 
 /* The title for the badge configuration page */
-"BADGE_CONFIGURATION_TITLE" = "Badges";
+"BADGE_CONFIGURATION_TITLE" = "பேட்ஜ்கள்";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "ஒரு காப்பாளராக மாறவும்";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
+"BADGE_DETAILS_GIVE_A_BOOST" = "சிக்னலுக்கு ஒரு பூஸ்ட் கொடுக்கவும்";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
@@ -380,10 +380,10 @@
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Become a Sustainer";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "ஒரு காப்பாளராக மாறவும்";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Add a Boost";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "ஒரு பூஸ்ட்டைச் சேர்க்கவும்";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
@@ -395,10 +395,16 @@
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "மாதாந்திர நன்கொடை றது செய்யப்பட்டது";
+
+/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
+"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+
+/* Title for the sheet that's shown when you gift someone a badge */
+"BADGE_GIFT_THANKS_TITLE" = "உங்கள் ஆதரவுக்கு நன்றி!";
 
 /* Text telling the user that they can add a message along with their gift badge */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "உங்கள் பரிசு பெறுநருக்கு 1 -க்கு 1 செய்தியில் அனுப்பப்படும். உங்கள் சொந்த செய்தியை கீழே சேர்க்கவும்.";
 
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "கூட்டு ஒரு செய்தி";
@@ -410,13 +416,13 @@
 "BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
-"BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
+"BADGE_GIFTING_CHAT_EXPIRED" = "காலாவதியாகிவிட்டது";
 
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
 
 /* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "ஒரு பேட்ஜை பரிசளிக்கவும்";
 
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "தேர்வு செய்யவும் பெறுநர்";
@@ -430,11 +436,17 @@
 /* Title for error message dialog indicating that a user can't receive gifts. */
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
 
+/* Error message indicating that the person you're trying to send has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+
+/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Cannot Send Gift Badge";
+
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
 
 /* Text telling the user that their gift is a one-time donation */
-"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "One-time Donation";
+"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "ஒரு-முறை நன்கொடை";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
 "BADGE_GIFTING_PAYMENT_FAILED_BODY" = "உங்கள் கட்டணத்தைச் செயல்படுத்த முடியவில்லை மேலும் உங்களிடம் கட்டணம் விதிக்கப்படவில்லை. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.";
@@ -455,7 +467,7 @@
 "BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
-"BADGE_GIFTING_REDEEM" = "Redeem";
+"BADGE_GIFTING_REDEEM" = "மீட்டெடு";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
@@ -464,7 +476,10 @@
 "BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "Redeemed";
+"BADGE_GIFTING_REDEEMED" = "மீட்டெடுக்கப்பட்டது";
+
+/* Shown when you're replying to a gift message to indicate that it contains a gift. */
+"BADGE_GIFTING_REPLY" = "பரிசு";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
@@ -482,19 +497,19 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "Thanks for the Boost!";
+"BADGE_THANKS_BOOST_TITLE" = "பூஸ்ட்டுக்கு நன்றி!";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Display on Profile";
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "சுயவிவரத்தில் காண்பிக்கவும்";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "உங்கள் ஆதரவுக்கு நன்றி!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "உங்களிடம் ஒன்றுக்கும் மேற்பட்ட பேட்ஜ்கள் இருந்தால், உங்கள் சுயவிவரத்தில் மற்றவர்கள் பார்க்கும்படியாக ஒன்றைத் தேர்ந்தெடுக்கலாம்.";
 
 /* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
 "BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
@@ -584,7 +599,7 @@
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "உள்ளிடவும் தனிப்பயன் தொகை";
 
 /* Text explaining there are other ways to donate on the boost view. */
-"BOOST_VIEW_OTHER_WAYS" = "More Payment Options";
+"BOOST_VIEW_OTHER_WAYS" = "நிறைய கட்டண விருப்பங்கள்";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
 "BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "தேர்ந்தெடு நன்கொடை அளிக்க ஒரு பெரிய தொகை";
@@ -596,7 +611,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "தேர்ந்தெடு நன்கொடையாக ஒரு தொகை";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Give Signal a Boost";
+"BOOST_VIEW_TITLE" = "சிக்னலுக்கு ஒரு பூஸ்ட் கொடுக்கவும்";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "சேர்க்கவும்";
@@ -1121,7 +1136,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "மக்கள்";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Stories";
+"CONVERSATION_PICKER_SECTION_STORIES" = "ஸ்டோரீஸ்";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "பெறுநர்களைத் தேர்வுசெய்க";
@@ -1160,7 +1175,7 @@
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "Badges";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "பேட்ஜ்கள்";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "இந்த பயனரிடமிருந்து நீங்கள் இனி செய்திகளையோ புதுப்பிப்புகளையோ பெற மாட்டீர்கள்.";
@@ -1646,7 +1661,7 @@
 "DISMISS_CONTEXT_MENU" = "சூழல் மெனுவை நிராகரிக்கவும்";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Display badges on profile";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "சுயவிவரத்தில் பேட்ஜ்களைக் காண்பிக்கவும்";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "தணிக்கை சுற்றறிக்கை இடம்";
@@ -1664,7 +1679,7 @@
 "DONATE_MEGAPHONE_TITLE" = "Signal-க்கு நன்கொடை அளி";
 
 /* Donation payment error for decline failures where authentication is required. */
-"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "மற்றொரு கட்டண முறையை முயற்சிக்கவும் அல்லது மேலும் தகவலுக்கு உங்கள் வங்கியைத் தொடர்பு கொள்ளவும்.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
 "DONATION_PAYMENT_ERROR_CALL_ISSUER" = "ஆப்பிள் பே-இல்  உங்கள் கட்டண முறை புதுப்பித்த நிலையில் உள்ளதா எனச் சரி பார்க்கவும். அப்படி  இல்லையென்றால், அதைப் புதுப்பித்து மீண்டும் முயற்சிக்கவும். உங்களுக்கு இன்னும் சிக்கல்கள் இருந்தால், உங்கள் வங்கியைத் தொடர்புகொள்ளவும்.";
@@ -1694,19 +1709,19 @@
 "DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Try completing the payment again or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "கட்டணத்தை மீண்டும் முடிக்க முயற்சிக்கவும் அல்லது மேலும் தகவலுக்கு உங்கள் வங்கியைத் தொடர்பு கொள்ளவும்.";
 
 /* Donation payment error for unspecified decline failures. */
-"DONATION_PAYMENT_ERROR_OTHER" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_OTHER" = "மற்றொரு கட்டண முறையை முயற்சிக்கவும் அல்லது மேலும் தகவலுக்கு உங்கள் வங்கியைத் தொடர்பு கொள்ளவும்.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
 
 /* Section title for donation amount on receipts */
-"DONATION_RECEIPT_AMOUNT" = "Amount";
+"DONATION_RECEIPT_AMOUNT" = "தொகை";
 
 /* Section title for donation date on receipts */
-"DONATION_RECEIPT_DATE_PAID" = "Date paid";
+"DONATION_RECEIPT_DATE_PAID" = "செலுத்திய தேதி";
 
 /* Title on the view where you can see a single receipt */
 "DONATION_RECEIPT_DETAILS" = "விவரங்கள்";
@@ -1717,23 +1732,26 @@
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
 
+/* Title for gift donation receipts */
+"DONATION_RECEIPT_GIFT" = "பரிசு";
+
 /* Title for one-time donation receipts */
-"DONATION_RECEIPT_ONE_TIME" = "One-time";
+"DONATION_RECEIPT_ONE_TIME" = "ஒரு-முறை";
 
 /* Title for recurring donation receipts */
-"DONATION_RECEIPT_RECURRING" = "Recurring";
+"DONATION_RECEIPT_RECURRING" = "தொடரும்";
 
 /* Title on donation receipts */
-"DONATION_RECEIPT_TITLE" = "Donation receipt";
+"DONATION_RECEIPT_TITLE" = "நன்கொடை ரசீது";
 
 /* Section title for donation type on receipts */
 "DONATION_RECEIPT_TYPE" = "Type";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
-"DONATION_RECEIPTS" = "Donation Receipts";
+"DONATION_RECEIPTS" = "நன்கொடை ரசீதுகள்";
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
-"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
+"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "நீங்கள் சிக்னலை மீண்டும் நிறுவியிருந்தால், முந்தைய நன்கொடைகளின் ரசீதுகள் கிடைக்காது.";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Signal-க்கு நன்கொடை அளி";
@@ -1742,16 +1760,16 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "நன்கொடை க்கு Signal\n ";
 
 /* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "Gift a Badge";
+"DONATION_VIEW_GIFT" = "ஒரு பேட்ஜை பரிசளிக்கவும்";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
-"DONATION_VIEW_LOAD_FAILED" = "Network error. Check your connection and try again.";
+"DONATION_VIEW_LOAD_FAILED" = "நெட்வொர்க் பிழை. உங்கள் இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.";
 
 /* Text of the 'make a monthly donation' button on the donation screen */
 "DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
 
 /* Title for the 'Badges' button on the donation screen */
-"DONATION_VIEW_MANAGE_BADGES" = "Badges";
+"DONATION_VIEW_MANAGE_BADGES" = "பேட்ஜ்கள்";
 
 /* Title for the 'Manage Subscription' button on the donation screen */
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Manage Subscription";
@@ -1763,16 +1781,16 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "My Support";
 
 /* Title for the 'one-time donation' link in the donation view */
-"DONATION_VIEW_ONE_TIME_DONATION" = "One-time Donation";
+"DONATION_VIEW_ONE_TIME_DONATION" = "ஒரு-முறை நன்கொடை";
 
 /* Title for the 'other ways to give' section on the donation view */
 "DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
 
 /* Title for the 'receipts' section on the donation screen */
-"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Receipts";
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "ரசீதுகள்";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
-"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Subscription FAQ";
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "சந்தா கேள்வி-பதில் பட்டியல்";
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "Signal-க்கு நன்கொடை அளி";
@@ -1868,10 +1886,10 @@
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "செய்திகள் கிடைக்கப் பெறாததால் அவற்றை முன்னனுப்ப முடியவில்லை.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "செய்தியை அனுப்ப முடியவில்லை ";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "காணொளியை சேமிக்க முடியவில்லை";
@@ -1967,7 +1985,7 @@
 "ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "சிக்னல் பீட்டா: பிழை ஏற்பட்டது";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "உங்கள் சாதனம் இனி இணைக்கப்படவில்லை. மேலும் செய்திகளை அனுப்ப மீண்டும் இணைக்கவும்";
@@ -2018,7 +2036,7 @@
 "FORWARD_MESSAGE" = "செய்தியை முன்னோக்கு ";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "முன்னனுப்பப்பட்ட செய்திகள் இப்போது உடனடியாக அனுப்பப்படுகின்றன.";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
@@ -2390,7 +2408,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ மாற்றப்பட்டது குழு அமைப்புகள் மட்டும் அனுமதி நிர்வாகிகள் க்கு அனுப்பு செய்திகள்.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "ஒரு நிர்வாகி உங்களை நீக்கியதால், குழு இணைப்பு வாயிலாக இந்தக் குழுவில் உங்களால் சேர முடியாது.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "இது குழு இணைப்பு இருக்கிறது இல்லை நீண்டது செல்லுபடியாகும்.";
@@ -3217,6 +3235,27 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "அனைத்து மீடியா";
 
+/* Title for the button that discards all edits in media editor. */
+"MEDIA_EDITOR_CLEAR_ALL" = "Clear All";
+
+/* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Discard Changes";
+
+/* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "You will lose any changes you have made to this photo";
+
+/* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Discard Changes?";
+
+/* Title for the button that resets photo to its initial state. */
+"MEDIA_EDITOR_RESET" = "மீட்டமைக்க";
+
+/* Placeholder for message text input field in media editor. */
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Add Message";
+
+/* Shown in place of message input text in media editor when 'View Once' is on. */
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "View Once Media";
+
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
@@ -3281,10 +3320,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "அழைப்பு";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "ஃபேஸ்டைம் ஆடியோ";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "முகநேர வீடியோ ";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "அனுப்பு உரை செய்தி";
@@ -3517,9 +3556,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "பார்க்கப்பட்டவை";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "புதிய தகவல்";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ இனி சரிபார்க்கப்பட்டதாக குறிக்கப்படவில்லை. விருப்பங்களுக்குத் தட்டவும்.";
 
@@ -3566,13 +3602,49 @@
 "MUTED_BADGE" = "முடக்கியது";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Updates to your story will show up here.";
+"MY_STORIES_NO_STORIES" = "உங்கள் ஸ்டோரியின் புதுப்பிப்புகள் இங்கே காட்டப்படும்.";
+
+/* Footer for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Header for the 'replies' section of the my stories settings */
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+
+/* Title for the replies switch */
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "குறிப்பிட்ட நபர்களிடமிருந்து உங்கள் ஸ்டோரியை மறைக்கவும்";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "அனைத்து இணைப்புகளுடனும் பகிரவும்";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+
+/* Footer for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Header for the 'visibility' section of the my stories settings */
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+
+/* Subtitle for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "My Stories";
+"MY_STORIES_TITLE" = "எனது ஸ்டோரீஸ்";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "My Story";
+"MY_STORY_NAME" = "எனது ஸ்டோரி";
+
+/* Title for the my story settings view */
+"MY_STORY_SETTINGS_TITLE" = "எனது ஸ்டோரி";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "சமீபத்தில் அவர்களின் சுயவிவரப் பெயரை மாற்றியது %1$@ க்கு %2$@.";
@@ -4409,7 +4481,7 @@
 "PINS_MEGAPHONE_ACTION" = "பின் உருவாக்கவும்";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "உங்கள்  சிக்னல் பின்னை உருவாக்கி முடிக்கவும் ";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "பின்னை உருவாக்கவும்";
@@ -4574,7 +4646,7 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "அசல் செய்தி கிடைக்கவில்லை.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "உங்கள் ஸ்டோரிக்குப் பதிலாளித்துள்ளார்";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
@@ -4715,7 +4787,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "நீங்கள் ஒரு செய்தியை அனுப்புவதற்கு முன்பு பதிவு செய்ய வேண்டும்.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "இந்த எண்ணில் பரிமாற்றத்திற்குக் கிடைக்கக்கூடிய முன்பு பதிவுசெய்யப்பட்ட கணக்கு ஒன்று இருக்கிறது.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "சரிபார்ப்பு தோல்வியுற்றது";
@@ -4757,7 +4829,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "நீங்கள் பதிவு செய்ய முயற்சிக்கும் தொலைபேசி எண் ஏற்கனவே வேறொரு சேவையகத்தில் பதிவு செய்யப்பட்டுள்ளது, தயவுசெய்து அங்கிருந்து பதிவுசெய்து மீண்டும் முயற்சிக்கவும்.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = "முன்னோட்டத்தை  நீக்கவும் ";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "புதிய நிர்வாகியைத் தேர்வுசெய்க";
@@ -4774,8 +4846,8 @@
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "திரும்பவும்";
 
-/* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "எப்படியும் குழுவில் சேர்";
+/* button title to confirm adding a recipient when their safety number has recently changed */
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "எப்படியும் அழைக்கவும்";
@@ -5050,7 +5122,7 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "தடுக்கப்பட்ட பயனரைச் சேர்க்கவும்";
 
-/* A label that indicates the user has no Signal contacts. */
+/* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal லில் உங்களுக்கு எந்த தொடர்புகளும் இல்லை.";
 
 /* A label that indicates the user's search has no matching results. */
@@ -5075,7 +5147,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Change Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "எண்ணை மாற்றவும்";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
@@ -5108,7 +5180,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
 
 /* Title for the 'change phone number' views in settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Change Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "எண்ணை மாற்றவும்";
 
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "உரையாடல்கள்\n ";
@@ -5540,7 +5612,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "மீட்பு சொற்றொடரை ஒட்டவும்";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "உங்கள்  மீட்பு சொற்றொடர்  24 வார்த்தை சொற்றொடர் ஆகும். அதை பயன்படுத்தி உங்கள் கட்டணக் கணக்கை மீட்கலாம்.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "உள்ளிடவும் மீட்பு சொற்றொடர்";
@@ -5771,13 +5843,13 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "புகைப்படங்கள் மற்றும் வீடியோக்கள்";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
+"SETTINGS_SHARING_SUGGESTIONS" = "ஐ.ஓ.எஸ் உடன் தொடர்புகளைப் பகிரவும்";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "பரிந்துரைகளைப் பகிர்தல் போன்ற அம்சங்களுக்கான சிக்னல் தொடர்புகள் மற்றும் அரட்டைகளுக்கு ஐ.ஓ.எஸ் அணுகலை அனுமதிக்கவும்.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "பரிந்துரைகள் மற்றும் அறிவிப்புகளைப் பகிர்தல் போன்ற அம்சங்களுக்கான சிக்னல் தொடர்புகள் மற்றும் அரட்டைகளுக்கு ஐ.ஓ.எஸ் அணுகலை அனுமதிக்கவும்.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "பதிவு பூட்டு";
@@ -5948,13 +6020,13 @@
 "STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
 
 /* Indicates that this story has no replies yet */
-"STORIES_NO_REPLIES_YET" = "No replies yet";
+"STORIES_NO_REPLIES_YET" = "இன்னும் பதில்கள் ஏதுமில்லை";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "New Private Story";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private stories can only be viewed by the people you add to them. Only you can see the story name.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "தனிப்பட்ட ஸ்டோரீக்களை நீங்கள் சேர்க்கும் நபர்களால் மட்டுமே பார்க்க முடியும். ஸ்டோரியின் பெயரை நீங்கள் மட்டுமே பார்க்க முடியும்.";
 
 /* Header for the 'Private Stories' section of the stories settings */
 "STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Stories";
@@ -5966,13 +6038,13 @@
 "STORIES_SHARE_STORY_ACTION" = "பகிர்";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "ஸ்டோரீஸ்";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "இணைப்பை பார்வையிடவும்";
 
 /* Text indicating a story that was replied to is no longer available. */
-"STORY_NO_LONGER_AVAILABLE" = "No longer available";
+"STORY_NO_LONGER_AVAILABLE" = "இனி ஒருபோதும் கிடைக்கப்பெறாது";
 
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "தனியுரிமை";
@@ -5987,7 +6059,7 @@
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "பதில்";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reacted to the story";
+"STORY_REPLY_REACTION" = "ஸ்டோரிக்கு பதிலளிக்கப்பட்டது";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "பதில்";
@@ -5995,20 +6067,26 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "நீங்கள்";
 
+/* The title for the 'select connections for story' view. */
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+
+/* The title for the 'select excluded connections for story' view. */
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "நன்கொடை";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "உங்களைப் போன்றவர்களால் சிக்னல் இயக்கப்படுகிறது. நன்கொடை அளித்து பேட்ஜைப் பெறுங்கள்.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "இப்போது வேண்டாம் ";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "ஒரு காப்பாளராக மாறவும்";
 
 /* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "சந்தாதாரர் ஐ.டி கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "உங்கள் பாதுகாப்பு எண்%@ உடன் பொருந்துகிறது . இந்த தொடர்பு  சரிபார்க்கப்பட்டதாக நீங்கள் குறிக்கலாம்.";
@@ -6068,7 +6146,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "ஏற்றுதல்";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "சிக்னல் என்பது விளம்பரதாரர்கள் அல்லது முதலீட்டாளர்கள் இல்லாத ஒரு இலாப நோக்கமற்ற நிறுவனமாகும், அதைப் பயன்படுத்தும் மற்றும் மதிக்கும் நபர்களால் மட்டுமே நிலைநிறுத்தப்படுகிறது. தொடர்ச்சியான மாதாந்திர நன்கொடையைச் செய்து, உங்கள் ஆதரவைப் பகிர்ந்து கொள்ள சுயவிவரப் பேட்ஜைப் பெறுங்கள்.";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
@@ -6086,16 +6164,16 @@
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancel Subscription";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "சந்தாவை ரத்துசெய்யவும்";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "உறுதிப்படுத்தவும்";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You won't be charged again. Your badge will be removed from your profile at the end of your billing period.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "உங்களிடம் மீண்டும் கட்டணம் விதிக்கப்படாது. உங்கள் பில்லிங் காலத்தின் முடிவில் உங்கள் சுயவிவரத்திலிருந்து உங்கள் பேட்ஜ் அகற்றப்படும்.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "ரத்து செய்வதை உறுதிசெய்யலாமா?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
@@ -6107,7 +6185,7 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "தயவுசெய்து உதவி மையத்தை தொடர்பு கொள்ளவும்.";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
@@ -6137,7 +6215,7 @@
 "SUSTAINER_VIEW_RENEWAL" = "Renews %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "உங்கள் கட்டணம் இன்னும் செயல்படுத்தப்படுகிறது. உங்கள் இணைப்பைப் பொறுத்து இதற்கு ஒரு சில நிமிடங்கள் ஆகலாம்.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
@@ -6158,7 +6236,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "புதுப்பிக்கப்பட்டது";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "உங்களுக்காக உருவாக்கப்பட்ட தொழில்நுட்பத்தை ஆதரிக்க சிக்னலுக்கு தொடர்ச்சியான மாதாந்திர நன்கொடையை வழங்குங்கள், உங்கள் தரவு அல்ல.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "அணை";
