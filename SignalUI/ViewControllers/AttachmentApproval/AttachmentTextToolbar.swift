@@ -164,6 +164,7 @@ class AttachmentTextToolbar: UIView {
         let placeholderTextView = buildTextView()
         placeholderTextView.text = placeholderText
         placeholderTextView.isEditable = false
+        placeholderTextView.isUserInteractionEnabled = false
         placeholderTextView.textContainer.maximumNumberOfLines = 1
         placeholderTextView.textContainer.lineBreakMode = .byTruncatingTail
         placeholderTextView.textColor = .ows_gray45
