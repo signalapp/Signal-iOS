@@ -699,7 +699,7 @@ const NSUInteger kMinimumSearchLength = 1;
     OWSAssertIsOnMainThread();
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         NSSet<SignalServiceAddress *> *addressesToSkip = self.includeBlockedContacts
-            ? [NSSet alloc]
+            ? [NSSet set]
             : [self.blockingManager blockedAddressesWithTransaction:transaction];
 
         for (SignalAccount *signalAccount in filteredSignalAccounts) {
