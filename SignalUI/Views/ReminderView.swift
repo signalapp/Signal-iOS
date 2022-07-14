@@ -4,15 +4,15 @@
 
 import Foundation
 
-public class ReminderView: UIView {
+open class ReminderView: UIView {
 
     let label = UILabel()
 
     public typealias Action = () -> Void
 
-    var tapAction: Action?
+    public var tapAction: Action?
 
-    var text: String? {
+    public var text: String? {
         get {
             return label.text
         }
@@ -22,16 +22,16 @@ public class ReminderView: UIView {
         }
     }
 
-    enum ReminderViewMode {
+    public enum ReminderViewMode {
         // Nags are urgent interactive prompts, bidding for the user's attention.
         case nag
         // Explanations are not interactive or urgent.
         case explanation
     }
-    let mode: ReminderViewMode
+    public let mode: ReminderViewMode
 
     @available(*, unavailable, message: "use other constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -40,7 +40,7 @@ public class ReminderView: UIView {
         fatalError("init(frame:) has not been implemented")
     }
 
-    init(mode: ReminderViewMode,
+    public init(mode: ReminderViewMode,
          text: String, tapAction: Action?) {
         self.mode = mode
         self.tapAction = tapAction

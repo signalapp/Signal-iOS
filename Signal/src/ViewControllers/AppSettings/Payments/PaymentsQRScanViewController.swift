@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -89,15 +89,15 @@ public class PaymentsQRScanViewController: OWSViewController {
 
 extension PaymentsQRScanViewController: QRCodeScanDelegate {
 
-    func qrCodeScanViewDismiss(_ qrCodeScanViewController: QRCodeScanViewController) {
+    public func qrCodeScanViewDismiss(_ qrCodeScanViewController: QRCodeScanViewController) {
         AssertIsOnMainThread()
 
         navigationController?.popViewController(animated: true)
     }
 
-    func qrCodeScanViewScanned(_ qrCodeScanViewController: QRCodeScanViewController,
-                               qrCodeData: Data?,
-                               qrCodeString: String?) -> QRCodeScanOutcome {
+    public func qrCodeScanViewScanned(_ qrCodeScanViewController: QRCodeScanViewController,
+                                      qrCodeData: Data?,
+                                      qrCodeString: String?) -> QRCodeScanOutcome {
         AssertIsOnMainThread()
 
         // Prefer qrCodeString to qrCodeData.  The only valid payload

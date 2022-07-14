@@ -3,14 +3,13 @@
 //
 
 import Foundation
-import SignalUI
 
-struct NewMember {
-    let recipient: PickedRecipient
-    let address: SignalServiceAddress
-    let displayName: String
-    let shortName: String
-    let comparableName: String
+public struct NewMember {
+    public let recipient: PickedRecipient
+    public let address: SignalServiceAddress
+    public let displayName: String
+    public let shortName: String
+    public let comparableName: String
 }
 
 // MARK: -
@@ -27,7 +26,7 @@ public class NewMembersBar: UIView {
 
     private var members = [NewMember]()
 
-    func setMembers(_ members: [NewMember]) {
+    public func setMembers(_ members: [NewMember]) {
         var addedEntries: [IndexPath] = []
         var removedEntries: [IndexPath] = []
         let oldMemberHashes: [PickedRecipient] = self.members.map { $0.recipient }
@@ -117,7 +116,7 @@ public class NewMembersBar: UIView {
         return collectionViewLayout.collectionViewContentSize.height
     }
 
-    func scrollToRecipient(_ recipient: PickedRecipient) {
+    public func scrollToRecipient(_ recipient: PickedRecipient) {
         guard let index = members.firstIndex(where: { $0.recipient == recipient }) else {
             owsFailDebug("Missing member.")
             return

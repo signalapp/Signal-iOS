@@ -8,7 +8,7 @@ import MessageUI
 import SignalServiceKit
 
 @objc(OWSInviteFlow)
-class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, ContactsPickerDelegate {
+public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, ContactsPickerDelegate {
     private enum Channel {
         case message, mail, twitter
     }
@@ -68,7 +68,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     // MARK: ContactsPickerDelegate
 
-    func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact]) {
+    public func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact]) {
         Logger.debug("didSelectContacts:\(contacts)")
 
         guard let inviteChannel = channel else {
@@ -89,7 +89,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         }
     }
 
-    func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool {
+    public func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool {
         guard let inviteChannel = channel else {
             Logger.error("unexpected nil channel in contact picker.")
             return true
@@ -106,19 +106,19 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         return true
     }
 
-    func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError) {
+    public func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError) {
         Logger.error("with error: \(error)")
         popToPresentingViewController(animated: true) {
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_FETCH_CONTACTS", comment: "Error indicating that the phone's contacts could not be retrieved."))
         }
     }
 
-    func contactsPickerDidCancel(_: ContactsPicker) {
+    public func contactsPickerDidCancel(_: ContactsPicker) {
         Logger.debug("")
         popToPresentingViewController(animated: true)
     }
 
-    func contactsPicker(_: ContactsPicker, didSelectContact contact: Contact) {
+    public func contactsPicker(_: ContactsPicker, didSelectContact contact: Contact) {
         owsFailDebug("InviteFlow only supports multi-select")
         popToPresentingViewController(animated: true)
     }
@@ -179,7 +179,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     // MARK: MessageComposeViewControllerDelegate
 
-    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+    public func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
         presentingViewController?.dismiss(animated: true) {
             switch result {
             case .failed:
@@ -239,7 +239,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     // MARK: MailComposeViewControllerDelegate
 
-    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+    public func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         presentingViewController?.dismiss(animated: true) {
             switch result {
             case .failed:

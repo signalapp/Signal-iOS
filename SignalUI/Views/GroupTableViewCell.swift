@@ -4,10 +4,9 @@
 
 import UIKit
 import SignalServiceKit
-import SignalUI
 
 @objc
-class GroupTableViewCell: UITableViewCell {
+public class GroupTableViewCell: UITableViewCell {
 
     private let avatarView = ConversationAvatarView(sizeClass: .thirtySix, localUserDisplayMode: .asUser)
     private let nameLabel = UILabel()
@@ -17,7 +16,7 @@ class GroupTableViewCell: UITableViewCell {
     @objc
     var accessoryMessage: String?
 
-    init() {
+    public init() {
         super.init(style: .default, reuseIdentifier: GroupTableViewCell.logTag())
 
         // Font config

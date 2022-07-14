@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 
 @objc
-class SafetyNumberConfirmationSheet: UIViewController {
+public class SafetyNumberConfirmationSheet: UIViewController {
     let stackView = UIStackView()
     let contentView = UIView()
     let handle = UIView()
@@ -22,21 +22,21 @@ class SafetyNumberConfirmationSheet: UIViewController {
     let confirmAction: ActionSheetAction
     let cancelAction: ActionSheetAction
     let completionHandler: (Bool) -> Void
-    var allowsDismissal: Bool = true
+    public var allowsDismissal: Bool = true
 
     public let theme: Theme.ActionSheet
 
     @objc
     @available(swift, obsoleted: 1.0)
-    convenience init(addressesToConfirm addresses: [SignalServiceAddress], confirmationText: String, completionHandler: @escaping (Bool) -> Void) {
+    public convenience init(addressesToConfirm addresses: [SignalServiceAddress], confirmationText: String, completionHandler: @escaping (Bool) -> Void) {
         self.init(addressesToConfirm: addresses, confirmationText: confirmationText, completionHandler: completionHandler)
     }
 
-    init(addressesToConfirm addresses: [SignalServiceAddress],
-         confirmationText: String,
-         cancelText: String = CommonStrings.cancelButton,
-         theme: Theme.ActionSheet = .translucentDark,
-         completionHandler: @escaping (Bool) -> Void) {
+    public init(addressesToConfirm addresses: [SignalServiceAddress],
+                confirmationText: String,
+                cancelText: String = CommonStrings.cancelButton,
+                theme: Theme.ActionSheet = .translucentDark,
+                completionHandler: @escaping (Bool) -> Void) {
 
         assert(!addresses.isEmpty)
         self.confirmAction = ActionSheetAction(title: confirmationText, style: .default)
@@ -63,7 +63,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
     }
 
     @objc
-    class func presentIfNecessary(address: SignalServiceAddress, confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
+    public class func presentIfNecessary(address: SignalServiceAddress, confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
         return presentIfNecessary(addresses: [address], confirmationText: confirmationText, completion: completion)
     }
 
@@ -74,7 +74,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
      *          false if there were no unconfirmed identities
      */
     @objc
-    class func presentIfNecessary(addresses: [SignalServiceAddress], confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
+    public class func presentIfNecessary(addresses: [SignalServiceAddress], confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
 
         let untrustedAddresses = untrustedIdentitiesForSendingWithSneakyTransaction(addresses: addresses)
 
@@ -89,7 +89,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
             completionHandler: completion
         )
 
-        UIApplication.shared.frontmostViewController?.present(sheet, animated: true)
+        CurrentAppContext().frontmostViewController()?.present(sheet, animated: true)
         return true
     }
 
@@ -214,7 +214,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
     }
 
     private var hasPreparedInitialLayout = false
-    override func viewWillLayoutSubviews() {
+    public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
         guard !hasPreparedInitialLayout else { return }
@@ -457,7 +457,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
         tableView.showsVerticalScrollIndicator = true
     }
 
-    override func viewSafeAreaInsetsDidChange() {
+    public override func viewSafeAreaInsetsDidChange() {
         // The minimized height is dependent on safe the current safe area insets
         // If they every change, reset the content height to the new minimized height
         super.viewSafeAreaInsetsDidChange()
@@ -468,15 +468,15 @@ class SafetyNumberConfirmationSheet: UIViewController {
 // MARK: -
 
 extension SafetyNumberConfirmationSheet: UITableViewDelegate, UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
+    public func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: SafetyNumberCell.reuseIdentifier,
                                                  for: indexPath)
 
@@ -574,7 +574,7 @@ private class SafetyNumberCell: ContactTableViewCell {
 
 // MARK: -
 extension SafetyNumberConfirmationSheet: UIGestureRecognizerDelegate {
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         switch gestureRecognizer {
         case is UITapGestureRecognizer:
             let point = gestureRecognizer.location(in: view)
@@ -585,7 +585,7 @@ extension SafetyNumberConfirmationSheet: UIGestureRecognizerDelegate {
         }
     }
 
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         switch gestureRecognizer {
         case is UIPanGestureRecognizer:
             return tableView.panGestureRecognizer == otherGestureRecognizer

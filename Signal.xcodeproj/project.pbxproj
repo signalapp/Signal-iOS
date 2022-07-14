@@ -202,8 +202,6 @@
 		340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */; };
 		340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */; };
 		340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC887204DAC8C007AEB0F /* BlockListViewController.m */; };
-		340FC8BA204DAC8D007AEB0F /* FingerprintViewScanController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */; };
-		340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */; };
 		3412F9BB2350D0840022EDAA /* ThreadPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */; };
 		3414896925C9B6490098E3ED /* CurrencyPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414896825C9B6490098E3ED /* CurrencyPickerViewController.swift */; };
 		3415217525B0CB31009F177F /* CVAttachmentProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3415217425B0CB30009F177F /* CVAttachmentProgressView.swift */; };
@@ -290,7 +288,6 @@
 		34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34546F4F2649989C007C4958 /* ChatColorViewController.swift */; };
 		3456A73223D63EBE00947219 /* GroupsV2Protos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456A73123D63EBE00947219 /* GroupsV2Protos.swift */; };
 		345772B6257E4E01001D7D44 /* CVViewStateSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345772B5257E4E01001D7D44 /* CVViewStateSnapshot.swift */; };
-		345779412682464700732869 /* ScanQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345779402682464700732869 /* ScanQRCodeViewController.swift */; };
 		3457794326828A9A00732869 /* ConversationCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457794226828A9A00732869 /* ConversationCollectionView.swift */; };
 		3457811B23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457811A23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift */; };
 		345AE2B62317048300DB6225 /* GRDBFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345AE2B52317048200DB6225 /* GRDBFinderTest.swift */; };
@@ -318,7 +315,6 @@
 		3464450E22B7F93600A957B1 /* OWSOrphanDataCleaner.h in Headers */ = {isa = PBXBuildFile; fileRef = 3464450C22B7F93600A957B1 /* OWSOrphanDataCleaner.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3464451122B7F97100A957B1 /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3464450F22B7F97000A957B1 /* DateUtil.m */; };
 		3464451222B7F97100A957B1 /* DateUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 3464451022B7F97100A957B1 /* DateUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3465947C2433B77700E5C510 /* NewMembersBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947B2433B77700E5C510 /* NewMembersBar.swift */; };
 		3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947D2434CCC100E5C510 /* NewGroupConfirmViewController.swift */; };
 		346594802434D49F00E5C510 /* NewGroupState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947F2434D49F00E5C510 /* NewGroupState.swift */; };
 		346594822434D5E000E5C510 /* GroupAttributesEditorHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346594812434D5E000E5C510 /* GroupAttributesEditorHelper.swift */; };
@@ -536,9 +532,7 @@
 		34B14D8D24F02A9600CC3A9A /* GroupLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B14D8C24F02A9500CC3A9A /* GroupLinkViewController.swift */; };
 		34B14D8F24F41C4300CC3A9A /* GroupLinkQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B14D8E24F41C4200CC3A9A /* GroupLinkQRCodeViewController.swift */; };
 		34B3F8751E8DF1700035BE1A /* IndividualCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83B1E8DF1700035BE1A /* IndividualCallViewController.swift */; };
-		34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
 		34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* SplashViewController.swift */; };
-		34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
 		34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */; };
 		34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */; };
 		34BB3C5D23C6644B001651FC /* GroupsV2Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */; };
@@ -604,7 +598,6 @@
 		34F0566A23DA209300265283 /* GroupsV2IncomingChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */; };
 		34F1072026D005340053EF4D /* BatchUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F1071F26D005340053EF4D /* BatchUpdate.swift */; };
 		34F1072226D045290053EF4D /* BatchUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F1072126D045290053EF4D /* BatchUpdateTest.swift */; };
-		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
 		34F316F32732C695008D7352 /* WebSocketFactoryHybrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F316F22732C694008D7352 /* WebSocketFactoryHybrid.swift */; };
 		34FB6A4F25D1C6AC00E599B1 /* PaymentsDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */; };
 		34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */; };
@@ -617,7 +610,6 @@
 		450C801220AD1D5B00F3A091 /* UIDevice+featureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */; };
 		450D19131F85236600970622 /* RemoteVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450D19121F85236600970622 /* RemoteVideoView.m */; };
 		451166C01FD86B98000739BA /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451166BF1FD86B98000739BA /* AccountManager.swift */; };
-		4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451764291DE939FD00EDB8B9 /* ContactCell.swift */; };
 		45194F8F1FD71FF500333B2C /* ThreadUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129BE1FD2068600532771 /* ThreadUtil.m */; };
 		45194F901FD7200000333B2C /* ThreadUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129BD1FD2068600532771 /* ThreadUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8C1F9521F800FA666C /* Searcher.swift */; };
@@ -648,7 +640,6 @@
 		457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457C87B72032645C008D52D6 /* DebugUINotifications.swift */; };
 		457F671B20746193000EABCD /* QuotedReplyPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457F671A20746193000EABCD /* QuotedReplyPreview.swift */; };
 		45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45847E861E4283C30080EAB3 /* Intents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */; };
 		458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458967101DC117CC00E9DD21 /* AccountManagerTest.swift */; };
 		458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */; };
 		458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */; };
@@ -656,8 +647,6 @@
 		45A2F005204473A3002E978A /* NewMessage.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45A2F004204473A3002E978A /* NewMessage.aifc */; };
 		45A3579827DAAC6A0051CE8B /* UserProfileTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A3579727DAAC6A0051CE8B /* UserProfileTest.swift */; };
 		45A3579B27DBD5BB0051CE8B /* OWSProfileManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A3579A27DBD5BB0051CE8B /* OWSProfileManagerTest.swift */; };
-		45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A663C41F92EC760027B59E /* GroupTableViewCell.swift */; };
-		45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* ReminderView.swift */; };
 		45B27B862037FFB400A539DF /* DebugUIFileBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B27B852037FFB400A539DF /* DebugUIFileBrowser.swift */; };
 		45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5B2044AAB300CD42F8 /* aurora-quiet.aifc */; };
 		45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5C2044AAB300CD42F8 /* synth-quiet.aifc */; };
@@ -690,7 +679,6 @@
 		45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D231761DC7E8F10034FA89 /* SessionResetJob.swift */; };
 		45D308AD2049A439000189E4 /* PinEntryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D308AC2049A439000189E4 /* PinEntryView.m */; };
 		45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */; };
-		45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */; };
 		45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */; };
 		45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */; };
 		45F32C222057297A00A300D5 /* MediaDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */; };
@@ -829,8 +817,6 @@
 		8829883C25B9FD9E00DEE1E3 /* MockConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8829883A25B9FD6700DEE1E3 /* MockConversationView.swift */; };
 		882BDAAE249050F000C14587 /* AddToGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882BDAAD249050F000C14587 /* AddToGroupViewController.swift */; };
 		882F8DE6251AB23600AA4359 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 882F8DE5251AB23600AA4359 /* Settings.bundle */; };
-		8835DDF9230CEDC300DC6B66 /* RecipientPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */; };
-		8835DDFD230CEE8900DC6B66 /* RecipientPickerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */; };
 		8835DE01230DBF7E00DC6B66 /* ComposeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DE00230DBF7E00DC6B66 /* ComposeViewController.swift */; };
 		8835DE03230DEC6A00DC6B66 /* AddToBlockListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DE02230DEC6A00DC6B66 /* AddToBlockListViewController.swift */; };
 		8837F73D23D8DE8500772A32 /* pinCreationSuccess.json in Resources */ = {isa = PBXBuildFile; fileRef = 8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */; };
@@ -938,7 +924,6 @@
 		889DFA12264EE77C00D03921 /* GroupDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889DFA11264EE77C00D03921 /* GroupDescriptionViewController.swift */; };
 		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
 		88A47171286646B3001A3065 /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A47170286646B3001A3065 /* SelectMyStoryRecipientsViewController.swift */; };
-		88A4717328664DE3001A3065 /* BaseMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4717228664DE3001A3065 /* BaseMemberViewController.swift */; };
 		88A4CC10246CE2760082211F /* TransferProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC0F246CE2760082211F /* TransferProgressView.swift */; };
 		88A4CC12246CE2F50082211F /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC11246CE2F50082211F /* QRCodeView.swift */; };
 		88A4CC17246CE6190082211F /* DeviceTransferNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC16246CE6190082211F /* DeviceTransferNavigationController.swift */; };
@@ -963,6 +948,25 @@
 		88B6D673280770C4005D86EC /* TextAttachmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885275BF27E26775003F2F9B /* TextAttachmentView.swift */; };
 		88B6D674280770C4005D86EC /* StoryMessage+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B6D67128076F37005D86EC /* StoryMessage+SignalUI.swift */; };
 		88B986F4287F5B6500F8C74D /* NewGroupStoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B986F3287F5B6500F8C74D /* NewGroupStoryViewController.swift */; };
+		88B986F528807D6F00F8C74D /* RecipientPickerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */; };
+		88B986F628807D6F00F8C74D /* RecipientPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */; };
+		88B986F828807E9000F8C74D /* RecipientPickerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8835DDF7230CEDC300DC6B66 /* RecipientPickerViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		88B986F928807ED500F8C74D /* GroupTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A663C41F92EC760027B59E /* GroupTableViewCell.swift */; };
+		88B986FA28807EEA00F8C74D /* ReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* ReminderView.swift */; };
+		88B986FB28807F1D00F8C74D /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
+		88B986FC28807F4100F8C74D /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
+		88B986FD28807F6400F8C74D /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451764291DE939FD00EDB8B9 /* ContactCell.swift */; };
+		88B98700288088B800F8C74D /* BaseMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4717228664DE3001A3065 /* BaseMemberViewController.swift */; };
+		88B98701288088BC00F8C74D /* NewMembersBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947B2433B77700E5C510 /* NewMembersBar.swift */; };
+		88B987022880890800F8C74D /* SafetyNumberConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */; };
+		88B98703288089C200F8C74D /* FingerprintViewScanController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */; };
+		88B98704288089C200F8C74D /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */; };
+		88B98705288089C700F8C74D /* FingerprintViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 340FC89D204DAC8D007AEB0F /* FingerprintViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		88B98706288089CD00F8C74D /* FingerprintViewScanController.h in Headers */ = {isa = PBXBuildFile; fileRef = 340FC8A5204DAC8D007AEB0F /* FingerprintViewScanController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		88B9870728808A1200F8C74D /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
+		88B9870828808A2100F8C74D /* OWSBezierPathView.h in Headers */ = {isa = PBXBuildFile; fileRef = 34F308A01ECB469700BB7697 /* OWSBezierPathView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		88B9870928808A8A00F8C74D /* ScanQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345779402682464700732869 /* ScanQRCodeViewController.swift */; };
+		88B9870A28808BF600F8C74D /* CompareSafetyNumbersActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */; };
 		88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */; };
 		88BE44A626153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BE44A526153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift */; };
 		88BE44A82615451A00AE8E33 /* GroupPermissionsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BE44A72615451A00AE8E33 /* GroupPermissionsSettingsViewController.swift */; };
@@ -2825,10 +2829,6 @@
 				34E20D4B24256563002C011E /* ConversationHeaderBuilder.swift */,
 				34A17D80253F7236009F8C02 /* ConversationSettingsViewController+LegacyGroups.swift */,
 				88EF42E425F825650017C057 /* DisappearingMessagesTimerSettingsViewController.swift */,
-				340FC89D204DAC8D007AEB0F /* FingerprintViewController.h */,
-				340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */,
-				340FC8A5204DAC8D007AEB0F /* FingerprintViewScanController.h */,
-				340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */,
 				346594812434D5E000E5C510 /* GroupAttributesEditorHelper.swift */,
 				34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */,
 				889DFA0F264EE76F00D03921 /* GroupNameViewController.swift */,
@@ -3333,6 +3333,7 @@
 				34A955AD271B532F00B05242 /* FullTextSearcher.swift */,
 				34A955AF271B53F500B05242 /* GroupManager+SignalMessaging.swift */,
 				34A95507271B510400B05242 /* GroupViewUtils.swift */,
+				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
 				34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */,
 				34A955BC271B560000B05242 /* NameCollisionFinder.swift */,
 				34A95504271B510400B05242 /* OWSAnyTouchGestureRecognizer.h */,
@@ -3355,6 +3356,7 @@
 				32FAB9292727A57100FB76A6 /* PrimaryImageView.swift */,
 				34A95545271B510400B05242 /* AvatarImageView.swift */,
 				34A9553F271B510400B05242 /* CircleView.swift */,
+				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
 				34A9550B271B510400B05242 /* ContactCellView.swift */,
 				34A95565271B510400B05242 /* ContactsViewHelper.h */,
 				34A95527271B510400B05242 /* ContactsViewHelper.m */,
@@ -3367,6 +3369,7 @@
 				34A9551F271B510400B05242 /* DisappearingTimerConfigurationView.swift */,
 				34A95548271B510400B05242 /* GalleryRailView.swift */,
 				34A95546271B510400B05242 /* GradientView.swift */,
+				45A663C41F92EC760027B59E /* GroupTableViewCell.swift */,
 				34A95551271B510400B05242 /* ImageEditor */,
 				34A9554F271B510400B05242 /* InputAccessoryViewPlaceholder.swift */,
 				34A95514271B510400B05242 /* Link Preview */,
@@ -3377,6 +3380,8 @@
 				34A9552A271B510400B05242 /* Mentions */,
 				34A9550A271B510400B05242 /* NonContactTableViewCell.swift */,
 				34A9553D271B510400B05242 /* OWSActionSheets.swift */,
+				34F308A01ECB469700BB7697 /* OWSBezierPathView.h */,
+				34F308A11ECB469700BB7697 /* OWSBezierPathView.m */,
 				34A95535271B510400B05242 /* OWSBubbleShapeView.swift */,
 				34A95534271B510400B05242 /* OWSBubbleView.h */,
 				34A95530271B510400B05242 /* OWSButton.swift */,
@@ -3390,6 +3395,7 @@
 				34A95550271B510400B05242 /* OWSTextField.m */,
 				34A95533271B510400B05242 /* OWSTextView.h */,
 				34A9550D271B510400B05242 /* OWSTextView.m */,
+				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
 				34A95531271B510400B05242 /* ResizingScrollView.swift */,
 				763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */,
 				34A95509271B510400B05242 /* TappableStackView.swift */,
@@ -3499,6 +3505,7 @@
 				34A95596271B510500B05242 /* AttachmentApproval */,
 				34A9558A271B510500B05242 /* ContactFieldView.swift */,
 				34A95592271B510500B05242 /* ContactShareApprovalViewController.swift */,
+				34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */,
 				34A9557A271B510500B05242 /* ConversationPicker */,
 				34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */,
 				34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */,
@@ -3506,6 +3513,7 @@
 				880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */,
 				8868A08B287F4F81000E74A5 /* OWSTableSheetViewController.swift */,
 				34A95578271B510500B05242 /* MediaMessageView.swift */,
+				88A47174286666AF001A3065 /* Member Picker */,
 				34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */,
 				34A95582271B510500B05242 /* OWSNavigationController.h */,
 				34A9556B271B510500B05242 /* OWSNavigationController.m */,
@@ -3516,7 +3524,11 @@
 				34A95588271B510500B05242 /* OWSViewController.h */,
 				34A95575271B510500B05242 /* OWSViewController.m */,
 				34A95567271B510500B05242 /* OWSWindow.swift */,
+				88B9870B28808C2900F8C74D /* Safety Numbers */,
+				345779402682464700732869 /* ScanQRCodeViewController.swift */,
+				88B986F728807D7400F8C74D /* Recipient Picker */,
 				34ACA7F42733183000E47AD4 /* RegistrationValues.swift */,
+				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */,
 				34A95593271B510500B05242 /* ScreenLockViewController.h */,
 				34A95580271B510500B05242 /* ScreenLockViewController.m */,
 				34A95595271B510500B05242 /* SheetViewController.swift */,
@@ -3664,7 +3676,6 @@
 				883A7FC1269F4BE700841DF9 /* Avatars */,
 				4C46361022EB98EC00185951 /* CameraFirstNavigationController.swift */,
 				348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */,
-				34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */,
 				34E88D252098C5AE00A608F4 /* ContactViewController.swift */,
 				F0B872B4269CF01E00D26481 /* Context Menus */,
 				3448BFC01EDF0EA7005B2D69 /* ConversationView */,
@@ -3678,12 +3689,10 @@
 				3490D57C25ADDC2900F5F96C /* GroupLinkPromotionActionSheet.swift */,
 				3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */,
 				34386A4C207D0C01009F5D9C /* HomeView */,
-				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
 				4542DF53208D40AC007B4E76 /* LoadingViewController.swift */,
 				88A9729322FB4D02004B4FBF /* LocationPicker.swift */,
 				3496744E2076ACCE00080B5F /* LongTextViewController.swift */,
 				4C4F360E2284516F00A8DF48 /* MediaGallery */,
-				88A47174286666AF001A3065 /* Member Picker */,
 				4CFF4C0920F55BBA005DA313 /* MessageActionsToolbar.swift */,
 				34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */,
 				881218EF238CA51600E6F271 /* MessageReactionPicker.swift */,
@@ -3697,7 +3706,6 @@
 				8835DDFB230CEE7600DC6B66 /* RecipientPicker */,
 				340FC875204DAC8C007AEB0F /* Registration */,
 				342FFE7D271EF5B1000AC89F /* ReturnToCallViewController.swift */,
-				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */,
 				346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */,
 				349767DE25B8744600ECE1B0 /* Stickers */,
 				340FC897204DAC8D007AEB0F /* ThreadSettings */,
@@ -3936,7 +3944,6 @@
 			isa = PBXGroup;
 			children = (
 				451166BF1FD86B98000739BA /* AccountManager.swift */,
-				45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */,
 				4CB5F26820F7D060004D1B42 /* MessageActions.swift */,
 				458E38351D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.h */,
 				458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */,
@@ -4129,18 +4136,14 @@
 				4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */,
 				14E4A33F278EE999008408FD /* BlurredToolbarContainer.swift */,
 				4CA46F4B219CCC630038ABDE /* CaptionView.swift */,
-				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
 				4C4AEC4420EC343B0020E72B /* DismissableTextField.swift */,
 				32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */,
 				88905E9D229CCA96004E4234 /* ExpirationNagView.swift */,
 				329D42A125AD65C400DCB449 /* GetStartedBannerCell.swift */,
-				45A663C41F92EC760027B59E /* GroupTableViewCell.swift */,
 				88A941982409A391000E9700 /* LottieToggleButton.swift */,
 				45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */,
 				8829883A25B9FD6700DEE1E3 /* MockConversationView.swift */,
 				3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */,
-				34F308A01ECB469700BB7697 /* OWSBezierPathView.h */,
-				34F308A11ECB469700BB7697 /* OWSBezierPathView.m */,
 				459311FA1D75C948008DD4F0 /* OWSDeviceTableViewCell.h */,
 				459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */,
 				88A4CC11246CE2F50082211F /* QRCodeView.swift */,
@@ -4148,7 +4151,6 @@
 				45D308AB2049A439000189E4 /* PinEntryView.h */,
 				45D308AC2049A439000189E4 /* PinEntryView.m */,
 				457F671A20746193000EABCD /* QuotedReplyPreview.swift */,
-				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
 				88863A55280CD04A00977F69 /* ReactionFlybyAnimation.swift */,
 				88A4CC0F246CE2760082211F /* TransferProgressView.swift */,
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
@@ -4198,9 +4200,6 @@
 			children = (
 				8835DE02230DEC6A00DC6B66 /* AddToBlockListViewController.swift */,
 				8835DE00230DBF7E00DC6B66 /* ComposeViewController.swift */,
-				8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */,
-				8835DDF7230CEDC300DC6B66 /* RecipientPickerViewController.h */,
-				8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */,
 			);
 			path = RecipientPicker;
 			sourceTree = "<group>";
@@ -4442,7 +4441,6 @@
 				3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */,
 				340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */,
 				340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */,
-				345779402682464700732869 /* ScanQRCodeViewController.swift */,
 			);
 			path = "Linked Devices";
 			sourceTree = "<group>";
@@ -4545,6 +4543,28 @@
 				88A9419624099F85000E9700 /* attachment_light.json */,
 			);
 			path = "Attachment Keyboard";
+			sourceTree = "<group>";
+		};
+		88B986F728807D7400F8C74D /* Recipient Picker */ = {
+			isa = PBXGroup;
+			children = (
+				8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */,
+				8835DDF7230CEDC300DC6B66 /* RecipientPickerViewController.h */,
+				8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */,
+			);
+			path = "Recipient Picker";
+			sourceTree = "<group>";
+		};
+		88B9870B28808C2900F8C74D /* Safety Numbers */ = {
+			isa = PBXGroup;
+			children = (
+				45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */,
+				340FC89D204DAC8D007AEB0F /* FingerprintViewController.h */,
+				340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */,
+				340FC8A5204DAC8D007AEB0F /* FingerprintViewScanController.h */,
+				340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */,
+			);
+			path = "Safety Numbers";
 			sourceTree = "<group>";
 		};
 		88BFD4712335C2A4001797D7 /* Lottie */ = {
@@ -4984,12 +5004,14 @@
 				34A954FF271B4FB000B05242 /* UIFont+OWS.h in Headers */,
 				3402AAC2271DA6100084CBAE /* OWSAudioPlayer.h in Headers */,
 				34A954BA271A471300B05242 /* SignalUI.h in Headers */,
+				88B98705288089C700F8C74D /* FingerprintViewController.h in Headers */,
 				3402AAA5271D9E180084CBAE /* ThreadViewHelper.h in Headers */,
 				3402AA32271D9DCD0084CBAE /* ViewControllerUtils.h in Headers */,
 				3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */,
 				3402AA64271D9DEC0084CBAE /* CVItemViewModel.h in Headers */,
 				3402AA50271D9DCD0084CBAE /* OWSViewController.h in Headers */,
 				342FFE65271DB66E000AC89F /* OWSProfileManager+SignalUI.h in Headers */,
+				88B98706288089CD00F8C74D /* FingerprintViewScanController.h in Headers */,
 				3402AAB7271D9E180084CBAE /* OWSTextField.h in Headers */,
 				3402AA5D271D9DCD0084CBAE /* OWSNavigationController.h in Headers */,
 				3402AA8B271D9E180084CBAE /* OWSTextView.h in Headers */,
@@ -5000,10 +5022,12 @@
 				3402AA9E271D9E180084CBAE /* ContactsViewHelper.h in Headers */,
 				34A954CF271B4D0700B05242 /* SignalUI-Prefix.pch in Headers */,
 				3402AA53271D9DCD0084CBAE /* ScreenLockViewController.h in Headers */,
+				88B986F828807E9000F8C74D /* RecipientPickerViewController.h in Headers */,
 				34A955B4271B53F600B05242 /* BlockListUIUtils.h in Headers */,
 				3402AAA1271D9E180084CBAE /* OWSBubbleView.h in Headers */,
 				3402AA4C271D9DCD0084CBAE /* OWSTableViewController.h in Headers */,
 				34A954FD271B4FB000B05242 /* UIViewController+OWS.h in Headers */,
+				88B9870828808A2100F8C74D /* OWSBezierPathView.h in Headers */,
 				3402A9FE271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.h in Headers */,
 				3402A9E9271D97090084CBAE /* UIView+SignalUI.h in Headers */,
 			);
@@ -6070,7 +6094,9 @@
 				3402AA47271D9DCD0084CBAE /* StickerHorizontalListView.swift in Sources */,
 				83B9573927C9A1FA00A678FD /* CaptchaView.swift in Sources */,
 				3402AAB4271D9E180084CBAE /* VideoPlayerView.swift in Sources */,
+				88B986F528807D6F00F8C74D /* RecipientPickerDelegate.swift in Sources */,
 				34A955B9271B553D00B05242 /* PaymentsFormat.swift in Sources */,
+				88B986FA28807EEA00F8C74D /* ReminderView.swift in Sources */,
 				34ACA7F72733183000E47AD4 /* CountryCodeViewController.swift in Sources */,
 				342FFE62271DB2E7000AC89F /* AppContext+SignalUI.swift in Sources */,
 				3402AA31271D9DCD0084CBAE /* TextApprovalViewController.swift in Sources */,
@@ -6081,6 +6107,7 @@
 				3402AAA3271D9E180084CBAE /* DirectionalPanGestureRecognizer.swift in Sources */,
 				34BB78B7272C51B600DA0D04 /* MobileCoinHelperSDK.swift in Sources */,
 				3402AA72271D9E180084CBAE /* ImageEditorItem.swift in Sources */,
+				88B986FC28807F4100F8C74D /* ContactsPicker.swift in Sources */,
 				3402AA52271D9DCD0084CBAE /* ViewControllerUtils.m in Sources */,
 				3402AA6C271D9E180084CBAE /* ImageEditorView.swift in Sources */,
 				3402AA59271D9DCD0084CBAE /* OWSViewController.m in Sources */,
@@ -6099,6 +6126,7 @@
 				3402AA8A271D9E180084CBAE /* ImageEditorCanvasView.swift in Sources */,
 				3402AA83271D9E180084CBAE /* OWSFlatButton.swift in Sources */,
 				3402A9DA271D953B0084CBAE /* SUIEnvironment.swift in Sources */,
+				88B986FD28807F6400F8C74D /* ContactCell.swift in Sources */,
 				76995F15283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift in Sources */,
 				3402AAAE271D9E180084CBAE /* ImageEditorTextItem.swift in Sources */,
 				3402AA30271D9DCD0084CBAE /* ContactFieldView.swift in Sources */,
@@ -6108,6 +6136,7 @@
 				76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */,
 				76896BFA28415B6B00F6C8D2 /* VideoTimelineView.swift in Sources */,
 				32FAB92A2727A57100FB76A6 /* PrimaryImageView.swift in Sources */,
+				88B98701288088BC00F8C74D /* NewMembersBar.swift in Sources */,
 				3402AAAC271D9E180084CBAE /* NonContactTableViewCell.swift in Sources */,
 				3402AAB1271D9E180084CBAE /* OWSNavigationBar.swift in Sources */,
 				3402AA46271D9DCD0084CBAE /* OWSTableViewController.m in Sources */,
@@ -6127,6 +6156,7 @@
 				3402AA9F271D9E180084CBAE /* ViewOnceTooltip.swift in Sources */,
 				3402AA9D271D9E180084CBAE /* CircleView.swift in Sources */,
 				3402AAA0271D9E180084CBAE /* ImageEditorPaletteView.swift in Sources */,
+				88B9870728808A1200F8C74D /* OWSBezierPathView.m in Sources */,
 				34ACA7F62733183000E47AD4 /* RegistrationValues.swift in Sources */,
 				3402AAB3271D9E180084CBAE /* CVBodyTextLabel.swift in Sources */,
 				3402AA80271D9E180084CBAE /* TappableView.swift in Sources */,
@@ -6136,7 +6166,9 @@
 				3402AA3E271D9DCD0084CBAE /* StickerPackDataSource.swift in Sources */,
 				3402AA8C271D9E180084CBAE /* LoopingVideoView.swift in Sources */,
 				3402AA39271D9DCD0084CBAE /* OWSTableViewController.swift in Sources */,
+				88B98700288088B800F8C74D /* BaseMemberViewController.swift in Sources */,
 				88B6D674280770C4005D86EC /* StoryMessage+SignalUI.swift in Sources */,
+				88B9870928808A8A00F8C74D /* ScanQRCodeViewController.swift in Sources */,
 				3402AA94271D9E180084CBAE /* ImageEditorBlurRegionsItem.swift in Sources */,
 				3402AA5C271D9DCD0084CBAE /* UIViewController+Permissions.m in Sources */,
 				3402AA34271D9DCD0084CBAE /* AttachmentItemCollection.swift in Sources */,
@@ -6144,11 +6176,14 @@
 				34F316F32732C695008D7352 /* WebSocketFactoryHybrid.swift in Sources */,
 				3402AAA7271D9E180084CBAE /* AvatarImageView.swift in Sources */,
 				3402AAAF271D9E180084CBAE /* Mention.swift in Sources */,
+				88B98704288089C200F8C74D /* FingerprintViewController.m in Sources */,
 				3402AA7E271D9E180084CBAE /* TappableStackView.swift in Sources */,
 				3402AAB0271D9E180084CBAE /* TextFieldWithPlaceholder.swift in Sources */,
+				88B9870A28808BF600F8C74D /* CompareSafetyNumbersActivity.swift in Sources */,
 				3402A9EA271D97090084CBAE /* UIView+SignalUI.m in Sources */,
 				3402AA6F271D9E180084CBAE /* VideoEditorView.swift in Sources */,
 				3402AA48271D9DCD0084CBAE /* StickerKeyboard.swift in Sources */,
+				88B98703288089C200F8C74D /* FingerprintViewScanController.m in Sources */,
 				3402AA86271D9E180084CBAE /* ResizingScrollView.swift in Sources */,
 				3402AA4F271D9DCD0084CBAE /* SpamCaptchaViewController.swift in Sources */,
 				3402AAB6271D9E180084CBAE /* ImageEditorCropViewController.swift in Sources */,
@@ -6160,6 +6195,7 @@
 				3402AA96271D9E180084CBAE /* Toast.swift in Sources */,
 				3402AA92271D9E180084CBAE /* CVText.swift in Sources */,
 				3402AA43271D9DCD0084CBAE /* ContactShareApprovalViewController.swift in Sources */,
+				88B987022880890800F8C74D /* SafetyNumberConfirmationSheet.swift in Sources */,
 				3402AA5B271D9DCD0084CBAE /* StickerPackCollectionView.swift in Sources */,
 				3402AA4B271D9DCD0084CBAE /* AttachmentApprovalToolbar.swift in Sources */,
 				34A954CB271B4BE600B05242 /* ShareViewDelegate.swift in Sources */,
@@ -6170,6 +6206,7 @@
 				3402AAAB271D9E180084CBAE /* OWSActionSheets.swift in Sources */,
 				766035A9286CE4CB00F6B71C /* MediaTopBar.swift in Sources */,
 				3402AAA8271D9E180084CBAE /* MentionTextView.swift in Sources */,
+				88B986FB28807F1D00F8C74D /* InviteFlow.swift in Sources */,
 				34D21DA227297FBF00D891F4 /* DebugLogger+Payments.swift in Sources */,
 				34A954FC271B4FB000B05242 /* UIFont+OWS.m in Sources */,
 				3402AA75271D9E180084CBAE /* ConversationAvatarView.swift in Sources */,
@@ -6196,6 +6233,7 @@
 				8868A08C287F4F81000E74A5 /* OWSTableSheetViewController.swift in Sources */,
 				3402A9F5271D9A060084CBAE /* UIUtil.m in Sources */,
 				3402AA7B271D9E180084CBAE /* CustomKeyboard.swift in Sources */,
+				88B986F928807ED500F8C74D /* GroupTableViewCell.swift in Sources */,
 				3402AA44271D9DCD0084CBAE /* ModalActivityIndicatorViewController.swift in Sources */,
 				3402AA8E271D9E180084CBAE /* TextViewWithPlaceholder.swift in Sources */,
 				34A954F7271B4FB000B05242 /* UIViewController+OWS.m in Sources */,
@@ -6206,6 +6244,7 @@
 				3402AA90271D9E180084CBAE /* ImageEditorModel.swift in Sources */,
 				88B6D673280770C4005D86EC /* TextAttachmentView.swift in Sources */,
 				8868A089287F4514000E74A5 /* NewStorySheet.swift in Sources */,
+				88B986F628807D6F00F8C74D /* RecipientPickerViewController.m in Sources */,
 				3402AA88271D9E180084CBAE /* ContactCellView.swift in Sources */,
 				3402AA3D271D9DCD0084CBAE /* AttachmentPrepViewController.swift in Sources */,
 				3402AA37271D9DCD0084CBAE /* ConversationItem.swift in Sources */,
@@ -6434,15 +6473,12 @@
 				34A4D8812677B2AB00A794E7 /* ConversationViewController+Calls.swift in Sources */,
 				3405C06E25435048008B24EF /* ConversationViewController+Banners.swift in Sources */,
 				881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */,
-				340FC8BA204DAC8D007AEB0F /* FingerprintViewScanController.m in Sources */,
 				14DB56A62829310B00E01AC9 /* DonationMegaphone.swift in Sources */,
 				17ACF11E267D71E0009BE867 /* OWSAudioSession+WebRTC.swift in Sources */,
 				34ACA7E92733159600E47AD4 /* ChangePhoneNumberSplashViewController.swift in Sources */,
 				34ACA7E22733159600E47AD4 /* OnboardingPhoneNumberViewController.swift in Sources */,
-				8835DDF9230CEDC300DC6B66 /* RecipientPickerViewController.m in Sources */,
 				886BB3D425BA0CA900079781 /* ColorAndWallpaperSettingsViewController.swift in Sources */,
 				34FCCA04264AEDFE00A63EDE /* CustomColorViewController.swift in Sources */,
-				4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift in Sources */,
 				4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */,
 				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,
 				345772B6257E4E01001D7D44 /* CVViewStateSnapshot.swift in Sources */,
@@ -6451,7 +6487,6 @@
 				88FBE954264B6849005F6C80 /* SubscriptionMegaphone.swift in Sources */,
 				3426A36A255D9D7C0036407F /* ConversationViewController+Selection.swift in Sources */,
 				88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */,
-				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
 				3498AC982518E98A00B1F315 /* DebugUIPayments.swift in Sources */,
 				4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */,
@@ -6471,7 +6506,6 @@
 				887CD48324730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift in Sources */,
 				8855DF87238F1E0C0066D96F /* EmojiReactorsTableView.swift in Sources */,
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
-				34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */,
 				8864073127F21AD7009916B6 /* StoryReplyInputToolbar.swift in Sources */,
 				326DF2612739F4D90017B789 /* FeaturedBadgeViewController.swift in Sources */,
 				F95427E6286E042200314EDA /* BadgeGiftThanksSheet.swift in Sources */,
@@ -6488,7 +6522,6 @@
 				34404275273C0E41008C9FA4 /* RegistrationPinAttemptsExhaustedViewController.swift in Sources */,
 				3496955D219B605E00DCFE74 /* PhotoCollectionPickerController.swift in Sources */,
 				34A4D8852677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift in Sources */,
-				8835DDFD230CEE8900DC6B66 /* RecipientPickerDelegate.swift in Sources */,
 				8880179427430DDB00346E9A /* BadgeThanksSheet.swift in Sources */,
 				88863A56280CD04B00977F69 /* ReactionFlybyAnimation.swift in Sources */,
 				3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */,
@@ -6540,7 +6573,6 @@
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
 				34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */,
 				34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */,
-				340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */,
 				887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */,
 				346E09012662FBBE0042375E /* ChatListCell.swift in Sources */,
 				8878B2D6286636D8008368F2 /* MyStorySettingsViewController.swift in Sources */,
@@ -6586,7 +6618,6 @@
 				88A4CC17246CE6190082211F /* DeviceTransferNavigationController.swift in Sources */,
 				4C30E224234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift in Sources */,
 				349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */,
-				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				347C382A252CE69400F3D941 /* CVLoadCoordinator.swift in Sources */,
 				348815C2255341F300D4F4C4 /* CVComponentAudioAttachment.swift in Sources */,
 				347C384B252D085900F3D941 /* CVComponentUnreadIndicator.swift in Sources */,
@@ -6630,7 +6661,6 @@
 				8864072827EEA658009916B6 /* StoryGroupReplySheet.swift in Sources */,
 				88A4CC1B246CEC8B0082211F /* DeviceTransferQRScanningViewController.swift in Sources */,
 				34E95C24269F4F4F004807EC /* CLVViewState.swift in Sources */,
-				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
 				88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */,
 				88588D26252E59CE00405414 /* CallService.swift in Sources */,
 				F9D83012282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift in Sources */,
@@ -6657,7 +6687,6 @@
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				884DB95027DE67BB00C6A309 /* StoryContextViewController.swift in Sources */,
 				34A4D87F2677B23100A794E7 /* ConversationViewController+MessageActions.swift in Sources */,
-				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				887CD47F247307D900FDD265 /* DeviceTransferService+Restore.swift in Sources */,
 				8829883925B979F900DEE1E3 /* ThemeSettingsTableViewController.swift in Sources */,
 				888B6D4D25B2523800E2A662 /* ConversationViewController+Wallpaper.swift in Sources */,
@@ -6702,14 +6731,12 @@
 				348815CA255346A500D4F4C4 /* CVRenderItem.swift in Sources */,
 				32CBF07D258C939800D56903 /* NameCollisionResolutionViewController.swift in Sources */,
 				887B381125F05F3100685845 /* PrivacySettingsViewController.swift in Sources */,
-				345779412682464700732869 /* ScanQRCodeViewController.swift in Sources */,
 				34ACA7D62733159600E47AD4 /* OnboardingTransferQRCodeViewController.swift in Sources */,
 				34DE9C02256575300080E4AF /* CVMessageMapping.swift in Sources */,
 				347C382C252CE69400F3D941 /* CVStackView.swift in Sources */,
 				4C5250D221E7BD7D00CE3D95 /* PhoneNumberValidator.swift in Sources */,
 				88B2234C284FABE600A25048 /* StoryThumbnailView.swift in Sources */,
 				F05F51C926A90D6B00861034 /* ContextMenuActionsAccessory.swift in Sources */,
-				34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */,
 				88BE44A626153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift in Sources */,
 				34E95C29269F6109004807EC /* ChatListViewController+Helpers.swift in Sources */,
 				88D1D40422EF8A9700F472C5 /* ThreadDetailsInteraction.swift in Sources */,
@@ -6790,7 +6817,6 @@
 				88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */,
 				88FE237E249C22080041670F /* ConversationViewController+Scroll.swift in Sources */,
 				34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */,
-				3465947C2433B77700E5C510 /* NewMembersBar.swift in Sources */,
 				34ACA7D52733159600E47AD4 /* OnboardingTransferChoiceViewController.swift in Sources */,
 				347B83F724367EC10019A52C /* GroupViewHelper+MemberActionSheet.swift in Sources */,
 				34E93F9226668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift in Sources */,
@@ -6803,7 +6829,6 @@
 				889DFA10264EE76F00D03921 /* GroupNameViewController.swift in Sources */,
 				8871B17125F0139D00D4E070 /* ProfileNameViewController.swift in Sources */,
 				4CD4E7D523E8CCFE00834B1B /* IndividualCall.swift in Sources */,
-				88A4717328664DE3001A3065 /* BaseMemberViewController.swift in Sources */,
 				88423A56280A373C007D2918 /* StoryReplySheet.swift in Sources */,
 				34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */,
 				3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */,
@@ -6829,7 +6854,6 @@
 				887CD4812473098D00FDD265 /* DeviceTransferService+State.swift in Sources */,
 				34635332257549F2003C5428 /* CVReactionCountsView.swift in Sources */,
 				3440426B273AB186008C9FA4 /* RegistrationUtils.swift in Sources */,
-				45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */,
 				88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */,
 				344DAEDF248A7526000AD4FA /* DebugUIStress.swift in Sources */,
 				3428577926BD8777005A2A96 /* Emoji+SkinTones.swift in Sources */,

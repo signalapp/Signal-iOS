@@ -15,7 +15,7 @@ public enum RecipientPickerRecipientState: Int {
 }
 
 @objc
-protocol RecipientPickerDelegate: AnyObject {
+public protocol RecipientPickerDelegate: AnyObject {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          getRecipientState recipient: PickedRecipient) -> RecipientPickerRecipientState
 
@@ -56,8 +56,8 @@ protocol RecipientPickerDelegate: AnyObject {
 
 @objc
 public class PickedRecipient: NSObject {
-    let identifier: Identifier
-    enum Identifier: Hashable {
+    public let identifier: Identifier
+    public enum Identifier: Hashable {
         case address(_ address: SignalServiceAddress)
         case group(_ groupThread: TSGroupThread)
     }
@@ -67,24 +67,24 @@ public class PickedRecipient: NSObject {
     }
 
     @objc
-    var isGroup: Bool {
+    public var isGroup: Bool {
         guard case .group = identifier else { return false }
         return true
     }
 
     @objc
-    var address: SignalServiceAddress? {
+    public var address: SignalServiceAddress? {
         guard case .address(let address) = identifier else { return nil }
         return address
     }
 
     @objc
-    static func `for`(groupThread: TSGroupThread) -> PickedRecipient {
+    public static func `for`(groupThread: TSGroupThread) -> PickedRecipient {
         return .init(.group(groupThread))
     }
 
     @objc
-    static func `for`(address: SignalServiceAddress) -> PickedRecipient {
+    public static func `for`(address: SignalServiceAddress) -> PickedRecipient {
         return .init(.address(address))
     }
 

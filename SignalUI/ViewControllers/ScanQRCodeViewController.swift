@@ -16,7 +16,7 @@ public enum QRCodeScanOutcome: UInt {
 // MARK: -
 
 @objc
-protocol QRCodeScanDelegate: AnyObject {
+public protocol QRCodeScanDelegate: AnyObject {
     // A QR code scan might yield a String payload, Data payload or both.
     //
     // * Traditional QR code payloads are Strings, but that's not true of
@@ -54,7 +54,7 @@ protocol QRCodeScanDelegate: AnyObject {
 // MARK: -
 
 @objc
-class QRCodeScanViewController: OWSViewController {
+public class QRCodeScanViewController: OWSViewController {
 
     @objc(QRCodeScanViewAppearance)
     public enum Appearance: UInt {
@@ -83,7 +83,7 @@ class QRCodeScanViewController: OWSViewController {
     private let appearance: Appearance
 
     @objc
-    weak var delegate: QRCodeScanDelegate?
+    public weak var delegate: QRCodeScanDelegate?
 
     private var scanner: QRCodeScanner?
 
@@ -98,7 +98,7 @@ class QRCodeScanViewController: OWSViewController {
         stopScanning()
     }
 
-    override var prefersStatusBarHidden: Bool {
+    public override var prefersStatusBarHidden: Bool {
         guard !CurrentAppContext().hasActiveCall else {
             return false
         }
@@ -106,14 +106,14 @@ class QRCodeScanViewController: OWSViewController {
         return true
     }
 
-    override var prefersHomeIndicatorAutoHidden: Bool {
+    public override var prefersHomeIndicatorAutoHidden: Bool {
         return true
     }
 
     // MARK: - View Lifecycle
 
     @objc
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         AssertIsOnMainThread()
 
         super.viewDidLoad()
@@ -403,14 +403,14 @@ private enum QRCodeError: Error {
 // are inherently small. Therefore, this approach favors simplicity
 // over efficiency.
 public class QRCodePayload {
-    let version: Int
-    let mode: Mode
-    let bytes: [UInt8]
+    public let version: Int
+    public let mode: Mode
+    public let bytes: [UInt8]
 
-    var data: Data {
+    public var data: Data {
         Data(bytes)
     }
-    var asString: String? {
+    public var asString: String? {
         String(data: data, encoding: .utf8)
     }
 
@@ -573,9 +573,9 @@ private class QRCodeBitStream {
 // MARK: -
 
 extension QRCodeScanViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
-    func captureOutput(_ output: AVCaptureOutput,
-                       didOutput sampleBuffer: CMSampleBuffer,
-                       from connection: AVCaptureConnection) {
+    public func captureOutput(_ output: AVCaptureOutput,
+                              didOutput sampleBuffer: CMSampleBuffer,
+                              from connection: AVCaptureConnection) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             owsFailDebug("Missing pixelBuffer.")
             return
@@ -861,5 +861,39 @@ private class QRCodeScanOutput {
         videoDataOutput.setSampleBufferDelegate(
             sampleBufferDelegate,
             queue: DispatchQueue.global(qos: DispatchQoS.QoSClass.default))
+    }
+}
+
+// MARK: -
+
+public extension AVCaptureVideoOrientation {
+    init?(deviceOrientation: UIDeviceOrientation) {
+        switch deviceOrientation {
+        case .unknown:
+            return nil
+        case .portrait: self = .portrait
+        case .portraitUpsideDown: self = .portraitUpsideDown
+        case .landscapeLeft: self = .landscapeRight
+        case .landscapeRight: self = .landscapeLeft
+        case .faceUp:
+            return nil
+        case .faceDown:
+            return nil
+        @unknown default:
+            return nil
+        }
+    }
+
+    init?(interfaceOrientation: UIInterfaceOrientation) {
+        switch interfaceOrientation {
+        case .unknown:
+            return nil
+        case .portrait: self = .portrait
+        case .portraitUpsideDown: self = .portraitUpsideDown
+        case .landscapeLeft: self = .landscapeLeft
+        case .landscapeRight: self = .landscapeRight
+        @unknown default:
+            return nil
+        }
     }
 }

@@ -3,7 +3,6 @@
 //
 
 #import "RecipientPickerViewController.h"
-#import "Signal-Swift.h"
 #import "SignalApp.h"
 #import <MessageUI/MessageUI.h>
 #import <SignalCoreKit/NSString+OWS.h>
@@ -17,6 +16,7 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalUI/ContactsViewHelper.h>
 #import <SignalUI/OWSTableViewController.h>
+#import <SignalUI/SignalUI-Swift.h>
 #import <SignalUI/UIUtil.h>
 #import <SignalUI/UIView+SignalUI.h>
 
@@ -390,7 +390,7 @@ const NSUInteger kMinimumSearchLength = 1;
                     nagWithText:NSLocalizedString(@"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
                                     @"Multi-line label explaining why compose-screen contact picker is empty.")
                       tapAction:^{
-                          [[UIApplication sharedApplication] openSystemSettings];
+                    [CurrentAppContext() openSystemSettings];
                       }];
                 [cell.contentView addSubview:reminderView];
                 [reminderView autoPinEdgesToSuperviewEdges];

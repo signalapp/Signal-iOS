@@ -1473,40 +1473,6 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
 
 // MARK: -
 
-extension AVCaptureVideoOrientation {
-    init?(deviceOrientation: UIDeviceOrientation) {
-        switch deviceOrientation {
-        case .unknown:
-            return nil
-        case .portrait: self = .portrait
-        case .portraitUpsideDown: self = .portraitUpsideDown
-        case .landscapeLeft: self = .landscapeRight
-        case .landscapeRight: self = .landscapeLeft
-        case .faceUp:
-            return nil
-        case .faceDown:
-            return nil
-        @unknown default:
-            return nil
-        }
-    }
-
-    init?(interfaceOrientation: UIInterfaceOrientation) {
-        switch interfaceOrientation {
-        case .unknown:
-            return nil
-        case .portrait: self = .portrait
-        case .portraitUpsideDown: self = .portraitUpsideDown
-        case .landscapeLeft: self = .landscapeLeft
-        case .landscapeRight: self = .landscapeRight
-        @unknown default:
-            return nil
-        }
-    }
-}
-
-// MARK: -
-
 extension AVCaptureDevice.FocusMode: CustomStringConvertible {
     public var description: String {
         switch self {

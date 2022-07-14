@@ -26,7 +26,7 @@ public enum SubtitleCellValue: Int {
 }
 
 @objc
-public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
     var tableView: UITableView!
     var searchBar: UISearchBar!
@@ -159,7 +159,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
             let settingsText = CommonStrings.openSettingsButton
             let openSettingsAction = ActionSheetAction(title: settingsText, style: .default, handler: { (_) in
-                UIApplication.shared.openSystemSettings()
+                CurrentAppContext().openSystemSettings()
             })
             alert.addAction(openSettingsAction)
 
@@ -195,7 +195,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         }
     }
 
-    func collatedContacts(_ contacts: [CNContact]) -> [[CNContact]] {
+    public func collatedContacts(_ contacts: [CNContact]) -> [[CNContact]] {
         let selector: Selector = #selector(getter: CNContact.nameForCollating)
 
         var collated = Array(repeating: [CNContact](), count: collation.sectionTitles.count)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 typedef void (^ConfigureShapeLayerBlock)(CAShapeLayer *_Nonnull layer, CGRect bounds);

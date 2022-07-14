@@ -8,13 +8,13 @@ import SignalServiceKit
 let CompareSafetyNumbersActivityType = "org.whispersystems.signal.activity.CompareSafetyNumbers"
 
 @objc(OWSCompareSafetyNumbersActivityDelegate)
-protocol CompareSafetyNumbersActivityDelegate {
+public protocol CompareSafetyNumbersActivityDelegate {
     func compareSafetyNumbersActivitySucceeded(activity: CompareSafetyNumbersActivity)
     func compareSafetyNumbersActivity(_ activity: CompareSafetyNumbersActivity, failedWithError error: Error)
 }
 
 @objc(OWSCompareSafetyNumbersActivity)
-class CompareSafetyNumbersActivity: UIActivity {
+public class CompareSafetyNumbersActivity: UIActivity {
 
     var mySafetyNumbers: String?
     weak var delegate: CompareSafetyNumbersActivityDelegate?
@@ -27,28 +27,28 @@ class CompareSafetyNumbersActivity: UIActivity {
 
     // MARK: UIActivity
 
-    override class var activityCategory: UIActivity.Category { .action }
+    public override class var activityCategory: UIActivity.Category { .action }
 
-    override var activityType: UIActivity.ActivityType? {
+    public override var activityType: UIActivity.ActivityType? {
         UIActivity.ActivityType(rawValue: CompareSafetyNumbersActivityType)
     }
 
-    override var activityTitle: String? {
+    public override var activityTitle: String? {
         NSLocalizedString("COMPARE_SAFETY_NUMBER_ACTION", comment: "Activity Sheet label")
     }
 
-    override var activityImage: UIImage? { #imageLiteral(resourceName: "ic_lock_outline") }
+    public override var activityImage: UIImage? { #imageLiteral(resourceName: "ic_lock_outline") }
 
-    override func canPerform(withActivityItems activityItems: [Any]) -> Bool {
+    public override func canPerform(withActivityItems activityItems: [Any]) -> Bool {
         return stringsFrom(activityItems: activityItems).count > 0
     }
 
-    override func prepare(withActivityItems activityItems: [Any]) {
+    public override func prepare(withActivityItems activityItems: [Any]) {
         let myFormattedSafetyNumbers = stringsFrom(activityItems: activityItems).first
         mySafetyNumbers = numericOnly(string: myFormattedSafetyNumbers)
     }
 
-    override func perform() {
+    public override func perform() {
         defer { activityDidFinish(true) }
 
         guard let delegate = delegate else {

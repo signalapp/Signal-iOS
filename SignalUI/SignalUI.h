@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -15,8 +15,11 @@ FOUNDATION_EXPORT const unsigned char SignalUIVersionString[];
 #import <SignalUI/BlockListUIUtils.h>
 #import <SignalUI/CVItemViewModel.h>
 #import <SignalUI/ContactsViewHelper.h>
+#import <SignalUI/FingerprintViewController.h>
+#import <SignalUI/FingerprintViewScanController.h>
 #import <SignalUI/OWSAnyTouchGestureRecognizer.h>
 #import <SignalUI/OWSAudioPlayer.h>
+#import <SignalUI/OWSBezierPathView.h>
 #import <SignalUI/OWSBubbleView.h>
 #import <SignalUI/OWSNavigationController.h>
 #import <SignalUI/OWSProfileManager+SignalUI.h>
@@ -25,6 +28,7 @@ FOUNDATION_EXPORT const unsigned char SignalUIVersionString[];
 #import <SignalUI/OWSTableViewController.h>
 #import <SignalUI/OWSTextField.h>
 #import <SignalUI/OWSTextView.h>
+#import <SignalUI/RecipientPickerViewController.h>
 #import <SignalUI/ScreenLockViewController.h>
 #import <SignalUI/Theme.h>
 #import <SignalUI/ThreadViewHelper.h>

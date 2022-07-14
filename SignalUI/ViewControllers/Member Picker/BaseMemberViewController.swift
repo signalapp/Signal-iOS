@@ -4,7 +4,7 @@
 
 import Foundation
 
-protocol MemberViewDelegate: AnyObject {
+public protocol MemberViewDelegate: AnyObject {
     var memberViewRecipientSet: OrderedSet<PickedRecipient> { get }
 
     var memberViewHasUnsavedChanges: Bool { get }
@@ -40,10 +40,10 @@ protocol MemberViewDelegate: AnyObject {
 // MARK: -
 
 @objc
-public class BaseMemberViewController: OWSViewController {
+open class BaseMemberViewController: OWSViewController {
 
     // This delegate is the subclass.
-    weak var memberViewDelegate: MemberViewDelegate?
+    public weak var memberViewDelegate: MemberViewDelegate?
 
     private var recipientSet: OrderedSet<PickedRecipient> {
         guard let memberViewDelegate = memberViewDelegate else {
@@ -53,7 +53,7 @@ public class BaseMemberViewController: OWSViewController {
         return memberViewDelegate.memberViewRecipientSet
     }
 
-    var hasUnsavedChanges: Bool {
+    open var hasUnsavedChanges: Bool {
         guard let memberViewDelegate = memberViewDelegate else {
             owsFailDebug("Missing memberViewDelegate.")
             return false
@@ -61,7 +61,7 @@ public class BaseMemberViewController: OWSViewController {
         return memberViewDelegate.memberViewHasUnsavedChanges
     }
 
-    let recipientPicker = RecipientPickerViewController()
+    public let recipientPicker = RecipientPickerViewController()
 
     private let memberBar = NewMembersBar()
     private let memberCountLabel = UILabel()
@@ -74,7 +74,7 @@ public class BaseMemberViewController: OWSViewController {
     // MARK: - View Lifecycle
 
     @objc
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
 
         // First section.
@@ -117,7 +117,7 @@ public class BaseMemberViewController: OWSViewController {
     }
 
     @objc
-    public override func viewWillLayoutSubviews() {
+    open override func viewWillLayoutSubviews() {
         updateMemberBarHeightConstraint()
 
         super.viewWillLayoutSubviews()
@@ -194,9 +194,9 @@ public class BaseMemberViewController: OWSViewController {
         return Self.orderedMembers(recipientSet: recipientSet, shouldSort: shouldSort, transaction: transaction)
     }
 
-    class func orderedMembers(recipientSet: OrderedSet<PickedRecipient>,
-                              shouldSort: Bool,
-                              transaction: SDSAnyReadTransaction) -> [NewMember] {
+    public class func orderedMembers(recipientSet: OrderedSet<PickedRecipient>,
+                                     shouldSort: Bool,
+                                     transaction: SDSAnyReadTransaction) -> [NewMember] {
         var members = recipientSet.orderedMembers.compactMap { (recipient: PickedRecipient) -> NewMember? in
             guard let address = recipient.address else {
                 owsFailDebug("Invalid recipient.")
@@ -221,7 +221,7 @@ public class BaseMemberViewController: OWSViewController {
 
     // MARK: -
 
-    public override func viewWillAppear(_ animated: Bool) {
+    open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         recipientPicker.applyTheme(to: self)
@@ -241,14 +241,14 @@ public class BaseMemberViewController: OWSViewController {
         }
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
+    open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         recipientPicker.removeTheme(from: self)
     }
 
     @objc
-    func dismissPressed() {
+    open func dismissPressed() {
         if !self.hasUnsavedChanges {
             // If user made no changes, dismiss.
             self.memberViewDelegate?.memberViewDismiss()
@@ -285,7 +285,7 @@ public class BaseMemberViewController: OWSViewController {
 
 extension BaseMemberViewController: RecipientPickerDelegate {
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          getRecipientState recipient: PickedRecipient) -> RecipientPickerRecipientState {
         guard let memberViewDelegate = memberViewDelegate else {
             owsFailDebug("Missing memberViewDelegate.")
@@ -303,7 +303,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         }
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          didSelectRecipient recipient: PickedRecipient) {
         guard let address = recipient.address else {
             owsFailDebug("Missing address.")
@@ -373,7 +373,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         }
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          willRenderRecipient recipient: PickedRecipient) {
 
         guard let memberViewDelegate = memberViewDelegate else {
@@ -384,7 +384,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         memberViewDelegate.memberViewWillRenderRecipient(recipient)
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
 
         guard let memberViewDelegate = memberViewDelegate else {
@@ -395,7 +395,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         return memberViewDelegate.memberViewPrepareToSelectRecipient(recipient)
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          showInvalidRecipientAlert recipient: PickedRecipient) {
         AssertIsOnMainThread()
 
@@ -407,7 +407,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         memberViewDelegate.memberViewShowInvalidRecipientAlert(recipient)
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          accessoryMessageForRecipient recipient: PickedRecipient,
                          transaction: SDSAnyReadTransaction) -> String? {
         guard let address = recipient.address else {
@@ -431,7 +431,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         }
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          accessoryViewForRecipient recipient: PickedRecipient,
                          transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView? {
         guard let address = recipient.address else {
@@ -466,7 +466,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         return ContactCellAccessoryView(accessoryView: imageView, size: .square(24))
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient,
                          transaction: SDSAnyReadTransaction) -> NSAttributedString? {
 
@@ -481,7 +481,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         }
 
         if address.uuid == nil, let warning = memberViewDelegate.memberViewNoUuidSubtitleForRecipient(recipient) {
-            return warning.attributedString()
+            return NSAttributedString(string: warning)
         }
 
         guard !address.isLocalAddress else {
@@ -494,11 +494,11 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         return NSAttributedString(string: bioForDisplay)
     }
 
-    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
+    public func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
 
-    func recipientPickerNewGroupButtonWasPressed() {}
+    public func recipientPickerNewGroupButtonWasPressed() {}
 
-    func recipientPickerCustomHeaderViews() -> [UIView] {
+    public func recipientPickerCustomHeaderViews() -> [UIView] {
         return [memberBar, memberCountWrapper]
     }
 }

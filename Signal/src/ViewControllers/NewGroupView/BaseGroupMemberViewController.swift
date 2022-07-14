@@ -100,7 +100,7 @@ public class BaseGroupMemberViewController: BaseMemberViewController {
 }
 
 extension BaseGroupMemberViewController: MemberViewDelegate {
-    var memberViewRecipientSet: OrderedSet<PickedRecipient> {
+    public var memberViewRecipientSet: OrderedSet<PickedRecipient> {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return OrderedSet()
@@ -108,7 +108,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return groupMemberViewDelegate.groupMemberViewRecipientSet
     }
 
-    var memberViewHasUnsavedChanges: Bool {
+    public var memberViewHasUnsavedChanges: Bool {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return false
@@ -116,7 +116,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return groupMemberViewDelegate.groupMemberViewHasUnsavedChanges
     }
 
-    func memberViewRemoveRecipient(_ recipient: PickedRecipient) {
+    public func memberViewRemoveRecipient(_ recipient: PickedRecipient) {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return
@@ -124,7 +124,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         groupMemberViewDelegate.groupMemberViewRemoveRecipient(recipient)
     }
 
-    func memberViewAddRecipient(_ recipient: PickedRecipient) {
+    public func memberViewAddRecipient(_ recipient: PickedRecipient) {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return
@@ -132,7 +132,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         groupMemberViewDelegate.groupMemberViewAddRecipient(recipient)
     }
 
-    func memberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool {
+    public func memberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return false
@@ -152,7 +152,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return true
     }
 
-    func memberViewWillRenderRecipient(_ recipient: PickedRecipient) {
+    public func memberViewWillRenderRecipient(_ recipient: PickedRecipient) {
         guard let address = recipient.address else {
             owsFailDebug("Invalid recipient.")
             return
@@ -173,7 +173,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         }
     }
 
-    func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise {
+    public func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise {
         guard let address = recipient.address else {
             owsFailDebug("Invalid recipient.")
             return AnyPromise(Promise.value(()))
@@ -226,12 +226,12 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         }
     }
 
-    func memberViewShowInvalidRecipientAlert(_ recipient: PickedRecipient) {
+    public func memberViewShowInvalidRecipientAlert(_ recipient: PickedRecipient) {
         AssertIsOnMainThread()
         GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)
     }
 
-    func memberViewGetRecipientStateForRecipient(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> RecipientPickerRecipientState? {
+    public func memberViewGetRecipientStateForRecipient(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> RecipientPickerRecipientState? {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing delegate.")
             return nil
@@ -252,12 +252,12 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return nil
     }
 
-    func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? {
+    public func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? {
         return NSLocalizedString("NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS",
                                  comment: "Indicates that a group member does not support New Groups.")
     }
 
-    func memberViewShouldShowMemberCount() -> Bool {
+    public func memberViewShouldShowMemberCount() -> Bool {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return false
@@ -265,9 +265,9 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return groupMemberViewDelegate.groupMemberViewShouldShowMemberCount()
     }
 
-    func memberViewShouldAllowBlockedSelection() -> Bool { false }
+    public func memberViewShouldAllowBlockedSelection() -> Bool { false }
 
-    func memberViewMemberCountForDisplay() -> Int {
+    public func memberViewMemberCountForDisplay() -> Int {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return 0
@@ -275,7 +275,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return groupMemberViewDelegate.groupMemberViewGroupMemberCountForDisplay()
     }
 
-    func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> Bool {
+    public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> Bool {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return false
@@ -283,7 +283,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient, transaction: transaction)
     }
 
-    func memberViewDismiss() {
+    public func memberViewDismiss() {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return

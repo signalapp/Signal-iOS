@@ -13,7 +13,7 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
     var recipientSet: OrderedSet<PickedRecipient>
     let originalRecipientSet: OrderedSet<PickedRecipient>
 
-    override var hasUnsavedChanges: Bool { originalRecipientSet != recipientSet }
+    public override var hasUnsavedChanges: Bool { originalRecipientSet != recipientSet }
 
     let completionBlock: () -> Void
 
@@ -108,41 +108,41 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
 // MARK: -
 
 extension SelectMyStoryRecipientsViewController: MemberViewDelegate {
-    var memberViewRecipientSet: OrderedSet<PickedRecipient> { recipientSet }
+    public var memberViewRecipientSet: OrderedSet<PickedRecipient> { recipientSet }
 
-    var memberViewHasUnsavedChanges: Bool { hasUnsavedChanges }
+    public var memberViewHasUnsavedChanges: Bool { hasUnsavedChanges }
 
-    func memberViewRemoveRecipient(_ recipient: PickedRecipient) {
+    public func memberViewRemoveRecipient(_ recipient: PickedRecipient) {
         recipientSet.remove(recipient)
         updateBarButtons()
     }
 
-    func memberViewAddRecipient(_ recipient: PickedRecipient) {
+    public func memberViewAddRecipient(_ recipient: PickedRecipient) {
         recipientSet.append(recipient)
         updateBarButtons()
     }
 
-    func memberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool { true }
+    public func memberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool { true }
 
-    func memberViewWillRenderRecipient(_ recipient: PickedRecipient) {}
+    public func memberViewWillRenderRecipient(_ recipient: PickedRecipient) {}
 
-    func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise { AnyPromise(Promise.value(())) }
+    public func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise { AnyPromise(Promise.value(())) }
 
-    func memberViewShowInvalidRecipientAlert(_ recipient: PickedRecipient) {}
+    public func memberViewShowInvalidRecipientAlert(_ recipient: PickedRecipient) {}
 
-    func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? { nil }
+    public func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? { nil }
 
-    func memberViewGetRecipientStateForRecipient(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> RecipientPickerRecipientState? { nil }
+    public func memberViewGetRecipientStateForRecipient(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> RecipientPickerRecipientState? { nil }
 
-    func memberViewShouldShowMemberCount() -> Bool { false }
+    public func memberViewShouldShowMemberCount() -> Bool { false }
 
-    func memberViewShouldAllowBlockedSelection() -> Bool { mode == .blockList }
+    public func memberViewShouldAllowBlockedSelection() -> Bool { mode == .blockList }
 
-    func memberViewMemberCountForDisplay() -> Int { recipientSet.count }
+    public func memberViewMemberCountForDisplay() -> Int { recipientSet.count }
 
-    func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> Bool { false }
+    public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> Bool { false }
 
-    func memberViewDismiss() {
+    public func memberViewDismiss() {
         dismiss(animated: true)
     }
 }

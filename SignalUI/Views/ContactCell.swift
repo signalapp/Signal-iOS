@@ -6,8 +6,8 @@ import UIKit
 import Contacts
 import SignalServiceKit
 
-class ContactCell: UITableViewCell {
-    static let reuseIdentifier = "ContactCell"
+public class ContactCell: UITableViewCell {
+    public static let reuseIdentifier = "ContactCell"
 
     public static let kSeparatorHInset: CGFloat = CGFloat(kAvatarDiameter) + 16 + 8
 
@@ -54,12 +54,12 @@ class ContactCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func prepareForReuse() {
+    public override func prepareForReuse() {
         accessoryType = .none
         self.subtitleLabel.removeFromSuperview()
     }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
+    public override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         if showsWhenSelected {
             accessoryType = selected ? .checkmark : .none
@@ -72,7 +72,7 @@ class ContactCell: UITableViewCell {
         self.subtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
     }
 
-    func configure(contact: Contact, subtitleType: SubtitleCellValue, showsWhenSelected: Bool) {
+    public func configure(contact: Contact, subtitleType: SubtitleCellValue, showsWhenSelected: Bool) {
 
         self.contact = contact
         self.showsWhenSelected = showsWhenSelected
@@ -125,7 +125,7 @@ class ContactCell: UITableViewCell {
         }
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
         titleLabel.textColor = Theme.primaryTextColor
