@@ -1,1 +1,3 @@
-Spousta vylepšení, díky kterým aplikace poběží hladce. A na obzoru jsou další vzrušující změny!
+• Vylepšili jsme editor médií, takže je teď ještě snazší fotky a videa před odesláním upravit.
+• We’ve fixed an issue that was preventing new users from signing up to use Signal. Hello, new people!
+• Spousta vylepšení, díky kterým aplikace poběží hladce. A na obzoru jsou další vzrušující změny!

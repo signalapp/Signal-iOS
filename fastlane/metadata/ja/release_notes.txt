@@ -1,1 +1,3 @@
-Appをスムーズに実行し続けるためのいくつかのバグ修正。 今後もエキサイティングな変更を予定しています。
+・メディアエディターを改良し、写真や動画を送信する前に、これまで以上に簡単にカスタマイズできるようになりました。
+• We’ve fixed an issue that was preventing new users from signing up to use Signal. Hello, new people!
+・アプリをスムーズに実行し続けるためのいくつかのバグ修正。 今後も改良のため様々な変更を予定しています！

@@ -1,1 +1,3 @@
-我們修復了多項問題，好讓各位的 App 運作更順暢。未來，還有許多精彩的更新內容待你挖掘！
+• 我們改善了多媒體編輯器效能，方便你在傳送照片和影片之前輕鬆進行編輯。
+• We’ve fixed an issue that was preventing new users from signing up to use Signal. Hello, new people!
+• 我們修復了多項問題，好讓各位的 App 運作更順暢。未來還有許多精彩的更新內容待你挖掘！
