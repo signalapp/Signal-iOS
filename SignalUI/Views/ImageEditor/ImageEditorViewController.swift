@@ -177,8 +177,9 @@ class ImageEditorViewController: OWSViewController {
     }
     var currentStrokeSamples = [ImageEditorStrokeItem.StrokeSample]()
     func currentStrokeUnitWidth() -> CGFloat {
-        let defaultUnitStrokeWidth = ImageEditorStrokeItem.defaultUnitStrokeWidth(forStrokeType: currentStrokeType)
-        return defaultUnitStrokeWidth * CGFloat(strokeWidthSlider.value) / model.currentTransform().scaling
+        let unitStrokeWidth = ImageEditorStrokeItem.unitStrokeWidth(forStrokeType: currentStrokeType,
+                                                                    widthAdjustmentFactor: CGFloat(strokeWidthSlider.value))
+        return unitStrokeWidth / model.currentTransform().scaling
     }
 
     // Text UI

@@ -567,8 +567,7 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
             optionalBlurredImageLayer = nil
         }
 
-        let strokeWidth = ImageEditorStrokeItem.strokeWidth(forUnitStrokeWidth: item.unitStrokeWidth,
-                                                            dstSize: viewSize)
+        let strokeWidth = item.strokeWidth(forDstSize: viewSize)
         let unitSamples = item.unitSamples
         guard unitSamples.count > 0 else {
             // Not an error; the stroke doesn't have enough samples to render yet.

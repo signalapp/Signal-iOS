@@ -26,6 +26,10 @@ class ImageEditorStrokeItem: ImageEditorItem {
     // min(width, height) of the destination viewport.
     let unitStrokeWidth: CGFloat
 
+    func strokeWidth(forDstSize dstSize: CGSize) -> CGFloat {
+        ImageEditorStrokeItem.strokeWidth(forUnitStrokeWidth: unitStrokeWidth, dstSize: dstSize)
+    }
+
     init(color: UIColor? = nil,
          strokeType: StrokeType,
          unitSamples: [StrokeSample],
@@ -51,15 +55,29 @@ class ImageEditorStrokeItem: ImageEditorItem {
         super.init(itemId: itemId, itemType: .stroke)
     }
 
-    class func defaultUnitStrokeWidth(forStrokeType strokeType: StrokeType) -> CGFloat {
+    // First value is default unitStrokeWidth for a given stroke type.
+    // Second value is the power to raise adjustment factor (slider value) if the factor is greater than 1.
+    private class func metrics(forStrokeType strokeType: StrokeType) -> (CGFloat, CGFloat) {
         switch strokeType {
         case .pen:
-            return 0.02
+            return (0.02, 3)
         case .highlighter:
-            return 0.04
+            return (0.04, 3)
         case .blur:
-            return 0.05
+            return (0.05, 2)
         }
+    }
+
+    class func unitStrokeWidth(forStrokeType strokeType: StrokeType,
+                               widthAdjustmentFactor adjustmentFactor: CGFloat) -> CGFloat {
+        let (defaultWidth, power) = metrics(forStrokeType: strokeType)
+        let multiplier: CGFloat
+        if adjustmentFactor > 1 {
+            multiplier = pow(adjustmentFactor, power)
+        } else {
+            multiplier = adjustmentFactor
+        }
+        return defaultWidth * multiplier
     }
 
     class func strokeWidth(forUnitStrokeWidth unitStrokeWidth: CGFloat, dstSize: CGSize) -> CGFloat {
