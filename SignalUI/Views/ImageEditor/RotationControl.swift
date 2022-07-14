@@ -31,6 +31,7 @@ class RotationControl: UIControl {
      */
     private func setAngle(_ angle: CGFloat, updateScrollViewOffset: Bool = true) {
         _angle = angle
+        canvasRotation = angle - angle.remainder(dividingBy: 90)
         updateAppearance()
         if updateScrollViewOffset {
             updateScrollViewContentOffset()
@@ -40,7 +41,7 @@ class RotationControl: UIControl {
     /**
      * Measured in degrees.
      */
-    var canvasRotation: CGFloat = 0
+    private var canvasRotation: CGFloat = 0
 
     required init() {
         super.init(frame: .zero)
