@@ -901,7 +901,6 @@ extension ImageEditorCropViewController {
         let unitTranslation = transform.unitTranslation
         let rotationRadians = transform.rotationRadians + rotationAngle
         let scaling = transform.scaling
-        rotationControl.canvasRotation += rotationAngle.radiansToDegrees
         updateTransform(ImageEditorTransform(outputSizePixels: outputSizePixels,
                                              unitTranslation: unitTranslation,
                                              rotationRadians: rotationRadians,
@@ -924,7 +923,6 @@ extension ImageEditorCropViewController {
     @objc
     private func didTapReset() {
         Logger.verbose("")
-        rotationControl.canvasRotation = 0
         updateTransform(ImageEditorTransform.defaultTransform(srcImageSizePixels: model.srcImageSizePixels), animated: true)
     }
 
