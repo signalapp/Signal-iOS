@@ -14,6 +14,9 @@ public class StoryManager: NSObject {
             // Create My Story thread if necessary
             Self.databaseStorage.asyncWrite { transaction in
                 TSPrivateStoryThread.getOrCreateMyStory(transaction: transaction)
+                if CurrentAppContext().isMainApp {
+                    TSPrivateStoryThread.cleanupDeletedTimestamps(transaction: transaction)
+                }
             }
         }
     }

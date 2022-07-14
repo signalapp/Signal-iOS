@@ -558,3 +558,29 @@ public class MegaphoneStrings: NSObject {
                           comment: "toast indicating that we will remind the user later")
     }
 }
+
+// MARK: -
+
+@objc
+public class StoryStrings: NSObject {
+    @objc
+    static public var repliesAndReactionsHeader: String {
+        OWSLocalizedString(
+            "STORIES_REPLIES_AND_REACTIONS_HEADER",
+            comment: "Section header for the 'replies & reactions' section in stories settings")
+    }
+
+    @objc
+    static public var repliesAndReactionsFooter: String {
+        OWSLocalizedString(
+            "STORIES_REPLIES_AND_REACTIONS_FOOTER",
+            comment: "Section footer for the 'replies & reactions' section in stories settings")
+    }
+
+    @objc
+    static public var repliesAndReactionsToggle: String {
+        OWSLocalizedString(
+            "STORIES_REPLIES_AND_REACTIONS_TOGGLE",
+            comment: "Toggle text for the 'replies & reactions' switch in stories settings")
+    }
+}

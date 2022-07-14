@@ -38,4 +38,41 @@ public extension TSPrivateStoryThread {
             return profileManager.allWhitelistedRegisteredAddresses(with: transaction).filter { !addresses.contains($0) && !$0.isLocalAddress }
         }
     }
+
+    private static let deletedAtTimestampKVS = SDSKeyValueStore(collection: "TSPrivateStoryThread+DeletedAtTimestamp")
+    private static let deletedAtTimestampThreshold = kMonthInterval
+
+    static func deletedAtTimestamp(forDistributionListIdentifer identifier: Data, transaction: SDSAnyReadTransaction) -> UInt64? {
+        deletedAtTimestampKVS.getUInt64(UUID(data: identifier).uuidString, transaction: transaction)
+    }
+
+    static func recordDeletedAtTimestamp(_ timestamp: UInt64, forDistributionListIdentifer identifier: Data, transaction: SDSAnyWriteTransaction) {
+        guard Date().timeIntervalSince(Date(millisecondsSince1970: timestamp)) < deletedAtTimestampThreshold else {
+            Logger.warn("Ignorning stale deleted at timestamp")
+            return
+        }
+
+        deletedAtTimestampKVS.setUInt64(timestamp, key: UUID(data: identifier).uuidString, transaction: transaction)
+    }
+
+    static func allDeletedIdentifiers(transaction: SDSAnyReadTransaction) -> [Data] {
+        deletedAtTimestampKVS.allKeys(transaction: transaction).compactMap { UUID(uuidString: $0)?.data }
+    }
+
+    static func cleanupDeletedTimestamps(transaction: SDSAnyWriteTransaction) {
+        var deletedIdentifiers = [Data]()
+        for identifier in deletedAtTimestampKVS.allKeys(transaction: transaction) {
+            guard let timestamp = deletedAtTimestampKVS.getUInt64(
+                identifier,
+                transaction: transaction
+            ) else { continue }
+            guard Date().timeIntervalSince(Date(millisecondsSince1970: timestamp)) > deletedAtTimestampThreshold else { continue }
+            deletedAtTimestampKVS.removeValue(forKey: identifier, transaction: transaction)
+            UUID(uuidString: identifier).map { deletedIdentifiers.append($0.data) }
+        }
+
+        if !deletedIdentifiers.isEmpty {
+            Self.storageServiceManager.recordPendingDeletions(deletedStoryDistributionListIds: deletedIdentifiers)
+        }
+    }
 }

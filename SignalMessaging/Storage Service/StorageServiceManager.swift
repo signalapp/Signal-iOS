@@ -1085,6 +1085,26 @@ class StorageServiceOperation: OWSOperation {
                     }
                 }
             }
+
+            // Deleted Private Stories
+            for distributionListId in TSPrivateStoryThread.allDeletedIdentifiers(transaction: transaction) {
+                let identifier = StorageService.StorageIdentifier.generate(type: .storyDistributionList)
+                state.storyDistributionListIdentifierToStorageIdentifierMap[distributionListId] = identifier
+
+                do {
+                    let storyDistributionListRecord = try StorageServiceProtoStoryDistributionListRecord.build(
+                        for: distributionListId,
+                        transaction: transaction
+                    )
+                    allItems.append(
+                        try .init(identifier: identifier, storyDistributionList: storyDistributionListRecord)
+                    )
+                } catch {
+                    // We'll just skip it, something may be wrong with our local data.
+                    // We'll try and backup this story again when something changes.
+                    owsFailDebug("failed to build story record with error: \(error)")
+                }
+            }
         }
 
         let manifest: StorageServiceProtoManifestRecord

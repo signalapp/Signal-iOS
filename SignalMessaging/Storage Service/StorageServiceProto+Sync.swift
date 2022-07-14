@@ -972,20 +972,25 @@ extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
         unknownFields: SwiftProtobuf.UnknownStorage? = nil,
         transaction: SDSAnyReadTransaction
     ) throws -> StorageServiceProtoStoryDistributionListRecord {
-        guard let story = TSPrivateStoryThread.anyFetchPrivateStoryThread(
+        var builder = StorageServiceProtoStoryDistributionListRecord.builder()
+        builder.setIdentifier(distributionListIdentifier)
+
+        if let story = TSPrivateStoryThread.anyFetchPrivateStoryThread(
             uniqueId: UUID(data: distributionListIdentifier).uuidString,
             transaction: transaction
-        ) else {
+        ) {
+            builder.setName(story.name)
+            builder.setRecipientUuids(story.addresses.compactMap { $0.uuidString })
+            builder.setAllowsReplies(story.allowsReplies)
+            builder.setIsBlockList(story.storyViewMode == .blockList)
+        } else if let deletedAtTimestamp = TSPrivateStoryThread.deletedAtTimestamp(
+            forDistributionListIdentifer: distributionListIdentifier,
+            transaction: transaction
+        ) {
+            builder.setDeletedAtTimestamp(deletedAtTimestamp)
+        } else {
             throw StorageService.StorageError.storyMissing
         }
-
-        var builder = StorageServiceProtoStoryDistributionListRecord.builder()
-
-        builder.setIdentifier(distributionListIdentifier)
-        builder.setName(story.name)
-        builder.setRecipientUuids(story.addresses.compactMap { $0.uuidString })
-        builder.setAllowsReplies(story.allowsReplies)
-        builder.setIsBlockList(story.storyViewMode == .blockList)
 
         // Unknown
 
@@ -1023,10 +1028,26 @@ extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
         // For now, we'd like to avoid that as it adds its own set of problems.
 
         let uniqueId = UUID(data: identifier).uuidString
+        let existingStory = TSPrivateStoryThread.anyFetchPrivateStoryThread(
+            uniqueId: uniqueId,
+            transaction: transaction
+        )
 
         var mergeState: MergeState = .resolved(identifier)
 
-        if let story = TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: uniqueId, transaction: transaction) {
+        // The story has been deleted on another device, record that
+        // and ensure we don't try and put it back.
+        guard deletedAtTimestamp == 0 else {
+            existingStory?.anyRemove(transaction: transaction)
+            TSPrivateStoryThread.recordDeletedAtTimestamp(
+                deletedAtTimestamp,
+                forDistributionListIdentifer: identifier,
+                transaction: transaction
+            )
+            return mergeState
+        }
+
+        if let story = existingStory {
             // My Story has a hardcoded, localized name that we don't sync
             if !story.isMyStory {
                 let localName = story.name

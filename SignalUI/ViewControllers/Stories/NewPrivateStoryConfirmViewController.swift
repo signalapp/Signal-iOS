@@ -127,21 +127,12 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
         contents.addSection(nameAndAvatarSection)
 
         let repliesSection = OWSTableSection()
-        repliesSection.headerTitle = OWSLocalizedString(
-            "NEW_PRIVATE_STORY_REPLIES_HEADER",
-            comment: "Header for the 'replies' section of the 'new private story' view"
-        )
-        repliesSection.footerTitle = OWSLocalizedString(
-            "NEW_PRIVATE_STORY_REPLIES_FOOTER",
-            comment: "Footer for the 'replies' section of the 'new private story' view"
-        )
+        repliesSection.headerTitle = StoryStrings.repliesAndReactionsHeader
+        repliesSection.footerTitle = StoryStrings.repliesAndReactionsFooter
         contents.addSection(repliesSection)
 
         repliesSection.add(.switch(
-            withText: OWSLocalizedString(
-                "NEW_PRIVATE_STORY_REPLIES_SWITCH",
-                comment: "Title for the 'replies' switch of the 'new private story' view"
-            ),
+            withText: StoryStrings.repliesAndReactionsToggle,
             isOn: { [allowsReplies] in allowsReplies },
             target: self,
             selector: #selector(didToggleReplies)
@@ -189,7 +180,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
     func didTapCreate() {
         AssertIsOnMainThread()
 
-        guard let name = nameTextField.text?.nilIfEmpty else {
+        guard let name = nameTextField.text?.filterForDisplay?.nilIfEmpty else {
             return showMissingNameAlert()
         }
 

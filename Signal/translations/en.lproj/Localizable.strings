@@ -3607,15 +3607,6 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Updates to your story will show up here.";
 
-/* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
-
-/* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
-
-/* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
-
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Hide your story from specific people";
 
@@ -3735,15 +3726,6 @@
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story Name (Required)";
-
-/* Footer for the 'replies' section of the 'new private story' view */
-"NEW_PRIVATE_STORY_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
-
-/* Header for the 'replies' section of the 'new private story' view */
-"NEW_PRIVATE_STORY_REPLIES_HEADER" = "Replies & Reactions";
-
-/* Title for the 'replies' switch of the 'new private story' view */
-"NEW_PRIVATE_STORY_REPLIES_SWITCH" = "Allow Replies & Reactions";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
@@ -4587,6 +4569,27 @@
 
 /* Button that lets user mark another user's identity as verified. */
 "PRIVACY_VERIFY_BUTTON" = "Mark as Verified";
+
+/* Button to add a new viewer on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Add Viewers";
+
+/* Button to delete the story on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
+
+/* Action sheet title confirming deletion of a private story on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+
+/* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
+"PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Remove";
+
+/* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer see your story.";
+
+/* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
+
+/* Section header for the 'viewers' section on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "Who Can See This Story";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Proceed";
@@ -6072,6 +6075,15 @@
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "No replies yet";
+
+/* Section footer for the 'replies & reactions' section in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Section header for the 'replies & reactions' section in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Replies & Reactions";
+
+/* Toggle text for the 'replies & reactions' switch in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Allow Replies & Reactions";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "New Private Story";
