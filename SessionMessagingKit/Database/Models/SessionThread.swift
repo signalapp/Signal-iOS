@@ -2,6 +2,7 @@
 
 import Foundation
 import GRDB
+import Sodium
 import SessionUtilitiesKit
 
 public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
@@ -312,6 +313,39 @@ public extension SessionThread {
                 }
                 
                 return profile.displayName()
+        }
+    }
+    
+    static func getUserHexEncodedBlindedKey(
+        threadId: String,
+        threadVariant: Variant
+    ) -> String? {
+        guard
+            threadVariant == .openGroup,
+            let blindingInfo: (edkeyPair: Box.KeyPair?, publicKey: String?) = Storage.shared.read({ db in
+                return (
+                    Identity.fetchUserEd25519KeyPair(db),
+                    try OpenGroup
+                        .filter(id: threadId)
+                        .select(.publicKey)
+                        .asRequest(of: String.self)
+                        .fetchOne(db)
+                )
+            }),
+            let userEdKeyPair: Box.KeyPair = blindingInfo.edkeyPair,
+            let publicKey: String = blindingInfo.publicKey
+        else { return nil }
+        
+        let sodium: Sodium = Sodium()
+        
+        let blindedKeyPair: Box.KeyPair? = sodium.blindedKeyPair(
+            serverPublicKey: publicKey,
+            edKeyPair: userEdKeyPair,
+            genericHash: sodium.getGenericHash()
+        )
+        
+        return blindedKeyPair.map { keyPair -> String in
+            SessionId(.blinded, publicKey: keyPair.publicKey).hexString
         }
     }
 }

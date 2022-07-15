@@ -128,7 +128,11 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     
     func continueWithSeed(_ seed: Data) {
         if (seed.count != 16) {
-            let alert = UIAlertController(title: NSLocalizedString("invalid_recovery_phrase", comment: ""), message: NSLocalizedString("Please check the Recovery Phrase and try again.", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(
+                title: "invalid_recovery_phrase".localized(),
+                message: "INVALID_RECOVERY_PHRASE_MESSAGE".localized(),
+                preferredStyle: .alert
+            )
             alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: { _ in
                 self.scanQRCodeWrapperVC.startCapture()
             }))

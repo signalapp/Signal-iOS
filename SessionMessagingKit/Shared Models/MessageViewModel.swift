@@ -29,6 +29,7 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     public static let quoteAttachmentKey: SQL = SQL(stringLiteral: CodingKeys.quoteAttachment.stringValue)
     public static let linkPreviewKey: SQL = SQL(stringLiteral: CodingKeys.linkPreview.stringValue)
     public static let linkPreviewAttachmentKey: SQL = SQL(stringLiteral: CodingKeys.linkPreviewAttachment.stringValue)
+    public static let currentUserPublicKeyKey: SQL = SQL(stringLiteral: CodingKeys.currentUserPublicKey.stringValue)
     public static let cellTypeKey: SQL = SQL(stringLiteral: CodingKeys.cellType.stringValue)
     public static let authorNameKey: SQL = SQL(stringLiteral: CodingKeys.authorName.stringValue)
     public static let shouldShowProfileKey: SQL = SQL(stringLiteral: CodingKeys.shouldShowProfile.stringValue)
@@ -92,6 +93,8 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     public let linkPreview: LinkPreview?
     public let linkPreviewAttachment: Attachment?
     
+    public let currentUserPublicKey: String
+    
     // Post-Query Processing Data
     
     /// This value includes the associated attachments
@@ -132,6 +135,9 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     
     /// This value indicates whether this is the last message in the thread
     public let isLast: Bool
+    
+    /// This is the users blinded key (will only be set for messages within open groups)
+    public let currentUserBlindedPublicKey: String?
 
     // MARK: - Mutation
     
@@ -164,6 +170,7 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
             quoteAttachment: self.quoteAttachment,
             linkPreview: self.linkPreview,
             linkPreviewAttachment: self.linkPreviewAttachment,
+            currentUserPublicKey: self.currentUserPublicKey,
             attachments: attachments,
             cellType: self.cellType,
             authorName: self.authorName,
@@ -175,14 +182,16 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
             previousVariant: self.previousVariant,
             positionInCluster: self.positionInCluster,
             isOnlyMessageInCluster: self.isOnlyMessageInCluster,
-            isLast: self.isLast
+            isLast: self.isLast,
+            currentUserBlindedPublicKey: self.currentUserBlindedPublicKey
         )
     }
     
     public func withClusteringChanges(
         prevModel: MessageViewModel?,
         nextModel: MessageViewModel?,
-        isLast: Bool
+        isLast: Bool,
+        currentUserBlindedPublicKey: String?
     ) -> MessageViewModel {
         let cellType: CellType = {
             guard self.isTypingIndicator != true else { return .typingIndicator }
@@ -338,6 +347,7 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
             quoteAttachment: self.quoteAttachment,
             linkPreview: self.linkPreview,
             linkPreviewAttachment: self.linkPreviewAttachment,
+            currentUserPublicKey: self.currentUserPublicKey,
             attachments: self.attachments,
             cellType: cellType,
             authorName: authorDisplayName,
@@ -385,7 +395,8 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
             previousVariant: prevModel?.variant,
             positionInCluster: positionInCluster,
             isOnlyMessageInCluster: isOnlyMessageInCluster,
-            isLast: isLast
+            isLast: isLast,
+            currentUserBlindedPublicKey: currentUserBlindedPublicKey
         )
     }
 }
@@ -478,6 +489,7 @@ public extension MessageViewModel {
         self.quoteAttachment = nil
         self.linkPreview = nil
         self.linkPreviewAttachment = nil
+        self.currentUserPublicKey = ""
         
         // Post-Query Processing Data
         
@@ -493,6 +505,7 @@ public extension MessageViewModel {
         self.positionInCluster = .middle
         self.isOnlyMessageInCluster = true
         self.isLast = true
+        self.currentUserBlindedPublicKey = nil
     }
 }
 
@@ -557,7 +570,11 @@ public extension MessageViewModel {
         return SQL("\(interaction[.timestampMs].desc)")
     }()
     
-    static func baseQuery(orderSQL: SQL, groupSQL: SQL?) -> (([Int64]) -> AdaptedFetchRequest<SQLRequest<MessageViewModel>>) {
+    static func baseQuery(
+        userPublicKey: String,
+        orderSQL: SQL,
+        groupSQL: SQL?
+    ) -> (([Int64]) -> AdaptedFetchRequest<SQLRequest<MessageViewModel>>) {
         return { rowIds -> AdaptedFetchRequest<SQLRequest<ViewModel>> in
             let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
             let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
@@ -620,6 +637,8 @@ public extension MessageViewModel {
                     \(ViewModel.quoteAttachmentKey).*,
                     \(ViewModel.linkPreviewKey).*,
                     \(ViewModel.linkPreviewAttachmentKey).*,
+            
+                    \(SQL("\(userPublicKey)")) AS \(ViewModel.currentUserPublicKeyKey),
             
                     -- All of the below properties are set in post-query processing but to prevent the
                     -- query from crashing when decoding we need to provide default values

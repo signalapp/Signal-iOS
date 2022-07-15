@@ -48,11 +48,11 @@ public enum Mnemonic {
         
         public var errorDescription: String? {
             switch self {
-            case .generic: return NSLocalizedString("Something went wrong. Please check your recovery phrase and try again.", comment: "")
-            case .inputTooShort: return NSLocalizedString("Looks like you didn't enter enough words. Please check your recovery phrase and try again.", comment: "")
-            case .missingLastWord: return NSLocalizedString("You seem to be missing the last word of your recovery phrase. Please check what you entered and try again.", comment: "")
-            case .invalidWord: return NSLocalizedString("There appears to be an invalid word in your recovery phrase. Please check what you entered and try again.", comment: "")
-            case .verificationFailed: return NSLocalizedString("Your recovery phrase couldn't be verified. Please check what you entered and try again.", comment: "")
+                case .generic: return "RECOVERY_PHASE_ERROR_GENERIC".localized()
+                case .inputTooShort: return "RECOVERY_PHASE_ERROR_LENGTH".localized()
+                case .missingLastWord: return "RECOVERY_PHASE_ERROR_LAST_WORD".localized()
+                case .invalidWord: return "RECOVERY_PHASE_ERROR_INVALID_WORD".localized()
+                case .verificationFailed: return "RECOVERY_PHASE_ERROR_FAILED".localized()
             }
         }
     }

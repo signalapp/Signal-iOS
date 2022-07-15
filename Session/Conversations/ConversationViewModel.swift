@@ -86,7 +86,10 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         // also want to skip the initial query and trigger it async so that the push animation
         // doesn't stutter (it should load basically immediately but without this there is a
         // distinct stutter)
-        self.pagedDataObserver = self.setupPagedObserver(for: threadId)
+        self.pagedDataObserver = self.setupPagedObserver(
+            for: threadId,
+            userPublicKey: getUserHexEncodedPublicKey()
+        )
         
         // Run the initial query on a background thread so we don't block the push transition
         DispatchQueue.global(qos: .default).async { [weak self] in
@@ -164,7 +167,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         }
     }
     
-    private func setupPagedObserver(for threadId: String) -> PagedDatabaseObserver<Interaction, MessageViewModel> {
+    private func setupPagedObserver(for threadId: String, userPublicKey: String) -> PagedDatabaseObserver<Interaction, MessageViewModel> {
         return PagedDatabaseObserver(
             pagedTable: Interaction.self,
             pageSize: ConversationViewModel.pageSize,
@@ -201,6 +204,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
             groupSQL: MessageViewModel.groupSQL,
             orderSQL: MessageViewModel.orderSQL,
             dataQuery: MessageViewModel.baseQuery(
+                userPublicKey: userPublicKey,
                 orderSQL: MessageViewModel.orderSQL,
                 groupSQL: MessageViewModel.groupSQL
             ),
@@ -316,7 +320,8 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                                     // it's the last element in the 'sortedData' array
                                     index == (sortedData.count - 1) &&
                                     pageInfo.pageOffset == 0
-                                )
+                                ),
+                                currentUserBlindedPublicKey: threadData.currentUserBlindedPublicKey
                             )
                         }
                         .appending(typingIndicator)
@@ -491,7 +496,10 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         
         self.threadId = updatedThreadId
         self.observableThreadData = self.setupObservableThreadData(for: updatedThreadId)
-        self.pagedDataObserver = self.setupPagedObserver(for: updatedThreadId)
+        self.pagedDataObserver = self.setupPagedObserver(
+            for: updatedThreadId,
+            userPublicKey: getUserHexEncodedPublicKey()
+        )
         
         // Try load everything up to the initial visible message, fallback to just the initial page of messages
         // if we don't have one

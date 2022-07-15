@@ -6,25 +6,6 @@ import Foundation
 import SessionUtilitiesKit
 
 @objc public class OWSAlerts: NSObject {
-
-    /// Cleanup and present alert for no permissions
-    @objc
-    public class func showNoMicrophonePermissionAlert() {
-        let alertTitle = NSLocalizedString("CALL_AUDIO_PERMISSION_TITLE", comment: "Alert title when calling and permissions for microphone are missing")
-        let alertMessage = NSLocalizedString("CALL_AUDIO_PERMISSION_MESSAGE", comment: "Alert message when calling and permissions for microphone are missing")
-        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
-
-        let dismissAction = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel)
-        dismissAction.accessibilityIdentifier = "OWSAlerts.\("dismiss")"
-        alert.addAction(dismissAction)
-
-        if let settingsAction = CurrentAppContext().openSystemSettingsAction {
-            settingsAction.accessibilityIdentifier = "OWSAlerts.\("settings")"
-            alert.addAction(settingsAction)
-        }
-        CurrentAppContext().frontmostViewController()?.presentAlert(alert)
-    }
-
     @objc
     public class func showAlert(_ alert: UIAlertController) {
         guard let frontmostViewController = CurrentAppContext().frontmostViewController() else {

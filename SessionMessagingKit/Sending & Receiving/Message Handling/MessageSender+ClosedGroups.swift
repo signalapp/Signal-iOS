@@ -44,11 +44,11 @@ extension MessageSender {
         // Send a closed group update message to all members individually
         var promises: [Promise<Void>] = []
         
-        try members.forEach { adminId in
+        try members.forEach { memberId in
             try GroupMember(
                 groupId: groupPublicKey,
-                profileId: adminId,
-                role: .admin
+                profileId: memberId,
+                role: .standard
             ).insert(db)
         }
         

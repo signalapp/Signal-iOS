@@ -606,7 +606,6 @@
 "accessibility_camera_button" = "Камера";
 "accessibility_main_button_collapse" = "Свернуть параметры вложений";
 "invalid_recovery_phrase" = "Неверная секретная фраза";
-"invalid_recovery_phrase" = "Неверная секретная фраза";
 "DISMISS_BUTTON_TEXT" = "Закрыть";
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Настройки";
@@ -653,10 +652,36 @@
 "modal_call_permission_request_explanation" = "You can enable the 'Voice and video calls' permission in the Privacy Settings.";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
-"ALERT_ERROR_TITLE" = "Ошибка";
 "LOADING_CONVERSATIONS" = "Loading Conversations...";
 "DATABASE_MIGRATION_FAILED" = "An error occurred when optimising the database\n\nYou can export your application logs to be able to share for troubleshooting or you can restore our device\n\nWarning: Restoring your device will result in loss of any data older than two weeks";
 "CHATS_TITLE" = "Chats";
 "MESSAGE_TRIMMING_TITLE" = "Message Trimming";
 "MESSAGE_TRIMMING_OPEN_GROUP_TITLE" = "Delete Old Open Group Messages";
 "MESSAGE_TRIMMING_OPEN_GROUP_DESCRIPTION" = "Automatically delete messages which are older than 6 months from open groups with over 2,000 messages when starting the app";
+"RECOVERY_PHASE_ERROR_GENERIC" = "Something went wrong. Please check your recovery phrase and try again.";
+"RECOVERY_PHASE_ERROR_LENGTH" = "Looks like you didn't enter enough words. Please check your recovery phrase and try again.";
+"RECOVERY_PHASE_ERROR_LAST_WORD" = "You seem to be missing the last word of your recovery phrase. Please check what you entered and try again.";
+"RECOVERY_PHASE_ERROR_INVALID_WORD" = "There appears to be an invalid word in your recovery phrase. Please check what you entered and try again.";
+"RECOVERY_PHASE_ERROR_FAILED" = "Your recovery phrase couldn't be verified. Please check what you entered and try again.";
+/* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+/* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Ошибка аутентификации.";
+/* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Слишком много неудачных попыток аутентификации. Пожалуйста, повторите попытку позже.";
+/* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Вы должны включить код доступа в приложении «Настройки», чтобы использовать блокировку экрана.";
+/* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Вы должны включить код доступа в приложении «Настройки», чтобы использовать блокировку экрана.";
+/* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Вы должны включить код доступа в приложении «Настройки», чтобы использовать блокировку экрана.";
+/* Label for the button to send a message */
+"SEND_BUTTON_TITLE" = "Send";
+/* Generic text for button that retries whatever the last action was. */
+"RETRY_BUTTON_TEXT" = "Retry";
+/* notification action */
+"SHOW_THREAD_BUTTON_TITLE" = "Show Chat";
+/* notification body */
+"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
+"INVALID_SESSION_ID_MESSAGE" = "Please check the Session ID and try again.";
+"INVALID_RECOVERY_PHRASE_MESSAGE" = "Please check the Recovery Phrase and try again.";
