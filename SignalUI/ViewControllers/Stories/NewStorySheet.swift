@@ -50,7 +50,7 @@ public class NewStorySheet: OWSTableSheetViewController {
             title: OWSLocalizedString("NEW_STORY_SHEET_PRIVATE_STORY_TITLE",
                                      comment: "Title for create private story row on the 'new story sheet'"),
             subtitle: OWSLocalizedString("NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE",
-                                        comment: "Subitle for create private story row on the 'new story sheet'"),
+                                        comment: "Subtitle for create private story row on the 'new story sheet'"),
             action: { [weak self] in
                 guard let self = self else { return }
                 let presentingViewController = self.presentingViewController
@@ -65,7 +65,7 @@ public class NewStorySheet: OWSTableSheetViewController {
             title: OWSLocalizedString("NEW_STORY_SHEET_GROUP_STORY_TITLE",
                                      comment: "Title for create group story row on the 'new story sheet'"),
             subtitle: OWSLocalizedString("NEW_STORY_SHEET_GROUP_STORY_SUBTITLE",
-                                        comment: "Subitle for create group story row on the 'new story sheet'"),
+                                        comment: "Subtitle for create group story row on the 'new story sheet'"),
             action: { [weak self] in
                 guard let self = self else { return }
                 let presentingViewController = self.presentingViewController

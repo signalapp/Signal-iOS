@@ -3733,13 +3733,13 @@
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Viewers";
 
-/* Subitle for create group story row on the 'new story sheet' */
+/* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Share to an existing group";
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
 
-/* Subitle for create private story row on the 'new story sheet' */
+/* Subtitle for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Visible only to specific people";
 
 /* Title for create private story row on the 'new story sheet' */

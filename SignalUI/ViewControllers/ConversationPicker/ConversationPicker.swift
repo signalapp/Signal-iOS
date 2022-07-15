@@ -1028,9 +1028,9 @@ public class ConversationPickerSelection {
     }
 
     public func isSelected(conversation: ConversationItem) -> Bool {
-        !conversations.filter {
+        conversations.contains {
             ($0 is StoryConversationItem) == (conversation is StoryConversationItem) && $0.messageRecipient == conversation.messageRecipient
-        }.isEmpty
+        }
     }
 }
 

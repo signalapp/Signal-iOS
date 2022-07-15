@@ -43,7 +43,8 @@ public extension TSPrivateStoryThread {
     private static let deletedAtTimestampThreshold = kMonthInterval
 
     static func deletedAtTimestamp(forDistributionListIdentifer identifier: Data, transaction: SDSAnyReadTransaction) -> UInt64? {
-        deletedAtTimestampKVS.getUInt64(UUID(data: identifier).uuidString, transaction: transaction)
+        guard let uniqueId = UUID(data: identifier)?.uuidString else { return nil }
+        return deletedAtTimestampKVS.getUInt64(uniqueId, transaction: transaction)
     }
 
     static func recordDeletedAtTimestamp(_ timestamp: UInt64, forDistributionListIdentifer identifier: Data, transaction: SDSAnyWriteTransaction) {
@@ -52,7 +53,8 @@ public extension TSPrivateStoryThread {
             return
         }
 
-        deletedAtTimestampKVS.setUInt64(timestamp, key: UUID(data: identifier).uuidString, transaction: transaction)
+        guard let uniqueId = UUID(data: identifier)?.uuidString else { return }
+        deletedAtTimestampKVS.setUInt64(timestamp, key: uniqueId, transaction: transaction)
     }
 
     static func allDeletedIdentifiers(transaction: SDSAnyReadTransaction) -> [Data] {

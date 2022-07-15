@@ -972,11 +972,15 @@ extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
         unknownFields: SwiftProtobuf.UnknownStorage? = nil,
         transaction: SDSAnyReadTransaction
     ) throws -> StorageServiceProtoStoryDistributionListRecord {
+        guard let uniqueId = UUID(data: distributionListIdentifier)?.uuidString else {
+            throw StorageService.StorageError.assertion
+        }
+
         var builder = StorageServiceProtoStoryDistributionListRecord.builder()
         builder.setIdentifier(distributionListIdentifier)
 
         if let story = TSPrivateStoryThread.anyFetchPrivateStoryThread(
-            uniqueId: UUID(data: distributionListIdentifier).uuidString,
+            uniqueId: uniqueId,
             transaction: transaction
         ) {
             builder.setName(story.name)
@@ -1008,7 +1012,7 @@ extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
     }
 
     func mergeWithLocalDistributionList(transaction: SDSAnyWriteTransaction) -> MergeState {
-        guard let identifier = identifier else {
+        guard let identifier = identifier, let uniqueId = UUID(data: identifier)?.uuidString else {
             owsFailDebug("identifier unexpectedly missing for distribution list")
             return .invalid
         }
@@ -1027,7 +1031,6 @@ extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
         // representing the remote and local last update time for every value we sync.
         // For now, we'd like to avoid that as it adds its own set of problems.
 
-        let uniqueId = UUID(data: identifier).uuidString
         let existingStory = TSPrivateStoryThread.anyFetchPrivateStoryThread(
             uniqueId: uniqueId,
             transaction: transaction
