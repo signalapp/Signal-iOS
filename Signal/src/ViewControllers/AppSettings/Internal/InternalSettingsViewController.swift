@@ -69,6 +69,15 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 SignalApp.showExportDatabaseUI(from: self)
             }
         ))
+        debugSection.add(.actionItem(
+            withText: "Run Database Integrity Checks",
+            actionBlock: { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                SignalApp.showDatabaseIntegrityCheckUI(from: self)
+            }
+        ))
 
         contents.addSection(debugSection)
 
