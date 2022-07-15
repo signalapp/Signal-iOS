@@ -433,7 +433,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                                 lastSearchText: lastSearchText
                             )
                             bubbleView.addSubview(linkPreviewView)
-                            bubbleView.pin(to: linkPreviewView, withInset: -inset)
+                            linkPreviewView.pin(to: bubbleView, withInset: 0)
                             snContentView.addArrangedSubview(bubbleView)
                             self.bodyTextView = linkPreviewView.bodyTextView
                             
@@ -445,7 +445,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                                 isOutgoing: (cellViewModel.variant == .standardOutgoing)
                             )
                             bubbleView.addSubview(openGroupInvitationView)
-                            bubbleView.pin(to: openGroupInvitationView, withInset: -inset)
+                            bubbleView.pin(to: openGroupInvitationView)
                             snContentView.addArrangedSubview(openGroupInvitationView)
                     }
                 }
@@ -535,7 +535,6 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                     return
                 }
                 
-                let inset: CGFloat = 12
                 let voiceMessageView: VoiceMessageView = VoiceMessageView()
                 voiceMessageView.update(
                     with: attachment,
@@ -546,7 +545,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 )
             
                 bubbleView.addSubview(voiceMessageView)
-                voiceMessageView.pin(to: bubbleView, withInset: inset)
+                voiceMessageView.pin(to: bubbleView)
                 snContentView.addArrangedSubview(bubbleView)
                 self.voiceMessageView = voiceMessageView
                 
