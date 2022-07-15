@@ -162,6 +162,20 @@ struct GroupsProtos_RequestingMember {
   init() {}
 }
 
+struct GroupsProtos_BannedMember {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var userID: Data = Data()
+
+  var bannedAtTimestamp: UInt64 = 0
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
 struct GroupsProtos_AccessControl {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -275,8 +289,10 @@ struct GroupsProtos_Group {
 
   var descriptionBytes: Data = Data()
 
-  /// next: 13
   var announcementsOnly: Bool = false
+
+  /// next: 14
+  var bannedMembers: [GroupsProtos_BannedMember] = []
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -467,6 +483,18 @@ struct GroupsProtos_GroupChange {
     /// Clears the value of `modifyAnnouncementsOnly`. Subsequent reads from it will return its default value.
     mutating func clearModifyAnnouncementsOnly() {_uniqueStorage()._modifyAnnouncementsOnly = nil}
 
+    /// change epoch = 4
+    var addBannedMembers: [GroupsProtos_GroupChange.Actions.AddBannedMemberAction] {
+      get {return _storage._addBannedMembers}
+      set {_uniqueStorage()._addBannedMembers = newValue}
+    }
+
+    /// change epoch = 4
+    var deleteBannedMembers: [GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction] {
+      get {return _storage._deleteBannedMembers}
+      set {_uniqueStorage()._deleteBannedMembers = newValue}
+    }
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     struct AddMemberAction {
@@ -616,6 +644,39 @@ struct GroupsProtos_GroupChange {
       var userID: Data = Data()
 
       var role: GroupsProtos_Member.Role = .unknown
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+    }
+
+    struct AddBannedMemberAction {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      var added: GroupsProtos_BannedMember {
+        get {return _added ?? GroupsProtos_BannedMember()}
+        set {_added = newValue}
+      }
+      /// Returns true if `added` has been explicitly set.
+      var hasAdded: Bool {return self._added != nil}
+      /// Clears the value of `added`. Subsequent reads from it will return its default value.
+      mutating func clearAdded() {self._added = nil}
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+
+      fileprivate var _added: GroupsProtos_BannedMember? = nil
+    }
+
+    struct DeleteBannedMemberAction {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      var deletedUserID: Data = Data()
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -877,7 +938,7 @@ struct GroupsProtos_GroupInviteLink {
 
   var contents: GroupsProtos_GroupInviteLink.OneOf_Contents? = nil
 
-  /// I have renamed this field to work around a limitation 
+  /// I have renamed this field to work around a limitation
   /// in our code generation.
   var contentsV1: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1 {
     get {
@@ -890,7 +951,7 @@ struct GroupsProtos_GroupInviteLink {
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Contents: Equatable {
-    /// I have renamed this field to work around a limitation 
+    /// I have renamed this field to work around a limitation
     /// in our code generation.
     case contentsV1(GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1)
 
@@ -970,6 +1031,7 @@ extension GroupsProtos_Member: @unchecked Sendable {}
 extension GroupsProtos_Member.Role: @unchecked Sendable {}
 extension GroupsProtos_PendingMember: @unchecked Sendable {}
 extension GroupsProtos_RequestingMember: @unchecked Sendable {}
+extension GroupsProtos_BannedMember: @unchecked Sendable {}
 extension GroupsProtos_AccessControl: @unchecked Sendable {}
 extension GroupsProtos_AccessControl.AccessRequired: @unchecked Sendable {}
 extension GroupsProtos_Group: @unchecked Sendable {}
@@ -985,6 +1047,8 @@ extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: @unchecke
 extension GroupsProtos_GroupChange.Actions.AddRequestingMemberAction: @unchecked Sendable {}
 extension GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction: @unchecked Sendable {}
 extension GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.AddBannedMemberAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction: @unchecked Sendable {}
 extension GroupsProtos_GroupChange.Actions.ModifyTitleAction: @unchecked Sendable {}
 extension GroupsProtos_GroupChange.Actions.ModifyAvatarAction: @unchecked Sendable {}
 extension GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction: @unchecked Sendable {}
@@ -1240,6 +1304,44 @@ extension GroupsProtos_RequestingMember: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
+extension GroupsProtos_BannedMember: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".BannedMember"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "userId"),
+    2: .same(proto: "bannedAtTimestamp"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.userID) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.bannedAtTimestamp) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.userID.isEmpty {
+      try visitor.visitSingularBytesField(value: self.userID, fieldNumber: 1)
+    }
+    if self.bannedAtTimestamp != 0 {
+      try visitor.visitSingularUInt64Field(value: self.bannedAtTimestamp, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GroupsProtos_BannedMember, rhs: GroupsProtos_BannedMember) -> Bool {
+    if lhs.userID != rhs.userID {return false}
+    if lhs.bannedAtTimestamp != rhs.bannedAtTimestamp {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension GroupsProtos_AccessControl: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AccessControl"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -1309,6 +1411,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     10: .same(proto: "inviteLinkPassword"),
     11: .same(proto: "descriptionBytes"),
     12: .same(proto: "announcementsOnly"),
+    13: .same(proto: "bannedMembers"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1329,6 +1432,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       case 10: try { try decoder.decodeSingularBytesField(value: &self.inviteLinkPassword) }()
       case 11: try { try decoder.decodeSingularBytesField(value: &self.descriptionBytes) }()
       case 12: try { try decoder.decodeSingularBoolField(value: &self.announcementsOnly) }()
+      case 13: try { try decoder.decodeRepeatedMessageField(value: &self.bannedMembers) }()
       default: break
       }
     }
@@ -1375,6 +1479,9 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if self.announcementsOnly != false {
       try visitor.visitSingularBoolField(value: self.announcementsOnly, fieldNumber: 12)
     }
+    if !self.bannedMembers.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.bannedMembers, fieldNumber: 13)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1391,6 +1498,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if lhs.inviteLinkPassword != rhs.inviteLinkPassword {return false}
     if lhs.descriptionBytes != rhs.descriptionBytes {return false}
     if lhs.announcementsOnly != rhs.announcementsOnly {return false}
+    if lhs.bannedMembers != rhs.bannedMembers {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1464,6 +1572,8 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     19: .same(proto: "modifyInviteLinkPassword"),
     20: .same(proto: "modifyDescription"),
     21: .same(proto: "modifyAnnouncementsOnly"),
+    22: .same(proto: "addBannedMembers"),
+    23: .same(proto: "deleteBannedMembers"),
   ]
 
   fileprivate class _StorageClass {
@@ -1488,6 +1598,8 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     var _modifyInviteLinkPassword: GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction? = nil
     var _modifyDescription: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction? = nil
     var _modifyAnnouncementsOnly: GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction? = nil
+    var _addBannedMembers: [GroupsProtos_GroupChange.Actions.AddBannedMemberAction] = []
+    var _deleteBannedMembers: [GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction] = []
 
     static let defaultInstance = _StorageClass()
 
@@ -1515,6 +1627,8 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
       _modifyInviteLinkPassword = source._modifyInviteLinkPassword
       _modifyDescription = source._modifyDescription
       _modifyAnnouncementsOnly = source._modifyAnnouncementsOnly
+      _addBannedMembers = source._addBannedMembers
+      _deleteBannedMembers = source._deleteBannedMembers
     }
   }
 
@@ -1554,6 +1668,8 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
         case 19: try { try decoder.decodeSingularMessageField(value: &_storage._modifyInviteLinkPassword) }()
         case 20: try { try decoder.decodeSingularMessageField(value: &_storage._modifyDescription) }()
         case 21: try { try decoder.decodeSingularMessageField(value: &_storage._modifyAnnouncementsOnly) }()
+        case 22: try { try decoder.decodeRepeatedMessageField(value: &_storage._addBannedMembers) }()
+        case 23: try { try decoder.decodeRepeatedMessageField(value: &_storage._deleteBannedMembers) }()
         default: break
         }
       }
@@ -1629,6 +1745,12 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
       try { if let v = _storage._modifyAnnouncementsOnly {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 21)
       } }()
+      if !_storage._addBannedMembers.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._addBannedMembers, fieldNumber: 22)
+      }
+      if !_storage._deleteBannedMembers.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._deleteBannedMembers, fieldNumber: 23)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1659,6 +1781,8 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
         if _storage._modifyInviteLinkPassword != rhs_storage._modifyInviteLinkPassword {return false}
         if _storage._modifyDescription != rhs_storage._modifyDescription {return false}
         if _storage._modifyAnnouncementsOnly != rhs_storage._modifyAnnouncementsOnly {return false}
+        if _storage._addBannedMembers != rhs_storage._addBannedMembers {return false}
+        if _storage._deleteBannedMembers != rhs_storage._deleteBannedMembers {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -2013,6 +2137,74 @@ extension GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction: SwiftP
   static func ==(lhs: GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction, rhs: GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction) -> Bool {
     if lhs.userID != rhs.userID {return false}
     if lhs.role != rhs.role {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GroupsProtos_GroupChange.Actions.AddBannedMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".AddBannedMemberAction"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "added"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._added) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._added {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GroupsProtos_GroupChange.Actions.AddBannedMemberAction, rhs: GroupsProtos_GroupChange.Actions.AddBannedMemberAction) -> Bool {
+    if lhs._added != rhs._added {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".DeleteBannedMemberAction"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "deletedUserId"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.deletedUserID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.deletedUserID.isEmpty {
+      try visitor.visitSingularBytesField(value: self.deletedUserID, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction, rhs: GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction) -> Bool {
+    if lhs.deletedUserID != rhs.deletedUserID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

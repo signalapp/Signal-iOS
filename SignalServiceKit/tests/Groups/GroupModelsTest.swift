@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,6 +11,8 @@ class GroupModelsTest: SSKBaseTestSwift {
     func test_groupMembershipComparison() {
         let uuid1 = UUID()
         let uuid2 = UUID()
+        let uuid3 = UUID()
+        let uuid4 = UUID()
 
         var membershipBuilder1 = GroupMembership.Builder()
         membershipBuilder1.addFullMember(uuid1, role: .`normal`)
@@ -38,5 +40,23 @@ class GroupModelsTest: SSKBaseTestSwift {
         XCTAssertTrue(membership2 == membership4)
 
         XCTAssertFalse(membership3 == membership4)
+
+        var membershipBuilder5 = GroupMembership.Builder()
+        membershipBuilder5.addInvitedMember(uuid3, role: .normal, addedByUuid: uuid1)
+        membershipBuilder5.addBannedMember(uuid4, bannedAtTimestamp: 3)
+        let membership5 = membershipBuilder5.build()
+
+        var membershipBuilder6 = GroupMembership.Builder()
+        membershipBuilder6.addInvitedMember(uuid3, role: .normal, addedByUuid: uuid1)
+        membershipBuilder6.addBannedMember(uuid4, bannedAtTimestamp: 3)
+        let membership6 = membershipBuilder6.build()
+
+        var membershipBuilder7 = GroupMembership.Builder()
+        membershipBuilder7.addBannedMember(uuid3, bannedAtTimestamp: 12)
+        membershipBuilder7.addBannedMember(uuid4, bannedAtTimestamp: 3)
+        let membership7 = membershipBuilder7.build()
+
+        XCTAssertTrue(membership5 == membership6)
+        XCTAssertFalse(membership5 == membership7)
     }
 }

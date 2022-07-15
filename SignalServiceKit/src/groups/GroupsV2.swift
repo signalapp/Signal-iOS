@@ -176,6 +176,10 @@ public protocol GroupsV2OutgoingChanges: AnyObject {
 
     func removeMember(_ uuid: UUID)
 
+    func addBannedMember(_ uuid: UUID)
+
+    func removeBannedMember(_ uuid: UUID)
+
     func revokeInvalidInvites()
 
     func changeRoleForMember(_ uuid: UUID, role: TSGroupMemberRole)

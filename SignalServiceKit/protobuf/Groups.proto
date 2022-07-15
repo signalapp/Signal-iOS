@@ -48,6 +48,11 @@ message RequestingMember {
     uint64 timestamp    = 4;
 }
 
+message BannedMember {
+  bytes userId = 1;
+  uint64 bannedAtTimestamp = 2;
+}
+
 message AccessControl {
     enum AccessRequired {
         UNKNOWN       = 0;
@@ -75,7 +80,8 @@ message Group {
              bytes            inviteLinkPassword        = 10;
              bytes            descriptionBytes          = 11;
              bool             announcementsOnly         = 12;
-             // next: 13
+    repeated BannedMember     bannedMembers             = 13;
+             // next: 14
 }
 
 message GroupChange {
@@ -111,7 +117,7 @@ message GroupChange {
         message PromotePendingMemberAction {
             bytes presentation = 1;
         }
-    
+
         message AddRequestingMemberAction {
             RequestingMember added = 1;
 	    }
@@ -123,6 +129,14 @@ message GroupChange {
         message PromoteRequestingMemberAction {
             bytes       userId = 1;
             Member.Role role   = 2;
+        }
+
+        message AddBannedMemberAction {
+            BannedMember added = 1;
+        }
+
+        message DeleteBannedMemberAction {
+            bytes deletedUserId = 1;
         }
 
         message ModifyTitleAction {
@@ -148,7 +162,7 @@ message GroupChange {
         message ModifyMembersAccessControlAction {
             AccessControl.AccessRequired membersAccess = 1;
         }
-    
+
         message ModifyAddFromInviteLinkAccessControlAction {
             AccessControl.AccessRequired addFromInviteLinkAccess = 1;
         }
@@ -160,7 +174,7 @@ message GroupChange {
         message ModifyDescriptionAction {
             bytes descriptionBytes = 1;
         }
-		
+
         message ModifyAnnouncementsOnlyAction {
             bool announcementsOnly = 1;
         }
@@ -186,6 +200,8 @@ message GroupChange {
                  ModifyInviteLinkPasswordAction             modifyInviteLinkPassword        = 19;  // change epoch = 1
                  ModifyDescriptionAction                    modifyDescription               = 20;  // change epoch = 2
                  ModifyAnnouncementsOnlyAction              modifyAnnouncementsOnly         = 21;  // change epoch = 3
+        repeated AddBannedMemberAction                      addBannedMembers                = 22;  // change epoch = 4
+        repeated DeleteBannedMemberAction                   deleteBannedMembers             = 23;  // change epoch = 4
     }
 
     bytes  actions         = 1; // The serialized actions
@@ -218,7 +234,7 @@ message GroupInviteLink {
     }
 
     oneof contents {
-        // I have renamed this field to work around a limitation 
+        // I have renamed this field to work around a limitation
         // in our code generation.
         GroupInviteLinkContentsV1 contentsV1 = 1;
     }

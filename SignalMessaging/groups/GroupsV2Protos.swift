@@ -69,6 +69,15 @@ public class GroupsV2Protos {
         return try builder.build()
     }
 
+    public class func buildBannedMemberProto(uuid: UUID, groupV2Params: GroupV2Params) throws -> GroupsProtoBannedMember {
+        var builder = GroupsProtoBannedMember.builder()
+
+        let userId = try groupV2Params.userId(forUuid: uuid)
+        builder.setUserID(userId)
+
+        return try builder.build()
+    }
+
     public class func presentationData(profileKeyCredential: ProfileKeyCredential,
                                        groupV2Params: GroupV2Params) throws -> Data {
 
@@ -162,6 +171,12 @@ public class GroupsV2Protos {
                                                                        role: role,
                                                                        localUuid: localUuid,
                                                                        groupV2Params: groupV2Params))
+        }
+
+        for (uuid, _) in groupMembership.bannedMembers {
+            owsFailDebug("There should never be a banned member in a freshly created group!")
+
+            groupBuilder.addBannedMembers(try buildBannedMemberProto(uuid: uuid, groupV2Params: groupV2Params))
         }
 
         let encryptedTimerData = try groupV2Params.encryptDisappearingMessagesTimer(disappearingMessageToken)
@@ -386,6 +401,21 @@ public class GroupsV2Protos {
             let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
                                                           uuid: uuid)
             profileKeys[uuid] = profileKey
+        }
+
+        for bannedMemberProto in groupProto.bannedMembers {
+            guard let userId = bannedMemberProto.userID else {
+                throw OWSAssertionError("Group banned member missing userID.")
+            }
+
+            let bannedAtTimestamp = bannedMemberProto.bannedAtTimestamp
+            guard bannedAtTimestamp > 0 else {
+                throw OWSAssertionError("Group banned member missing timestamp")
+            }
+
+            let uuid = try groupV2Params.uuid(forUserId: userId)
+
+            groupMembershipBuilder.addBannedMember(uuid, bannedAtTimestamp: bannedAtTimestamp)
         }
 
         let groupMembership = groupMembershipBuilder.build()

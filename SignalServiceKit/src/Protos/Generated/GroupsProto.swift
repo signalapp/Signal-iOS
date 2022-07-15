@@ -874,6 +874,143 @@ extension GroupsProtoRequestingMemberBuilder {
 
 #endif
 
+// MARK: - GroupsProtoBannedMember
+
+public struct GroupsProtoBannedMember: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: GroupsProtos_BannedMember
+
+    public var userID: Data? {
+        guard hasUserID else {
+            return nil
+        }
+        return proto.userID
+    }
+    public var hasUserID: Bool {
+        return !proto.userID.isEmpty
+    }
+
+    public var bannedAtTimestamp: UInt64 {
+        return proto.bannedAtTimestamp
+    }
+    public var hasBannedAtTimestamp: Bool {
+        return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: GroupsProtos_BannedMember) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try GroupsProtos_BannedMember(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate init(_ proto: GroupsProtos_BannedMember) throws {
+        // MARK: - Begin Validation Logic for GroupsProtoBannedMember -
+
+        // MARK: - End Validation Logic for GroupsProtoBannedMember -
+
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension GroupsProtoBannedMember {
+    public static func builder() -> GroupsProtoBannedMemberBuilder {
+        return GroupsProtoBannedMemberBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoBannedMemberBuilder {
+        var builder = GroupsProtoBannedMemberBuilder()
+        if let _value = userID {
+            builder.setUserID(_value)
+        }
+        if hasBannedAtTimestamp {
+            builder.setBannedAtTimestamp(bannedAtTimestamp)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoBannedMemberBuilder {
+
+    private var proto = GroupsProtos_BannedMember()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setUserID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.userID = valueParam
+    }
+
+    public mutating func setUserID(_ valueParam: Data) {
+        proto.userID = valueParam
+    }
+
+    public mutating func setBannedAtTimestamp(_ valueParam: UInt64) {
+        proto.bannedAtTimestamp = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoBannedMember {
+        return try GroupsProtoBannedMember(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoBannedMember(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension GroupsProtoBannedMember {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoBannedMemberBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoBannedMember? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - GroupsProtoAccessControlAccessRequired
 
 public enum GroupsProtoAccessControlAccessRequired: SwiftProtobuf.Enum {
@@ -1123,6 +1260,8 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
 
     public let requestingMembers: [GroupsProtoRequestingMember]
 
+    public let bannedMembers: [GroupsProtoBannedMember]
+
     public var publicKey: Data? {
         guard hasPublicKey else {
             return nil
@@ -1209,12 +1348,14 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
                  accessControl: GroupsProtoAccessControl?,
                  members: [GroupsProtoMember],
                  pendingMembers: [GroupsProtoPendingMember],
-                 requestingMembers: [GroupsProtoRequestingMember]) {
+                 requestingMembers: [GroupsProtoRequestingMember],
+                 bannedMembers: [GroupsProtoBannedMember]) {
         self.proto = proto
         self.accessControl = accessControl
         self.members = members
         self.pendingMembers = pendingMembers
         self.requestingMembers = requestingMembers
+        self.bannedMembers = bannedMembers
     }
 
     public func serializedData() throws -> Data {
@@ -1241,6 +1382,9 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
         var requestingMembers: [GroupsProtoRequestingMember] = []
         requestingMembers = try proto.requestingMembers.map { try GroupsProtoRequestingMember($0) }
 
+        var bannedMembers: [GroupsProtoBannedMember] = []
+        bannedMembers = try proto.bannedMembers.map { try GroupsProtoBannedMember($0) }
+
         // MARK: - Begin Validation Logic for GroupsProtoGroup -
 
         // MARK: - End Validation Logic for GroupsProtoGroup -
@@ -1249,7 +1393,8 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
                   accessControl: accessControl,
                   members: members,
                   pendingMembers: pendingMembers,
-                  requestingMembers: requestingMembers)
+                  requestingMembers: requestingMembers,
+                  bannedMembers: bannedMembers)
     }
 
     public init(from decoder: Swift.Decoder) throws {
@@ -1305,6 +1450,7 @@ extension GroupsProtoGroup {
         if hasAnnouncementsOnly {
             builder.setAnnouncementsOnly(announcementsOnly)
         }
+        builder.setBannedMembers(bannedMembers)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1418,6 +1564,14 @@ public struct GroupsProtoGroupBuilder {
 
     public mutating func setAnnouncementsOnly(_ valueParam: Bool) {
         proto.announcementsOnly = valueParam
+    }
+
+    public mutating func addBannedMembers(_ valueParam: GroupsProtoBannedMember) {
+        proto.bannedMembers.append(valueParam.proto)
+    }
+
+    public mutating func setBannedMembers(_ wrappedItems: [GroupsProtoBannedMember]) {
+        proto.bannedMembers = wrappedItems.map { $0.proto }
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2743,6 +2897,252 @@ extension GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder {
 
 #endif
 
+// MARK: - GroupsProtoGroupChangeActionsAddBannedMemberAction
+
+public struct GroupsProtoGroupChangeActionsAddBannedMemberAction: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: GroupsProtos_GroupChange.Actions.AddBannedMemberAction
+
+    public let added: GroupsProtoBannedMember?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: GroupsProtos_GroupChange.Actions.AddBannedMemberAction,
+                 added: GroupsProtoBannedMember?) {
+        self.proto = proto
+        self.added = added
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try GroupsProtos_GroupChange.Actions.AddBannedMemberAction(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.AddBannedMemberAction) throws {
+        var added: GroupsProtoBannedMember?
+        if proto.hasAdded {
+            added = try GroupsProtoBannedMember(proto.added)
+        }
+
+        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsAddBannedMemberAction -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsAddBannedMemberAction -
+
+        self.init(proto: proto,
+                  added: added)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension GroupsProtoGroupChangeActionsAddBannedMemberAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsAddBannedMemberActionBuilder {
+        return GroupsProtoGroupChangeActionsAddBannedMemberActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsAddBannedMemberActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsAddBannedMemberActionBuilder()
+        if let _value = added {
+            builder.setAdded(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsAddBannedMemberActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.AddBannedMemberAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setAdded(_ valueParam: GroupsProtoBannedMember?) {
+        guard let valueParam = valueParam else { return }
+        proto.added = valueParam.proto
+    }
+
+    public mutating func setAdded(_ valueParam: GroupsProtoBannedMember) {
+        proto.added = valueParam.proto
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsAddBannedMemberAction {
+        return try GroupsProtoGroupChangeActionsAddBannedMemberAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsAddBannedMemberAction(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension GroupsProtoGroupChangeActionsAddBannedMemberAction {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupChangeActionsAddBannedMemberActionBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsAddBannedMemberAction? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - GroupsProtoGroupChangeActionsDeleteBannedMemberAction
+
+public struct GroupsProtoGroupChangeActionsDeleteBannedMemberAction: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction
+
+    public var deletedUserID: Data? {
+        guard hasDeletedUserID else {
+            return nil
+        }
+        return proto.deletedUserID
+    }
+    public var hasDeletedUserID: Bool {
+        return !proto.deletedUserID.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction) throws {
+        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsDeleteBannedMemberAction -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsDeleteBannedMemberAction -
+
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension GroupsProtoGroupChangeActionsDeleteBannedMemberAction {
+    public static func builder() -> GroupsProtoGroupChangeActionsDeleteBannedMemberActionBuilder {
+        return GroupsProtoGroupChangeActionsDeleteBannedMemberActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsDeleteBannedMemberActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsDeleteBannedMemberActionBuilder()
+        if let _value = deletedUserID {
+            builder.setDeletedUserID(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct GroupsProtoGroupChangeActionsDeleteBannedMemberActionBuilder {
+
+    private var proto = GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setDeletedUserID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.deletedUserID = valueParam
+    }
+
+    public mutating func setDeletedUserID(_ valueParam: Data) {
+        proto.deletedUserID = valueParam
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func build() throws -> GroupsProtoGroupChangeActionsDeleteBannedMemberAction {
+        return try GroupsProtoGroupChangeActionsDeleteBannedMemberAction(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try GroupsProtoGroupChangeActionsDeleteBannedMemberAction(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension GroupsProtoGroupChangeActionsDeleteBannedMemberAction {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupChangeActionsDeleteBannedMemberActionBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsDeleteBannedMemberAction? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - GroupsProtoGroupChangeActionsModifyTitleAction
 
 public struct GroupsProtoGroupChangeActionsModifyTitleAction: Codable, CustomDebugStringConvertible {
@@ -4016,6 +4416,10 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
 
     public let modifyAnnouncementsOnly: GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction?
 
+    public let addBannedMembers: [GroupsProtoGroupChangeActionsAddBannedMemberAction]
+
+    public let deleteBannedMembers: [GroupsProtoGroupChangeActionsDeleteBannedMemberAction]
+
     public var sourceUuid: Data? {
         guard hasSourceUuid else {
             return nil
@@ -4060,7 +4464,9 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
                  promoteRequestingMembers: [GroupsProtoGroupChangeActionsPromoteRequestingMemberAction],
                  modifyInviteLinkPassword: GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction?,
                  modifyDescription: GroupsProtoGroupChangeActionsModifyDescriptionAction?,
-                 modifyAnnouncementsOnly: GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction?) {
+                 modifyAnnouncementsOnly: GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction?,
+                 addBannedMembers: [GroupsProtoGroupChangeActionsAddBannedMemberAction],
+                 deleteBannedMembers: [GroupsProtoGroupChangeActionsDeleteBannedMemberAction]) {
         self.proto = proto
         self.addMembers = addMembers
         self.deleteMembers = deleteMembers
@@ -4081,6 +4487,8 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
         self.modifyInviteLinkPassword = modifyInviteLinkPassword
         self.modifyDescription = modifyDescription
         self.modifyAnnouncementsOnly = modifyAnnouncementsOnly
+        self.addBannedMembers = addBannedMembers
+        self.deleteBannedMembers = deleteBannedMembers
     }
 
     public func serializedData() throws -> Data {
@@ -4168,6 +4576,12 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
             modifyAnnouncementsOnly = try GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction(proto.modifyAnnouncementsOnly)
         }
 
+        var addBannedMembers: [GroupsProtoGroupChangeActionsAddBannedMemberAction] = []
+        addBannedMembers = try proto.addBannedMembers.map { try GroupsProtoGroupChangeActionsAddBannedMemberAction($0) }
+
+        var deleteBannedMembers: [GroupsProtoGroupChangeActionsDeleteBannedMemberAction] = []
+        deleteBannedMembers = try proto.deleteBannedMembers.map { try GroupsProtoGroupChangeActionsDeleteBannedMemberAction($0) }
+
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActions -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActions -
@@ -4191,7 +4605,9 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
                   promoteRequestingMembers: promoteRequestingMembers,
                   modifyInviteLinkPassword: modifyInviteLinkPassword,
                   modifyDescription: modifyDescription,
-                  modifyAnnouncementsOnly: modifyAnnouncementsOnly)
+                  modifyAnnouncementsOnly: modifyAnnouncementsOnly,
+                  addBannedMembers: addBannedMembers,
+                  deleteBannedMembers: deleteBannedMembers)
     }
 
     public init(from decoder: Swift.Decoder) throws {
@@ -4260,6 +4676,8 @@ extension GroupsProtoGroupChangeActions {
         if let _value = modifyAnnouncementsOnly {
             builder.setModifyAnnouncementsOnly(_value)
         }
+        builder.setAddBannedMembers(addBannedMembers)
+        builder.setDeleteBannedMembers(deleteBannedMembers)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -4455,6 +4873,22 @@ public struct GroupsProtoGroupChangeActionsBuilder {
 
     public mutating func setModifyAnnouncementsOnly(_ valueParam: GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction) {
         proto.modifyAnnouncementsOnly = valueParam.proto
+    }
+
+    public mutating func addAddBannedMembers(_ valueParam: GroupsProtoGroupChangeActionsAddBannedMemberAction) {
+        proto.addBannedMembers.append(valueParam.proto)
+    }
+
+    public mutating func setAddBannedMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsAddBannedMemberAction]) {
+        proto.addBannedMembers = wrappedItems.map { $0.proto }
+    }
+
+    public mutating func addDeleteBannedMembers(_ valueParam: GroupsProtoGroupChangeActionsDeleteBannedMemberAction) {
+        proto.deleteBannedMembers.append(valueParam.proto)
+    }
+
+    public mutating func setDeleteBannedMembers(_ wrappedItems: [GroupsProtoGroupChangeActionsDeleteBannedMemberAction]) {
+        proto.deleteBannedMembers = wrappedItems.map { $0.proto }
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

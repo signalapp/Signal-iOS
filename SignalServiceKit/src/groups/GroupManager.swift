@@ -59,7 +59,8 @@ public class GroupManager: NSObject {
     // Epoch 1: Group Links
     // Epoch 2: Group Description
     // Epoch 3: Announcement-Only Groups
-    public static let changeProtoEpoch: UInt32 = 3
+    // Epoch 4: Banned Members
+    public static let changeProtoEpoch: UInt32 = 4
 
     // This matches kOversizeTextMessageSizeThreshold.
     public static let maxEmbeddedChangeProtoLength: UInt = 2 * 1024
@@ -980,7 +981,14 @@ public class GroupManager: NSObject {
         updateGroupV2(groupModel: groupModel,
                       description: "Remove from group or revoke invite") { groupChangeSet in
             for uuid in uuids {
+                owsAssertDebug(!groupModel.groupMembership.isRequestingMember(uuid))
+
                 groupChangeSet.removeMember(uuid)
+
+                // Do not ban when revoking an invite
+                if !groupModel.groupMembership.isInvitedMember(uuid) {
+                    groupChangeSet.addBannedMember(uuid)
+                }
             }
         }
     }
@@ -1117,6 +1125,7 @@ public class GroupManager: NSObject {
                     groupChangeSet.addMember(uuid, role: .`normal`)
                 } else {
                     groupChangeSet.removeMember(uuid)
+                    groupChangeSet.addBannedMember(uuid)
                 }
             }
         }
@@ -2322,6 +2331,10 @@ extension GroupManager {
                                 groupChangeSet.addInvitedMember(uuid, role: .normal)
                             } else {
                                 groupChangeSet.addMember(uuid, role: .normal)
+                            }
+
+                            if existingGroupModel.groupMembership.isBannedMember(uuid) {
+                                groupChangeSet.removeBannedMember(uuid)
                             }
                         }
                     }

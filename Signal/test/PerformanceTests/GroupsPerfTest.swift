@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -34,6 +34,9 @@ class GroupsPerfTest: PerformanceBaseTest {
         }
         for _ in 0..<memberCount {
             builder.addRequestingMember(UUID())
+        }
+        for i in 0..<memberCount {
+            builder.addBannedMember(UUID(), bannedAtTimestamp: UInt64(i))
         }
         return builder.build()
     }

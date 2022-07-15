@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -197,13 +197,18 @@ public class GroupMembership: MTLModel {
     fileprivate typealias MemberStateMap = [SignalServiceAddress: GroupMemberState]
     fileprivate var memberStates: MemberStateMap
 
+    public typealias BannedAtTimestampMillis = UInt64
+    public typealias BannedMembersMap = [UUID: BannedAtTimestampMillis]
+    public fileprivate(set) var bannedMembers: BannedMembersMap
+
     typealias InvalidInviteMap = [Data: InvalidInviteModel]
     @objc
     var invalidInviteMap: InvalidInviteMap
 
     @objc
     public override init() {
-        self.memberStates = MemberStateMap()
+        self.memberStates = [:]
+        self.bannedMembers = [:]
         self.invalidInviteMap = [:]
 
         super.init()
@@ -223,14 +228,23 @@ public class GroupMembership: MTLModel {
             do {
                 self.memberStates = try decoder.decode(MemberStateMap.self, from: memberStatesData)
             } catch {
-                owsFailDebug("Error: \(error)")
+                owsFailDebug("Could not decode member states: \(error)")
                 return nil
             }
         } else if let legacyMemberStateMap = aDecoder.decodeObject(forKey: Self.legacyMemberStatesKey) as? LegacyMemberStateMap {
             self.memberStates = Self.convertLegacyMemberStateMap(legacyMemberStateMap)
         } else {
-            owsFailDebug("Could not decode.")
+            owsFailDebug("Could not decode legacy member states.")
             return nil
+        }
+
+        if let bannedMembers = aDecoder.decodeObject(forKey: Self.bannedMembersKey) as? BannedMembersMap {
+            self.bannedMembers = bannedMembers
+        } else {
+            // TODO: (Group Abuse) we should debug assert here eventually.
+            // However, while clients are learning about banned members this is
+            // a normal path to hit.
+            self.bannedMembers = [:]
         }
 
         super.init()
@@ -238,6 +252,7 @@ public class GroupMembership: MTLModel {
 
     private static var memberStatesKey: String { "memberStates" }
     private static var legacyMemberStatesKey: String { "memberStateMap" }
+    private static var bannedMembersKey: String { "bannedMembers" }
     private static var invalidInviteMapKey: String { "invalidInviteMap" }
 
     public override func encode(with aCoder: NSCoder) {
@@ -249,6 +264,7 @@ public class GroupMembership: MTLModel {
             owsFailDebug("Error: \(error)")
         }
 
+        aCoder.encode(bannedMembers, forKey: Self.bannedMembersKey)
         aCoder.encode(invalidInviteMap, forKey: Self.invalidInviteMapKey)
     }
 
@@ -266,14 +282,27 @@ public class GroupMembership: MTLModel {
         } else if let legacyMemberStateMap = dictionaryValue[Self.legacyMemberStatesKey] as? LegacyMemberStateMap {
             self.memberStates = Self.convertLegacyMemberStateMap(legacyMemberStateMap)
         } else {
-            throw OWSAssertionError("Could not decode.")
+            throw OWSAssertionError("Could not decode member states.")
+        }
+
+        if let bannedMembers = dictionaryValue[Self.bannedMembersKey] as? BannedMembersMap {
+            self.bannedMembers = bannedMembers
+        } else {
+            // TODO: (Group Abuse) we should throw an assertion error here eventually.
+            // However, while clients are migrating this is a normal path to hit.
+            self.bannedMembers = [:]
         }
 
         super.init()
     }
 
-    fileprivate init(memberStates: MemberStateMap, invalidInviteMap: InvalidInviteMap) {
+    fileprivate init(
+        memberStates: MemberStateMap,
+        bannedMembers: BannedMembersMap,
+        invalidInviteMap: InvalidInviteMap
+    ) {
         self.memberStates = memberStates
+        self.bannedMembers = bannedMembers
         self.invalidInviteMap = invalidInviteMap
 
         super.init()
@@ -284,6 +313,7 @@ public class GroupMembership: MTLModel {
         var builder = Builder()
         builder.addFullMembers(v1Members, role: .normal)
         self.memberStates = builder.asMemberStateMap()
+        self.bannedMembers = [:]
         self.invalidInviteMap = [:]
 
         super.init()
@@ -360,7 +390,11 @@ public class GroupMembership: MTLModel {
     }
 
     public var asBuilder: Builder {
-        return Builder(memberStates: memberStates, invalidInviteMap: invalidInviteMap)
+        return Builder(
+            memberStates: memberStates,
+            bannedMembers: bannedMembers,
+            invalidInviteMap: invalidInviteMap
+        )
     }
 
     public override var debugDescription: String {
@@ -525,6 +559,10 @@ public extension GroupMembership {
         return isMemberOfAnyKind(SignalServiceAddress(uuid: uuid))
     }
 
+    func isBannedMember(_ uuid: UUID) -> Bool {
+        bannedMembers[uuid] != nil
+    }
+
     // This method should only be called for "pending profile key" members.
     func addedByUuid(forInvitedMember address: SignalServiceAddress) -> UUID? {
         guard let memberState = memberStates[address] else {
@@ -561,26 +599,34 @@ public extension GroupMembership {
 public extension GroupMembership {
     struct Builder {
         private var memberStates = MemberStateMap()
+        private var bannedMembers = BannedMembersMap()
         private var invalidInviteMap = InvalidInviteMap()
 
         public init() {}
 
-        fileprivate init(memberStates: MemberStateMap, invalidInviteMap: InvalidInviteMap) {
+        fileprivate init(
+            memberStates: MemberStateMap,
+            bannedMembers: BannedMembersMap,
+            invalidInviteMap: InvalidInviteMap
+        ) {
             self.memberStates = memberStates
+            self.bannedMembers = bannedMembers
             self.invalidInviteMap = invalidInviteMap
         }
+
+        // MARK: Member states
 
         public mutating func remove(_ uuid: UUID) {
             remove(SignalServiceAddress(uuid: uuid))
         }
 
         public mutating func remove(_ address: SignalServiceAddress) {
-            memberStates.removeValue(forKey: address)
+            remove([address])
         }
 
         public mutating func remove(_ addresses: Set<SignalServiceAddress>) {
             for address in addresses {
-                remove(address)
+                memberStates.removeValue(forKey: address)
             }
         }
 
@@ -599,39 +645,29 @@ public extension GroupMembership {
         public mutating func addFullMembers(_ addresses: Set<SignalServiceAddress>,
                                             role: TSGroupMemberRole,
                                             didJoinFromInviteLink: Bool = false) {
-            for address in addresses {
-                guard memberStates[address] == nil else {
-                    // Not necessarily an error; you might know of the UUID mapping 
-                    // for a user that another group member doesn't know about.
-                    Logger.warn("Duplicate address.")
-                    continue
-                }
-                memberStates[address] = .fullMember(role: role, didJoinFromInviteLink: didJoinFromInviteLink)
-            }
+            // Dupe is not necessarily an error; you might know of the UUID
+            // mapping for a user that another group member doesn't know about.
+            addMembers(addresses,
+                       withState: .fullMember(role: role, didJoinFromInviteLink: didJoinFromInviteLink),
+                       failOnDupe: false)
         }
 
         public mutating func addInvitedMember(_ uuid: UUID,
-                                                        role: TSGroupMemberRole,
-                                                        addedByUuid: UUID) {
+                                              role: TSGroupMemberRole,
+                                              addedByUuid: UUID) {
             addInvitedMember(SignalServiceAddress(uuid: uuid), role: role, addedByUuid: addedByUuid)
         }
 
         public mutating func addInvitedMember(_ address: SignalServiceAddress,
-                                                        role: TSGroupMemberRole,
-                                                        addedByUuid: UUID) {
+                                              role: TSGroupMemberRole,
+                                              addedByUuid: UUID) {
             addInvitedMembers([address], role: role, addedByUuid: addedByUuid)
         }
 
         public mutating func addInvitedMembers(_ addresses: Set<SignalServiceAddress>,
-                                                         role: TSGroupMemberRole,
-                                                         addedByUuid: UUID) {
-            for address in addresses {
-                if memberStates[address] != nil {
-                    owsFailDebug("Duplicate address.")
-                    continue
-                }
-                memberStates[address] = .invited(role: role, addedByUuid: addedByUuid)
-            }
+                                               role: TSGroupMemberRole,
+                                               addedByUuid: UUID) {
+            addMembers(addresses, withState: .invited(role: role, addedByUuid: addedByUuid))
         }
 
         public mutating func addRequestingMember(_ uuid: UUID) {
@@ -643,12 +679,21 @@ public extension GroupMembership {
         }
 
         public mutating func addRequestingMembers(_ addresses: Set<SignalServiceAddress>) {
+            addMembers(addresses, withState: .Requesting)
+        }
+
+        private mutating func addMembers(
+            _ addresses: Set<SignalServiceAddress>,
+            withState memberState: GroupMemberState,
+            failOnDupe: Bool = true
+        ) {
             for address in addresses {
-                if memberStates[address] != nil {
-                    owsFailDebug("Duplicate address.")
+                guard memberStates[address] == nil else {
+                    failOnDupe ? owsFailDebug("Duplicate address.") : Logger.warn("Duplicate address.")
                     continue
                 }
-                memberStates[address] = .Requesting
+
+                memberStates[address] = memberState
             }
         }
 
@@ -664,6 +709,36 @@ public extension GroupMembership {
             memberStates[address] = memberState
         }
 
+        public func hasMemberOfAnyKind(_ address: SignalServiceAddress) -> Bool {
+            nil != memberStates[address]
+        }
+
+        fileprivate func asMemberStateMap() -> MemberStateMap {
+            return memberStates
+        }
+
+        // MARK: Banned members
+
+        public mutating func addBannedMember(_ uuid: UUID, bannedAtTimestamp: BannedAtTimestampMillis) {
+            guard bannedMembers[uuid] == nil else {
+                owsFailDebug("Duplicate banned member!")
+                return
+            }
+
+            bannedMembers[uuid] = bannedAtTimestamp
+        }
+
+        public mutating func removeBannedMember(_ uuid: UUID) {
+            guard bannedMembers[uuid] != nil else {
+                owsFailDebug("Removing not-currently-banned member!")
+                return
+            }
+
+            bannedMembers.removeValue(forKey: uuid)
+        }
+
+        // MARK: Invalid invites
+
         public mutating func addInvalidInvite(userId: Data, addedByUserId: Data) {
             invalidInviteMap[userId] = InvalidInviteModel(userId: userId, addedByUserId: addedByUserId)
         }
@@ -673,7 +748,7 @@ public extension GroupMembership {
         }
 
         public mutating func copyInvalidInvites(from other: GroupMembership) {
-            assert(invalidInviteMap.isEmpty)
+            owsAssertDebug(invalidInviteMap.isEmpty)
             invalidInviteMap = other.invalidInviteMap
         }
 
@@ -681,15 +756,12 @@ public extension GroupMembership {
             nil != invalidInviteMap[userId]
         }
 
-        public func hasMemberOfAnyKind(_ address: SignalServiceAddress) -> Bool {
-            nil != memberStates[address]
-        }
-
-        fileprivate func asMemberStateMap() -> MemberStateMap {
-            return memberStates
-        }
+        // MARK: Build
 
         public func build() -> GroupMembership {
+            owsAssertDebug(Set(bannedMembers.keys.map { SignalServiceAddress(uuid: $0) })
+                .isDisjoint(with: Set(memberStates.keys)))
+
             var memberStates = self.memberStates
 
             let localProfileInvariantAddress = SignalServiceAddress(phoneNumber: kLocalProfileInvariantPhoneNumber)
@@ -699,6 +771,7 @@ public extension GroupMembership {
             }
 
             return GroupMembership(memberStates: memberStates,
+                                   bannedMembers: bannedMembers,
                                    invalidInviteMap: invalidInviteMap)
         }
     }

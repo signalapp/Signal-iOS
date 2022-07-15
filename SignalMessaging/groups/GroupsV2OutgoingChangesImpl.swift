@@ -72,6 +72,10 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
     private var invalidInvitesToRemove = [Data: InvalidInvite]()
     private var invitedMembersToPromote = [UUID]()
 
+    // Banning
+    private var membersToBan = [UUID]()
+    private var membersToUnban = [UUID]()
+
     // These access properties should only be set if the value is changing.
     private var accessForMembers: GroupV2Access?
     private var accessForAttributes: GroupV2Access?
@@ -138,6 +142,16 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
     public func removeMember(_ uuid: UUID) {
         owsAssertDebug(!membersToRemove.contains(uuid))
         membersToRemove.append(uuid)
+    }
+
+    public func addBannedMember(_ uuid: UUID) {
+        owsAssertDebug(!membersToBan.contains(uuid))
+        membersToBan.append(uuid)
+    }
+
+    public func removeBannedMember(_ uuid: UUID) {
+        owsAssertDebug(!membersToUnban.contains(uuid))
+        membersToUnban.append(uuid)
     }
 
     @objc
@@ -510,6 +524,50 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
                 // invitation.
                 // Redundant change, not a conflict.
                 continue
+            }
+        }
+
+        do {
+            // Only ban/unban if relevant according to current group membership
+            let uuidsToBan = membersToBan.filter { !currentGroupMembership.isBannedMember($0) }
+            var uuidsToUnban = membersToUnban.filter { currentGroupMembership.isBannedMember($0) }
+
+            let currentBannedMembers = currentGroupMembership.bannedMembers
+
+            // If we will overrun the max number of banned members, unban currently
+            // banned members until we have enough room, beginning with the
+            // least-recently banned.
+            let maxNumBannableIds = RemoteConfig.groupsV2MaxBannedMembers
+            let netNumIdsToBan = uuidsToBan.count - uuidsToUnban.count
+            let nOldMembersToUnban = currentBannedMembers.count + netNumIdsToBan - Int(maxNumBannableIds)
+
+            if nOldMembersToUnban > 0 {
+                let bannedSortedByAge = currentBannedMembers.sorted { member1, member2 -> Bool in
+                    // Lower bannedAt time goes first
+                    member1.value < member2.value
+                }.map { (uuid, _) -> UUID in uuid }
+
+                uuidsToUnban += bannedSortedByAge.prefix(nOldMembersToUnban)
+            }
+
+            // Build the bans
+            for uuid in uuidsToBan {
+                let bannedMember = try GroupsV2Protos.buildBannedMemberProto(uuid: uuid, groupV2Params: groupV2Params)
+
+                var actionBuilder = GroupsProtoGroupChangeActionsAddBannedMemberAction.builder()
+                actionBuilder.setAdded(bannedMember)
+
+                actionsBuilder.addAddBannedMembers(try actionBuilder.build())
+            }
+
+            // Build the unbans
+            for uuid in uuidsToUnban {
+                let userId = try groupV2Params.userId(forUuid: uuid)
+
+                var actionBuilder = GroupsProtoGroupChangeActionsDeleteBannedMemberAction.builder()
+                actionBuilder.setDeletedUserID(userId)
+
+                actionsBuilder.addDeleteBannedMembers(try actionBuilder.build())
             }
         }
 

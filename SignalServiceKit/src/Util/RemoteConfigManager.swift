@@ -88,6 +88,10 @@ public class RemoteConfig: BaseFlags {
         return uintValue
     }
 
+    public static var groupsV2MaxBannedMembers: UInt {
+        groupsV2MaxGroupSizeHardLimit
+    }
+
     @objc
     public static var groupCalling: Bool {
         return DebugFlags.forceGroupCalling || !isEnabled(.groupCallingKillSwitch)

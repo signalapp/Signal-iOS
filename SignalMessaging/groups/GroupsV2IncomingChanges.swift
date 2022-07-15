@@ -462,6 +462,29 @@ public class GroupsV2IncomingChanges: Dependencies {
             groupMembershipBuilder.addFullMember(uuid, role: role)
         }
 
+        for action in changeActionsProto.addBannedMembers {
+            guard let userId = action.added?.userID,
+                  let bannedAtTimestamp = action.added?.bannedAtTimestamp,
+                  bannedAtTimestamp > 0
+            else {
+                throw OWSAssertionError("Invalid addBannedMember action")
+            }
+
+            let uuid = try groupV2Params.uuid(forUserId: userId)
+
+            groupMembershipBuilder.addBannedMember(uuid, bannedAtTimestamp: bannedAtTimestamp)
+        }
+
+        for action in changeActionsProto.deleteBannedMembers {
+            guard let userId = action.deletedUserID else {
+                throw OWSAssertionError("Invalid deleteBannedMember action")
+            }
+
+            let uuid = try groupV2Params.uuid(forUserId: userId)
+
+            groupMembershipBuilder.removeBannedMember(uuid)
+        }
+
         if let action = changeActionsProto.modifyTitle {
             if !canEditAttributes {
                 owsFailDebug("Cannot modify title.")
