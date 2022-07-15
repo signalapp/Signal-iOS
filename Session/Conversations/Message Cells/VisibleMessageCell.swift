@@ -39,9 +39,9 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     // MARK: - UI Components
     
     private lazy var viewsToMoveForReply: [UIView] = [
-        bubbleView,
-        bubbleBackgroundView,
+        snContentView,
         profilePictureView,
+        moderatorIconImageView,
         replyButton,
         timerView,
         messageStatusImageView
@@ -792,19 +792,22 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     // MARK: - Convenience
     
     private func getCornersToRound() -> UIRectCorner {
-        guard viewModel?.isOnlyMessageInCluster == false else { return .allCorners }
+        return .allCorners
         
-        let direction: Direction = (viewModel?.variant == .standardOutgoing ? .outgoing : .incoming)
-        
-        switch (viewModel?.positionInCluster, direction) {
-            case (.top, .outgoing): return [ .bottomLeft, .topLeft, .topRight ]
-            case (.middle, .outgoing): return [ .bottomLeft, .topLeft ]
-            case (.bottom, .outgoing): return [ .bottomRight, .bottomLeft, .topLeft ]
-            case (.top, .incoming): return [ .topLeft, .topRight, .bottomRight ]
-            case (.middle, .incoming): return [ .topRight, .bottomRight ]
-            case (.bottom, .incoming): return [ .topRight, .bottomRight, .bottomLeft ]
-            case (.none, _): return .allCorners
-        }
+        // FIXME: Leave the code here just in case we want this again.
+//        guard viewModel?.isOnlyMessageInCluster == false else { return .allCorners }
+//
+//        let direction: Direction = (viewModel?.variant == .standardOutgoing ? .outgoing : .incoming)
+//
+//        switch (viewModel?.positionInCluster, direction) {
+//            case (.top, .outgoing): return [ .bottomLeft, .topLeft, .topRight ]
+//            case (.middle, .outgoing): return [ .bottomLeft, .topLeft ]
+//            case (.bottom, .outgoing): return [ .bottomRight, .bottomLeft, .topLeft ]
+//            case (.top, .incoming): return [ .topLeft, .topRight, .bottomRight ]
+//            case (.middle, .incoming): return [ .topRight, .bottomRight ]
+//            case (.bottom, .incoming): return [ .topRight, .bottomRight, .bottomLeft ]
+//            case (.none, _): return .allCorners
+//        }
     }
     
     private func getCornerMask(from rectCorner: UIRectCorner) -> CACornerMask {
