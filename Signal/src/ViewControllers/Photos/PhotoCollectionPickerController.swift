@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -29,13 +29,16 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = Theme.darkThemeBackgroundColor
-        tableView.backgroundColor = Theme.darkThemeBackgroundColor
-        tableView.separatorColor = .clear
-
         library.add(delegate: self)
 
         updateContents()
+    }
+
+    override func applyTheme() {
+        // don't call super -- we want to set our own theme
+        view.backgroundColor = Theme.darkThemeBackgroundColor
+        tableView.backgroundColor = Theme.darkThemeBackgroundColor
+        tableView.separatorColor = .clear
     }
 
     // MARK: -
