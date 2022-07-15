@@ -116,44 +116,46 @@ public class VideoPlayerView: UIView {
 
     // MARK: - KVO
 
+    private var playerObservers = [NSKeyValueObservation]()
     private var periodicTimeObserver: Any?
 
     private func addKVO(player: AVPlayer?) {
         guard let player = player else {
             return
         }
+
         // Observe status changes: anything that might affect "isPlaying".
-        player.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
-        player.addObserver(self, forKeyPath: "timeControlStatus", options: [.new, .initial], context: nil)
-        player.addObserver(self, forKeyPath: "rate", options: [.new, .initial], context: nil)
+        let changeHandler = { [weak self] (_: AVPlayer, _: Any) in
+            guard let self = self else { return }
+            self.delegate?.videoPlayerViewStatusDidChange(self)
+        }
+        playerObservers = [
+            player.observe(\AVPlayer.status, options: [.new, .initial], changeHandler: changeHandler),
+            player.observe(\AVPlayer.timeControlStatus, options: [.new, .initial], changeHandler: changeHandler),
+            player.observe(\AVPlayer.rate, options: [.new, .initial], changeHandler: changeHandler)
+        ]
 
         // Observe playback progress.
         let interval = CMTime(seconds: 0.01, preferredTimescale: 1000)
         periodicTimeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { [weak self] _ in
-            self?.playbackTimeDidChange()
+            guard let self = self else { return }
+            self.delegate?.videoPlayerViewPlaybackTimeDidChange(self)
         }
     }
 
     private func removeKVO(player: AVPlayer?) {
+        for playerObserver in playerObservers {
+            playerObserver.invalidate()
+        }
+        playerObservers = []
+
         guard let player = player else {
             return
         }
-        player.removeObserver(self, forKeyPath: "status")
-        player.removeObserver(self, forKeyPath: "timeControlStatus")
-        player.removeObserver(self, forKeyPath: "rate")
         if let periodicTimeObserver = periodicTimeObserver {
             player.removeTimeObserver(periodicTimeObserver)
         }
         periodicTimeObserver = nil
-    }
-
-    public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-
-        delegate?.videoPlayerViewStatusDidChange(self)
-    }
-
-    private func playbackTimeDidChange() {
-        delegate?.videoPlayerViewPlaybackTimeDidChange(self)
     }
 
     // MARK: - Playback
