@@ -58,7 +58,10 @@ public class ProfileBadge: NSObject, Codable {
             lhs.localizedDescriptionFormatString == rhs.localizedDescriptionFormatString &&
             lhs.resourcePath == rhs.resourcePath &&
             lhs.badgeVariant == rhs.badgeVariant &&
-            lhs.localization == rhs.localization
+            lhs.localization == rhs.localization &&
+            lhs.duration == rhs.duration
+            // Don't check assets -- it's essentially a derived property that doesn't
+            // need to be included in equality checks.
     }
 }
 
