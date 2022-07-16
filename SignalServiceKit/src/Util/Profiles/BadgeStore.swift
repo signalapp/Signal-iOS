@@ -228,23 +228,21 @@ public class BadgeStore: NSObject {
     private func populateAssets(_ badge: ProfileBadge) -> Promise<Void> {
         lock.assertOwner()
 
+        let badgeAssets: BadgeAssets
         // We try and reuse any existing BadgeAssets instances if we have one cached
         if let cachedValue = badgeCache[badge.id], cachedValue.resourcePath == badge.resourcePath, let assets = cachedValue.assets {
-            badge.assets = assets
+            badgeAssets = assets
         } else if let cachedAssets = assetCache[badge.resourcePath] {
-            badge.assets = cachedAssets
+            badgeAssets = cachedAssets
         } else {
-            badge.assets = BadgeAssets(
+            badgeAssets = BadgeAssets(
                 scale: badge.badgeVariant.intendedScale,
                 remoteSourceUrl: badge.remoteAssetUrl,
                 localAssetDirectory: badge.localAssetDir)
-            assetCache[badge.resourcePath] = badge.assets
+            assetCache[badge.resourcePath] = badgeAssets
         }
-        owsAssertDebug(badge.assets != nil)
-        guard let assets = badge.assets else {
-            return Promise.value(())
-        }
+        badge.assets = badgeAssets
 
-        return assets.prepareAssetsIfNecessary()
+        return badgeAssets.prepareAssetsIfNecessary()
     }
 }
