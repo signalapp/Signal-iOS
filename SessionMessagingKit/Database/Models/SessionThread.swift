@@ -381,7 +381,7 @@ public class SMKThread: NSObject {
     public static func isOnlyNotifyingForMentions(_ threadId: String) -> Bool {
         return Storage.shared.read { db in
             return try SessionThread
-                .select(SessionThread.Columns.onlyNotifyForMentions == true)
+                .select(SessionThread.Columns.onlyNotifyForMentions)
                 .filter(id: threadId)
                 .asRequest(of: Bool.self)
                 .fetchOne(db)

@@ -718,7 +718,7 @@ CGFloat kIconViewLength = 24;
 
 - (BOOL)hasLeftGroup
 {
-    if (self.isClosedGroup || self.isOpenGroup) {
+    if (self.isClosedGroup) {
         return ![SMKGroupMember isCurrentUserMemberOf:self.threadId];
     }
 

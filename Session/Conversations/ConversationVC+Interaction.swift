@@ -82,29 +82,11 @@ extension ConversationVC:
     // MARK: - Blocking
     
     @objc func unblock() {
-        guard self.viewModel.threadData.threadVariant == .contact else { return }
-        
-        let publicKey: String = self.viewModel.threadData.threadId
-
-        UIView.animate(
-            withDuration: 0.25,
-            animations: {
-                self.blockedBanner.alpha = 0
-            },
-            completion: { _ in
-                Storage.shared.write { db in
-                    try Contact
-                        .filter(id: publicKey)
-                        .updateAll(db, Contact.Columns.isBlocked.set(to: true))
-                    
-                    try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
-                }
-            }
-        )
+        self.showBlockedModalIfNeeded()
     }
 
     func showBlockedModalIfNeeded() -> Bool {
-        guard viewModel.threadData.threadIsBlocked == true else { return false }
+        guard self.viewModel.threadData.threadIsBlocked == true else { return false }
         
         let blockedModal = BlockedModal(publicKey: viewModel.threadData.threadId)
         blockedModal.modalPresentationStyle = .overFullScreen

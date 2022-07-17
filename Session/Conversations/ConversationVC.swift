@@ -551,29 +551,21 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         if
             initialLoad ||
             viewModel.threadData.threadRequiresApproval != updatedThreadData.threadRequiresApproval ||
+            viewModel.threadData.threadIsMessageRequest != updatedThreadData.threadIsMessageRequest ||
             viewModel.threadData.profile != updatedThreadData.profile
         {
             updateNavBarButtons(threadData: updatedThreadData, initialVariant: viewModel.initialThreadVariant)
-        }
-        
-        if initialLoad || viewModel.threadData.threadIsBlocked != updatedThreadData.threadIsBlocked {
-            addOrRemoveBlockedBanner(threadIsBlocked: (updatedThreadData.threadIsBlocked == true))
-        }
-        
-        if initialLoad || viewModel.threadData.threadIsMessageRequest != updatedThreadData.threadIsMessageRequest {
-            scrollButtonMessageRequestsBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == true)
-            scrollButtonBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == false)
-        }
-        
-        if
-            initialLoad ||
-                viewModel.threadData.threadRequiresApproval != updatedThreadData.threadRequiresApproval ||
-                viewModel.threadData.threadIsMessageRequest != updatedThreadData.threadIsMessageRequest
-        {
+            
             messageRequestView.isHidden = (
                 updatedThreadData.threadIsMessageRequest == false ||
                 updatedThreadData.threadRequiresApproval == true
             )
+            scrollButtonMessageRequestsBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == true)
+            scrollButtonBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == false)
+        }
+        
+        if initialLoad || viewModel.threadData.threadIsBlocked != updatedThreadData.threadIsBlocked {
+            addOrRemoveBlockedBanner(threadIsBlocked: (updatedThreadData.threadIsBlocked == true))
         }
         
         if initialLoad || viewModel.threadData.threadUnreadCount != updatedThreadData.threadUnreadCount {
@@ -1056,7 +1048,16 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
 
     func addOrRemoveBlockedBanner(threadIsBlocked: Bool) {
         guard threadIsBlocked else {
-            self.blockedBanner.removeFromSuperview()
+            UIView.animate(
+                withDuration: 0.25,
+                animations: { [weak self] in
+                    self?.blockedBanner.alpha = 0
+                },
+                completion: { [weak self] _ in
+                    self?.blockedBanner.alpha = 1
+                    self?.blockedBanner.removeFromSuperview()
+                }
+            )
             return
         }
 

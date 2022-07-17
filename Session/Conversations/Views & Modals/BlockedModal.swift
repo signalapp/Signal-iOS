@@ -81,7 +81,7 @@ final class BlockedModal: Modal {
         Storage.shared.writeAsync { db in
             try Contact
                 .filter(id: publicKey)
-                .updateAll(db, Contact.Columns.isBlocked.set(to: true))
+                .updateAll(db, Contact.Columns.isBlocked.set(to: false))
         
             try MessageSender
                 .syncConfiguration(db, forceSyncNow: true)
