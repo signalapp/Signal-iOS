@@ -493,7 +493,7 @@
 		34A95501271B503E00B05242 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95500271B503E00B05242 /* DisplayableText.swift */; };
 		34A955AC271B521500B05242 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AB271B521500B05242 /* CommonStrings.swift */; };
 		34A955AE271B533000B05242 /* FullTextSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AD271B532F00B05242 /* FullTextSearcher.swift */; };
-		34A955B2271B53F600B05242 /* GroupManager+SignalMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AF271B53F500B05242 /* GroupManager+SignalMessaging.swift */; };
+		34A955B2271B53F600B05242 /* GroupManager+GroupInvites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */; };
 		34A955B3271B53F600B05242 /* BlockListUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A955B0271B53F600B05242 /* BlockListUIUtils.m */; };
 		34A955B4271B53F600B05242 /* BlockListUIUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A955B1271B53F600B05242 /* BlockListUIUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34A955B6271B54BD00B05242 /* UIColor+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955B5271B54BC00B05242 /* UIColor+OWS.swift */; };
@@ -1752,7 +1752,7 @@
 		34A955AA271B510500B05242 /* Wallpaper+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Wallpaper+Constants.swift"; sourceTree = "<group>"; };
 		34A955AB271B521500B05242 /* CommonStrings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonStrings.swift; sourceTree = "<group>"; };
 		34A955AD271B532F00B05242 /* FullTextSearcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FullTextSearcher.swift; sourceTree = "<group>"; };
-		34A955AF271B53F500B05242 /* GroupManager+SignalMessaging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupManager+SignalMessaging.swift"; sourceTree = "<group>"; };
+		34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupManager+GroupInvites.swift"; sourceTree = "<group>"; };
 		34A955B0271B53F600B05242 /* BlockListUIUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListUIUtils.m; sourceTree = "<group>"; };
 		34A955B1271B53F600B05242 /* BlockListUIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListUIUtils.h; sourceTree = "<group>"; };
 		34A955B5271B54BC00B05242 /* UIColor+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+OWS.swift"; sourceTree = "<group>"; };
@@ -3340,7 +3340,7 @@
 				34A955B0271B53F600B05242 /* BlockListUIUtils.m */,
 				34A95506271B510400B05242 /* ConversationStyle.swift */,
 				34A955AD271B532F00B05242 /* FullTextSearcher.swift */,
-				34A955AF271B53F500B05242 /* GroupManager+SignalMessaging.swift */,
+				34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */,
 				34A95507271B510400B05242 /* GroupViewUtils.swift */,
 				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
 				34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */,
@@ -6206,7 +6206,7 @@
 				3402AAAA271D9E180084CBAE /* InputAccessoryViewPlaceholder.swift in Sources */,
 				34A954DC271B4F3E00B05242 /* Theme+OWS.swift in Sources */,
 				3402AA97271D9E180084CBAE /* VideoEditorModel.swift in Sources */,
-				34A955B2271B53F600B05242 /* GroupManager+SignalMessaging.swift in Sources */,
+				34A955B2271B53F600B05242 /* GroupManager+GroupInvites.swift in Sources */,
 				3402AA96271D9E180084CBAE /* Toast.swift in Sources */,
 				3402AA92271D9E180084CBAE /* CVText.swift in Sources */,
 				3402AA43271D9DCD0084CBAE /* ContactShareApprovalViewController.swift in Sources */,
