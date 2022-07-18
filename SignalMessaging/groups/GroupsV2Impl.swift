@@ -2088,7 +2088,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         }
     }
 
-    public func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: TSGroupModelV2) {
+    public func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(
+        groupModel: TSGroupModelV2,
+        removeLocalUserBlock: @escaping (SDSAnyWriteTransaction) -> Void
+    ) {
         guard groupModel.isPlaceholderModel else {
             owsFailDebug("Invalid group model.")
             return
@@ -2102,8 +2105,13 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         }.catch { (error: Error) -> Void in
             switch error {
             case GroupsV2Error.localUserIsNotARequestingMember, GroupsV2Error.localUserBlockedFromJoining:
-                // Expected if our request has been cancelled or we're banned
+                // Expected if our request has been cancelled or we're banned. In this
+                // scenario, we should remove ourselves from the local group (in which
+                // we will be stored as a requesting member).
                 Logger.verbose("Error: \(error)")
+                self.databaseStorage.write { transaction in
+                    removeLocalUserBlock(transaction)
+                }
             default:
                 owsFailDebug("Error: \(error)")
             }

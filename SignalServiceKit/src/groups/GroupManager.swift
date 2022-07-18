@@ -1142,10 +1142,6 @@ public class GroupManager: NSObject {
         }
     }
 
-    private static func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: TSGroupModelV2) {
-        groupsV2Swift.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: groupModel)
-    }
-
     @objc
     public static func cachedGroupInviteLinkPreview(groupInviteLinkInfo: GroupInviteLinkInfo) -> GroupInviteLinkPreview? {
         do {
@@ -1196,39 +1192,45 @@ public class GroupManager: NSObject {
             return
         }
 
-        if let groupModelV2 = groupThread.groupModel as? TSGroupModelV2,
-           groupModelV2.isPlaceholderModel {
-            Logger.warn("Ignoring 403 for placeholder group.")
-            GroupManager.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: groupModelV2)
-            return
+        let groupModel = groupThread.groupModel
+
+        let removeLocalUserBlock: (SDSAnyWriteTransaction) -> Void = { transaction in
+            // Remove local user from group.
+            // We do _not_ bump the revision number since this (unlike all other
+            // changes to group state) is inferred from a 403. This is fine; if
+            // we're ever re-added to the group the groups v2 machinery will
+            // recover.
+            var groupMembershipBuilder = groupModel.groupMembership.asBuilder
+            groupMembershipBuilder.remove(localAddress)
+            var groupModelBuilder = groupModel.asBuilder
+            do {
+                groupModelBuilder.groupMembership = groupMembershipBuilder.build()
+                let newGroupModel = try groupModelBuilder.build()
+
+                // groupUpdateSourceAddress is nil because we don't (and can't) know who
+                // removed us or revoked our invite.
+                //
+                // newDisappearingMessageToken is nil because we don't want to change
+                // DM state.
+                _ = try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
+                                                                                newDisappearingMessageToken: nil,
+                                                                                groupUpdateSourceAddress: nil,
+                                                                                infoMessagePolicy: .always,
+                                                                                transaction: transaction)
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
         }
 
-        Logger.info("")
-
-        // Remove local user from group.
-        // We do _not_ bump the revision number since this (unlike all other
-        // changes to group state) is inferred from a 403. This is fine; if
-        // we're ever re-added to the group the groups v2 machinery will
-        // recover.
-        var groupMembershipBuilder = groupThread.groupModel.groupMembership.asBuilder
-        groupMembershipBuilder.remove(localAddress)
-        var groupModelBuilder = groupThread.groupModel.asBuilder
-        do {
-            groupModelBuilder.groupMembership = groupMembershipBuilder.build()
-            let newGroupModel = try groupModelBuilder.build()
-
-            // groupUpdateSourceAddress is nil because we don't (and can't) know who
-            // removed us or revoked our invite.
-            //
-            // newDisappearingMessageToken is nil because we don't want to change
-            // DM state.
-            _ = try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
-                                                                            newDisappearingMessageToken: nil,
-                                                                            groupUpdateSourceAddress: nil,
-                                                                            infoMessagePolicy: .always,
-                                                                            transaction: transaction)
-        } catch {
-            owsFailDebug("Error: \(error)")
+        if let groupModelV2 = groupModel as? TSGroupModelV2,
+           groupModelV2.isPlaceholderModel {
+            Logger.warn("Ignoring 403 for placeholder group.")
+            groupsV2Swift.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(
+                groupModel: groupModelV2,
+                removeLocalUserBlock: removeLocalUserBlock
+            )
+        } else {
+            removeLocalUserBlock(transaction)
         }
     }
 
