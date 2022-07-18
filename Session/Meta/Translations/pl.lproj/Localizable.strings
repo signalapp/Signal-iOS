@@ -638,7 +638,6 @@
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "Czy na pewno chcesz wyczyścić wszystkie żądania wiadomości?";
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "Wyczyść";
 "MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "Czy na pewno chcesz usunąć to żądanie wiadomości?";
-"MESSAGE_REQUESTS_APPROVAL_ERROR_MESSAGE" = "Wystąpił błąd podczas próby zaakceptowania tego żądania wiadomości";
 "MESSAGE_REQUESTS_INFO" = "Wysyłanie wiadomości do tego użytkownika automatycznie zaakceptuje ich żądanie wiadomości.";
 "MESSAGE_REQUESTS_ACCEPTED" = "Twoje żądanie wiadomości zostało zaakceptowane.";
 "MESSAGE_REQUESTS_NOTIFICATION" = "Masz nowe żądanie wiadomości";

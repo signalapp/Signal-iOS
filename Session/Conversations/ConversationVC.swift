@@ -556,12 +556,32 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         {
             updateNavBarButtons(threadData: updatedThreadData, initialVariant: viewModel.initialThreadVariant)
             
-            messageRequestView.isHidden = (
-                updatedThreadData.threadIsMessageRequest == false ||
-                updatedThreadData.threadRequiresApproval == true
-            )
-            scrollButtonMessageRequestsBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == true)
-            scrollButtonBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == false)
+            let messageRequestsViewWasVisible: Bool = (messageRequestView.isHidden == false)
+            
+            UIView.animate(withDuration: 0.3) { [weak self] in
+                self?.messageRequestView.isHidden = (
+                    updatedThreadData.threadIsMessageRequest == false ||
+                    updatedThreadData.threadRequiresApproval == true
+                )
+            
+                self?.scrollButtonMessageRequestsBottomConstraint?.isActive = (
+                    updatedThreadData.threadIsMessageRequest == true
+                )
+                self?.scrollButtonBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == false)
+                
+                // Update the table content inset and offset to account for
+                // the dissapearance of the messageRequestsView
+                if messageRequestsViewWasVisible {
+                    let messageRequestsOffset: CGFloat = ((self?.messageRequestView.bounds.height ?? 0) + 16)
+                    let oldContentInset: UIEdgeInsets = (self?.tableView.contentInset ?? UIEdgeInsets.zero)
+                    self?.tableView.contentInset = UIEdgeInsets(
+                        top: 0,
+                        leading: 0,
+                        bottom: max(oldContentInset.bottom - messageRequestsOffset, 0),
+                        trailing: 0
+                    )
+                }
+            }
         }
         
         if initialLoad || viewModel.threadData.threadIsBlocked != updatedThreadData.threadIsBlocked {

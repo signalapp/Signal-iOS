@@ -338,83 +338,77 @@ extension ConversationVC:
         let linkPreviewDraft: LinkPreviewDraft? = snInputView.linkPreviewInfo?.draft
         let quoteModel: QuotedReplyModel? = snInputView.quoteDraftInfo?.model
         
+        // If this was a message request then approve it
         approveMessageRequestIfNeeded(
             for: threadId,
             threadVariant: self.viewModel.threadData.threadVariant,
             isNewThread: !oldThreadShouldBeVisible,
             timestampMs: (sentTimestampMs - 1)  // Set 1ms earlier as this is used for sorting
         )
-        .done { [weak self] _ in
-            Storage.shared.writeAsync(
-                updates: { db in
-                    guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
-                        return
-                    }
-                    
-                    // Let the viewModel know we are about to send a message
-                    self?.viewModel.sentMessageBeforeUpdate = true
-                    
-                    // Update the thread to be visible
-                    _ = try SessionThread
-                        .filter(id: threadId)
-                        .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
-                    
-                    // Create the interaction
-                    let interaction: Interaction = try Interaction(
-                        threadId: threadId,
-                        authorId: getUserHexEncodedPublicKey(db),
-                        variant: .standardOutgoing,
-                        body: text,
-                        timestampMs: sentTimestampMs,
-                        hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: text),
-                        linkPreviewUrl: linkPreviewDraft?.urlString
-                    ).inserted(db)
-
-                    // If there is a LinkPreview and it doesn't match an existing one then add it now
-                    if
-                        let linkPreviewDraft: LinkPreviewDraft = linkPreviewDraft,
-                        (try? interaction.linkPreview.isEmpty(db)) == true
-                    {
-                        try LinkPreview(
-                            url: linkPreviewDraft.urlString,
-                            title: linkPreviewDraft.title,
-                            attachmentId: LinkPreview.saveAttachmentIfPossible(
-                                db,
-                                imageData: linkPreviewDraft.jpegImageData,
-                                mimeType: OWSMimeTypeImageJpeg
-                            )
-                        ).insert(db)
-                    }
-                    
-                    // If there is a Quote the insert it now
-                    if let interactionId: Int64 = interaction.id, let quoteModel: QuotedReplyModel = quoteModel {
-                        try Quote(
-                            interactionId: interactionId,
-                            authorId: quoteModel.authorId,
-                            timestampMs: quoteModel.timestampMs,
-                            body: quoteModel.body,
-                            attachmentId: quoteModel.generateAttachmentThumbnailIfNeeded(db)
-                        ).insert(db)
-                    }
-                    
-                    try MessageSender.send(
-                        db,
-                        interaction: interaction,
-                        in: thread
-                    )
-                },
-                completion: { [weak self] _, _ in
-                    self?.handleMessageSent()
+        
+        // Send the message
+        Storage.shared.writeAsync(
+            updates: { [weak self] db in
+                guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
+                    return
                 }
-            )
-        }
-        .catch(on: DispatchQueue.main) { [weak self] _ in
-            // Show an error indicating that approving the thread failed
-            let alert = UIAlertController(title: "Session", message: "An error occurred when trying to accept this message request", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            self?.present(alert, animated: true, completion: nil)
-        }
-        .retainUntilComplete()
+                
+                // Let the viewModel know we are about to send a message
+                self?.viewModel.sentMessageBeforeUpdate = true
+                
+                // Update the thread to be visible
+                _ = try SessionThread
+                    .filter(id: threadId)
+                    .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
+                
+                // Create the interaction
+                let interaction: Interaction = try Interaction(
+                    threadId: threadId,
+                    authorId: getUserHexEncodedPublicKey(db),
+                    variant: .standardOutgoing,
+                    body: text,
+                    timestampMs: sentTimestampMs,
+                    hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: text),
+                    linkPreviewUrl: linkPreviewDraft?.urlString
+                ).inserted(db)
+
+                // If there is a LinkPreview and it doesn't match an existing one then add it now
+                if
+                    let linkPreviewDraft: LinkPreviewDraft = linkPreviewDraft,
+                    (try? interaction.linkPreview.isEmpty(db)) == true
+                {
+                    try LinkPreview(
+                        url: linkPreviewDraft.urlString,
+                        title: linkPreviewDraft.title,
+                        attachmentId: LinkPreview.saveAttachmentIfPossible(
+                            db,
+                            imageData: linkPreviewDraft.jpegImageData,
+                            mimeType: OWSMimeTypeImageJpeg
+                        )
+                    ).insert(db)
+                }
+                
+                // If there is a Quote the insert it now
+                if let interactionId: Int64 = interaction.id, let quoteModel: QuotedReplyModel = quoteModel {
+                    try Quote(
+                        interactionId: interactionId,
+                        authorId: quoteModel.authorId,
+                        timestampMs: quoteModel.timestampMs,
+                        body: quoteModel.body,
+                        attachmentId: quoteModel.generateAttachmentThumbnailIfNeeded(db)
+                    ).insert(db)
+                }
+                
+                try MessageSender.send(
+                    db,
+                    interaction: interaction,
+                    in: thread
+                )
+            },
+            completion: { [weak self] _, _ in
+                self?.handleMessageSent()
+            }
+        )
     }
 
     func sendAttachments(_ attachments: [SignalAttachment], with text: String, onComplete: (() -> ())? = nil) {
@@ -435,61 +429,55 @@ extension ConversationVC:
         let oldThreadShouldBeVisible: Bool = (self.viewModel.threadData.threadShouldBeVisible == true)
         let sentTimestampMs: Int64 = Int64(floor((Date().timeIntervalSince1970 * 1000)))
 
+        // If this was a message request then approve it
         approveMessageRequestIfNeeded(
             for: threadId,
             threadVariant: self.viewModel.threadData.threadVariant,
             isNewThread: !oldThreadShouldBeVisible,
             timestampMs: (sentTimestampMs - 1)  // Set 1ms earlier as this is used for sorting
         )
-        .done { [weak self] _ in
-            Storage.shared.writeAsync(
-                updates: { db in
-                    guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
-                        return
-                    }
-                    
-                    // Let the viewModel know we are about to send a message
-                    self?.viewModel.sentMessageBeforeUpdate = true
-                    
-                    // Update the thread to be visible
-                    _ = try SessionThread
-                        .filter(id: threadId)
-                        .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
-                    
-                    // Create the interaction
-                    let interaction: Interaction = try Interaction(
-                        threadId: threadId,
-                        authorId: getUserHexEncodedPublicKey(db),
-                        variant: .standardOutgoing,
-                        body: text,
-                        timestampMs: sentTimestampMs,
-                        hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: text)
-                    ).inserted(db)
-
-                    try MessageSender.send(
-                        db,
-                        interaction: interaction,
-                        with: attachments,
-                        in: thread
-                    )
-                },
-                completion: { [weak self] _, _ in
-                    self?.handleMessageSent()
-                    
-                    // Attachment successfully sent - dismiss the screen
-                    DispatchQueue.main.async {
-                        onComplete?()
-                    }
+        
+        // Send the message
+        Storage.shared.writeAsync(
+            updates: { [weak self] db in
+                guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
+                    return
                 }
-            )
-        }
-        .catch(on: DispatchQueue.main) { [weak self] _ in
-            // Show an error indicating that approving the thread failed
-            let alert = UIAlertController(title: "Session", message: "An error occurred when trying to accept this message request", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            self?.present(alert, animated: true, completion: nil)
-        }
-        .retainUntilComplete()
+                
+                // Let the viewModel know we are about to send a message
+                self?.viewModel.sentMessageBeforeUpdate = true
+                
+                // Update the thread to be visible
+                _ = try SessionThread
+                    .filter(id: threadId)
+                    .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
+                
+                // Create the interaction
+                let interaction: Interaction = try Interaction(
+                    threadId: threadId,
+                    authorId: getUserHexEncodedPublicKey(db),
+                    variant: .standardOutgoing,
+                    body: text,
+                    timestampMs: sentTimestampMs,
+                    hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: text)
+                ).inserted(db)
+
+                try MessageSender.send(
+                    db,
+                    interaction: interaction,
+                    with: attachments,
+                    in: thread
+                )
+            },
+            completion: { [weak self] _, _ in
+                self?.handleMessageSent()
+                
+                // Attachment successfully sent - dismiss the screen
+                DispatchQueue.main.async {
+                    onComplete?()
+                }
+            }
+        )
     }
 
     func handleMessageSent() {
@@ -1635,8 +1623,8 @@ extension ConversationVC {
         threadVariant: SessionThread.Variant,
         isNewThread: Bool,
         timestampMs: Int64
-    ) -> Promise<Void> {
-        guard threadVariant == .contact else { return Promise.value(()) }
+    ) {
+        guard threadVariant == .contact else { return }
 
         // If the contact doesn't exist then we should create it so we can store the 'isApproved' state
         // (it'll be updated with correct profile info if they accept the message request so this
@@ -1651,97 +1639,54 @@ extension ConversationVC {
             let thread: SessionThread = approvalData.thread,
             !approvalData.contact.isApproved
         else {
-            return Promise.value(())
+            return
         }
-
-        return Promise.value(())
-            .then { [weak self] _ -> Promise<Void> in
-                guard !isNewThread else { return Promise.value(()) }
-                guard let strongSelf = self else { return Promise(error: MessageSenderError.noThread) }
-
+        
+        Storage.shared.writeAsync(
+            updates: { db in
                 // If we aren't creating a new thread (ie. sending a message request) then send a
                 // messageRequestResponse back to the sender (this allows the sender to know that
                 // they have been approved and can now use this contact in closed groups)
-                let (promise, seal) = Promise<Void>.pending()
-                let messageRequestResponse: MessageRequestResponse = MessageRequestResponse(
-                    isApproved: true,
-                    sentTimestampMs: UInt64(timestampMs)
-                )
-
-                // Show a loading indicator
-                ModalActivityIndicatorViewController.present(fromViewController: strongSelf, canCancel: false) { _ in
-                    seal.fulfill(())
+                if !isNewThread {
+                    try MessageSender.send(
+                        db,
+                        message: MessageRequestResponse(
+                            isApproved: true,
+                            sentTimestampMs: UInt64(timestampMs)
+                        ),
+                        interactionId: nil,
+                        in: thread
+                    )
                 }
-
-                return promise
-                    .then { _ -> Promise<Void> in
-                        Storage.shared.writeAsync { db in
-                            try MessageSender.sendNonDurably(
-                                db,
-                                message: messageRequestResponse,
-                                interactionId: nil,
-                                in: thread
-                            )
-                        }
-                    }
-                    .map { _ in
-                        if self?.presentedViewController is ModalActivityIndicatorViewController {
-                            self?.dismiss(animated: true, completion: nil) // Dismiss the loader
-                        }
-                    }
-            }
-            .map { _ in
+                
                 // Default 'didApproveMe' to true for the person approving the message request
-                Storage.shared.writeAsync(
-                    updates: { db in
-                        try approvalData.contact
-                            .with(
-                                isApproved: true,
-                                didApproveMe: .update(approvalData.contact.didApproveMe || !isNewThread)
-                            )
-                            .save(db)
-                        
-                        // Send a sync message with the details of the contact
-                        try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
-                    },
-                    completion: { db, _ in
-                        // Hide the 'messageRequestView' since the request has been approved
-                        DispatchQueue.main.async { [weak self] in
-                            let messageRequestViewWasVisible: Bool = (self?.messageRequestView.isHidden == false)
-
-                            UIView.animate(withDuration: 0.3) {
-                                self?.messageRequestView.isHidden = true
-                                self?.scrollButtonMessageRequestsBottomConstraint?.isActive = false
-                                self?.scrollButtonBottomConstraint?.isActive = true
-
-                                // Update the table content inset and offset to account for
-                                // the dissapearance of the messageRequestsView
-                                if messageRequestViewWasVisible {
-                                    let messageRequestsOffset: CGFloat = ((self?.messageRequestView.bounds.height ?? 0) + 16)
-                                    let oldContentInset: UIEdgeInsets = (self?.tableView.contentInset ?? UIEdgeInsets.zero)
-                                    self?.tableView.contentInset = UIEdgeInsets(
-                                        top: 0,
-                                        leading: 0,
-                                        bottom: max(oldContentInset.bottom - messageRequestsOffset, 0),
-                                        trailing: 0
-                                    )
-                                }
-                            }
-                            
-                            // Remove the 'MessageRequestsViewController' from the nav hierarchy if present
-                            if
-                                let viewControllers: [UIViewController] = self?.navigationController?.viewControllers,
-                                let messageRequestsIndex = viewControllers.firstIndex(where: { $0 is MessageRequestsViewController }),
-                                messageRequestsIndex > 0
-                            {
-                                var newViewControllers = viewControllers
-                                newViewControllers.remove(at: messageRequestsIndex)
-                                self?.navigationController?.viewControllers = newViewControllers
-                            }
-                        }
+                try approvalData.contact
+                    .with(
+                        isApproved: true,
+                        didApproveMe: .update(approvalData.contact.didApproveMe || !isNewThread)
+                    )
+                    .save(db)
+                
+                // Send a sync message with the details of the contact
+                try MessageSender
+                    .syncConfiguration(db, forceSyncNow: true)
+                    .retainUntilComplete()
+            },
+            completion: { _, _ in
+                // Remove the 'MessageRequestsViewController' from the nav hierarchy if present
+                DispatchQueue.main.async { [weak self] in
+                    if
+                        let viewControllers: [UIViewController] = self?.navigationController?.viewControllers,
+                        let messageRequestsIndex = viewControllers.firstIndex(where: { $0 is MessageRequestsViewController }),
+                        messageRequestsIndex > 0
+                    {
+                        var newViewControllers = viewControllers
+                        newViewControllers.remove(at: messageRequestsIndex)
+                        self?.navigationController?.viewControllers = newViewControllers
                     }
-                )
+                }
             }
+        )
     }
 
     @objc func acceptMessageRequest() {
@@ -1751,17 +1696,6 @@ extension ConversationVC {
             isNewThread: false,
             timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
         )
-        .catch(on: DispatchQueue.main) { [weak self] _ in
-            // Show an error indicating that approving the thread failed
-            let alert = UIAlertController(
-                title: "Session",
-                message: "MESSAGE_REQUESTS_APPROVAL_ERROR_MESSAGE".localized(),
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-            self?.present(alert, animated: true, completion: nil)
-        }
-        .retainUntilComplete()
     }
 
     @objc func deleteMessageRequest() {
@@ -1795,7 +1729,9 @@ extension ConversationVC {
                         .filter(id: threadId)
                         .deleteAll(db)
                     
-                    try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                    try MessageSender
+                        .syncConfiguration(db, forceSyncNow: true)
+                        .retainUntilComplete()
                 },
                 completion: { db, _ in
                     DispatchQueue.main.async { [weak self] in
