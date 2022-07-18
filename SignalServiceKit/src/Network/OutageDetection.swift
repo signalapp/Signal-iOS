@@ -52,16 +52,22 @@ public class OutageDetection: NSObject {
     // DNS lookup failures, etc. are not considered an outage.
     private func checkForOutageSync() -> Bool {
         let host = CFHostCreateWithName(nil, "uptime.signal.org" as CFString).takeRetainedValue()
-        CFHostStartInfoResolution(host, .addresses, nil)
+        var resolutionError = CFStreamError()
+        guard CFHostStartInfoResolution(host, .addresses, &resolutionError) else {
+            Logger.warn("CFHostStartInfoResolution failed: \(resolutionError)")
+            return false
+        }
         var success: DarwinBoolean = false
         guard let addresses = CFHostGetAddressing(host, &success)?.takeUnretainedValue() as NSArray? else {
-            owsFailDebug("CFHostGetAddressing failed: no addresses.")
+            owsFailDebug("CFHostGetAddressing failed: nil addresses")
             return false
         }
         guard success.boolValue else {
             owsFailDebug("CFHostGetAddressing failed.")
             return false
         }
+        owsAssertDebug(addresses.count > 0, "CFHostGetAddressing: empty addresses")
+
         var isOutageDetected = false
         for case let address as NSData in addresses {
             var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
