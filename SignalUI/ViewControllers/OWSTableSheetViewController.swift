@@ -53,7 +53,7 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
             previousSafeAreaInsets = tableViewController.view.safeAreaInsets
         }
         if minimizedHeight != previousMinimizedHeight {
-            heightConstraint?.constant = minimizedHeight
+            heightConstraint.constant = minimizedHeight
             previousMinimizedHeight = minimizedHeight
         }
     }

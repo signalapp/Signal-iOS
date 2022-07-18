@@ -57,15 +57,6 @@ open class InteractiveSheetViewController: OWSViewController {
         contentContainerView.autoHCenterInSuperview()
         contentContainerView.backgroundColor = sheetBackgroundColor
 
-        let autoMatchHeightOffset: CGFloat
-        switch handlePosition {
-        case .outside:
-            autoMatchHeightOffset = 0
-        case .inside:
-            autoMatchHeightOffset = -2 * (handleHeight + handleInsideMargin + handleInsideMargin)
-        }
-        contentContainerView.autoMatch(.height, to: .height, of: view, withOffset: autoMatchHeightOffset, relation: .lessThanOrEqual)
-
         // Prefer to be full width, but don't exceed the maximum width
         contentContainerView.autoSetDimension(.width, toSize: maxWidth, relation: .lessThanOrEqual)
         contentContainerView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
@@ -129,7 +120,8 @@ open class InteractiveSheetViewController: OWSViewController {
 
     // MARK: - Resize / Interactive Dismiss
 
-    public var heightConstraint: NSLayoutConstraint?
+    public private(set) lazy var heightConstraint = contentContainerView.heightAnchor.constraint(equalToConstant: minimizedHeight)
+    private lazy var maxHeightConstraint = contentContainerView.heightAnchor.constraint(equalToConstant: maximizedHeight)
     open var minimizedHeight: CGFloat {
         return min(maximizedHeight, minHeight)
     }
@@ -138,7 +130,7 @@ open class InteractiveSheetViewController: OWSViewController {
     }
 
     public func maximizeHeight() {
-        heightConstraint?.constant = maximizedHeight
+        heightConstraint.constant = maximizedHeight
         view.layoutIfNeeded()
     }
 
@@ -147,7 +139,7 @@ open class InteractiveSheetViewController: OWSViewController {
     private var startingTranslation: CGFloat?
 
     private func setupInteractiveSizing() {
-        heightConstraint = contentContainerView.autoSetDimension(.height, toSize: minimizedHeight)
+        view.addConstraints( [ heightConstraint, maxHeightConstraint ] )
 
         // Create a pan gesture to handle when the user interacts with the
         // view outside of any scroll views we want to follow.
@@ -160,6 +152,11 @@ open class InteractiveSheetViewController: OWSViewController {
         // so we can transfer any initial scrolling into maximizing
         // the view.
         interactiveScrollViews.forEach { $0.panGestureRecognizer.addTarget(self, action: #selector(handlePan)) }
+    }
+
+    open override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        maxHeightConstraint.constant = maximizedHeight
     }
 
     @objc
@@ -197,7 +194,7 @@ open class InteractiveSheetViewController: OWSViewController {
             }
 
             // Update our height to reflect the new position
-            heightConstraint?.constant = newHeight
+            heightConstraint.constant = newHeight
             view.layoutIfNeeded()
         case .ended, .cancelled, .failed:
             guard let startingHeight = startingHeight else { break }
@@ -253,13 +250,13 @@ open class InteractiveSheetViewController: OWSViewController {
                         break
                     }
                 } else {
-                    self.heightConstraint?.constant = finalHeight
+                    self.heightConstraint.constant = finalHeight
                     self.view.layoutIfNeeded()
                 }
 
                 self.backdropView?.alpha = completionState == .dismissing ? 0 : 1
             }) { _ in
-                self.heightConstraint?.constant = finalHeight
+                self.heightConstraint.constant = finalHeight
                 self.view.layoutIfNeeded()
 
                 if completionState == .dismissing {
@@ -275,7 +272,7 @@ open class InteractiveSheetViewController: OWSViewController {
             backdropView?.alpha = 1
 
             guard let startingHeight = startingHeight else { break }
-            heightConstraint?.constant = startingHeight
+            heightConstraint.constant = startingHeight
         }
     }
 
@@ -286,8 +283,8 @@ open class InteractiveSheetViewController: OWSViewController {
         // currently maximized, or we're panning outside of the scroll
         // view we want to do an interactive transition.
         guard (panningScrollView != nil && panningScrollView!.contentOffset.y <= 0)
-            || contentContainerView.height < maximizedHeight
-            || panningScrollView == nil else { return false }
+                || contentContainerView.height < maxHeightConstraint.constant
+                || panningScrollView == nil else { return false }
 
         if startingTranslation == nil {
             startingTranslation = sender.translation(in: view).y

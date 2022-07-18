@@ -118,10 +118,10 @@ class EmojiPickerSheet: InteractiveSheetViewController {
     }
 
     private func expandSheetAnimated() {
-        guard heightConstraint?.constant != maximizedHeight else { return }
+        guard heightConstraint.constant != maximizedHeight else { return }
 
         UIView.animate(withDuration: maxAnimationDuration, delay: 0, options: .curveEaseOut, animations: {
-            self.heightConstraint?.constant = self.maximizedHeight
+            self.heightConstraint.constant = self.maximizedHeight
             self.view.layoutIfNeeded()
             self.backdropView?.alpha = 1
         })
