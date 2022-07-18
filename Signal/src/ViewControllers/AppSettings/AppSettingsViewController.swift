@@ -80,17 +80,6 @@ class AppSettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    private lazy var hasCurrentSubscription: Bool = {
-        return SubscriptionManager.hasCurrentSubscriptionWithSneakyTransaction()
-    }()
-
-    private lazy var hasExpiredSubscription: Bool = {
-        guard let mostRecentlyExpiredBadgeId = SubscriptionManager.mostRecentlyExpiredBadgeIDWithSneakyTransaction() else {
-            return false
-        }
-        return SubscriptionBadgeIds.contains(mostRecentlyExpiredBadgeId)
-    }()
-
     func updateTableContents() {
         let contents = OWSTableContents()
 

@@ -71,10 +71,6 @@ class SubscriptionViewController: OWSTableViewController2 {
 
     // MARK: - Internal variables
 
-    private lazy var profileSubscriptionBadges: [OWSUserProfileBadgeInfo] = {
-        return SubscriptionManager.currentProfileSubscriptionBadges()
-    }()
-
     private var ignoreProfileBadgeStateForNewBadgeRedemption = false
     private var persistedSubscriberID: Data?
 

@@ -253,12 +253,6 @@ public class SubscriptionManager: NSObject {
 
     // MARK: Current subscription status
 
-    // Returns if we have a current subscription or not as calculated via our cached last subscription expiry date and subscriberID.
-    // The most accurate way to determine subscription status is via getCurrentSubscriptionStatus()
-    public class func hasCurrentSubscriptionWithSneakyTransaction() -> Bool {
-        databaseStorage.read { subscriptionManager.hasCurrentSubscription(transaction: $0) }
-    }
-
     public class func currentProfileSubscriptionBadges() -> [OWSUserProfileBadgeInfo] {
         let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
         let profileBadges = snapshot.profileBadgeInfo ?? []
@@ -808,10 +802,6 @@ public class SubscriptionManager: NSObject {
         }.catch(on: .sharedBackground) { error in
             owsFailDebug("Failed subscription heartbeat with error \(error)")
         }
-    }
-
-    public static func mostRecentlyExpiredBadgeIDWithSneakyTransaction() -> String? {
-        databaseStorage.read { mostRecentlyExpiredBadgeID(transaction: $0) }
     }
 
     private static func updateSubscriptionHeartbeatDate() {
