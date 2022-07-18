@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -66,43 +66,35 @@ public extension TSInfoMessage {
 // MARK: -
 
 extension TSInfoMessage {
-    private func groupUpdateDescription(oldGroupModel: TSGroupModel?,
-                                        newGroupModel: TSGroupModel,
-                                        transaction: SDSAnyReadTransaction) -> String {
-
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("missing local address")
-            return GroupUpdateCopy.defaultGroupUpdateDescription(groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                                                 transaction: transaction)
+    private func groupUpdateDescription(
+        oldGroupModel: TSGroupModel?,
+        newGroupModel: TSGroupModel,
+        transaction: SDSAnyReadTransaction
+    ) -> String {
+        guard let groupUpdate = makeGroupUpdate(
+            oldGroupModel: oldGroupModel,
+            newGroupModel: newGroupModel,
+            transaction: transaction
+        ) else {
+            return GroupUpdateCopy.defaultGroupUpdateDescription(
+                groupUpdateSourceAddress: groupUpdateSourceAddress,
+                transaction: transaction
+            )
         }
 
-        let groupUpdate = GroupUpdateCopy(newGroupModel: newGroupModel,
-                                          oldGroupModel: oldGroupModel,
-                                          oldDisappearingMessageToken: oldDisappearingMessageToken,
-                                          newDisappearingMessageToken: newDisappearingMessageToken,
-                                          localAddress: localAddress,
-                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                          transaction: transaction)
         return groupUpdate.updateDescription
     }
 
-    private func groupUpdateItems(oldGroupModel: TSGroupModel?,
-                                  newGroupModel: TSGroupModel,
-                                  transaction: SDSAnyReadTransaction) -> [GroupUpdateCopyItem]? {
-
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("missing local address")
-            return nil
-        }
-
-        let groupUpdate = GroupUpdateCopy(newGroupModel: newGroupModel,
-                                          oldGroupModel: oldGroupModel,
-                                          oldDisappearingMessageToken: oldDisappearingMessageToken,
-                                          newDisappearingMessageToken: newDisappearingMessageToken,
-                                          localAddress: localAddress,
-                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                          transaction: transaction)
-        return groupUpdate.itemList
+    private func groupUpdateItems(
+        oldGroupModel: TSGroupModel?,
+        newGroupModel: TSGroupModel,
+        transaction: SDSAnyReadTransaction
+    ) -> [GroupUpdateCopyItem]? {
+        makeGroupUpdate(
+            oldGroupModel: oldGroupModel,
+            newGroupModel: newGroupModel,
+            transaction: transaction
+        )?.itemList
     }
 
     func isEmptyGroupUpdate(transaction: SDSAnyReadTransaction) -> Bool {
@@ -122,23 +114,37 @@ extension TSInfoMessage {
                                   transaction: transaction)
     }
 
-    private func isEmptyGroupUpdate(oldGroupModel: TSGroupModel?,
-                                    newGroupModel: TSGroupModel,
-                                    transaction: SDSAnyReadTransaction) -> Bool {
+    private func isEmptyGroupUpdate(
+        oldGroupModel: TSGroupModel?,
+        newGroupModel: TSGroupModel,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
+        makeGroupUpdate(
+            oldGroupModel: oldGroupModel,
+            newGroupModel: newGroupModel,
+            transaction: transaction
+        )?.isEmptyUpdate ?? false
+    }
 
+    private func makeGroupUpdate(
+        oldGroupModel: TSGroupModel?,
+        newGroupModel: TSGroupModel,
+        transaction: SDSAnyReadTransaction
+    ) -> GroupUpdateCopy? {
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("missing local address")
-            return false
+            return nil
         }
 
-        let groupUpdate = GroupUpdateCopy(newGroupModel: newGroupModel,
-                                          oldGroupModel: oldGroupModel,
-                                          oldDisappearingMessageToken: oldDisappearingMessageToken,
-                                          newDisappearingMessageToken: newDisappearingMessageToken,
-                                          localAddress: localAddress,
-                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                          transaction: transaction)
-        return groupUpdate.isEmptyUpdate
+        return GroupUpdateCopy(
+            newGroupModel: newGroupModel,
+            oldGroupModel: oldGroupModel,
+            oldDisappearingMessageToken: oldDisappearingMessageToken,
+            newDisappearingMessageToken: newDisappearingMessageToken,
+            localAddress: localAddress,
+            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            transaction: transaction
+        )
     }
 
     @objc
@@ -178,7 +184,7 @@ extension TSInfoMessage {
     }
 }
 
-// MARK: -
+// MARK: - InfoMessageUserInfo
 
 extension TSInfoMessage {
 
@@ -195,12 +201,10 @@ extension TSInfoMessage {
         return groupModel
     }
 
-    @objc
     public var oldGroupModel: TSGroupModel? {
         return infoMessageValue(forKey: .oldGroupModel)
     }
 
-    @objc
     public var newGroupModel: TSGroupModel? {
         return infoMessageValue(forKey: .newGroupModel)
     }
@@ -213,7 +217,7 @@ extension TSInfoMessage {
         return infoMessageValue(forKey: .newDisappearingMessageToken)
     }
 
-    fileprivate var groupUpdateSourceAddress: SignalServiceAddress? {
+    public var groupUpdateSourceAddress: SignalServiceAddress? {
         return infoMessageValue(forKey: .groupUpdateSourceAddress)
     }
 

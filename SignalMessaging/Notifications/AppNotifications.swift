@@ -944,7 +944,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             if let infoMessage = previewableInteraction as? TSInfoMessage {
                 switch infoMessage.messageType {
                 case .typeGroupUpdate:
-                    if let groupUpdateAuthor = infoMessage.infoMessageUserInfo?[.groupUpdateSourceAddress] as? SignalServiceAddress,
+                    if let groupUpdateAuthor = infoMessage.groupUpdateSourceAddress,
                        let intent = thread.generateSendMessageIntent(context: .senderAddress(groupUpdateAuthor), transaction: transaction) {
                         wrapIntent(intent)
                     }
