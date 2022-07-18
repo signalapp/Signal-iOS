@@ -9,12 +9,12 @@ import SignalMessaging
 public class OWSActionSheets: NSObject {
 
     @objc
-    public class func showActionSheet(_ actionSheet: ActionSheetController) {
-        guard let frontmostViewController = CurrentAppContext().frontmostViewController() else {
+    public class func showActionSheet(_ actionSheet: ActionSheetController, fromViewController: UIViewController? = nil) {
+        guard let fromViewController = fromViewController ?? CurrentAppContext().frontmostViewController() else {
             owsFailDebug("frontmostViewController was unexpectedly nil")
             return
         }
-        frontmostViewController.present(actionSheet, animated: true, completion: nil)
+        fromViewController.present(actionSheet, animated: true, completion: nil)
     }
 
     @objc

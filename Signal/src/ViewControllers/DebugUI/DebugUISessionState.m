@@ -147,7 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                            }]];
         }
 
-        [OWSActionSheets showActionSheet:recipientSelection];
+        [OWSActionSheets showActionSheet:recipientSelection fromViewController:nil];
 
     } else {
         [self updateIdentityVerificationForAddress:thread.recipientAddressesWithSneakyTransaction.firstObject];
@@ -180,7 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    }]];
     }
 
-    [OWSActionSheets showActionSheet:stateSelection];
+    [OWSActionSheets showActionSheet:stateSelection fromViewController:nil];
 }
 
 @end
