@@ -1574,7 +1574,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                 created: 0,
                                 activeUsers: 0,
                                 activeUsersCutoff: 0,
-                                imageId: 10,
+                                imageId: "10",
                                 pinnedMessages: nil,
                                 admin: false,
                                 globalAdmin: false,
@@ -1732,7 +1732,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                 created: 0,
                                 activeUsers: 0,
                                 activeUsersCutoff: 0,
-                                imageId: 10,
+                                imageId: "10",
                                 pinnedMessages: nil,
                                 admin: false,
                                 globalAdmin: false,
@@ -1843,7 +1843,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                 created: 0,
                                 activeUsers: 0,
                                 activeUsersCutoff: 0,
-                                imageId: 10,
+                                imageId: "10",
                                 pinnedMessages: nil,
                                 admin: false,
                                 globalAdmin: false,
@@ -1912,7 +1912,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                 created: 0,
                                 activeUsers: 0,
                                 activeUsersCutoff: 0,
-                                imageId: 10,
+                                imageId: "10",
                                 pinnedMessages: nil,
                                 admin: false,
                                 globalAdmin: false,
@@ -2988,7 +2988,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                 created: 0,
                                 activeUsers: 0,
                                 activeUsersCutoff: 0,
-                                imageId: 12,
+                                imageId: "12",
                                 pinnedMessages: nil,
                                 admin: false,
                                 globalAdmin: false,
@@ -3104,7 +3104,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                         created: 0,
                                         activeUsers: 0,
                                         activeUsersCutoff: 0,
-                                        imageId: 12,
+                                        imageId: "12",
                                         pinnedMessages: nil,
                                         admin: false,
                                         globalAdmin: false,
@@ -3188,7 +3188,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                 created: 0,
                                 activeUsers: 0,
                                 activeUsersCutoff: 0,
-                                imageId: 12,
+                                imageId: "12",
                                 pinnedMessages: nil,
                                 admin: false,
                                 globalAdmin: false,
@@ -3279,7 +3279,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         OpenGroupManager
                             .roomImage(
                                 db,
-                                fileId: 1,
+                                fileId: "1",
                                 for: "testRoom",
                                 on: "testServer",
                                 using: dependencies
@@ -3293,7 +3293,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         OpenGroupManager
                             .roomImage(
                                 db,
-                                fileId: 1,
+                                fileId: "1",
                                 for: "testRoom",
                                 on: "testServer",
                                 using: dependencies
@@ -3321,7 +3321,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         OpenGroupManager
                             .roomImage(
                                 db,
-                                fileId: 1,
+                                fileId: "1",
                                 for: "testRoom",
                                 on: "testServer",
                                 using: dependencies
@@ -3348,7 +3348,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             return Promise<(OnionRequestResponseInfoType, Data?)>.pending().promise
                         }
                         
-                        static func sendOnionRequest(to snode: Snode, invoking method: SnodeAPIEndpoint, with parameters: JSON, using version: OnionRequestAPIVersion, associatedWith publicKey: String?) -> Promise<Data> {
+                        static func sendOnionRequest(to snode: Snode, invoking method: SnodeAPIEndpoint, with parameters: JSON, associatedWith publicKey: String?) -> Promise<Data> {
                             return Promise.value(Data())
                         }
                     }
@@ -3357,7 +3357,7 @@ class OpenGroupManagerSpec: QuickSpec {
                     let promise = mockStorage.read { db in
                         OpenGroupManager.roomImage(
                             db,
-                            fileId: 1,
+                            fileId: "1",
                             for: "testRoom",
                             on: "testServer",
                             using: dependencies
@@ -3382,7 +3382,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                 OpenGroupManager
                                     .roomImage(
                                         db,
-                                        fileId: 1,
+                                        fileId: "1",
                                         for: "testRoom",
                                         on: OpenGroupAPI.defaultServer,
                                         using: dependencies
@@ -3400,7 +3400,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             OpenGroupManager
                                 .roomImage(
                                     db,
-                                    fileId: 1,
+                                    fileId: "1",
                                     for: "testRoom",
                                     on: OpenGroupAPI.defaultServer,
                                     using: dependencies
@@ -3428,7 +3428,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             OpenGroupManager
                                 .roomImage(
                                     db,
-                                    fileId: 1,
+                                    fileId: "1",
                                     for: "testRoom",
                                     on: OpenGroupAPI.defaultServer,
                                     using: dependencies
@@ -3471,7 +3471,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     OpenGroupManager
                                         .roomImage(
                                             db,
-                                            fileId: 1,
+                                            fileId: "1",
                                             for: "testRoom",
                                             on: OpenGroupAPI.defaultServer,
                                             using: dependencies
@@ -3500,7 +3500,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     OpenGroupManager
                                         .roomImage(
                                             db,
-                                            fileId: 1,
+                                            fileId: "1",
                                             for: "testRoom",
                                             on: OpenGroupAPI.defaultServer,
                                             using: dependencies
