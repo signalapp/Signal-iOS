@@ -441,9 +441,13 @@ public final class DonationViewsUtil {
     }
 
     public static func getSubscriptionRedemptionFailureReason(subscription: Subscription?) -> SubscriptionRedemptionFailureReason {
-        if let subscription = subscription,
-           (subscription.status == .incomplete || subscription.status == .incompleteExpired) {
-            return .paymentFailed
+        if let subscription = subscription {
+            switch subscription.status {
+            case .incomplete, .incompleteExpired, .pastDue, .unpaid:
+                return .paymentFailed
+            case .active, .trialing, .canceled, .unknown:
+                break
+            }
         }
 
         return SDSDatabaseStorage.shared.read { transaction in
