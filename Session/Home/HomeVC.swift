@@ -16,6 +16,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     private var hasLoadedInitialThreadData: Bool = false
     private var isLoadingMore: Bool = false
     private var isAutoLoadingNextPage: Bool = false
+    private var viewHasAppeared: Bool = false
     
     // MARK: - Intialization
     
@@ -222,6 +223,13 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         super.viewWillAppear(animated)
         
         startObservingChanges()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.viewHasAppeared = true
+        self.autoLoadNextPageIfNeeded()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -487,7 +495,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     }
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        guard self.hasLoadedInitialThreadData && !self.isLoadingMore else { return }
+        guard self.hasLoadedInitialThreadData && self.viewHasAppeared && !self.isLoadingMore else { return }
         
         let section: HomeViewModel.SectionModel = self.viewModel.threadData[section]
         

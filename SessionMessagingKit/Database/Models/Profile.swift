@@ -314,14 +314,11 @@ public extension Profile {
     
     /// A standardised mechanism for truncating a user id for a given thread
     static func truncated(id: String, threadVariant: SessionThread.Variant = .contact) -> String {
-        switch threadVariant {
-            case .openGroup: return truncated(id: id, truncating: .start)
-            default: return truncated(id: id, truncating: .middle)
-        }
+        return truncated(id: id, truncating: .middle)
     }
     
     /// A standardised mechanism for truncating a user id
-    static func truncated(id: String, truncating: Truncation = .start) -> String {
+    static func truncated(id: String, truncating: Truncation = .middle) -> String {
         guard id.count > 8 else { return id }
         
         switch truncating {
@@ -355,7 +352,7 @@ public extension Profile {
             case .openGroup:
                 // In open groups, where it's more likely that multiple users have the same name,
                 // we display a bit of the Session ID after a user's display name for added context
-                return "\(name) (\(Profile.truncated(id: id, truncating: .start)))"
+                return "\(name) (\(Profile.truncated(id: id, truncating: .middle)))"
         }
     }
 }

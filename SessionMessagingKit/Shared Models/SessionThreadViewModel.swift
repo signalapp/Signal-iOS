@@ -2,6 +2,7 @@
 
 import Foundation
 import GRDB
+import Sodium
 import DifferenceKit
 import SessionUtilitiesKit
 
@@ -124,6 +125,7 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
     private let threadContactNameInternal: String?
     private let authorNameInternal: String?
     public let currentUserPublicKey: String
+    public let currentUserBlindedPublicKey: String?
     
     // UI specific logic
     
@@ -275,6 +277,67 @@ public extension SessionThreadViewModel {
         self.threadContactNameInternal = nil
         self.authorNameInternal = nil
         self.currentUserPublicKey = getUserHexEncodedPublicKey()
+        self.currentUserBlindedPublicKey = nil
+    }
+}
+
+// MARK: - Mutation
+
+public extension SessionThreadViewModel {
+    func populatingCurrentUserBlindedKey(
+        currentUserBlindedPublicKeyForThisThread: String? = nil
+    ) -> SessionThreadViewModel {
+        return SessionThreadViewModel(
+            rowId: self.rowId,
+            threadId: self.threadId,
+            threadVariant: self.threadVariant,
+            threadCreationDateTimestamp: self.threadCreationDateTimestamp,
+            threadMemberNames: self.threadMemberNames,
+            threadIsNoteToSelf: self.threadIsNoteToSelf,
+            threadIsMessageRequest: self.threadIsMessageRequest,
+            threadRequiresApproval: self.threadRequiresApproval,
+            threadShouldBeVisible: self.threadShouldBeVisible,
+            threadIsPinned: self.threadIsPinned,
+            threadIsBlocked: self.threadIsBlocked,
+            threadMutedUntilTimestamp: self.threadMutedUntilTimestamp,
+            threadOnlyNotifyForMentions: self.threadOnlyNotifyForMentions,
+            threadMessageDraft: self.threadMessageDraft,
+            threadContactIsTyping: self.threadContactIsTyping,
+            threadUnreadCount: self.threadUnreadCount,
+            threadUnreadMentionCount: self.threadUnreadMentionCount,
+            contactProfile: self.contactProfile,
+            closedGroupProfileFront: self.closedGroupProfileFront,
+            closedGroupProfileBack: self.closedGroupProfileBack,
+            closedGroupProfileBackFallback: self.closedGroupProfileBackFallback,
+            closedGroupName: self.closedGroupName,
+            closedGroupUserCount: self.closedGroupUserCount,
+            currentUserIsClosedGroupMember: self.currentUserIsClosedGroupMember,
+            currentUserIsClosedGroupAdmin: self.currentUserIsClosedGroupAdmin,
+            openGroupName: self.openGroupName,
+            openGroupServer: self.openGroupServer,
+            openGroupRoomToken: self.openGroupRoomToken,
+            openGroupProfilePictureData: self.openGroupProfilePictureData,
+            openGroupUserCount: self.openGroupUserCount,
+            interactionId: self.interactionId,
+            interactionVariant: self.interactionVariant,
+            interactionTimestampMs: self.interactionTimestampMs,
+            interactionBody: self.interactionBody,
+            interactionState: self.interactionState,
+            interactionIsOpenGroupInvitation: self.interactionIsOpenGroupInvitation,
+            interactionAttachmentDescriptionInfo: self.interactionAttachmentDescriptionInfo,
+            interactionAttachmentCount: self.interactionAttachmentCount,
+            authorId: self.authorId,
+            threadContactNameInternal: self.threadContactNameInternal,
+            authorNameInternal: self.authorNameInternal,
+            currentUserPublicKey: self.currentUserPublicKey,
+            currentUserBlindedPublicKey: (
+                currentUserBlindedPublicKeyForThisThread ??
+                SessionThread.getUserHexEncodedBlindedKey(
+                    threadId: self.threadId,
+                    threadVariant: self.threadVariant
+                )
+            )
+        )
     }
 }
 

@@ -106,33 +106,12 @@ public extension Contact {
 // TODO: Remove this when possible
 @objc(SMKContact)
 public class SMKContact: NSObject {
-    @objc let isApproved: Bool
-    @objc let isBlocked: Bool
-    @objc let didApproveMe: Bool
-    
-    init(isApproved: Bool, isBlocked: Bool, didApproveMe: Bool) {
-        self.isApproved = isApproved
-        self.isBlocked = isBlocked
-        self.didApproveMe = didApproveMe
-    }
-    
-    @objc public static func fetchOrCreate(id: String) -> SMKContact {
-        let existingContact: Contact? = Storage.shared.read { db in
-            try Contact.fetchOne(db, id: id)
-        }
-        
-        return SMKContact(
-            isApproved: existingContact?.isApproved ?? false,
-            isBlocked: existingContact?.isBlocked ?? false,
-            didApproveMe: existingContact?.didApproveMe ?? false
-        )
-    }
-    
     @objc(isBlockedFor:)
     public static func isBlocked(id: String) -> Bool {
         return Storage.shared
             .read { db in
                 try Contact
+                    .filter(id: id)
                     .select(.isBlocked)
                     .asRequest(of: Bool.self)
                     .fetchOne(db)

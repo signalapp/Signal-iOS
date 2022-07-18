@@ -105,7 +105,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         
         // Loki: Customize title
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("GIF", comment: "")
+        titleLabel.text = "accessibility_gif_button".localized().uppercased()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel

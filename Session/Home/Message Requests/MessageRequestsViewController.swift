@@ -14,6 +14,8 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     private var dataChangeObservable: DatabaseCancellable?
     private var hasLoadedInitialThreadData: Bool = false
     private var isLoadingMore: Bool = false
+    private var isAutoLoadingNextPage: Bool = false
+    private var viewHasAppeared: Bool = false
     
     // MARK: - Intialization
     
@@ -130,6 +132,13 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         startObservingChanges()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.viewHasAppeared = true
+        self.autoLoadNextPageIfNeeded()
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -196,6 +205,13 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         clearAllButton.isHidden = updatedData.isEmpty
         emptyStateLabel.isHidden = !updatedData.isEmpty
         
+        CATransaction.begin()
+        CATransaction.setCompletionBlock { [weak self] in
+            // Complete page loading
+            self?.isLoadingMore = false
+            self?.autoLoadNextPageIfNeeded()
+        }
+        
         // Reload the table content (animate changes after the first load)
         tableView.reload(
             using: StagedChangeset(source: viewModel.threadData, target: updatedData),
@@ -208,6 +224,38 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             interrupt: { $0.changeCount > 100 }    // Prevent too many changes from causing performance issues
         ) { [weak self] updatedData in
             self?.viewModel.updateThreadData(updatedData)
+        }
+        
+        CATransaction.commit()
+    }
+    
+    private func autoLoadNextPageIfNeeded() {
+        guard !self.isAutoLoadingNextPage && !self.isLoadingMore else { return }
+        
+        self.isAutoLoadingNextPage = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + PagedData.autoLoadNextPageDelay) { [weak self] in
+            self?.isAutoLoadingNextPage = false
+            
+            // Note: We sort the headers as we want to prioritise loading newer pages over older ones
+            let sections: [(MessageRequestsViewModel.Section, CGRect)] = (self?.viewModel.threadData
+                .enumerated()
+                .map { index, section in (section.model, (self?.tableView.rectForHeader(inSection: index) ?? .zero)) })
+                .defaulting(to: [])
+            let shouldLoadMore: Bool = sections
+                .contains { section, headerRect in
+                    section == .loadMore &&
+                    headerRect != .zero &&
+                    (self?.tableView.bounds.contains(headerRect) == true)
+                }
+            
+            guard shouldLoadMore else { return }
+            
+            self?.isLoadingMore = true
+            
+            DispatchQueue.global(qos: .default).async { [weak self] in
+                self?.viewModel.pagedDataObserver?.load(.pageAfter)
+            }
         }
     }
 
@@ -277,7 +325,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        guard self.hasLoadedInitialThreadData && !self.isLoadingMore else { return }
+        guard self.hasLoadedInitialThreadData && self.viewHasAppeared && !self.isLoadingMore else { return }
         
         let section: MessageRequestsViewModel.SectionModel = self.viewModel.threadData[section]
         
@@ -338,7 +386,9 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     // MARK: - Interaction
     
     @objc private func clearAllTapped() {
-        guard viewModel.threadData.first { $0.model == .threads }?.elements.isEmpty == false else { return }
+        guard viewModel.threadData.first(where: { $0.model == .threads })?.elements.isEmpty == false else {
+            return
+        }
         
         let threadIds: [String] = (viewModel.threadData
             .first { $0.model == .threads }?
