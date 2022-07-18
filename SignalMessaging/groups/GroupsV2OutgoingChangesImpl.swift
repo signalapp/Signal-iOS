@@ -558,6 +558,7 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
                 actionBuilder.setAdded(bannedMember)
 
                 actionsBuilder.addAddBannedMembers(try actionBuilder.build())
+                didChange = true
             }
 
             // Build the unbans
@@ -568,6 +569,7 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
                 actionBuilder.setDeletedUserID(userId)
 
                 actionsBuilder.addDeleteBannedMembers(try actionBuilder.build())
+                didChange = true
             }
         }
 
