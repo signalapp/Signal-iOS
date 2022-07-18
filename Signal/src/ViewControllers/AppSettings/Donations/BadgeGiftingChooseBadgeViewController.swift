@@ -63,10 +63,12 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     }
 
     private func loadData() -> Guarantee<State> {
-        firstly {
-            Promise.when(fulfilled: SubscriptionManager.getGiftBadge(), SubscriptionManager.getGiftBadgePricesByCurrencyCode())
+        firstly { () -> Promise<(ProfileBadge, [String: UInt])> in
+            Logger.info("[Gifting] Fetching badge data...")
+            return Promise.when(fulfilled: SubscriptionManager.getGiftBadge(), SubscriptionManager.getGiftBadgePricesByCurrencyCode())
         }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [String: UInt]) -> Promise<(ProfileBadge, [String: UInt])> in
-            self.profileManager.badgeStore.populateAssetsOnBadge(giftBadge).map { (giftBadge, pricesByCurrencyCode) }
+            Logger.info("[Gifting] Populating badge assets...")
+            return self.profileManager.badgeStore.populateAssetsOnBadge(giftBadge).map { (giftBadge, pricesByCurrencyCode) }
         }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [Currency.Code: UInt]) -> Guarantee<State> in
             let selectedCurrencyCode: Currency.Code
             if pricesByCurrencyCode[Stripe.defaultCurrencyCode] != nil {

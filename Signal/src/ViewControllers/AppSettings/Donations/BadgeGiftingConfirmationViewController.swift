@@ -122,7 +122,10 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                                                                                     confirmationText: SafetyNumberStrings.confirmSendButton) { didConfirm in
             future.resolve(didConfirm ? .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded : .userDidNotConfirmSafetyNumberChange)
         }
-        if !needsUserInteraction {
+        if needsUserInteraction {
+            Logger.info("[Gifting] Showing safety number confirmation sheet")
+        } else {
+            Logger.info("[Gifting] Not showing safety number confirmation sheet; it was not needed")
             future.resolve(.userConfirmedSafetyNumberChangeOrNoChangeWasNeeded)
         }
 
@@ -132,6 +135,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     @objc
     private func checkRecipientAndRequestApplePay() {
         guard !isRecipientBlockedWithSneakyTransaction() else {
+            Logger.warn("[Gifting] Not requesting Apple Pay because recipient is blocked")
             Self.showRecipientIsBlockedError()
             return
         }
@@ -161,6 +165,8 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 break
             }
 
+            Logger.info("[Gifting] Requesting Apple Pay...")
+
             let request = DonationUtilities.newPaymentRequest(for: NSDecimalNumber(value: self.price), currencyCode: self.currencyCode)
 
             let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
@@ -169,11 +175,12 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 if !presented {
                     // This can happen under normal conditions if the user double-taps the button,
                     // but may also indicate a problem.
-                    Logger.warn("Failed to present payment controller")
+                    Logger.warn("[Gifting] Failed to present payment controller")
                 }
             }
         }.catch { error in
             if let error = error as? SendGiftBadgeError {
+                Logger.warn("[Gifting] Error \(error)")
                 switch error {
                 case .userCanceledBeforeChargeCompleted:
                     return

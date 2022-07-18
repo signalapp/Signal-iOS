@@ -84,6 +84,7 @@ public class SendGiftBadgeJobQueue: NSObject, JobQueue {
     }
 
     public func addJob(_ jobRecord: OWSSendGiftBadgeJobRecord, transaction: SDSAnyWriteTransaction) {
+        Logger.info("[Gifting] Adding a \"send gift badge\" job")
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
 
@@ -222,16 +223,20 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
         assert(self.durableOperationDelegate != nil)
 
         firstly(on: .global()) { () -> Promise<Void> in
+            Logger.info("[Gifting] Ensuring we can still message recipient...")
             // We also do this check right before sending the message, but we might be able to prevent
             // charging the payment method (and some extra work) if we check now.
             try self.databaseStorage.read { try self.ensureThatWeCanStillMessageRecipient(transaction: $0) }
             return Promise.value(())
         }.then { () -> Promise<Void> in
-            try self.confirmPaymentIntent()
+            Logger.info("[Gifting] Confirming payment intent...")
+            return try self.confirmPaymentIntent()
         }.then { () -> Promise<ReceiptCredentialPresentation> in
             self.postJobEventNotification(.chargeSucceeded)
+            Logger.info("[Gifting] Charge succeeded! Getting receipt credential...")
             return try self.getReceiptCredentialPresentation()
         }.done(on: .global()) { receiptCredentialPresentation in
+            Logger.info("[Gifting] Enqueueing messages...")
             try self.databaseStorage.write { transaction in
                 try self.enqueueMessages(receiptCredentialPresentation: receiptCredentialPresentation,
                                          transaction: transaction)
@@ -243,6 +248,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
     }
 
     override public func didSucceed() {
+        Logger.info("[Gifting] Gift sent! Finishing up...")
         databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
 
