@@ -228,6 +228,8 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
             authorId: quoteDraftInfo.model.authorId,
             quotedText: quoteDraftInfo.model.body,
             threadVariant: threadVariant,
+            currentUserPublicKey: nil,
+            currentUserBlindedPublicKey: nil,
             direction: (quoteDraftInfo.isOutgoing ? .outgoing : .incoming),
             attachment: quoteDraftInfo.model.attachment,
             hInset: hInset,

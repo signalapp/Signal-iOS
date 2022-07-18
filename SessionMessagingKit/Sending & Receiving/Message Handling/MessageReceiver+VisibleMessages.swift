@@ -204,20 +204,20 @@ extension MessageReceiver {
         message.attachmentIds = attachments.map { $0.id }
         
         // Persist quote if needed
-        try? Quote(
+        let quote: Quote? = try? Quote(
             db,
             proto: dataMessage,
             interactionId: interactionId,
             thread: thread
-        )?.insert(db)
+        )?.inserted(db)
         
         // Parse link preview if needed
-        try? LinkPreview(
+        let linkPreview: LinkPreview? = try? LinkPreview(
             db,
             proto: dataMessage,
             body: message.text,
             sentTimestampMs: (messageSentTimestamp * 1000)
-        )?.save(db)
+        )?.saved(db)
         
         // Open group invitations are stored as LinkPreview values so create one if needed
         if
@@ -230,6 +230,31 @@ extension MessageReceiver {
                 variant: .openGroupInvitation,
                 title: openGroupInvitationName
             ).save(db)
+        }
+        
+        // Start attachment downloads if needed (ie. trusted contact or group thread)
+        // FIXME: Replace this to check the `autoDownloadAttachments` flag we are adding to threads
+        let isContactTrusted: Bool = ((try? Contact.fetchOne(db, id: sender))?.isTrusted ?? false)
+
+        if isContactTrusted || thread.variant != .contact {
+            attachments
+                .map { $0.id }
+                .appending(quote?.attachmentId)
+                .appending(linkPreview?.attachmentId)
+                .forEach { attachmentId in
+                    JobRunner.add(
+                        db,
+                        job: Job(
+                            variant: .attachmentDownload,
+                            threadId: thread.id,
+                            interactionId: interactionId,
+                            details: AttachmentDownloadJob.Details(
+                                attachmentId: attachmentId
+                            )
+                        ),
+                        canStartJob: isMainAppActive
+                    )
+                }
         }
         
         // Cancel any typing indicators if needed

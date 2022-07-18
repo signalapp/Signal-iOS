@@ -551,29 +551,41 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         if
             initialLoad ||
             viewModel.threadData.threadRequiresApproval != updatedThreadData.threadRequiresApproval ||
+            viewModel.threadData.threadIsMessageRequest != updatedThreadData.threadIsMessageRequest ||
             viewModel.threadData.profile != updatedThreadData.profile
         {
             updateNavBarButtons(threadData: updatedThreadData, initialVariant: viewModel.initialThreadVariant)
+            
+            let messageRequestsViewWasVisible: Bool = (messageRequestView.isHidden == false)
+            
+            UIView.animate(withDuration: 0.3) { [weak self] in
+                self?.messageRequestView.isHidden = (
+                    updatedThreadData.threadIsMessageRequest == false ||
+                    updatedThreadData.threadRequiresApproval == true
+                )
+            
+                self?.scrollButtonMessageRequestsBottomConstraint?.isActive = (
+                    updatedThreadData.threadIsMessageRequest == true
+                )
+                self?.scrollButtonBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == false)
+                
+                // Update the table content inset and offset to account for
+                // the dissapearance of the messageRequestsView
+                if messageRequestsViewWasVisible {
+                    let messageRequestsOffset: CGFloat = ((self?.messageRequestView.bounds.height ?? 0) + 16)
+                    let oldContentInset: UIEdgeInsets = (self?.tableView.contentInset ?? UIEdgeInsets.zero)
+                    self?.tableView.contentInset = UIEdgeInsets(
+                        top: 0,
+                        leading: 0,
+                        bottom: max(oldContentInset.bottom - messageRequestsOffset, 0),
+                        trailing: 0
+                    )
+                }
+            }
         }
         
         if initialLoad || viewModel.threadData.threadIsBlocked != updatedThreadData.threadIsBlocked {
             addOrRemoveBlockedBanner(threadIsBlocked: (updatedThreadData.threadIsBlocked == true))
-        }
-        
-        if initialLoad || viewModel.threadData.threadIsMessageRequest != updatedThreadData.threadIsMessageRequest {
-            scrollButtonMessageRequestsBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == true)
-            scrollButtonBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == false)
-        }
-        
-        if
-            initialLoad ||
-                viewModel.threadData.threadRequiresApproval != updatedThreadData.threadRequiresApproval ||
-                viewModel.threadData.threadIsMessageRequest != updatedThreadData.threadIsMessageRequest
-        {
-            messageRequestView.isHidden = (
-                updatedThreadData.threadIsMessageRequest == false ||
-                updatedThreadData.threadRequiresApproval == true
-            )
         }
         
         if initialLoad || viewModel.threadData.threadUnreadCount != updatedThreadData.threadUnreadCount {
@@ -1056,7 +1068,16 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
 
     func addOrRemoveBlockedBanner(threadIsBlocked: Bool) {
         guard threadIsBlocked else {
-            self.blockedBanner.removeFromSuperview()
+            UIView.animate(
+                withDuration: 0.25,
+                animations: { [weak self] in
+                    self?.blockedBanner.alpha = 0
+                },
+                completion: { [weak self] _ in
+                    self?.blockedBanner.alpha = 1
+                    self?.blockedBanner.removeFromSuperview()
+                }
+            )
             return
         }
 

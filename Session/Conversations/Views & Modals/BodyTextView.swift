@@ -9,10 +9,29 @@ import UIKit
 // • The long press interaction that shows the context menu should still work
 final class BodyTextView: UITextView {
     private let snDelegate: BodyTextViewDelegate?
+    private let highlightedMentionBackgroundView: HighlightMentionBackgroundView = HighlightMentionBackgroundView()
+    
+    override var attributedText: NSAttributedString! {
+        didSet {
+            guard attributedText != nil else { return }
+            
+            highlightedMentionBackgroundView.maxPadding = highlightedMentionBackgroundView
+                .calculateMaxPadding(for: attributedText)
+            highlightedMentionBackgroundView.frame = self.bounds.insetBy(
+                dx: -highlightedMentionBackgroundView.maxPadding,
+                dy: -highlightedMentionBackgroundView.maxPadding
+            )
+        }
+    }
     
     init(snDelegate: BodyTextViewDelegate?) {
         self.snDelegate = snDelegate
+        
         super.init(frame: CGRect.zero, textContainer: nil)
+        
+        self.clipsToBounds = false  // Needed for the 'HighlightMentionBackgroundView'
+        addSubview(highlightedMentionBackgroundView)
+        
         setUpGestureRecognizers()
     }
     
@@ -38,6 +57,15 @@ final class BodyTextView: UITextView {
     
     @objc private func handleDoubleTap() {
         // Do nothing
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        highlightedMentionBackgroundView.frame = self.bounds.insetBy(
+            dx: -highlightedMentionBackgroundView.maxPadding,
+            dy: -highlightedMentionBackgroundView.maxPadding
+        )
     }
 }
 

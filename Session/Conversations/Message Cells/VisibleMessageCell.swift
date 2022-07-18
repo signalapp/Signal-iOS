@@ -459,6 +459,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                             authorId: quote.authorId,
                             quotedText: quote.body,
                             threadVariant: cellViewModel.threadVariant,
+                            currentUserPublicKey: cellViewModel.currentUserPublicKey,
+                            currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
                             direction: (cellViewModel.variant == .standardOutgoing ?
                                 .outgoing :
                                 .incoming
@@ -956,6 +958,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
             attributedString: MentionUtilities.highlightMentions(
                 in: (cellViewModel.body ?? ""),
                 threadVariant: cellViewModel.threadVariant,
+                currentUserPublicKey: cellViewModel.currentUserPublicKey,
+                currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
                 isOutgoingMessage: isOutgoing,
                 attributes: [
                     .foregroundColor : textColor,

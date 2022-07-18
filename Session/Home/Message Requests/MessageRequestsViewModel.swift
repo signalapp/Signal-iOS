@@ -140,12 +140,25 @@ public class MessageRequestsViewModel {
     }
     
     private func process(data: [SessionThreadViewModel], for pageInfo: PagedData.PageInfo) -> [SectionModel] {
+        let groupedOldData: [String: [SessionThreadViewModel]] = (self.threadData
+            .first(where: { $0.model == .threads })?
+            .elements)
+            .defaulting(to: [])
+            .grouped(by: \.threadId)
+        
         return [
             [
                 SectionModel(
                     section: .threads,
                     elements: data
                         .sorted { lhs, rhs -> Bool in lhs.lastInteractionDate > rhs.lastInteractionDate }
+                        .map { viewModel -> SessionThreadViewModel in
+                            viewModel.populatingCurrentUserBlindedKey(
+                                currentUserBlindedPublicKeyForThisThread: groupedOldData[viewModel.threadId]?
+                                    .first?
+                                    .currentUserBlindedPublicKey
+                            )
+                        }
                 )
             ],
             (!data.isEmpty && (pageInfo.pageOffset + pageInfo.currentCount) < pageInfo.totalCount ?
