@@ -260,7 +260,7 @@ public class SubscriptionManager: NSObject {
     }
 
     public class func currentProfileSubscriptionBadges() -> [OWSUserProfileBadgeInfo] {
-        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
+        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
         let profileBadges = snapshot.profileBadgeInfo ?? []
         return profileBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> OWSUserProfileBadgeInfo? in
             guard SubscriptionBadgeIds.contains(badge.badgeId) else { return nil }
