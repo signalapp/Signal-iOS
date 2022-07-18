@@ -36,12 +36,6 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     public var lastSearchedText: String?
     public let focusedInteractionId: Int64?    // Note: This is used for global search
     
-    /// We maintain a local set of ids for attachments which we have automatically created attachmentDownload jobs for
-    /// in order to avoid creating excessive jobs while the user is actively chatting in a conversation (the attachmentDownload
-    /// jobs run serially and will only actually perform the download if the attachment hasn't already been downloaded so
-    /// we don't need to worry about duplicate jobs but it's better to avoid creating duplicate jobs when possible)
-    private var autoStartedDownloadJobAttachmentIds: Set<String> = []
-    
     public lazy var blockedBannerMessage: String = {
         switch self.threadData.threadVariant {
             case .contact:
@@ -259,44 +253,6 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         let sortedData: [MessageViewModel] = data
             .filter { $0.isTypingIndicator != true }
             .sorted { lhs, rhs -> Bool in lhs.timestampMs < rhs.timestampMs }
-        
-        // Add download jobs for any attachments which need to be downloaded
-        let pendingAttachmentsToDownload: [(attachment: Attachment, interactionId: Int64)] = sortedData
-            .flatMap { viewModel -> [(attachment: Attachment, interactionId: Int64)] in
-                // Do nothing if this is an incoming message on an untrusted contact thread
-                guard
-                    viewModel.variant != .standardIncoming ||
-                    viewModel.threadIsTrusted ||
-                    viewModel.threadVariant != .contact
-                else { return [] }
-                
-                return (viewModel.attachments ?? [])
-                    .appending(viewModel.quoteAttachment)
-                    .appending(viewModel.linkPreviewAttachment)
-                    .filter { $0.state == .pendingDownload }
-                    .filter { !self.autoStartedDownloadJobAttachmentIds.contains($0.id) }
-                    .map { ($0, viewModel.id) }
-            }
-        
-        if !pendingAttachmentsToDownload.isEmpty {
-            Storage.shared.writeAsync { db in
-                pendingAttachmentsToDownload.forEach { attachment, interactionId in
-                    JobRunner.add(
-                        db,
-                        job: Job(
-                            variant: .attachmentDownload,
-                            threadId: self.threadId,
-                            interactionId: interactionId,
-                            details: AttachmentDownloadJob.Details(
-                                attachmentId: attachment.id
-                            )
-                        )
-                    )
-                    
-                    self.autoStartedDownloadJobAttachmentIds.insert(attachment.id)
-                }
-            }
-        }
         
         // We load messages from newest to oldest so having a pageOffset larger than zero means
         // there are newer pages to load
