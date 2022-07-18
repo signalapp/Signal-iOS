@@ -212,13 +212,13 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         }
         
         // randomElement() uses the system's default random generator, which is cryptographically secure
-        if paths.count >= targetPathCount {
-            if let snode: Snode = snode {
-                return Promise { $0.fulfill(paths.filter { !$0.contains(snode) }.randomElement()!) }
-            }
-            else {
-                return Promise { $0.fulfill(paths.randomElement()!) }
-            }
+        if
+            paths.count >= targetPathCount,
+            let targetPath: [Snode] = paths
+                .filter({ snode == nil || !$0.contains(snode!) })
+                .randomElement()
+        {
+            return Promise { $0.fulfill(targetPath) }
         }
         else if !paths.isEmpty {
             if let snode = snode {
@@ -228,13 +228,22 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                 }
                 else {
                     return buildPaths(reusing: paths).map2 { paths in
-                        return paths.filter { !$0.contains(snode) }.randomElement()!
+                        guard let path: [Snode] = paths.filter({ !$0.contains(snode) }).randomElement() else {
+                            throw OnionRequestAPIError.insufficientSnodes
+                        }
+                        
+                        return path
                     }
                 }
             }
             else {
                 buildPaths(reusing: paths) // Re-build paths in the background
-                return Promise { $0.fulfill(paths.randomElement()!) }
+                
+                guard let path: [Snode] = paths.randomElement() else {
+                    return Promise(error: OnionRequestAPIError.insufficientSnodes)
+                }
+                
+                return Promise { $0.fulfill(path) }
             }
         }
         else {
@@ -247,7 +256,11 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                     throw OnionRequestAPIError.insufficientSnodes
                 }
                 
-                return paths.randomElement()!
+                guard let path: [Snode] = paths.randomElement() else {
+                    throw OnionRequestAPIError.insufficientSnodes
+                }
+                
+                return path
             }
         }
     }

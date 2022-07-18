@@ -7,13 +7,9 @@ import SessionSnodeKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-@objc(LKBackgroundPoller)
-public final class BackgroundPoller: NSObject {
+public final class BackgroundPoller {
     private static var promises: [Promise<Void>] = []
 
-    private override init() { }
-
-    @objc(pollWithCompletionHandler:)
     public static func poll(completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         promises = []
             .appending(pollForMessages())
@@ -40,12 +36,29 @@ public final class BackgroundPoller: NSObject {
                     }
             )
         
+        // Background tasks will automatically be terminated after 30 seconds (which results in a crash
+        // and a prompt to appear for the user) we want to avoid this so we start a timer which expires
+        // after 25 seconds allowing us to cancel all pending promises
+        let cancelTimer: Timer = Timer.scheduledTimerOnMainThread(withTimeInterval: 25, repeats: false) { timer in
+            timer.invalidate()
+            
+            guard promises.contains(where: { !$0.isResolved }) else { return }
+            
+            SNLog("Background poll failed due to manual timeout")
+            completionHandler(.failed)
+        }
+        
         when(resolved: promises)
             .done { _ in
+                cancelTimer.invalidate()
                 completionHandler(.newData)
             }
             .catch { error in
+                // If we have already invalidated the timer then do nothing (we essentially timed out)
+                guard cancelTimer.isValid else { return }
+                
                 SNLog("Background poll failed due to error: \(error)")
+                cancelTimer.invalidate()
                 completionHandler(.failed)
             }
     }
@@ -74,7 +87,7 @@ public final class BackgroundPoller: NSObject {
                 ClosedGroupPoller.poll(
                     groupPublicKey,
                     on: DispatchQueue.main,
-                    maxRetryCount: 4,
+                    maxRetryCount: 0,
                     isBackgroundPoll: true
                 )
             }
@@ -85,78 +98,76 @@ public final class BackgroundPoller: NSObject {
             .then(on: DispatchQueue.main) { swarm -> Promise<Void> in
                 guard let snode = swarm.randomElement() else { throw SnodeAPIError.generic }
                 
-                return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
-                    return SnodeAPI.getMessages(from: snode, associatedWith: publicKey)
-                        .then(on: DispatchQueue.main) { messages -> Promise<Void> in
-                            guard !messages.isEmpty else { return Promise.value(()) }
+                return SnodeAPI.getMessages(from: snode, associatedWith: publicKey)
+                    .then(on: DispatchQueue.main) { messages -> Promise<Void> in
+                        guard !messages.isEmpty else { return Promise.value(()) }
+                        
+                        var jobsToRun: [Job] = []
+                        
+                        Storage.shared.write { db in
+                            var threadMessages: [String: [MessageReceiveJob.Details.MessageInfo]] = [:]
                             
-                            var jobsToRun: [Job] = []
-                            
-                            Storage.shared.write { db in
-                                var threadMessages: [String: [MessageReceiveJob.Details.MessageInfo]] = [:]
-                                
-                                messages.forEach { message in
-                                    do {
-                                        let processedMessage: ProcessedMessage? = try Message.processRawReceivedMessage(db, rawMessage: message)
-                                        let key: String = (processedMessage?.threadId ?? Message.nonThreadMessageId)
+                            messages.forEach { message in
+                                do {
+                                    let processedMessage: ProcessedMessage? = try Message.processRawReceivedMessage(db, rawMessage: message)
+                                    let key: String = (processedMessage?.threadId ?? Message.nonThreadMessageId)
+                                    
+                                    threadMessages[key] = (threadMessages[key] ?? [])
+                                        .appending(processedMessage?.messageInfo)
+                                }
+                                catch {
+                                    switch error {
+                                        // Ignore duplicate & selfSend message errors (and don't bother logging
+                                        // them as there will be a lot since we each service node duplicates messages)
+                                        case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
+                                            MessageReceiverError.duplicateMessage,
+                                            MessageReceiverError.duplicateControlMessage,
+                                            MessageReceiverError.selfSend:
+                                            break
                                         
-                                        threadMessages[key] = (threadMessages[key] ?? [])
-                                            .appending(processedMessage?.messageInfo)
-                                    }
-                                    catch {
-                                        switch error {
-                                            // Ignore duplicate & selfSend message errors (and don't bother logging
-                                            // them as there will be a lot since we each service node duplicates messages)
-                                            case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
-                                                MessageReceiverError.duplicateMessage,
-                                                MessageReceiverError.duplicateControlMessage,
-                                                MessageReceiverError.selfSend:
-                                                break
-                                            
-                                            default: SNLog("Failed to deserialize envelope due to error: \(error).")
-                                        }
+                                        default: SNLog("Failed to deserialize envelope due to error: \(error).")
                                     }
                                 }
-                                
-                                threadMessages
-                                    .forEach { threadId, threadMessages in
-                                        let maybeJob: Job? = Job(
-                                            variant: .messageReceive,
-                                            behaviour: .runOnce,
-                                            threadId: threadId,
-                                            details: MessageReceiveJob.Details(
-                                                messages: threadMessages,
-                                                isBackgroundPoll: true
-                                            )
-                                        )
-                                        
-                                        guard let job: Job = maybeJob else { return }
-                                        
-                                        // Add to the JobRunner so they are persistent and will retry on
-                                        // the next app run if they fail
-                                        JobRunner.add(db, job: job, canStartJob: false)
-                                        jobsToRun.append(job)
-                                    }
                             }
                             
-                            let promises: [Promise<Void>] = jobsToRun.map { job -> Promise<Void> in
-                                let (promise, seal) = Promise<Void>.pending()
-                                
-                                // Note: In the background we just want jobs to fail silently
-                                MessageReceiveJob.run(
-                                    job,
-                                    queue: DispatchQueue.main,
-                                    success: { _, _ in seal.fulfill(()) },
-                                    failure: { _, _, _ in seal.fulfill(()) },
-                                    deferred: { _ in seal.fulfill(()) }
-                                )
-
-                                return promise
-                            }
-
-                            return when(fulfilled: promises)
+                            threadMessages
+                                .forEach { threadId, threadMessages in
+                                    let maybeJob: Job? = Job(
+                                        variant: .messageReceive,
+                                        behaviour: .runOnce,
+                                        threadId: threadId,
+                                        details: MessageReceiveJob.Details(
+                                            messages: threadMessages,
+                                            isBackgroundPoll: true
+                                        )
+                                    )
+                                    
+                                    guard let job: Job = maybeJob else { return }
+                                    
+                                    // Add to the JobRunner so they are persistent and will retry on
+                                    // the next app run if they fail
+                                    JobRunner.add(db, job: job, canStartJob: false)
+                                    jobsToRun.append(job)
+                                }
                         }
-                }
+                        
+                        let promises: [Promise<Void>] = jobsToRun.map { job -> Promise<Void> in
+                            let (promise, seal) = Promise<Void>.pending()
+                            
+                            // Note: In the background we just want jobs to fail silently
+                            MessageReceiveJob.run(
+                                job,
+                                queue: DispatchQueue.main,
+                                success: { _, _ in seal.fulfill(()) },
+                                failure: { _, _, _ in seal.fulfill(()) },
+                                deferred: { _ in seal.fulfill(()) }
+                            )
+
+                            return promise
+                        }
+
+                        return when(fulfilled: promises)
+                    }
             }
     }
 }
