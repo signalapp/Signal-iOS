@@ -329,6 +329,9 @@ public class GroupMembership: MTLModel {
         guard self.memberStates == other.memberStates else {
             return false
         }
+        guard self.bannedMembers == other.bannedMembers else {
+            return false
+        }
         let invalidInvitesSet = Set(invalidInvites.map { $0.userId })
         let otherInvalidInvitesSet = Set(other.invalidInvites.map { $0.userId })
         return invalidInvitesSet == otherInvalidInvitesSet
@@ -398,13 +401,16 @@ public class GroupMembership: MTLModel {
     }
 
     public override var debugDescription: String {
-        var result = "["
+        var result = "[\n"
         for address in GroupMembership.normalize(Array(allMembersOfAnyKind)) {
             guard let memberState = memberStates[address] else {
                 owsFailDebug("Missing memberState.")
                 continue
             }
             result += "\(address), memberType: \(memberState)\n"
+        }
+        for (uuid, bannedAtTimestamp) in bannedMembers {
+            result += "Banned: \(uuid.uuidString), at \(bannedAtTimestamp)\n"
         }
         result += "]"
         return result
