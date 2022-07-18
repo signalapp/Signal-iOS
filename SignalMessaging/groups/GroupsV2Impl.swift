@@ -964,7 +964,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                     case .reportInvalidOrBlockedGroupLink:
                         owsAssertDebug(groupId == nil, "groupId should not be set in this code path.")
 
-                        if FeatureFlags.groupAbuse, error.httpResponseHeaders?.containsBan == true {
+                        if error.httpResponseHeaders?.containsBan == true {
                             throw GroupsV2Error.localUserBlockedFromJoining
                         } else {
                             throw GroupsV2Error.expiredGroupInviteLink

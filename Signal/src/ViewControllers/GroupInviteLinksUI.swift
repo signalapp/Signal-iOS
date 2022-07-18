@@ -229,8 +229,8 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                 self?.dismiss(animated: true, completion: {
                     OWSActionSheets.showActionSheet(
                         title: NSLocalizedString(
-                            "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE",
-                            comment: "Title indicating that the group invite link has expired in the 'group invite link' action sheet."),
+                            "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
+                            comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet."),
                         message: NSLocalizedString(
                             "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE",
                             comment: "Subtitle indicating that the local user has been blocked from joining the group"))
@@ -293,8 +293,8 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
         self.groupInviteLinkPreview = nil
 
-        groupTitleLabel.text = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE",
-                                                 comment: "Title indicating that the group invite link has expired in the 'group invite link' action sheet.")
+        groupTitleLabel.text = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
+                                                 comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet.")
         groupSubtitleLabel.text = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
                                                     comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet.")
         messageLabel.textColor = Theme.backgroundColor
@@ -398,8 +398,8 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
                     self.showActionSheet(
                         title: NSLocalizedString(
-                            "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE",
-                            comment: "Title indicating that the group invite link has expired in the 'group invite link' action sheet."),
+                            "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
+                            comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet."),
 
                         message: {
                             switch error {
