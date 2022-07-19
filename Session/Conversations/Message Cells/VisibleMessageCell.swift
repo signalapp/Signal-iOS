@@ -556,7 +556,16 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 
                 let inset: CGFloat = 12
                 let maxWidth = (VisibleMessageCell.getMaxWidth(for: cellViewModel) - 2 * inset)
+            
+                // Stack view
+                let stackView = UIStackView(arrangedSubviews: [])
+                stackView.axis = .vertical
+                stackView.spacing = Values.smallSpacing
                 
+                // Document view
+                let documentView = DocumentView(attachment: attachment, textColor: bodyLabelTextColor)
+                stackView.addArrangedSubview(documentView)
+            
                 // Body text view
                 if let body: String = cellViewModel.body, !body.isEmpty { // delegate should always be set at this point
                     let bodyTextView = VisibleMessageCell.getBodyTextView(
@@ -568,14 +577,12 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                     )
                     
                     self.bodyTextView = bodyTextView
-                    bubbleView.addSubview(bodyTextView)
-                    bodyTextView.pin(to: bubbleView, withInset: inset)
-                    snContentView.addArrangedSubview(bubbleView)
+                    stackView.addArrangedSubview(bodyTextView)
                 }
                 
-                // Document view
-                let documentView = DocumentView(attachment: attachment, textColor: bodyLabelTextColor)
-                snContentView.addArrangedSubview(documentView)
+                bubbleView.addSubview(stackView)
+                stackView.pin(to: bubbleView, withInset: inset)
+                snContentView.addArrangedSubview(bubbleView)
         }
     }
 
