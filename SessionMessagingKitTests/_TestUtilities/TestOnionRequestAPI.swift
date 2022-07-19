@@ -54,7 +54,7 @@ class TestOnionRequestAPI: OnionRequestAPIType {
         return Promise.value((responseInfo, mockResponse))
     }
     
-    static func sendOnionRequest(to snode: Snode, invoking method: SnodeAPIEndpoint, with parameters: JSON, using version: OnionRequestAPIVersion, associatedWith publicKey: String?) -> Promise<Data> {
+    static func sendOnionRequest(to snode: Snode, invoking method: SnodeAPIEndpoint, with parameters: JSON, associatedWith publicKey: String?) -> Promise<Data> {
         return Promise.value(mockResponse!)
     }
 }

@@ -54,14 +54,25 @@ class MediaDetailViewController: OWSViewController, UIScrollViewDelegate, OWSVid
         galleryItem.attachment.thumbnail(
             size: .large,
             success: { [weak self] image, _ in
-                self?.image = image
-                
                 // Only reload the content if the view has already loaded (if it
                 // hasn't then it'll load with the image immediately)
-                if self?.isViewLoaded == true {
-                    self?.updateContents()
-                    self?.updateMinZoomScale()
+                let updateUICallback = {
+                    self?.image = image
+                    
+                    if self?.isViewLoaded == true {
+                        self?.updateContents()
+                        self?.updateMinZoomScale()
+                    }
                 }
+                
+                guard Thread.isMainThread else {
+                    DispatchQueue.main.async {
+                        updateUICallback()
+                    }
+                    return
+                }
+                
+                updateUICallback()
             },
             failure: {
                 SNLog("Could not load media.")
