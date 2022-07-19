@@ -281,8 +281,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                       linkPreviewState: linkPreviewState)
         }
 
-        if let giftBadge = componentState.giftBadge, let timeState = itemViewState.giftBadgeState {
-            self.giftBadge = CVComponentGiftBadge(itemModel: itemModel, giftBadge: giftBadge, timeState: timeState)
+        if let giftBadge = componentState.giftBadge, let viewState = itemViewState.giftBadgeState {
+            self.giftBadge = CVComponentGiftBadge(itemModel: itemModel, giftBadge: giftBadge, viewState: viewState)
         }
 
         if let reactionsState = componentState.reactions {

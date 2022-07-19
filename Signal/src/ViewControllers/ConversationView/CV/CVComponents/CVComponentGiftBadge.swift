@@ -11,35 +11,37 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
 
     private let giftBadge: CVComponentState.GiftBadge
 
-    private let timeState: TimeState
+    private let viewState: ViewState
 
     // Component state objects are derived from TSInteractions, and they're
     // only updated when the underlying interaction changes. The "N days
     // remaining" label depends on the current time, so we need to use
     // CVItemViewState, which is refreshed even when the underlying interaction
     // hasn't changed. This is similar to how the time in the footer works.
-    struct TimeState: Equatable {
+    struct ViewState: Equatable {
         let timeRemainingText: String
     }
 
-    static func buildTimeState(_ giftBadge: CVComponentState.GiftBadge) -> TimeState {
-        return TimeState(timeRemainingText: GiftBadgeView.timeRemainingText(for: giftBadge.expirationDate))
+    static func buildViewState(_ giftBadge: CVComponentState.GiftBadge) -> ViewState {
+        ViewState(
+            timeRemainingText: GiftBadgeView.timeRemainingText(for: giftBadge.expirationDate)
+        )
     }
 
-    private var viewState: GiftBadgeView.State {
+    private var state: GiftBadgeView.State {
         GiftBadgeView.State(
             messageUniqueId: self.giftBadge.messageUniqueId,
             badgeLoader: self.giftBadge.loader,
-            timeRemainingText: self.timeState.timeRemainingText,
+            timeRemainingText: self.viewState.timeRemainingText,
             redemptionState: self.giftBadge.redemptionState,
             isIncoming: self.isIncoming,
             conversationStyle: self.conversationStyle
         )
     }
 
-    init(itemModel: CVItemModel, giftBadge: CVComponentState.GiftBadge, timeState: TimeState) {
+    init(itemModel: CVItemModel, giftBadge: CVComponentState.GiftBadge, viewState: ViewState) {
         self.giftBadge = giftBadge
-        self.timeState = timeState
+        self.viewState = viewState
         super.init(itemModel: itemModel)
     }
 
@@ -60,14 +62,14 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
 
         componentView.messageUniqueId = self.giftBadge.messageUniqueId
         componentView.giftBadgeView.configureForRendering(
-            state: self.viewState,
+            state: self.state,
             cellMeasurement: cellMeasurement,
             componentDelegate: componentDelegate
         )
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
-        return GiftBadgeView.measurement(for: self.viewState, maxWidth: maxWidth, measurementBuilder: measurementBuilder)
+        return GiftBadgeView.measurement(for: self.state, maxWidth: maxWidth, measurementBuilder: measurementBuilder)
     }
 
     public func configureGiftWrapIfNeeded(componentView: CVComponentView) -> (ManualLayoutView, OWSBubbleViewPartner)? {
