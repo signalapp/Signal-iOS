@@ -2328,7 +2328,7 @@ class OpenGroupAPISpec: QuickSpec {
                             OpenGroupAPI
                                 .downloadFile(
                                     db,
-                                    fileId: 1,
+                                    fileId: "1",
                                     from: "testRoom",
                                     on: "testserver",
                                     using: dependencies

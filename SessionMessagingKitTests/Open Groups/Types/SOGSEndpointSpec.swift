@@ -46,7 +46,7 @@ class SOGSEndpointSpec: QuickSpec {
                 // Files
                 
                 expect(OpenGroupAPI.Endpoint.roomFile("test").path).to(equal("room/test/file"))
-                expect(OpenGroupAPI.Endpoint.roomFileIndividual("test", 123).path).to(equal("room/test/file/123"))
+                expect(OpenGroupAPI.Endpoint.roomFileIndividual("test", "123").path).to(equal("room/test/file/123"))
                 
                 // Inbox/Outbox (Message Requests)
                 
