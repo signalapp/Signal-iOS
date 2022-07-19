@@ -128,7 +128,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    public func buildRenderItem(interactionId: String) -> CVRenderItem? {
+    private func buildRenderItem(interactionId: String) -> CVRenderItem? {
         databaseStorage.read { transaction in
             guard let interaction = TSInteraction.anyFetch(
                 uniqueId: interactionId,
