@@ -14,6 +14,8 @@ public enum CVAttachmentTapAction: Int {
 @objc
 public protocol CVComponentDelegate {
 
+    func cvc_enqueueReload()
+
     // MARK: - Body Text Items
 
     func cvc_didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject)

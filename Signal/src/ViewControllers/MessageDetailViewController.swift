@@ -806,6 +806,10 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
 
 extension MessageDetailViewController: CVComponentDelegate {
 
+    func cvc_enqueueReload() {
+        self.refreshContent()
+    }
+
     // MARK: - Body Text Items
 
     func cvc_didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {}

@@ -9,26 +9,18 @@ import QuartzCore
 class GiftBadgeView: ManualStackView {
 
     struct State {
+        enum Badge {
+            // The badge isn't loaded. Calling the block will load it.
+            case notLoaded(() -> Promise<Void>)
+            // The badge is loaded. The associated value is the badge.
+            case loaded(ProfileBadge)
+        }
+        let badge: Badge
         let messageUniqueId: String
-        let badgeLoader: BadgeLoader
         let timeRemainingText: String
         let redemptionState: OWSGiftBadgeRedemptionState
         let isIncoming: Bool
         let conversationStyle: ConversationStyle
-    }
-
-    final class BadgeLoader: Dependencies, Equatable {
-        let level: OneTimeBadgeLevel
-
-        init(level: OneTimeBadgeLevel) {
-            self.level = level
-        }
-
-        static func == (lhs: BadgeLoader, rhs: BadgeLoader) -> Bool {
-            return lhs.level == rhs.level
-        }
-
-        lazy var profileBadge: Guarantee<ProfileBadge?> = self.buildProfileBadgeGuarantee()
     }
 
     // The outerStack contains the details (innerStack) & redeem button.
@@ -181,8 +173,6 @@ class GiftBadgeView: ManualStackView {
 
     private(set) var giftWrap: GiftWrap?
 
-    private var badgeLoadCounter = 0
-
     override func reset() {
         super.reset()
 
@@ -194,7 +184,6 @@ class GiftBadgeView: ManualStackView {
         self.timeRemainingLabel.text = nil
         self.redeemButtonLabel.text = nil
 
-        self.badgeLoadCounter += 1  // cancel any outstanding load request
         self.badgeView.image = nil
 
         let allSubviews: [UIView] = [
@@ -216,17 +205,14 @@ class GiftBadgeView: ManualStackView {
         Self.timeRemainingLabelConfig(for: state).applyForRendering(label: self.timeRemainingLabel)
         Self.redeemButtonLabelConfig(for: state).applyForRendering(label: self.redeemButtonLabel)
 
-        self.badgeLoadCounter += 1
-        let badgeLoadRequest = self.badgeLoadCounter
-
-        self.badgeView.image = nil
-        state.badgeLoader.profileBadge.done { [weak self] profileBadge in
-            guard let self = self else { return }
-            // If the `badgeLoadCounter` changes, it means the request was canceled,
-            // perhaps due to view reuse.
-            guard badgeLoadRequest == self.badgeLoadCounter else { return }
-
-            self.badgeView.image = profileBadge?.assets?.universal64
+        switch state.badge {
+        case .notLoaded(let loadPromise):
+            loadPromise().done { [weak componentDelegate] in
+                componentDelegate?.cvc_enqueueReload()
+            }.cauterize()
+            // TODO: (GB) If an error occurs, we'll be stuck with a spinner.
+        case .loaded(let profileBadge):
+            self.badgeView.image = profileBadge.assets?.universal64
         }
 
         self.buttonStack.backgroundColor = self.redeemButtonBackgroundColor(for: state)
@@ -381,29 +367,6 @@ class GiftBadgeView: ManualStackView {
         self.giftWrap?.animateUnwrap()
         self.giftWrap = nil
     }
-}
-
-// MARK: -
-
-private extension GiftBadgeView.BadgeLoader {
-    func buildProfileBadgeGuarantee() -> Guarantee<ProfileBadge?> {
-        // TODO: (GB) Cache the payload to avoid fetching it every time it's rendered.
-        firstly {
-            SubscriptionManager.getBadge(level: self.level)
-        }.then { [weak self] profileBadge -> Promise<ProfileBadge?> in
-            guard let self = self else { return Promise.value(nil) }
-
-            return firstly {
-                self.profileManager.badgeStore.populateAssetsOnBadge(profileBadge)
-            }.map { () -> ProfileBadge? in
-                return profileBadge
-            }
-        }.recover { (error) -> Guarantee<ProfileBadge?> in
-            Logger.warn("Couldn't fetch gift badge image: \(error)")
-            return Guarantee.value(nil)
-        }
-    }
-
 }
 
 // MARK: - Wrapping View

@@ -15,6 +15,10 @@ extension ConversationViewController: CVComponentDelegate {
 
     public var wallpaperBlurProvider: WallpaperBlurProvider? { backgroundContainer }
 
+    public func cvc_enqueueReload() {
+        self.loadCoordinator.enqueueReload()
+    }
+
     // MARK: - Body Text Items
 
     public func cvc_didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {

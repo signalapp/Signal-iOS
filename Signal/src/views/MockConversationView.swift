@@ -271,6 +271,8 @@ private class MockOutgoingMessage: TSOutgoingMessage {
 
 extension MockConversationView: CVComponentDelegate {
 
+    func cvc_enqueueReload() {}
+
     func cvc_didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {}
 
     func cvc_didLongPressBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {}

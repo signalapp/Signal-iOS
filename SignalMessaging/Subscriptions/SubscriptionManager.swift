@@ -1161,6 +1161,17 @@ extension SubscriptionManager {
         }
     }
 
+    private static var cachedBadges = [OneTimeBadgeLevel: CachedBadge]()
+
+    public class func getCachedBadge(level: OneTimeBadgeLevel) -> CachedBadge {
+        if let cachedBadge = self.cachedBadges[level] {
+            return cachedBadge
+        }
+        let cachedBadge = CachedBadge(level: level)
+        self.cachedBadges[level] = cachedBadge
+        return cachedBadge
+    }
+
     public class func getBoostBadge() -> Promise<ProfileBadge> {
         getBadge(level: .boostBadge)
     }

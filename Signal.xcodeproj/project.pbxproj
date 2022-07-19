@@ -764,6 +764,7 @@
 		4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */; };
 		4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C622E7D393008010D2 /* MediaPresentationContext.swift */; };
 		4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */; };
+		500FE490288615BA00FA090C /* CachedBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE48E2886148800FA090C /* CachedBadge.swift */; };
 		503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503614CE282AF657008128B4 /* GiftBadgeView.swift */; };
 		5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */; };
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
@@ -2110,6 +2111,7 @@
 		500049CE28330191006A7466 /* pa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = pa; path = translations/pa.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049CF28330195006A7466 /* pa_PK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = pa_PK; path = translations/pa_PK.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500FE46B2880914900FA090C /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = my; path = translations/my.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		500FE48E2886148800FA090C /* CachedBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedBadge.swift; sourceTree = "<group>"; };
 		503614CE282AF657008128B4 /* GiftBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftBadgeView.swift; sourceTree = "<group>"; };
 		503614D0282C5703008128B4 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ro; path = translations/ro.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D1282C5728008128B4 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fi; path = translations/fi.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
@@ -4952,6 +4954,7 @@
 		F00385FB273F6388000B5ABD /* Subscriptions */ = {
 			isa = PBXGroup;
 			children = (
+				500FE48E2886148800FA090C /* CachedBadge.swift */,
 				F00385FD273F6388000B5ABD /* DonationUtilities.swift */,
 				F00385FE273F6388000B5ABD /* Stripe.swift */,
 				886A58C8276A760600A1099B /* SubscriptionManager.swift */,
@@ -6312,6 +6315,7 @@
 				4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				348C686D246B0B110039705A /* ThreadUtil.swift in Sources */,
+				500FE490288615BA00FA090C /* CachedBadge.swift in Sources */,
 				34FC7EEC265834F30046707A /* AvatarBuilder.swift in Sources */,
 				3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */,
 				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
