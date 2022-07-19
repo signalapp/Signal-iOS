@@ -252,6 +252,11 @@ public class HomeViewModel {
             0 :
             self.state.unreadMessageRequestThreadCount
         )
+        let groupedOldData: [String: [SessionThreadViewModel]] = (self.threadData
+            .first(where: { $0.model == .threads })?
+            .elements)
+            .defaulting(to: [])
+            .grouped(by: \.threadId)
         
         return [
             // If there are no unread message requests then hide the message request banner
@@ -274,6 +279,13 @@ public class HomeViewModel {
                             if !lhs.threadIsPinned && rhs.threadIsPinned { return false }
                             
                             return lhs.lastInteractionDate > rhs.lastInteractionDate
+                        }
+                        .map { viewModel -> SessionThreadViewModel in
+                            viewModel.populatingCurrentUserBlindedKey(
+                                currentUserBlindedPublicKeyForThisThread: groupedOldData[viewModel.threadId]?
+                                    .first?
+                                    .currentUserBlindedPublicKey
+                            )
                         }
                 )
             ],

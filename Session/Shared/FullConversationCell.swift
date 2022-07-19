@@ -267,6 +267,8 @@ public final class FullConversationCell: UITableViewCell {
                 cellViewModel.authorName(for: .contact) :
                 nil
             ),
+            currentUserPublicKey: cellViewModel.currentUserPublicKey,
+            currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
             searchText: searchText.lowercased(),
             fontSize: Values.smallFontSize
         )
@@ -288,6 +290,8 @@ public final class FullConversationCell: UITableViewCell {
         timestampLabel.isHidden = true
         displayNameLabel.attributedText = getHighlightedSnippet(
             content: cellViewModel.displayName,
+            currentUserPublicKey: cellViewModel.currentUserPublicKey,
+            currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
             searchText: searchText.lowercased(),
             fontSize: Values.mediumFontSize
         )
@@ -299,6 +303,8 @@ public final class FullConversationCell: UITableViewCell {
                 bottomLabelStackView.isHidden = (cellViewModel.threadMemberNames ?? "").isEmpty
                 snippetLabel.attributedText = getHighlightedSnippet(
                     content: (cellViewModel.threadMemberNames ?? ""),
+                    currentUserPublicKey: cellViewModel.currentUserPublicKey,
+                    currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
                     searchText: searchText.lowercased(),
                     fontSize: Values.smallFontSize
                 )
@@ -440,7 +446,9 @@ public final class FullConversationCell: UITableViewCell {
                     attachmentCount: cellViewModel.interactionAttachmentCount,
                     isOpenGroupInvitation: (cellViewModel.interactionIsOpenGroupInvitation == true)
                 ),
-                threadVariant: cellViewModel.threadVariant
+                threadVariant: cellViewModel.threadVariant,
+                currentUserPublicKey: cellViewModel.currentUserPublicKey,
+                currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey
             ),
             attributes: [
                 .font: font,
@@ -454,6 +462,8 @@ public final class FullConversationCell: UITableViewCell {
     private func getHighlightedSnippet(
         content: String,
         authorName: String? = nil,
+        currentUserPublicKey: String,
+        currentUserBlindedPublicKey: String?,
         searchText: String,
         fontSize: CGFloat
     ) -> NSAttributedString {
@@ -473,7 +483,9 @@ public final class FullConversationCell: UITableViewCell {
         // we don't want to include the truncated id as part of the name so we exclude it
         let mentionReplacedContent: String = MentionUtilities.highlightMentions(
             in: content,
-            threadVariant: .contact
+            threadVariant: .contact,
+            currentUserPublicKey: currentUserPublicKey,
+            currentUserBlindedPublicKey: currentUserBlindedPublicKey
         )
         let result: NSMutableAttributedString = NSMutableAttributedString(
             string: mentionReplacedContent,

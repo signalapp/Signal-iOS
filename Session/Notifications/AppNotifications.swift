@@ -224,11 +224,19 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let userInfo = [
             AppNotificationUserInfoKey.threadId: thread.id
         ]
+        
+        let userPublicKey: String = getUserHexEncodedPublicKey(db)
+        let userBlindedKey: String? = SessionThread.getUserHexEncodedBlindedKey(
+            threadId: thread.id,
+            threadVariant: thread.variant
+        )
 
         DispatchQueue.main.async {
             notificationBody = MentionUtilities.highlightMentions(
                 in: (notificationBody ?? ""),
-                threadVariant: thread.variant
+                threadVariant: thread.variant,
+                currentUserPublicKey: userPublicKey,
+                currentUserBlindedPublicKey: userBlindedKey
             )
             let sound: Preferences.Sound? = self.requestSound(thread: thread)
             

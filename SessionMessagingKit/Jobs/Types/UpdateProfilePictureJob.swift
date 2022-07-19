@@ -28,6 +28,15 @@ public enum UpdateProfilePictureJob: JobExecutor {
             let lastProfilePictureUpload: Date = UserDefaults.standard[.lastProfilePictureUpload],
             Date().timeIntervalSince(lastProfilePictureUpload) > (14 * 24 * 60 * 60)
         else {
+            // Reset the `nextRunTimestamp` value just in case the last run failed so we don't get stuck
+            // in a loop endlessly deferring the job
+            if let jobId: Int64 = job.id {
+                Storage.shared.write { db in
+                    try Job
+                        .filter(id: jobId)
+                        .updateAll(db, Job.Columns.nextRunTimestamp.set(to: 0))
+                }
+            }
             deferred(job)
             return
         }

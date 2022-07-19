@@ -36,12 +36,6 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     public var lastSearchedText: String?
     public let focusedInteractionId: Int64?    // Note: This is used for global search
     
-    /// We maintain a local set of ids for attachments which we have automatically created attachmentDownload jobs for
-    /// in order to avoid creating excessive jobs while the user is actively chatting in a conversation (the attachmentDownload
-    /// jobs run serially and will only actually perform the download if the attachment hasn't already been downloaded so
-    /// we don't need to worry about duplicate jobs but it's better to avoid creating duplicate jobs when possible)
-    private var autoStartedDownloadJobAttachmentIds: Set<String> = []
-    
     public lazy var blockedBannerMessage: String = {
         switch self.threadData.threadVariant {
             case .contact:
@@ -86,7 +80,10 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         // also want to skip the initial query and trigger it async so that the push animation
         // doesn't stutter (it should load basically immediately but without this there is a
         // distinct stutter)
-        self.pagedDataObserver = self.setupPagedObserver(for: threadId)
+        self.pagedDataObserver = self.setupPagedObserver(
+            for: threadId,
+            userPublicKey: getUserHexEncodedPublicKey()
+        )
         
         // Run the initial query on a background thread so we don't block the push transition
         DispatchQueue.global(qos: .default).async { [weak self] in
@@ -164,7 +161,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         }
     }
     
-    private func setupPagedObserver(for threadId: String) -> PagedDatabaseObserver<Interaction, MessageViewModel> {
+    private func setupPagedObserver(for threadId: String, userPublicKey: String) -> PagedDatabaseObserver<Interaction, MessageViewModel> {
         return PagedDatabaseObserver(
             pagedTable: Interaction.self,
             pageSize: ConversationViewModel.pageSize,
@@ -201,6 +198,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
             groupSQL: MessageViewModel.groupSQL,
             orderSQL: MessageViewModel.orderSQL,
             dataQuery: MessageViewModel.baseQuery(
+                userPublicKey: userPublicKey,
                 orderSQL: MessageViewModel.orderSQL,
                 groupSQL: MessageViewModel.groupSQL
             ),
@@ -256,44 +254,6 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
             .filter { $0.isTypingIndicator != true }
             .sorted { lhs, rhs -> Bool in lhs.timestampMs < rhs.timestampMs }
         
-        // Add download jobs for any attachments which need to be downloaded
-        let pendingAttachmentsToDownload: [(attachment: Attachment, interactionId: Int64)] = sortedData
-            .flatMap { viewModel -> [(attachment: Attachment, interactionId: Int64)] in
-                // Do nothing if this is an incoming message on an untrusted contact thread
-                guard
-                    viewModel.variant != .standardIncoming ||
-                    viewModel.threadIsTrusted ||
-                    viewModel.threadVariant != .contact
-                else { return [] }
-                
-                return (viewModel.attachments ?? [])
-                    .appending(viewModel.quoteAttachment)
-                    .appending(viewModel.linkPreviewAttachment)
-                    .filter { $0.state == .pendingDownload }
-                    .filter { !self.autoStartedDownloadJobAttachmentIds.contains($0.id) }
-                    .map { ($0, viewModel.id) }
-            }
-        
-        if !pendingAttachmentsToDownload.isEmpty {
-            Storage.shared.writeAsync { db in
-                pendingAttachmentsToDownload.forEach { attachment, interactionId in
-                    JobRunner.add(
-                        db,
-                        job: Job(
-                            variant: .attachmentDownload,
-                            threadId: self.threadId,
-                            interactionId: interactionId,
-                            details: AttachmentDownloadJob.Details(
-                                attachmentId: attachment.id
-                            )
-                        )
-                    )
-                    
-                    self.autoStartedDownloadJobAttachmentIds.insert(attachment.id)
-                }
-            }
-        }
-        
         // We load messages from newest to oldest so having a pageOffset larger than zero means
         // there are newer pages to load
         return [
@@ -316,7 +276,8 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                                     // it's the last element in the 'sortedData' array
                                     index == (sortedData.count - 1) &&
                                     pageInfo.pageOffset == 0
-                                )
+                                ),
+                                currentUserBlindedPublicKey: threadData.currentUserBlindedPublicKey
                             )
                         }
                         .appending(typingIndicator)
@@ -491,7 +452,10 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         
         self.threadId = updatedThreadId
         self.observableThreadData = self.setupObservableThreadData(for: updatedThreadId)
-        self.pagedDataObserver = self.setupPagedObserver(for: updatedThreadId)
+        self.pagedDataObserver = self.setupPagedObserver(
+            for: updatedThreadId,
+            userPublicKey: getUserHexEncodedPublicKey()
+        )
         
         // Try load everything up to the initial visible message, fallback to just the initial page of messages
         // if we don't have one

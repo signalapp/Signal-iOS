@@ -28,6 +28,8 @@ final class QuoteView: UIView {
         authorId: String,
         quotedText: String?,
         threadVariant: SessionThread.Variant,
+        currentUserPublicKey: String?,
+        currentUserBlindedPublicKey: String?,
         direction: Direction,
         attachment: Attachment?,
         hInset: CGFloat,
@@ -43,6 +45,8 @@ final class QuoteView: UIView {
             authorId: authorId,
             quotedText: quotedText,
             threadVariant: threadVariant,
+            currentUserPublicKey: currentUserPublicKey,
+            currentUserBlindedPublicKey: currentUserBlindedPublicKey,
             direction: direction,
             attachment: attachment,
             hInset: hInset,
@@ -63,6 +67,8 @@ final class QuoteView: UIView {
         authorId: String,
         quotedText: String?,
         threadVariant: SessionThread.Variant,
+        currentUserPublicKey: String?,
+        currentUserBlindedPublicKey: String?,
         direction: Direction,
         attachment: Attachment?,
         hInset: CGFloat,
@@ -190,6 +196,8 @@ final class QuoteView: UIView {
                 MentionUtilities.highlightMentions(
                     in: $0,
                     threadVariant: threadVariant,
+                    currentUserPublicKey: currentUserPublicKey,
+                    currentUserBlindedPublicKey: currentUserBlindedPublicKey,
                     isOutgoingMessage: isOutgoing,
                     attributes: [:]
                 )
@@ -207,11 +215,21 @@ final class QuoteView: UIView {
         // Label stack view
         var authorLabelHeight: CGFloat?
         if threadVariant == .openGroup || threadVariant == .closedGroup {
+            let isCurrentUser: Bool = [
+                currentUserPublicKey,
+                currentUserBlindedPublicKey,
+            ]
+            .compactMap { $0 }
+            .asSet()
+            .contains(authorId)
             let authorLabel = UILabel()
             authorLabel.lineBreakMode = .byTruncatingTail
-            authorLabel.text = Profile.displayName(
-                id: authorId,
-                threadVariant: threadVariant
+            authorLabel.text = (isCurrentUser ?
+                "MEDIA_GALLERY_SENDER_NAME_YOU".localized() :
+                Profile.displayName(
+                    id: authorId,
+                    threadVariant: threadVariant
+                )
             )
             authorLabel.textColor = textColor
             authorLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
