@@ -1080,11 +1080,6 @@ public class GroupManager: NSObject {
         return groupsV2Swift.parseGroupInviteLink(url)
     }
 
-    @objc
-    public static func isGroupInviteLink(_ url: URL) -> Bool {
-        nil != groupsV2Swift.parseGroupInviteLink(url)
-    }
-
     public static func joinGroupViaInviteLink(groupId: Data,
                                               groupSecretParamsData: Data,
                                               inviteLinkPassword: Data,
