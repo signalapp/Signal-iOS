@@ -11,6 +11,8 @@ jobs:
   build_and_test:
     name: Build and Test
 
+    needs: lint
+
     runs-on: macos-12
 
     steps:
