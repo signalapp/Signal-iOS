@@ -144,6 +144,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         return result
     }()
     
+    static var leftGutterSize: CGFloat { groupThreadHSpacing + profilePictureSize + groupThreadHSpacing }
+    
     // MARK: Direction & Position
     
     enum Direction { case incoming, outgoing }
@@ -931,7 +933,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                     cellViewModel.threadVariant == .openGroup ||
                     cellViewModel.threadVariant == .closedGroup
                 )
-                let leftGutterSize = (isGroupThread ? gutterSize : contactThreadHSpacing)
+                let leftGutterSize = (isGroupThread ? leftGutterSize : contactThreadHSpacing)
                 
                 return (screen.width - leftGutterSize - gutterSize)
                 
