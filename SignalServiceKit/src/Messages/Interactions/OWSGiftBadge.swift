@@ -82,7 +82,7 @@ public class OWSGiftBadge: MTLModel {
         guard let giftBadge = dataMessage.giftBadge else {
             throw GiftBadgeError.noGiftBadge
         }
-        guard FeatureFlags.giftBadgeReceiving else {
+        guard RemoteConfig.canReceiveGiftBadges else {
             throw GiftBadgeError.featureNotEnabled
         }
         guard let rcPresentationData = giftBadge.receiptCredentialPresentation else {

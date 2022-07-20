@@ -14,7 +14,7 @@ public class DonationUtilities: NSObject {
     }
 
     public static var canSendGiftBadges: Bool {
-        isApplePayAvailable && FeatureFlags.giftBadgeSending
+        isApplePayAvailable && RemoteConfig.canSendGiftBadges
     }
 
     public static var supportedNetworks: [PKPaymentNetwork] {

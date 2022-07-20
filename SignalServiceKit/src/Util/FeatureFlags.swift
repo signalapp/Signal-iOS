@@ -95,13 +95,9 @@ public class FeatureFlags: BaseFlags {
     public static let canUseNativeWebsocket = true
 
     @objc
-    public static let giftBadgeReceiving = build.includes(.qa)
-
-    @objc
-    public static let giftBadgeSending = build.includes(.qa)
-
-    @objc
     public static let hsmContactDiscovery = false
+
+    public static let isPrerelease = build.includes(.beta)
 
     @objc
     public static var notificationServiceExtension: Bool {

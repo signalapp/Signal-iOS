@@ -219,6 +219,19 @@ public class RemoteConfig: BaseFlags {
         DebugFlags.internalSettings || isEnabled(.keepMutedChatsArchivedOption)
     }
 
+    @objc
+    public static var canReceiveGiftBadges: Bool {
+        isEnabled(.canReceiveGiftBadges, defaultValue: true)
+    }
+
+    public static var canSendGiftBadges: Bool {
+        if FeatureFlags.isPrerelease {
+            return isEnabled(.canSendGiftBadgesInPrerelease, defaultValue: true)
+        } else {
+            return isEnabled(.canSendGiftBadgesInProduction, defaultValue: false)
+        }
+    }
+
     // MARK: -
 
     private static func interval(
@@ -407,6 +420,9 @@ private struct Flags {
         case donorBadgeDisplayKillSwitch
         case changePhoneNumberUI
         case keepMutedChatsArchivedOption
+        case canReceiveGiftBadges
+        case canSendGiftBadgesInPrerelease
+        case canSendGiftBadgesInProduction
     }
 
     // Values defined in this array remain set once they are

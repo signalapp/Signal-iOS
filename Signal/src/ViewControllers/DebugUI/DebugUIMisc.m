@@ -525,7 +525,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[OWSUserProfile getOrBuildUserProfileForAddress:address1
                                          transaction:transaction] updateWithUsername:nil
                                                                     isStoriesCapable:YES
-                                                                canReceiveGiftBadges:SSKFeatureFlags.giftBadgeReceiving
+                                                                canReceiveGiftBadges:RemoteConfig.canReceiveGiftBadges
                                                                    userProfileWriter:UserProfileWriter_Debugging
                                                                          transaction:transaction];
 

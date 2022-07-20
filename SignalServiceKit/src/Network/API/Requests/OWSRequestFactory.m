@@ -505,7 +505,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
         capabilities[@"stories"] = @(YES);
     }
 
-    if (SSKFeatureFlags.giftBadgeReceiving) {
+    if (RemoteConfig.canReceiveGiftBadges) {
         capabilities[@"giftBadges"] = @(YES);
     }
 

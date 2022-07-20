@@ -393,7 +393,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
     [userProfile updateWithUsername:username
                    isStoriesCapable:YES
-               canReceiveGiftBadges:SSKFeatureFlags.giftBadgeReceiving
+               canReceiveGiftBadges:RemoteConfig.canReceiveGiftBadges
                   userProfileWriter:userProfileWriter
                         transaction:transaction];
 }
