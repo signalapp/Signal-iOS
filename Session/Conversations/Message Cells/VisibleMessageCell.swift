@@ -19,11 +19,11 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     private lazy var authorLabelHeightConstraint = authorLabel.set(.height, to: 0)
     private lazy var profilePictureViewLeftConstraint = profilePictureView.pin(.left, to: .left, of: self, withInset: VisibleMessageCell.groupThreadHSpacing)
     private lazy var profilePictureViewWidthConstraint = profilePictureView.set(.width, to: Values.verySmallProfilePictureSize)
-    private lazy var bubbleViewLeftConstraint1 = snContentView.pin(.left, to: .right, of: profilePictureView, withInset: VisibleMessageCell.groupThreadHSpacing)
-    private lazy var bubbleViewLeftConstraint2 = snContentView.leftAnchor.constraint(greaterThanOrEqualTo: leftAnchor, constant: VisibleMessageCell.gutterSize)
-    private lazy var bubbleViewTopConstraint = snContentView.pin(.top, to: .bottom, of: authorLabel, withInset: VisibleMessageCell.authorLabelBottomSpacing)
-    private lazy var bubbleViewRightConstraint1 = snContentView.pin(.right, to: .right, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
-    private lazy var bubbleViewRightConstraint2 = snContentView.rightAnchor.constraint(lessThanOrEqualTo: rightAnchor, constant: -VisibleMessageCell.gutterSize)
+    private lazy var contentViewLeftConstraint1 = snContentView.pin(.left, to: .right, of: profilePictureView, withInset: VisibleMessageCell.groupThreadHSpacing)
+    private lazy var contentViewLeftConstraint2 = snContentView.leftAnchor.constraint(greaterThanOrEqualTo: leftAnchor, constant: VisibleMessageCell.gutterSize)
+    private lazy var contentViewTopConstraint = snContentView.pin(.top, to: .bottom, of: authorLabel, withInset: VisibleMessageCell.authorLabelBottomSpacing)
+    private lazy var contentViewRightConstraint1 = snContentView.pin(.right, to: .right, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
+    private lazy var contentViewRightConstraint2 = snContentView.rightAnchor.constraint(lessThanOrEqualTo: rightAnchor, constant: -VisibleMessageCell.gutterSize)
     private lazy var messageStatusImageViewTopConstraint = messageStatusImageView.pin(.top, to: .bottom, of: snContentView, withInset: 0)
     private lazy var messageStatusImageViewWidthConstraint = messageStatusImageView.set(.width, to: VisibleMessageCell.messageStatusImageViewSize)
     private lazy var messageStatusImageViewHeightConstraint = messageStatusImageView.set(.height, to: VisibleMessageCell.messageStatusImageViewSize)
@@ -180,10 +180,13 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         
         // Content view
         addSubview(snContentView)
-        bubbleViewLeftConstraint1.isActive = true
-        bubbleViewTopConstraint.isActive = true
-        bubbleViewRightConstraint1.isActive = true
-//        bubbleBackgroundView.pin(to: snContentView)
+        contentViewLeftConstraint1.isActive = true
+        contentViewTopConstraint.isActive = true
+        contentViewRightConstraint1.isActive = true
+        
+        // Bubble background view
+        bubbleBackgroundView.addSubview(bubbleView)
+        bubbleBackgroundView.pin(to: bubbleView)
         
         // Timer view
         addSubview(timerView)
@@ -254,15 +257,15 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         moderatorIconImageView.isHidden = (!cellViewModel.isSenderOpenGroupModerator || !cellViewModel.shouldShowProfile)
        
         // Bubble view
-        bubbleViewLeftConstraint1.isActive = (
+        contentViewLeftConstraint1.isActive = (
             cellViewModel.variant == .standardIncoming ||
             cellViewModel.variant == .standardIncomingDeleted
         )
-        bubbleViewLeftConstraint1.constant = (isGroupThread ? VisibleMessageCell.groupThreadHSpacing : VisibleMessageCell.contactThreadHSpacing)
-        bubbleViewLeftConstraint2.isActive = (cellViewModel.variant == .standardOutgoing)
-        bubbleViewTopConstraint.constant = (cellViewModel.senderName == nil ? 0 : VisibleMessageCell.authorLabelBottomSpacing)
-        bubbleViewRightConstraint1.isActive = (cellViewModel.variant == .standardOutgoing)
-        bubbleViewRightConstraint2.isActive = (
+        contentViewLeftConstraint1.constant = (isGroupThread ? VisibleMessageCell.groupThreadHSpacing : VisibleMessageCell.contactThreadHSpacing)
+        contentViewLeftConstraint2.isActive = (cellViewModel.variant == .standardOutgoing)
+        contentViewTopConstraint.constant = (cellViewModel.senderName == nil ? 0 : VisibleMessageCell.authorLabelBottomSpacing)
+        contentViewRightConstraint1.isActive = (cellViewModel.variant == .standardOutgoing)
+        contentViewRightConstraint2.isActive = (
             cellViewModel.variant == .standardIncoming ||
             cellViewModel.variant == .standardIncomingDeleted
         )
@@ -401,7 +404,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
             let deletedMessageView: DeletedMessageView = DeletedMessageView(textColor: bodyLabelTextColor)
             bubbleView.addSubview(deletedMessageView)
             deletedMessageView.pin(to: bubbleView)
-            snContentView.addArrangedSubview(bubbleView)
+            snContentView.addArrangedSubview(bubbleBackgroundView)
             return
         }
         
@@ -410,7 +413,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
             let mediaPlaceholderView = MediaPlaceholderView(cellViewModel: cellViewModel, textColor: bodyLabelTextColor)
             bubbleView.addSubview(mediaPlaceholderView)
             mediaPlaceholderView.pin(to: bubbleView)
-            snContentView.addArrangedSubview(bubbleView)
+            snContentView.addArrangedSubview(bubbleBackgroundView)
             return
         }
 
@@ -438,7 +441,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                             )
                             bubbleView.addSubview(linkPreviewView)
                             linkPreviewView.pin(to: bubbleView, withInset: 0)
-                            snContentView.addArrangedSubview(bubbleView)
+                            snContentView.addArrangedSubview(bubbleBackgroundView)
                             self.bodyTextView = linkPreviewView.bodyTextView
                             
                         case .openGroupInvitation:
@@ -450,7 +453,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                             )
                             bubbleView.addSubview(openGroupInvitationView)
                             bubbleView.pin(to: openGroupInvitationView)
-                            snContentView.addArrangedSubview(openGroupInvitationView)
+                            snContentView.addArrangedSubview(bubbleBackgroundView)
                     }
                 }
                 else {
@@ -495,7 +498,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                     // Constraints
                     bubbleView.addSubview(stackView)
                     stackView.pin(to: bubbleView, withInset: inset)
-                    snContentView.addArrangedSubview(bubbleView)
+                    snContentView.addArrangedSubview(bubbleBackgroundView)
                 }
                 
             case .mediaMessage:
@@ -514,7 +517,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                     self.bodyTextView = bodyTextView
                     bubbleView.addSubview(bodyTextView)
                     bodyTextView.pin(to: bubbleView, withInset: inset)
-                    snContentView.addArrangedSubview(bubbleView)
+                    snContentView.addArrangedSubview(bubbleBackgroundView)
                 }
                 
                 // Album view
@@ -552,7 +555,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
             
                 bubbleView.addSubview(voiceMessageView)
                 voiceMessageView.pin(to: bubbleView)
-                snContentView.addArrangedSubview(bubbleView)
+                snContentView.addArrangedSubview(bubbleBackgroundView)
                 self.voiceMessageView = voiceMessageView
                 
             case .genericAttachment:
@@ -586,7 +589,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 
                 bubbleView.addSubview(stackView)
                 stackView.pin(to: bubbleView, withInset: inset)
-                snContentView.addArrangedSubview(bubbleView)
+                snContentView.addArrangedSubview(bubbleBackgroundView)
         }
     }
 
