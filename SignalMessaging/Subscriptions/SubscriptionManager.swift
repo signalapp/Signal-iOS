@@ -7,9 +7,18 @@ import PassKit
 import LibSignalClient
 import SignalServiceKit
 
-public enum OneTimeBadgeLevel: UInt64, CaseIterable {
-    case boostBadge = 1
-    case giftBadge = 100
+public enum OneTimeBadgeLevel: Hashable {
+    case boostBadge
+    case giftBadge(OWSGiftBadge.Level)
+
+    var rawValue: UInt64 {
+        switch self {
+        case .boostBadge:
+            return 1
+        case .giftBadge(let level):
+            return level.rawLevel
+        }
+    }
 }
 
 private let SUBSCRIPTION_CHARGE_FAILURE_FALLBACK_CODE = "__signal_charge_failure_fallback_code__"
@@ -1173,25 +1182,54 @@ extension SubscriptionManager {
     }
 
     public class func getBoostBadge() -> Promise<ProfileBadge> {
-        getBadge(level: .boostBadge)
-    }
-
-    public class func getGiftBadge() -> Promise<ProfileBadge> {
-        getBadge(level: .giftBadge)
-    }
-
-    public class func getBadge(level: OneTimeBadgeLevel) -> Promise<ProfileBadge> {
         firstly {
-            getOneTimeBadges()
-        }.map { oneTimeBadges in
-            guard let result = oneTimeBadges[level] else {
+            getBadge(level: .boostBadge)
+        }.map { profileBadge in
+            guard let profileBadge = profileBadge else {
                 owsFail("No badge for this level was found")
             }
-            return result
+            return profileBadge
         }
     }
 
-    public class func getOneTimeBadges() -> Promise<[OneTimeBadgeLevel: ProfileBadge]> {
+    public class func getGiftBadge() -> Promise<ProfileBadge> {
+        firstly {
+            getBadge(level: .giftBadge(.signalGift))
+        }.map { profileBadge in
+            guard let profileBadge = profileBadge else {
+                owsFail("No badge for this level was found")
+            }
+            return profileBadge
+        }
+    }
+
+    public class func getBadge(level: OneTimeBadgeLevel) -> Promise<ProfileBadge?> {
+        firstly {
+            getOneTimeBadges()
+        }.map { oneTimeBadgeResult in
+            try oneTimeBadgeResult.parse(level: level)
+        }
+    }
+
+    public struct OneTimeBadgeResponse {
+        fileprivate let parser: ParamParser
+
+        public func parse(level: OneTimeBadgeLevel) throws -> ProfileBadge? {
+            guard let badgeLevel: [String: Any] = try self.parser.optional(key: String(level.rawValue)) else {
+                return nil
+            }
+
+            guard let levelParser = ParamParser(responseObject: badgeLevel) else {
+                throw OWSAssertionError("Missing or invalid response.")
+            }
+
+            let badgeJson: [String: Any] = try levelParser.required(key: "badge")
+
+            return try ProfileBadge(jsonDictionary: badgeJson)
+        }
+    }
+
+    public class func getOneTimeBadges() -> Promise<OneTimeBadgeResponse> {
         let request = OWSRequestFactory.boostBadgesRequest()
 
         return firstly {
@@ -1212,22 +1250,7 @@ extension SubscriptionManager {
                 throw OWSAssertionError("Missing or invalid response.")
             }
 
-            var result = [OneTimeBadgeLevel: ProfileBadge]()
-
-            for level in OneTimeBadgeLevel.allCases {
-                let badgeLevel: [String: Any]? = try? levelsParser.optional(key: String(level.rawValue))
-                guard let badgeLevel = badgeLevel else { continue }
-
-                guard let levelParser = ParamParser(responseObject: badgeLevel) else {
-                    throw OWSAssertionError("Missing or invalid response.")
-                }
-
-                let badgeJson: [String: Any] = try levelParser.required(key: "badge")
-
-                result[level] = try ProfileBadge(jsonDictionary: badgeJson)
-            }
-
-            return result
+            return OneTimeBadgeResponse(parser: levelsParser)
         }
     }
 }

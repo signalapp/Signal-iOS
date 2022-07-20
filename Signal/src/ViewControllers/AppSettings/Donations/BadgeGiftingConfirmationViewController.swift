@@ -5,6 +5,7 @@
 import Foundation
 import UIKit
 import PassKit
+import SignalServiceKit
 
 class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     // MARK: - View state
@@ -478,7 +479,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
 
     private func prepareToPay(authorizedPayment: PKPayment) -> Promise<PreparedPayment> {
         firstly {
-            Stripe.createBoostPaymentIntent(for: NSDecimalNumber(value: self.price), in: self.currencyCode, level: .giftBadge)
+            Stripe.createBoostPaymentIntent(for: NSDecimalNumber(value: self.price), in: self.currencyCode, level: .giftBadge(.signalGift))
         }.then { paymentIntent in
             Stripe.createPaymentMethod(with: authorizedPayment).map { paymentMethodId in
                 PreparedPayment(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)

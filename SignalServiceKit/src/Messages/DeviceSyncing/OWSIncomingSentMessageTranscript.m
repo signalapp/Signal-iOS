@@ -210,6 +210,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         _giftBadge = [OWSGiftBadge maybeBuildFromDataMessage:_dataMessage];
+        if ((_giftBadge != nil) && _thread.isGroupThread) {
+            OWSFailDebug(@"Ignoring gift sent to group");
+            return nil;
+        }
 
         NSError *stickerError;
         _messageSticker = [MessageSticker buildValidatedMessageStickerWithDataMessage:_dataMessage

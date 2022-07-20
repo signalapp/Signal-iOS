@@ -191,7 +191,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
             for: self.paymentIntentId,
             context: self.receiptCredentialRequestContext,
             request: self.receiptCredentialRequest,
-            expectedBadgeLevel: .giftBadge
+            expectedBadgeLevel: .giftBadge(.signalGift)
         )
     }
 

@@ -12,13 +12,18 @@ public final class CachedBadge: Equatable, Dependencies {
         self.badgeLevel = level
     }
 
+    public enum Value: Equatable {
+        case notFound
+        case profileBadge(ProfileBadge)
+    }
+
     // If set, the badge and its assets are populated and ready to use.
-    private var _profileBadge = AtomicOptional<ProfileBadge>(nil)
-    public var profileBadge: ProfileBadge? { self._profileBadge.get() }
+    private var _cachedValue = AtomicOptional<Value>(nil)
+    public var cachedValue: Value? { self._cachedValue.get() }
 
     // If set, there's an ongoing request to populate the badge. New callers
     // should join this chain to know when the shared request has finished.
-    private var fetchPromise: Promise<ProfileBadge>?
+    private var fetchPromise: Promise<Value>?
 
     public static func == (lhs: CachedBadge, rhs: CachedBadge) -> Bool {
         // Cached badges are considered equivalent if the underlying badge has the
@@ -28,29 +33,35 @@ public final class CachedBadge: Equatable, Dependencies {
     }
 
     @discardableResult
-    public func fetchIfNeeded() -> Promise<ProfileBadge> {
+    public func fetchIfNeeded() -> Promise<Value> {
         // Run on a stable queue to avoid race conditions.
-        return firstly(on: .main) { () -> Promise<ProfileBadge> in
+        return firstly(on: .main) { () -> Promise<Value> in
             // If we already have a cached value, do nothing.
-            if let profileBadge = self.profileBadge {
-                return Promise.value(profileBadge)
+            if let cachedValue = self.cachedValue {
+                return Promise.value(cachedValue)
             }
             // If we're already fetching, chain onto that fetch.
             if let fetchPromise = self.fetchPromise {
                 return fetchPromise
             }
             // Otherwise, kick off a new fetch.
-            let fetchPromise: Promise<ProfileBadge> = firstly {
+            let fetchPromise: Promise<Value> = firstly {
                 SubscriptionManager.getBadge(level: self.badgeLevel)
-            }.then { profileBadge in
-                firstly {
-                    self.profileManager.badgeStore.populateAssetsOnBadge(profileBadge)
-                }.map { _ in
-                    profileBadge
+            }.then { (profileBadge) -> Promise<Value> in
+                switch profileBadge {
+                case .none:
+                    return Promise.value(.notFound)
+
+                case .some(let profileBadge):
+                    return firstly {
+                        self.profileManager.badgeStore.populateAssetsOnBadge(profileBadge)
+                    }.map { _ in
+                        return .profileBadge(profileBadge)
+                    }
                 }
-            }.map { (profileBadge) -> ProfileBadge in
-                self._profileBadge.set(profileBadge)
-                return profileBadge
+            }.map { (value) -> Value in
+                self._cachedValue.set(value)
+                return value
             }.ensure {
                 self.fetchPromise = nil
             }

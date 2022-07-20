@@ -102,11 +102,15 @@ class DonationViewController: OWSTableViewController2 {
         let willEverShowBadges: Bool = hasAnyDonationReceipts || subscriberID != nil
         guard willEverShowBadges else { return Guarantee.value(ProfileBadgeLookup()) }
 
-        let oneTimeBadgesPromise: Guarantee<[OneTimeBadgeLevel: ProfileBadge]> = SubscriptionManager.getOneTimeBadges()
-            .recover { error -> Guarantee<[OneTimeBadgeLevel: ProfileBadge]> in
-                Logger.warn("Failed to fetch boost badge \(error). Proceeding without it, as it is only cosmetic here")
-                return Guarantee.value([:])
-            }
+        let oneTimeBadgesPromise = firstly {
+            SubscriptionManager.getOneTimeBadges()
+        }.map {
+            // Make the result an Optional.
+            $0
+        }.recover { error -> Guarantee<SubscriptionManager.OneTimeBadgeResponse?> in
+            Logger.warn("Failed to fetch boost badge \(error). Proceeding without it, as it is only cosmetic here")
+            return Guarantee.value(nil)
+        }
 
         let subscriptionLevelsPromise: Guarantee<[SubscriptionLevel]> = SubscriptionManager.getSubscriptions()
             .recover { error -> Guarantee<[SubscriptionLevel]> in
@@ -114,10 +118,10 @@ class DonationViewController: OWSTableViewController2 {
                 return Guarantee.value([])
             }
 
-        return oneTimeBadgesPromise.then { oneTimeBadges in
+        return oneTimeBadgesPromise.then { oneTimeBadgeResponse in
             subscriptionLevelsPromise.map { subscriptionLevels in
-                ProfileBadgeLookup(boostBadge: oneTimeBadges[.boostBadge],
-                                   giftBadge: oneTimeBadges[.giftBadge],
+                ProfileBadgeLookup(boostBadge: try? oneTimeBadgeResponse?.parse(level: .boostBadge),
+                                   giftBadge: try? oneTimeBadgeResponse?.parse(level: .giftBadge(.signalGift)),
                                    subscriptionLevels: subscriptionLevels)
             }.then { profileBadgeLookup in
                 profileBadgeLookup.attemptToPopulateBadgeAssets(populateAssetsOnBadge: self.profileManager.badgeStore.populateAssetsOnBadge).map { profileBadgeLookup }

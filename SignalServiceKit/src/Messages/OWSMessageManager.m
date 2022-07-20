@@ -2246,6 +2246,11 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
+    if ((message.giftBadge != nil) && thread.isGroupThread) {
+        OWSFailDebug(@"Ignoring gift sent to group");
+        return nil;
+    }
+
     if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
         OWSLogInfo(@"Inserting: %@", messageDescription);
     }

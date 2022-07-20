@@ -16,6 +16,8 @@ class GiftBadgeView: ManualStackView {
             case notLoaded(() -> Promise<Void>)
             // The badge is loaded. The associated value is the badge.
             case loaded(ProfileBadge)
+            // No badge was found for the level in the gift.
+            case notFound
         }
         let badge: Badge
         let messageUniqueId: String
@@ -260,6 +262,13 @@ class GiftBadgeView: ManualStackView {
             }.cauterize()
             // TODO: (GB) If an error occurs, we'll be stuck with a spinner.
 
+            let activityIndicator = self.activityIndicator(for: state)
+            activityIndicator.play()
+            innerStackSubviews = [activityIndicator]
+            self.buttonStack.alpha = 0.5
+
+        case .notFound:
+            // Show the same UI as we do when loading.
             let activityIndicator = self.activityIndicator(for: state)
             activityIndicator.play()
             innerStackSubviews = [activityIndicator]

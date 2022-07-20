@@ -1144,15 +1144,10 @@ fileprivate extension CVComponentState.Builder {
     }
 
     private mutating func buildGiftBadge(messageUniqueId: String, giftBadge: OWSGiftBadge) throws -> CVComponentState {
-        let (rawLevel, expirationDate) = try giftBadge.getReceiptDetails()
-
-        // TODO: (GB) What should we do with unexpected/malformed gifts? Ignore them? Show an error?
-        guard let level = OneTimeBadgeLevel(rawValue: rawLevel), level == .giftBadge else {
-            throw OWSAssertionError("Gift message doesn't contain a gift badge")
-        }
+        let (level, expirationDate) = try giftBadge.getReceiptDetails()
         self.giftBadge = GiftBadge(
             messageUniqueId: messageUniqueId,
-            cachedBadge: SubscriptionManager.getCachedBadge(level: level),
+            cachedBadge: SubscriptionManager.getCachedBadge(level: .giftBadge(level)),
             expirationDate: expirationDate,
             redemptionState: giftBadge.redemptionState
         )
