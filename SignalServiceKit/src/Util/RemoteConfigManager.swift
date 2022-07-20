@@ -33,11 +33,6 @@ public class RemoteConfig: BaseFlags {
         return isEnabled(.kbs)
     }
 
-    @objc
-    public static var groupsV2InviteLinks: Bool {
-        true
-    }
-
     private static let forceDisableUuidSafetyNumbers = true
 
     @objc

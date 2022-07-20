@@ -43,13 +43,8 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        if RemoteConfig.groupsV2InviteLinks {
-            title = NSLocalizedString("GROUP_REQUESTS_AND_INVITES_VIEW_TITLE",
-                                      comment: "The title for the 'group requests and invites' view.")
-        } else {
-            title = NSLocalizedString("GROUP_INVITES_VIEW_TITLE",
-                                      comment: "The title for the 'group invites' view.")
-        }
+        title = NSLocalizedString("GROUP_REQUESTS_AND_INVITES_VIEW_TITLE",
+                                  comment: "The title for the 'group requests and invites' view.")
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
 
@@ -96,24 +91,19 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     private func updateTableContents() {
         let contents = OWSTableContents()
 
-        var mode = Mode.pendingInvites
-        if RemoteConfig.groupsV2InviteLinks {
-            let modeSection = OWSTableSection()
-            let modeHeader = UIStackView(arrangedSubviews: [segmentedControl])
-            modeHeader.axis = .vertical
-            modeHeader.alignment = .fill
-            modeHeader.layoutMargins = UIEdgeInsets(top: 20, leading: 20, bottom: 0, trailing: 20)
-            modeHeader.isLayoutMarginsRelativeArrangement = true
-            modeSection.customHeaderView = modeHeader
-            contents.addSection(modeSection)
+        let modeSection = OWSTableSection()
+        let modeHeader = UIStackView(arrangedSubviews: [segmentedControl])
+        modeHeader.axis = .vertical
+        modeHeader.alignment = .fill
+        modeHeader.layoutMargins = UIEdgeInsets(top: 20, leading: 20, bottom: 0, trailing: 20)
+        modeHeader.isLayoutMarginsRelativeArrangement = true
+        modeSection.customHeaderView = modeHeader
+        contents.addSection(modeSection)
 
-            guard let parsedMode = Mode(rawValue: segmentedControl.selectedSegmentIndex) else {
-                owsFailDebug("Invalid mode.")
-                return
-            }
-            mode = parsedMode
+        guard let mode = Mode(rawValue: segmentedControl.selectedSegmentIndex) else {
+            owsFailDebug("Invalid mode.")
+            return
         }
-
         switch mode {
         case .memberRequests:
             addContentsForMemberRequests(contents: contents)

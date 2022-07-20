@@ -1066,18 +1066,12 @@ public class GroupManager: NSObject {
 
     @objc
     public static func isPossibleGroupInviteLink(_ url: URL) -> Bool {
-        guard RemoteConfig.groupsV2InviteLinks else {
-            return false
-        }
-        return groupsV2Swift.isPossibleGroupInviteLink(url)
+        groupsV2Swift.isPossibleGroupInviteLink(url)
     }
 
     @objc
     public static func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
-        guard RemoteConfig.groupsV2InviteLinks else {
-            return nil
-        }
-        return groupsV2Swift.parseGroupInviteLink(url)
+        groupsV2Swift.parseGroupInviteLink(url)
     }
 
     public static func joinGroupViaInviteLink(groupId: Data,

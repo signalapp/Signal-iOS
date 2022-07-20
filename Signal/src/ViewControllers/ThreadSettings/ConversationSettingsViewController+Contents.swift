@@ -612,25 +612,20 @@ extension ConversationSettingsViewController {
     ) {
         let section = OWSTableSection()
 
-        if RemoteConfig.groupsV2InviteLinks {
-            let groupLinkStatus = (groupModelV2.isGroupInviteLinkEnabled
-                ? CommonStrings.switchOn
-                : CommonStrings.switchOff)
-            section.add(OWSTableItem.disclosureItem(icon: .settingsLink,
-                                                    name: NSLocalizedString("CONVERSATION_SETTINGS_GROUP_LINK",
-                                                                            comment: "Label for 'group link' action in conversation settings view."),
-                                                    accessoryText: groupLinkStatus,
-                                                    accessibilityIdentifier: "conversation_settings_group_link",
-                                                    actionBlock: { [weak self] in
-                                                        self?.showGroupLinkView()
-            }))
-        }
+        let groupLinkStatus = (groupModelV2.isGroupInviteLinkEnabled
+                               ? CommonStrings.switchOn
+                               : CommonStrings.switchOff)
+        section.add(OWSTableItem.disclosureItem(icon: .settingsLink,
+                                                name: NSLocalizedString("CONVERSATION_SETTINGS_GROUP_LINK",
+                                                                        comment: "Label for 'group link' action in conversation settings view."),
+                                                accessoryText: groupLinkStatus,
+                                                accessibilityIdentifier: "conversation_settings_group_link",
+                                                actionBlock: { [weak self] in
+            self?.showGroupLinkView()
+        }))
 
-        let itemTitle = (RemoteConfig.groupsV2InviteLinks
-            ? NSLocalizedString("CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES",
-                                comment: "Label for 'member requests & invites' action in conversation settings view.")
-            : NSLocalizedString("CONVERSATION_SETTINGS_MEMBER_INVITES",
-                                comment: "Label for 'member invites' action in conversation settings view."))
+        let itemTitle = NSLocalizedString("CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES",
+                                          comment: "Label for 'member requests & invites' action in conversation settings view.")
         section.add(OWSTableItem.disclosureItem(icon: .settingsViewRequestAndInvites,
                                                 name: itemTitle,
                                                 accessoryText: OWSFormat.formatInt(groupModelV2.groupMembership.invitedOrRequestMembers.count),
