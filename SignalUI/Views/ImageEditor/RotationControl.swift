@@ -177,7 +177,11 @@ class RotationControl: UIControl {
     }
 
     private func updateAppearance() {
-        textLabel.text = numberFormatter.string(from: NSNumber(value: normalizedAngle.rounded()))
+        var roundedAngle = normalizedAngle.rounded()
+        if roundedAngle == 0 && roundedAngle.sign == .minus {
+            roundedAngle = 0
+        }
+        textLabel.text = numberFormatter.string(for: roundedAngle)
         currentValueMark.isHidden = abs(angle) < .epsilon
     }
 
