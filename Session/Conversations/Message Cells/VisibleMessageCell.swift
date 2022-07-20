@@ -79,7 +79,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         return result
     }()
 
-    private lazy var snContentView: UIStackView = {
+    lazy var snContentView: UIStackView = {
         let result = UIStackView(arrangedSubviews: [])
         result.axis = .vertical
         result.spacing = Values.verySmallSpacing

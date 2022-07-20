@@ -649,7 +649,7 @@ extension ConversationVC:
                 .elements
                 .firstIndex(of: cellViewModel),
             let cell = tableView.cellForRow(at: IndexPath(row: index, section: sectionIndex)) as? VisibleMessageCell,
-            let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false),
+            let snapshot = cell.snContentView.snapshotView(afterScreenUpdates: false),
             contextMenuWindow == nil,
             let actions: [ContextMenuVC.Action] = ContextMenuVC.actions(
                 for: cellViewModel,
