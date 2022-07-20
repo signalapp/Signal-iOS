@@ -14,10 +14,6 @@ For troubleshooting and questions, please visit our [support center](https://sup
 
 We use GitHub for bug tracking. Please search [existing issues](https://github.com/signalapp/signal-ios/issues) and create a new one if the issue is not yet tracked. For Android users, please use the [Signal for Android issue tracker](https://github.com/signalapp/signal-android/issues).
 
-## Contributing Translations
-
-Help us translate Signal! The translation effort happens on [Transifex](https://www.transifex.com/signalapp/signal-ios/).
-
 ## Contributing Code
 
 Instructions on how to setup your development environment and build Signal-iOS can be found in [BUILDING.md](https://github.com/signalapp/Signal-iOS/blob/main/BUILDING.md). Other useful instructions for development can be found in the [Development Guide wiki page](https://github.com/signalapp/Signal-iOS/wiki/Development-Guide). We also recommend reading the [contribution guidelines](https://github.com/signalapp/Signal-iOS/blob/main/CONTRIBUTING.md).

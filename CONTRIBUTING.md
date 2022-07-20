@@ -15,10 +15,6 @@ Truths which we believe to be self-evident:
 1. **There is no such thing as time.**  Protocol ideas that require synchronized clocks are doomed to failure.
 
 
-## Translations
-
-Thanks to a dedicated community of volunteer translators, Signal is now available in more than one hundred languages. We use Transifex to manage our translation efforts, not GitHub. Any suggestions, corrections, or new translations should be submitted to the [Signal localization project for iOS](https://www.transifex.com/signalapp/signal-ios/).
-
 ## Issues
 
 Please search both open and closed issues to make sure your bug report is not a duplicate.
@@ -68,10 +64,6 @@ There are several other ways to get involved:
 * Help new users learn about Signal.
   * Redirect support questions to support@signal.org and the [Signal Support Center](https://support.signal.org/).
   * Redirect non-bug discussions to the [community forum](https://community.signalusers.org).
-* Join the community of volunteer translators on Transifex:
-  * [Android](https://www.transifex.com/projects/p/signal-android/)
-  * [iOS](https://www.transifex.com/signalapp/signal-ios/)
-  * [Desktop](https://www.transifex.com/signalapp/signal-desktop/)
 * Find and mark duplicate issues.
 * Try to reproduce issues and help with troubleshooting.
 * Discover solutions to open issues and post any relevant findings.
