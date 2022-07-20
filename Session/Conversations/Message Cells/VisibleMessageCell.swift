@@ -399,16 +399,18 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         // Handle the deleted state first (it's much simpler than the others)
         guard cellViewModel.variant != .standardIncomingDeleted else {
             let deletedMessageView: DeletedMessageView = DeletedMessageView(textColor: bodyLabelTextColor)
-            snContentView.addArrangedSubview(deletedMessageView)
-            deletedMessageView.pin(to: snContentView)
+            bubbleView.addSubview(deletedMessageView)
+            deletedMessageView.pin(to: bubbleView)
+            snContentView.addArrangedSubview(bubbleView)
             return
         }
         
         // If it's an incoming media message and the thread isn't trusted then show the placeholder view
         if cellViewModel.cellType != .textOnlyMessage && cellViewModel.variant == .standardIncoming && !cellViewModel.threadIsTrusted {
             let mediaPlaceholderView = MediaPlaceholderView(cellViewModel: cellViewModel, textColor: bodyLabelTextColor)
-            snContentView.addArrangedSubview(mediaPlaceholderView)
-            mediaPlaceholderView.pin(to: snContentView)
+            bubbleView.addSubview(mediaPlaceholderView)
+            mediaPlaceholderView.pin(to: bubbleView)
+            snContentView.addArrangedSubview(bubbleView)
             return
         }
 
