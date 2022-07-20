@@ -963,10 +963,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d izključene osebe</string>
 			<key>one</key>
-			<string>1 person excluded</string>
+			<string>1 izključena oseba</string>
 			<key>other</key>
-			<string>%d people excluded</string>
+			<string>%d izključenih oseb</string>
+			<key>two</key>
+			<string>%d izključeni osebi</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -979,10 +983,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d osebe</string>
 			<key>one</key>
-			<string>1 person</string>
+			<string>1 oseba</string>
 			<key>other</key>
-			<string>%d people</string>
+			<string>%d oseb</string>
+			<key>two</key>
+			<string>%d osebi</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_%d</key>
@@ -1235,10 +1243,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d povezave</string>
 			<key>one</key>
-			<string>1 Connection</string>
+			<string>1 povezava</string>
 			<key>other</key>
-			<string>%d Connections</string>
+			<string>%d povezav</string>
+			<key>two</key>
+			<string>%d povezavi</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1251,10 +1263,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d izključene</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 izključena</string>
 			<key>other</key>
-			<string>%d Excluded</string>
+			<string>%d izključenih</string>
+			<key>two</key>
+			<string>%d izključeni</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

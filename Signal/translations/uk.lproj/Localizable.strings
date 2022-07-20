@@ -398,7 +398,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Щомісячний внесок скасовано";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+"BADGE_GIFT_THANKS_BODY" = "Значок надіслано. Одержувач — %@. Коли подарунок буде прийнято, одержувач зможе відобразити значок у своєму профілі.";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "Дякуємо за вашу підтримку!";
@@ -419,7 +419,7 @@
 "BADGE_GIFTING_CHAT_EXPIRED" = "Строк дії закінчився";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Подаруйте комусь значок, зробивши Signal пожертву. Ця людина отримає значок для фото свого профілю.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Подаруйте комусь значок, зробивши пожертву Signal. Ця людина отримає значок до фото свого профілю.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Подарувати емблему";
@@ -437,7 +437,7 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Не вдалося подарувати значок";
 
 /* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "Користувач не може отримати подарунок, тому що ви його заблокували.";
 
 /* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Не вдалося подарувати значок";
@@ -476,7 +476,7 @@
 "BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ надсилає вам подарунок";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "Придбано";
+"BADGE_GIFTING_REDEEMED" = "Активовано";
 
 /* Shown when you're replying to a gift message to indicate that it contains a gift. */
 "BADGE_GIFTING_REPLY" = "Подарунок";
@@ -488,7 +488,7 @@
 "BADGE_GIFTING_VIEW" = "Переглянути";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Ви отримали в подарунок значок! Відправник — %@. Увімкніть відображення значка в профілі, щоб інші користувачі дізналися про допомогу для Signal.";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Ви отримали значок у подарунок! Відправник — %@. Увімкніть відображення значка в профілі, щоб інші користувачі дізналися про допомогу для Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Регулярний щомісячний платіж було автоматично скасовано. %@ Ваш %@ значок більше не відображатиметься у профілі.";
@@ -3242,7 +3242,7 @@
 "MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Скасувати зміни";
 
 /* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
-"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "Усі зміни цієї світлини буде скасовано";
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "Усі зміни до цього фото буде скасовано";
 
 /* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
 "MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Скасувати зміни?";
@@ -3605,37 +3605,37 @@
 "MY_STORIES_NO_STORIES" = "Оновлення ваших сторіз показуватимуться тут.";
 
 /* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Дозвольте глядачам своїх сторіз реагувати і відповідати на них.";
 
 /* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Відповіді та реакції";
 
 /* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Дозволити відповіді та реакції";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Приховати сторіз від конкретних людей";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Усі довірені контакти в Signal, крім...";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Ділитися з усіма контактами";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Усі довірені контакти в Signal";
 
 /* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Виберіть, хто може переглядати ваші сторіз. Зміни не впливатимуть на вже надіслані сторіз.";
 
 /* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Хто може бачити цю сторі";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Оберіть, із ким поділитися";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Ділитися тільки з...";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Мої сторіз";
@@ -4847,7 +4847,7 @@
 "RETURN_CALL_PILL_BUTTON" = "Повернутись";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Все одно додати";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Усе одно зателефонувати";
@@ -6068,10 +6068,10 @@
 "STORY_REPLY_YOU_AUTHOR" = "Ви";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Довірені контакти";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Вилучені довірені контакти";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Дарувати";
@@ -6485,7 +6485,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Переглянути код безпеки";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
-"VIDEO_BROKEN" = "Відео не можна відтворити";
+"VIDEO_BROKEN" = "Це відео неможливо відтворити";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "Відеовиклик";

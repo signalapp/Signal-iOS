@@ -398,7 +398,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "حمایت مالی ماهانه لغو شد";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+"BADGE_GIFT_THANKS_BODY" = "شما به %@ یک نشان هدیه داده‌اید. پس از آزادسازی نشان توسط کاربر، به او حق انتخاب داده می‌شود که نشان خود را در معرض دید قرار دهد یا آن را پنهان کند.";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "از پشتیبانی شما سپاسگزاریم!";
@@ -437,7 +437,7 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "نشان هدیه قابل ارسال نیست";
 
 /* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "این کاربر نمی‌تواند هدیه شما را دریافت کند زیرا او را مسدود کرده‌اید.";
 
 /* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "نشان هدیه قابل ارسال نیست";
@@ -476,7 +476,7 @@
 "BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ یک هدیه برای شما فرستاد";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "آزادسازی شده";
+"BADGE_GIFTING_REDEEMED" = "آزادسازی‌شده";
 
 /* Shown when you're replying to a gift message to indicate that it contains a gift. */
 "BADGE_GIFTING_REPLY" = "هدیه";
@@ -3605,37 +3605,37 @@
 "MY_STORIES_NO_STORIES" = "به‌روزرسانی‌های استوری شما اینجا نشان داده می‌شود.";
 
 /* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "اجازه دهید افرادی که می‌توانند استوری شما را ببینند واکنش نشان دهند و پاسخ دهند.";
 
 /* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "پاسخ‌ها و واکنش‌ها";
 
 /* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "اجازه پاسخ و واکنش";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "استوری خود را از افراد خاصی پنهان کنید";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "تمام آشنایان سیگنال به جز...";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "اشتراک‌گذاری با تمام آشنایان";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "تمام آشنایان سیگنال";
 
 /* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "انتخاب کنید چه کسی می‌تواند استوری شما را مشاهده کند. تغییرات روی استوری‌هایی که قبلاً ارسال کرده‌اید تأثیر نمی‌گذارد.";
 
 /* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "کسانی که می‌توانند این استوری را ببینند";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "انتخاب افراد برای اشتراک‌گذاری";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "فقط با این افراد به اشتراک گذاشته شود:";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "استوری‌های من";
@@ -4847,7 +4847,7 @@
 "RETURN_CALL_PILL_BUTTON" = "بازگشت";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "به هر حال اضافه شود";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "تماس بگیر";
@@ -6068,10 +6068,10 @@
 "STORY_REPLY_YOU_AUTHOR" = "شما";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "آشنایان";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "آشنایان مستثنی‌شده";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "حمایت کنید";

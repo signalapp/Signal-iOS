@@ -398,7 +398,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "માસિક દાન રદ કર્યું";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+"BADGE_GIFT_THANKS_BODY" = "તમે %@ને એક બૅજ ગિફ્ટ કર્યું. તેઓ રીડીમ કરશે ત્યારે તેઓને તેમનું બૅજ બતાવવા કે છુપાવવાની પસંદગી આપવામાં આવશે.";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "આપના સહયોગ બદલ આભાર!";
@@ -437,7 +437,7 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "ગિફ્ટ બૅજ મોકલી ન શક્યા";
 
 /* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "આ ઉપયોગકર્તા તમારી ગિફ્ટ મેળવી શકતા નથી કારણ કે તમે તેમને બ્લૉક કરેલા છે.";
 
 /* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "ગિફ્ટ બૅજ મોકલી ન શક્યા";
@@ -3605,37 +3605,37 @@
 "MY_STORIES_NO_STORIES" = "તમારી સ્ટોરી પરના અપડેટ્સ અહીં દેખાશે.";
 
 /* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "જે લોકો તમારી સ્ટોરી જોઈ શકે છે તેમને પ્રતિક્રિયા અને જવાબ આપવા દો.";
 
 /* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "જવાબો અને પ્રતિક્રિયાઓ";
 
 /* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "જવાબો અને પ્રતિક્રિયાઓને મંજૂરી આપો";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "ચોક્કસ લોકોથી તમારી સ્ટોરી છુપાવો";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "બધા Signal કનેક્શન, સિવાય કે...";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "બધા કનેક્શન સાથે શેર કરો";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "બધા Signal કનેક્શન";
 
 /* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "તમારી સ્ટોરી કોણ જોઈ શકે તે પસંદ કરો. ફેરફારો તમે પહેલાથી મોકલેલ સ્ટોરીને અસર કરશે નહીં.";
 
 /* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "આ સ્ટોરી કોણ જોઈ શકે";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "કોની સાથે શેર કરવું તે લોકોને પસંદ કરો";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "ફક્ત આમની સાથે શેર કરો...";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "મારી સ્ટોરી";
@@ -4847,7 +4847,7 @@
 "RETURN_CALL_PILL_BUTTON" = "પાછા ફરો";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "કોઈપણ રીતે મોકલો";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "કોઈપણ રીતે કૉલ કરો";
@@ -6068,10 +6068,10 @@
 "STORY_REPLY_YOU_AUTHOR" = "તમે";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "કનેક્શન";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "બાકાત કરેલ કનેક્શન";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "દાન કરો";

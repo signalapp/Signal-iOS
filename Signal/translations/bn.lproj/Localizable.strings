@@ -398,7 +398,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "মাসিক ডোনেশন বাতিল";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+"BADGE_GIFT_THANKS_BODY" = "আপনি %@-কে একটি ব্যাজ উপহার দিয়েছেন। তিনি এটি গ্রহণ করলে, ব্যাজ দেখানোর বা লুকিয়ে রাখার জন্য তাদেরকে একটি অপশন দেওয়া হবে।";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "আপনার সহযোগীতার জন্য ধন্যবাদ!";
@@ -410,16 +410,16 @@
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "বার্তা যোগ করুন";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "গিফট ব্যাজ পাঠানো সফল হয়নি। আপনার সংযোগ ঠিক আছে কিনা দেখুন এবং আবার চেষ্টা করুন।";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "গিফট ব্যাজ পাঠানো যায়নি। আপনার সংযোগ ঠিক আছে কি না দেখুন এবং আবার চেষ্টা করুন।";
 
 /* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "গিফট ব্যাজ পাঠানো সফল হয়নি";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "গিফট ব্যাজ পাঠানো যায়নি";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "বাতিল";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "কাউকে তাদের নামে Signal-এ ডোনেশন দিয়ে একটি ব্যাজ উপহার দিন। প্রোফাইল ফটোতে প্রদর্শন করার জন্য তারা একটি ব্যাজ পাবেন।";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Signal-এ একটি অনুদান দিয়ে কাউকে একটি ব্যাজ উপহার দিন। নিজেদের প্রোফাইলে প্রদর্শন করার জন্য তারা একটি ব্যাজ পাবেন।";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "একটি ব্যাজ উপহার দিন";
@@ -434,10 +434,10 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "এই ব্যবহারকারী Signal আপগ্রেড না করা পর্যন্ত উপহার গ্রহণ করতে পারবেন না।";
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "গিফট ব্যাজ পাঠানো সফল হয়নি";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "গিফট ব্যাজ পাঠাতে পারছে না";
 
 /* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "এই ব্যবহারকারী আপনার উপহার গ্রহণ করতে পারবেন না কারণ আপনি তাকে ব্লক করেছেন৷";
 
 /* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "গিফট ব্যাজ পাঠানো সফল হয়নি";
@@ -464,13 +464,13 @@
 "BADGE_GIFTING_PREVIEW_INCOMING" = "আপনি একটি উপহার পেয়েছেন";
 
 /* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "আপনি একটি উপহার পাঠিয়েছিলেন";
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "আপনি একটি উপহার পাঠিয়েছেন";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "ফিরে পান";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "আপনি পরে আপনার ব্যাজ ফিরে পেতে পারবেন।";
+"BADGE_GIFTING_REDEEM_LATER" = "আপনি পরে আপনার ব্যাজ ছাড় করতে পারবেন";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
 "BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ আপনাকে একটি উপহার পাঠিয়েছেন";
@@ -488,7 +488,7 @@
 "BADGE_GIFTING_VIEW" = "দেখুন";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "আপনি %@-এর কাছ থেকে একটি গিফট ব্যাজ পেয়েছেন। Signal-এ ডোনেশন দেয়ার জন্য সচেতনতা তৈরি করতে আপনার প্রোফাইলে এই ব্যাজটি প্রদর্শন করুন৷";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "আপনি %@-এর কাছ থেকে একটি গিফট ব্যাজ পেয়েছেন। Signal-এ অনুদান দেয়ার জন্য সচেতনতা তৈরি করতে আপনার প্রোফাইলে এই ব্যাজটি প্রদর্শন করুন৷";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "আপনার পুনরাবৃত্ত মাসিক ডোনেশন স্বয়ংক্রিয়ভাবে বাতিল হয়ে গেছে। %@ আপনার %@ ব্যাজ আপনার প্রোফাইলে আর দৃশ্যমান নয়৷";
@@ -3242,7 +3242,7 @@
 "MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "পরিবর্তনগুলো বাতিল করুন";
 
 /* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
-"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "আপনি এই ফটোতে করা যেকোনো পরিবর্তন হারাবেন।";
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "আপনি এই ছবিতে করা যেকোনো পরিবর্তন হারাবেন";
 
 /* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
 "MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "পরিবর্তনগুলো বাতিল করবেন?";
@@ -3605,37 +3605,37 @@
 "MY_STORIES_NO_STORIES" = "আপনার স্টোরি'র আপডেট এখানে দেখানো হবে।";
 
 /* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "যারা আপনার স্টোরি দেখতে পাবেন তাদের রিঅ্যাক্ট এবং রিপ্লাই দিতে দিন";
 
 /* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "উত্তর ও রিঅ্যাকশন";
 
 /* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "উত্তর ও রিঅ্যাকশন অনুমোদন করুন";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "কিছু নির্দিষ্ট ব্যক্তির কাছ থেকে আপনার স্টোরি লুকান";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "...ছাড়া সকল Signal কানেকশন";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "সকল কানেকশনের সাথে শেয়ার করুন";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "সকল Signal কানেকশন";
 
 /* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "আপনার স্টোরি কে দেখতে পাবে তা নির্ধারণ করুন৷ পরিবর্তনগুলো আপনার ইতিমধ্যে পাঠানো স্টোরিগুলোকে প্রভাবিত করবে না৷";
 
 /* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "যারা স্টোরি দেখতে পাবেন";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "যাদের সাথে শেয়ার করবেন তাদের বেছে নিন";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "শেয়ার করুন শুধু...";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "আমার স্টোরি";
@@ -4847,7 +4847,7 @@
 "RETURN_CALL_PILL_BUTTON" = "ফিরে যান";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "যাই হোক যোগ করুন";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "যাইহোক কল করুন";
@@ -6068,10 +6068,10 @@
 "STORY_REPLY_YOU_AUTHOR" = "আপনি";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "কানেকশন";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "বাদ দেয়া কানেকশন";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "অনুদান";

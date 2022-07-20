@@ -1,3 +1,3 @@
 • Olemme tehneet parannuksia mediaeditoriin. Kuvien ja videoiden muokkaus ennen lähettämistä on nyt helpompaa kuin koskaan.
-• We’ve fixed an issue that was preventing new users from signing up to use Signal. Hello, new people!
+• Korjasimme ongelman, joka esti uusia käyttäjiä rekisteröitymästä Signaliin. Tervetuloa uusille käyttäjille!
 • Useita virheenkorjauksia, jotka sujuvoittavat sovelluksen käyttöä. Lisää kiinnostavia uudistuksia tulossa!

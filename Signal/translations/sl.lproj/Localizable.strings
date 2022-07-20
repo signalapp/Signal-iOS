@@ -92,7 +92,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Razumem";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Sporočila, nalepke, odziva, potrdila o branju ali vsebine vam v tem pogovoru ni bilo mogoče dostaviti od %@.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Sporočila, nalepke, odziva, potrdila o branju ali vsebine vam v pogovoru z uporabnikom_co %@ ni bilo mogoče dostaviti.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problem pri dostavi";
@@ -398,7 +398,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Mesečne donacije so bile preklicane.";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+"BADGE_GIFT_THANKS_BODY" = "Uporabniku_ci %@ ste podarili značko. Ko jo unovči, mu/ji bo predstavljena možnost, da jo pokaže ali skrije.";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "Hvala za vašo podporo!";
@@ -437,7 +437,7 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Darilne značke ni bilo mogoče poslati.";
 
 /* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "Ta uporabnik_ca ne more prejeti vašega darila, saj ste ga/jo blokirali.";
 
 /* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Darilne značke ni bilo mogoče poslati.";
@@ -869,7 +869,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Da bi videli kdo izmed vaših stikov že uporablja Signal, lahko aplikaciji dovolite dostop do vašega telefonskega imenika v Nastavitvah iOS.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "Nastavi reakcije";
+"CONFIGURE_REACTIONS" = "Nastavi odzive";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "To bo ponastavilo aplikacijo in izbrisalo sporočila. Aplikacija se bo zaprla, ko bo postopek končan.";
@@ -1658,7 +1658,7 @@
 "DISMISS_BUTTON_TEXT" = "Prekini";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Opusti meni s kontekstom";
+"DISMISS_CONTEXT_MENU" = "Opusti Meni bližnjic";
 
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Prikaži značke na profilu";
@@ -3605,37 +3605,37 @@
 "MY_STORIES_NO_STORIES" = "Tu bodo prikazane posodobitve vaše zgodbe.";
 
 /* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Dovolite ljudem, ki lahko vidijo vašo Zgodbo, da se nanjo odzovejo in odgovorijo.";
 
 /* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Odgovori in odzivi";
 
 /* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Dovoli odgovore in odzive";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Skrijte svojo Zgodbo pred določenimi ljudmi";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Vse Signal povezave, razen ...";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Deli s vsemi povezavami";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Vse Signal povezave";
 
 /* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Izberite, kdo lahko vidi vašo zgodbo. Spremembe ne bodo vplivale na že poslane zgodbe.";
 
 /* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Kdo lahko vidi to zgodbo";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Izberite ljudi, s katerimi jo boste delili";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Deli le s/z ...";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Moje zgodbe";
@@ -4847,7 +4847,7 @@
 "RETURN_CALL_PILL_BUTTON" = "Nazaj";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Vseeno dodaj";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Vseeno kliči";
@@ -5780,7 +5780,7 @@
 "SETTINGS_PRIVACY_TITLE" = "Zasebnost";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Potrdila o ogledu";
+"SETTINGS_READ_RECEIPT" = "Potrdila o branju";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Izklopi";
@@ -5870,7 +5870,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Dovoli od vsakogar";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Vklop zakritega pošiljatelja za dohodna sporočila uporabnikov, ki niso v imeniku in tistih, s katerimi ne delite svojega profila.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Vklop skritega pošiljatelja za dohodna sporočila uporabnikov, ki niso v imeniku in tistih, s katerimi ne delite svojega profila.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Različica";
@@ -6068,10 +6068,10 @@
 "STORY_REPLY_YOU_AUTHOR" = "Vi";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Povezave";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Izključene povezave";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Podpri Signal!";

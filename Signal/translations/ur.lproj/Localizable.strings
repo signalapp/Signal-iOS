@@ -398,7 +398,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "ماہانہ عطیہ منسوخ ہو گیا";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+"BADGE_GIFT_THANKS_BODY" = "آپ نے %@ کو بیج گفٹ کیا ہے۔ ان کے ریڈیم کرنے پر، انہیں اپنا بیج دکھانے یا چھپانے کا انتخاب دیا جائے گا۔";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "آپ کی حمایت کا شکریہ";
@@ -419,7 +419,7 @@
 "BADGE_GIFTING_CHAT_EXPIRED" = "زائد المیعاد";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Signal کو عطیہ کرنے کے ذریعے کسی شخص کو بیج گفٹ کریں۔ وہ اپنی پروفائل پر ڈسپلے کرنے کے لیے بیج حاصل کریں گے۔";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Signal کو عطیہ کر کے کسی یوزر کو بیج گفٹ کریں۔ وہ اپنی پروفائل پر ڈسپلے کرنے کے لیے بیج حاصل کریں گے۔";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "بیج گفٹ کریں";
@@ -437,7 +437,7 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "گفٹ بیج نہیں بھیج سکے";
 
 /* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "یہ صارف آپ کا گفٹ وصول نہیں کر سکتا کیونکہ آپ نے انہیں بلاک کیا ہے۔";
 
 /* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "گفٹ بیج نہیں بھیج سکے";
@@ -461,7 +461,7 @@
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "بیج گفٹ کرنا ناکام ہو گیا";
 
 /* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 آپ نے گفٹ وصول کیا ہے";
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 آپ کو ایک گفٹ ملا ہے";
 
 /* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
 "BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 آپ نے گفٹ بھیجا ہے";
@@ -488,7 +488,7 @@
 "BADGE_GIFTING_VIEW" = "دیکھیں";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "آپ نے %@ کی جانب سے گفٹ بیج وصول کیا ہے۔ Signal کو عطیہ کرنے کی آگہی پھیلانے کے لیے اس بیج کو اپنی پروفائل پر ڈسپلے کریں۔";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "آپ کو %@ کی جانب سے گفٹ بیج ملا ہے۔ Signal کو عطیہ کرنے کے بارے میں بتانے کے لیے اس بیج کو اپنی پروفائل پر ڈسپلے کریں۔";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "آپ کا ماہانہ متواتر عطیہ خود کار طور پر منسوخ ہو گیا تھا۔ %@ آپ کا %@ آپ کی پروفائل پر مزید نظر نہیں آتا۔";
@@ -3605,37 +3605,37 @@
 "MY_STORIES_NO_STORIES" = "آپ کی اسٹوری کی اپ ڈیٹس یہاں دکھائی جائیں گی۔";
 
 /* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "اپنی اسٹوری دیکھ سکنے والے لوگوں کو اس پر ردعمل دینے اور جواب دینے کی اجازت دیں۔";
 
 /* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "جوابات اور ردعمل";
 
 /* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "جوابات اور ردعمل کی اجازت دیں";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "مخصوص لوگوں سے اپنی اسٹوری مخفی کریں";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "تمام Signal کنکشنز ماسوائے...";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "تمام کنکشنز کے ساتھ شیئر کریں";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "تمام Signal کنکشنز";
 
 /* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "انتخاب کریں کہ آپ کی اسٹوری کون دیکھ سکتا ہے. تبدیلیاں ان اسٹوریز کو متاثر نہیں کریں گی جو آپ پہلے ہی بھیج چکے ہیں۔";
 
 /* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "یہ اسٹوری کون دیکھ سکتا ہے";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "ان لوگوں کا انتخاب کریں جن کے ساتھ شیئر کرنا ہے";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "صرف ان کے ساتھ شیئر کریں...";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "میری اسٹوریز";
@@ -4847,7 +4847,7 @@
 "RETURN_CALL_PILL_BUTTON" = "واپس";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "بہرصورت شامل کریں";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "کہیں بھی کال کریں ";
@@ -6068,10 +6068,10 @@
 "STORY_REPLY_YOU_AUTHOR" = "آپ";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "کنکشنز";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "خارج کردہ کنکشنز";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "عطیہ کریں";

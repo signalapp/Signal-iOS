@@ -353,7 +353,7 @@
 "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "揀相";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "揀個大頭公仔";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "揀個虛擬頭像";
 
 /* Text indicating the user can create a new avatar with text */
 "AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "文字";
@@ -389,7 +389,7 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "襟章已經褪色夠鐘換喇";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "講多啲畀我聽。";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "講多啲俾我聽。";
 
 /* Button text when a badge expires, asking you to renew your subscription */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "為課金計劃續期";
@@ -398,7 +398,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "每月捐款已經取消";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+"BADGE_GIFT_THANKS_BODY" = "你送咗一個徽章俾 %@。當佢哋換領咗之後，就可以選擇顯示或者隱藏徽章。";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "感謝您嘅支持！";
@@ -437,7 +437,7 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "傳送唔到饋贈徽章";
 
 /* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "你封鎖咗呢個用戶，所以佢接收唔到你送嘅禮物。";
 
 /* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "傳送唔到饋贈徽章";
@@ -476,7 +476,7 @@
 "BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ 送咗一份禮物俾你";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "已換領";
+"BADGE_GIFTING_REDEEMED" = "換領咗";
 
 /* Shown when you're replying to a gift message to indicate that it contains a gift. */
 "BADGE_GIFTING_REPLY" = "禮物";
@@ -1400,7 +1400,7 @@
 "DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "完整性檢查結果";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "確定要執行資料庫完整性檢查？";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "係咪要執行資料庫完整性檢查呀？";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "可能要幾分鐘時間。";
@@ -2921,7 +2921,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "呢個谷喺呢一刻未升級得做新版谷住。";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "你未連接至互聯網，所以冇辦法將呢個群組升級至新版群組。請稍後再試。";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "你未連接至互聯網，所以冇辦法將呢個群組升級至新版群組。請等一陣再試。";
 
 /* Title for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "未能完成升級";
@@ -3155,7 +3155,7 @@
 "KEY_COMMAND_UNARCHIVE" = "解除封印傾偈";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "講多啲畀我聽";
+"LEARN_MORE" = "講多啲俾我聽";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "離開";
@@ -3176,7 +3176,7 @@
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "呢部裝置將會睇到你有份參與嘅谷、聯絡人、聊天內容，同埋以你名義傳送嘅訊息。";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "確定要連結呢部裝置？";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "係咪要連結呢部裝置呀？";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "再試一次";
@@ -3194,7 +3194,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "條拎嘅預覽";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "已連結裝置";
+"LINKED_DEVICES_TITLE" = "連結咗嘅裝置";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "連結裝置失敗";
@@ -3605,37 +3605,37 @@
 "MY_STORIES_NO_STORIES" = "您嘅限時動態更新會喺呢度顯示。";
 
 /* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "睇到你嘅限時動態嘅人都可以俾心情回應同回覆。";
 
 /* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "回覆同心情回應";
 
 /* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "允許回覆同心情回應";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "向指定用戶隱藏限時動態";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "所有 Signal 嘅人脈，除咗...";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "同所有人脈分享";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "所有 Signal 人脈";
 
 /* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "選擇邊個可以睇到你嘅限時動態。呢個選擇唔會影響你喺更改前發送嘅限時動態。";
 
 /* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "邊個可以睇到呢個限時動態";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "選擇你嘅分享對象";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "只係分享俾...";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "我嘅限時動態";
@@ -3668,7 +3668,7 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi 同流動數據";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "用電話冧把搵";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "用電話號碼嚟搵";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "開個新谷";
@@ -3716,7 +3716,7 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "搵使用者";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "用電話冧把搵聯絡人";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "用電話號碼嚟搵聯絡人";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "無有緣相遇嘅谷";
@@ -4676,40 +4676,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "全部 · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "對您個訊息畀咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "對你個訊息俾咗 %@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "對您個相簿畀咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "對你個相簿俾咗 %@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "對您嘅音訊畀咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "對你嘅音訊俾咗 %@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "對您分享嘅聯絡人畀咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "對你分享嘅聯絡人俾咗 %@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "對您個檔案畀咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "對你個檔案俾咗 %@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "對您個 GIF 畀咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "對您個 GIF 俾咗 %@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "對您幅相畀咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "對你幅相俾咗 %@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "對您嘅貼圖畀咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "對你個貼圖俾咗 %@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "對此畀咗 %@ 心情：「%@」";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "俾咗 %@ 心情：「%@」";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "對您條片畀咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "對你條片俾咗 %@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "對您嘅流聲掠影多媒體檔案畀咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "對你嘅閱後即毀媒體俾咗 %@ 心情";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "對您個語音訊息畀咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "對你個語音訊息俾咗 %@ 心情";
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "您";
@@ -4847,7 +4847,7 @@
 "RETURN_CALL_PILL_BUTTON" = "返轉頭";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "照樣新增";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "照樣通話";
@@ -4934,7 +4934,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "攞唔到連結碼";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "你必須重設裝置，先可以連結至其他帳戶。你確定要刪除所有記錄 (訊息、附件同通話等)？刪除咗就冇得復原㗎喇。";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "你必須重設裝置，先可以連結至其他帳戶。你係咪要刪除所有記錄 (訊息、附件同通話等) 呀？刪除咗就冇得復原㗎喇。";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "統統刪除得一乾二淨";
@@ -5246,7 +5246,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "刪除晒所有資料";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "你確定要刪除所有記錄 (訊息、附件同通話等)？刪除咗就冇得復原㗎喇。";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "你係咪要刪除所有記錄 (訊息、附件同通話等) 呀？刪除咗就冇得復原㗎喇。";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "全部刪除";
@@ -5732,10 +5732,10 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "您嘅銀包位址";
 
 /* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "用電話冧把摷到我";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "用電話號碼嚟搵我";
 
 /* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "用電話冧把摷到我";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "用電話號碼嚟搵我";
 
 /* Label for the 'phone number sharing' setting. */
 "SETTINGS_PHONE_NUMBER_SHARING" = "見到我嘅電話冧把";
@@ -6011,7 +6011,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "轉寄";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "跳去傾偈";
+"STORIES_GO_TO_CHAT_ACTION" = "去聊天";
 
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "隱藏是日花生";
@@ -6068,10 +6068,10 @@
 "STORY_REPLY_YOU_AUTHOR" = "您";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "人脈";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "排除人脈";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "課金";
@@ -6380,7 +6380,7 @@
 "UNLINK_CONFIRMATION_ALERT_BODY" = "解除連結之後，呢部裝置就冇得再用嚟收發訊息㗎喇。";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "確定要解除連結「%@」？";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "係咪要解除連結「%@」呀？";
 
 /* Label warning the user that they have been unlinked from their primary device. */
 "UNLINKED_WARNING" = "裝置已經解除連結。請將 Signal 重新連結至手機，方便繼續收發訊息。";

@@ -1,3 +1,3 @@
 • Poboljšali smo uređivač medija tako da možete lakše prilagoditi fotografije i videozapise prije slanja.
-• We’ve fixed an issue that was preventing new users from signing up to use Signal. Hello, new people!
+• Riješili smo problem koji je sprječavao nove korisnike da se registriraju na Signal. Pozdrav, novi ljudi!
 • Ispravili smo bugove za nesmetano korištenje aplikacije, a na horizontu ima još uzbudljivih promjena!

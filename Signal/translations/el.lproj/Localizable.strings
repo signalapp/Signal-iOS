@@ -398,7 +398,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Η μηνιαία δωρεά ακυρώθηκε";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+"BADGE_GIFT_THANKS_BODY" = "Έκανες δώρο ένα σήμα στον/ην %@. Όταν το εξαργυρώσει, θα έχει τη δυνατότητα να επιλέξει αν θα εμφανίζεται ή όχι το σήμα.";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "Ευχαριστούμε για την υποστήριξη!";
@@ -410,16 +410,16 @@
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Προσθήκη μηνύματος";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Δεν είναι δυνατή η αποστολή σήματος. Έλεγξε την επαφή σου και δοκίμασε πάλι.";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Δεν είναι δυνατή η αποστολή σήματος δώρου. Έλεγξε τη σύνδεσή σου και δοκίμασε πάλι.";
 
 /* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Δεν είναι δυνατή η αποστολή σήματος";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Δεν είναι δυνατή η αποστολή σήματος δώρου";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Έληξε";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Κάνε δώρο ένα σήμα σε κάποιο άτομο με δωρεά στο Signal. Θα λάβει ένα σήμα που θα εμφανίζεται στο προφίλ του.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Κάνε δώρο ένα σήμα σε κάποιο άτομο με δωρεά στο Signal. Θα λάβουν ένα σήμα που θα εμφανίζεται στο προφίλ τους.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Κάνε δώρο ένα έμβλημα";
@@ -434,10 +434,10 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "Ο χρήστης δεν μπορεί να λάβει δώρα μέχρι να αναβαθμίσει το Signal.";
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Δεν είναι δυνατή η αποστολή σήματος";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Δεν είναι δυνατή η αποστολή σήματος δώρου";
 
 /* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "Αυτός ο χρήστης δεν μπορεί να λάβει το δώρο σου γιατί τον έχεις αποκλείσει";
 
 /* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Δεν είναι δυνατή η αποστολή σήματος";
@@ -470,7 +470,7 @@
 "BADGE_GIFTING_REDEEM" = "Εξαργύρωση";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "Μπορείς να εξαργυρώσεις αργότερα το σήμα σου";
+"BADGE_GIFTING_REDEEM_LATER" = "Μπορείς να εξαργυρώσεις το σήμα σου αργότερα ";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
 "BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "Ο/Η %@ σου έστειλε ένα δώρο";
@@ -488,7 +488,7 @@
 "BADGE_GIFTING_VIEW" = "Εμφάνιση";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Έλαβες δώρο ένα σήμα από τον/την %@. Δείξε αυτό το σήμα στο προφίλ σου για να υποστηρίξεις τη δωρεά στο Signal.";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Έλαβες δώρο ένα σήμα από τον/την %@. Ανάδειξε αυτό το σήμα στο προφίλ σου για να υποστηρίξεις τη δωρεά στο Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Η επαναλαμβανόμενη μηνιαία δωρεά σου ακυρώθηκε αυτόματα. %@ Το σήμα σου %@ δεν είναι πλέον ορατό στο προφίλ σου.";
@@ -3242,7 +3242,7 @@
 "MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Απόρριψη αλλαγών";
 
 /* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
-"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "Θα χάσεις τυχόν αλλαγές που έκανες στη φωτογραφία";
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "Θα χάσεις τυχόν αλλαγές που έκανες σε αυτή τη φωτογραφία";
 
 /* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
 "MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Απόρριψη αλλαγών;";
@@ -3605,37 +3605,37 @@
 "MY_STORIES_NO_STORIES" = "Εδώ θα εμφανίζονται ενημερώσεις για την ιστορία σου.";
 
 /* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
+"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Δώσε τη δυνατότητα στα άτομα που μπορούν να δουν την ιστορία σου να αντιδρούν και να απαντούν.";
 
 /* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Απαντήσεις και αντιδράσεις";
 
 /* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
+"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Επίτρεψε τις απαντήσεις και τις αντιδράσεις";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Κρύψε την ιστορία σου από συγκεκριμένα άτομα";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Όλες οι επαφές Signal εκτός από...";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Κοινοποίηση σε όλες τις επαφές";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Όλες οι επαφές Signal";
 
 /* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Διάλεξε ποια άτομα μπορούν να δουν την ιστορία σου. Οι αλλαγές δεν επηρεάζουν τις ιστορίες που έχεις στείλει ήδη.";
 
 /* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Ποια άτομα μπορούν να δουν αυτήν την ιστορία";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Διάλεξε με ποια άτομα θα τη μοιραστείς";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Κοινοποίηση μόνο σε...";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Οι ιστορίες μου";
@@ -4847,7 +4847,7 @@
 "RETURN_CALL_PILL_BUTTON" = "Επιστροφή";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Προσθήκη παρ' όλα αυτά";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Κλήση παρ' όλα αυτά";
@@ -6068,10 +6068,10 @@
 "STORY_REPLY_YOU_AUTHOR" = "Εσύ";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Επαφές";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Αποκλεισμένες επαφές";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Δωρεά";
@@ -6485,7 +6485,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Έλεγχος αριθμών ασφαλείας";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
-"VIDEO_BROKEN" = "Δεν είναι δυνατή η αναπαραγωγή του βίντεο";
+"VIDEO_BROKEN" = "Δεν είναι δυνατή η αναπαραγωγή αυτού του βίντεο";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "Βιντεοκλήση";

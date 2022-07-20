@@ -1,3 +1,3 @@
 • 我们优化了视频编辑器，让您在发送之前可以更加轻松地自定义照片和视频。
-• We’ve fixed an issue that was preventing new users from signing up to use Signal. Hello, new people!
+• 我们已修复一个影响新用户注册和使用 Signal 的问题。您好，新朋友！
 • 多个漏洞修复让您的应用可以顺畅运行。更多惊喜更新即将上线！

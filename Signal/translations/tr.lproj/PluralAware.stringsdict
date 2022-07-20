@@ -776,9 +776,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 person excluded</string>
+			<string>1 kişi hariç tutuldu</string>
 			<key>other</key>
-			<string>%d people excluded</string>
+			<string>%d kişi hariç tutuldu</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 person</string>
+			<string>1 kişi</string>
 			<key>other</key>
-			<string>%d people</string>
+			<string>%d kişi</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_%d</key>
@@ -1000,9 +1000,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Connection</string>
+			<string>1 Bağlantı</string>
 			<key>other</key>
-			<string>%d Connections</string>
+			<string>%d Bağlantı</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1016,9 +1016,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 Hariç Tutuldu</string>
 			<key>other</key>
-			<string>%d Excluded</string>
+			<string>%d Hariç Tutuldu</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

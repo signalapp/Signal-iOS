@@ -461,10 +461,10 @@
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Versenden von Geschenkabzeichen gescheitert";
 
 /* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "Du hast ein Geschenk erhalten";
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 Du hast ein Geschenk erhalten";
 
 /* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "Du hast ein Geschenk gesendet";
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 Du hast ein Geschenk gesendet";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "Einlösen";
