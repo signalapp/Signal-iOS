@@ -64,7 +64,7 @@ class GiftBadgeView: ManualStackView {
             ),
             font: .ows_dynamicTypeBody,
             textColor: textColor,
-            lineBreakMode: .byTruncatingTail
+            numberOfLines: 0
         )
     }
 
@@ -104,7 +104,7 @@ class GiftBadgeView: ManualStackView {
             text: state.timeRemainingText,
             font: .ows_dynamicTypeSubheadline,
             textColor: textColor,
-            lineBreakMode: .byTruncatingTail
+            numberOfLines: 0
         )
     }
 
@@ -393,7 +393,11 @@ class GiftBadgeView: ManualStackView {
                 text: self.localizedDurationText(for: timeRemaining),
                 font: labelConfig.font,
                 textColor: labelConfig.textColor,
-                lineBreakMode: labelConfig.lineBreakMode
+                // Only consider the first line for these alternative values. This (a)
+                // ensures that we don't reserve space for the second line unless the value
+                // we're going to show needs two lines and (b) still maintains a roughly
+                // constant overall bubble width.
+                lineBreakMode: .byTruncatingTail
             )
             let candidateSize = candidateConfig.measure(maxWidth: maxWidth)
             labelSize.width = max(labelSize.width, candidateSize.width)
