@@ -246,7 +246,11 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
 
     // MARK: Equatable
 
-    static func == (lhs: IndividualCall, rhs: IndividualCall) -> Bool {
-        return lhs.localId == rhs.localId
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let other = object as? Self else {
+            return false
+        }
+
+        return localId == other.localId
     }
 }

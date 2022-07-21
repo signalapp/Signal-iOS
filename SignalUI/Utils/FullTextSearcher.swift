@@ -96,8 +96,12 @@ public class ContactSearchResult: NSObject, Comparable {
 
     // MARK: Equatable
 
-    public static func == (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
-        return lhs.recipientAddress == rhs.recipientAddress
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let other = object as? Self else {
+            return false
+        }
+
+        return recipientAddress == other.recipientAddress
     }
 }
 
@@ -204,8 +208,12 @@ public class GroupSearchResult: NSObject, Comparable {
 
     // MARK: Equatable
 
-    public static func == (lhs: GroupSearchResult, rhs: GroupSearchResult) -> Bool {
-        return lhs.thread.threadRecord.uniqueId == rhs.thread.threadRecord.uniqueId
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let other = object as? Self else {
+            return false
+        }
+
+        return thread.threadRecord.uniqueId == other.thread.threadRecord.uniqueId
     }
 }
 

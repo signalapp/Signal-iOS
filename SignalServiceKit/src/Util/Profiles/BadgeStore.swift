@@ -50,16 +50,23 @@ public class ProfileBadge: NSObject, Codable {
         duration = try params.optional(key: "duration")
     }
 
-    static func == (lhs: ProfileBadge, rhs: ProfileBadge) -> Bool {
-        return type(of: lhs) == type(of: rhs) &&
-            lhs.id == rhs.id &&
-            lhs.rawCategory == rhs.rawCategory &&
-            lhs.localizedName == rhs.localizedName &&
-            lhs.localizedDescriptionFormatString == rhs.localizedDescriptionFormatString &&
-            lhs.resourcePath == rhs.resourcePath &&
-            lhs.badgeVariant == rhs.badgeVariant &&
-            lhs.localization == rhs.localization &&
-            lhs.duration == rhs.duration
+    override public func isEqual(_ object: Any?) -> Bool {
+        guard
+            let other = object as? Self,
+            type(of: self) == type(of: other)
+        else {
+            return false
+        }
+
+        return
+            id == other.id &&
+            rawCategory == other.rawCategory &&
+            localizedName == other.localizedName &&
+            localizedDescriptionFormatString == other.localizedDescriptionFormatString &&
+            resourcePath == other.resourcePath &&
+            badgeVariant == other.badgeVariant &&
+            localization == other.localization &&
+            duration == other.duration
             // Don't check assets -- it's essentially a derived property that doesn't
             // need to be included in equality checks.
     }
