@@ -1,26 +1,26 @@
-Millions of people use Signal every day for free and instantaneous communication anywhere in the world. Send and receive high-fidelity messages, participate in HD voice/video calls, and explore a growing set of new features that help you stay connected. Signal’s advanced privacy-preserving technology is always enabled, so you can focus on sharing the moments that matter with the people who matter to you.
+Millioner av mennesker bruker Signal gratis hver eneste dag, og kommuniserer uavhengig av hvor de befinner seg i verden. Send og motta høyoppløselige meldinger, delta i HD-lyd og videosamtaler, og utforsk et økende antall new egenskaper som vil hjelpe deg forbli tilkoblet omverden. Signal's avanserte personvern bevarende teknologi er alltid skrudd på, så du kan fokusere på å dele øyeblikkene som betyr noe med de som betyr noe for deg.
 
-• Say anything – State-of-the-art end-to-end encryption (powered by the open source Signal Protocol™) keeps your conversations secure. Privacy isn’t an optional mode — it’s just the way that Signal works. Every message, every call, every time.
+• Si hva som helst - Toppmoderne kryptering (drevet av åpen kildekode-prosjektet Signal Protocol™) holder samtalene dine sikre. Personvern er ikke en alternativ modus  — Det er bare sånn Signal fungerer. Hver melding, hver samtale, hver gang.
 
-• Go fast – Messages are delivered quickly and reliably, even on slow networks. Signal is optimized to operate in the most constrained environment possible.
+• Gå fort – Meldinger er levert raskt og pålitelig, til og med på trege internettlinjer. Signal er optimalisert for å fungere i de mest begrensede omgivelser tenkelig.
 
-• Feel free – Signal is a completely independent 501c3 nonprofit. Development is supported by users like you. No advertisements. No trackers. No kidding.
+• Føl deg fri – Signal er en uavhengig 501c3 nonprofit-organisasjon. Utviklingen er støttet av brukere som deg. Ingen reklame. Ingen sporing. Ingen spøk.  
 
-• Be yourself – You can use your existing phone number and address book to securely communicate with your friends.
+• Vær deg selv – Du kan bruke eksisterende telefonnummer og kontaktliste til å sikkert kommunisere med vennene dine.
 
-• Speak up – Whether they live across town or across the ocean, Signal’s enhanced audio and video quality will make your friends and family feel closer.
+• Snakk ut – Enten de bor på andre siden av byen, eller på andre siden av havet, Signal's forbedrede lyd og bildekvalitet vil gi deg følelsen av at familie og venner føles nærmere.
 
-• Whisper in the shadows – Switch to the dark theme if you refuse to see the light.
+• Hvisk i skyggene  – Bytt til mørkt tema om du nekter å se lyset.
 
-• Sound familiar – Choose custom alerts for each contact, or disable noises completely. Simon & Garfunkel wrote a hit song about it in 1964, and you can experience the sound of silence whenever you want by choosing “None” as your notification ringtone.
+• Høres kjent ut – Velg mellom forskjellige varsler for hver kontakt, eller skru av støy helt. Simon & Garfunkel skrev en sang om det i 1964, og du kan få oppleve lyden av stillhet når du vil ved å velge «Ingen» som din varslingslyd. 
 
-• Picture this – Use the built-in image editing features to sketch, crop, and flip your outgoing photos. There’s even a text tool so that you can add more words to the 1,000 that your picture is already worth.
+• Se for deg dette – Bruk de innebygde bilderedigerings-funksjonene til å tegne, beskjære eller flippe bildene du sender. Det er til og med et tekstverktøy der du kan legge flere ord til bildene dine som allerede er verdt 1000 ord fra før.
 
 
-For support, questions, or more information, please visit:
+For brukerstøtte, spørsmål eller mer informasjon, vennligst besøk:
 https://support.signal.org
 
-Source code:
+Kildekode:
 https://github.com/signalapp
 
-Follow us on Twitter (@signalapp) and Instagram (@signal_app) for all of the latest updates and announcements.
+Følg oss på Twitter (@signalapp) og Instagram (@signal_app) for de siste oppdateringene og kunngjøringene.

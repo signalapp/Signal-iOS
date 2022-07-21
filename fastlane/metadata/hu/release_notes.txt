@@ -1,3 +1,2 @@
 • Továbbfejlesztettük a médiaszerkesztőt, így minden eddiginél egyszerűbben személyre szabhatod a fényképeket és videókat, mielőtt elküldenéd azokat.
-• We’ve fixed an issue that was preventing new users from signing up to use Signal. Hello, new people!
 • Számos hibajavítás az alkalmazás zökkenőmentes működéséhez. További izgalmas változások a láthatáron!

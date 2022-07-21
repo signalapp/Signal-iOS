@@ -1,3 +1,2 @@
 • Medya düzenleyiciyi iyileştirdik. Fotoğrafları ve videoları göndermeden önce düzenlemek şimdi her zamankinden daha kolay.
-• We’ve fixed an issue that was preventing new users from signing up to use Signal. Hello, new people!
 • Uygulamanın sorunsuz çalışmasını sağlamak için birkaç hata düzeltmesi yaptık. Daha heyecan verici gelişmeler çok yakında!

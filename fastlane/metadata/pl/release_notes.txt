@@ -1,3 +1,2 @@
 • Poprawiliśmy funkcjonalność edytora multimediów, dzięki czemu łatwiej niż dotąd dostosujesz zdjęcia i filmy przed ich wysłaniem.
-• We’ve fixed an issue that was preventing new users from signing up to use Signal. Hello, new people!
 • Naprawiliśmy kilka błędów, aby aplikacja działała jeszcze płynniej. Kolejne ekscytujące zmiany już wkrótce!

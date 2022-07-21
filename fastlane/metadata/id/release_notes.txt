@@ -1,3 +1,2 @@
-• Kami telah meningkatkan editor media, memudahkan Anda untuk mengedit foto dan video sebelum dikirim.
-• We’ve fixed an issue that was preventing new users from signing up to use Signal. Hello, new people!
+• Kami telah menyempurnakan editor media, memudahkan Anda untuk mengedit foto dan video sebelum dikirim.
 • Beberapa perbaikan bug untuk memastikan aplikasi berjalan lancar. Perubahan menarik lain akan segera diterapkan!

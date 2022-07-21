@@ -1,3 +1,2 @@
 • Abbiamo migliorato l'editor per i media: da ora sarà più semplice modificare foto e video prima di inviarli.
-• We’ve fixed an issue that was preventing new users from signing up to use Signal. Hello, new people!
 • Risoluzione di una serie di bug per garantire il corretto funzionamento dell'app. E tante altre novità stanno per arrivare!

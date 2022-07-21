@@ -1,3 +1,2 @@
 • Hem millorat l'editor d'arxius multimèdia per tal que sigui més fàcil que mai personalitzar les teves fotos i vídeos abans d'enviar-los.
-• We’ve fixed an issue that was preventing new users from signing up to use Signal. Hello, new people!
 • També hem corregit una sèrie d'errors per assegurar-nos que l'app continuï funcionant sense entrebancs. Aviat tindrem més canvis emocionants!
