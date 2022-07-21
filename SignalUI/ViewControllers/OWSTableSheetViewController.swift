@@ -52,10 +52,15 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
             updateTableContents()
             previousSafeAreaInsets = tableViewController.view.safeAreaInsets
         }
+        // This comparison isn't redundant: assigning same value to `heightConstraint.constant`
+        // triggers a layout cycle and therefore this method, where height being reset to a previous value,
+        // killing interactive dismiss.
+        let minimizedHeight = minimizedHeight
         if minimizedHeight != previousMinimizedHeight {
             heightConstraint.constant = minimizedHeight
             previousMinimizedHeight = minimizedHeight
         }
+        maxHeightConstraint.constant = maximizedHeight
     }
 
     public override func themeDidChange() {

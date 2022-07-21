@@ -121,7 +121,7 @@ open class InteractiveSheetViewController: OWSViewController {
     // MARK: - Resize / Interactive Dismiss
 
     public private(set) lazy var heightConstraint = contentContainerView.heightAnchor.constraint(equalToConstant: minimizedHeight)
-    private lazy var maxHeightConstraint = contentContainerView.heightAnchor.constraint(equalToConstant: maximizedHeight)
+    public private(set) lazy var maxHeightConstraint = contentContainerView.heightAnchor.constraint(equalToConstant: maximizedHeight)
     open var minimizedHeight: CGFloat {
         return min(maximizedHeight, minHeight)
     }
