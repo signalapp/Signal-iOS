@@ -24,7 +24,7 @@ class DisplayableTextTest: SignalBaseTest {
         XCTAssertEqual(boringText, boringText.filterStringForDisplay())
 
         // show high byte emojis
-        let emojiText = "🇹🇹🌼🇹🇹🌼🇹🇹"
+        let emojiText = "🇹🇹🌼🇹🇹🌼🇹🇹a👩🏿‍❤️‍💋‍👩🏻b"
         XCTAssertEqual(emojiText, emojiText.filterStringForDisplay())
 
         // show normal diacritic usage
@@ -32,9 +32,7 @@ class DisplayableTextTest: SignalBaseTest {
         XCTAssertEqual(diacriticalText, diacriticalText.filterStringForDisplay())
 
         // filter excessive diacritics
-        XCTAssertEqual("HAVING TROUBLE READING TEXT?", "H҉̸̧͘͠A͢͞V̛̛I̴̸N͏̕͏G҉̵͜͏͢ ̧̧́T̶̛͘͡R̸̵̨̢̀O̷̡U͡҉B̶̛͢͞L̸̸͘͢͟É̸ ̸̛͘͏R͟È͠͞A̸͝Ḑ̕͘͜I̵͘҉͜͞N̷̡̢͠G̴͘͠ ͟͞T͏̢́͡È̀X̕҉̢̀T̢͠?̕͏̢͘͢".filterStringForDisplay() )
-
-        XCTAssertEqual("LGO!", "L̷̳͔̲͝Ģ̵̮̯̤̩̙͍̬̟͉̹̘̹͍͈̮̦̰̣͟͝O̶̴̮̻̮̗͘͡!̴̷̟͓͓".filterStringForDisplay())
+        XCTAssertEqual("�ab��👩🏿‍❤️‍💋‍👩🏻c�", "x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝abx̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝👩🏿‍❤️‍💋‍👩🏻cx̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝".filterStringForDisplay() )
     }
 
     func testGlyphCount() {
