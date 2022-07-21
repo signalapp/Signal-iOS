@@ -216,7 +216,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var canReceiveGiftBadges: Bool {
-        isEnabled(.canReceiveGiftBadges, defaultValue: true)
+        FeatureFlags.shouldUseRemoteConfigForReceivingGiftBadges && isEnabled(.canReceiveGiftBadges, defaultValue: true)
     }
 
     public static var canSendGiftBadges: Bool {
