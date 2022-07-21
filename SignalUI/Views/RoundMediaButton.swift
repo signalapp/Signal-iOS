@@ -5,7 +5,7 @@
 import SignalCoreKit
 import UIKit
 
-public class RoundMediaButton: UIButton {
+open class RoundMediaButton: UIButton {
 
     public enum BackgroundStyle {
         case none
@@ -83,7 +83,7 @@ public class RoundMediaButton: UIButton {
     }
 
     @available(*, unavailable, message: "Use init(image:backgroundStyle:) instead")
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 

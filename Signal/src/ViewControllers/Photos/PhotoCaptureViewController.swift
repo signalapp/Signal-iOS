@@ -85,7 +85,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             VolumeButtons.shared?.addObserver(observer: photoCapture)
         }
 
-        updateFlashModeControl()
+        updateFlashModeControl(animated: false)
 
         view.addGestureRecognizer(pinchZoomGesture)
         view.addGestureRecognizer(tapToFocusGesture)
@@ -232,17 +232,9 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
     private(set) var captureMode: CaptureMode = .single {
         didSet {
-            let buttonImage: UIImage? = {
-                switch captureMode {
-                case .single:
-                    return ButtonImages.batchModeOff
-                case .multi:
-                    return ButtonImages.batchModeOn
-                }
-            }()
-            topBar.batchModeButton.setImage(buttonImage, for: .normal)
+            topBar.batchModeButton.setCaptureMode(captureMode, animated: true)
             if let sideBar = sideBar {
-                sideBar.batchModeButton.setImage(buttonImage, for: .normal)
+                sideBar.batchModeButton.setCaptureMode(captureMode, animated: true)
             }
         }
     }
@@ -355,7 +347,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             view.addConstraints(cameraZoomControlConstraints)
             cameraZoomControlIPhoneConstraints?.append(contentsOf: cameraZoomControlConstraints)
         }
-        updateCameraZoomControlVisibility()
+        updateUIOnCameraPositionChange()
 
         view.addSubview(doneButton)
         doneButton.isHidden = true
@@ -403,7 +395,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         self.sideBar = sideBar
 
         sideBar.batchModeButton.setImage(topBar.batchModeButton.image(for: .normal), for: .normal)
-        updateFlashModeControl()
+        updateFlashModeControl(animated: false)
 
         doneButtonIPadConstraints = [ doneButton.centerXAnchor.constraint(equalTo: sideBar.centerXAnchor),
                                       doneButton.bottomAnchor.constraint(equalTo: sideBar.topAnchor, constant: -8)]
@@ -498,17 +490,10 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         }
     }
 
-    private func updateCameraZoomControlVisibility(animated: Bool = false) {
+    private func updateUIOnCameraPositionChange(animated: Bool = false) {
         let isFrontCamera = photoCapture.desiredPosition == .front
-        let changes = {
-            self.frontCameraZoomControl?.alpha = isFrontCamera ? 1 : 0
-            self.rearCameraZoomControl?.alpha = isFrontCamera ? 0 : 1
-        }
-        if animated {
-            UIView.animate(withDuration: 0.2, animations: changes)
-        } else {
-            changes()
-        }
+        frontCameraZoomControl?.setIsHidden(!isFrontCamera, animated: animated)
+        rearCameraZoomControl?.setIsHidden(isFrontCamera, animated: animated)
     }
 
     // MARK: - Interactive Dismiss
@@ -572,16 +557,13 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
     private func switchCameraPosition() {
         if let switchCameraButton = isIPadUIInRegularMode ? sideBar?.switchCameraButton : bottomBar.switchCameraButton {
-            UIView.animate(withDuration: 0.2) {
-                let epsilonToForceCounterClockwiseRotation: CGFloat = 0.00001
-                switchCameraButton.transform = switchCameraButton.transform.rotate(.pi + epsilonToForceCounterClockwiseRotation)
-            }
+            switchCameraButton.performSwitchAnimation()
         }
-        photoCapture.switchCameraPosition().catch { error in
+        photoCapture.switchCameraPosition().done { [weak self] in
+            self?.updateUIOnCameraPositionChange(animated: true)
+        }.catch { error in
             self.showFailureUI(error: error)
         }
-
-        updateCameraZoomControlVisibility(animated: true)
     }
 
     @objc
@@ -589,7 +571,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         firstly {
             photoCapture.switchFlashMode()
         }.done {
-            self.updateFlashModeControl()
+            self.updateFlashModeControl(animated: true)
         }.catch { error in
             owsFailDebug("Error: \(error)")
         }
@@ -792,25 +774,10 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
                                         buttonAction: { [weak self] _ in self?.dismiss(animated: true) })
     }
 
-    private func updateFlashModeControl() {
-        let image: UIImage?
-        switch photoCapture.flashMode {
-        case .auto:
-            image = ButtonImages.flashAuto
-
-        case .on:
-            image = ButtonImages.flashOn
-
-        case .off:
-            image = ButtonImages.flashOff
-
-        @unknown default:
-            owsFailDebug("unexpected photoCapture.flashMode: \(photoCapture.flashMode.rawValue)")
-            image = ButtonImages.flashAuto
-        }
-        topBar.flashModeButton.setImage(image, for: .normal)
+    private func updateFlashModeControl(animated: Bool) {
+        topBar.flashModeButton.setFlashMode(photoCapture.flashMode, animated: animated)
         if let sideBar = sideBar {
-            sideBar.flashModeButton.setImage(image, for: .normal)
+            sideBar.flashModeButton.setFlashMode(photoCapture.flashMode, animated: animated)
         }
     }
 }
@@ -823,25 +790,13 @@ extension PhotoCaptureViewController: CameraZoomSelectionControlDelegate {
     }
 }
 
-private struct ButtonImages {
-    static let close = UIImage(named: "media-composer-close")
-    static let switchCamera = UIImage(named: "media-composer-switch-camera")
-
-    static let batchModeOn = UIImage(named: "media-composer-create-album-solid")
-    static let batchModeOff = UIImage(named: "media-composer-create-album-outline")
-
-    static let flashOn = UIImage(named: "media-composer-flash-filled")
-    static let flashOff = UIImage(named: "media-composer-flash-outline")
-    static let flashAuto = UIImage(named: "media-composer-flash-auto")
-}
-
 private class TopBar: MediaTopBar {
 
-    let closeButton = RoundMediaButton(image: ButtonImages.close, backgroundStyle: .blur)
+    let closeButton = RoundMediaButton(image: UIImage(named: "media-composer-close"), backgroundStyle: .blur)
 
     private let cameraControlsContainerView: UIStackView
-    let flashModeButton = RoundMediaButton(image: ButtonImages.flashAuto, backgroundStyle: .blur)
-    let batchModeButton = RoundMediaButton(image: ButtonImages.batchModeOff, backgroundStyle: .blur)
+    let flashModeButton = FlashModeButton()
+    let batchModeButton = CaptureModeButton()
 
     let recordingTimerView = RecordingTimerView(frame: .zero)
 
@@ -903,6 +858,7 @@ private class TopBar: MediaTopBar {
 }
 
 private class BottomBar: UIView {
+
     private var compactHeightLayoutConstraints = [NSLayoutConstraint]()
     private var regularHeightLayoutConstraints = [NSLayoutConstraint]()
     var isCompactHeightLayout = false {
@@ -919,9 +875,8 @@ private class BottomBar: UIView {
         }
     }
 
-    let photoLibraryButton = MediaPickerThumbnailButton(frame: .zero)
-    let switchCameraButton = RoundMediaButton(image: ButtonImages.switchCamera,
-                                              backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor))
+    let photoLibraryButton = MediaPickerThumbnailButton()
+    let switchCameraButton = CameraChooserButton(backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor))
     let controlButtonsLayoutGuide = UILayoutGuide() // area encompassing Photo Library and Switch Camera buttons.
 
     let captureControl = CameraCaptureControl(axis: .horizontal)
@@ -979,10 +934,10 @@ private class BottomBar: UIView {
             addConstraints(regularHeightLayoutConstraints)
         }
     }
-
 }
 
 private class SideBar: UIView {
+
     var isRecordingVideo = false {
         didSet {
             cameraControlsContainerView.isHidden = isRecordingVideo
@@ -991,11 +946,11 @@ private class SideBar: UIView {
     }
 
     private let cameraControlsContainerView: UIStackView
-    let flashModeButton = RoundMediaButton(image: ButtonImages.flashAuto, backgroundStyle: .blur)
-    let batchModeButton = RoundMediaButton(image: ButtonImages.batchModeOff, backgroundStyle: .blur)
-    let switchCameraButton = RoundMediaButton(image: ButtonImages.switchCamera, backgroundStyle: .blur)
+    let flashModeButton = FlashModeButton()
+    let batchModeButton = CaptureModeButton()
+    let switchCameraButton = CameraChooserButton(backgroundStyle: .blur)
 
-    let photoLibraryButton = MediaPickerThumbnailButton(frame: .zero)
+    let photoLibraryButton = MediaPickerThumbnailButton()
 
     private(set) var cameraCaptureControl = CameraCaptureControl(axis: .vertical)
 
@@ -1143,12 +1098,108 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
 // MARK: - Views
 
+private class FlashModeButton: RoundMediaButton {
+
+    private static let flashOn = UIImage(named: "media-composer-flash-filled")
+    private static let flashOff = UIImage(named: "media-composer-flash-outline")
+    private static let flashAuto = UIImage(named: "media-composer-flash-auto")
+
+    private var flashMode: AVCaptureDevice.FlashMode = .auto
+
+    required init() {
+        super.init(image: FlashModeButton.flashAuto, backgroundStyle: .blur)
+    }
+
+    required init(image: UIImage?, backgroundStyle: RoundMediaButton.BackgroundStyle) {
+        fatalError("init(image:backgroundStyle:) has not been implemented")
+    }
+
+    func setFlashMode(_ flashMode: AVCaptureDevice.FlashMode, animated: Bool) {
+        guard self.flashMode != flashMode else { return }
+
+        let image: UIImage? = {
+            switch flashMode {
+            case .auto:
+                return FlashModeButton.flashAuto
+            case .on:
+                return FlashModeButton.flashOn
+            case .off:
+                return FlashModeButton.flashOff
+            @unknown default:
+                owsFailDebug("unexpected photoCapture.flashMode: \(flashMode.rawValue)")
+                return FlashModeButton.flashAuto
+            }
+        }()
+        setImage(image, animated: animated)
+        self.flashMode = flashMode
+    }
+}
+
+private class CameraChooserButton: RoundMediaButton {
+
+    required init(backgroundStyle: RoundMediaButton.BackgroundStyle) {
+        super.init(image: UIImage(named: "media-composer-switch-camera"), backgroundStyle: backgroundStyle)
+    }
+
+    required init(image: UIImage?, backgroundStyle: RoundMediaButton.BackgroundStyle) {
+        fatalError("init(image:backgroundStyle:) has not been implemented")
+    }
+
+    func performSwitchAnimation() {
+        UIView.animate(withDuration: 0.2) {
+            let epsilonToForceCounterClockwiseRotation: CGFloat = 0.00001
+            self.transform = self.transform.rotate(.pi + epsilonToForceCounterClockwiseRotation)
+        }
+    }
+}
+
+private class CaptureModeButton: RoundMediaButton {
+
+    private static let batchModeOn = UIImage(named: "media-composer-create-album-solid")
+    private static let batchModeOff = UIImage(named: "media-composer-create-album-outline")
+
+    required init() {
+        super.init(image: CaptureModeButton.batchModeOff, backgroundStyle: .blur)
+    }
+
+    required init(image: UIImage?, backgroundStyle: RoundMediaButton.BackgroundStyle) {
+        fatalError("init(image:backgroundStyle:) has not been implemented")
+    }
+
+    private var captureMode = PhotoCaptureViewController.CaptureMode.single
+
+    func setCaptureMode(_ captureMode: PhotoCaptureViewController.CaptureMode, animated: Bool) {
+        guard self.captureMode != captureMode else { return }
+
+        let image: UIImage? = {
+            switch captureMode {
+            case .single:
+                return CaptureModeButton.batchModeOff
+            case .multi:
+                return CaptureModeButton.batchModeOn
+            }
+        }()
+        setImage(image, animated: animated)
+        self.captureMode = captureMode
+    }
+}
+
 private class MediaPickerThumbnailButton: UIButton {
 
+    required init() {
+        let buttonSize = MediaPickerThumbnailButton.visibleSize + 2*MediaPickerThumbnailButton.contentMargin
+        super.init(frame: CGRect(origin: .zero, size: .square(buttonSize)))
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     private static let visibleSize: CGFloat = 42
+    private static let contentMargin: CGFloat = 8
 
     func configure() {
-        contentEdgeInsets = UIEdgeInsets(margin: 8)
+        contentEdgeInsets = UIEdgeInsets(margin: MediaPickerThumbnailButton.contentMargin)
 
         let placeholderView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         placeholderView.layer.cornerRadius = 10
@@ -1189,7 +1240,7 @@ private class MediaPickerThumbnailButton: UIButton {
     }
 
     private func updateWith(image: UIImage) {
-        setImage(image, for: .normal)
+        setImage(image, animated: self.window != nil)
         if let imageView = imageView {
             imageView.layer.cornerRadius = 10
             imageView.layer.borderWidth = 1.5
