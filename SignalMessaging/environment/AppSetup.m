@@ -205,43 +205,39 @@ NS_ASSUME_NONNULL_BEGIN
         NSObject *sleepBlockObject = [NSObject new];
         [DeviceSleepManager.shared addBlockWithBlockObject:sleepBlockObject];
 
-        dispatch_block_t completionBlock = ^{
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                if (AppSetup.shouldTruncateGrdbWal) {
-                    // Try to truncate GRDB WAL before any readers or writers are
-                    // active.
-                    NSError *_Nullable error;
-                    [databaseStorage.grdbStorage syncTruncatingCheckpointAndReturnError:&error];
-                    if (error != nil) {
-                        OWSFailDebug(@"Failed to truncate database: %@", error);
-                    }
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if (AppSetup.shouldTruncateGrdbWal) {
+                // Try to truncate GRDB WAL before any readers or writers are
+                // active.
+                NSError *_Nullable error;
+                [databaseStorage.grdbStorage syncTruncatingCheckpointAndReturnError:&error];
+                if (error != nil) {
+                    OWSFailDebug(@"Failed to truncate database: %@", error);
                 }
+            }
 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [storageCoordinator markStorageSetupAsComplete];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [storageCoordinator markStorageSetupAsComplete];
 
-                    // Don't start database migrations until storage is ready.
-                    [VersionMigrations performUpdateCheckWithCompletion:^() {
-                        OWSAssertIsOnMainThread();
+                // Don't start database migrations until storage is ready.
+                [VersionMigrations performUpdateCheckWithCompletion:^() {
+                    OWSAssertIsOnMainThread();
 
-                        [DeviceSleepManager.shared removeBlockWithBlockObject:sleepBlockObject];
+                    [DeviceSleepManager.shared removeBlockWithBlockObject:sleepBlockObject];
 
-                        [SSKEnvironment.shared warmCaches];
-                        migrationCompletion(nil);
+                    [SSKEnvironment.shared warmCaches];
+                    migrationCompletion(nil);
 
-                        OWSAssertDebug(backgroundTask);
-                        backgroundTask = nil;
-                    }];
-                });
-
-                // Do this after we've let the main thread know that storage setup is complete.
-                if (SSKDebugFlags.internalLogging) {
-                    [SDSKeyValueStore logCollectionStatistics];
-                }
+                    OWSAssertDebug(backgroundTask);
+                    backgroundTask = nil;
+                }];
             });
-        };
 
-        completionBlock();
+            // Do this after we've let the main thread know that storage setup is complete.
+            if (SSKDebugFlags.internalLogging) {
+                [SDSKeyValueStore logCollectionStatistics];
+            }
+        });
     });
 }
 
