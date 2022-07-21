@@ -41,7 +41,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>確定要將 %d 位成員加入「%2$@」？</string>
+			<string>係咪要將 %d 位成員加入「%2$@」呀？</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -58,6 +58,22 @@
 			<string>加入新成員</string>
 		</dict>
 	</dict>
+	<key>CAMERA_VO_N_ITEMS</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 item</string>
+			<key>other</key>
+			<string>%d items</string>
+		</dict>
+	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -69,7 +85,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>有 %d 個聊天用緊呢隻自訂顏色。你確定要喺所有聊天度刪除呢隻色？</string>
+			<string>有 %d 個聊天用緊呢隻自訂顏色。你係咪要喺所有聊天度刪除呢隻色呀？</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -83,7 +99,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>有 %d 個聊天用緊呢隻顏色。你確定要喺所有聊天度儲存變更？</string>
+			<string>有 %d 個聊天用緊呢隻顏色。你係咪要喺所有聊天度儲存變更呀？</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -97,7 +113,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>確定要刪除 %d 個聊天？</string>
+			<string>係咪要刪除 %d 個聊天呀？</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -218,7 +234,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>確定要刪除 %d 個訊息？</string>
+			<string>係咪要刪除 %d 個訊息呀？</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -302,7 +318,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>有 %d 個成員未能重新加入新版群組。確定要宜家加返佢哋？</string>
+			<string>有 %d 個成員未能重新加入新版群組。係咪要而家加返佢哋呀？</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -679,10 +695,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 person excluded</string>
 			<key>other</key>
-			<string>%d people excluded</string>
+			<string>排除咗 %d 個人</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -695,10 +709,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 person</string>
 			<key>other</key>
-			<string>%d people</string>
+			<string>%d 個人</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_%d</key>
@@ -727,6 +739,22 @@
 			<string>d</string>
 			<key>other</key>
 			<string>%d 個成員</string>
+		</dict>
+	</dict>
+	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Viewer</string>
+			<key>other</key>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -810,7 +838,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>確定要撤回 %2$@ 發出嘅 %d 個邀請？</string>
+			<string>係咪要撤回 %2$@ 發出嘅 %d 個邀請呀？</string>
 		</dict>
 	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
@@ -879,10 +907,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 Connection</string>
 			<key>other</key>
-			<string>%d Connections</string>
+			<string>%d 個人脈</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -895,10 +921,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>1 Excluded</string>
 			<key>other</key>
-			<string>%d Excluded</string>
+			<string>排除咗 %d</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

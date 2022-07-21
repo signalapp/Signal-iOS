@@ -205,12 +205,6 @@
 /* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
 "ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
 
-/* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "キャプションが長すぎます。";
-
-/* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "キャプションを追加…";
-
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "添付ファイルをエクスポートできませんでした。";
 
@@ -398,7 +392,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "月々の寄付をキャンセル";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+"BADGE_GIFT_THANKS_BODY" = "%@にバッジをプレゼントしました。引換えの際に、相手はバッジの表示・非表示を選択できます。";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "ご支援をありがとうございます！";
@@ -417,6 +411,9 @@
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "期限切れ";
+
+/* Shown on a gift badge message to indicate that the message contains a gift. */
+"BADGE_GIFTING_CHAT_TITLE" = "ギフトバッジ";
 
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Signalに寄付をすると、バッジをプレゼントすることができます。その人のプロフィール写真にバッジが表示されます。";
@@ -437,7 +434,7 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "ギフトバッジの送信に失敗しました";
 
 /* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "ブロックしているユーザーのため、相手はあなたからのギフトを受け取ることができません。";
 
 /* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "ギフトバッジの送信に失敗しました";
@@ -467,16 +464,16 @@
 "BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁ギフトを贈りました";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
-"BADGE_GIFTING_REDEEM" = "交換";
+"BADGE_GIFTING_REDEEM" = "引換え";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "バッジは後で交換することが可能です";
+"BADGE_GIFTING_REDEEM_LATER" = "バッジは後で引換えることが可能です";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
 "BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@さんからあなたにギフトが届きました";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "交換";
+"BADGE_GIFTING_REDEEMED" = "引換え済";
 
 /* Shown when you're replying to a gift message to indicate that it contains a gift. */
 "BADGE_GIFTING_REPLY" = "ギフト";
@@ -777,6 +774,60 @@
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "カメラ";
+
+/* VoiceOver label for Flash button in camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE" = "Album mode";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "無効";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "有効";
+
+/* VoiceOver value for Switch Camera button that tells which camera is currently active. */
+"CAMERA_VO_CAMERA_BACK_FACING" = "Back facing";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Camera Chooser";
+
+/* VoiceOver hint for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Switches between cameras";
+
+/* VoiceOver value for Switch Camera button that tells which camera is currently active. */
+"CAMERA_VO_CAMERA_FRONT_FACING" = "Front facing";
+
+/* VoiceOver label for close (X) button in camera. */
+"CAMERA_VO_CLOSE_BUTTON" = "閉じる";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_AUTO" = "Automatic";
+
+/* VoiceOver label for Flash button in camera. */
+"CAMERA_VO_FLASH_BUTTON" = "Flash";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_OFF" = "無効";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_ON" = "有効";
+
+/* VoiceOver label for button to choose existing photo/video in in-app camera */
+"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Photo and video viewer";
+
+/* VoiceOver label for the round capture button in in-app camera during video recording. */
+"CAMERA_VO_STOP_VIDEO_REC" = "Stop Recording Video";
+
+/* VoiceOver label for the round capture button in in-app camera. */
+"CAMERA_VO_TAKE_PICTURE" = "Take Picture";
+
+/* VoiceOver label for other possible action for round capture button in in-app camera. */
+"CAMERA_VO_TAKE_VIDEO" = "Take Video";
+
+/* VoiceOver label for camera zoom control. */
+"CAMERA_VO_ZOOM" = "ズーム";
+
+/* VoiceOver description of current camera zoom level. */
+"CAMERA_VO_ZOOM_LEVEL" = "%@times";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "メッセージを交換するまでは、このユーザを検証済みにできません。";
@@ -1123,6 +1174,9 @@
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "常時";
 
+/* table section header button to add a new story */
+"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
+
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "グループ管理者のみがメッセージを送信できます。";
 
@@ -1215,9 +1269,6 @@
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ がこのグループの設定やメンバーを編集できるようになります";
-
-/* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "招待";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "申請と招待";
@@ -2386,9 +2437,6 @@
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "これらのユーザを自動的にこのグループに追加することはできません。ユーザは受信した招待を受け入れるまで、グループメッセージを閲覧できません。";
 
-/* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "メンバーの招待";
-
 /* Message indicating that 'announcement-only' mode was disabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "グループ設定が変更され、すべてのメンバーがメッセージを送信可能になりました。";
 
@@ -2410,11 +2458,11 @@
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "管理者があなたを削除したため、グループリンクからはこのグループに参加できません。";
 
+/* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "グループに参加できません";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "このグループリンクはすでに無効です。";
-
-/* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "グループに参加できません";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "グループ";
@@ -3604,38 +3652,29 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "あなたのストーリーの更新がここに表示されます。";
 
-/* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
-
-/* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
-
-/* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
-
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "特定の人に自分のストーリーを隠す";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "以下を除くすべてのSignalコネクション";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "すべてのコネクションと共有";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "すべてのSignalコネクション";
 
 /* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "ストーリーズを閲覧できるユーザーを選択してください。 変更は、すでに送信したストーリーには影響しません。";
 
 /* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "ストーリーを閲覧できる人";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "共有する人を選択";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "共有するのは...";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "マイストーリー";
@@ -3706,6 +3745,9 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "メンバーの選択";
 
+/* Title for the 'new group story' view */
+"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choose Group";
+
 /* No comment provided by engineer. */
 "new_message" = "新規メッセージ";
 
@@ -3714,6 +3756,42 @@
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ユーザを検索";
+
+/* Title for the 'new private story' confirmation view */
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Name Story";
+
+/* Button to create a new private story */
+"NEW_PRIVATE_STORY_CREATE_BUTTON" = "作成";
+
+/* Message for error alert indicating that a story name is required. */
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "A story name is required.";
+
+/* Title for error alert indicating that a story name is required. */
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Missing Story Name";
+
+/* Placeholder text for a new private story name */
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story Name (Required)";
+
+/* The title for the 'new private story' view. */
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
+
+/* Header for the 'viewers' section of the 'new private story' view */
+"NEW_PRIVATE_STORY_VIEWERS_HEADER" = "閲覧者";
+
+/* Subtitle for create group story row on the 'new story sheet' */
+"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "既存のグループに共有";
+
+/* Title for create group story row on the 'new story sheet' */
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
+
+/* Subtitle for create private story row on the 'new story sheet' */
+"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "特定のユーザーのみ閲覧可能";
+
+/* Title for create private story row on the 'new story sheet' */
+"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "新しいプライベートストーリー";
+
+/* Title for the new story sheet */
+"NEW_STORY_SHEET_TITLE" = "Choose Story Type";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "連絡先を電話番号で検索";
@@ -4187,7 +4265,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "申請を拒否する";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "「%@」からの申請を拒否しますか？";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”? They will not be able to request to join via the group link again.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "保留中のメンバー申請はありません。";
@@ -4537,6 +4615,27 @@
 /* Button that lets user mark another user's identity as verified. */
 "PRIVACY_VERIFY_BUTTON" = "検証済みにする";
 
+/* Button to add a new viewer on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Add Viewers";
+
+/* Button to delete the story on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
+
+/* Action sheet title confirming deletion of a private story on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+
+/* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
+"PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "削除";
+
+/* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "このユーザーは、あなたのストーリを見ることができなくなります。";
+
+/* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
+
+/* Section header for the 'viewers' section on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "ストーリーを閲覧できる人";
+
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "進む";
 
@@ -4847,7 +4946,7 @@
 "RETURN_CALL_PILL_BUTTON" = "戻る";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "とりあえず追加する";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "とにかく発信する";
@@ -6022,6 +6121,15 @@
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "返信 なし";
 
+/* Section footer for the 'replies & reactions' section in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "あなたのストーリーを閲覧可能なユーザーにリアクションと返信を許可します。";
+
+/* Section header for the 'replies & reactions' section in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "返信とリアクション";
+
+/* Toggle text for the 'replies & reactions' switch in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "返信とリアクションを許可する";
+
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "新しいプライベートストーリー";
 
@@ -6068,10 +6176,10 @@
 "STORY_REPLY_YOU_AUTHOR" = "あなた";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "コネクション";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "除外されたコネクション";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "寄付する";

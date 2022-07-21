@@ -205,12 +205,6 @@
 /* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
 "ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
 
-/* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Beschriftungslimit erreicht.";
-
-/* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Beschriftung hinzufügen …";
-
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Anhang konnte nicht exportiert werden.";
 
@@ -398,7 +392,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monatliche Spende abgebrochen";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+"BADGE_GIFT_THANKS_BODY" = "Du hast %@ ein Abzeichen geschenkt. Wenn der Empfänger es annimmt, kann er auswählen, ob er das Abzeichen anzeigt oder ausblendet.";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "Danke für deine Unterstützung!";
@@ -417,6 +411,9 @@
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Abgelaufen";
+
+/* Shown on a gift badge message to indicate that the message contains a gift. */
+"BADGE_GIFTING_CHAT_TITLE" = "Geschenkabzeichen";
 
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Schenke jemandem ein Abzeichen, indem du an Signal spendest. Die Person erhält ein Abzeichen, das sie in ihrem Profil anzeigen kann.";
@@ -437,7 +434,7 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Geschenkabzeichen kann nicht versendet werden.";
 
 /* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "Dieser Benutzer kann dein Geschenk nicht erhalten, weil du ihn blockiert hast.";
 
 /* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Geschenkabzeichen kann nicht versendet werden.";
@@ -461,10 +458,10 @@
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Versenden von Geschenkabzeichen gescheitert";
 
 /* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "Du hast ein Geschenk erhalten";
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 Du hast ein Geschenk erhalten";
 
 /* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "Du hast ein Geschenk gesendet";
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 Du hast ein Geschenk gesendet";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "Einlösen";
@@ -777,6 +774,60 @@
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Kamera";
+
+/* VoiceOver label for Flash button in camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE" = "Album mode";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "Aus";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "Ein";
+
+/* VoiceOver value for Switch Camera button that tells which camera is currently active. */
+"CAMERA_VO_CAMERA_BACK_FACING" = "Back facing";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Camera Chooser";
+
+/* VoiceOver hint for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Switches between cameras";
+
+/* VoiceOver value for Switch Camera button that tells which camera is currently active. */
+"CAMERA_VO_CAMERA_FRONT_FACING" = "Front facing";
+
+/* VoiceOver label for close (X) button in camera. */
+"CAMERA_VO_CLOSE_BUTTON" = "Schließen";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_AUTO" = "Automatic";
+
+/* VoiceOver label for Flash button in camera. */
+"CAMERA_VO_FLASH_BUTTON" = "Flash";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_OFF" = "Aus";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_ON" = "Ein";
+
+/* VoiceOver label for button to choose existing photo/video in in-app camera */
+"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Photo and video viewer";
+
+/* VoiceOver label for the round capture button in in-app camera during video recording. */
+"CAMERA_VO_STOP_VIDEO_REC" = "Stop Recording Video";
+
+/* VoiceOver label for the round capture button in in-app camera. */
+"CAMERA_VO_TAKE_PICTURE" = "Take Picture";
+
+/* VoiceOver label for other possible action for round capture button in in-app camera. */
+"CAMERA_VO_TAKE_VIDEO" = "Take Video";
+
+/* VoiceOver label for camera zoom control. */
+"CAMERA_VO_ZOOM" = "Zoom";
+
+/* VoiceOver description of current camera zoom level. */
+"CAMERA_VO_ZOOM_LEVEL" = "%@times";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Dieser Nutzer kann nicht verifiziert werden, bevor ihr Nachrichten ausgetauscht habt.";
@@ -1123,6 +1174,9 @@
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Immer";
 
+/* table section header button to add a new story */
+"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
+
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Nur Admins können in dieser Gruppe Nachrichten senden.";
 
@@ -1215,9 +1269,6 @@
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ wird diese Gruppe und deren Mitglieder bearbeiten können.";
-
-/* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Einladungen";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Anfragen & Einladungen";
@@ -2386,9 +2437,6 @@
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Diese Nutzer können von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Sie wurden eingeladen beizutreten, werden aber keine Gruppennachrichten erhalten, bis sie die Einladung angenommen haben.";
 
-/* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "Mitgliedseinladungen";
-
 /* Message indicating that 'announcement-only' mode was disabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Die Gruppen-Einstellungen wurden geändert, um allen Mitgliedern das Senden von Nachrichten zu erlauben.";
 
@@ -2410,11 +2458,11 @@
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Du kannst dieser Gruppe nicht über den Gruppen-Link beitreten, da ein Admin dich entfernt hat.";
 
+/* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Gruppenbeitritt nicht möglich.";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Dieser Gruppen-Link ist nicht mehr gültig.";
-
-/* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Gruppenbeitritt nicht möglich.";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Gruppe";
@@ -3604,38 +3652,29 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Hier erscheinen Aktualisierungen deiner Story.";
 
-/* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
-
-/* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
-
-/* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
-
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Deine Story vor bestimmten Personen verbergen";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Alle Signal-Verbindungen außer …";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Mit allen Verbindungen teilen.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Alle Signal-Verbindungen";
 
 /* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Wähle aus, wer deine Story sehen kann. Änderungen wirken sich nicht auf bereits gesendete Storys aus.";
 
 /* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Diese Story kann sehen";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Wähle Personen zum Teilen aus";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Nur teilen mit …";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Meine Storys";
@@ -3706,6 +3745,9 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Mitglieder auswählen";
 
+/* Title for the 'new group story' view */
+"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choose Group";
+
 /* No comment provided by engineer. */
 "new_message" = "Neue Nachricht";
 
@@ -3714,6 +3756,42 @@
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Nutzer suchen";
+
+/* Title for the 'new private story' confirmation view */
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Name Story";
+
+/* Button to create a new private story */
+"NEW_PRIVATE_STORY_CREATE_BUTTON" = "Erstellen";
+
+/* Message for error alert indicating that a story name is required. */
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "A story name is required.";
+
+/* Title for error alert indicating that a story name is required. */
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Missing Story Name";
+
+/* Placeholder text for a new private story name */
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story Name (Required)";
+
+/* The title for the 'new private story' view. */
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
+
+/* Header for the 'viewers' section of the 'new private story' view */
+"NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Betrachter";
+
+/* Subtitle for create group story row on the 'new story sheet' */
+"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Mit einer bestehenden Gruppe teilen";
+
+/* Title for create group story row on the 'new story sheet' */
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
+
+/* Subtitle for create private story row on the 'new story sheet' */
+"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Nur für bestimmte Personen sichtbar";
+
+/* Title for create private story row on the 'new story sheet' */
+"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Neue private Story";
+
+/* Title for the new story sheet */
+"NEW_STORY_SHEET_TITLE" = "Choose Story Type";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Kontakte über Rufnummer suchen";
@@ -4187,7 +4265,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Anfrage ablehnen";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Anfrage von %@ ablehnen?";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”? They will not be able to request to join via the group link again.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Keine ausstehenden Beitrittsanfragen.";
@@ -4537,6 +4615,27 @@
 /* Button that lets user mark another user's identity as verified. */
 "PRIVACY_VERIFY_BUTTON" = "Als verifiziert markieren";
 
+/* Button to add a new viewer on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Add Viewers";
+
+/* Button to delete the story on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
+
+/* Action sheet title confirming deletion of a private story on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+
+/* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
+"PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Entfernen";
+
+/* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Diese Person wird deine Story nicht mehr sehen. ";
+
+/* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
+
+/* Section header for the 'viewers' section on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "Diese Story kann sehen";
+
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Fortfahren";
 
@@ -4847,7 +4946,7 @@
 "RETURN_CALL_PILL_BUTTON" = "Zurück";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Trotzdem hinzufügen";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Trotzdem anrufen";
@@ -6022,6 +6121,15 @@
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Bisher keine Antworten";
 
+/* Section footer for the 'replies & reactions' section in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Erlaube Personen, die deine Story sehen können, auf sie zu antworten und zu reagieren.";
+
+/* Section header for the 'replies & reactions' section in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Antworten und Reaktionen";
+
+/* Toggle text for the 'replies & reactions' switch in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Antworten und Reaktionen erlauben";
+
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "Neue private Story";
 
@@ -6068,10 +6176,10 @@
 "STORY_REPLY_YOU_AUTHOR" = "Du";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Verbindungen";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Ausgeschlossene Verbindungen";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Spenden";

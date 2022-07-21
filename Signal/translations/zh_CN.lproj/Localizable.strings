@@ -205,12 +205,6 @@
 /* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
 "ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
 
-/* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "描述字数已达上限。";
-
-/* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "添加描述…";
-
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "无法导出附件。";
 
@@ -398,7 +392,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "每月捐款已取消";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+"BADGE_GIFT_THANKS_BODY" = "您给 %@ 赠送了一个徽章。对方领取徽章后可以选择显示或隐藏徽章。";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "感谢您的支持！";
@@ -417,6 +411,9 @@
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "已过期";
+
+/* Shown on a gift badge message to indicate that the message contains a gift. */
+"BADGE_GIFTING_CHAT_TITLE" = "礼品徽章";
 
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "以他人名义给 Signal 捐款可以给对方赠送捐款徽章。对方将会收到捐款徽章并可以在个人资料照片中显示。";
@@ -437,7 +434,7 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "无法赠送礼品徽章";
 
 /* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "此用户无法接收您的礼物，因为您已屏蔽对方。";
 
 /* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "无法赠送礼品徽章";
@@ -777,6 +774,60 @@
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "相机";
+
+/* VoiceOver label for Flash button in camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE" = "Album mode";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "关";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "开启";
+
+/* VoiceOver value for Switch Camera button that tells which camera is currently active. */
+"CAMERA_VO_CAMERA_BACK_FACING" = "Back facing";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Camera Chooser";
+
+/* VoiceOver hint for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Switches between cameras";
+
+/* VoiceOver value for Switch Camera button that tells which camera is currently active. */
+"CAMERA_VO_CAMERA_FRONT_FACING" = "Front facing";
+
+/* VoiceOver label for close (X) button in camera. */
+"CAMERA_VO_CLOSE_BUTTON" = "关闭";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_AUTO" = "Automatic";
+
+/* VoiceOver label for Flash button in camera. */
+"CAMERA_VO_FLASH_BUTTON" = "Flash";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_OFF" = "关";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_ON" = "开启";
+
+/* VoiceOver label for button to choose existing photo/video in in-app camera */
+"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Photo and video viewer";
+
+/* VoiceOver label for the round capture button in in-app camera during video recording. */
+"CAMERA_VO_STOP_VIDEO_REC" = "Stop Recording Video";
+
+/* VoiceOver label for the round capture button in in-app camera. */
+"CAMERA_VO_TAKE_PICTURE" = "Take Picture";
+
+/* VoiceOver label for other possible action for round capture button in in-app camera. */
+"CAMERA_VO_TAKE_VIDEO" = "Take Video";
+
+/* VoiceOver label for camera zoom control. */
+"CAMERA_VO_ZOOM" = "缩放";
+
+/* VoiceOver description of current camera zoom level. */
+"CAMERA_VO_ZOOM_LEVEL" = "%@times";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "此用户在您和他通信之前将不能被验证。";
@@ -1123,6 +1174,9 @@
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "总是";
 
+/* table section header button to add a new story */
+"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
+
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "只有管理员可发送消息至该群组。";
 
@@ -1215,9 +1269,6 @@
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ 能编辑此群组及其成员。";
-
-/* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "邀请";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "请求与邀请";
@@ -2386,9 +2437,6 @@
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "这些用户不能直接被你邀请入群组。他们已经收到入群邀请，但在他们同意之前无法收到来自该群组的任何消息。";
 
-/* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "入群邀请";
-
 /* Message indicating that 'announcement-only' mode was disabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "群组设置已更改为允许全部成员发送消息。";
 
@@ -2410,11 +2458,11 @@
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "您无法通过此群组链接加入群组，因为有一位管理员移除了您。";
 
+/* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "无法加入群组";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "此群组链接已失效。";
-
-/* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "无法加入群组";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "群组";
@@ -3604,38 +3652,29 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "您的动态更新将会在这里显示。";
 
-/* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
-
-/* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
-
-/* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
-
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "对特定用户隐藏您的动态";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "所有 Signal 联系人，除了......";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "分享给所有联系人";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "所有 Signal 联系人";
 
 /* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "选择谁可以查看您的动态。此更改不会影响您已发送的动态。";
 
 /* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "谁可以看到此动态";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "选择分享的对象";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "只分享给……";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "我的动态";
@@ -3706,6 +3745,9 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "选择成员";
 
+/* Title for the 'new group story' view */
+"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choose Group";
+
 /* No comment provided by engineer. */
 "new_message" = "新消息";
 
@@ -3714,6 +3756,42 @@
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "查找用户";
+
+/* Title for the 'new private story' confirmation view */
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Name Story";
+
+/* Button to create a new private story */
+"NEW_PRIVATE_STORY_CREATE_BUTTON" = "创建";
+
+/* Message for error alert indicating that a story name is required. */
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "A story name is required.";
+
+/* Title for error alert indicating that a story name is required. */
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Missing Story Name";
+
+/* Placeholder text for a new private story name */
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story Name (Required)";
+
+/* The title for the 'new private story' view. */
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
+
+/* Header for the 'viewers' section of the 'new private story' view */
+"NEW_PRIVATE_STORY_VIEWERS_HEADER" = "访客";
+
+/* Subtitle for create group story row on the 'new story sheet' */
+"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "分享给一个现有群组";
+
+/* Title for create group story row on the 'new story sheet' */
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
+
+/* Subtitle for create private story row on the 'new story sheet' */
+"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "仅对特定用户可见";
+
+/* Title for create private story row on the 'new story sheet' */
+"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "新私密动态";
+
+/* Title for the new story sheet */
+"NEW_STORY_SHEET_TITLE" = "Choose Story Type";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "用手机号码搜索联系人";
@@ -4187,7 +4265,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "拒绝入群申请";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "拒绝“%@”的入群申请？";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”? They will not be able to request to join via the group link again.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "没有待处理的入群申请。";
@@ -4537,6 +4615,27 @@
 /* Button that lets user mark another user's identity as verified. */
 "PRIVACY_VERIFY_BUTTON" = "标记为已验证";
 
+/* Button to add a new viewer on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Add Viewers";
+
+/* Button to delete the story on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
+
+/* Action sheet title confirming deletion of a private story on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+
+/* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
+"PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "移除";
+
+/* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "此人将无法再看到您的动态。";
+
+/* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
+
+/* Section header for the 'viewers' section on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "谁可以看到此动态";
+
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "继续";
 
@@ -4847,7 +4946,7 @@
 "RETURN_CALL_PILL_BUTTON" = "返回";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "仍然添加";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "依然呼叫";
@@ -6022,6 +6121,15 @@
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "未有回复";
 
+/* Section footer for the 'replies & reactions' section in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "让能够看到您的动态的人回应和回复。";
+
+/* Section header for the 'replies & reactions' section in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "回复和反应";
+
+/* Toggle text for the 'replies & reactions' switch in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "允许回复和反应";
+
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "新私密动态";
 
@@ -6068,10 +6176,10 @@
 "STORY_REPLY_YOU_AUTHOR" = "您";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "联系人";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "排除的联系人";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "捐赠";

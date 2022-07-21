@@ -82,6 +82,22 @@
 			<string>إضافة أعضاء جُدد</string>
 		</dict>
 	</dict>
+	<key>CAMERA_VO_N_ITEMS</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 item</string>
+			<key>other</key>
+			<string>%d items</string>
+		</dict>
+	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1143,10 +1159,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d أشخاص مستبعدين</string>
+			<key>many</key>
+			<string>%d أشخاص مستبعدين</string>
 			<key>one</key>
-			<string>1 person excluded</string>
+			<string>1 شخص مستبعد</string>
 			<key>other</key>
-			<string>%d people excluded</string>
+			<string>%d أشخاص مستبعدين</string>
+			<key>two</key>
+			<string>%d أشخاص مستبعدين</string>
+			<key>zero</key>
+			<string>%d شخص مستبعد</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1159,10 +1183,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d أشخاص</string>
+			<key>many</key>
+			<string>%d أشخاص</string>
 			<key>one</key>
-			<string>1 person</string>
+			<string>1 شخص</string>
 			<key>other</key>
-			<string>%d people</string>
+			<string>%d أشخاص</string>
+			<key>two</key>
+			<string>%d أشخاص</string>
+			<key>zero</key>
+			<string>%d أشخاص</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_%d</key>
@@ -1211,6 +1243,22 @@
 			<string>%d أعضاء</string>
 			<key>zero</key>
 			<string>%d أعضاء</string>
+		</dict>
+	</dict>
+	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Viewer</string>
+			<key>other</key>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -1463,10 +1511,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d معارف</string>
+			<key>many</key>
+			<string>%d معارف</string>
 			<key>one</key>
-			<string>1 Connection</string>
+			<string>1 معرفة</string>
 			<key>other</key>
-			<string>%d Connections</string>
+			<string>%d جهات اتصال</string>
+			<key>two</key>
+			<string>%d معارف</string>
+			<key>zero</key>
+			<string>%d معارف</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1479,10 +1535,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d مستبعدين</string>
+			<key>many</key>
+			<string>%d مستبعدين</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 مستبعد</string>
 			<key>other</key>
-			<string>%d Excluded</string>
+			<string>%d مستبعد</string>
+			<key>two</key>
+			<string>%d مستبعدين</string>
+			<key>zero</key>
+			<string>%d مستبعدين</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

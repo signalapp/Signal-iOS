@@ -66,6 +66,22 @@
 			<string>નવા સભ્યો ઉમેરો</string>
 		</dict>
 	</dict>
+	<key>CAMERA_VO_N_ITEMS</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 item</string>
+			<key>other</key>
+			<string>%d items</string>
+		</dict>
+	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -776,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 person excluded</string>
+			<string>1 વ્યક્તિને બાકાત કરી</string>
 			<key>other</key>
-			<string>%d people excluded</string>
+			<string>%d લોકોને બાકાત કર્યા</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -792,9 +808,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 person</string>
+			<string>1 વ્યક્તિ</string>
 			<key>other</key>
-			<string>%d people</string>
+			<string>%d લોકો</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_%d</key>
@@ -827,6 +843,22 @@
 			<string>1 સભ્ય</string>
 			<key>other</key>
 			<string>%d સભ્યો</string>
+		</dict>
+	</dict>
+	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Viewer</string>
+			<key>other</key>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -1000,9 +1032,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Connection</string>
+			<string>1 કનેક્શન</string>
 			<key>other</key>
-			<string>%d Connections</string>
+			<string>%d કનેક્શન</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1016,9 +1048,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 ને બાકાત કર્યા</string>
 			<key>other</key>
-			<string>%d Excluded</string>
+			<string>%d ને બાકાત કર્યા</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

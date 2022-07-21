@@ -205,12 +205,6 @@
 /* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
 "ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
 
-/* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "標題字數已達到上限";
-
-/* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "新增附注…";
-
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "無法匯出附件。";
 
@@ -417,6 +411,9 @@
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "已過期";
+
+/* Shown on a gift badge message to indicate that the message contains a gift. */
+"BADGE_GIFTING_CHAT_TITLE" = "Gift Badge";
 
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
@@ -778,6 +775,60 @@
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "相機";
 
+/* VoiceOver label for Flash button in camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE" = "Album mode";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "關閉";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "開啟";
+
+/* VoiceOver value for Switch Camera button that tells which camera is currently active. */
+"CAMERA_VO_CAMERA_BACK_FACING" = "Back facing";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Camera Chooser";
+
+/* VoiceOver hint for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Switches between cameras";
+
+/* VoiceOver value for Switch Camera button that tells which camera is currently active. */
+"CAMERA_VO_CAMERA_FRONT_FACING" = "Front facing";
+
+/* VoiceOver label for close (X) button in camera. */
+"CAMERA_VO_CLOSE_BUTTON" = "關閉";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_AUTO" = "Automatic";
+
+/* VoiceOver label for Flash button in camera. */
+"CAMERA_VO_FLASH_BUTTON" = "Flash";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_OFF" = "關閉";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_ON" = "開啟";
+
+/* VoiceOver label for button to choose existing photo/video in in-app camera */
+"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Photo and video viewer";
+
+/* VoiceOver label for the round capture button in in-app camera during video recording. */
+"CAMERA_VO_STOP_VIDEO_REC" = "Stop Recording Video";
+
+/* VoiceOver label for the round capture button in in-app camera. */
+"CAMERA_VO_TAKE_PICTURE" = "Take Picture";
+
+/* VoiceOver label for other possible action for round capture button in in-app camera. */
+"CAMERA_VO_TAKE_VIDEO" = "Take Video";
+
+/* VoiceOver label for camera zoom control. */
+"CAMERA_VO_ZOOM" = "Zoom";
+
+/* VoiceOver description of current camera zoom level. */
+"CAMERA_VO_ZOOM_LEVEL" = "%@times";
+
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "在你與這個使用者傳送訊息前，不能驗證這個使用者。";
 
@@ -1123,6 +1174,9 @@
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "總是";
 
+/* table section header button to add a new story */
+"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
+
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "只有管理員可以向此群組傳送訊息。";
 
@@ -1215,9 +1269,6 @@
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@將可以變更這個群組及成員。";
-
-/* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "邀請";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "請求與邀請";
@@ -2386,9 +2437,6 @@
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "您不可自動將這些使用者新增至此群組。他們已獲邀加入群組，而且各人在接受之前，不會看見任何群組訊息。";
 
-/* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "成員邀請";
-
 /* Message indicating that 'announcement-only' mode was disabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "群組設定已變更為允許所有成員傳送訊息。";
 
@@ -2410,11 +2458,11 @@
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "您不能透過群組連結加入此群組，因為管理員已移除您。";
 
+/* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "無法加入群組";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "此群組連結已失效。";
-
-/* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "無法加入群組";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "群組";
@@ -3604,15 +3652,6 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "你的限時動態更新將在此顯示。";
 
-/* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
-
-/* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
-
-/* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
-
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "對特定的人隱藏您的限時動態";
 
@@ -3706,6 +3745,9 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "選擇成員";
 
+/* Title for the 'new group story' view */
+"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choose Group";
+
 /* No comment provided by engineer. */
 "new_message" = "新訊息";
 
@@ -3714,6 +3756,42 @@
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "搜尋使用者";
+
+/* Title for the 'new private story' confirmation view */
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Name Story";
+
+/* Button to create a new private story */
+"NEW_PRIVATE_STORY_CREATE_BUTTON" = "建立";
+
+/* Message for error alert indicating that a story name is required. */
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "A story name is required.";
+
+/* Title for error alert indicating that a story name is required. */
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Missing Story Name";
+
+/* Placeholder text for a new private story name */
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story Name (Required)";
+
+/* The title for the 'new private story' view. */
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
+
+/* Header for the 'viewers' section of the 'new private story' view */
+"NEW_PRIVATE_STORY_VIEWERS_HEADER" = "觀看者";
+
+/* Subtitle for create group story row on the 'new story sheet' */
+"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "分享至現有的群組";
+
+/* Title for create group story row on the 'new story sheet' */
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
+
+/* Subtitle for create private story row on the 'new story sheet' */
+"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "僅限特定人士看得見";
+
+/* Title for create private story row on the 'new story sheet' */
+"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "新的私人限時動態";
+
+/* Title for the new story sheet */
+"NEW_STORY_SHEET_TITLE" = "Choose Story Type";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "以電話號碼搜尋聯絡人";
@@ -4187,7 +4265,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "拒絕請求";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "要拒絕 %@ 的請求嗎？";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”? They will not be able to request to join via the group link again.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "沒有待處理的成員請求。";
@@ -4536,6 +4614,27 @@
 
 /* Button that lets user mark another user's identity as verified. */
 "PRIVACY_VERIFY_BUTTON" = "標記為已驗證";
+
+/* Button to add a new viewer on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Add Viewers";
+
+/* Button to delete the story on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
+
+/* Action sheet title confirming deletion of a private story on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+
+/* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
+"PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "移除";
+
+/* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "此人將不再看見您的限時動態。";
+
+/* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
+
+/* Section header for the 'viewers' section on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "Who Can See This Story";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "繼續";
@@ -6021,6 +6120,15 @@
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "未有回覆";
+
+/* Section footer for the 'replies & reactions' section in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Let people who can view your story react and reply.";
+
+/* Section header for the 'replies & reactions' section in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Replies & Reactions";
+
+/* Toggle text for the 'replies & reactions' switch in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Allow Replies & Reactions";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "新的私人限時動態";

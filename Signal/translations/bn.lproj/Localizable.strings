@@ -205,12 +205,6 @@
 /* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
 "ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
 
-/* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "ক্যাপশন সীমা পৌঁছেছে।";
-
-/* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "ক্যাপশন যোগ করুন...";
-
 /* Error that outgoing attachments could not be exported. */
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "সংযুক্তি রপ্তানি ব্যর্থ|";
 
@@ -398,7 +392,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "মাসিক ডোনেশন বাতিল";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
+"BADGE_GIFT_THANKS_BODY" = "আপনি %@-কে একটি ব্যাজ উপহার দিয়েছেন। তিনি এটি গ্রহণ করলে, ব্যাজ দেখানোর বা লুকিয়ে রাখার জন্য তাদেরকে একটি অপশন দেওয়া হবে।";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "আপনার সহযোগীতার জন্য ধন্যবাদ!";
@@ -410,16 +404,19 @@
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "বার্তা যোগ করুন";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "গিফট ব্যাজ পাঠানো সফল হয়নি। আপনার সংযোগ ঠিক আছে কিনা দেখুন এবং আবার চেষ্টা করুন।";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "গিফট ব্যাজ পাঠানো যায়নি। আপনার সংযোগ ঠিক আছে কি না দেখুন এবং আবার চেষ্টা করুন।";
 
 /* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "গিফট ব্যাজ পাঠানো সফল হয়নি";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "গিফট ব্যাজ পাঠানো যায়নি";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "বাতিল";
 
+/* Shown on a gift badge message to indicate that the message contains a gift. */
+"BADGE_GIFTING_CHAT_TITLE" = "গিফট ব্যাজ";
+
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "কাউকে তাদের নামে Signal-এ ডোনেশন দিয়ে একটি ব্যাজ উপহার দিন। প্রোফাইল ফটোতে প্রদর্শন করার জন্য তারা একটি ব্যাজ পাবেন।";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Signal-এ একটি অনুদান দিয়ে কাউকে একটি ব্যাজ উপহার দিন। নিজেদের প্রোফাইলে প্রদর্শন করার জন্য তারা একটি ব্যাজ পাবেন।";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "একটি ব্যাজ উপহার দিন";
@@ -434,10 +431,10 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "এই ব্যবহারকারী Signal আপগ্রেড না করা পর্যন্ত উপহার গ্রহণ করতে পারবেন না।";
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "গিফট ব্যাজ পাঠানো সফল হয়নি";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "গিফট ব্যাজ পাঠাতে পারছে না";
 
 /* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "This user can't receive your gift because you have blocked them.";
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "এই ব্যবহারকারী আপনার উপহার গ্রহণ করতে পারবেন না কারণ আপনি তাকে ব্লক করেছেন৷";
 
 /* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "গিফট ব্যাজ পাঠানো সফল হয়নি";
@@ -464,13 +461,13 @@
 "BADGE_GIFTING_PREVIEW_INCOMING" = "আপনি একটি উপহার পেয়েছেন";
 
 /* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "আপনি একটি উপহার পাঠিয়েছিলেন";
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "আপনি একটি উপহার পাঠিয়েছেন";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "ফিরে পান";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "আপনি পরে আপনার ব্যাজ ফিরে পেতে পারবেন।";
+"BADGE_GIFTING_REDEEM_LATER" = "আপনি পরে আপনার ব্যাজ ছাড় করতে পারবেন";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
 "BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ আপনাকে একটি উপহার পাঠিয়েছেন";
@@ -488,7 +485,7 @@
 "BADGE_GIFTING_VIEW" = "দেখুন";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "আপনি %@-এর কাছ থেকে একটি গিফট ব্যাজ পেয়েছেন। Signal-এ ডোনেশন দেয়ার জন্য সচেতনতা তৈরি করতে আপনার প্রোফাইলে এই ব্যাজটি প্রদর্শন করুন৷";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "আপনি %@-এর কাছ থেকে একটি গিফট ব্যাজ পেয়েছেন। Signal-এ অনুদান দেয়ার জন্য সচেতনতা তৈরি করতে আপনার প্রোফাইলে এই ব্যাজটি প্রদর্শন করুন৷";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "আপনার পুনরাবৃত্ত মাসিক ডোনেশন স্বয়ংক্রিয়ভাবে বাতিল হয়ে গেছে। %@ আপনার %@ ব্যাজ আপনার প্রোফাইলে আর দৃশ্যমান নয়৷";
@@ -777,6 +774,60 @@
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "ক্যামেরা";
+
+/* VoiceOver label for Flash button in camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE" = "Album mode";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "বন্ধ";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "চালু";
+
+/* VoiceOver value for Switch Camera button that tells which camera is currently active. */
+"CAMERA_VO_CAMERA_BACK_FACING" = "Back facing";
+
+/* VoiceOver label for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Camera Chooser";
+
+/* VoiceOver hint for Switch Camera button in in-app camera. */
+"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Switches between cameras";
+
+/* VoiceOver value for Switch Camera button that tells which camera is currently active. */
+"CAMERA_VO_CAMERA_FRONT_FACING" = "Front facing";
+
+/* VoiceOver label for close (X) button in camera. */
+"CAMERA_VO_CLOSE_BUTTON" = "বন্ধ করুন";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_AUTO" = "Automatic";
+
+/* VoiceOver label for Flash button in camera. */
+"CAMERA_VO_FLASH_BUTTON" = "Flash";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_OFF" = "বন্ধ";
+
+/* VoiceOver description of current flash setting. */
+"CAMERA_VO_FLASH_ON" = "চালু";
+
+/* VoiceOver label for button to choose existing photo/video in in-app camera */
+"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Photo and video viewer";
+
+/* VoiceOver label for the round capture button in in-app camera during video recording. */
+"CAMERA_VO_STOP_VIDEO_REC" = "Stop Recording Video";
+
+/* VoiceOver label for the round capture button in in-app camera. */
+"CAMERA_VO_TAKE_PICTURE" = "Take Picture";
+
+/* VoiceOver label for other possible action for round capture button in in-app camera. */
+"CAMERA_VO_TAKE_VIDEO" = "Take Video";
+
+/* VoiceOver label for camera zoom control. */
+"CAMERA_VO_ZOOM" = "বড়";
+
+/* VoiceOver description of current camera zoom level. */
+"CAMERA_VO_ZOOM_LEVEL" = "%@times";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "আপনি তাদের সাথে বার্তা বিনিময় না করা অবধি এই ব্যবহারকারী যাচাই করা যাবে না।";
@@ -1123,6 +1174,9 @@
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "সর্বদা";
 
+/* table section header button to add a new story */
+"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
+
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "কেবলমাত্র অ্যাডমিনরা এই গ্রুপে মেসেজ পাঠাতে পারবেন।";
 
@@ -1215,9 +1269,6 @@
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ এই গ্রুপ ও এটির সদস্যদের সম্পাদনা করতে পারবেন।";
-
-/* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "আমন্ত্রণ";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "অনুরোধ ও আমন্ত্রণ";
@@ -2386,9 +2437,6 @@
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "এই ইউজাররা আপনার দ্বারা স্বয়ংক্রিয়ভাবে এই গ্রুপে যোগ করা যাবে না। তাদের যোগদানের জন্য আমন্ত্রণ জানানো হয়েছে এবং তারা স্বীকার না করা পর্যন্ত কোনও গ্রুপ মেসেজ দেখতে পাবেন না।";
 
-/* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "সদস্য আমন্ত্রণ";
-
 /* Message indicating that 'announcement-only' mode was disabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "সকল সদস্যকে মেসেজ পাঠানোর অনুমতি দিতে গ্রুপের সেটিংস পরিবর্তন করা হয়েছে।";
 
@@ -2410,11 +2458,11 @@
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "আপনি এই লিংকের মাধ্যমে গ্ৰুপে যোগ দিতে পারবেন না কারণ একজন অ্যাডমিন আপনাকে বাদ দিয়েছেন।";
 
+/* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "গ্রুপে যোগ দেওয়া যাবে না";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "এই গ্রুপ লিঙ্কটি আর বৈধ নেই।";
-
-/* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "গ্রুপে যোগ দেওয়া যাবে না";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "গ্রুপ";
@@ -3242,7 +3290,7 @@
 "MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "পরিবর্তনগুলো বাতিল করুন";
 
 /* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
-"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "আপনি এই ফটোতে করা যেকোনো পরিবর্তন হারাবেন।";
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "আপনি এই ছবিতে করা যেকোনো পরিবর্তন হারাবেন";
 
 /* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
 "MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "পরিবর্তনগুলো বাতিল করবেন?";
@@ -3604,38 +3652,29 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "আপনার স্টোরি'র আপডেট এখানে দেখানো হবে।";
 
-/* Footer for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_FOOTER" = "Let people who can view your story react and reply.";
-
-/* Header for the 'replies' section of the my stories settings */
-"MY_STORIES_SETTINGS_REPLIES_HEADER" = "Replies & Reactions";
-
-/* Title for the replies switch */
-"MY_STORIES_SETTINGS_REPLIES_SWITCH_TITLE" = "Allow Replies & Reactions";
-
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "কিছু নির্দিষ্ট ব্যক্তির কাছ থেকে আপনার স্টোরি লুকান";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "...ছাড়া সকল Signal কানেকশন";
 
 /* Subtitle for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "সকল কানেকশনের সাথে শেয়ার করুন";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "সকল Signal কানেকশন";
 
 /* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
+"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "আপনার স্টোরি কে দেখতে পাবে তা নির্ধারণ করুন৷ পরিবর্তনগুলো আপনার ইতিমধ্যে পাঠানো স্টোরিগুলোকে প্রভাবিত করবে না৷";
 
 /* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
+"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "যারা স্টোরি দেখতে পাবেন";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "যাদের সাথে শেয়ার করবেন তাদের বেছে নিন";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "শেয়ার করুন শুধু...";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "আমার স্টোরি";
@@ -3706,6 +3745,9 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "সদস্যকে বেছে নিন";
 
+/* Title for the 'new group story' view */
+"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choose Group";
+
 /* No comment provided by engineer. */
 "new_message" = "নতুন বার্তা";
 
@@ -3714,6 +3756,42 @@
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ব্যবহারকারী খুঁজুন";
+
+/* Title for the 'new private story' confirmation view */
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Name Story";
+
+/* Button to create a new private story */
+"NEW_PRIVATE_STORY_CREATE_BUTTON" = "তৈরি করুন";
+
+/* Message for error alert indicating that a story name is required. */
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "A story name is required.";
+
+/* Title for error alert indicating that a story name is required. */
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Missing Story Name";
+
+/* Placeholder text for a new private story name */
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story Name (Required)";
+
+/* The title for the 'new private story' view. */
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
+
+/* Header for the 'viewers' section of the 'new private story' view */
+"NEW_PRIVATE_STORY_VIEWERS_HEADER" = "দর্শক";
+
+/* Subtitle for create group story row on the 'new story sheet' */
+"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "একটি বিদ্যমান গ্ৰুপে শেয়ার করুন";
+
+/* Title for create group story row on the 'new story sheet' */
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
+
+/* Subtitle for create private story row on the 'new story sheet' */
+"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "শুধু নির্দিষ্ট কিছু ব্যক্তির কাছে দৃশ্যমান";
+
+/* Title for create private story row on the 'new story sheet' */
+"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "নতুন ব্যক্তিগত স্টোরি";
+
+/* Title for the new story sheet */
+"NEW_STORY_SHEET_TITLE" = "Choose Story Type";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ফোন নাম্বার দ্বারা পরিচিতি খুঁজুন";
@@ -4187,7 +4265,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "অনুরোধ প্রত্যাখ্যান করুন";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "“%@”-এর কাছ থেকে আসা অনুরোধ প্রত্যাখ্যান করবেন?";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”? They will not be able to request to join via the group link again.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "কোনও মুলতুবি থাকা সদস্যের অনুরোধ নেই।";
@@ -4537,6 +4615,27 @@
 /* Button that lets user mark another user's identity as verified. */
 "PRIVACY_VERIFY_BUTTON" = "যাচাইকৃত হিসাবে চিহ্নিত করুন";
 
+/* Button to add a new viewer on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Add Viewers";
+
+/* Button to delete the story on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
+
+/* Action sheet title confirming deletion of a private story on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+
+/* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
+"PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "সরান";
+
+/* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "এই ব্যক্তি আর আপনার স্টোরি দেখতে পাবেন না।";
+
+/* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
+
+/* Section header for the 'viewers' section on the 'private story settings' view */
+"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "যারা স্টোরি দেখতে পাবেন";
+
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "এগিয়ে যান";
 
@@ -4847,7 +4946,7 @@
 "RETURN_CALL_PILL_BUTTON" = "ফিরে যান";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "Add Anyway";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "যাই হোক যোগ করুন";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "যাইহোক কল করুন";
@@ -6022,6 +6121,15 @@
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "এখন পর্যন্ত কোন রিপ্লাই নেই";
 
+/* Section footer for the 'replies & reactions' section in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "যারা আপনার স্টোরি দেখতে পাবেন তাদের রিঅ্যাক্ট এবং রিপ্লাই দিতে দিন";
+
+/* Section header for the 'replies & reactions' section in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "উত্তর ও রিঅ্যাকশন";
+
+/* Toggle text for the 'replies & reactions' switch in stories settings */
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "উত্তর ও রিঅ্যাকশন অনুমোদন করুন";
+
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "নতুন ব্যক্তিগত স্টোরি";
 
@@ -6068,10 +6176,10 @@
 "STORY_REPLY_YOU_AUTHOR" = "আপনি";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "কানেকশন";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "বাদ দেয়া কানেকশন";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "অনুদান";
