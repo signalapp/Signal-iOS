@@ -199,9 +199,10 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
                 topBar.mode = .videoRecording
                 topBar.recordingTimerView.startCounting()
 
-                bottomBar.captureControl.setState(.recording, animationDuration: 0.4)
+                let captureControlState: CameraCaptureControl.State = UIAccessibility.isVoiceOverRunning ? .recordingUsingVoiceOver : .recording
+                bottomBar.captureControl.setState(captureControlState, animationDuration: 0.4)
                 if let sideBar = sideBar {
-                    sideBar.cameraCaptureControl.setState(.recording, animationDuration: 0.4)
+                    sideBar.cameraCaptureControl.setState(captureControlState, animationDuration: 0.4)
                 }
             } else {
                 topBar.mode = isIPadUIInRegularMode ? .closeButton : .cameraControls
@@ -494,6 +495,10 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         let isFrontCamera = photoCapture.desiredPosition == .front
         frontCameraZoomControl?.setIsHidden(!isFrontCamera, animated: animated)
         rearCameraZoomControl?.setIsHidden(isFrontCamera, animated: animated)
+        bottomBar.switchCameraButton.isFrontCameraActive = isFrontCamera
+        if let sideBar = sideBar {
+            sideBar.switchCameraButton.isFrontCameraActive = isFrontCamera
+        }
     }
 
     // MARK: - Interactive Dismiss
@@ -788,6 +793,10 @@ extension PhotoCaptureViewController: CameraZoomSelectionControlDelegate {
         let position: AVCaptureDevice.Position = cameraZoomControl == frontCameraZoomControl ? .front : .back
         photoCapture.switchCamera(to: camera, at: position, animated: true)
     }
+
+    fileprivate func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didChangeZoomFactor zoomFactor: CGFloat) {
+        photoCapture.changeVisibleZoomFactor(to: zoomFactor, animated: true)
+    }
 }
 
 private class TopBar: MediaTopBar {
@@ -804,6 +813,9 @@ private class TopBar: MediaTopBar {
         cameraControlsContainerView = UIStackView(arrangedSubviews: [ batchModeButton, flashModeButton ])
 
         super.init(frame: frame)
+
+        closeButton.accessibilityLabel = NSLocalizedString("CAMERA_VO_CLOSE_BUTTON",
+                                                           comment: "VoiceOver label for close (X) button in camera.")
 
         addSubview(closeButton)
         closeButton.translatesAutoresizingMaskIntoConstraints = false
@@ -1137,6 +1149,8 @@ private class FlashModeButton: RoundMediaButton {
 
 private class CameraChooserButton: RoundMediaButton {
 
+    var isFrontCameraActive = false
+
     required init(backgroundStyle: RoundMediaButton.BackgroundStyle) {
         super.init(image: UIImage(named: "media-composer-switch-camera"), backgroundStyle: backgroundStyle)
     }
@@ -1415,12 +1429,17 @@ private class RecordingTimerView: PillView {
 }
 
 private protocol CameraZoomSelectionControlDelegate: AnyObject {
+
     func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didSelect camera: PhotoCapture.CameraType)
+
+    func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didChangeZoomFactor zoomFactor: CGFloat)
 }
 
 private class CameraZoomSelectionControl: PillView {
 
     weak var delegate: CameraZoomSelectionControlDelegate?
+
+    private let availableCameras: [PhotoCapture.CameraType]
 
     var selectedCamera: PhotoCapture.CameraType
     var currentZoomFactor: CGFloat {
@@ -1463,16 +1482,16 @@ private class CameraZoomSelectionControl: PillView {
         }
     }
 
-    required init(availableCameras: [(PhotoCapture.CameraType, CGFloat)]) {
+    required init(availableCameras: [(cameraType: PhotoCapture.CameraType, defaultZoomFactor: CGFloat)]) {
         owsAssertDebug(!availableCameras.isEmpty, "availableCameras must not be empty.")
 
-        let (wideAngleCamera, wideAngleCameraZoomFactor) = availableCameras.first(where: { $0.0 == .wideAngle }) ?? availableCameras.first!
+        self.availableCameras = availableCameras.map { $0.cameraType }
+
+        let (wideAngleCamera, wideAngleCameraZoomFactor) = availableCameras.first(where: { $0.cameraType == .wideAngle }) ?? availableCameras.first!
         selectedCamera = wideAngleCamera
         currentZoomFactor = wideAngleCameraZoomFactor
 
-        selectionViews = availableCameras.map { (camera, zoomFactor) in
-            return CameraSelectionCircleView(camera: camera, defaultZoomFactor: zoomFactor)
-        }
+        selectionViews = availableCameras.map { CameraSelectionCircleView(camera: $0.cameraType, defaultZoomFactor: $0.defaultZoomFactor) }
 
         super.init(frame: .zero)
 
@@ -1636,6 +1655,187 @@ private class CameraZoomSelectionControl: PillView {
                 animations()
             }
         }
+
+        override var isAccessibilityElement: Bool {
+            get { false }
+            set { super.isAccessibilityElement = newValue }
+        }
+    }
+}
+
+// MARK: - Accessibility
+
+extension FlashModeButton {
+
+    override var accessibilityLabel: String? {
+        get {
+            NSLocalizedString("CAMERA_VO_FLASH_BUTTON",
+                              comment: "VoiceOver label for Flash button in camera.")
+        }
+        set { super.accessibilityLabel = newValue }
+    }
+
+    override var accessibilityValue: String? {
+        get {
+            switch flashMode {
+            case .auto:
+                return NSLocalizedString("CAMERA_VO_FLASH_AUTO",
+                                         comment: "VoiceOver description of current flash setting.")
+
+            case .on:
+                return NSLocalizedString("CAMERA_VO_FLASH_ON",
+                                         comment: "VoiceOver description of current flash setting.")
+
+            case .off:
+                return NSLocalizedString("CAMERA_VO_FLASH_OFF",
+                                         comment: "VoiceOver description of current flash setting.")
+
+            @unknown default:
+                owsFailDebug("unexpected photoCapture.flashMode: \(flashMode.rawValue)")
+                return nil
+            }
+        }
+        set { super.accessibilityValue = newValue }
+    }
+}
+
+extension CameraChooserButton {
+
+    override var accessibilityLabel: String? {
+        get {
+            NSLocalizedString("CAMERA_VO_CAMERA_CHOOSER_BUTTON",
+                              comment: "VoiceOver label for Switch Camera button in in-app camera.")
+        }
+        set { super.accessibilityLabel = newValue }
+    }
+
+    override var accessibilityHint: String? {
+        get {
+            NSLocalizedString("CAMERA_VO_CAMERA_CHOOSER_HINT",
+                              comment: "VoiceOver hint for Switch Camera button in in-app camera.")
+        }
+        set { super.accessibilityHint = newValue }
+    }
+
+    override var accessibilityValue: String? {
+        get {
+            if isFrontCameraActive {
+                return NSLocalizedString("CAMERA_VO_CAMERA_FRONT_FACING",
+                                         comment: "VoiceOver value for Switch Camera button that tells which camera is currently active.")
+            } else {
+                return NSLocalizedString("CAMERA_VO_CAMERA_BACK_FACING",
+                                         comment: "VoiceOver value for Switch Camera button that tells which camera is currently active.")
+            }
+        }
+        set { super.accessibilityValue = newValue }
+    }
+}
+
+extension CaptureModeButton {
+
+    override var accessibilityLabel: String? {
+        get {
+            NSLocalizedString("CAMERA_VO_CAMERA_ALBUM_MODE",
+                              comment: "VoiceOver label for Flash button in camera.")
+        }
+        set { super.accessibilityLabel = newValue }
+    }
+
+    override var accessibilityValue: String? {
+        get {
+            switch captureMode {
+            case .single:
+                return NSLocalizedString("CAMERA_VO_CAMERA_ALBUM_MODE_OFF",
+                                         comment: "VoiceOver label for Switch Camera button in in-app camera.")
+
+            case .multi:
+                return NSLocalizedString("CAMERA_VO_CAMERA_ALBUM_MODE_ON",
+                                         comment: "VoiceOver label for Switch Camera button in in-app camera.")
+            }
+        }
+        set { super.accessibilityValue = newValue }
+    }
+}
+
+extension MediaPickerThumbnailButton {
+
+    override var accessibilityLabel: String? {
+        get {
+            NSLocalizedString("CAMERA_VO_PHOTO_LIBRARY_BUTTON",
+                          comment: "VoiceOver label for button to choose existing photo/video in in-app camera")
+        }
+        set { super.accessibilityLabel = newValue }
+    }
+}
+
+extension CameraZoomSelectionControl {
+
+    override var isAccessibilityElement: Bool {
+        get { true }
+        set { super.isAccessibilityElement = newValue }
+    }
+
+    override var accessibilityTraits: UIAccessibilityTraits {
+        get { [ .button, .adjustable ] }
+        set { super.accessibilityTraits = newValue }
+    }
+
+    override var accessibilityLabel: String? {
+        get {
+            NSLocalizedString("CAMERA_VO_ZOOM", comment: "VoiceOver label for camera zoom control.")
+        }
+        set { super.accessibilityLabel = newValue }
+    }
+
+    private static let voiceOverNumberFormatter: NumberFormatter = {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.minimumIntegerDigits = 1
+        numberFormatter.minimumFractionDigits = 1
+        numberFormatter.maximumFractionDigits = 1
+        return numberFormatter
+    }()
+
+    override var accessibilityValue: String? {
+        get {
+            guard let zoomValueString = CameraZoomSelectionControl.voiceOverNumberFormatter.string(for: currentZoomFactor) else { return nil }
+
+            let formatString = NSLocalizedString("CAMERA_VO_ZOOM_LEVEL",
+                                                 comment: "VoiceOver description of current camera zoom level.")
+            return String(format: formatString, zoomValueString)
+        }
+        set { super.accessibilityValue = newValue }
+    }
+
+    override func accessibilityActivate() -> Bool {
+        // Tapping on a single available camera switches between 1x and 2x.
+        guard availableCameras.count > 1 else {
+            delegate?.cameraZoomControl(self, didSelect: selectedCamera)
+            return true
+        }
+
+        // Cycle through cameras.
+        guard let selectedCameraIndex = availableCameras.firstIndex(of: selectedCamera) else { return false }
+        var nextCameraIndex = availableCameras.index(after: selectedCameraIndex)
+        if nextCameraIndex >= availableCameras.endIndex {
+            nextCameraIndex = availableCameras.startIndex
+        }
+        let nextCamera = availableCameras[nextCameraIndex]
+        selectedCamera = nextCamera
+        delegate?.cameraZoomControl(self, didSelect: nextCamera)
+        return true
+    }
+
+    override func accessibilityIncrement() {
+        // Increment zoom by 0.1.
+        currentZoomFactor = 0.1 * round(currentZoomFactor * 10 + 1)
+        delegate?.cameraZoomControl(self, didChangeZoomFactor: currentZoomFactor)
+    }
+
+    override func accessibilityDecrement() {
+        // Decrement zoom by 0.1.
+        currentZoomFactor = 0.1 * round(currentZoomFactor * 10 - 1)
+        delegate?.cameraZoomControl(self, didChangeZoomFactor: currentZoomFactor)
     }
 }
 

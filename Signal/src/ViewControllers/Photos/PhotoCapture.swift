@@ -531,14 +531,21 @@ class PhotoCapture: NSObject {
         if availableCameras.count == 1, let currentZoomFactor = captureDevice?.videoZoomFactor, currentZoomFactor == zoomFactor {
             zoomFactor *= 2
         }
+        updateZoomFactor(zoomFactor, animated: animated)
+    }
+
+    func changeVisibleZoomFactor(to visibleZoomFactor: CGFloat, animated: Bool) {
+        let zoomFactor = visibleZoomFactor / cameraZoomFactorMultiplier(forPosition: desiredPosition)
+        updateZoomFactor(zoomFactor, animated: animated)
+    }
+
+    private func updateZoomFactor(_ zoomFactor: CGFloat, animated: Bool) {
         sessionQueue.async { [weak self] in
             guard let self = self else { return }
             guard let captureDevice = self.captureDevice else {
                 owsFailDebug("captureDevice was unexpectedly nil")
                 return
             }
-            owsAssertDebug(position == captureDevice.position, "Attempt to select camera for incorrect position")
-
             self.update(captureDevice: captureDevice, zoomFactor: zoomFactor, animated: animated)
         }
     }

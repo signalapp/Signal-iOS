@@ -102,6 +102,14 @@ class CameraCaptureControl: UIView {
         shutterButtonInnerCircle.centerXAnchor.constraint(equalTo: shutterButtonOuterCircle.centerXAnchor).isActive = true
         shutterButtonInnerCircle.centerYAnchor.constraint(equalTo: shutterButtonOuterCircle.centerYAnchor).isActive = true
 
+        // Stop Button
+        stopButton.alpha = 0
+        addSubview(stopButton)
+        stopButton.autoPin(toAspectRatio: 1)
+        stopButton.autoSetDimension(.width, toSize: CameraCaptureControl.recordingLockControlSize)
+        stopButton.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor).isActive = true
+        stopButton.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor).isActive = true
+
         // The long press handles both the tap and the hold interaction, as well as the animation
         // the presents as the user begins to hold (and the button begins to grow prior to recording)
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
@@ -122,6 +130,7 @@ class CameraCaptureControl: UIView {
         case initial
         case recording
         case recordingLocked
+        case recordingUsingVoiceOver
     }
 
     private var _internalState: State = .initial
@@ -156,6 +165,9 @@ class CameraCaptureControl: UIView {
         if state == .initial {
             // Hide "slide to lock" controls momentarily before animating the rest of the UI to "not recording" state.
             hideLongPressVideoRecordingControls()
+        }
+        if state == .recordingUsingVoiceOver {
+            stopButton.alpha = 1
         }
 
         if animationDuration > 0 {
@@ -201,23 +213,20 @@ class CameraCaptureControl: UIView {
         case .recordingLocked:
             // This should already by at the correct size so this assignment is "just in case".
             innerCircleSizeConstraint.constant = CameraCaptureControl.recordingLockControlSize
+
+        case .recordingUsingVoiceOver:
+            outerCircleSizeConstraint.constant = CameraCaptureControl.shutterButtonRecordingSize
+            innerCircleSizeConstraint.constant = CameraCaptureControl.recordingLockControlSize
         }
     }
 
     private func initializeVideoRecordingControlsIfNecessary() {
-        guard stopButton.superview == nil else { return }
+        guard lockIconView.superview == nil else { return }
 
-        // 1. Stop button.
-        addSubview(stopButton)
-        stopButton.autoPin(toAspectRatio: 1)
-        stopButton.autoSetDimension(.width, toSize: CameraCaptureControl.recordingLockControlSize)
-        stopButton.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor).isActive = true
-        stopButton.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor).isActive = true
-
-        // 2. Slider.
+        // 1. Slider.
         insertSubview(slidingCircleView, belowSubview: shutterButtonInnerCircle)
 
-        // 3. Lock Icon
+        // 2. Lock Icon
         addSubview(lockIconView)
         lockIconView.translatesAutoresizingMaskIntoConstraints = false
         // Centered vertically, pinned to trailing edge.
@@ -227,7 +236,7 @@ class CameraCaptureControl: UIView {
         let verticalConstraints = [ lockIconView.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor),
                                     lockIconView.bottomAnchor.constraint(equalTo: bottomAnchor) ]
 
-        // 4. Activate current constraints.
+        // 3. Activate current constraints.
         horizontalAxisConstraints.append(contentsOf: horizontalConstraints)
         if axis == .horizontal {
             addConstraints(horizontalConstraints)
@@ -279,6 +288,24 @@ class CameraCaptureControl: UIView {
         }
     }
 
+    // MARK: - Photo / Video Capture
+
+    private func capturePhoto() {
+        delegate?.cameraCaptureControlDidRequestCapturePhoto(self)
+    }
+
+    private func startVideoRecording() {
+        delegate?.cameraCaptureControlDidRequestStartVideoRecording(self)
+    }
+
+    private func cancelVideoRecording() {
+        delegate?.cameraCaptureControlDidRequestCancelVideoRecording(self)
+    }
+
+    private func finishVideoRecording() {
+        delegate?.cameraCaptureControlDidRequestFinishVideoRecording(self)
+    }
+
     // MARK: - Gestures
 
     private let animationDuration: TimeInterval = 0.2
@@ -321,7 +348,7 @@ class CameraCaptureControl: UIView {
                 guard let self = self else { return }
 
                 self.setState(.recording, isRecordingWithLongPress: true, animationDuration: 2*self.animationDuration)
-                self.delegate?.cameraCaptureControlDidRequestStartVideoRecording(self)
+                self.startVideoRecording()
             }
 
         case .changed:
@@ -433,13 +460,13 @@ class CameraCaptureControl: UIView {
                         self.setState(.initial, animationDuration: self.animationDuration)
                     })
 
-                    delegate?.cameraCaptureControlDidRequestFinishVideoRecording(self)
+                    finishVideoRecording()
                 }
 
             case .initial:
-                delegate?.cameraCaptureControlDidRequestCapturePhoto(self)
+                capturePhoto()
 
-            case .recordingLocked:
+            case .recordingLocked, .recordingUsingVoiceOver:
                 break
             }
 
@@ -447,7 +474,7 @@ class CameraCaptureControl: UIView {
             if state == .recording {
                 sliderTrackingProgress = 0
                 setState(.initial, animationDuration: animationDuration)
-                delegate?.cameraCaptureControlDidRequestCancelVideoRecording(self)
+                cancelVideoRecording()
             }
 
             touchTimer?.invalidate()
@@ -517,7 +544,7 @@ class CameraCaptureControl: UIView {
     // MARK: - Button Actions
 
     private func didTapStopButton() {
-        delegate?.cameraCaptureControlDidRequestFinishVideoRecording(self)
+        finishVideoRecording()
     }
 }
 
@@ -783,5 +810,98 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
         guard userInterfaceStyle != .unspecified else { return }
         blurBackgroundView.effect = UIBlurEffect(style: MediaDoneButton.blurEffectStyle(for: userInterfaceStyle))
         chevronImageView.tintColor = MediaDoneButton.tintColor(for: userInterfaceStyle)
+    }
+}
+
+// MARK: - Accessibility
+
+extension CameraCaptureControl {
+
+    override var isAccessibilityElement: Bool {
+        get { true }
+        set { super.isAccessibilityElement = newValue }
+    }
+
+    override var accessibilityTraits: UIAccessibilityTraits {
+        get { [ .button ] }
+        set { super.accessibilityTraits = newValue }
+    }
+
+    override var accessibilityFrame: CGRect {
+        get { UIAccessibility.convertToScreenCoordinates(shutterButtonLayoutGuide.layoutFrame, in: self) }
+        set { super.accessibilityFrame = newValue }
+    }
+
+    override var accessibilityLabel: String? {
+        get {
+            switch state {
+            case .initial:
+                return NSLocalizedString("CAMERA_VO_TAKE_PICTURE",
+                                         comment: "VoiceOver label for the round capture button in in-app camera.")
+
+            case .recordingUsingVoiceOver:
+                return NSLocalizedString("CAMERA_VO_STOP_VIDEO_REC",
+                                         comment: "VoiceOver label for the round capture button in in-app camera during video recording.")
+
+            default:
+                owsFailDebug("Invalid state")
+                return nil
+            }
+        }
+        set { super.accessibilityLabel = newValue }
+    }
+
+    override var accessibilityCustomActions: [UIAccessibilityCustomAction]? {
+        get {
+            guard state == .initial else { return [] }
+            let actionName = NSLocalizedString("CAMERA_VO_TAKE_VIDEO",
+                                               comment: "VoiceOver label for other possible action for round capture button in in-app camera.")
+            return [ UIAccessibilityCustomAction(name: actionName, target: self, selector: #selector(accessibilityStartVideoRecording)) ] }
+        set { super.accessibilityCustomActions = newValue }
+    }
+
+    override func accessibilityActivate() -> Bool {
+        switch state {
+        case .initial:
+            capturePhoto()
+
+        case .recordingUsingVoiceOver:
+            accessibilityStopVideoRecording()
+
+        default:
+            owsFailDebug("Invalid state")
+            return false
+        }
+        return true
+    }
+
+    @objc
+    private func accessibilityStartVideoRecording() {
+        startVideoRecording()
+    }
+
+    private func accessibilityStopVideoRecording() {
+        finishVideoRecording()
+    }
+}
+
+extension MediaDoneButton {
+
+    override var accessibilityLabel: String? {
+        get { CommonStrings.doneButton }
+        set { super.accessibilityLabel = newValue }
+    }
+
+    override var accessibilityValue: String? {
+        get {
+            guard badgeNumber > 0 else { return nil }
+
+            let format = NSLocalizedString("CAMERA_VO_N_ITEMS", tableName: "PluralAware",
+                                           comment: "VoiceOver text for blue Done button in camera, describing how many items have already been captured.")
+            return String.localizedStringWithFormat(format, badgeNumber)
+        }
+        set {
+            super.accessibilityValue = newValue
+        }
     }
 }
