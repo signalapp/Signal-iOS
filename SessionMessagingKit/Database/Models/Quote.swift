@@ -100,11 +100,8 @@ public extension Quote {
         if let quotedInteraction: Interaction = quotedInteraction, quotedInteraction.body?.isEmpty == false {
             self.body = quotedInteraction.body
         }
-        else if let body: String = quoteProto.text, !body.isEmpty {
-            self.body = body
-        }
         else {
-            self.body = nil
+            self.body = "QUOTED_MESSAGE_NOT_FOUND".localized()
         }
         
         // We only use the first attachment

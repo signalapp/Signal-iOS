@@ -186,7 +186,6 @@ final class QuoteView: UIView {
             }
         }()
         let bodyLabel = UILabel()
-        bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byTruncatingTail
         
         let isOutgoing = (direction == .outgoing)
