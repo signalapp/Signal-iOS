@@ -65,11 +65,14 @@ public class BadgeExpirationSheetState {
         }
     }()
 
-    public lazy var body: Body = {
-        func format(_ formatText: String) -> String {
-            String(format: formatText, badge.localizedName)
-        }
+    private var monthlyDonationCallToAction: String {
+        NSLocalizedString(
+            "BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION",
+            comment: "Shown when a non-monthly badge expires to suggest starting a recurring donation."
+        )
+    }
 
+    public lazy var body: Body = {
         switch mode {
         case let .subscriptionExpiredBecauseOfChargeFailure(chargeFailure):
             let failureSpecificText = Self.getChargeFailureSpecificText(chargeFailure: chargeFailure)
@@ -79,17 +82,22 @@ public class BadgeExpirationSheetState {
         case .subscriptionExpiredBecauseNotRenewed:
             let formatText = NSLocalizedString("BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT",
                                                comment: "Body of the sheet shown when your subscription is canceled due to inactivity")
-            return Body(format(formatText), hasLearnMoreLink: true)
+            return Body(String(format: formatText, badge.localizedName), hasLearnMoreLink: true)
         case let .boostExpired(hasCurrentSubscription):
-            let formatText: String
+            var bodyText = [String]()
             if hasCurrentSubscription {
-                formatText = NSLocalizedString("BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT",
-                                               comment: "String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet.")
+                bodyText.append(NSLocalizedString(
+                    "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY",
+                    comment: "String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet."
+                ))
             } else {
-                formatText = NSLocalizedString("BADGE_EXIPRED_BOOST_BODY_FORMAT",
-                                               comment: "String explaining to the user that their boost badge has expired on the badge expiry sheet.")
+                bodyText.append(NSLocalizedString(
+                    "BADGE_EXPIRED_BOOST_BODY",
+                    comment: "String explaining to the user that their boost badge has expired on the badge expiry sheet."
+                ))
+                bodyText.append(self.monthlyDonationCallToAction)
             }
-            return Body(format(formatText))
+            return Body(bodyText.joined(separator: "\n\n"))
         }
     }()
 

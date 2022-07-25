@@ -138,13 +138,16 @@ class BadgeExpirationSheetStateTest: XCTestCase {
             ),
             (
                 State(badge: getSubscriptionBadge(), mode: .boostExpired(hasCurrentSubscription: false)),
-                NSLocalizedString("BADGE_EXIPRED_BOOST_BODY_FORMAT",
-                                  comment: "String explaining to the user that their boost badge has expired on the badge expiry sheet."),
+                NSLocalizedString("BADGE_EXPIRED_BOOST_BODY",
+                                  comment: "String explaining to the user that their boost badge has expired on the badge expiry sheet.")
+                + "\n\n"
+                + NSLocalizedString("BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION",
+                                    comment: "Shown when a non-monthly badge expires to suggest starting a recurring donation."),
                 false
             ),
             (
                 State(badge: getSubscriptionBadge(), mode: .boostExpired(hasCurrentSubscription: true)),
-                NSLocalizedString("BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT",
+                NSLocalizedString("BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY",
                                   comment: "String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet."),
                 false
             )
