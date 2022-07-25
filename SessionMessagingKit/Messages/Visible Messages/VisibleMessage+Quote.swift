@@ -44,6 +44,7 @@ public extension VisibleMessage {
                 return nil
             }
             let quoteProto = SNProtoDataMessageQuote.builder(id: timestamp, author: publicKey)
+            if let text = text { quoteProto.setText(text) }
             addAttachmentsIfNeeded(db, to: quoteProto)
             do {
                 return try quoteProto.build()
