@@ -149,13 +149,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             /// no longer always called before `applicationDidBecomeActive` we need to trigger the "clear notifications" logic
             /// within the `runNowOrWhenAppDidBecomeReady` callback and dispatch to the next run loop to ensure it runs after
             /// the notification has actually been handled
-            DispatchQueue.main.async { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [weak self] in
                 self?.clearAllNotificationsAndRestoreBadgeCount()
             }
         }
 
         // On every activation, clear old temp directories.
-        ClearOldTemporaryDirectories();
+        ClearOldTemporaryDirectories()
     }
     
     func applicationWillResignActive(_ application: UIApplication) {

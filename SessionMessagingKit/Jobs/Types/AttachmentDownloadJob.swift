@@ -87,10 +87,7 @@ public enum AttachmentDownloadJob: JobExecutor {
         let downloadPromise: Promise<Data> = {
             guard
                 let downloadUrl: String = attachment.downloadUrl,
-                let fileId: String = downloadUrl
-                    .split(separator: "/")
-                    .last
-                    .map({ String($0) })
+                let fileId: String = Attachment.fileId(for: downloadUrl)
             else {
                 return Promise(error: AttachmentDownloadError.invalidUrl)
             }

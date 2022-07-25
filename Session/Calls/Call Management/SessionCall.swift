@@ -167,7 +167,10 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
     }
     
     func reportIncomingCallIfNeeded(completion: @escaping (Error?) -> Void) {
-        guard case .answer = mode else { return }
+        guard case .answer = mode else {
+            SessionCallManager.reportFakeCall(info: "Call not in answer mode")
+            return
+        }
         
         setupTimeoutTimer()
         AppEnvironment.shared.callManager.reportIncomingCall(self, callerName: contactName) { error in

@@ -49,5 +49,21 @@ public extension Message {
                     return .openGroup(roomToken: openGroup.roomToken, server: openGroup.server, fileIds: fileIds)
             }
         }
+        
+        func with(fileIds: [String]) -> Message.Destination {
+            // Only Open Group messages support receiving the 'fileIds'
+            switch self {
+                case .openGroup(let roomToken, let server, let whisperTo, let whisperMods, _):
+                    return .openGroup(
+                        roomToken: roomToken,
+                        server: server,
+                        whisperTo: whisperTo,
+                        whisperMods: whisperMods,
+                        fileIds: fileIds
+                    )
+                    
+                default: return self
+            }
+        }
     }
 }

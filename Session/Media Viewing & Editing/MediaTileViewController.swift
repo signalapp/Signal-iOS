@@ -171,7 +171,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     }
     
     @objc func applicationDidBecomeActive(_ notification: Notification) {
-        startObservingChanges()
+        startObservingChanges(didReturnFromBackground: true)
     }
     
     @objc func applicationDidResignActive(_ notification: Notification) {
@@ -243,10 +243,17 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
         }
     }
     
-    private func startObservingChanges() {
+    private func startObservingChanges(didReturnFromBackground: Bool = false) {
         // Start observing for data changes (will callback on the main thread)
         self.viewModel.onGalleryChange = { [weak self] updatedGalleryData in
             self?.handleUpdates(updatedGalleryData)
+        }
+        
+        // Note: When returning from the background we could have received notifications but the
+        // PagedDatabaseObserver won't have them so we need to force a re-fetch of the current
+        // data to ensure everything is up to date
+        if didReturnFromBackground {
+            self.viewModel.pagedDataObserver?.reload()
         }
     }
     

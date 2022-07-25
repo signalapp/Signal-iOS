@@ -242,40 +242,52 @@ public enum PushRegistrationError: Error {
         owsAssertDebug(type == .voIP)
         let payload = payload.dictionaryPayload
         
-        if let uuid = payload["uuid"] as? String, let caller = payload["caller"] as? String, let timestampMs = payload["timestamp"] as? Int64 {
-            let call: SessionCall? = Storage.shared.write { db in
-                let messageInfo: CallMessage.MessageInfo = CallMessage.MessageInfo(
-                    state: (caller == getUserHexEncodedPublicKey(db) ?
-                        .outgoing :
-                        .incoming
-                    )
+        guard
+            let uuid: String = payload["uuid"] as? String,
+            let caller: String = payload["caller"] as? String,
+            let timestampMs: Int64 = payload["timestamp"] as? Int64
+        else {
+            SessionCallManager.reportFakeCall(info: "Missing payload data")
+            return
+        }
+        
+        let maybeCall: SessionCall? = Storage.shared.write { db in
+            let messageInfo: CallMessage.MessageInfo = CallMessage.MessageInfo(
+                state: (caller == getUserHexEncodedPublicKey(db) ?
+                    .outgoing :
+                    .incoming
                 )
-                
-                guard let messageInfoData: Data = try? JSONEncoder().encode(messageInfo) else { return nil }
-                
-                let call: SessionCall = SessionCall(db, for: caller, uuid: uuid, mode: .answer)
-                let thread: SessionThread = try SessionThread.fetchOrCreate(db, id: caller, variant: .contact)
-                
-                let interaction: Interaction = try Interaction(
-                    messageUuid: uuid,
-                    threadId: thread.id,
-                    authorId: caller,
-                    variant: .infoCall,
-                    body: String(data: messageInfoData, encoding: .utf8),
-                    timestampMs: timestampMs
-                ).inserted(db)
-                call.callInteractionId = interaction.id
-                
-                return call
-            }
+            )
             
-            // NOTE: Just start 1-1 poller so that it won't wait for polling group messages
-            (UIApplication.shared.delegate as? AppDelegate)?.startPollersIfNeeded(shouldStartGroupPollers: false)
+            guard let messageInfoData: Data = try? JSONEncoder().encode(messageInfo) else { return nil }
             
-            call?.reportIncomingCallIfNeeded { error in
-                if let error = error {
-                    SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
-                }
+            let call: SessionCall = SessionCall(db, for: caller, uuid: uuid, mode: .answer)
+            let thread: SessionThread = try SessionThread.fetchOrCreate(db, id: caller, variant: .contact)
+            
+            let interaction: Interaction = try Interaction(
+                messageUuid: uuid,
+                threadId: thread.id,
+                authorId: caller,
+                variant: .infoCall,
+                body: String(data: messageInfoData, encoding: .utf8),
+                timestampMs: timestampMs
+            ).inserted(db)
+            call.callInteractionId = interaction.id
+            
+            return call
+        }
+        
+        guard let call: SessionCall = maybeCall else {
+            SessionCallManager.reportFakeCall(info: "Could not retrieve call from database")
+            return
+        }
+        
+        // NOTE: Just start 1-1 poller so that it won't wait for polling group messages
+        (UIApplication.shared.delegate as? AppDelegate)?.startPollersIfNeeded(shouldStartGroupPollers: false)
+        
+        call.reportIncomingCallIfNeeded { error in
+            if let error = error {
+                SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
             }
         }
     }
