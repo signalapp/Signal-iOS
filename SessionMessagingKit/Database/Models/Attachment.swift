@@ -468,6 +468,7 @@ extension Attachment {
         public let attachmentId: String
         public let interactionId: Int64
         public let state: Attachment.State
+        public let downloadUrl: String?
     }
     
     public static func stateInfo(authorId: String, state: State? = nil) -> SQLRequest<Attachment.StateInfo> {
@@ -484,7 +485,8 @@ extension Attachment {
             SELECT DISTINCT
                 \(attachment[.id]) AS attachmentId,
                 \(interaction[.id]) AS interactionId,
-                \(attachment[.state]) AS state
+                \(attachment[.state]) AS state,
+                \(attachment[.downloadUrl]) AS downloadUrl
         
             FROM \(Attachment.self)
             
@@ -529,7 +531,8 @@ extension Attachment {
             SELECT DISTINCT
                 \(attachment[.id]) AS attachmentId,
                 \(interaction[.id]) AS interactionId,
-                \(attachment[.state]) AS state
+                \(attachment[.state]) AS state,
+                \(attachment[.downloadUrl]) AS downloadUrl
         
             FROM \(Attachment.self)
             
@@ -913,6 +916,16 @@ extension Attachment {
 
         return true
     }
+    
+    public static func fileId(for downloadUrl: String?) -> String? {
+        return downloadUrl
+            .map { urlString -> String? in
+                urlString
+                    .split(separator: "/")
+                    .last
+                    .map { String($0) }
+            }
+    }
 }
 
 // MARK: - Upload
@@ -923,14 +936,14 @@ extension Attachment {
         queue: DispatchQueue,
         using upload: (Database, Data) -> Promise<String>,
         encrypt: Bool,
-        success: (() -> Void)?,
+        success: ((String?) -> Void)?,
         failure: ((Error) -> Void)?
     ) {
         // This can occur if an AttachmnetUploadJob was explicitly created for a message
         // dependant on the attachment being uploaded (in this case the attachment has
         // already been uploaded so just succeed)
         guard state != .uploaded else {
-            success?()
+            success?(Attachment.fileId(for: self.downloadUrl))
             return
         }
         
@@ -982,7 +995,7 @@ extension Attachment {
                 return
             }
                 
-            success?()
+            success?(Attachment.fileId(for: self.downloadUrl))
             return
         }
         
@@ -1073,7 +1086,7 @@ extension Attachment {
                     return
                 }
                     
-                success?()
+                success?(fileId)
             }
             .catch(on: queue) { error in
                 Storage.shared.write { db in

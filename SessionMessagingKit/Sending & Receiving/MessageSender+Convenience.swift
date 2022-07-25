@@ -100,7 +100,7 @@ extension MessageSender {
     }
     
     public static func sendNonDurably(_ db: Database, message: Message, interactionId: Int64?, to destination: Message.Destination) -> Promise<Void> {
-        var attachmentUploadPromises: [Promise<Void>] = [Promise.value(())]
+        var attachmentUploadPromises: [Promise<String?>] = [Promise.value(nil)]
         
         // If we have an interactionId then check if it has any attachments and process them first
         if let interactionId: Int64 = interactionId {
@@ -124,8 +124,8 @@ extension MessageSender {
                 .filter(ids: attachmentStateInfo.map { $0.attachmentId })
                 .fetchAll(db))
                 .defaulting(to: [])
-                .map { attachment -> Promise<Void> in
-                    let (promise, seal) = Promise<Void>.pending()
+                .map { attachment -> Promise<String?> in
+                    let (promise, seal) = Promise<String?>.pending()
     
                     attachment.upload(
                         db,
@@ -146,7 +146,7 @@ extension MessageSender {
                                 .map { response -> String in response.id }
                         },
                         encrypt: (openGroup == nil),
-                        success: { seal.fulfill(()) },
+                        success: { fileId in seal.fulfill(fileId) },
                         failure: { seal.reject($0) }
                     )
     
@@ -167,10 +167,18 @@ extension MessageSender {
                 if let error: Error = errors.first { return Promise(error: error) }
                 
                 return Storage.shared.writeAsync { db in
-                    try MessageSender.sendImmediate(
+                    let fileIds: [String] = results
+                        .compactMap { result -> String? in
+                            if case .fulfilled(let value) = result { return value }
+                            
+                            return nil
+                        }
+                    
+                    return try MessageSender.sendImmediate(
                         db,
                         message: message,
-                        to: destination,
+                        to: destination
+                            .with(fileIds: fileIds),
                         interactionId: interactionId
                     )
                 }

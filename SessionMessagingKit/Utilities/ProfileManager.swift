@@ -150,10 +150,7 @@ public struct ProfileManager {
             return
         }
         guard
-            let fileId: String = profileUrlStringAtStart
-                .split(separator: "/")
-                .last
-                .map({ String($0) }),
+            let fileId: String = Attachment.fileId(for: profileUrlStringAtStart),
             let profileKeyAtStart: OWSAES256Key = profile.profileEncryptionKey,
             profileKeyAtStart.keyData.count > 0
         else {

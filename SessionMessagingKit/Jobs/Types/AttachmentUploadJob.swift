@@ -55,7 +55,7 @@ public enum AttachmentUploadJob: JobExecutor {
                     .map { response -> String in response.id }
             },
             encrypt: (openGroup == nil),
-            success: { success(job, false) },
+            success: { _ in success(job, false) },
             failure: { error in failure(job, error, false) }
         )
     }
